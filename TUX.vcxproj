@@ -19,15 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GUI\AntiAlias\GUIAAArc.c" />
-    <ClCompile Include="GUI\AntiAlias\GUIAAChar.c" />
-    <ClCompile Include="GUI\AntiAlias\GUIAAChar2.c" />
-    <ClCompile Include="GUI\AntiAlias\GUIAAChar4.c" />
-    <ClCompile Include="GUI\AntiAlias\GUIAACircle.c" />
-    <ClCompile Include="GUI\AntiAlias\GUIAALib.c" />
-    <ClCompile Include="GUI\AntiAlias\GUIAALine.c" />
-    <ClCompile Include="GUI\AntiAlias\GUIAAPoly.c" />
-    <ClCompile Include="GUI\AntiAlias\GUIAAPolyOut.c" />
     <ClCompile Include="GUI\ConvertColor\LCDP111.c" />
     <ClCompile Include="GUI\ConvertColor\LCDP222.c" />
     <ClCompile Include="GUI\ConvertColor\LCDP233.c" />
@@ -51,9 +42,6 @@
     <ClCompile Include="GUI\ConvertColor\LCDPM556.c" />
     <ClCompile Include="GUI\ConvertColor\LCDPM565.c" />
     <ClCompile Include="GUI\ConvertColor\LCDPM655.c" />
-    <ClCompile Include="GUI\ConvertMono\LCDP0.c" />
-    <ClCompile Include="GUI\ConvertMono\LCDP2.c" />
-    <ClCompile Include="GUI\ConvertMono\LCDP4.c" />
     <ClCompile Include="GUI\Core\GUI2DLib.c" />
     <ClCompile Include="GUI\Core\GUIAlloc.c" />
     <ClCompile Include="GUI\Core\GUIArc.c" />
@@ -327,10 +315,6 @@
     <ClCompile Include="GUI\MemDev\GUIDEV_WriteAlpha.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_WriteEx.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_XY2PTR.c" />
-    <ClCompile Include="GUI\MultiLayer\LCD_1.c" />
-    <ClCompile Include="GUI\MultiLayer\LCD_2.c" />
-    <ClCompile Include="GUI\MultiLayer\LCD_3.c" />
-    <ClCompile Include="GUI\MultiLayer\LCD_4.c" />
     <ClCompile Include="GUI\Widget\BUTTON.c" />
     <ClCompile Include="GUI\Widget\BUTTON_Bitmap.c" />
     <ClCompile Include="GUI\Widget\BUTTON_BMP.c" />
@@ -623,7 +607,6 @@
     <ClCompile Include="GUI\WM\WM__GetFirstSibling.c" />
     <ClCompile Include="GUI\WM\WM__GetFocussedChild.c" />
     <ClCompile Include="GUI\WM\WM__GetLastSibling.c" />
-    <ClCompile Include="GUI\WM\WM__GetOrg_AA.c" />
     <ClCompile Include="GUI\WM\WM__GetPrevSibling.c" />
     <ClCompile Include="GUI\WM\WM__IsAncestor.c" />
     <ClCompile Include="GUI\WM\WM__IsChild.c" />
@@ -657,7 +640,6 @@
     <ClInclude Include="GUI\Core\LCD_ConfDefaults.h" />
     <ClInclude Include="GUI\Core\LCD_Private.h" />
     <ClInclude Include="GUI\Core\LCD_Protected.h" />
-    <ClInclude Include="GUI\MultiLayer\LCD_IncludeDriver.h" />
     <ClInclude Include="GUI\Widget\BUTTON.h" />
     <ClInclude Include="GUI\Widget\BUTTON_Private.h" />
     <ClInclude Include="GUI\Widget\CHECKBOX.h" />

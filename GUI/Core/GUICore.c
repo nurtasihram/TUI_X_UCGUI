@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -27,19 +27,6 @@ Purpose     : Core routines
 #if GUI_WINSUPPORT
   #include "WM_GUI.h"
   #include "WM.h"
-#endif
-
-/*********************************************************************
-*
-*       Static data
-*
-**********************************************************************
-*/
-#if GUI_SUPPORT_AA
-static const tLCD_HL_APIList _HL_APIList = {
-  LCD_DrawHLine,
-  LCD_DrawPixel
-};
 #endif
 
 /*********************************************************************
@@ -66,9 +53,6 @@ static void _InitContext(GUI_CONTEXT* pContext) {
   #endif
   pContext->pClipRect_HL = &GUI_Context.ClipRect;
   LCD_L0_GetRect(&pContext->ClipRect);
-  #if GUI_SUPPORT_AA
-    pContext->pLCD_HL      = &_HL_APIList;
-  #endif
   pContext->pAFont       = GUI_DEFAULT_FONT;
   pContext->pClipRect_HL = &GUI_Context.ClipRect;
   pContext->PenSize      = 1;
@@ -77,9 +61,6 @@ static void _InitContext(GUI_CONTEXT* pContext) {
     pContext->hAWin    = WM_GetDesktopWindow();
   #endif
   /* Variables in GUI_AA module */
-  #if GUI_SUPPORT_AA
-    pContext->AA_Factor = 3;
-  #endif
   pContext->Color   = GUI_INVALID_COLOR;
   pContext->BkColor = GUI_INVALID_COLOR;
   LCD_SetBkColor(GUI_DEFAULT_BKCOLOR);

@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -206,14 +206,8 @@ struct GUI_Usage {
 ********************************************************************
 */
 
-#if GUI_SUPPORT_AA
-  #define LCD_HL_DrawHLine             GUI_Context.pLCD_HL->pfDrawHLine
-  #define LCD_HL_DrawPixel             GUI_Context.pLCD_HL->pfDrawPixel
-#else
-  #define LCD_HL_DrawHLine             LCD_DrawHLine
-  #define LCD_HL_DrawPixel             LCD_DrawPixel
-#endif
-
+#define LCD_HL_DrawHLine             LCD_DrawHLine
+#define LCD_HL_DrawPixel             LCD_DrawPixel
 
 /*********************************************************************
 *

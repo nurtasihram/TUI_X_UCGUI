@@ -7,14 +7,8 @@
     <Filter Include="Config">
       <UniqueIdentifier>{df4a76cf-1d15-4215-ad08-9f3586562d22}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GUI\AntiAlias">
-      <UniqueIdentifier>{44a21205-cb22-4400-9dc9-e2d83bf5e974}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GUI\ConvertColor">
       <UniqueIdentifier>{ee6a3c13-8d49-475b-9e42-934007c74c57}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GUI\ConvertMono">
-      <UniqueIdentifier>{f5eb7f1f-2135-457d-9d85-ec5f0c057fd3}</UniqueIdentifier>
     </Filter>
     <Filter Include="GUI\Core">
       <UniqueIdentifier>{66bb47bc-d957-45e8-b79b-7df70d23c8b4}</UniqueIdentifier>
@@ -27,9 +21,6 @@
     </Filter>
     <Filter Include="GUI\MemDev">
       <UniqueIdentifier>{abf105d2-d9ee-4c97-92fc-876b476349fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GUI\MultiLayer">
-      <UniqueIdentifier>{9decb9f4-c329-46b5-8986-ab2705f972f9}</UniqueIdentifier>
     </Filter>
     <Filter Include="GUI\Widget">
       <UniqueIdentifier>{6fc855ae-06c7-466d-b909-67d008be96a8}</UniqueIdentifier>
@@ -47,33 +38,6 @@
     </ClCompile>
     <ClCompile Include="GUI_X\GUI_X.cc">
       <Filter>GUI_X</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\AntiAlias\GUIAAArc.c">
-      <Filter>GUI\AntiAlias</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\AntiAlias\GUIAAChar.c">
-      <Filter>GUI\AntiAlias</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\AntiAlias\GUIAAChar2.c">
-      <Filter>GUI\AntiAlias</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\AntiAlias\GUIAAChar4.c">
-      <Filter>GUI\AntiAlias</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\AntiAlias\GUIAACircle.c">
-      <Filter>GUI\AntiAlias</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\AntiAlias\GUIAALib.c">
-      <Filter>GUI\AntiAlias</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\AntiAlias\GUIAALine.c">
-      <Filter>GUI\AntiAlias</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\AntiAlias\GUIAAPoly.c">
-      <Filter>GUI\AntiAlias</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\AntiAlias\GUIAAPolyOut.c">
-      <Filter>GUI\AntiAlias</Filter>
     </ClCompile>
     <ClCompile Include="GUI\ConvertColor\LCDP111.c">
       <Filter>GUI\ConvertColor</Filter>
@@ -143,15 +107,6 @@
     </ClCompile>
     <ClCompile Include="GUI\ConvertColor\LCDPM655.c">
       <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertMono\LCDP0.c">
-      <Filter>GUI\ConvertMono</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertMono\LCDP2.c">
-      <Filter>GUI\ConvertMono</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertMono\LCDP4.c">
-      <Filter>GUI\ConvertMono</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI__AddSpaceHex.c">
       <Filter>GUI\Core</Filter>
@@ -966,18 +921,6 @@
     <ClCompile Include="GUI\MemDev\GUIDEV_XY2PTR.c">
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\MultiLayer\LCD_1.c">
-      <Filter>GUI\MultiLayer</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MultiLayer\LCD_2.c">
-      <Filter>GUI\MultiLayer</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MultiLayer\LCD_3.c">
-      <Filter>GUI\MultiLayer</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MultiLayer\LCD_4.c">
-      <Filter>GUI\MultiLayer</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\BUTTON.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
@@ -1617,9 +1560,6 @@
     <ClCompile Include="GUI\WM\WM__GetLastSibling.c">
       <Filter>GUI\WM</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\WM\WM__GetOrg_AA.c">
-      <Filter>GUI\WM</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\WM\WM__GetPrevSibling.c">
       <Filter>GUI\WM</Filter>
     </ClCompile>
@@ -1949,9 +1889,6 @@
     </ClInclude>
     <ClInclude Include="GUI\Core\LCDSIM.h">
       <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\MultiLayer\LCD_IncludeDriver.h">
-      <Filter>GUI\MultiLayer</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\BUTTON.h">
       <Filter>GUI\Widget</Filter>

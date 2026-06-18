@@ -245,23 +245,11 @@ static void _FillPolygon(const GUI_POINT* paPoint, int NumPoints, int x0, int y0
 *       _FillPolygonAA
 */
 static void _FillPolygonAA(const GUI_POINT* paPoint, int NumPoints, int x0, int y0) {
-  #if GUI_SUPPORT_AA
-    GUI_RECT r;
-    _CalcPolyRect(&r, paPoint, NumPoints);
-    GUI_MoveRect(&r, x0, y0);
-    if (GUI_Context.AA_HiResEnable) {
-      r.x0 /= GUI_Context.AA_Factor;
-      r.y0 /= GUI_Context.AA_Factor;
-      r.x1 = (r.x1 + GUI_Context.AA_Factor - 1) / GUI_Context.AA_Factor;
-      r.y1 = (r.y1 + GUI_Context.AA_Factor - 1) / GUI_Context.AA_Factor;
-    }
-    _MarkRect(r.x0, r.y0, r.x1, r.y1);
-  #else
+
     GUI_USE_PARA(paPoint);
     GUI_USE_PARA(NumPoints);
     GUI_USE_PARA(x0);
     GUI_USE_PARA(y0);
-  #endif
 }
 
 /*********************************************************************
