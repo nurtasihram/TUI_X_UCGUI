@@ -150,12 +150,7 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
     pDevData->y0            = y0;
     pDevData->XSize         = xsize;
     pDevData->YSize         = ysize;
-    pDevData->NumColors     = 
-    #if GUI_NUM_LAYERS == 1
-      LCD_GET_NUMCOLORS();
-    #else
-      LCD_GetNumColorsEx(GUI_Context.SelLayer);
-    #endif
+    pDevData->NumColors     = LCD_GET_NUMCOLORS();
     pDevData->BytesPerLine  = BytesPerLine;
     pDevData->hUsage        = hUsage;
     /* Set color conversion routine pointers */
@@ -165,11 +160,6 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
 
     pDevData->pAPIList      = pMemDevAPI;
     pDevData->BitsPerPixel  = BitsPerPixel;
-    #if (GUI_NUM_LAYERS > 1)   /* Size opt., preprocessor not required */
-      pDevData->LayerIndex  = GUI_Context.SelLayer;
-    #else
-      pDevData->LayerIndex  = 0;
-    #endif
   } else {
     if (hUsage) {
       GUI_ALLOC_Free(hUsage);
@@ -190,11 +180,7 @@ GUI_MEMDEV_Handle GUI_MEMDEV_CreateEx(int x0, int y0, int xSize, int ySize, int 
   tLCDDEV_Index2Color   * pfIndex2Color;
   tLCDDEV_GetIndexMask  * pfGetIndexMask;
   GUI_LOCK();
-  #if (GUI_NUM_LAYERS > 1)   /* Size opt., preprocessor not required */
-    pDeviceAPI = LCD_aAPI[GUI_Context.SelLayer];
-  #else
-    pDeviceAPI = LCD_aAPI[0];
-  #endif
+  pDeviceAPI = LCD_aAPI[0];
   if (GUI_Context.hDevData == 0) {
     pfColor2Index = GUI_Context.pDeviceAPI->pfColor2Index;    /* LCD_L0_Color2Index; */
     pfIndex2Color = GUI_Context.pDeviceAPI->pfIndex2Color;    /* LCD_L0_Index2Color; */
@@ -301,18 +287,11 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
   #if (GUI_WINSUPPORT)
     GUI_RECT r;
   #endif
-  #if GUI_NUM_LAYERS > 1
-    int PrevLayer;
-  #endif
     GUI_LOCK();
     hMemPrev = GUI_Context.hDevData;
     pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
     /* Make sure LCD is selected as device */
-  #if GUI_NUM_LAYERS > 1
-    PrevLayer = GUI_SelectLayer(pDevData->LayerIndex);
-  #else
     GUI_SelectLCD();  /* Activate LCD */
-  #endif
     if (x == GUI_POS_AUTO) {
       x = pDevData->x0;
       y = pDevData->y0;
@@ -328,9 +307,6 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
     GUI_MEMDEV__WriteToActiveAt(hMem, x, y);
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
-  #endif
-  #if GUI_NUM_LAYERS > 1
-    GUI_SelectLayer(PrevLayer);
   #endif
     /* Reactivate previously used device */
     GUI_MEMDEV_Select(hMemPrev);

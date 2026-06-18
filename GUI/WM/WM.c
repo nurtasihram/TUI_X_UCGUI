@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -118,18 +118,9 @@ static void _CheckCriticalHandles(WM_HWIN hWin) {
 *   else: -1
 */
 static int _DesktopHandle2Index(WM_HWIN hDesktop) {
-#if GUI_NUM_LAYERS > 1
-  int i;
-  for (i = 0; i < GUI_NUM_LAYERS; i++) {
-    if (hDesktop == WM__ahDesktopWin[i]) {
-      return i;
-    }
-  }
-#else
-  if (hDesktop == WM__ahDesktopWin[0]) {
+  if (hDesktop == WM__ahDesktopWin) {
     return 0;
   }
-#endif
   return -1;
 }
 
@@ -187,20 +178,6 @@ static void _Invalidate1Abs(WM_HWIN hWin, const GUI_RECT*pRect) {
     #endif
   }
 }
-
-/*********************************************************************
-*
-*       _GetTopLevelWindow
-*/
-#if GUI_NUM_LAYERS > 1
-static WM_HWIN _GetTopLevelWindow(WM_HWIN hWin) {
-  WM_Obj* pWin;
-  WM_HWIN hTop;
-  while (hTop = hWin, pWin = WM_H2P(hWin), (hWin = pWin->hParent) != 0) {
-  }
-  return hTop;
-}
-#endif
 
 /*********************************************************************
 *
@@ -810,11 +787,7 @@ WM_HWIN WM_CreateWindowAsChild( int x0, int y0, int width, int height
   /* Default parent is Desktop 0 */
   if (!hParent) {
     if (WM__NumWindows) {
-    #if GUI_NUM_LAYERS == 1
-      hParent = WM__ahDesktopWin[0];
-    #else
-      hParent = WM__ahDesktopWin[GUI_Context.SelLayer];
-    #endif
+      hParent = WM__ahDesktopWin;
     }
   }
   if (hParent == WM_UNATTACHED) {
@@ -968,17 +941,6 @@ WM_HWIN WM_SelectWindow(WM_HWIN  hWin) {
   }
   /* Select new window */
   GUI_Context.hAWin = hWin;
-  #if GUI_NUM_LAYERS > 1
-  {
-    WM_HWIN hTop;
-    int LayerIndex;
-    hTop = _GetTopLevelWindow(hWin);
-    LayerIndex = _DesktopHandle2Index(hTop);
-    if (LayerIndex >= 0) {
-      GUI_SelectLayer(LayerIndex);
-    }
-  }
-  #endif
   pObj = WM_H2P(hWin);
   LCD_SetClipRectMax();             /* Drawing operations will clip ... If WM is deactivated, allow all */
   GUI_Context.xOff = pObj->Rect.x0;
@@ -1272,15 +1234,6 @@ int WM__InitIVRSearch(const GUI_RECT* pMaxRect) {
   return WM__GetNextIVR();
 }
 
-/*********************************************************************
-*
-*       WM_SetDefault
-*
-  This routine sets the defaults for WM and the layers below.
-  It is used before a drawing routine is called in order to
-  make sure that defaults are set (in case the default settings
-  had been altered before by the application)
-*/
 void WM_SetDefault(void) {
   GL_SetDefault();
   GUI_Context.WM__pUserClipRect = NULL;   /* No add. clipping */
@@ -1616,14 +1569,8 @@ static void cbBackWin( WM_MESSAGE* pMsg) {
     break;
   case WM_PAINT:
     {
-      int LayerIndex;
-      #if GUI_NUM_LAYERS > 1
-        LayerIndex = _DesktopHandle2Index(pMsg->hWin);
-      #else
-        LayerIndex = 0;
-      #endif
-      if (WM__aBkColor[LayerIndex] != GUI_INVALID_COLOR) {
-        GUI_SetBkColor(WM__aBkColor[LayerIndex]);
+      if (WM__aBkColor != GUI_INVALID_COLOR) {
+        GUI_SetBkColor(WM__aBkColor);
         GUI_Clear();
       }
     }
@@ -1700,25 +1647,14 @@ void WM_Init(void) {
 	  /* Make sure we have at least one window. This greatly simplifies the
 		  drawing routines as they do not have to check if the window is valid.
 	  */
-    #if GUI_NUM_LAYERS == 1
-      WM__ahDesktopWin[0] = WM_CreateWindow(0, 0, GUI_XMAX, GUI_YMAX, WM_CF_SHOW, cbBackWin, 0);
-      WM__aBkColor[0] = GUI_INVALID_COLOR;
-      WM_InvalidateWindow(WM__ahDesktopWin[0]); /* Required because a desktop window has no parent. */
-    #else
-    {
-      int i;
-      for (i = 0; i < GUI_NUM_LAYERS; i++) {
-        WM__ahDesktopWin[i] = WM_CreateWindowAsChild(0, 0, GUI_XMAX, GUI_YMAX, WM_UNATTACHED, WM_CF_SHOW, cbBackWin, 0);
-        WM__aBkColor[i] = GUI_INVALID_COLOR;
-        WM_InvalidateWindow(WM__ahDesktopWin[i]); /* Required because a desktop window has no parent. */
-      }
-    }
-    #endif
-    /* Register the critical handles ... Note: This could be moved into the module setting the Window handle */
-    WM__AddCriticalHandle(&WM__CHWinModal);
-    WM__AddCriticalHandle(&WM__CHWinLast);
+		WM__ahDesktopWin = WM_CreateWindow(0, 0, GUI_XMAX, GUI_YMAX, WM_CF_SHOW, cbBackWin, 0);
+		WM__aBkColor = GUI_INVALID_COLOR;
+		WM_InvalidateWindow(WM__ahDesktopWin); /* Required because a desktop window has no parent. */
+		/* Register the critical handles ... Note: This could be moved into the module setting the Window handle */
+		WM__AddCriticalHandle(&WM__CHWinModal);
+		WM__AddCriticalHandle(&WM__CHWinLast);
 
-    WM_SelectWindow(WM__ahDesktopWin[0]);
+		WM_SelectWindow(WM__ahDesktopWin);
 	  WM_Activate();
     _IsInited =1;
 	}

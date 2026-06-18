@@ -63,10 +63,6 @@
   #define GUI_COMPATIBLE_MODE 1
 #endif
 
-#ifndef GUI_NUM_LAYERS
-  #define GUI_NUM_LAYERS      1
-#endif
-
 #ifndef GUI_SUPPORT_CURSOR
   #define GUI_SUPPORT_CURSOR  (GUI_SUPPORT_MOUSE | GUI_SUPPORT_TOUCH)
 #endif
@@ -75,7 +71,7 @@
   #ifdef __C51__               /* Keil C51 limitation ... Indirect function calls are limited */
     #define GUI_SUPPORT_DEVICES 0
   #else
-    #define GUI_SUPPORT_DEVICES (GUI_SUPPORT_MEMDEV | (GUI_NUM_LAYERS > 1))
+    #define GUI_SUPPORT_DEVICES (GUI_SUPPORT_MEMDEV)
   #endif
 #endif
 
@@ -86,14 +82,6 @@ with parameters. In this case, we do not use function pointers, but limit the fu
     #define GUI_COMPILER_SUPPORTS_FP 0
   #else
     #define GUI_COMPILER_SUPPORTS_FP 1
-  #endif
-#endif
-
-#ifndef GUI_SUPPORT_ROTATION
-  #if GUI_COMPILER_SUPPORTS_FP
-    #define GUI_SUPPORT_ROTATION 1
-  #else
-    #define GUI_SUPPORT_ROTATION 0
   #endif
 #endif
 

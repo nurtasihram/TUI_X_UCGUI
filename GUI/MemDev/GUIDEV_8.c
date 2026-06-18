@@ -656,7 +656,6 @@ const tLCDDEV_APIList API_LIST = {
   GUI_MEMDEV__GetRect,
   _SetPixelIndex,
   _XorPixel,
-  NULL,               /* pfSetLUTEntry   */
   NULL,               /* pfFillPolygon   */
   NULL,               /* pfFillPolygonAA */
   NULL,               /* MemDevAPI       */

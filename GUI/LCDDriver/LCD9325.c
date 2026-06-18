@@ -2,45 +2,6 @@
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 
-#if (!defined (LCD_LUT_COM) && !defined(LCD_LUT_SEG))
-#if   (!LCD_MIRROR_X && !LCD_MIRROR_Y && !LCD_SWAP_XY) 
-#define LOG2PHYS_X(x, y) x
-#define LOG2PHYS_Y(x, y) y
-#elif (!LCD_MIRROR_X && !LCD_MIRROR_Y &&  LCD_SWAP_XY) 
-#define LOG2PHYS_X(x, y) y
-#define LOG2PHYS_Y(x, y) x
-#elif (!LCD_MIRROR_X &&  LCD_MIRROR_Y && !LCD_SWAP_XY) 
-#define LOG2PHYS_X(x, y) x
-#define LOG2PHYS_Y(x, y) LCD_YSIZE - 1 - (y)
-#elif (!LCD_MIRROR_X &&  LCD_MIRROR_Y &&  LCD_SWAP_XY) 
-#define LOG2PHYS_X(x, y) y
-#define LOG2PHYS_Y(x, y) LCD_XSIZE - 1 - (x)
-#elif ( LCD_MIRROR_X && !LCD_MIRROR_Y && !LCD_SWAP_XY) 
-#define LOG2PHYS_X(x, y) LCD_XSIZE - 1 - (x)
-#define LOG2PHYS_Y(x, y) y
-#elif ( LCD_MIRROR_X && !LCD_MIRROR_Y &&  LCD_SWAP_XY) 
-#define LOG2PHYS_X(x, y) LCD_YSIZE - 1 - (y)
-#define LOG2PHYS_Y(x, y) x
-#elif ( LCD_MIRROR_X &&  LCD_MIRROR_Y && !LCD_SWAP_XY) 
-#define LOG2PHYS_X(x, y) LCD_XSIZE - 1 - (x)
-#define LOG2PHYS_Y(x, y) LCD_YSIZE - 1 - (y)
-#elif ( LCD_MIRROR_X &&  LCD_MIRROR_Y &&  LCD_SWAP_XY) 
-#define LOG2PHYS_X(x, y) LCD_YSIZE - 1 - (y)
-#define LOG2PHYS_Y(x, y) LCD_XSIZE - 1 - (x)
-#endif
-#else
-#if   ( defined (LCD_LUT_COM) && !defined(LCD_LUT_SEG))
-#define LOG2PHYS_X(x, y) x
-#define LOG2PHYS_Y(x, y) LCD__aLine2Com0[y]
-#elif (!defined (LCD_LUT_COM) &&  defined(LCD_LUT_SEG))
-#define LOG2PHYS_X(x, y) LCD__aCol2Seg0[x]
-#define LOG2PHYS_Y(x, y) y
-#elif ( defined (LCD_LUT_COM) &&  defined(LCD_LUT_SEG))
-#define LOG2PHYS_X(x, y) LCD__aCol2Seg0[x]
-#define LOG2PHYS_Y(x, y) LCD__aLine2Com0[y]
-#endif
-#endif
-
 /*********************************************************************
 *
 *       Static functions
@@ -426,13 +387,4 @@ void LCD_L0_DrawBitmap(int x0, int y0,
 void LCD_L0_SetOrg(int x, int y) {
 	GUI_USE_PARA(x);
 	GUI_USE_PARA(y);
-}
-
-/*********************************************************************
-*
-*       LCD_L0_SetLUTEntry
-*/
-void LCD_L0_SetLUTEntry(U8 Pos, LCD_COLOR Color) {
-	GUI_USE_PARA(Pos);
-	GUI_USE_PARA(Color);
 }

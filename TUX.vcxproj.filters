@@ -225,9 +225,6 @@
     <ClCompile Include="GUI\Core\GUI_DispStringInRect.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_DispStringInRectEx.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_DispStringInRectMax.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -324,16 +321,10 @@
     <ClCompile Include="GUI\Core\GUI_GetTextMode.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetVersionString.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_GetYSizeOfFont.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_Goto.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_InitLUT.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_InvertRect.c">
@@ -402,15 +393,6 @@
     <ClCompile Include="GUI\Core\GUI_SetLineStyle.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetLUTColor.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetLUTColorEx.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetLUTEntry.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_SetOrg.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -430,18 +412,6 @@
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_SIF_Prop.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_TOUCH.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_TOUCH_DriverAnalog.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_TOUCH_StoreState.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_TOUCH_StoreUnstable.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_UC.c">
@@ -549,16 +519,7 @@
     <ClCompile Include="GUI\Core\LCD_GetColorIndex.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_GetEx.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_GetNumDisplays.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\LCD_GetPixelColor.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_Index2ColorEx.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\LCD_L0_Generic.c">
@@ -568,9 +529,6 @@
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\LCD_SelectLCD.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_SetAPI.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\LCD_SetClipRectEx.c">
@@ -1509,9 +1467,6 @@
     <ClCompile Include="GUI\WM\WM_GetDesktopWindow.c">
       <Filter>GUI\WM</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\WM\WM_GetDesktopWindowEx.c">
-      <Filter>GUI\WM</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\WM\WM_GetDiagInfo.c">
       <Filter>GUI\WM</Filter>
     </ClCompile>
@@ -1746,9 +1701,6 @@
     <ClInclude Include="GUI\Core\GUI_Protected.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Core\GUI_VNC.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Core\GUI_X.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
@@ -1756,9 +1708,6 @@
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\GUIType.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Core\GUIVersion.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\LCD.h">

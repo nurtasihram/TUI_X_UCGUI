@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -154,12 +154,6 @@ void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize, int xMul, int yMul,
   U8  Data = 0;
   int x1, y1;
   /* Handle rotation if necessary */
-  #if GUI_SUPPORT_ROTATION
-  if (GUI_pLCD_APIList) {
-    GUI_pLCD_APIList->pfDrawBitmap(x0, y0, xsize, ysize, xMul, yMul, BitsPerPixel, BytesPerLine, pPixel, pTrans);
-    return;
-  }
-  #endif
   /* Handle the optional Y-magnification */
   y1 = y0 + ysize - 1;
   x1 = x0 + xsize - 1;
@@ -274,35 +268,12 @@ int LCD_Init(void) {
   GUI_DEBUG_LOG("\nLCD_Init...");
   LCD_SetClipRectMax();
   r |= LCD_L0_Init();
-  #if GUI_NUM_LAYERS > 1
-    r |= LCD_L0_1_Init();
+  #if (GUI_DEFAULT_BKCOLOR != GUI_INVALID_COLOR)
+  /* Clear video memory */
+  LCD_SetDrawMode(GUI_DRAWMODE_REV);
+  LCD_FillRect(0,0, GUI_XMAX, GUI_YMAX);
+  LCD_SetDrawMode(0);
   #endif
-  #if GUI_NUM_LAYERS > 2
-    r |= LCD_L0_2_Init();
-  #endif
-  #if GUI_NUM_LAYERS > 3
-    r |= LCD_L0_3_Init();
-  #endif
-  #if GUI_NUM_LAYERS > 4
-    r |= LCD_L0_4_Init();
-  #endif
-  LCD_InitLUT();
-  {
-  #if GUI_NUM_LAYERS > 1
-    int i;
-    for (i = GUI_NUM_LAYERS - 1; i >= 0; i--) {
-      GUI_SelectLayer(i);
-  #else
-    {
-  #endif
-      #if (GUI_DEFAULT_BKCOLOR != GUI_INVALID_COLOR)
-        /* Clear video memory */
-        LCD_SetDrawMode(GUI_DRAWMODE_REV);
-        LCD_FillRect(0,0, GUI_XMAX, GUI_YMAX);
-        LCD_SetDrawMode(0);
-      #endif
-    }
-  }
   /* Switch LCD on */
   return r;
 }

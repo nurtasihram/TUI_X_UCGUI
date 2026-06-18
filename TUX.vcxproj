@@ -89,7 +89,6 @@
     <ClCompile Include="GUI\Core\GUI_DispStringAtCEOL.c" />
     <ClCompile Include="GUI\Core\GUI_DispStringHCenter.c" />
     <ClCompile Include="GUI\Core\GUI_DispStringInRect.c" />
-    <ClCompile Include="GUI\Core\GUI_DispStringInRectEx.c" />
     <ClCompile Include="GUI\Core\GUI_DispStringInRectMax.c" />
     <ClCompile Include="GUI\Core\GUI_DispStringLen.c" />
     <ClCompile Include="GUI\Core\GUI_DrawBitmap.c" />
@@ -122,10 +121,8 @@
     <ClCompile Include="GUI\Core\GUI_GetTextAlign.c" />
     <ClCompile Include="GUI\Core\GUI_GetTextExtend.c" />
     <ClCompile Include="GUI\Core\GUI_GetTextMode.c" />
-    <ClCompile Include="GUI\Core\GUI_GetVersionString.c" />
     <ClCompile Include="GUI\Core\GUI_GetYSizeOfFont.c" />
     <ClCompile Include="GUI\Core\GUI_Goto.c" />
-    <ClCompile Include="GUI\Core\GUI_InitLUT.c" />
     <ClCompile Include="GUI\Core\GUI_InvertRect.c" />
     <ClCompile Include="GUI\Core\GUI_IsInFont.c" />
     <ClCompile Include="GUI\Core\GUI_Log.c" />
@@ -148,9 +145,6 @@
     <ClCompile Include="GUI\Core\GUI_SetFont.c" />
     <ClCompile Include="GUI\Core\GUI_SetLBorder.c" />
     <ClCompile Include="GUI\Core\GUI_SetLineStyle.c" />
-    <ClCompile Include="GUI\Core\GUI_SetLUTColor.c" />
-    <ClCompile Include="GUI\Core\GUI_SetLUTColorEx.c" />
-    <ClCompile Include="GUI\Core\GUI_SetLUTEntry.c" />
     <ClCompile Include="GUI\Core\GUI_SetOrg.c" />
     <ClCompile Include="GUI\Core\GUI_SetPixelIndex.c" />
     <ClCompile Include="GUI\Core\GUI_SetTextAlign.c" />
@@ -158,10 +152,6 @@
     <ClCompile Include="GUI\Core\GUI_SetTextStyle.c" />
     <ClCompile Include="GUI\Core\GUI_SIF.c" />
     <ClCompile Include="GUI\Core\GUI_SIF_Prop.c" />
-    <ClCompile Include="GUI\Core\GUI_TOUCH.c" />
-    <ClCompile Include="GUI\Core\GUI_TOUCH_DriverAnalog.c" />
-    <ClCompile Include="GUI\Core\GUI_TOUCH_StoreState.c" />
-    <ClCompile Include="GUI\Core\GUI_TOUCH_StoreUnstable.c" />
     <ClCompile Include="GUI\Core\GUI_UC.c" />
     <ClCompile Include="GUI\Core\GUI_UC_DispString.c" />
     <ClCompile Include="GUI\Core\GUI_UC_EncodeNone.c" />
@@ -194,15 +184,11 @@
     <ClCompile Include="GUI\Core\LCD_API.c" />
     <ClCompile Include="GUI\Core\LCD_DrawVLine.c" />
     <ClCompile Include="GUI\Core\LCD_GetColorIndex.c" />
-    <ClCompile Include="GUI\Core\LCD_GetEx.c" />
-    <ClCompile Include="GUI\Core\LCD_GetNumDisplays.c" />
     <ClCompile Include="GUI\Core\LCD_GetPixelColor.c" />
-    <ClCompile Include="GUI\Core\LCD_Index2ColorEx.c" />
     <ClCompile Include="GUI\Core\LCD_L0_Generic.c" />
     <ClCompile Include="GUI\Core\LCD_Mirror.c" />
     <ClCompile Include="GUI\Core\LCD_MixColors256.c" />
     <ClCompile Include="GUI\Core\LCD_SelectLCD.c" />
-    <ClCompile Include="GUI\Core\LCD_SetAPI.c" />
     <ClCompile Include="GUI\Core\LCD_SetClipRectEx.c" />
     <ClCompile Include="GUI\Core\LCD_UpdateColorIndices.c" />
     <ClCompile Include="GUI\Font\F08_1.c" />
@@ -502,7 +488,6 @@
     <ClCompile Include="GUI\WM\WM_GetClientRect.c" />
     <ClCompile Include="GUI\WM\WM_GetClientWindow.c" />
     <ClCompile Include="GUI\WM\WM_GetDesktopWindow.c" />
-    <ClCompile Include="GUI\WM\WM_GetDesktopWindowEx.c" />
     <ClCompile Include="GUI\WM\WM_GetDiagInfo.c" />
     <ClCompile Include="GUI\WM\WM_GetDialogItem.c" />
     <ClCompile Include="GUI\WM\WM_GetFirstChild.c" />
@@ -591,12 +576,10 @@
     <ClInclude Include="GUI\Core\GUI.h" />
     <ClInclude Include="GUI\Core\GUIDebug.h" />
     <ClInclude Include="GUI\Core\GUIType.h" />
-    <ClInclude Include="GUI\Core\GUIVersion.h" />
     <ClInclude Include="GUI\Core\GUI_ConfDefaults.h" />
     <ClInclude Include="GUI\Core\GUI_FontIntern.h" />
     <ClInclude Include="GUI\Core\GUI_Private.h" />
     <ClInclude Include="GUI\Core\GUI_Protected.h" />
-    <ClInclude Include="GUI\Core\GUI_VNC.h" />
     <ClInclude Include="GUI\Core\GUI_X.h" />
     <ClInclude Include="GUI\Core\LCD.h" />
     <ClInclude Include="GUI\Core\LCD_ConfDefaults.h" />

@@ -27,26 +27,17 @@ Purpose     : Windows manager, add. module
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       WM_SetDesktopColorEx
-*/
-GUI_COLOR WM_SetDesktopColorEx(GUI_COLOR Color, unsigned int LayerIndex) {
-  GUI_COLOR r = GUI_INVALID_COLOR;
-  if (LayerIndex <  GUI_NUM_LAYERS) {
-    r = WM__aBkColor[LayerIndex];
-    WM__aBkColor[LayerIndex] = Color;
-    WM_InvalidateWindow(WM__ahDesktopWin[LayerIndex]);
-  }
-  return r;
-}
 
 /*********************************************************************
 *
 *       WM_SetDesktopColor
 */
 GUI_COLOR WM_SetDesktopColor(GUI_COLOR Color) {
-  return WM_SetDesktopColorEx(Color, 0);
+  GUI_COLOR r;
+  r = WM__aBkColor;
+  WM__aBkColor = Color;
+  WM_InvalidateWindow(WM__ahDesktopWin);
+  return r;
 }
 
 /*********************************************************************
@@ -54,10 +45,7 @@ GUI_COLOR WM_SetDesktopColor(GUI_COLOR Color) {
 *       WM_SetDesktopColors
 */
 void WM_SetDesktopColors(GUI_COLOR Color) {
-  int i;
-  for (i = 0; i < GUI_NUM_LAYERS; i++) {
-    WM_SetDesktopColorEx(Color, i);
-  }
+  WM_SetDesktopColor(Color);
 }
 
 #else

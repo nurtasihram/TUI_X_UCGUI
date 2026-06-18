@@ -61,9 +61,6 @@ void GUI_MEMDEV_CopyToLCDAA(GUI_MEMDEV_Handle hMem) {
   /* Make sure memory handle is valid */
   if (hMem) {
     GUI_MEMDEV_Handle hMemPrev;
-  #if GUI_NUM_LAYERS > 1
-    int PrevLayer;
-  #endif
     int x, y;
     GUI_MEMDEV* pDev = (GUI_MEMDEV*)GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
     LCD_PIXELINDEX* pData0 = (LCD_PIXELINDEX*)(pDev+1);
@@ -73,11 +70,7 @@ void GUI_MEMDEV_CopyToLCDAA(GUI_MEMDEV_Handle hMem) {
     int XMax = pDev->XSize / 2;
     int YMax = pDev->YSize / 2;
     hMemPrev = GUI_Context.hDevData;
-  #if GUI_NUM_LAYERS > 1
-    PrevLayer = GUI_SelectLayer(pDev->LayerIndex);   /* Should not we switch back to the orig. layer when done ? */
-  #else
     GUI_SelectLCD();  /* Activate LCD */
-  #endif
     for (y = 0; y < YMax; y++) {
       LCD_PIXELINDEX* pData = pData0;
       for (x = 0; x < XMax; x++) {
@@ -108,9 +101,6 @@ void GUI_MEMDEV_CopyToLCDAA(GUI_MEMDEV_Handle hMem) {
       }
       pData0 += 2 * LineOff;
     }
-  #if GUI_NUM_LAYERS > 1
-    GUI_SelectLayer(PrevLayer);
-  #endif
     /* Reactivate previously used device */
     GUI_MEMDEV_Select(hMemPrev);
   }

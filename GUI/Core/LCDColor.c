@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -93,89 +93,6 @@ LCD_PIXELINDEX* LCD_GetpPalConvTable(const LCD_LOGPALETTE GUI_UNI_PTR *  pLogPal
     pLogPalCache = pLogPal;
   #endif
   return LCD_GetpPalConvTableUncached(pLogPal);
-}
-
-/*********************************************************************
-*
-*       LCD_InitLUT
-*/
-void LCD_InitLUT(void) {
-  #if (LCD_BITSPERPIXEL <= 8)
-    {
-      int i;
-      for (i=0; i < LCD_NUM_COLORS; i++) {
-        LCD_COLOR color = LCD_Index2Color((U8)i);
-        #if LCD_REVERSE_LUT
-          color ^= 0xffffff;    /* Invert R,G,B components */
-        #endif
-        LCD_L0_SetLUTEntry((U8)i, color);
-      }
-    }
-  #endif
-  #if (GUI_NUM_LAYERS > 1)
-    #if (LCD_BITSPERPIXEL_1 <= 8)
-    {
-      int i;
-      int DisplayOld = GUI_SelectLayer(1);
-      for (i=0; i < LCD_NUM_COLORS_1; i++) {
-        LCD_COLOR color = LCD_Index2Color((U8)i);
-        #if LCD_REVERSE_LUT_1
-          color ^= 0xffffff;    /* Invert R,G,B components */
-        #endif
-        LCD_L0_1_SetLUTEntry((U8)i, color);
-      }
-      GUI_SelectLayer(DisplayOld);
-    }
-    #endif
-  #endif
-  #if (GUI_NUM_LAYERS > 2)
-    #if (LCD_BITSPERPIXEL_2 <= 8)
-    {
-      int i;
-      int DisplayOld = GUI_SelectLayer(2);
-      for (i=0; i < LCD_NUM_COLORS_2; i++) {
-        LCD_COLOR color = LCD_Index2Color((U8)i);
-        #if LCD_REVERSE_LUT_2
-          color ^= 0xffffff;    /* Invert R,G,B components */
-        #endif
-        LCD_L0_2_SetLUTEntry((U8)i, color);
-      }
-      GUI_SelectLayer(DisplayOld);
-    }
-    #endif
-  #endif
-  #if (GUI_NUM_LAYERS > 3)
-    #if (LCD_BITSPERPIXEL_3 <= 8)
-    {
-      int i;
-      int DisplayOld = GUI_SelectLayer(3);
-      for (i=0; i < LCD_NUM_COLORS_3; i++) {
-        LCD_COLOR color = LCD_Index2Color((U8)i);
-        #if LCD_REVERSE_LUT_3
-          color ^= 0xffffff;    /* Invert R,G,B components */
-        #endif
-        LCD_L0_3_SetLUTEntry((U8)i, color);
-      }
-      GUI_SelectLayer(DisplayOld);
-    }
-    #endif
-  #endif
-  #if (GUI_NUM_LAYERS > 4)
-    #if (LCD_BITSPERPIXEL_4 <= 8)
-    {
-      int i;
-      int DisplayOld = GUI_SelectLayer(4);
-      for (i=0; i < LCD_NUM_COLORS_4; i++) {
-        LCD_COLOR color = LCD_Index2Color((U8)i);
-        #if LCD_REVERSE_LUT_4
-          color ^= 0xffffff;    /* Invert R,G,B components */
-        #endif
-        LCD_L0_4_SetLUTEntry((U8)i, color);
-      }
-      GUI_SelectLayer(DisplayOld);
-    }
-    #endif
-  #endif
 }
 
 /*************************** End of file ****************************/

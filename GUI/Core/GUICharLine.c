@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -112,18 +112,6 @@ int GUI__GetLineDistX(const char GUI_UNI_PTR *s, int MaxNumChars) {
 */
 void GUI__DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT* pr) {
   GUI_RECT r;
-  #if GUI_SUPPORT_ROTATION
-  if (GUI_pLCD_APIList) {
-    #if GUI_WINSUPPORT
-    WM_ITERATE_START(NULL) {
-    #endif
-      /* Do the actual drawing via routine call. */
-      _DispLine(s, MaxNumChars, &r);
-    #if GUI_WINSUPPORT
-    } WM_ITERATE_END();
-    #endif
-  } else
-  #endif
   {
     r = *pr;
     #if GUI_WINSUPPORT

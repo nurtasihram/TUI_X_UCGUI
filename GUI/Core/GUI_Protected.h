@@ -158,7 +158,6 @@ struct GUI_Usage {
     int                    NumColors;
     unsigned               BytesPerLine;
     unsigned               BitsPerPixel;
-    unsigned               LayerIndex;
     GUI_HMEM               hUsage;
     tLCDDEV_Color2Index*   pfColor2Index;
     tLCDDEV_Index2Color*   pfIndex2Color;
@@ -356,10 +355,6 @@ GUI_EXTERN GUI_SADDR char               GUI_DecChar;
 GUI_EXTERN           GUI_tfTimer*       GUI_pfTimerExec;
 GUI_EXTERN           WM_tfHandlePID*    WM_pfHandlePID;
 GUI_EXTERN      void (*GUI_pfDispCharStyle)(U16 Char);
-
-#if GUI_COMPILER_SUPPORTS_FP && GUI_SUPPORT_ROTATION
-  GUI_EXTERN const     tLCD_APIList *     GUI_pLCD_APIList;   /* Used for rotating text */
-#endif
 
 #if GUI_SUPPORT_CURSOR
   GUI_EXTERN GUI_CURSOR_tfTempHide*   GUI_CURSOR_pfTempHide;

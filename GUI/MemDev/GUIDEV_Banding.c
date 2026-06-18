@@ -79,25 +79,15 @@ int GUI_MEMDEV_Draw(GUI_RECT* pRect, GUI_CALLBACK_VOID_P* pfDraw, void* pData, i
   if (pRect) {
     x0 = (pRect->x0 < 0) ? 0 : pRect->x0;
     y0 = (pRect->y0 < 0) ? 0 : pRect->y0;
-    #if GUI_NUM_LAYERS == 1
-      x1 = _Min(pRect->x1, LCD_GET_XSIZE() - 1);
-      y1 = _Min(pRect->y1, LCD_GET_YSIZE() - 1);
-    #else
-      x1 = _Min(pRect->x1, LCD_GetXSizeEx(GUI_Context.SelLayer) - 1);
-      y1 = _Min(pRect->y1, LCD_GetYSizeEx(GUI_Context.SelLayer) - 1);
-    #endif
+    x1 = _Min(pRect->x1, LCD_GET_XSIZE() - 1);
+    y1 = _Min(pRect->y1, LCD_GET_YSIZE() - 1);
     xsize = x1 - x0 + 1;
     ysize = y1 - y0 + 1;
   } else {
     x0 = 0;
     y0 = 0;
-    #if GUI_NUM_LAYERS == 1
-      xsize = LCD_GET_XSIZE();
-      ysize = LCD_GET_YSIZE();
-    #else
-      xsize = LCD_GetXSizeEx(GUI_Context.SelLayer);
-      ysize = LCD_GetYSizeEx(GUI_Context.SelLayer);
-    #endif
+    xsize = LCD_GET_XSIZE();
+    ysize = LCD_GET_YSIZE();
   }
   if (NumLines == 0) {
     NumLines = -ysize;   /* Request <ysize> lines ... Less is o.k. */

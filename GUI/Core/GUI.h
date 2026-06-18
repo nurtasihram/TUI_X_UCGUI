@@ -1,15 +1,7 @@
-
-
-
-#ifndef  GUI_H
-#define  GUI_H
-#define __EMWIN_GSC__   /* Allow "C" to find out that emWin GSC is used */
-
+#pragma once
 
 #include "GUI_ConfDefaults.h"
 #include "GUIType.h"
-#include "GUIVersion.h"
-
 
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
@@ -423,17 +415,11 @@ which ever one you like best.
   To allow the application to save and restore the context.
 */
 
-typedef union {
-  U8  aColorIndex8[2];
-  U16 aColorIndex16[2];
-} LCD_COLORINDEX_UNION;
-
 typedef struct {
-/* Variables in LCD module */
-  LCD_COLORINDEX_UNION LCD;
+  /* Variables in LCD module */
+  U32 aColorIndex[2];
   LCD_RECT       ClipRect;
   U8             DrawMode;
-  U8             SelLayer;
   U8             TextStyle;
 /* Variables in GL module */
   GUI_RECT* pClipRect_HL;                /* High level clip rectangle ... Speed optimization so drawing routines can optimize */
@@ -557,10 +543,6 @@ int       GUI_Color2Index(GUI_COLOR color);
 GUI_COLOR GUI_Color2VisColor(GUI_COLOR color);
 char      GUI_ColorIsAvailable(GUI_COLOR color);
 GUI_COLOR GUI_Index2Color(int Index);
-void      GUI_InitLUT(void);
-void      GUI_SetLUTEntry (U8 Pos, GUI_COLOR Color);
-void      GUI_SetLUTColor (U8 Pos, GUI_COLOR Color);
-void      GUI_SetLUTColorEx(U8 Pos, LCD_COLOR Color, unsigned int LayerIndex);
 U32       GUI_CalcColorDist (GUI_COLOR Color0, GUI_COLOR  Color1);
 U32       GUI_CalcVisColorError(GUI_COLOR color);
 
@@ -707,9 +689,6 @@ void  GUI_DispStringAtCEOL   (const char GUI_UNI_PTR *s, int x, int y);
 void  GUI_DispStringHCenterAt(const char GUI_UNI_PTR *s, int x, int y);
 void  GUI__DispStringInRect  (const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAlign, int MaxNumChars);
 void  GUI_DispStringInRect   (const char GUI_UNI_PTR *s, GUI_RECT* pRect, int Flags);
-#if GUI_SUPPORT_ROTATION
-  void  GUI_DispStringInRectEx (const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAlign, int MaxLen, const GUI_ROTATION * pLCD_Api);
-#endif
 void  GUI_DispStringInRectMax(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAlign, int MaxLen); /* Not to be doc. */
 void  GUI_DispStringLen      (const char GUI_UNI_PTR *s, int Len);
 void  GUI_GetTextExtend(GUI_RECT* pRect, const char GUI_UNI_PTR * s, int Len);
@@ -883,7 +862,6 @@ GUI_HMEM           GUI_ALLOC_Realloc    (GUI_HMEM hOld, int NewSize);
 #endif
 
 void GUI_SelectLCD(void);
-unsigned int GUI_SelectLayer(unsigned int Index);
 
 /**************************************************************
 *
@@ -980,23 +958,6 @@ void GUI_TIMER_Restart   (GUI_TIMER_HANDLE hObj);
 int  GUI_TIMER_Exec(void);
 
 void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, U32 Context);	//houhh 20061020
-
-/******************************************************************
-*
-*                 Anti Aliasing
-*
-*******************************************************************
-*/
-
-void GUI_AA_DisableHiRes   (void);
-void GUI_AA_EnableHiRes    (void);
-int  GUI_AA_GetFactor      (void);
-void GUI_AA_SetFactor      (int Factor);
-void GUI_AA_DrawArc        (int x0, int y0, int rx, int ry, int a0, int a1);
-void GUI_AA_DrawLine       (int x0, int y0, int x1, int y1);
-void GUI_AA_DrawPolyOutline(const GUI_POINT* pSrc, int NumPoints, int Thickness, int x, int y);
-void GUI_AA_FillCircle     (int x0, int y0, int r);
-void GUI_AA_FillPolygon    (GUI_POINT* pPoints, int NumPoints, int x0, int y0);
 
 /******************************************************************
 *
@@ -1365,16 +1326,7 @@ int  GUI_TOUCH_X_MeasureY(void);
 */
 
 #define GUI_DispString_UC  GUI_UC_DispString
-#define TOUCH_X_ActivateX  GUI_TOUCH_X_ActivateX
-#define TOUCH_X_ActivateY  GUI_TOUCH_X_ActivateY
-#define TOUCH_X_Disable    GUI_TOUCH_X_Disable
-#define TOUCH_X_MeasureX   GUI_TOUCH_X_MeasureX
-#define TOUCH_X_MeasureY   GUI_TOUCH_X_MeasureY
-#define GUI_SelLayer       GUI_SelectLayer
+
 #if defined(__cplusplus)
 }
 #endif 
-
-#endif   /* ifdef GUI_H */
-
-/*************************** End of file ****************************/

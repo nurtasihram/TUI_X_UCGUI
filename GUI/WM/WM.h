@@ -72,17 +72,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
       *************************************************************
 */
 
-/*
-      *************************************************************
-      *                                                           *
-      *               Locking macros                              *
-      *                                                           *
-      *************************************************************
-  For performance reasons, the windows manager uses the same locking mechanisms
-  as the GUI layer. The advantage is that wiht a single call to GUI_LOCK both
-  the graphic level and the WM level are covered.
-*/
-
 #define WM_LOCK()   GUI_LOCK()
 #define WM_UNLOCK() GUI_UNLOCK()
 
@@ -389,7 +378,6 @@ void WM_BringToBottom(WM_HWIN hWin);
 void WM_BringToTop(WM_HWIN hWin);
 
 GUI_COLOR WM_SetDesktopColor(GUI_COLOR Color);
-GUI_COLOR WM_SetDesktopColorEx(GUI_COLOR Color, unsigned int LayerIndex);
 void WM_SetDesktopColors(GUI_COLOR Color);
 
 /* Select window used for drawing operations */
@@ -399,7 +387,6 @@ void    WM_Paint                  (WM_HWIN hObj);
 
 /* Get foreground/background windows */
 WM_HWIN WM_GetDesktopWindow    (void);
-WM_HWIN WM_GetDesktopWindowEx  (unsigned int LayerIndex);
 
 /* Reduce clipping area of a window */
 const GUI_RECT* WM_SetUserClipRect(const GUI_RECT* pRect);

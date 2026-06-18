@@ -31,8 +31,8 @@ Purpose     : Windows manager internal include, dependent on LCDConf.h
   #define GUI_EXTERN extern
 #endif
 
-GUI_EXTERN WM_HWIN   WM__ahDesktopWin[GUI_NUM_LAYERS];   /* No longer depends on LCDConf.h ... Can be moved to an other file */
-GUI_EXTERN GUI_COLOR WM__aBkColor[GUI_NUM_LAYERS];       /* No longer depends on LCDConf.h ... Can be moved to an other file */
+GUI_EXTERN WM_HWIN   WM__ahDesktopWin;   /* Desktop window handle */
+GUI_EXTERN GUI_COLOR WM__aBkColor;       /* Desktop background color */
 
 #undef GUI_EXTERN
 

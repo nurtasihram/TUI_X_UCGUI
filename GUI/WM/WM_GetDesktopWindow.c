@@ -32,7 +32,7 @@ Purpose     : Implementation of WM_GetDesktopWindow
 *       WM_GetDesktopWindow
 */
 WM_HWIN WM_GetDesktopWindow(void) {
-  return WM__ahDesktopWin[0];
+  return WM__ahDesktopWin;
 }
 
 #else
