@@ -245,7 +245,6 @@ static void _FillPolygon(const GUI_POINT* paPoint, int NumPoints, int x0, int y0
 *       _FillPolygonAA
 */
 static void _FillPolygonAA(const GUI_POINT* paPoint, int NumPoints, int x0, int y0) {
-
     GUI_USE_PARA(paPoint);
     GUI_USE_PARA(NumPoints);
     GUI_USE_PARA(x0);

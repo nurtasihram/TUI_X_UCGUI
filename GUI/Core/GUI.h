@@ -1,25 +1,4 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI.h
-Purpose     : GUI API include file
----------------------------END-OF-HEADER------------------------------
 
-Attention : Do not modify this file ! If you do, you will not
-            be able do update to a later GUI version !
-
-*/
 
 
 #ifndef  GUI_H
@@ -1113,26 +1092,6 @@ void GUI_TOUCH_X_ActivateY(void);
 void GUI_TOUCH_X_Disable(void);
 int  GUI_TOUCH_X_MeasureX(void);
 int  GUI_TOUCH_X_MeasureY(void);
-
-/**************************************************************
-*
-*   Constants for fonts and bitmaps
-*
-***************************************************************
-*/
-
-extern const GUI_BITMAP_METHODS GUI_BitmapMethodsRLE4;
-extern const GUI_BITMAP_METHODS GUI_BitmapMethodsRLE8;
-extern const GUI_BITMAP_METHODS GUI_BitmapMethods565;
-extern const GUI_BITMAP_METHODS GUI_BitmapMethodsM565;
-
-#define GUI_COMPRESS_RLE4 0
-#define GUI_COMPRESS_RLE8 0
-
-#define GUI_DRAW_RLE4    &GUI_BitmapMethodsRLE4 /* Method table ! */
-#define GUI_DRAW_RLE8    &GUI_BitmapMethodsRLE8 /* Method table ! */
-#define GUI_DRAW_BMP565  &GUI_BitmapMethods565  /* Method table ! */
-#define GUI_DRAW_BMPM565 &GUI_BitmapMethodsM565 /* Method table ! */
 
 /**************************************************************
 *

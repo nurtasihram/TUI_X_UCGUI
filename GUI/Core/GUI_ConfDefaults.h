@@ -1,25 +1,4 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_ConfDefaults.h
-Purpose     : Defaults for GUI config switches.
----------------------------END-OF-HEADER------------------------------
 
-Attention : Do not modify this file ! If you do, you will not
-            be able do update to a later GUI version !
-
-*/
 
 #ifndef  GUI_CONFDEFAULTS_H
 #define  GUI_CONFDEFAULTS_H
@@ -66,10 +45,6 @@ Attention : Do not modify this file ! If you do, you will not
 
 #ifndef GUI_SUPPORT_MEMDEV
   #define GUI_SUPPORT_MEMDEV  0
-#endif
-
-#ifndef GUI_SUPPORT_AA
-  #define GUI_SUPPORT_AA      0
 #endif
 
 #ifndef GUI_OS

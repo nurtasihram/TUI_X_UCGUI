@@ -19,29 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GUI\ConvertColor\LCDP111.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDP222.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDP233.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDP323.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDP332.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDP444_12.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDP444_12_1.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDP444_16.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDP555.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDP556.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDP565.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDP655.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDP8666.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDP8666_1.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDPM233.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDPM323.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDPM332.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDPM444_12.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDPM444_16.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDPM555.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDPM556.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDPM565.c" />
-    <ClCompile Include="GUI\ConvertColor\LCDPM655.c" />
     <ClCompile Include="GUI\Core\GUI2DLib.c" />
     <ClCompile Include="GUI\Core\GUIAlloc.c" />
     <ClCompile Include="GUI\Core\GUIArc.c" />
@@ -213,19 +190,8 @@
     <ClCompile Include="GUI\Core\LCDAA.c" />
     <ClCompile Include="GUI\Core\LCDColor.c" />
     <ClCompile Include="GUI\Core\LCDGetP.c" />
-    <ClCompile Include="GUI\Core\LCDInfo.c" />
     <ClCompile Include="GUI\Core\LCDInfo0.c" />
-    <ClCompile Include="GUI\Core\LCDInfo1.c" />
-    <ClCompile Include="GUI\Core\LCDL0Delta.c" />
-    <ClCompile Include="GUI\Core\LCDL0Mag.c" />
-    <ClCompile Include="GUI\Core\LCDP1.c" />
-    <ClCompile Include="GUI\Core\LCDP565_Index2Color.c" />
-    <ClCompile Include="GUI\Core\LCDPM565_Index2Color.c" />
-    <ClCompile Include="GUI\Core\LCDRLE4.c" />
-    <ClCompile Include="GUI\Core\LCDRLE8.c" />
     <ClCompile Include="GUI\Core\LCD_API.c" />
-    <ClCompile Include="GUI\Core\LCD_DrawBitmap_565.c" />
-    <ClCompile Include="GUI\Core\LCD_DrawBitmap_M565.c" />
     <ClCompile Include="GUI\Core\LCD_DrawVLine.c" />
     <ClCompile Include="GUI\Core\LCD_GetColorIndex.c" />
     <ClCompile Include="GUI\Core\LCD_GetEx.c" />
@@ -235,9 +201,6 @@
     <ClCompile Include="GUI\Core\LCD_L0_Generic.c" />
     <ClCompile Include="GUI\Core\LCD_Mirror.c" />
     <ClCompile Include="GUI\Core\LCD_MixColors256.c" />
-    <ClCompile Include="GUI\Core\LCD_Rotate180.c" />
-    <ClCompile Include="GUI\Core\LCD_RotateCCW.c" />
-    <ClCompile Include="GUI\Core\LCD_RotateCW.c" />
     <ClCompile Include="GUI\Core\LCD_SelectLCD.c" />
     <ClCompile Include="GUI\Core\LCD_SetAPI.c" />
     <ClCompile Include="GUI\Core\LCD_SetClipRectEx.c" />
@@ -636,7 +599,6 @@
     <ClInclude Include="GUI\Core\GUI_VNC.h" />
     <ClInclude Include="GUI\Core\GUI_X.h" />
     <ClInclude Include="GUI\Core\LCD.h" />
-    <ClInclude Include="GUI\Core\LCDSIM.h" />
     <ClInclude Include="GUI\Core\LCD_ConfDefaults.h" />
     <ClInclude Include="GUI\Core\LCD_Private.h" />
     <ClInclude Include="GUI\Core\LCD_Protected.h" />

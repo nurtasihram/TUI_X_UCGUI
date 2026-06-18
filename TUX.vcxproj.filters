@@ -7,9 +7,6 @@
     <Filter Include="Config">
       <UniqueIdentifier>{df4a76cf-1d15-4215-ad08-9f3586562d22}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GUI\ConvertColor">
-      <UniqueIdentifier>{ee6a3c13-8d49-475b-9e42-934007c74c57}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GUI\Core">
       <UniqueIdentifier>{66bb47bc-d957-45e8-b79b-7df70d23c8b4}</UniqueIdentifier>
     </Filter>
@@ -38,75 +35,6 @@
     </ClCompile>
     <ClCompile Include="GUI_X\GUI_X.cc">
       <Filter>GUI_X</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP111.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP222.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP233.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP323.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP332.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP444_12.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP444_12_1.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP444_16.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP555.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP556.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP565.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP655.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP8666.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDP8666_1.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDPM233.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDPM323.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDPM332.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDPM444_12.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDPM444_16.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDPM555.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDPM556.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDPM565.c">
-      <Filter>GUI\ConvertColor</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\ConvertColor\LCDPM655.c">
-      <Filter>GUI\ConvertColor</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI__AddSpaceHex.c">
       <Filter>GUI\Core</Filter>
@@ -615,12 +543,6 @@
     <ClCompile Include="GUI\Core\LCD_API.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_DrawBitmap_565.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_DrawBitmap_M565.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\LCD_DrawVLine.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -645,18 +567,6 @@
     <ClCompile Include="GUI\Core\LCD_Mirror.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_MixColors256.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_Rotate180.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_RotateCCW.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_RotateCW.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\LCD_SelectLCD.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -676,36 +586,6 @@
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\LCDGetP.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCDInfo.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCDInfo0.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCDInfo1.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCDL0Delta.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCDL0Mag.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCDP1.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCDP565_Index2Color.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCDPM565_Index2Color.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCDRLE4.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCDRLE8.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Font\F4x6.c">
@@ -1834,6 +1714,12 @@
     <ClCompile Include="GUI\Font\F16_1.c">
       <Filter>GUI\Font</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\Core\LCDInfo0.c">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\LCD_MixColors256.c">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">
@@ -1885,9 +1771,6 @@
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\LCD_Protected.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Core\LCDSIM.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\BUTTON.h">
