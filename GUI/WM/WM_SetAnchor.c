@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -27,15 +27,12 @@ Purpose     : Windows manager, implementation of said function
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       WM_SetAnchor
-*/
+
 void WM_SetAnchor(WM_HWIN hWin, U16 AnchorFlags) {
   if (hWin) {
     WM_Obj* pWin;
     U16 Mask;
-    WM_LOCK();
+    
     pWin = WM_H2P(hWin);
     Mask = (WM_SF_ANCHOR_LEFT | WM_SF_ANCHOR_RIGHT | WM_SF_ANCHOR_TOP | WM_SF_ANCHOR_BOTTOM);
 
@@ -46,7 +43,7 @@ void WM_SetAnchor(WM_HWIN hWin, U16 AnchorFlags) {
 
     pWin->Status &= ~(Mask);
     pWin->Status |= AnchorFlags;
-    WM_UNLOCK();
+    
   }
 }
 

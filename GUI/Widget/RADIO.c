@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -353,7 +353,7 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParen
   hObj = WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent, WinFlags, _RADIO_Callback, sizeof(RADIO_Obj) - sizeof(WM_Obj));
   if (hObj) {
     RADIO_Obj* pObj;
-    WM_LOCK();
+    
     pObj = RADIO_H2P(hObj);
     /* Init sub-classes */
     GUI_ARRAY_CREATE(&pObj->TextArray);
@@ -374,7 +374,7 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParen
     pObj->NumItems     = NumItems;
     pObj->Spacing      = Spacing;
     pObj->Height       = Height;
-    WM_UNLOCK();
+    
   } else {
     GUI_DEBUG_ERROROUT_IF(hObj==0, "RADIO_Create failed")
   }
@@ -394,10 +394,10 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParen
 void RADIO_AddValue(RADIO_Handle hObj, int Add) {
   if (hObj) {
     RADIO_Obj* pObj;
-    WM_LOCK();
+    
     pObj = RADIO_H2P(hObj);
     RADIO_SetValue(hObj, pObj->Sel + Add);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -424,7 +424,7 @@ void RADIO_Inc(RADIO_Handle hObj) {
 void RADIO_SetValue(RADIO_Handle hObj, int v) {
   if (hObj) {
     RADIO_Obj* pObj;
-    WM_LOCK();
+    
     pObj = RADIO_H2P(hObj);
     if (pObj->GroupId && RADIO__pfHandleSetValue) {
       (*RADIO__pfHandleSetValue)(hObj, pObj, v);
@@ -434,7 +434,7 @@ void RADIO_SetValue(RADIO_Handle hObj, int v) {
       }
       RADIO__SetValue(hObj, pObj, v);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -452,10 +452,10 @@ int RADIO_GetValue(RADIO_Handle hObj) {
   int r = 0;
   if (hObj) {
     RADIO_Obj* pObj;
-    WM_LOCK();
+    
     pObj = RADIO_H2P(hObj);
     r = pObj->Sel;
-    WM_UNLOCK();
+    
   }
   return r;
 }

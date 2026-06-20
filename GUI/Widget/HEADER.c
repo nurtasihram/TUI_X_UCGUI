@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -298,7 +298,7 @@ static void _HEADER_Callback (WM_MESSAGE *pMsg) {
   if (WIDGET_HandleActive(hObj, pMsg) == 0) {
     return;
   }
-  WM_LOCK();
+  
   pObj = HEADER_H2P(hObj);
   switch (pMsg->MsgId) {
     case WM_PAINT:
@@ -319,7 +319,7 @@ static void _HEADER_Callback (WM_MESSAGE *pMsg) {
     default:
       WM_DefaultProc(pMsg);
   }
-  WM_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -346,7 +346,7 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
   HEADER_Handle hObj;
   GUI_USE_PARA(ExFlags);
   /* Create the window */
-  WM_LOCK();
+  
   if ((xsize == 0) && (x0 == 0) && (y0 == 0)) {
     GUI_RECT Rect;
     WM_GetInsideRectEx(hParent, &Rect);
@@ -380,7 +380,7 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
   } else {
     GUI_DEBUG_ERROROUT_IF(hObj==0, "HEADER_Create failed")
   }
-  WM_UNLOCK();
+  
   return hObj;
 }
 
@@ -474,11 +474,11 @@ const GUI_FONT GUI_UNI_PTR *    HEADER_GetDefaultFont(void)      { return _pDefa
 void HEADER_SetFont(HEADER_Handle hObj, const GUI_FONT GUI_UNI_PTR * pFont) {
   if (hObj) {
     HEADER_Obj * pObj;
-    WM_LOCK();
+    
     pObj = HEADER_H2P(hObj);
     pObj->pFont = pFont;
     WM_InvalidateWindow(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -502,11 +502,11 @@ void HEADER_SetHeight(HEADER_Handle hObj, int Height) {
 void HEADER_SetTextColor(HEADER_Handle hObj, GUI_COLOR Color) {
   if (hObj) {
     HEADER_Obj * pObj;
-    WM_LOCK();
+    
     pObj = HEADER_H2P(hObj);
     pObj->TextColor = Color;
     WM_InvalidateWindow(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -517,11 +517,11 @@ void HEADER_SetTextColor(HEADER_Handle hObj, GUI_COLOR Color) {
 void HEADER_SetBkColor(HEADER_Handle hObj, GUI_COLOR Color) {
   if (hObj) {
     HEADER_Obj * pObj;
-    WM_LOCK();
+    
     pObj = HEADER_H2P(hObj);
     pObj->BkColor = Color;
     WM_InvalidateWindow(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -532,7 +532,7 @@ void HEADER_SetBkColor(HEADER_Handle hObj, GUI_COLOR Color) {
 void HEADER_SetTextAlign(HEADER_Handle hObj, unsigned int Index, int Align) {
   if (hObj) {
     HEADER_Obj * pObj;
-    WM_LOCK();
+    
     pObj = HEADER_H2P(hObj);
     if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
       HEADER_COLUMN * pColumn;
@@ -540,7 +540,7 @@ void HEADER_SetTextAlign(HEADER_Handle hObj, unsigned int Index, int Align) {
       pColumn->Align = Align;
       WM_InvalidateWindow(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -551,14 +551,14 @@ void HEADER_SetTextAlign(HEADER_Handle hObj, unsigned int Index, int Align) {
 void HEADER_SetScrollPos(HEADER_Handle hObj, int ScrollPos) {
   if (hObj && (ScrollPos >= 0)) {
     HEADER_Obj* pObj;
-    WM_LOCK();
+    
     pObj = HEADER_H2P(hObj);
     if (ScrollPos != pObj->ScrollPos) {
       pObj->ScrollPos = ScrollPos;
       WM_Invalidate(hObj);
       WM_InvalidateWindow(WM_GetParent(hObj));
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -571,7 +571,7 @@ void HEADER_AddItem(HEADER_Handle hObj, int Width, const char * s, int Align) {
     HEADER_Obj * pObj;
     HEADER_COLUMN Column;
     int Index;
-    WM_LOCK();
+    
     pObj = HEADER_H2P(hObj);
     if (!Width) {
       const GUI_FONT GUI_UNI_PTR * pFont = GUI_SetFont(pObj->pFont);
@@ -590,7 +590,7 @@ void HEADER_AddItem(HEADER_Handle hObj, int Width, const char * s, int Align) {
       WM_InvalidateWindow(hObj);
       WM_InvalidateWindow(WM_GetParent(hObj));
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -601,14 +601,14 @@ void HEADER_AddItem(HEADER_Handle hObj, int Width, const char * s, int Align) {
 void HEADER_DeleteItem(HEADER_Handle hObj, unsigned Index) {
   if (hObj) {
     HEADER_Obj* pObj;
-    WM_LOCK();
+    
     pObj = HEADER_H2P(hObj);
     if (Index < GUI_ARRAY_GetNumItems(&pObj->Columns)) {
       GUI_ARRAY_DeleteItem(&pObj->Columns, Index);
       WM_InvalidateWindow(hObj);
       WM_InvalidateWindow(WM_GetParent(hObj));
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -619,7 +619,7 @@ void HEADER_DeleteItem(HEADER_Handle hObj, unsigned Index) {
 void HEADER_SetItemText(HEADER_Handle hObj, unsigned int Index, const char* s) {
   if (hObj) {
     HEADER_Obj* pObj;
-    WM_LOCK();
+    
     pObj = HEADER_H2P(hObj);
     if (Index < GUI_ARRAY_GetNumItems(&pObj->Columns)) {
       HEADER_COLUMN* pColumn;
@@ -628,7 +628,7 @@ void HEADER_SetItemText(HEADER_Handle hObj, unsigned int Index, const char* s) {
         strcpy(pColumn->acText, s);
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -639,7 +639,7 @@ void HEADER_SetItemText(HEADER_Handle hObj, unsigned int Index, const char* s) {
 void HEADER_SetItemWidth(HEADER_Handle hObj, unsigned int Index, int Width) {
   if (hObj && (Width >= 0)) {
     HEADER_Obj * pObj;
-    WM_LOCK();
+    
     pObj = HEADER_H2P(hObj);
     if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
       HEADER_COLUMN * pColumn;
@@ -651,7 +651,7 @@ void HEADER_SetItemWidth(HEADER_Handle hObj, unsigned int Index, int Width) {
         WM_InvalidateWindow(WM_GetParent(hObj));
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -678,14 +678,14 @@ int HEADER_GetItemWidth(HEADER_Handle hObj, unsigned int Index) {
   int Width = 0;
   if (hObj) {
     HEADER_Obj * pObj;
-    WM_LOCK();
+    
     pObj = HEADER_H2P(hObj);
     if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
       HEADER_COLUMN * pColumn;
       pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
       Width = pColumn->Width;
     }
-    WM_UNLOCK();
+    
   }
   return Width;
 }
@@ -698,10 +698,10 @@ int  HEADER_GetNumItems(HEADER_Handle hObj) {
   int NumCols = 0;
   if (hObj) {
     HEADER_Obj * pObj;
-    WM_LOCK();
+    
     pObj = HEADER_H2P(hObj);
     NumCols = GUI_ARRAY_GetNumItems(&pObj->Columns);
-    WM_UNLOCK();
+    
   }
   return NumCols;
 }

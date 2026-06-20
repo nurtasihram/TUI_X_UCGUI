@@ -37,10 +37,7 @@ Purpose     : Implementation of memory devices
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_MEMDEV__GetRect
-*/
+
 void GUI_MEMDEV__GetRect(GUI_RECT* pRect) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   pRect->x0 = pDev->x0;
@@ -49,28 +46,19 @@ void GUI_MEMDEV__GetRect(GUI_RECT* pRect) {
   pRect->y1 = pDev->y0 + pDev->YSize-1;
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV__Color2Index
-*/
+
 unsigned int GUI_MEMDEV__Color2Index(LCD_COLOR Color) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   return pDev->pfColor2Index(Color);
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV__Index2Color
-*/
+
 LCD_COLOR GUI_MEMDEV__Index2Color(int Index) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   return pDev->pfIndex2Color(Index);
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV__GetIndexMask
-*/
+
 unsigned int GUI_MEMDEV__GetIndexMask(void) {
   GUI_MEMDEV * pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   return pDev->pfGetIndexMask();
@@ -82,13 +70,10 @@ unsigned int GUI_MEMDEV__GetIndexMask(void) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_MEMDEV_Delete
-*/
+
 void GUI_MEMDEV_Delete(GUI_MEMDEV_Handle hMemDev) {
 /* Make sure memory device is not used */
-  GUI_LOCK();
+  
   if (hMemDev) {
     GUI_MEMDEV* pDev;
     if (GUI_Context.hDevData == hMemDev) {
@@ -100,13 +85,10 @@ void GUI_MEMDEV_Delete(GUI_MEMDEV_Handle hMemDev) {
       GUI_USAGE_DecUseCnt(pDev->hUsage);
     GUI_ALLOC_Free(hMemDev);
   }
-  GUI_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV__CreateFixed
-*/
+
 GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Flags
                                         ,const tLCDDEV_APIList * pMemDevAPI
                                         ,tLCDDEV_Color2Index*        pfColor2Index
@@ -134,7 +116,7 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
   /* Check if we can alloc sufficient memory */
   if (ysize <= 0) {
     GUI_DEBUG_WARN("GUI_MEMDEV_Create: Too little memory");
-    GUI_UNLOCK();
+    
     return 0;    
   }
   MemSize = ysize * BytesPerLine + sizeof(GUI_MEMDEV);
@@ -169,17 +151,14 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
   return hMemDev;
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV_CreateEx
-*/
+
 GUI_MEMDEV_Handle GUI_MEMDEV_CreateEx(int x0, int y0, int xSize, int ySize, int Flags) {
   GUI_MEMDEV_Handle hMemDev;
   const tLCDDEV_APIList * pDeviceAPI;
   tLCDDEV_Color2Index   * pfColor2Index;
   tLCDDEV_Index2Color   * pfIndex2Color;
   tLCDDEV_GetIndexMask  * pfGetIndexMask;
-  GUI_LOCK();
+  
   pDeviceAPI = LCD_aAPI[0];
   if (GUI_Context.hDevData == 0) {
     pfColor2Index = GUI_Context.pDeviceAPI->pfColor2Index;    /* LCD_L0_Color2Index; */
@@ -195,24 +174,18 @@ GUI_MEMDEV_Handle GUI_MEMDEV_CreateEx(int x0, int y0, int xSize, int ySize, int 
   }
   hMemDev = GUI_MEMDEV__CreateFixed(x0, y0, xSize, ySize, Flags, pDeviceAPI->pMemDevAPI, 
                                     pfColor2Index, pfIndex2Color ,pfGetIndexMask);
-  GUI_UNLOCK();
+  
   return hMemDev;
 }
-/*********************************************************************
-*
-*       GUI_MEMDEV_Create
-*/
+
 GUI_MEMDEV_Handle GUI_MEMDEV_Create(int x0, int y0, int xsize, int ysize) {
   return GUI_MEMDEV_CreateEx(x0, y0, xsize, ysize, GUI_MEMDEV_HASTRANS);
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV_Select
-*/
+
 GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem) {
   GUI_MEMDEV_Handle r;
-  GUI_LOCK();
+  
   r = GUI_Context.hDevData;
   if (hMem == 0) {
     GUI_SelectLCD();
@@ -229,14 +202,11 @@ GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem) {
     GUI_Context.pDeviceAPI = pDev->pAPIList;
     LCD_SetClipRectMax();
   }
-  GUI_UNLOCK();
+  
   return r;
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV__WriteToActiveAt
-*/
+
 void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem,int x, int y) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(hMem);
   GUI_USAGE_h hUsage = pDev->hUsage; 
@@ -276,10 +246,7 @@ void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem,int x, int y) {
   }
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV_CopyToLCDAt
-*/
+
 void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
   if (hMem) {
     GUI_MEMDEV_Handle hMemPrev;
@@ -287,7 +254,7 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
   #if (GUI_WINSUPPORT)
     GUI_RECT r;
   #endif
-    GUI_LOCK();
+    
     hMemPrev = GUI_Context.hDevData;
     pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
     /* Make sure LCD is selected as device */
@@ -310,14 +277,11 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
   #endif
     /* Reactivate previously used device */
     GUI_MEMDEV_Select(hMemPrev);
-    GUI_UNLOCK();
+    
   }
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV_CopyToLCD
-*/
+
 void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV_Handle hMem) {
   GUI_MEMDEV_CopyToLCDAt(hMem, GUI_POS_AUTO, GUI_POS_AUTO);
 }

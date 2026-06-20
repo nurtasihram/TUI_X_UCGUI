@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -137,7 +137,7 @@ void RADIO_SetGroupId(RADIO_Handle hObj, U8 NewGroupId) {
   if (hObj) {
     RADIO_Obj* pObj;
     U8 OldGroupId;
-    WM_LOCK();
+    
     pObj = RADIO_H2P(hObj);
     OldGroupId = pObj->GroupId;
     if (NewGroupId != OldGroupId) {
@@ -169,7 +169,7 @@ void RADIO_SetGroupId(RADIO_Handle hObj, U8 NewGroupId) {
       /* Change the group */
       pObj->GroupId = NewGroupId;
     }
-    WM_UNLOCK();
+    
   }
 }
 

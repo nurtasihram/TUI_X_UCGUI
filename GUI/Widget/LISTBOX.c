@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -921,7 +921,7 @@ LISTBOX_Handle LISTBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
                                 sizeof(LISTBOX_Obj) - sizeof(WM_Obj));
   if (hObj) {
     LISTBOX_Obj* pObj;
-    WM_LOCK();
+    
     pObj = LISTBOX_H2P(hObj);
      /* Init sub-classes */
     GUI_ARRAY_CREATE(&pObj->ItemArray);
@@ -935,7 +935,7 @@ LISTBOX_Handle LISTBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
     }
     INIT_ID(pObj);
     LISTBOX_UpdateScrollers(hObj);
-    WM_UNLOCK();
+    
   }
   return hObj;
 }
@@ -954,7 +954,7 @@ void LISTBOX_InvalidateItem(LISTBOX_Handle hObj, int Index) {
   if (hObj) {
     LISTBOX_Obj* pObj;
     int NumItems;
-    WM_LOCK();
+    
     pObj = LISTBOX_H2P(hObj);
     NumItems = LISTBOX__GetNumItems(pObj);
     if (Index < NumItems) {
@@ -971,7 +971,7 @@ void LISTBOX_InvalidateItem(LISTBOX_Handle hObj, int Index) {
         LISTBOX__InvalidateItemAndBelow(hObj, pObj, Index);
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -985,9 +985,9 @@ void LISTBOX_InvalidateItem(LISTBOX_Handle hObj, int Index) {
 int LISTBOX_AddKey(LISTBOX_Handle hObj, int Key) {
   int r = 0;
   if (hObj) {
-    WM_LOCK();
+    
     r = _AddKey(hObj, Key);
-    WM_UNLOCK();
+    
   }
   return r;
 }
@@ -1000,7 +1000,7 @@ void LISTBOX_AddString(LISTBOX_Handle hObj, const char* s) {
   if (hObj && s) {
     LISTBOX_Obj* pObj;
     LISTBOX_ITEM Item = {0, 0};
-    WM_LOCK();
+    
     pObj = LISTBOX_H2P(hObj);
     if (GUI_ARRAY_AddItem(&pObj->ItemArray, &Item, sizeof(LISTBOX_ITEM) + strlen(s)) == 0) {
       unsigned ItemIndex = GUI_ARRAY_GetNumItems(&pObj->ItemArray) - 1;
@@ -1010,7 +1010,7 @@ void LISTBOX_AddString(LISTBOX_Handle hObj, const char* s) {
       LISTBOX_UpdateScrollers(hObj);
       LISTBOX__InvalidateItem(hObj, pObj, ItemIndex);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1022,14 +1022,14 @@ void LISTBOX_SetText(LISTBOX_Handle hObj, const GUI_ConstString* ppText) {
   if (hObj) {
     int i;
     const char* s;
-    WM_LOCK();
+    
     if (ppText) {
       for (i = 0; (s = *(ppText+i)) != 0; i++) {
         LISTBOX_AddString(hObj, s);
       }
     }
     LISTBOX_InvalidateItem(hObj, LISTBOX_ALL_ITEMS);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1041,7 +1041,7 @@ void LISTBOX_SetSel (LISTBOX_Handle hObj, int NewSel) {
   if (hObj) {
     LISTBOX_Obj* pObj;
     int MaxSel;
-    WM_LOCK();
+    
     pObj = LISTBOX_H2P(hObj);
     MaxSel = LISTBOX__GetNumItems(pObj);
     MaxSel = MaxSel ? MaxSel - 1 : 0;
@@ -1071,7 +1071,7 @@ void LISTBOX_SetSel (LISTBOX_Handle hObj, int NewSel) {
       }
       _NotifyOwner(hObj, WM_NOTIFICATION_SEL_CHANGED);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1083,11 +1083,11 @@ int  LISTBOX_GetSel (LISTBOX_Handle hObj) {
   int r = -1;
   LISTBOX_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = LISTBOX_H2P(hObj);
     ASSERT_IS_VALID_PTR(pObj);
     r = pObj->Sel;
-    WM_UNLOCK();
+    
   }
   return r;
 }
@@ -1098,9 +1098,9 @@ int  LISTBOX_GetSel (LISTBOX_Handle hObj) {
 */
 void LISTBOX_IncSel      (LISTBOX_Handle hObj) {
   if (hObj) {
-    WM_LOCK();
+    
     _MoveSel(hObj, 1);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1110,9 +1110,9 @@ void LISTBOX_IncSel      (LISTBOX_Handle hObj) {
 */
 void LISTBOX_DecSel      (LISTBOX_Handle hObj) {
   if (hObj) {
-    WM_LOCK();
+    
     _MoveSel(hObj, -1);
-    WM_UNLOCK();
+    
   }
 }
 

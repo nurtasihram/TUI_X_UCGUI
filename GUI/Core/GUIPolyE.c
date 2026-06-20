@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -38,20 +38,14 @@ typedef struct {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _fround
-*/
+
 static int _fround(float f) {
   if (f>0)
     return f+0.5;
   return f-0.5;
 }
 
-/*********************************************************************
-*
-*       _Normalize
-*/
+
 static void _Normalize(tfPoint* pfPoint) {
   float fx = pfPoint->x;
   float fy = pfPoint->y;
@@ -62,10 +56,7 @@ static void _Normalize(tfPoint* pfPoint) {
   }
 }
 
-/*********************************************************************
-*
-*       _ReverseLen
-*/
+
 static void _ReverseLen(tfPoint* pfPoint) {
   float fx = pfPoint->x;
   float fy = pfPoint->y;
@@ -76,10 +67,7 @@ static void _ReverseLen(tfPoint* pfPoint) {
   }
 }
 
-/*********************************************************************
-*
-*       _GetVect
-*/
+
 static void _GetVect(tfPoint* pfPoint, const GUI_POINT* pSrc, int NumPoints, int Index) {
   int Off0 = (Index + NumPoints-1) % NumPoints;
   int Off1 = Index % NumPoints;
@@ -93,10 +81,7 @@ static void _GetVect(tfPoint* pfPoint, const GUI_POINT* pSrc, int NumPoints, int
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_EnlargePolygon
-*/
+
 #if 0
 void GUI_EnlargePolygon(GUI_POINT* pDest, const GUI_POINT* pSrc, int NumPoints, int Len) {
   int j;

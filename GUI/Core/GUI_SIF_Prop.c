@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -26,10 +26,7 @@ Purpose     : Implementation of system independend fonts
 **********************************************************************
 */
 
-/*********************************************************************
-*
-*       _GetNumCharAreas
-*/
+
 static int _GetNumCharAreas(const GUI_FONT GUI_UNI_PTR * pFont) {
   U16 NumCharAreas;
   const U8 * pData;
@@ -38,10 +35,7 @@ static int _GetNumCharAreas(const GUI_FONT GUI_UNI_PTR * pFont) {
   return NumCharAreas;
 }
 
-/*********************************************************************
-*
-*       _GetpCharInfo
-*/
+
 static const U8 * _GetpCharInfo(const GUI_FONT GUI_UNI_PTR * pFont, U16P c) {
   const U8 * pCharArea, * pCharInfo;
   int NumCharAreas;
@@ -70,10 +64,7 @@ static const U8 * _GetpCharInfo(const GUI_FONT GUI_UNI_PTR * pFont, U16P c) {
 **********************************************************************
 */
 
-/*********************************************************************
-*
-*       GUI_SIF_DispChar
-*/
+
 static void _GUI_SIF_DispChar(U16P c) {
   const U8 * pCharInfo, * pData;
   pCharInfo = _GetpCharInfo(GUI_Context.pAFont, c);
@@ -117,10 +108,7 @@ static void _GUI_SIF_DispChar(U16P c) {
   }
 }
 
-/*********************************************************************
-*
-*       GUI_SIF_GetCharDistX
-*/
+
 static int _GUI_SIF_GetCharDistX(U16P c) {
   const U8 * pCharInfo;
   U16 DistX = 0;
@@ -132,10 +120,7 @@ static int _GUI_SIF_GetCharDistX(U16P c) {
   return DistX;
 }
 
-/*********************************************************************
-*
-*       GUI_SIF_GetFontInfo
-*/
+
 static void _GUI_SIF_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO * pfi) {
   const U8 * pData;
   pData = (const U8 *)pFont->p.pFontData + 4 /* Skip XSize and XDist */;
@@ -145,10 +130,7 @@ static void _GUI_SIF_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINF
   pfi->Flags    = GUI_FONTINFO_FLAG_PROP;
 }
 
-/*********************************************************************
-*
-*       GUI_SIF_IsInFont
-*/
+
 static char _GUI_SIF_IsInFont(const GUI_FONT GUI_UNI_PTR * pFont, U16 c) {
   const U8 * pCharInfo;
   GUI_USE_PARA(pFont);
@@ -156,10 +138,7 @@ static char _GUI_SIF_IsInFont(const GUI_FONT GUI_UNI_PTR * pFont, U16 c) {
   return (pCharInfo) ? 1 : 0;
 }
 
-/*********************************************************************
-*
-*       GUI_SIF_TYPE_PROP
-*/
+
 const tGUI_SIF_APIList GUI_SIF_APIList_Prop = {
   _GUI_SIF_DispChar,
   _GUI_SIF_GetCharDistX,

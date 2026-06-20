@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -26,17 +26,14 @@ Purpose     : Implementation of GUI_DrawBitmapExp
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_DrawBitmapExp
-*/
+
 void GUI_DrawBitmapExp(int x0, int y0, int XSize, int YSize, int XMul, int YMul,
                        int BitsPerPixel, int BytesPerLine, const U8 GUI_UNI_PTR * pData,
                        const GUI_LOGPALETTE GUI_UNI_PTR * pPal)
 {
   GUI_DRAWMODE PrevDraw;
   const LCD_PIXELINDEX* pTrans;
-  GUI_LOCK();
+  
   pTrans = LCD_GetpPalConvTable(pPal);
   PrevDraw = GUI_SetDrawMode((pPal && pPal->HasTrans) ? GUI_DRAWMODE_TRANS : 0);
   #if (GUI_WINSUPPORT)
@@ -56,7 +53,7 @@ void GUI_DrawBitmapExp(int x0, int y0, int XSize, int YSize, int XMul, int YMul,
     }
   #endif
   GUI_SetDrawMode(PrevDraw);
-  GUI_UNLOCK();
+  
 }
 
 /*************************** End of file ****************************/

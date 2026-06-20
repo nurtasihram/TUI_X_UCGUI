@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -35,10 +35,7 @@ static GUI_POINT WM__CapturePoint;
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       WM_SetCaptureMove
-*/
+
 void WM_SetCaptureMove(WM_HWIN hWin, const GUI_PID_STATE* pState, int MinVisibility) {
   if (!WM_HasCaptured(hWin)) {
     WM_SetCapture(hWin, 1);        /* Set capture with auto release */

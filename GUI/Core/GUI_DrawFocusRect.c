@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -25,10 +25,7 @@ Purpose     : Implementation of GUI_DrawFocusRect
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _DrawFocusRect
-*/
+
 static void _DrawFocusRect(const GUI_RECT* pr) {
   int i; 
   for (i = pr->x0; i <= pr->x1; i += 2) {
@@ -46,14 +43,11 @@ static void _DrawFocusRect(const GUI_RECT* pr) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_DrawFocusRect
-*/
+
 void GUI_DrawFocusRect(const GUI_RECT *pRect, int Dist) {
   GUI_RECT r;
   GUI__ReduceRect(&r, pRect, Dist);
-  GUI_LOCK();
+  
   #if (GUI_WINSUPPORT)
     WM_ADDORG(r.x0, r.y0);
     WM_ADDORG(r.x1, r.y1);
@@ -63,7 +57,7 @@ void GUI_DrawFocusRect(const GUI_RECT *pRect, int Dist) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  GUI_UNLOCK();
+  
 }
 
 /*************************** End of file ****************************/

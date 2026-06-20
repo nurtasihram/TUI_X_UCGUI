@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -508,7 +508,7 @@ static void _Callback (WM_MESSAGE *pMsg) {
   MULTIPAGE_Handle hObj = pMsg->hWin;
   MULTIPAGE_Obj* pObj;
   int Handled;
-  WM_LOCK();
+  
   pObj    = MULTIPAGE_H2P(hObj);
   Handled = WIDGET_HandleActive(hObj, pMsg);
   switch (pMsg->MsgId) {
@@ -546,7 +546,7 @@ static void _Callback (WM_MESSAGE *pMsg) {
       WM_DefaultProc(pMsg);
     }
   }
-  WM_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -557,7 +557,7 @@ static void _ClientCallback(WM_MESSAGE* pMsg) {
   WM_HWIN hObj = pMsg->hWin;
   WM_HWIN hParent = WM_GetParent(hObj);
   MULTIPAGE_Obj* pParent;
-  WM_LOCK();
+  
   pParent = MULTIPAGE_H2P(hParent);
   switch (pMsg->MsgId) {
   case WM_PAINT:
@@ -574,7 +574,7 @@ static void _ClientCallback(WM_MESSAGE* pMsg) {
   case WM_GET_INSIDE_RECT:
     WM_DefaultProc(pMsg);
   }
-  WM_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -603,7 +603,7 @@ MULTIPAGE_Handle MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
     MULTIPAGE_Obj* pObj;
     GUI_RECT rClient;
     int Flags;
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     /* Init sub-classes */
     GUI_ARRAY_CREATE(&pObj->Handles);
@@ -627,7 +627,7 @@ MULTIPAGE_Handle MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
                                            rClient.y1 - rClient.y0 + 1,
                                            hObj, Flags, &_ClientCallback, 0);
     _UpdatePositions(hObj, pObj);
-    WM_UNLOCK();
+    
   } else {
     GUI_DEBUG_ERROROUT_IF(hObj==0, "MULTIPAGE_Create failed")
   }
@@ -648,7 +648,7 @@ void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_HWIN hWin ,const char* pText) {
   MULTIPAGE_Obj* pObj;
   GUI_USE_PARA(hWin);
   if (hObj) {
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
     if (!hWin) {
@@ -689,7 +689,7 @@ void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_HWIN hWin ,const char* pText) {
       }
       MULTIPAGE_SelectPage(hObj, pObj->Handles.NumItems - 1);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -700,7 +700,7 @@ void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_HWIN hWin ,const char* pText) {
 void MULTIPAGE_DeletePage(MULTIPAGE_Handle hObj, unsigned Index, int Delete) {
   if (hObj) {
     MULTIPAGE_Obj* pObj;
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
     if (pObj) {
@@ -730,7 +730,7 @@ void MULTIPAGE_DeletePage(MULTIPAGE_Handle hObj, unsigned Index, int Delete) {
         }
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -741,7 +741,7 @@ void MULTIPAGE_DeletePage(MULTIPAGE_Handle hObj, unsigned Index, int Delete) {
 void MULTIPAGE_SelectPage(MULTIPAGE_Handle hObj, unsigned Index) {
   if (hObj) {
     MULTIPAGE_Obj* pObj;
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
     if (pObj) {
@@ -753,7 +753,7 @@ void MULTIPAGE_SelectPage(MULTIPAGE_Handle hObj, unsigned Index) {
         }
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -764,14 +764,14 @@ void MULTIPAGE_SelectPage(MULTIPAGE_Handle hObj, unsigned Index) {
 void MULTIPAGE_DisablePage(MULTIPAGE_Handle hObj, unsigned Index) {
   if (hObj) {
     MULTIPAGE_Obj* pObj;
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
     if (pObj) {
       _SetEnable(pObj, Index, 0);
       WM_InvalidateWindow(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -782,14 +782,14 @@ void MULTIPAGE_DisablePage(MULTIPAGE_Handle hObj, unsigned Index) {
 void MULTIPAGE_EnablePage(MULTIPAGE_Handle hObj, unsigned Index) {
   if (hObj) {
     MULTIPAGE_Obj* pObj;
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
     if (pObj) {
       _SetEnable(pObj, Index, 1);
       WM_InvalidateWindow(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -806,7 +806,7 @@ void MULTIPAGE_EnablePage(MULTIPAGE_Handle hObj, unsigned Index) {
 void MULTIPAGE_SetText(MULTIPAGE_Handle hObj, const char* pText, unsigned Index) {
   MULTIPAGE_Obj* pObj;
   if (hObj && pText) {
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
     if (pObj) {
@@ -823,7 +823,7 @@ void MULTIPAGE_SetText(MULTIPAGE_Handle hObj, const char* pText, unsigned Index)
         }
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -834,14 +834,14 @@ void MULTIPAGE_SetText(MULTIPAGE_Handle hObj, const char* pText, unsigned Index)
 void MULTIPAGE_SetBkColor(MULTIPAGE_Handle hObj, GUI_COLOR Color, unsigned Index) {
   MULTIPAGE_Obj* pObj;
   if (hObj && ((int)Index < MULTIPAGE_NUMCOLORS)) {
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
     if (pObj) {
       pObj->aBkColor[Index] = Color;
       WM_InvalidateWindow(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -852,14 +852,14 @@ void MULTIPAGE_SetBkColor(MULTIPAGE_Handle hObj, GUI_COLOR Color, unsigned Index
 void MULTIPAGE_SetTextColor(MULTIPAGE_Handle hObj, GUI_COLOR Color, unsigned Index) {
   MULTIPAGE_Obj* pObj;
   if (hObj && ((int)Index < MULTIPAGE_NUMCOLORS)) {
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
     if (pObj) {
       pObj->aTextColor[Index] = Color;
       WM_InvalidateWindow(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -870,14 +870,14 @@ void MULTIPAGE_SetTextColor(MULTIPAGE_Handle hObj, GUI_COLOR Color, unsigned Ind
 void MULTIPAGE_SetFont(MULTIPAGE_Handle hObj, const GUI_FONT GUI_UNI_PTR * pFont) {
   MULTIPAGE_Obj* pObj;
   if (hObj && pFont) {
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
     if (pObj) {
       pObj->Font = pFont;
       _UpdatePositions(hObj, pObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -889,7 +889,7 @@ void MULTIPAGE_SetAlign(MULTIPAGE_Handle hObj, unsigned Align) {
   MULTIPAGE_Obj* pObj;
   GUI_RECT rClient;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
     if (pObj) {
@@ -899,7 +899,7 @@ void MULTIPAGE_SetAlign(MULTIPAGE_Handle hObj, unsigned Align) {
                                rClient.y0 + pObj->Widget.Win.Rect.y0);
       _UpdatePositions(hObj, pObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -911,13 +911,13 @@ int MULTIPAGE_GetSelection(MULTIPAGE_Handle hObj) {
   int r = 0;
   if (hObj) {
     MULTIPAGE_Obj* pObj;
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
     if (pObj) {
       r = pObj->Selection;
     }
-    WM_UNLOCK();
+    
   }
   return r;
 }
@@ -930,7 +930,7 @@ WM_HWIN MULTIPAGE_GetWindow(MULTIPAGE_Handle hObj, unsigned Index) {
   WM_HWIN r = 0;
   if (hObj) {
     MULTIPAGE_Obj* pObj;
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
     if (pObj) {
@@ -940,7 +940,7 @@ WM_HWIN MULTIPAGE_GetWindow(MULTIPAGE_Handle hObj, unsigned Index) {
         r = pPage->hWin;
       }
     }
-    WM_UNLOCK();
+    
   }
   return r;
 }
@@ -953,13 +953,13 @@ int MULTIPAGE_IsPageEnabled(MULTIPAGE_Handle hObj, unsigned Index) {
   int r = 0;
   if (hObj) {
     MULTIPAGE_Obj* pObj;
-    WM_LOCK();
+    
     pObj = MULTIPAGE_H2P(hObj);
     MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
     if (pObj) {
       r = _GetEnable(pObj, Index);
     }
-    WM_UNLOCK();
+    
   }
   return r;
 }

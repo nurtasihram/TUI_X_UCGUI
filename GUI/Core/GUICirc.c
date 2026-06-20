@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -40,10 +40,7 @@ None
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       Draw8Point
-*/
+
 static void Draw8Point(int x0,int y0, int xoff, int yoff) {
   LCD_HL_DrawPixel(x0+xoff,y0+yoff);
   LCD_HL_DrawPixel(x0-xoff,y0+yoff);
@@ -63,10 +60,7 @@ static void Draw8Point(int x0,int y0, int xoff, int yoff) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GL_DrawCircle
-*/
+
 void GL_DrawCircle(int x0, int y0, int r) {
   I32 i;
   int imax = ((I32)((I32)r*707))/1000+1;
@@ -82,15 +76,12 @@ void GL_DrawCircle(int x0, int y0, int r) {
   }
 }
 
-/*********************************************************************
-*
-*       GUI_DrawCircle
-*/
+
 void GUI_DrawCircle(int x0, int y0, int r) {
   #if (GUI_WINSUPPORT)
     GUI_RECT Rect;
   #endif
-  GUI_LOCK();
+  
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     Rect.x0 = x0-r;
@@ -103,13 +94,10 @@ void GUI_DrawCircle(int x0, int y0, int r) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  GUI_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       GL_FillCircle
-*/
+
 void GL_FillCircle(int x0, int y0, int r) {
   I32 i;
   int imax = ((I32)((I32)r*707))/1000+1;
@@ -131,12 +119,9 @@ void GL_FillCircle(int x0, int y0, int r) {
   }
 }
 
-/*********************************************************************
-*
-*       GUI_FillCircle
-*/
+
 void GUI_FillCircle(int x0, int y0, int r) {
-  GUI_LOCK();
+  
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     WM_ITERATE_START(NULL); {
@@ -145,7 +130,7 @@ void GUI_FillCircle(int x0, int y0, int r) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  GUI_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -165,10 +150,7 @@ void GUI_FillCircle(int x0, int y0, int r) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GL_FillEllipse
-*/
+
 void GL_FillEllipse(int x0, int y0, int rx, int ry) {
   I32 OutConst, Sum, SumY;
   int x,y;
@@ -190,15 +172,12 @@ void GL_FillEllipse(int x0, int y0, int rx, int ry) {
   }
 }
 
-/*********************************************************************
-*
-*       GUI_FillEllipse
-*/
+
 void GUI_FillEllipse(int x0, int y0, int rx, int ry) {
   #if (GUI_WINSUPPORT)
     GUI_RECT r;
   #endif
-  GUI_LOCK();
+  
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     /* Calc rectangle in order to avoid unnecessary drawing ops. */
@@ -209,13 +188,10 @@ void GUI_FillEllipse(int x0, int y0, int rx, int ry) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  GUI_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       GL_DrawEllipse
-*/
+
 void GL_DrawEllipse(int x0, int y0, int rx, int ry) {
   I32 OutConst, Sum, SumY;
   int x,y;
@@ -246,15 +222,12 @@ void GL_DrawEllipse(int x0, int y0, int rx, int ry) {
   }
 }
 
-/*********************************************************************
-*
-*       GUI_DrawEllipse
-*/
+
 void GUI_DrawEllipse(int x0, int y0, int rx, int ry) {
   #if (GUI_WINSUPPORT)
     GUI_RECT r;
   #endif
-  GUI_LOCK();
+  
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
   /* Calc rectangle in order to avoid unnecessary drawing ops. */
@@ -265,7 +238,7 @@ void GUI_DrawEllipse(int x0, int y0, int rx, int ry) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  GUI_UNLOCK();
+  
 }
 
 /*************************** End of file ****************************/

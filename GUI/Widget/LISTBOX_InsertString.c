@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -38,7 +38,7 @@ void LISTBOX_InsertString(LISTBOX_Handle hObj, const char* s, unsigned int Index
   if (hObj && s) {
     LISTBOX_Obj* pObj;
     unsigned int NumItems;
-    WM_LOCK();
+    
     pObj = LISTBOX_H2P(hObj);
     NumItems = LISTBOX__GetNumItems(pObj);
     if (Index < NumItems) {
@@ -53,7 +53,7 @@ void LISTBOX_InsertString(LISTBOX_Handle hObj, const char* s, unsigned int Index
     } else {
       LISTBOX_AddString(hObj, s);
     }
-    WM_UNLOCK();
+    
   }
 }
 

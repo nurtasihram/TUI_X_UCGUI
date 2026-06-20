@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -27,10 +27,7 @@ Purpose     : Implementation of said function
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI__SetText
-*/
+
 int GUI__SetText(GUI_HMEM* phText, const char* s) {
   int r = 0;
   if (GUI__strcmp_hp(*phText, s) != 0) {            /* Make sure we have a quick out if nothing changes */

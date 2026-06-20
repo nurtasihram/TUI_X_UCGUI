@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -40,8 +40,7 @@ Purpose     : Get Pixel routines
 *   device and use it for clipping.
 */
 unsigned LCD_GetPixelIndex(int x, int y)  {
-  LCD_RECT r;  
-  GUI_ASSERT_LOCK();
+  LCD_RECT r;
   LCDDEV_L0_GetRect(&r);
   if (x < r.x0) {
     return 0;

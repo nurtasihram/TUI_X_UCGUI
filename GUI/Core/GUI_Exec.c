@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -28,10 +28,7 @@ Purpose     : Implementation of GUI_Exec
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_Exec1
-*/
+
 int GUI_Exec1(void) {
   int r = 0;
   /* Execute background jobs */
@@ -47,10 +44,7 @@ int GUI_Exec1(void) {
   return r;
 }
 
-/*********************************************************************
-*
-*       GUI_Exec
-*/
+
 int GUI_Exec(void) {
   int r = 0;
   while (GUI_Exec1()) {

@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -37,7 +37,7 @@ Purpose     :
 void FRAMEWIN_AddMenu(FRAMEWIN_Handle hObj, WM_HWIN hMenu) {
   if (hObj) {
     FRAMEWIN_Obj* pObj;
-    WM_LOCK();
+    
     pObj = FRAMEWIN_H2P(hObj);
     if (pObj) {
       int TitleHeight, BorderSize, IBorderSize = 0;
@@ -60,7 +60,7 @@ void FRAMEWIN_AddMenu(FRAMEWIN_Handle hObj, WM_HWIN hMenu) {
       FRAMEWIN__UpdatePositions(pObj);
       FRAMEWIN_Invalidate(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 

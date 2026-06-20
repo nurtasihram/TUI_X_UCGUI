@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -137,18 +137,12 @@ static GUI_ALLOC_DATATYPE _Size2LegalSize(GUI_ALLOC_DATATYPE size) {
   return (size + ((1 << GUI_BLOCK_ALIGN) - 1)) & ~((1 << GUI_BLOCK_ALIGN) - 1);
 }
   
-/*********************************************************************
-*
-*       _GetSize
-*/
+
 static GUI_ALLOC_DATATYPE _GetSize(GUI_HMEM  hMem) {
   return aBlock[hMem].Size;
 }
 
-/*********************************************************************
-*
-*       _Free
-*/
+
 static void _Free(GUI_HMEM hMem) {
   GUI_ALLOC_DATATYPE Size;
   GUI_DEBUG_LOG1("\nGUI_ALLOC_Free(%d)", hMem);
@@ -248,20 +242,14 @@ static GUI_HMEM _CreateHole(GUI_ALLOC_DATATYPE Size) {
   return r;
 }
 
-/*********************************************************************
-*
-*       _CheckInit
-*/
+
 static void _CheckInit(void) {
   if (!IsInitialized) {
     GUI_ALLOC_Init();
   }
 }
 
-/*********************************************************************
-*
-*       _Alloc
-*/
+
 static GUI_HMEM _Alloc(GUI_ALLOC_DATATYPE size) {
   GUI_HMEM hMemNew, hMemIns;
   _CheckInit();
@@ -317,10 +305,7 @@ static GUI_HMEM _Alloc(GUI_ALLOC_DATATYPE size) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_ALLOC_Init
-*/
+
 void GUI_ALLOC_Init(void) {
   GUI_DEBUG_LOG("\nGUI_ALLOC_Init...");
   GUI_ALLOC.NumFreeBlocksMin = GUI_ALLOC.NumFreeBlocks = GUI_MAXBLOCKS-1;
@@ -333,29 +318,22 @@ void GUI_ALLOC_Init(void) {
   IsInitialized =1;
 }
 
-/*********************************************************************
-*
-*       GUI_ALLOC_AllocNoInit
-*/
+
 GUI_HMEM GUI_ALLOC_AllocNoInit(GUI_ALLOC_DATATYPE Size) {
   GUI_HMEM hMem;
   if (Size == 0) {
     return (GUI_HMEM)0;
   }
-  GUI_LOCK();
+  
   GUI_DEBUG_LOG2("\nGUI_ALLOC_AllocNoInit... requesting %d, %d avail", Size, GUI_ALLOC.NumFreeBytes);
   hMem = _Alloc(Size);
   GUI_DEBUG_LOG1("\nGUI_ALLOC_AllocNoInit : Handle", hMem);
-  GUI_UNLOCK();
+  
   return hMem;
 }
 
-/*********************************************************************
-*
-*       GUI_ALLOC_h2p
-*/
+
 void* GUI_ALLOC_h2p(GUI_HMEM  hMem) {
-  GUI_ASSERT_LOCK();
   #if GUI_DEBUG_LEVEL > 0
     if (!hMem) {
       GUI_DEBUG_ERROROUT("\n"__FILE__ " GUI_ALLOC_h2p: illegal argument (0 handle)");
@@ -369,10 +347,7 @@ void* GUI_ALLOC_h2p(GUI_HMEM  hMem) {
   return HMEM2PTR(hMem);
 }
 
-/*********************************************************************
-*
-*       GUI_ALLOC_GetNumFreeBytes
-*/
+
 GUI_ALLOC_DATATYPE GUI_ALLOC_GetNumFreeBytes(void) {
   _CheckInit();
   return GUI_ALLOC.NumFreeBytes;  
@@ -390,7 +365,7 @@ GUI_ALLOC_DATATYPE GUI_ALLOC_GetMaxSize(void) {
   GUI_ALLOC_DATATYPE NumFreeBytes;
   int i, iNext;
 
-  GUI_LOCK();
+  
   _CheckInit();
   for (i=0; (iNext =aBlock[i].Next) !=0; i= iNext) {
     NumFreeBytes = aBlock[iNext].Off- (aBlock[i].Off+aBlock[i].Size);
@@ -403,7 +378,7 @@ GUI_ALLOC_DATATYPE GUI_ALLOC_GetMaxSize(void) {
   if (NumFreeBytes > r) {
     r = NumFreeBytes;
   }
-  GUI_UNLOCK();
+  
   return r;
 }
 
@@ -430,28 +405,19 @@ typedef struct {
   } Info;      /* Unnamed would be best, but is not supported by all compilers */
 } INFO;
 
-/*********************************************************************
-*
-*       _GetSize
-*/
+
 static GUI_ALLOC_DATATYPE _GetSize(GUI_HMEM  hMem) {
   INFO * pInfo;
   pInfo = (INFO *)GUI_ALLOC_H2P(hMem);
   return pInfo->Info.Size;
 }
 
-/*********************************************************************
-*
-*       _Free
-*/
+
 static void _Free(GUI_HMEM  hMem) {
   GUI_ALLOC_FREE(hMem);
 }
 
-/*********************************************************************
-*
-*       GUI_ALLOC_AllocNoInit
-*/
+
 GUI_HMEM GUI_ALLOC_AllocNoInit(GUI_ALLOC_DATATYPE Size) {
   GUI_HMEM hMem;
   if (Size == 0) {
@@ -467,28 +433,19 @@ GUI_HMEM GUI_ALLOC_AllocNoInit(GUI_ALLOC_DATATYPE Size) {
   return hMem;
 }
 
-/*********************************************************************
-*
-*       GUI_ALLOC_h2p
-*/
+
 void* GUI_ALLOC_h2p(GUI_HMEM  hMem) {
   U8* p = (U8*)GUI_ALLOC_H2P(hMem);    /* Pointer to memory block from memory manager */
   p += sizeof(INFO);                   /* Convert to pointer to usable area */
   return p;
 }
 
-/*********************************************************************
-*
-*       GUI_ALLOC_GetMaxSize
-*/
+
 GUI_ALLOC_DATATYPE GUI_ALLOC_GetMaxSize(void) {
   return GUI_ALLOC_GETMAXSIZE();
 }
 
-/*********************************************************************
-*
-*       GUI_ALLOC_Init
-*/
+
 void GUI_ALLOC_Init(void) {
   #ifdef GUI_ALLOC_INIT
     GUI_ALLOC_INIT();
@@ -503,10 +460,7 @@ void GUI_ALLOC_Init(void) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_ALLOC_GetSize
-*/
+
 GUI_ALLOC_DATATYPE GUI_ALLOC_GetSize(GUI_HMEM  hMem) {
   /* Do the error checking first */
   #if GUI_DEBUG_LEVEL>0
@@ -518,30 +472,24 @@ GUI_ALLOC_DATATYPE GUI_ALLOC_GetSize(GUI_HMEM  hMem) {
   return _GetSize(hMem);
 }
 
-/*********************************************************************
-*
-*       GUI_ALLOC_Free
-*/
+
 void GUI_ALLOC_Free(GUI_HMEM hMem) {
   if (hMem == GUI_HMEM_NULL) { /* Note: This is not an error, it is permitted */
     return;
   }
-  GUI_LOCK();
+  
   GUI_DEBUG_LOG1("\nGUI_ALLOC_Free(%d)", hMem);
   _Free(hMem);
-  GUI_UNLOCK();
+  
 }
 
 
-/*********************************************************************
-*
-*       GUI_ALLOC_FreePtr
-*/
+
 void GUI_ALLOC_FreePtr(GUI_HMEM *ph) {
-  GUI_LOCK();
+  
   GUI_ALLOC_Free(*ph);
   *ph =0;
-  GUI_UNLOCK();
+  
 }
 
 

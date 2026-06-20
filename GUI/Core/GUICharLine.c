@@ -27,10 +27,7 @@ Purpose     : Implementation of character and string services
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _DispLine
-*/
+
 static void _DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT *pRect) {
   /* Check if we have anything to do at all ... */
   if (GUI_Context.pClipRect_HL) {
@@ -61,10 +58,7 @@ static void _DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI__GetLineNumChars
-*/
+
 int GUI__GetLineNumChars(const char GUI_UNI_PTR *s, int MaxNumChars) {
   int NumChars = 0;
   if (s) {
@@ -106,10 +100,7 @@ int GUI__GetLineDistX(const char GUI_UNI_PTR *s, int MaxNumChars) {
   return Dist;
 }
 
-/*********************************************************************
-*
-*       GUI__DispLine
-*/
+
 void GUI__DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT* pr) {
   GUI_RECT r;
   {

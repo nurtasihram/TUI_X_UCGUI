@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -314,7 +314,7 @@ SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 {
   SLIDER_Handle hObj;
   /* Create the window */
-  WM_LOCK();
+  
   #if SLIDER_SUPPORT_TRANSPARENCY
     WinFlags |= WM_CF_HASTRANS;
   #endif
@@ -342,7 +342,7 @@ SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
   } else {
     GUI_DEBUG_ERROROUT_IF(hObj==0, "SLIDER_Create failed")
   }
-  WM_UNLOCK();
+  
   return hObj;
 }
 
@@ -359,14 +359,14 @@ SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 void SLIDER_Dec(SLIDER_Handle hObj) {
   SLIDER_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = SLIDER_H2P(hObj);
     if (pObj->v > pObj->Min) {
       pObj->v--;
       WM_InvalidateWindow(hObj);
       WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -377,14 +377,14 @@ void SLIDER_Dec(SLIDER_Handle hObj) {
 void SLIDER_Inc(SLIDER_Handle hObj) {
   SLIDER_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = SLIDER_H2P(hObj);
     if (pObj->v < pObj->Max) {
       pObj->v++;
       WM_InvalidateWindow(hObj);
       WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -395,13 +395,13 @@ void SLIDER_Inc(SLIDER_Handle hObj) {
 void SLIDER_SetWidth(SLIDER_Handle hObj, int Width) {
   SLIDER_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = SLIDER_H2P(hObj);
     if (pObj->Width != Width) {
       pObj->Width = Width;
       WM_InvalidateWindow(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -412,7 +412,7 @@ void SLIDER_SetWidth(SLIDER_Handle hObj, int Width) {
 void SLIDER_SetValue(SLIDER_Handle hObj, int v) {
   SLIDER_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = SLIDER_H2P(hObj);
     /* Put in min/max range */
     if (v < pObj->Min) {
@@ -426,7 +426,7 @@ void SLIDER_SetValue(SLIDER_Handle hObj, int v) {
       WM_InvalidateWindow(hObj);
       WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -437,7 +437,7 @@ void SLIDER_SetValue(SLIDER_Handle hObj, int v) {
 void SLIDER_SetRange(SLIDER_Handle hObj, int Min, int Max) {
   if (hObj) {
     SLIDER_Obj* pObj;
-    WM_LOCK();
+    
     pObj = SLIDER_H2P(hObj);
     if (Max < Min) {
       Max = Min;
@@ -451,7 +451,7 @@ void SLIDER_SetRange(SLIDER_Handle hObj, int Min, int Max) {
       pObj->v = Max;
     }
     WM_InvalidateWindow(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -462,11 +462,11 @@ void SLIDER_SetRange(SLIDER_Handle hObj, int Min, int Max) {
 void SLIDER_SetNumTicks(SLIDER_Handle hObj, int NumTicks) {
   if (hObj && (NumTicks >= 0)) {
     SLIDER_Obj* pObj;
-    WM_LOCK();
+    
     pObj = SLIDER_H2P(hObj);
     pObj->NumTicks = NumTicks;
     WM_InvalidateWindow(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -477,7 +477,7 @@ void SLIDER_SetNumTicks(SLIDER_Handle hObj, int NumTicks) {
 void SLIDER_SetBkColor(SLIDER_Handle hObj, GUI_COLOR Color) {
   if (hObj) {
     SLIDER_Obj * pObj;
-    WM_LOCK();
+    
     pObj = SLIDER_H2P(hObj);
     pObj->aBkColor[0] = Color;
     #if SLIDER_SUPPORT_TRANSPARENCY
@@ -488,7 +488,7 @@ void SLIDER_SetBkColor(SLIDER_Handle hObj, GUI_COLOR Color) {
       }
     #endif
     WM_InvalidateWindow(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -514,10 +514,10 @@ int SLIDER_GetValue(SLIDER_Handle hObj) {
   int r = 0;
   SLIDER_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = SLIDER_H2P(hObj);
     r = pObj->v;
-    WM_UNLOCK();
+    
   }
   return r;
 }

@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -34,7 +34,7 @@ Purpose     : Implementation of RADIO_SetFont
 void RADIO_SetFont(RADIO_Handle hObj, const GUI_FONT GUI_UNI_PTR* pFont) {
   if (hObj) {
     RADIO_Obj* pObj;
-    WM_LOCK();
+    
     pObj = RADIO_H2P(hObj);
     if (pFont != pObj->pFont) {
       pObj->pFont = pFont;
@@ -42,7 +42,7 @@ void RADIO_SetFont(RADIO_Handle hObj, const GUI_FONT GUI_UNI_PTR* pFont) {
         WM_InvalidateWindow(hObj);
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 

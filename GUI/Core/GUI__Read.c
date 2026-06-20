@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -25,10 +25,7 @@ Purpose     : Implementation of reading data
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI__Read16
-*/
+
 U16 GUI__Read16(const U8 ** ppData) {
   const U8 * pData;
   U16  Value;
@@ -40,10 +37,7 @@ U16 GUI__Read16(const U8 ** ppData) {
   return Value;
 }
 
-/*********************************************************************
-*
-*       GUI__Read32
-*/
+
 U32 GUI__Read32(const U8 ** ppData) {
   const U8 * pData;
   U32  Value;

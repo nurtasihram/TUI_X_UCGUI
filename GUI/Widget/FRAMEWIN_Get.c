@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -35,13 +35,13 @@ Purpose     :
 */
 const GUI_FONT GUI_UNI_PTR * FRAMEWIN_GetFont(FRAMEWIN_Handle hObj) {
   const GUI_FONT GUI_UNI_PTR * r = NULL;
-  GUI_LOCK();
+  
   if (hObj) {
     FRAMEWIN_Obj* pObj = FRAMEWIN_H2P(hObj);
     r = pObj->Props.pFont;
     FRAMEWIN_Invalidate(hObj);
   }
-  GUI_UNLOCK();
+  
   return r;
 }
 
@@ -55,14 +55,14 @@ int FRAMEWIN_GetTitleHeight(FRAMEWIN_Handle hObj) {
   /* Move client window accordingly */
   if (hObj) {
     FRAMEWIN_Obj* pObj;
-    WM_LOCK();
+    
     pObj = FRAMEWIN_H2P(hObj);
     FRAMEWIN__CalcPositions(pObj, &Pos);
     r = pObj->Props.TitleHeight;
     if (r == 0) {
       r = Pos.TitleHeight;
     }
-    WM_UNLOCK();
+    
   }
   return r;
 }
@@ -76,10 +76,10 @@ int FRAMEWIN_GetBorderSize(FRAMEWIN_Handle hObj) {
   /* Move client window accordingly */
   if (hObj) {
     FRAMEWIN_Obj* pObj;
-    WM_LOCK();
+    
     pObj = FRAMEWIN_H2P(hObj);
     r = pObj->Props.BorderSize;
-    WM_UNLOCK();
+    
   }
   return r;
 }

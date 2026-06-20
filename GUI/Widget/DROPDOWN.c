@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -362,7 +362,7 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
                                 sizeof(DROPDOWN_Obj) - sizeof(WM_Obj));
   if (hObj) {
     DROPDOWN_Obj* pObj;
-    WM_LOCK();
+    
     pObj = DROPDOWN_H2P(hObj);
     /* Init sub-classes */
     GUI_ARRAY_CREATE(&pObj->Handles);
@@ -374,7 +374,7 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
     INIT_ID(pObj);
     pObj->ySizeEx = ysize;
     DROPDOWN__AdjustHeight(hObj, pObj);
-    WM_UNLOCK();
+    
   }
   return hObj;
 }
@@ -393,13 +393,13 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 void DROPDOWN_Collapse(DROPDOWN_Handle hObj) {
   DROPDOWN_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = DROPDOWN_H2P(hObj);
     if (pObj->hListWin) {
       WM_DeleteWindow(pObj->hListWin);
       pObj->hListWin = 0;
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -415,7 +415,7 @@ void DROPDOWN_Expand(DROPDOWN_Handle hObj) {
   WM_Obj* pParent;
   DROPDOWN_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = DROPDOWN_H2P(hObj);
     if  (pObj->hListWin == 0) {
       hParent = WM_GetParent(hObj);
@@ -454,7 +454,7 @@ void DROPDOWN_Expand(DROPDOWN_Handle hObj) {
       LISTBOX_SetSel(hLst, pObj->Sel);
       WM_NotifyParent(hObj, WM_NOTIFICATION_CLICKED);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -464,7 +464,7 @@ void DROPDOWN_Expand(DROPDOWN_Handle hObj) {
 */
 void DROPDOWN_AddKey(DROPDOWN_Handle hObj, int Key) {
   if (hObj) {
-    WM_LOCK();
+    
     switch (Key) {
       case GUI_KEY_DOWN:
         DROPDOWN_IncSel(hObj);
@@ -476,7 +476,7 @@ void DROPDOWN_AddKey(DROPDOWN_Handle hObj, int Key) {
         _SelectByKey(hObj, Key);
         break;
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -487,11 +487,11 @@ void DROPDOWN_AddKey(DROPDOWN_Handle hObj, int Key) {
 void DROPDOWN_AddString(DROPDOWN_Handle hObj, const char* s) {
   DROPDOWN_Obj* pObj;
   if (hObj && s) {
-    WM_LOCK();
+    
     pObj = DROPDOWN_H2P(hObj);
     GUI_ARRAY_AddItem(&pObj->Handles, s, strlen(s) + 1);
     DROPDOWN_Invalidate(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -503,11 +503,11 @@ int DROPDOWN_GetNumItems(DROPDOWN_Handle hObj) {
   DROPDOWN_Obj* pObj;
   int r = 0;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = DROPDOWN_H2P(hObj);
     ASSERT_IS_VALID_PTR(pObj);
     r = _GetNumItems(pObj);
-    WM_UNLOCK();
+    
   }
   return r;
 }
@@ -520,7 +520,7 @@ void DROPDOWN_SetFont(DROPDOWN_Handle hObj, const GUI_FONT GUI_UNI_PTR * pfont) 
   int OldHeight;
   DROPDOWN_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = DROPDOWN_H2P(hObj);
     ASSERT_IS_VALID_PTR(pObj);
     OldHeight = GUI_GetYDistOfFont(pObj->Props.pFont);
@@ -534,7 +534,7 @@ void DROPDOWN_SetFont(DROPDOWN_Handle hObj, const GUI_FONT GUI_UNI_PTR * pfont) 
       }
       LISTBOX_SetFont(pObj->hListWin, pfont);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -546,7 +546,7 @@ void DROPDOWN_SetBkColor(DROPDOWN_Handle hObj, unsigned int Index, GUI_COLOR col
   DROPDOWN_Obj* pObj;
   if (hObj) {
     if (Index < GUI_COUNTOF(pObj->Props.aBackColor)) {
-      WM_LOCK();
+      
       pObj = DROPDOWN_H2P(hObj);
       ASSERT_IS_VALID_PTR(pObj);
       pObj->Props.aBackColor[Index] = color;
@@ -554,7 +554,7 @@ void DROPDOWN_SetBkColor(DROPDOWN_Handle hObj, unsigned int Index, GUI_COLOR col
       if (pObj->hListWin) {
         LISTBOX_SetBkColor(pObj->hListWin, Index, color);
       }
-      WM_UNLOCK();
+      
     }
   }
 }
@@ -567,7 +567,7 @@ void DROPDOWN_SetTextColor(DROPDOWN_Handle hObj, unsigned int Index, GUI_COLOR c
   DROPDOWN_Obj* pObj;
   if (hObj) {
     if (Index < GUI_COUNTOF(pObj->Props.aBackColor)) {
-      WM_LOCK();
+      
       pObj = DROPDOWN_H2P(hObj);
       ASSERT_IS_VALID_PTR(pObj);
       pObj->Props.aTextColor[Index] = color;
@@ -575,7 +575,7 @@ void DROPDOWN_SetTextColor(DROPDOWN_Handle hObj, unsigned int Index, GUI_COLOR c
       if (pObj->hListWin) {
         LISTBOX_SetTextColor(pObj->hListWin, Index, color);
       }
-      WM_UNLOCK();
+      
     }
   }
 }
@@ -588,7 +588,7 @@ void DROPDOWN_SetSel(DROPDOWN_Handle hObj, int Sel) {
   int NumItems, MaxSel;
   DROPDOWN_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = DROPDOWN_H2P(hObj);
     ASSERT_IS_VALID_PTR(pObj);
     NumItems = _GetNumItems(pObj);
@@ -601,7 +601,7 @@ void DROPDOWN_SetSel(DROPDOWN_Handle hObj, int Sel) {
       DROPDOWN_Invalidate(hObj);
       WM_NotifyParent(hObj, WM_NOTIFICATION_SEL_CHANGED);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -629,11 +629,11 @@ int  DROPDOWN_GetSel (DROPDOWN_Handle hObj) {
   int r = 0;
   DROPDOWN_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = DROPDOWN_H2P(hObj);
     ASSERT_IS_VALID_PTR(pObj);
     r = pObj->Sel;
-    WM_UNLOCK();
+    
   }
   return r;
 }
@@ -645,7 +645,7 @@ int  DROPDOWN_GetSel (DROPDOWN_Handle hObj) {
 void DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width) {
   DROPDOWN_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = DROPDOWN_H2P(hObj);
     ASSERT_IS_VALID_PTR(pObj);
     if (Width != (unsigned)pObj->ScrollbarWidth) {
@@ -654,7 +654,7 @@ void DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width) {
         LISTBOX_SetScrollbarWidth(pObj->hListWin, Width);
       }
     }
-    WM_UNLOCK();
+    
   }  
 }
 

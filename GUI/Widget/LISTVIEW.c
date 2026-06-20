@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -597,7 +597,7 @@ LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
                                 sizeof(LISTVIEW_Obj) - sizeof(WM_Obj));
   if (hObj) {
     LISTVIEW_Obj* pObj;
-    WM_LOCK();
+    
     pObj = LISTVIEW_H2P(hObj);
     /* Init sub-classes */
     GUI_ARRAY_CREATE(&pObj->RowArray);
@@ -614,7 +614,7 @@ LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
     pObj->RBorder   = 1;
     pObj->hHeader   = HEADER_CreateEx(0, 0, 0, 0, hObj, WM_CF_SHOW, 0, 0);
     LISTVIEW__UpdateScrollParas(hObj, pObj);
-    WM_UNLOCK();
+    
   } else {
     GUI_DEBUG_ERROROUT_IF(hObj==0, "LISTVIEW_Create failed")
   }
@@ -655,7 +655,7 @@ void LISTVIEW_AddColumn(LISTVIEW_Handle hObj, int Width, const char * s, int Ali
   if (hObj) {
     LISTVIEW_Obj* pObj;
     unsigned NumRows;
-    WM_LOCK();
+    
     pObj = LISTVIEW_H2P(hObj);
     HEADER_AddItem(pObj->hHeader, Width, s, Align);   /* Modify header */
     GUI_ARRAY_AddItem(&pObj->AlignArray, &Align, sizeof(int));
@@ -670,7 +670,7 @@ void LISTVIEW_AddColumn(LISTVIEW_Handle hObj, int Width, const char * s, int Ali
     }
     LISTVIEW__UpdateScrollParas(hObj, pObj);
     LISTVIEW__InvalidateInsideArea(hObj, pObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -682,7 +682,7 @@ void LISTVIEW_AddRow(LISTVIEW_Handle hObj, const GUI_ConstString* ppText) {
   if (hObj) {
     LISTVIEW_Obj* pObj;
     int NumRows;
-    WM_LOCK();
+    
     pObj = LISTVIEW_H2P(hObj);
     NumRows = GUI_ARRAY_GetNumItems(&pObj->RowArray);
 
@@ -711,7 +711,7 @@ void LISTVIEW_AddRow(LISTVIEW_Handle hObj, const GUI_ConstString* ppText) {
       LISTVIEW__UpdateScrollParas(hObj, pObj);
       LISTVIEW__InvalidateRow(hObj, pObj, NumRows);
     }
-    WM_UNLOCK();
+    
   }
 }
 

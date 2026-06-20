@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -46,10 +46,7 @@ static I16 _aX[GUI_FP_MAXCOUNT];
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _DrawHLine
-*/
+
 static void _DrawHLine(int x0, int y, int x1) {
   if (x0 < x1) {
     LCD_HL_DrawHLine(x0, y, x1);
@@ -255,12 +252,9 @@ void GL_FillPolygon  (const GUI_POINT*paPoint, int NumPoints, int xOff, int yOff
   }  
 }
 
-/*********************************************************************
-*
-*       GUI_FillPolygon
-*/
+
 void GUI_FillPolygon(const GUI_POINT* pPoints, int NumPoints, int x0, int y0) {
-  GUI_LOCK();
+  
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x0, y0);
     WM_ITERATE_START(NULL); {
@@ -269,7 +263,7 @@ void GUI_FillPolygon(const GUI_POINT* pPoints, int NumPoints, int x0, int y0) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  GUI_UNLOCK();
+  
 }
 
 /*************************** End of file ****************************/

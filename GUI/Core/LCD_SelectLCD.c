@@ -30,10 +30,7 @@ Purpose     : Implementation of said routine
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _SelectLCD
-*/
+
 void LCD_SelectLCD(void) {
   #if GUI_SUPPORT_DEVICES
     GUI_Context.pDeviceAPI   = LCD_aAPI[0];

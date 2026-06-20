@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -39,10 +39,7 @@ None
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _CalcX
-*/
+
 static void _CalcX(int*px, int y, U32 r2) {
   int x =*px;
   U32 y2 = (U32)y*(U32)y;
@@ -60,10 +57,7 @@ static void _CalcX(int*px, int y, U32 r2) {
 	*px = x-1;
 }
 
-/*********************************************************************
-*
-*       _CalcInterSectLin
-*/
+
 static float _CalcInterSectLin(float y, float y0, float y1, float x0, float x1) {
   if (y1==y0) {
 	  return y0;
@@ -73,10 +67,7 @@ static float _CalcInterSectLin(float y, float y0, float y1, float x0, float x1) 
 	}
 }
 
-/*********************************************************************
-*
-*       _DrawArc
-*/
+
 static void _DrawArc(int x0, int y0, int rx, int ry, int Angle0, int Angle1, int xMul, int yMul) {
   float afx[4];
   float afy[4];
@@ -155,10 +146,7 @@ static void _DrawArc(int x0, int y0, int rx, int ry, int Angle0, int Angle1, int
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GL_DrawArc
-*/
+
 void GL_DrawArc(int x0, int y0, int rx, int ry, int a0, int a1) {
   int aEnd;
   a0+=360;
@@ -215,12 +203,9 @@ DoFirst:
 goto DoFirst;
 }
 
-/*********************************************************************
-*
-*       GUI_DrawArc
-*/
+
 void GUI_DrawArc(int x0, int y0, int rx, int ry, int a0, int a1) {
-  GUI_LOCK();
+  
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     WM_ITERATE_START(NULL) {
@@ -229,7 +214,7 @@ void GUI_DrawArc(int x0, int y0, int rx, int ry, int a0, int a1) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  GUI_UNLOCK();
+  
 }
 
 /*************************** End of file ****************************/

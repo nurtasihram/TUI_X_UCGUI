@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -25,10 +25,7 @@ Purpose     : Implementation of optional routines
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       CL_DispChar
-*/
+
 #if (GUI_WINSUPPORT)
 static void CL_DispChar(U16 c) {
   GUI_RECT r;
@@ -51,26 +48,20 @@ static void CL_DispChar(U16 c) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_DispChar
-*/
+
 void GUI_DispChar(U16 c) {
-  GUI_LOCK();
+  
   #if (GUI_WINSUPPORT)
     CL_DispChar(c);
   #else
     GL_DispChar(c);
   #endif
-  GUI_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       GUI_DispCharAt
-*/
+
 void GUI_DispCharAt(U16 c, I16P x, I16P y) {
-  GUI_LOCK();
+  
   GUI_Context.DispPosX = x;
   GUI_Context.DispPosY = y;
   #if (GUI_WINSUPPORT)
@@ -78,7 +69,7 @@ void GUI_DispCharAt(U16 c, I16P x, I16P y) {
   #else
     GL_DispChar(c);
   #endif
-  GUI_UNLOCK();
+  
 }
 
 /*************************** End of file ****************************/

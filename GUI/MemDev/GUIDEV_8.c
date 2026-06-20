@@ -67,10 +67,7 @@ static const LCD_PIXELINDEX aID[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _XY2PTR
-*/
+
 static PIXELINDEX* _XY2PTR(int x, int y) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   U8 *pData = (U8*)(pDev + 1);
@@ -83,10 +80,7 @@ static PIXELINDEX* _XY2PTR(int x, int y) {
   return ((PIXELINDEX*)pData) + x - pDev->x0;
 }
 
-/*********************************************************************
-*
-*       _DrawBitLine1BPP
-*/
+
 static void _DrawBitLine1BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * p, int Diff, unsigned int xsize,
                              const LCD_PIXELINDEX* pTrans, GUI_MEMDEV* pDev, PIXELINDEX* pDest)
 {
@@ -194,10 +188,7 @@ static void _DrawBitLine1BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   }
 }
 
-/*********************************************************************
-*
-*       _DrawBitLine2BPP
-*/
+
 static void _DrawBitLine2BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * p, int Diff, int xsize,
                              const LCD_PIXELINDEX* pTrans, PIXELINDEX* pDest)
 {
@@ -264,10 +255,7 @@ static void _DrawBitLine2BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   }
 }
 
-/*********************************************************************
-*
-*       _DrawBitLine4BPP
-*/
+
 static void _DrawBitLine4BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * p, int Diff, int xsize,
                              const LCD_PIXELINDEX* pTrans, PIXELINDEX* pDest)
 {
@@ -372,10 +360,7 @@ static void _DrawBitLine4BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   }
 }
 
-/*********************************************************************
-*
-*       _DrawBitLine8BPP
-*/
+
 static void _DrawBitLine8BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * pSrc, int xsize,
                              const LCD_PIXELINDEX* pTrans, PIXELINDEX* pDest) {
   switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
@@ -403,10 +388,7 @@ static void _DrawBitLine8BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
 }
 
 #if GUI_UNI_PTR_USED
-/*********************************************************************
-*
-*       _Memcopy
-*/
+
 static void _Memcopy(PIXELINDEX * pDest, const U8 GUI_UNI_PTR * pSrc, int NumBytes) {
   while(NumBytes--) {
     *pDest++ = *pSrc++;
@@ -414,10 +396,7 @@ static void _Memcopy(PIXELINDEX * pDest, const U8 GUI_UNI_PTR * pSrc, int NumByt
 }
 #endif
 
-/*********************************************************************
-*
-*       _DrawBitLine8BPP_DDB
-*/
+
 static void _DrawBitLine8BPP_DDB(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * pSrc, int xsize, PIXELINDEX* pDest) {
   switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
   case 0:    /* Write mode */
@@ -443,10 +422,7 @@ static void _DrawBitLine8BPP_DDB(GUI_USAGE* pUsage, int x, int y, const U8 GUI_U
   }
 }
 
-/*********************************************************************
-*
-*       _DrawBitmap
-*/
+
 static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
                         int BitsPerPixel, int BytesPerLine,
                         const U8 GUI_UNI_PTR * pData, int Diff, const LCD_PIXELINDEX* pTrans)
@@ -510,10 +486,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
   }
 }
 
-/*********************************************************************
-*
-*       _FillRect
-*/
+
 static void _FillRect(int x0, int y0, int x1, int y1) {
   unsigned BytesPerLine;
   int Len;
@@ -551,18 +524,12 @@ static void _FillRect(int x0, int y0, int x1, int y1) {
   }
 }
 
-/*********************************************************************
-*
-*       _DrawHLine
-*/
+
 static void _DrawHLine(int x0, int y, int x1) {
   _FillRect(x0, y, x1, y);
 }
 
-/*********************************************************************
-*
-*       _DrawVLine
-*/
+
 static void _DrawVLine(int x , int y0, int y1) {
   GUI_MEMDEV* pDev   = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   GUI_USAGE_h hUsage = pDev->hUsage; 
@@ -598,10 +565,7 @@ static void _DrawVLine(int x , int y0, int y1) {
   }
 }
 
-/*********************************************************************
-*
-*       _SetPixelIndex
-*/
+
 static void _SetPixelIndex(int x, int y, int Index) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   GUI_USAGE_h hUsage = pDev->hUsage; 
@@ -612,10 +576,7 @@ static void _SetPixelIndex(int x, int y, int Index) {
   }
 }
 
-/*********************************************************************
-*
-*       _XorPixel
-*/
+
 static void _XorPixel(int x, int y) {
   PIXELINDEX IndexMask;
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
@@ -628,10 +589,7 @@ static void _XorPixel(int x, int y) {
   }
 }
 
-/*********************************************************************
-*
-*       _GetPixelIndex
-*/
+
 static unsigned int _GetPixelIndex(int x, int y) {
   PIXELINDEX* pData = _XY2PTR(x, y);
   return *pData;

@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -246,7 +246,7 @@ static void _Delete(EDIT_Obj* pObj) {
 void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
   if (hObj) {
     EDIT_Obj* pObj;
-    WM_LOCK();
+    
     pObj = EDIT_H2P(hObj);
     if (pObj->hpText) {    
       const GUI_FONT GUI_UNI_PTR *pOldFont;
@@ -286,7 +286,7 @@ void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
       GUI_SetFont(pOldFont);
       EDIT_Invalidate(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -539,7 +539,7 @@ EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
                                 sizeof(EDIT_Obj) - sizeof(WM_Obj));
   if (hObj) {
     EDIT_Obj* pObj;
-    WM_LOCK();
+    
     pObj = (EDIT_Obj*)GUI_ALLOC_h2p(hObj);
     /* init widget specific variables */
     WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE);
@@ -555,7 +555,7 @@ EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
       EDIT_Delete(hObj);
       hObj = 0;
     }
-    WM_UNLOCK();
+    
   }
   return hObj;
 }
@@ -573,7 +573,7 @@ EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 void EDIT_AddKey(EDIT_Handle hObj, int Key) {
   if (hObj) {
     EDIT_Obj* pObj;
-    WM_LOCK();
+    
     pObj = EDIT_H2P(hObj);
     if (pObj) {
       if (pObj->pfAddKeyEx) {
@@ -643,7 +643,7 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
       }
       EDIT_Invalidate(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -655,13 +655,13 @@ void EDIT_SetFont(EDIT_Handle hObj, const GUI_FONT GUI_UNI_PTR * pfont) {
   EDIT_Obj* pObj;
   if (hObj == 0)
     return;
-  WM_LOCK();
+  
   pObj = EDIT_H2P(hObj);
   if (pObj) {
     pObj->Props.pFont = pfont;
     EDIT_Invalidate(hObj);
   }
-  WM_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -672,7 +672,7 @@ void EDIT_SetBkColor(EDIT_Handle hObj, unsigned int Index, GUI_COLOR color) {
   EDIT_Obj* pObj;
   if (hObj == 0)
     return;
-  WM_LOCK();
+  
   pObj = EDIT_H2P(hObj);
   if (pObj) {
     if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
@@ -680,7 +680,7 @@ void EDIT_SetBkColor(EDIT_Handle hObj, unsigned int Index, GUI_COLOR color) {
       EDIT_Invalidate(hObj);
     }
   }
-  WM_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -691,7 +691,7 @@ void EDIT_SetTextColor(EDIT_Handle hObj, unsigned int Index, GUI_COLOR color) {
   EDIT_Obj* pObj;
   if (hObj == 0)
     return;
-  WM_LOCK();
+  
   pObj = EDIT_H2P(hObj);
   if (pObj) {
     if (Index < GUI_COUNTOF(pObj->Props.aTextColor)) {
@@ -699,7 +699,7 @@ void EDIT_SetTextColor(EDIT_Handle hObj, unsigned int Index, GUI_COLOR color) {
       EDIT_Invalidate(hObj);
     }
   }
-  WM_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -709,7 +709,7 @@ void EDIT_SetTextColor(EDIT_Handle hObj, unsigned int Index, GUI_COLOR color) {
 void EDIT_SetText(EDIT_Handle hObj, const char* s) {
   if (hObj) {
     EDIT_Obj* pObj;
-    WM_LOCK();
+    
     pObj = EDIT_H2P(hObj);
     if (s) {
       int NumBytesNew, NumBytesOld = 0;
@@ -741,7 +741,7 @@ void EDIT_SetText(EDIT_Handle hObj, const char* s) {
       pObj->CursorPos  = 0;
     }
     EDIT_Invalidate(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -754,7 +754,7 @@ void EDIT_GetText(EDIT_Handle hObj, char* sDest, int MaxLen) {
     *sDest = 0;
     if (hObj) {
       EDIT_Obj* pObj;
-      WM_LOCK();
+      
       pObj = EDIT_H2P(hObj);
       if (pObj->hpText) {
         char* pText;
@@ -768,7 +768,7 @@ void EDIT_GetText(EDIT_Handle hObj, char* sDest, int MaxLen) {
         memcpy(sDest, pText, NumBytes);
         *(sDest + NumBytes) = 0;
       }
-      WM_UNLOCK();
+      
     }
   }
 }
@@ -781,10 +781,10 @@ I32  EDIT_GetValue(EDIT_Handle hObj) {
   EDIT_Obj* pObj;
   I32 r = 0;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = EDIT_H2P(hObj);
     r = pObj->CurrentValue;
-    WM_UNLOCK();
+    
   }
   return r;
 }
@@ -796,7 +796,7 @@ I32  EDIT_GetValue(EDIT_Handle hObj) {
 void EDIT_SetValue(EDIT_Handle hObj, I32 Value) {
   EDIT_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = EDIT_H2P(hObj);
     /* Put in min/max range */
     if (Value < pObj->Min) {
@@ -813,7 +813,7 @@ void EDIT_SetValue(EDIT_Handle hObj, I32 Value) {
       WM_InvalidateWindow(hObj);
       WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -824,7 +824,7 @@ void EDIT_SetValue(EDIT_Handle hObj, I32 Value) {
 void EDIT_SetMaxLen(EDIT_Handle  hObj, int MaxLen) {
   if (hObj) {
     EDIT_Obj* pObj;
-    WM_LOCK();
+    
     pObj = EDIT_H2P(hObj);
     if (MaxLen != pObj->MaxLen) {
       if (MaxLen < pObj->MaxLen) {
@@ -844,7 +844,7 @@ void EDIT_SetMaxLen(EDIT_Handle  hObj, int MaxLen) {
       pObj->MaxLen = MaxLen;
       EDIT_Invalidate(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -856,13 +856,13 @@ void EDIT_SetTextAlign(EDIT_Handle hObj, int Align) {
   EDIT_Obj* pObj;
   if (hObj == 0)
     return;
-  WM_LOCK();
+  
   pObj = EDIT_H2P(hObj);
   if (pObj) {
     pObj->Props.Align = Align;
     EDIT_Invalidate(hObj);
   }
-  WM_UNLOCK();
+  
 }
 
 #else  /* avoid empty object files */

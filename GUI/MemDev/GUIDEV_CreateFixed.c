@@ -37,12 +37,12 @@ GUI_MEMDEV_Handle GUI_MEMDEV_CreateFixed(int x0, int y0,
                                          const tLCDDEV_APIList * pMemDevAPI,
                                          const LCD_API_COLOR_CONV * pColorConvAPI) {
   GUI_MEMDEV_Handle hMemDev;
-  GUI_LOCK();
+  
   hMemDev = GUI_MEMDEV__CreateFixed(x0, y0, xsize, ysize, Flags, pMemDevAPI, 
                                     pColorConvAPI->pfColor2Index, 
                                     pColorConvAPI->pfIndex2Color, 
                                     pColorConvAPI->pfGetIndexMask);
-  GUI_UNLOCK();
+  
   return hMemDev;
 }
 

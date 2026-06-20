@@ -42,10 +42,7 @@ Purpose     : Implementation of memory devices
 #define BITSPERPIXEL                     16
 #define API_LIST      GUI_MEMDEV__APIList16
 
-/*********************************************************************
-*
-*       _DrawBitLine16BPP_DDB
-*/
+
 static void _DrawBitLine16BPP_DDB(GUI_USAGE* pUsage, int x, int y, const U16 *pSrc, int xsize, PIXELINDEX* pDest) {
   switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
   case 0:    /* Write mode */

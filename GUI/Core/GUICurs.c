@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -92,7 +92,7 @@ static void _Undraw(void) {
   int x, y, xSize, ySize;
   LCD_PIXELINDEX* pData;
   /* Save bitmap data */
-  GUI_LOCK();
+  
   if (_hBuffer) {
     pData = (LCD_PIXELINDEX*)GUI_ALLOC_h2p(_hBuffer);
     xSize = _Rect.x1 - _Rect.x0 + 1;
@@ -104,13 +104,10 @@ static void _Undraw(void) {
       pData += _pCursor->pBitmap->XSize;
     }
   }
-  GUI_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       _Log2Phys
-*/
+
 static int _Log2Phys(int Index) {
   if (Index < 4) {
     return _ColorIndex[Index];
@@ -120,15 +117,12 @@ static int _Log2Phys(int Index) {
   }
 }
 
-/*********************************************************************
-*
-*       _Draw
-*/
+
 static void _Draw(void) {
   int x, y, xSize, ySize;
   LCD_PIXELINDEX* pData;
   const GUI_BITMAP GUI_UNI_PTR * pBM;
-  GUI_LOCK();
+  
   if (_hBuffer) {
     /* Save bitmap data */
     pBM = _pCursor->pBitmap;
@@ -147,13 +141,10 @@ static void _Draw(void) {
       pData += pBM->XSize;
     }
   }
-  GUI_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       _CalcRect
-*/
+
 static void _CalcRect(void) {
   if (_pCursor) {
     _Rect.x0 = _x - _pCursor->xHot;
@@ -163,10 +154,7 @@ static void _CalcRect(void) {
   }
 }
 
-/*********************************************************************
-*
-*       _Hide
-*/
+
 static void _Hide(void) {
   if (_CursorIsVis) {
     _Undraw();
@@ -174,10 +162,7 @@ static void _Hide(void) {
   }
 }
 
-/*********************************************************************
-*
-*       _Show
-*/
+
 static void _Show(void) {
   if (_CursorOn && (_CursorDeActCnt==0)) {
     _CursorIsVis = 1;
@@ -217,10 +202,7 @@ static char _TempHide(const GUI_RECT* pRect) {
   return 0;               /* Cursor not affected -> nothing to do */
 }
 
-/*********************************************************************
-*
-*       _TempUnhide
-*/
+
 static void _TempUnhide(void) {
   _Show();
 }
@@ -231,38 +213,29 @@ static void _TempUnhide(void) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_CURSOR_Activate
-*/
+
 void GUI_CURSOR_Activate(void) {
-  GUI_LOCK();
+  
   if ((--_CursorDeActCnt) ==0) {
     _Show();
   }
-  GUI_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       GUI_CURSOR_Deactivate
-*/
+
 void GUI_CURSOR_Deactivate(void) {
-  GUI_LOCK();
+  
   if (_CursorDeActCnt++ ==0)
     _Hide();
-  GUI_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       GUI_CURSOR_Select
-*/
+
 const GUI_CURSOR GUI_UNI_PTR * GUI_CURSOR_Select(const GUI_CURSOR GUI_UNI_PTR * pCursor) {
   int AllocSize;
   const GUI_BITMAP GUI_UNI_PTR * pBM;
   const GUI_CURSOR GUI_UNI_PTR * pOldCursor;
-  GUI_LOCK();
+  
   pOldCursor = _pCursor;
   if (pCursor != _pCursor) {
     int i;
@@ -284,30 +257,24 @@ const GUI_CURSOR GUI_UNI_PTR * GUI_CURSOR_Select(const GUI_CURSOR GUI_UNI_PTR * 
     _CalcRect();
     _Show();
   }
-  GUI_UNLOCK();
+  
   return pOldCursor;
 }
 
-/*********************************************************************
-*
-*       GUI_CURSOR_Hide
-*/
+
 void GUI_CURSOR_Hide(void) {
-  GUI_LOCK();
+  
   _Hide();
   _CursorOn = 0;
   /* Set function pointer which window manager can use */
   GUI_CURSOR_pfTempHide   = NULL;
   GUI_CURSOR_pfTempUnhide = NULL;
-  GUI_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       GUI_CURSOR_Show
-*/
+
 void GUI_CURSOR_Show(void) {
-  GUI_LOCK();
+  
   LCDDEV_L0_GetRect(&_ClipRect);
   _Hide();
   _CursorOn = 1;
@@ -319,19 +286,16 @@ void GUI_CURSOR_Show(void) {
   } else {
     _Show();
   }
-  GUI_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       GUI_CURSOR_SetPosition
-*/
+
 void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
   int x, xStart, xStep, xEnd, xOff, xOverlapMin, xOverlapMax;
   int y, yStart, yStep, yEnd, yOff, yOverlapMin, yOverlapMax;
   int xSize;
   LCD_PIXELINDEX* pData;
-  GUI_LOCK();
+  
   if (_hBuffer) {
     if ((_x != xNewPos) | (_y != yNewPos)) {
       if (_CursorOn) {
@@ -410,7 +374,7 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
       _CalcRect();
     }
   }
-  GUI_UNLOCK();
+  
 }
 
 #else

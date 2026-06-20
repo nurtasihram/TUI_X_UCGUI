@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -326,7 +326,7 @@ BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
   BUTTON_Handle hObj;
   GUI_USE_PARA(ExFlags);
   /* Create the window */
-  WM_LOCK();
+  
   hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, BUTTON_Callback,
                                 sizeof(BUTTON_Obj) - sizeof(WM_Obj));
   if (hObj) {
@@ -339,7 +339,7 @@ BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
   } else {
     GUI_DEBUG_ERROROUT_IF(hObj==0, "BUTTON_Create failed")
   }
-  WM_UNLOCK();
+  
   return hObj;
 }
 
@@ -357,12 +357,12 @@ BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 void BUTTON_SetText(BUTTON_Handle hObj, const char* s) {
   if (hObj) {
     BUTTON_Obj* pObj;
-    WM_LOCK();
+    
     pObj = BUTTON_H2P(hObj);
     if (GUI__SetText(&pObj->hpText, s)) {
       BUTTON_Invalidate(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -373,12 +373,12 @@ void BUTTON_SetText(BUTTON_Handle hObj, const char* s) {
 void BUTTON_SetFont(BUTTON_Handle hObj, const GUI_FONT GUI_UNI_PTR * pfont) {
   if (hObj) {
     BUTTON_Obj* pObj;
-    WM_LOCK();
+    
     pObj = BUTTON_H2P(hObj);
     BUTTON_ASSERT_IS_VALID_PTR(pObj);
     pObj->Props.pFont = pfont;
     BUTTON_Invalidate(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -389,12 +389,12 @@ void BUTTON_SetFont(BUTTON_Handle hObj, const GUI_FONT GUI_UNI_PTR * pfont) {
 void BUTTON_SetBkColor(BUTTON_Handle hObj,unsigned int Index, GUI_COLOR Color) {
   if (hObj && (Index <= 2)) {
     BUTTON_Obj* pObj;
-    WM_LOCK();
+    
     pObj = BUTTON_H2P(hObj);
     BUTTON_ASSERT_IS_VALID_PTR(pObj);
     pObj->Props.aBkColor[Index] = Color;
     BUTTON_Invalidate(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -405,12 +405,12 @@ void BUTTON_SetBkColor(BUTTON_Handle hObj,unsigned int Index, GUI_COLOR Color) {
 void BUTTON_SetTextColor(BUTTON_Handle hObj,unsigned int Index, GUI_COLOR Color) {
   if (hObj && (Index <= 2)) {
     BUTTON_Obj* pObj;
-    WM_LOCK();
+    
     pObj = BUTTON_H2P(hObj);
     BUTTON_ASSERT_IS_VALID_PTR(pObj);
     pObj->Props.aTextColor[Index] = Color;
     BUTTON_Invalidate(hObj);
-    WM_UNLOCK();
+    
   }
 }
 

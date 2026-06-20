@@ -33,10 +33,7 @@ Purpose     : Implementation of memory devices, add. module
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_MEMDEV_Clear
-*/
+
 void GUI_MEMDEV_Clear(GUI_MEMDEV_Handle hMem) {
   if (!hMem) {
     if ((hMem = GUI_Context.hDevData) == 0) {
@@ -46,14 +43,14 @@ void GUI_MEMDEV_Clear(GUI_MEMDEV_Handle hMem) {
   {
     GUI_MEMDEV* pDev;
     GUI_USAGE_h hUsage;
-    GUI_LOCK();
+    
     pDev = GUI_MEMDEV_H2P(hMem);  /* Convert to pointer */
     hUsage = pDev->hUsage; 
     if (hUsage) {
       GUI_USAGE* pUsage = GUI_USAGE_H2P(hUsage);
       GUI_USAGE_Clear(pUsage);
     }
-    GUI_UNLOCK();
+    
   }
 }
 

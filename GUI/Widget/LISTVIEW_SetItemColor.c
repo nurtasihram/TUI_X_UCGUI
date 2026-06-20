@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -63,12 +63,12 @@ static LISTVIEW_ITEM_INFO * _GetpItemInfo(LISTVIEW_Handle hObj, unsigned Column,
 */
 void LISTVIEW_SetItemTextColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, GUI_COLOR Color) {
   LISTVIEW_ITEM_INFO * pItemInfo;
-  WM_LOCK();
+  
   pItemInfo = _GetpItemInfo(hObj, Column, Row, Index);
   if (pItemInfo) {
     pItemInfo->aTextColor[Index] = Color;
   }
-  WM_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -77,12 +77,12 @@ void LISTVIEW_SetItemTextColor(LISTVIEW_Handle hObj, unsigned Column, unsigned R
 */
 void LISTVIEW_SetItemBkColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, GUI_COLOR Color) {
   LISTVIEW_ITEM_INFO * pItemInfo;
-  WM_LOCK();
+  
   pItemInfo = _GetpItemInfo(hObj, Column, Row, Index);
   if (pItemInfo) {
     pItemInfo->aBkColor[Index] = Color;
   }
-  WM_UNLOCK();
+  
 }
 
 #else                            /* Avoid problems with empty object modules */

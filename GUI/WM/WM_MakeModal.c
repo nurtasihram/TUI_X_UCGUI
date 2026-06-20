@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -41,7 +41,7 @@ Purpose     : Windows manager, modal windows
 * Return value:
 */
 void WM_MakeModal(WM_HWIN hWin) {
-  WM_LOCK();
+  
   WM__CHWinModal.hWin = hWin;
   /* Send a message to the window that it is no longer pressed (WM_TOUCH(0)) 
      if it is outside the modal area, because otherwise it will not receive this message any more.
@@ -54,7 +54,7 @@ void WM_MakeModal(WM_HWIN hWin) {
       WM__CHWinLast.hWin = 0;
     } 
   }
-  WM_UNLOCK();
+  
 }
 
 #else

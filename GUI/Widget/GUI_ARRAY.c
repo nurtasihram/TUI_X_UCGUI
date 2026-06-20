@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -61,7 +61,7 @@ int GUI_ARRAY_AddItem(GUI_ARRAY* pThis, const void *pNew, int Len) {
 
   GUI_ARRAY_CHECK(pThis);    /* Sanity checks at higher debug levels only */
 
-  WM_LOCK();
+  
   /* Alloc memory for new item */
   if (Len) {
     if ((hNewItem = GUI_ALLOC_AllocInit(pNew, Len)) == 0) {
@@ -86,7 +86,7 @@ int GUI_ARRAY_AddItem(GUI_ARRAY* pThis, const void *pNew, int Len) {
       pThis->NumItems++;
     }
   }
-  WM_UNLOCK();
+  
   return r;
 }
 

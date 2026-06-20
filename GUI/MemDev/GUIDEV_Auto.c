@@ -33,27 +33,18 @@ Purpose     : Implementation of automatic banding memory devices
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_MEMDEV_CreateAuto
-*/
+
 int GUI_MEMDEV_CreateAuto(GUI_AUTODEV* pAutoDev) {
   pAutoDev->FirstCall = 1;
   return 0;
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV_DeleteAuto
-*/
+
 void GUI_MEMDEV_DeleteAuto(GUI_AUTODEV* pAutoDev) {
   GUI_USE_PARA(pAutoDev);
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV_DrawAuto
-*/
+
 int GUI_MEMDEV_DrawAuto(GUI_AUTODEV* pAutoDev, GUI_AUTODEV_INFO* pAutoDevInfo, GUI_CALLBACK_VOID_P* pfDraw, void* pData) {
   GUI_RECT rTemp;
   GUI_HMEM hMem = GUI_MEASDEV_Create();

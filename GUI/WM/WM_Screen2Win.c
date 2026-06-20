@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -64,10 +64,7 @@ static WM_HWIN _Screen2hWin(WM_HWIN hWin, WM_HWIN hStop, int x, int y) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       WM__IsInWindow
-*/
+
 int WM__IsInWindow(WM_Obj * pWin, int x, int y) {
   if (   (pWin->Status & WM_SF_ISVIS)
       && (x >= pWin->Rect.x0)
@@ -80,27 +77,21 @@ int WM__IsInWindow(WM_Obj * pWin, int x, int y) {
   return 0;
 }
 
-/*********************************************************************
-*
-*       WM_Screen2hWin
-*/
+
 WM_HWIN WM_Screen2hWin(int x, int y) {
   WM_HWIN r;
-  WM_LOCK();
+  
   r = _Screen2hWin(WM__FirstWin, 0, x, y);
-  WM_UNLOCK();
+  
   return r;
 }
 
-/*********************************************************************
-*
-*       WM_Screen2hWinEx
-*/
+
 WM_HWIN WM_Screen2hWinEx(WM_HWIN hStop, int x, int y) {
   WM_HWIN r;
-  WM_LOCK();
+  
   r = _Screen2hWin(WM__FirstWin, hStop, x, y);
-  WM_UNLOCK();
+  
   return r;
 }
 

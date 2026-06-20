@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -37,7 +37,7 @@ Purpose     : Implementation of WM_OnKey
 int WM_OnKey(int Key, int Pressed) {
   int r = 0;
   WM_MESSAGE Msg;
-  WM_LOCK();
+  
   if (WM__hWinFocus != 0) {
     WM_KEY_INFO Info;
     Info.Key = Key;
@@ -47,7 +47,7 @@ int WM_OnKey(int Key, int Pressed) {
     WM__SendMessage(WM__hWinFocus, &Msg);
     r = 1;
   }
-  WM_UNLOCK();
+  
   return r;
 }
 

@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -38,7 +38,7 @@ Purpose     : Windows manager, submodule
 */
 void WM_GetWindowRect(GUI_RECT* pRect) {
   WM_HWIN hWin;
-  WM_LOCK();
+  
   if (pRect) {
     WM_Obj* pWin;
     #if WM_SUPPORT_TRANSPARENCY
@@ -49,22 +49,19 @@ void WM_GetWindowRect(GUI_RECT* pRect) {
     pWin = WM_HANDLE2PTR(hWin);
     *pRect = pWin->Rect;
   }
-  WM_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       WM_GetWindowRectEx
-*/
+
 void WM_GetWindowRectEx(WM_HWIN hWin, GUI_RECT * pRect) {
   if (hWin && pRect) {
     WM_Obj * pWin;
-    WM_LOCK();
+    
     pWin = WM_HANDLE2PTR(hWin);
     if (pWin) {
       *pRect = pWin->Rect;
     }
-    WM_UNLOCK();
+    
   }
 }
 

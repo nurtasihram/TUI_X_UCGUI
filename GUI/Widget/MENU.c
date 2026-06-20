@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -986,7 +986,7 @@ MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParent,
                                 sizeof(MENU_Obj) - sizeof(WM_Obj));
   if (hObj) {
     MENU_Obj* pObj;
-    WM_LOCK();
+    
     pObj = (MENU_Obj*)GUI_ALLOC_h2p(hObj);
      /* Init sub-classes */
     GUI_ARRAY_CREATE(&pObj->ItemArray);
@@ -1007,7 +1007,7 @@ MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParent,
     pObj->IsSubmenuActive = 0;
     WIDGET_SetEffect(hObj, MENU__pDefaultEffect);
     INIT_ID(pObj);
-    WM_UNLOCK();
+    
   } else {
     GUI_DEBUG_ERROROUT_IF(hObj==0, "MENU_CreateEx failed")
   }
@@ -1139,7 +1139,7 @@ int MENU__SendMenuMessage(MENU_Handle hObj, WM_HWIN hDestWin, U16 MsgType, U16 I
 void MENU_AddItem(MENU_Handle hObj, const MENU_ITEM_DATA* pItemData) {
   if (hObj && pItemData) {
     MENU_Obj* pObj;
-    WM_LOCK();
+    
     pObj = MENU_H2P(hObj);
     if (pObj) {
       if (GUI_ARRAY_AddItem(&pObj->ItemArray, NULL, 0) == 0) {
@@ -1152,7 +1152,7 @@ void MENU_AddItem(MENU_Handle hObj, const MENU_ITEM_DATA* pItemData) {
         }
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1163,12 +1163,12 @@ void MENU_AddItem(MENU_Handle hObj, const MENU_ITEM_DATA* pItemData) {
 void MENU_SetOwner(MENU_Handle hObj, WM_HWIN hOwner) {
   if (hObj) {
     MENU_Obj* pObj;
-    WM_LOCK();
+    
     pObj = MENU_H2P(hObj);
     if (pObj) {
       pObj->hOwner = hOwner;
     }
-    WM_UNLOCK();
+    
   }
 }
 

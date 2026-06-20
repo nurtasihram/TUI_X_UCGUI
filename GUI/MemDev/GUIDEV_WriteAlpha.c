@@ -33,10 +33,7 @@ Purpose     : Implementation of memory devices
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _WriteAlphaToActiveAt
-*/
+
 static void _WriteAlphaToActiveAt(GUI_MEMDEV_Handle hMem, int Intens, int x, int y) {
   /* Make sure the memory handle is valid */
   if (hMem) {
@@ -86,17 +83,14 @@ static void _WriteAlphaToActiveAt(GUI_MEMDEV_Handle hMem, int Intens, int x, int
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_MEMDEV_WriteAlphaAt
-*/
+
 void GUI_MEMDEV_WriteAlphaAt(GUI_MEMDEV_Handle hMem, int Alpha, int x, int y) {
   if (hMem) {
     GUI_MEMDEV* pDevData;
     #if (GUI_WINSUPPORT)
       GUI_RECT r;
     #endif
-    GUI_LOCK();
+    
     pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
     if (x == GUI_POS_AUTO) {
       x = pDevData->x0;
@@ -111,14 +105,11 @@ void GUI_MEMDEV_WriteAlphaAt(GUI_MEMDEV_Handle hMem, int Alpha, int x, int y) {
     #else
       _WriteAlphaToActiveAt(hMem, Alpha, x,y);
     #endif
-    GUI_UNLOCK();
+    
   }
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV_WriteAlpha
-*/
+
 void GUI_MEMDEV_WriteAlpha(GUI_MEMDEV_Handle hMem, int Alpha) {
   GUI_MEMDEV_WriteAlphaAt(hMem, Alpha, GUI_POS_AUTO, GUI_POS_AUTO);
 }

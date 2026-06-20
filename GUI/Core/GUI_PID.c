@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -62,19 +62,13 @@ static void _PID_Load(void) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_PID_GetState
-*/
+
 int GUI_PID_GetState(GUI_PID_STATE *pState) {
   *pState = _State;
   return (pState->Pressed != 0) ? 1 : 0;
 }
 
-/*********************************************************************
-*
-*       GUI_PID_StoreState
-*/
+
 void GUI_PID_StoreState(const GUI_PID_STATE *pState) {
   _PID_Load();
   if (memcmp(&_State, pState, sizeof(_State))) {

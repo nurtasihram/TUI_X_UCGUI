@@ -54,10 +54,7 @@ Purpose     : Link between GUI and LCD_L0
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _GetColorIndex
-*/
+
 static int _GetColorIndex(int i)  /* i is 0 or 1 */ {
   return  (GUI_Context.DrawMode & LCD_DRAWMODE_REV) ? i-1 : i;
 }
@@ -68,26 +65,17 @@ static int _GetColorIndex(int i)  /* i is 0 or 1 */ {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       LCD_SetColorIndex
-*/
+
 void LCD_SetColorIndex(int Index) {
   LCD_ACOLORINDEX[_GetColorIndex(1)] = Index;
 }
 
-/*********************************************************************
-*
-*       LCD_SetBkColorIndex
-*/
+
 void LCD_SetBkColorIndex(int Index) {
   LCD_ACOLORINDEX[_GetColorIndex(0)] = Index;
 }
 
-/*********************************************************************
-*
-*       LCD_SetDrawMode
-*/
+
 LCD_DRAWMODE LCD_SetDrawMode(LCD_DRAWMODE dm) {
   LCD_DRAWMODE OldDM = GUI_Context.DrawMode;
   if ((GUI_Context.DrawMode^dm) & LCD_DRAWMODE_REV) {
@@ -99,10 +87,7 @@ LCD_DRAWMODE LCD_SetDrawMode(LCD_DRAWMODE dm) {
   return OldDM;
 }
 
-/*********************************************************************
-*
-*       LCD_DrawPixel
-*/
+
 void LCD_DrawPixel(int x, int y) {
   RETURN_IF_Y_OUT();
   RETURN_IF_X_OUT();
@@ -113,10 +98,7 @@ void LCD_DrawPixel(int x, int y) {
   }
 }
 
-/*********************************************************************
-*
-*       LCD_DrawHLine
-*/
+
 void LCD_DrawHLine(int x0, int y,  int x1) {
   /* Perform clipping and check if there is something to do */
   RETURN_IF_Y_OUT();
@@ -127,10 +109,7 @@ void LCD_DrawHLine(int x0, int y,  int x1) {
   LCDDEV_L0_DrawHLine(x0, y, x1);
 }
 
-/*********************************************************************
-*
-*       LCD_FillRect
-*/
+
 void LCD_FillRect(int x0, int y0, int x1, int y1) {
   /* Perform clipping and check if there is something to do */
   CLIP_X();
@@ -143,10 +122,7 @@ void LCD_FillRect(int x0, int y0, int x1, int y1) {
   LCDDEV_L0_FillRect(x0,y0,x1,y1);
 }
 
-/*********************************************************************
-*
-*       LCD_DrawBitmap
-*/
+
 void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize, int xMul, int yMul,
                        int BitsPerPixel, int BytesPerLine,
                        const U8 GUI_UNI_PTR * pPixel, const LCD_PIXELINDEX* pTrans)
@@ -168,11 +144,7 @@ void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize, int xMul, int yMul,
 		    return;
       }
       y0     = GUI_Context.ClipRect.y0;
-      #if GUI_SUPPORT_LARGE_BITMAPS                       /* Required only for 16 bit CPUs if some bitmaps are >64kByte */
-        pPixel += (U32)     Diff * (U32)     BytesPerLine;
-      #else
-        pPixel += (unsigned)Diff * (unsigned)BytesPerLine;
-      #endif
+      pPixel += (unsigned)Diff * (unsigned)BytesPerLine;
     }
     /*  Clip y1 (bottom) */
     Diff = y1 - GUI_Context.ClipRect.y1;
@@ -251,18 +223,12 @@ void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize, int xMul, int yMul,
   }
 }
 
-/*********************************************************************
-*
-*       LCD_SetClipRectMax
-*/
+
 void LCD_SetClipRectMax(void) {
   LCDDEV_L0_GetRect(&GUI_Context.ClipRect);
 }
 
-/*********************************************************************
-*
-*       LCD_Init
-*/
+
 int LCD_Init(void) {
   int r = 0;
   GUI_DEBUG_LOG("\nLCD_Init...");
@@ -278,26 +244,17 @@ int LCD_Init(void) {
   return r;
 }
 
-/*********************************************************************
-*
-*       LCD_Color2Index
-*/
+
 int LCD_Color2Index(LCD_COLOR Color) {
   return LCDDEV_L0_Color2Index(Color);
 }
 
-/*********************************************************************
-*
-*       LCD_Index2Color
-*/
+
 LCD_COLOR LCD_Index2Color(int Index) {
   return LCDDEV_L0_Index2Color(Index);
 }
 
-/*********************************************************************
-*
-*       LCD_SetBkColor
-*/
+
 void LCD_SetBkColor(GUI_COLOR color) {
   if (GUI_Context.BkColor != color) {
     GUI_Context.BkColor = color;
@@ -305,10 +262,7 @@ void LCD_SetBkColor(GUI_COLOR color) {
   }
 }
 
-/*********************************************************************
-*
-*       LCD_SetColor
-*/
+
 void LCD_SetColor(GUI_COLOR color) {
   if (GUI_Context.Color != color) {
     GUI_Context.Color = color;

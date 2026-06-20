@@ -27,7 +27,7 @@
 *
 * Special considerations
 *   Make sure that no GUI functions are called, because locking is
-*   not allowed here (GUITASK_INIT not yet called).
+*   not allowed here.
 */
 static void _InitContext(GUI_CONTEXT* pContext) {
   /* memset(..,0,..) is not required, as this function is called only at startup of the GUI when data is 0 */
@@ -57,16 +57,13 @@ static void _InitContext(GUI_CONTEXT* pContext) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_ClearRect
-*/
+
 void GUI_ClearRect(int x0, int y0, int x1, int y1) {
   GUI_DRAWMODE PrevDraw;
   #if GUI_WINSUPPORT
     GUI_RECT r;
   #endif
-  GUI_LOCK();
+  
   PrevDraw = LCD_SetDrawMode(GUI_DRAWMODE_REV);
   #if GUI_WINSUPPORT
     WM_ADDORG(x0,y0);
@@ -82,13 +79,10 @@ void GUI_ClearRect(int x0, int y0, int x1, int y1) {
     } WM_ITERATE_END();
   #endif
   LCD_SetDrawMode(PrevDraw);
-  GUI_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       GUI_Clear
-*/
+
 void GUI_Clear(void) {
   GUI_GotoXY(0,0);     /* Reset text cursor to upper left */
   GUI_ClearRect(GUI_XMIN, GUI_YMIN, GUI_XMAX, GUI_YMAX);
@@ -103,35 +97,10 @@ void GUI_Clear(void) {
 */
 int GUI_Init(void) {
   int r;
-  GUI_DEBUG_LOG("\nGUI_Init()");
-  /* Init system wide globals first */
-  GUI_DecChar = '.';
   GUI_X_Init();
   /* Init context */
   _InitContext(&GUI_Context);
-  GUITASK_INIT();
   r = LCD_Init();
-  #if GUI_WINSUPPORT
-    WM_Init();
-  #endif
-  GUITASK_COPY_CONTEXT();
-  #if defined(GUI_TRIAL_VERSION)
-  {
-    int i;
-    for (i = 0; i < 10; i++) {
-      GUI_DispString("This uC-GUI library\n"
-	                     "is for evaluation\n"
-	                     "purpose only.\n"
-	                     "A license is\n"
-	                     "required to use\n"
-	                     "it in a product\n\n"
-	                     "www.micrium.com\n");
-      GUI_GotoXY(0, 0);
-    }
-  }
-  GUI_Clear();
-  #endif
+  WM_Init();
   return r;
 }
-
-/*************************** End of file ****************************/

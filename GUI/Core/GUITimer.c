@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -62,10 +62,7 @@ GUI_TIMER_HANDLE _hActiveTimer;
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _Unlink
-*/
+
 static void _Unlink(GUI_TIMER_HANDLE hTimer) {
   GUI_TIMER_Obj* pTimer = GUI_TIMER_H2P(hTimer);
   GUI_TIMER_HANDLE hi;
@@ -142,14 +139,11 @@ Append:
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_TIMER_Exec
-*/
+
 int GUI_TIMER_Exec(void) {
   int r = 0;
   GUI_TIMER_TIME t = GUI_GetTime();
-  GUI_LOCK(); {
+   {
     while (hFirstTimer) {
      	GUI_TIMER_Obj* pTimer = GUI_TIMER_H2P(hFirstTimer);
       if ((pTimer->t0-t) <=0) {
@@ -167,18 +161,15 @@ int GUI_TIMER_Exec(void) {
 		GUI_TIMER_Obj* pObj = GUI_TIMER_H2P(hObj);
     pObj->t0 = Time;
     */
-  } GUI_UNLOCK(); 
+  }  
   return r;
 }
 
-/*********************************************************************
-*
-*       GUI_TIMER_Create
-*/
+
 GUI_TIMER_HANDLE GUI_TIMER_Create(GUI_TIMER_CALLBACK* cb, int Time, U32 Context, int Flags) {
   GUI_TIMER_HANDLE hObj;
   GUI_TIMER_Obj* pObj;
-  GUI_LOCK();
+  
   GUI_USE_PARA(Flags);
   GUI_USE_PARA(Time);
   GUI_pfTimerExec = GUI_TIMER_Exec;
@@ -192,73 +183,58 @@ GUI_TIMER_HANDLE GUI_TIMER_Create(GUI_TIMER_CALLBACK* cb, int Time, U32 Context,
 		pObj->t0 = Time;	//houhh 20061018...
     /* Link it */
 		_Link(hObj);
-	} GUI_UNLOCK();
+	} 
   return hObj;
 }
 
-/*********************************************************************
-*
-*       GUI_TIMER_Delete
-*/
+
 void GUI_TIMER_Delete(GUI_TIMER_HANDLE hObj) {
 /* Unlink Timer */
-  GUI_LOCK();
+  
   _Unlink(hObj);
   GUI_ALLOC_Free(hObj);
-  GUI_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       GUI_TIMER_SetPeriod
-*/
+
 void GUI_TIMER_SetPeriod(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Period) {
-  GUI_LOCK(); {
+   {
     GUI_TIMER_Obj* pObj = GUI_TIMER_H2P(hObj);
     pObj->Period = Period;
-  } GUI_UNLOCK(); 
+  }  
 }
 
-/*********************************************************************
-*
-*       GUI_TIMER_SetTime
-*/
+
 void GUI_TIMER_SetTime(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Time) {
-  GUI_LOCK(); {
+   {
    	GUI_TIMER_Obj* pObj = GUI_TIMER_H2P(hObj);
     pObj->t0 = Time;
-  } GUI_UNLOCK(); 
+  }  
 }
 
 //////
 void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, U32 Context) {
-  GUI_LOCK(); {
+   {
    	GUI_TIMER_Obj* pObj = GUI_TIMER_H2P(hObj);
     pObj->Context = Context;
-  } GUI_UNLOCK(); 
+  }  
 }
 //////
 
-/*********************************************************************
-*
-*       GUI_TIMER_SetDelay
-*/
+
 void GUI_TIMER_SetDelay(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Delay) {
-  GUI_LOCK(); {
+   {
    	GUI_TIMER_Obj* pObj = GUI_TIMER_H2P(hObj);
     pObj->t0 = Delay;
 		_Unlink(hObj);
 		_Link(hObj);
-  } GUI_UNLOCK(); 
+  }  
 }
 
-/*********************************************************************
-*
-*       GUI_TIMER_Restart
-*/
+
 void GUI_TIMER_Restart(GUI_TIMER_HANDLE hObj) {
   GUI_TIMER_Obj* pObj;
-  GUI_LOCK();
+  
   {
     if (hObj == 0) {
       hObj = _hActiveTimer;
@@ -267,7 +243,7 @@ void GUI_TIMER_Restart(GUI_TIMER_HANDLE hObj) {
     pObj->t0 = GUI_GetTime() +pObj->Period;
 		_Unlink(hObj);
 		_Link(hObj);
-  } GUI_UNLOCK(); 
+  }  
 }
 
 /*************************** End of file ****************************/

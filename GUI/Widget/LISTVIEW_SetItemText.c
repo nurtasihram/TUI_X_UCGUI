@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -39,7 +39,7 @@ void LISTVIEW_SetItemText(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, c
       int NumBytes;
       LISTVIEW_ITEM * pItem;
       LISTVIEW_Obj  * pObj;
-      WM_LOCK();
+      
       pObj = LISTVIEW_H2P(hObj);
       NumBytes = GUI__strlen(s) + 1;
       pItem = (LISTVIEW_ITEM *)GUI_ARRAY_ResizeItem((GUI_ARRAY *)GUI_ARRAY_GetpItem(&pObj->RowArray, Row), Column, sizeof(LISTVIEW_ITEM) + NumBytes);
@@ -47,7 +47,7 @@ void LISTVIEW_SetItemText(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, c
         strcpy(pItem->acText, s);
       }
       LISTVIEW__InvalidateRow(hObj, pObj, Row);
-      WM_UNLOCK();
+      
     }
   }
 }

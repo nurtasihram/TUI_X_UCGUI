@@ -30,16 +30,13 @@ Purpose     : Implementation of said function
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_MEMDEV_GetDataPtr
-*/
+
 void* GUI_MEMDEV_GetDataPtr(GUI_MEMDEV_Handle hMem) {
   GUI_MEMDEV* pDev;
   void *pData;
-  GUI_LOCK();                   /* Needed so the memory management does not complain */
+                     /* Needed so the memory management does not complain */
   pDev  = GUI_MEMDEV_H2P(hMem);
-  GUI_UNLOCK();
+  
   pData = (void*)(pDev + 1);
   return pData;
 }

@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -515,7 +515,7 @@ FRAMEWIN_Handle FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
   if (hObj) {
     FRAMEWIN_Obj* pObj;
     POSITIONS Pos;
-    GUI_LOCK();
+    
     pObj = FRAMEWIN_H2P(hObj);
     /* init widget specific variables */
     WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_SF_TITLEVIS);
@@ -542,7 +542,7 @@ FRAMEWIN_Handle FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
       WM_DisableMemdev(hObj);
     }
     FRAMEWIN_SetText(hObj, pTitle);
-    GUI_UNLOCK();
+    
   }
   return hObj;
 }
@@ -560,12 +560,12 @@ FRAMEWIN_Handle FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 void FRAMEWIN_SetText(FRAMEWIN_Handle hObj, const char* s) {
   if (hObj) {
     FRAMEWIN_Obj* pObj;
-    GUI_LOCK();
+    
     pObj = FRAMEWIN_H2P(hObj);
     if (GUI__SetText(&pObj->hText, s)) {
       FRAMEWIN_Invalidate(hObj);
     }
-    GUI_UNLOCK();
+    
   }
 }
 
@@ -576,13 +576,13 @@ void FRAMEWIN_SetText(FRAMEWIN_Handle hObj, const char* s) {
 void FRAMEWIN_SetTextAlign(FRAMEWIN_Handle hObj, int Align) {
   if (hObj) {
     FRAMEWIN_Obj* pObj;
-    GUI_LOCK();
+    
     pObj = FRAMEWIN_H2P(hObj);
     if (pObj->TextAlign != Align) {
       pObj->TextAlign = Align;
       FRAMEWIN_Invalidate(hObj);
     }
-    GUI_UNLOCK();
+    
   }
 }
 
@@ -593,14 +593,14 @@ void FRAMEWIN_SetTextAlign(FRAMEWIN_Handle hObj, int Align) {
 void FRAMEWIN_SetMoveable(FRAMEWIN_Handle hObj, int State) {
   if (hObj) {
     FRAMEWIN_Obj* pObj;
-    GUI_LOCK();
+    
     pObj = FRAMEWIN_H2P(hObj);
     if (State) {
       pObj->Flags |= FRAMEWIN_CF_MOVEABLE;
     } else {
       pObj->Flags &= ~FRAMEWIN_CF_MOVEABLE;
     }
-    GUI_UNLOCK();
+    
   }
 }
 
@@ -610,9 +610,9 @@ void FRAMEWIN_SetMoveable(FRAMEWIN_Handle hObj, int State) {
 */
 void FRAMEWIN_SetActive(FRAMEWIN_Handle hObj, int State) {
   if (hObj) {
-    WM_LOCK();
+    
     _SetActive(hObj, State);
-    WM_UNLOCK();
+    
   }
 }
 

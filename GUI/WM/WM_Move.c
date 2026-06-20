@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -59,10 +59,7 @@ static void _MoveDescendents(WM_HWIN hWin, int dx, int dy) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       WM__MoveWindow
-*/
+
 void WM__MoveWindow(WM_HWIN hWin, int dx, int dy) {
   GUI_RECT r;
   WM_Obj* pWin;
@@ -81,10 +78,7 @@ void WM__MoveWindow(WM_HWIN hWin, int dx, int dy) {
   }
 }
 
-/*********************************************************************
-*
-*       WM__MoveTo
-*/
+
 void WM__MoveTo(WM_HWIN hWin, int x, int y) {
   if (hWin) {
     WM_Obj* pWin = WM_HANDLE2PTR(hWin);
@@ -100,24 +94,18 @@ void WM__MoveTo(WM_HWIN hWin, int x, int y) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       WM_MoveWindow
-*/
+
 void WM_MoveWindow(WM_HWIN hWin, int dx, int dy) {
-  WM_LOCK(); {
+   {
     WM__MoveWindow(hWin, dx, dy);
-  } WM_UNLOCK();
+  } 
 }
 
-/*********************************************************************
-*
-*       WM_MoveTo
-*/
+
 void WM_MoveTo(WM_HWIN hWin, int x, int y) {
-  WM_LOCK(); {
+   {
     WM__MoveTo(hWin, x, y);
-  } WM_UNLOCK();
+  } 
 }
 
 #else

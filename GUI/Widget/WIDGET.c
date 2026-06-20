@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -49,10 +49,10 @@ const WIDGET_EFFECT* _pEffectDefault = &WIDGET_Effect_3D;
 */
 static void _UpdateChildPostions(WM_HWIN hObj, int Diff) {
   WM_Obj* pObj;
-  WM_LOCK();
+  
   pObj = (WM_Obj*)WM_H2P(hObj);
   WM__UpdateChildPositions(pObj, -Diff, -Diff, Diff, Diff);
-  WM_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -200,13 +200,13 @@ int WIDGET__GetWindowSizeX(WM_HWIN hWin) {
 */
 void WIDGET_SetState(WM_HWIN hObj, int State) {
   WIDGET* pWidget;
-  WM_LOCK();
+  
   pWidget = WIDGET_H2P(hObj);
   if (State != pWidget->State) {
     pWidget->State = State;
     WM_Invalidate(hObj);
   }
-  WM_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -217,10 +217,10 @@ int WIDGET_GetState(WM_HWIN hObj) {
   int Ret = 0;
   WIDGET * pWidget;
   if (hObj) {
-    WM_LOCK();
+    
     pWidget = WIDGET_H2P(hObj);
     Ret = pWidget->State;
-    WM_UNLOCK();
+    
   }
   return Ret;
 }
@@ -232,13 +232,13 @@ int WIDGET_GetState(WM_HWIN hObj) {
 void WIDGET_OrState(WM_HWIN hObj, int State) {
   if (hObj) {
     WIDGET* pWidget;
-    WM_LOCK();
+    
     pWidget = WIDGET_H2P(hObj);
     if (State != (pWidget->State & State)) {
       pWidget->State |= State;
       WM_Invalidate(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -257,14 +257,14 @@ void WIDGET_AndState(WM_HWIN hObj, int Mask) {
   U16 StateNew;
   if (hObj) {
     WIDGET* pWidget;
-    WM_LOCK();
+    
     pWidget = WIDGET_H2P(hObj);
     StateNew = pWidget->State & (~Mask);
     if (pWidget->State != StateNew) {
       pWidget->State = StateNew;
       WM_Invalidate(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 

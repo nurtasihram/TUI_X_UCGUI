@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -34,7 +34,7 @@ Purpose     : FRAMEWIN_SetBorderSize
 *       FRAMEWIN_SetBorderSize
 */
 void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
-  GUI_LOCK();
+  
   if (hObj) {
     GUI_RECT r;
     WM_Obj * pChild;
@@ -60,7 +60,7 @@ void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
     FRAMEWIN__UpdatePositions(pObj);
     FRAMEWIN_Invalidate(hObj);
   }
-  GUI_UNLOCK();
+  
 }
 
 #else

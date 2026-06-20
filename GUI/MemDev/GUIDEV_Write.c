@@ -33,17 +33,14 @@ Purpose     : Implementation of memory devices
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*        GUI_MEMDEV_WriteAt
-*/
+
 void GUI_MEMDEV_WriteAt(GUI_MEMDEV_Handle hMem, int x, int y) {
   if (hMem) {
     GUI_MEMDEV* pDevData;
     #if (GUI_WINSUPPORT)
       GUI_RECT r;
     #endif
-    GUI_LOCK();
+    
     pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
     if (x == GUI_POS_AUTO) {
       x = pDevData->x0;
@@ -60,14 +57,11 @@ void GUI_MEMDEV_WriteAt(GUI_MEMDEV_Handle hMem, int x, int y) {
     #else
       GUI_MEMDEV__WriteToActiveAt(hMem,x,y);
     #endif
-    GUI_UNLOCK();
+    
   }
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV_Write
-*/
+
 void GUI_MEMDEV_Write(GUI_MEMDEV_Handle hMem) {
   GUI_MEMDEV_WriteAt(hMem, GUI_POS_AUTO, GUI_POS_AUTO);
 }

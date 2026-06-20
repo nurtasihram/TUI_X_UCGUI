@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -280,7 +280,7 @@ CHECKBOX_Handle CHECKBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 {
   CHECKBOX_Handle hObj;
   GUI_USE_PARA(ExFlags);
-  WM_LOCK();
+  
   /* Calculate size if needed */
   if ((xsize == 0) || (ysize == 0)) {
     int EffectSize;
@@ -311,7 +311,7 @@ CHECKBOX_Handle CHECKBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
   } else {
     GUI_DEBUG_ERROROUT_IF(hObj==0, "CHECKBOX_Create failed")
   }
-  WM_UNLOCK();
+  
   return hObj;
 }
 

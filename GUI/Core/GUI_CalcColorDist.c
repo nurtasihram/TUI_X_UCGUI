@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -56,10 +56,7 @@ Purpose     : Color conversion routines
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_CalcColorDist
-*/
+
 U32 GUI_CalcColorDist (LCD_COLOR PalColor, LCD_COLOR  Color) {
 /* This routine does not use abs() because we are optimizing for speed ! */
   I16 Dist;

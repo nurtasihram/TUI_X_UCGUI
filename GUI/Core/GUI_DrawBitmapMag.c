@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -26,16 +26,13 @@ Purpose     : Implementation file for GUI_DrawBitmapMag
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_DrawBitmapMag
-*/
+
 void GUI_DrawBitmapMag(const GUI_BITMAP GUI_UNI_PTR *pBitmap, int x0, int y0, int xMul, int yMul) {
   GUI_DRAWMODE PrevDraw;
   int xSize, ySize;
   const GUI_LOGPALETTE GUI_UNI_PTR * pPal;
   const LCD_PIXELINDEX* pTrans;
-  GUI_LOCK();
+  
   pPal = pBitmap->pPal;
   xSize = pBitmap->XSize;
   ySize = pBitmap->YSize;
@@ -68,7 +65,7 @@ void GUI_DrawBitmapMag(const GUI_BITMAP GUI_UNI_PTR *pBitmap, int x0, int y0, in
     }
   #endif
   GUI_SetDrawMode(PrevDraw);
-  GUI_UNLOCK();
+  
 }
 
 /*************************** End of file ****************************/

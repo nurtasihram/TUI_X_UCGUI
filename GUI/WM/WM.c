@@ -215,10 +215,7 @@ static WM_HWIN _GethDrawWin(void) {
 
 
 
-/*********************************************************************
-*
-*       _SetClipRectUserIntersect
-*/
+
 static void _SetClipRectUserIntersect(const GUI_RECT* prSrc) {
   if (GUI_Context.WM__pUserClipRect == NULL) {
     LCD_SetClipRectEx(prSrc);
@@ -291,10 +288,7 @@ int WM__ClipAtParentBorders(GUI_RECT* pRect, WM_HWIN hWin) {
   return 1;               /* Something may be visible */
 }
 
-/*********************************************************************
-*
-*       WM__ActivateClipRect
-*/
+
 void  WM__ActivateClipRect(void) {
   if (WM_IsActive) {
     _SetClipRectUserIntersect(&_ClipContext.CurRect);
@@ -377,10 +371,7 @@ void WM__InsertWindowIntoList(WM_HWIN hWin, WM_HWIN hParent) {
   }
 }
 
-/*********************************************************************
-*
-*       WM__RemoveWindowFromList
-*/
+
 void WM__RemoveWindowFromList(WM_HWIN hWin) {
   WM_HWIN hi, hParent;
   WM_Obj * pWin, * pParent, * pi;
@@ -428,10 +419,7 @@ void WM__DetachWindow(WM_HWIN hWin) {
 }
 
 
-/*********************************************************************
-*
-*       _DeleteAllChildren
-*/
+
 static void _DeleteAllChildren(WM_HWIN hChild) {
   while (hChild) {
     WM_Obj* pChild = WM_H2P(hChild);
@@ -447,18 +435,12 @@ static void _DeleteAllChildren(WM_HWIN hChild) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       WM__Client2Screen
-*/
+
 void WM__Client2Screen(const WM_Obj* pWin, GUI_RECT *pRect) {
   GUI_MoveRect(pRect, pWin->Rect.x0, pWin->Rect.y0);
 }
 
-/*********************************************************************
-*
-*       WM__IsWindow
-*/
+
 int WM__IsWindow(WM_HWIN hWin) {
   WM_HWIN iWin;
   for (iWin = WM__FirstWin; iWin; iWin = WM_H2P(iWin)->hNextLin) {
@@ -480,10 +462,7 @@ void WM__InvalidateAreaBelow(const GUI_RECT* pRect, WM_HWIN StopWin) {
   WM_InvalidateArea(pRect);      /* Can be optimized to spare windows above */
 }
 
-/*********************************************************************
-*
-*       WM_RemoveFromLinList
-*/
+
 void WM__RemoveFromLinList(WM_HWIN hWin) {
   WM_Obj* piWin;
   WM_HWIN hiWin;
@@ -499,10 +478,7 @@ void WM__RemoveFromLinList(WM_HWIN hWin) {
   }
 }
 
-/*********************************************************************
-*
-*       _AddToLinList
-*/
+
 static void _AddToLinList(WM_HWIN hNew) {
   WM_Obj* pFirst;
   WM_Obj* pNew;
@@ -570,10 +546,7 @@ static void _Findy1(WM_HWIN iWin, GUI_RECT* pRect, GUI_RECT* pParentRect) {
   }
 }
 
-/*********************************************************************
-*
-*        _Findx0
-*/
+
 static int _Findx0(WM_HWIN hWin, GUI_RECT* pRect, GUI_RECT* pParentRect) {
   WM_Obj* pWin;
   int r = 0;
@@ -608,10 +581,7 @@ static int _Findx0(WM_HWIN hWin, GUI_RECT* pRect, GUI_RECT* pParentRect) {
   return r;
 }
 
-/*********************************************************************
-*
-*        _Findx1
-*/
+
 static void _Findx1(WM_HWIN hWin, GUI_RECT* pRect, GUI_RECT* pParentRect) {
   WM_Obj* pWin;
   for (; hWin; hWin = pWin->hNext) { 
@@ -647,27 +617,21 @@ static void _Findx1(WM_HWIN hWin, GUI_RECT* pRect, GUI_RECT* pParentRect) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       WM_SendMessage
-*/
+
 void WM_SendMessage(WM_HWIN hWin, WM_MESSAGE* pMsg) {
   if (hWin) {
     WM_Obj* pWin;
-    WM_LOCK();
+    
     pWin = WM_H2P(hWin);
     if (pWin->cb != NULL) {
       pMsg->hWin = hWin;
       (*pWin->cb)(pMsg);
     }
-    WM_UNLOCK();
+    
   }
 }
 
-/*********************************************************************
-*
-*       WM__SendMsgNoData
-*/
+
 void WM__SendMsgNoData(WM_HWIN hWin, U8 MsgId) {
   WM_MESSAGE Msg;
   Msg.hWin  = hWin;
@@ -688,10 +652,7 @@ void WM__GetClientRectWin(const WM_Obj* pWin, GUI_RECT* pRect) {
   pRect->y1 = pWin->Rect.y1 - pWin->Rect.y0;
 }
 
-/*********************************************************************
-*
-*       WM__GetInvalidRectAbs
-*/
+
 static void WM__GetInvalidRectAbs(WM_Obj* pWin, GUI_RECT* pRect) {
   *pRect = pWin->InvalidRect;
 }
@@ -715,7 +676,7 @@ void WM_InvalidateRect(WM_HWIN hWin, const GUI_RECT*pRect) {
   WM_Obj* pWin;
   int Status;
   if (hWin) {
-    WM_LOCK();
+    
     pWin = WM_H2P(hWin);
     Status = pWin->Status;
     if (Status & WM_SF_ISVIS) {
@@ -734,7 +695,7 @@ void WM_InvalidateRect(WM_HWIN hWin, const GUI_RECT*pRect) {
         }
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -758,12 +719,12 @@ void WM_InvalidateWindow(WM_HWIN hWin) {
 */
 void WM_InvalidateArea(const GUI_RECT* pRect) {
   WM_HWIN   hWin;
-  WM_LOCK();
+  
   /* Iterate over all windows */
   for (hWin = WM__FirstWin; hWin; hWin = WM_H2P(hWin)->hNextLin) {
     _Invalidate1Abs(hWin, pRect);
   }
-  WM_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -772,17 +733,14 @@ void WM_InvalidateArea(const GUI_RECT* pRect) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       WM_CreateWindowAsChild
-*/
+
 WM_HWIN WM_CreateWindowAsChild( int x0, int y0, int width, int height
                                ,WM_HWIN hParent, U16 Style, WM_CALLBACK* cb
                                ,int NumExtraBytes) {
   WM_Obj* pWin;
   WM_HWIN hWin;
   WM_ASSERT_NOT_IN_PAINT();
-  WM_LOCK();
+  
   Style |= WM__CreateFlags;
   /* Default parent is Desktop 0 */
   if (!hParent) {
@@ -848,14 +806,11 @@ WM_HWIN WM_CreateWindowAsChild( int x0, int y0, int width, int height
     }
     WM__SendMsgNoData(hWin, WM_CREATE);
   }
-  WM_UNLOCK();
+  
   return hWin;
 }
 
-/*********************************************************************
-*
-*       WM_CreateWindow
-*/
+
 WM_HWIN WM_CreateWindow(int x0, int y0, int width, int height, U16 Style, WM_CALLBACK* cb, int NumExtraBytes) {
   return WM_CreateWindowAsChild(x0,y0,width,height, 0 /* No parent */,  Style, cb, NumExtraBytes);
 }
@@ -866,17 +821,14 @@ WM_HWIN WM_CreateWindow(int x0, int y0, int width, int height, U16 Style, WM_CAL
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       WM_DeleteWindow
-*/
+
 void WM_DeleteWindow (WM_HWIN hWin) {
   WM_Obj* pWin;
   if (!hWin) {
     return;
   }
   WM_ASSERT_NOT_IN_PAINT();
-  WM_LOCK();
+  
   if (WM__IsWindow(hWin)) {
     pWin = WM_H2P(hWin);
     ResetNextDrawWin();              /* Make sure the window will no longer receive drawing messages */
@@ -919,7 +871,7 @@ void WM_DeleteWindow (WM_HWIN hWin) {
   } else {
     GUI_DEBUG_WARN("WM_DeleteWindow: Invalid handle");
   }
-  WM_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -934,7 +886,7 @@ WM_HWIN WM_SelectWindow(WM_HWIN  hWin) {
   WM_Obj* pObj;
 
   WM_ASSERT_NOT_IN_PAINT();
-  WM_LOCK();
+  
   hWinPrev = GUI_Context.hAWin;
   if (hWin == 0) {
     hWin = WM__FirstWin;
@@ -945,14 +897,11 @@ WM_HWIN WM_SelectWindow(WM_HWIN  hWin) {
   LCD_SetClipRectMax();             /* Drawing operations will clip ... If WM is deactivated, allow all */
   GUI_Context.xOff = pObj->Rect.x0;
   GUI_Context.yOff = pObj->Rect.y0;
-  WM_UNLOCK();
+  
   return hWinPrev;
 }
 
-/*********************************************************************
-*
-*       WM_GetActiveWindow
-*/
+
 WM_HWIN WM_GetActiveWindow(void) {
   return GUI_Context.hAWin;
 }
@@ -983,10 +932,7 @@ Function works as follows:
   STEP 6: - Find r.x1. We have to Iterate over all windows which are above
 */
 
-/*********************************************************************
-*
-*       _FindNext_IVR
-*/
+
 #if WM_SUPPORT_OBSTRUCT
 static int _FindNext_IVR(void) {
   WM_HMEM hParent;
@@ -1176,7 +1122,6 @@ int  WM__GetNextIVR(void) {
 int WM__InitIVRSearch(const GUI_RECT* pMaxRect) {
   GUI_RECT r;
   WM_Obj* pAWin;
-  GUI_ASSERT_LOCK();   /* GUI_LOCK must have been "called" before entering this (normally done indrawing routine) */
    /* If WM is not active -> nothing to do, leave cliprect alone */
   if (WM_IsActive==0) {
     WM__ActivateClipRect();
@@ -1239,10 +1184,7 @@ void WM_SetDefault(void) {
   GUI_Context.WM__pUserClipRect = NULL;   /* No add. clipping */
 }
 
-/*********************************************************************
-*
-*       _Paint1
-*/
+
 static void _Paint1(WM_HWIN hWin, WM_Obj* pWin) {
   int Status = pWin->Status;
   /* Send WM_PAINT if window is visible and a callback is defined */
@@ -1492,10 +1434,7 @@ static int _Paint(WM_HWIN hWin, WM_Obj* pWin) {
   return Ret;      /* Nothing done */
 }
 
-/*********************************************************************
-*
-*       _DrawNext
-*/
+
 static void _DrawNext(void) {
   int UpdateRem = 1;
   WM_HWIN iWin = (NextDrawWin == WM_HWIN_NULL) ? WM__FirstWin : NextDrawWin;
@@ -1513,10 +1452,7 @@ static void _DrawNext(void) {
   GUI_RestoreContext(&ContextOld);
 }
 
-/*********************************************************************
-*
-*       WM_Exec1
-*/
+
 int WM_Exec1(void) {
   /* Poll PID if necessary */
   if (WM_pfPollPID) {
@@ -1530,18 +1466,15 @@ int WM_Exec1(void) {
     return 1;               /* We have done something ... */
   }
   if (WM_IsActive && WM__NumInvalidWindows) {
-    WM_LOCK();
+    
     _DrawNext();
-    WM_UNLOCK();
+    
     return 1;               /* We have done something ... */
   }
   return 0;                  /* There was nothing to do ... */
 }
 
-/*********************************************************************
-*
-*       WM_Exec
-*/
+
 int WM_Exec(void) {
   int r = 0;
   while (WM_Exec1()) {
@@ -1579,23 +1512,17 @@ static void cbBackWin( WM_MESSAGE* pMsg) {
   }
 }
 
-/*********************************************************************
-*
-*       WM_Activate
-*/
+
 void WM_Activate(void) {
   WM_IsActive = 1;       /* Running */
 }
 
-/*********************************************************************
-*
-*       WM_Deactivate
-*/
+
 void WM_Deactivate(void) {
   WM_IsActive = 0;       /* No clipping performed by WM */
-  WM_LOCK();
+  
   LCD_SetClipRectMax();
-  WM_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -1635,10 +1562,7 @@ void WM_DefaultProc(WM_MESSAGE* pMsg) {
   pMsg->Data.p = 0;
 }
 
-/*********************************************************************
-*
-*       WM_Init
-*/
+
 void WM_Init(void) {
 	if (!_IsInited) {
 	  NextDrawWin = WM__FirstWin = WM_HWIN_NULL;

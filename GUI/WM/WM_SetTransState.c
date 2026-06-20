@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -30,7 +30,7 @@ Purpose     : Implementation of WM_SetTransState
 
 void WM_SetTransState(WM_HWIN hWin, unsigned State) {
   WM_Obj *pWin;
-  WM_LOCK();
+  
   if (hWin) {
     pWin = WM_H2P(hWin);
     if (State & WM_CF_HASTRANS) {
@@ -50,7 +50,7 @@ void WM_SetTransState(WM_HWIN hWin, unsigned State) {
       }
     }
   }
-  WM_UNLOCK();
+  
 }
 
 #else

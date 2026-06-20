@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -27,10 +27,7 @@ Purpose     : Implementation of GUI_BMP... functions
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _GetStep
-*/
+
 static int _GetStep(int * pYSize, int * pY) {
   if (*pYSize > 0) {
     *pY = *pYSize - 1;
@@ -44,10 +41,7 @@ static int _GetStep(int * pYSize, int * pY) {
   }
 }
 
-/*********************************************************************
-*
-*       _DrawBitmap_Pal
-*/
+
 static int _DrawBitmap_Pal(const U8 * pData, int x0, int y0, int XSize, int YSize, int Bpp, int NumColors) {
   int i, y, Step;
   int BytesPerLine = 0;
@@ -81,10 +75,7 @@ static int _DrawBitmap_Pal(const U8 * pData, int x0, int y0, int XSize, int YSiz
   return 0;
 }
 
-/*********************************************************************
-*
-*       _DrawBitmap_24bpp
-*/
+
 static int _DrawBitmap_24bpp(const U8 * pData, int x0, int y0, int XSize, int YSize) {
   int x, y, BytesPerLine, Step;
   Step = _GetStep(&YSize, &y);
@@ -112,10 +103,7 @@ static int _DrawBitmap_24bpp(const U8 * pData, int x0, int y0, int XSize, int YS
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_BMP_GetXSize
-*/
+
 int GUI_BMP_GetXSize(const void * pBMP) {
   const U8 * pSrc = (const U8 *)pBMP;
   if (!pBMP) {
@@ -125,10 +113,7 @@ int GUI_BMP_GetXSize(const void * pBMP) {
   return GUI__Read32(&pSrc);
 }
 
-/*********************************************************************
-*
-*       GUI_BMP_GetYSize
-*/
+
 int GUI_BMP_GetYSize(const void * pBMP) {
   const U8 * pSrc = (const U8 *)pBMP;
   if (!pBMP) {
@@ -138,10 +123,7 @@ int GUI_BMP_GetYSize(const void * pBMP) {
   return labs((int)GUI__Read32(&pSrc));
 }
 
-/*********************************************************************
-*
-*       GUI_BMP_Draw
-*/
+
 int GUI_BMP_Draw(const void * pBMP, int x0, int y0) {
   #if (GUI_WINSUPPORT)
     GUI_RECT r;
@@ -186,7 +168,7 @@ int GUI_BMP_Draw(const void * pBMP, int x0, int y0) {
     return 1;
   }
   /* start output */
-  GUI_LOCK();
+  
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     r.x1 = (r.x0 = x0) + Width - 1;
@@ -207,7 +189,7 @@ int GUI_BMP_Draw(const void * pBMP, int x0, int y0) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  GUI_UNLOCK();
+  
   return Ret;
 }
 

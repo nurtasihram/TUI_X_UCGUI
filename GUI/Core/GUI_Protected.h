@@ -73,27 +73,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #define GUI_180DEG (4*GUI_45DEG)
 #define GUI_360DEG (8*GUI_45DEG)
 
-
-
-
-
-/*****************************************************
-*
-*        Locking checks
-*
-******************************************************
-*/
-
-#if defined (WIN32) && defined (_DEBUG) && GUI_OS
-  #define GUI_ASSERT_LOCK()   GUITASK_AssertLock()
-  #define GUI_ASSERT_NO_LOCK() GUITASK_AssertNoLock()
-  void GUITASK_AssertLock(void);
-  void GUITASK_AssertNoLock(void);
-#else
-  #define GUI_ASSERT_LOCK()
-  #define GUI_ASSERT_NO_LOCK()
-#endif
-
 /*****************************************************
 *
 *        Usage internals

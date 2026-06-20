@@ -48,10 +48,7 @@ typedef struct {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_USAGE_BM_AddPixel
-*/
+
 static void GUI_USAGE_BM_AddPixel(GUI_USAGE* p, int x, int y) {
   U8* pData;
   GUI_USAGE_BM * pThis = (GUI_USAGE_BM*)p;
@@ -69,10 +66,7 @@ static void GUI_USAGE_BM_AddPixel(GUI_USAGE* p, int x, int y) {
   *pData|= 0x80>>(x&7);
 }
 
-/*********************************************************************
-*
-*       GUI_USAGE_BM_AddHLine
-*/
+
 static void GUI_USAGE_BM_AddHLine(GUI_USAGE* p, int x, int y, int len) {
 #if 0   /* Enable for the slower, but smaller version ... xxx*/
   while (len-- >0)
@@ -109,19 +103,13 @@ static void GUI_USAGE_BM_AddHLine(GUI_USAGE* p, int x, int y, int len) {
 #endif
 }
 
-/*********************************************************************
-*
-*       GUI_USAGE_BM_Clear
-*/
+
 static void GUI_USAGE_BM_Clear(GUI_USAGE* p) {
   GUI_USAGE_BM * pThis = (GUI_USAGE_BM*) p;
   memset (pThis+1, 0, pThis->Public.YSize * pThis->Private.BytesPerLine);
 }
 
-/*********************************************************************
-*
-*       GUI_USAGE_BM_GetNextDirty
-*/
+
 static int GUI_USAGE_BM_GetNextDirty(GUI_USAGE* p, int *pxOff, int yOff) {
   int x = *pxOff;
   int xEnd;
@@ -180,10 +168,7 @@ static int GUI_USAGE_BM_GetNextDirty(GUI_USAGE* p, int *pxOff, int yOff) {
   return xEnd-x+1;
 }
 
-/*********************************************************************
-*
-*       Delete
-*/
+
 static void _GUI_USAGE_BM_Delete(GUI_MEMDEV_Handle hDevUsage) {
   GUI_ALLOC_Free(hDevUsage);
 }
@@ -208,10 +193,7 @@ static const tUSAGE_APIList API = {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_USAGE_BM_Create
-*/
+
 GUI_USAGE_Handle GUI_USAGE_BM_Create(int x0, int y0, int xsize, int ysize, int Flags) {
   int MemSize;
   int BytesPerLine;
@@ -227,7 +209,7 @@ GUI_USAGE_Handle GUI_USAGE_BM_Create(int x0, int y0, int xsize, int ysize, int F
   }
   {
     GUI_USAGE_BM * pUsage;
-    GUI_LOCK();
+    
     pUsage = (GUI_USAGE_BM*)GUI_ALLOC_h2p(hMem);
     pUsage->Public.x0    = x0;
     pUsage->Public.y0    = y0;
@@ -236,7 +218,7 @@ GUI_USAGE_Handle GUI_USAGE_BM_Create(int x0, int y0, int xsize, int ysize, int F
     pUsage->Public.pAPI  = &API;
     pUsage->Public.UseCnt= 1;
     pUsage->Private.BytesPerLine= BytesPerLine;
-    GUI_UNLOCK();
+    
   }
   return hMem;
 }

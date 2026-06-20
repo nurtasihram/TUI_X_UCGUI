@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -282,7 +282,7 @@ PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
                                 sizeof(PROGBAR_Obj) - sizeof(WM_Obj));
   if (hObj) {
     PROGBAR_Obj* pObj;
-    WM_LOCK();
+    
     pObj = (PROGBAR_Obj*) GUI_ALLOC_h2p(hObj);
     /* init widget specific variables */
     WIDGET__Init(&pObj->Widget, Id, 0);
@@ -297,7 +297,7 @@ PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
     pObj->TextAlign    = GUI_TA_CENTER;
     pObj->Max          = 100;
     pObj->Min          = 0;
-    WM_UNLOCK();
+    
   }
   return hObj;
 }
@@ -315,7 +315,7 @@ PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
 void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
   if (hObj) {
     PROGBAR_Obj* pObj;
-    WM_LOCK();
+    
     pObj= PROGBAR_H2P(hObj);
     /* Put v into legal range */
     if (v < pObj->Min) {
@@ -352,7 +352,7 @@ void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
       }
       WM_InvalidateRect(hObj, &r);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -363,11 +363,11 @@ void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
 void PROGBAR_SetFont(PROGBAR_Handle hObj, const GUI_FONT GUI_UNI_PTR * pfont) {
   PROGBAR_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = PROGBAR_H2P(hObj);
     pObj->pFont = pfont;
     WM_InvalidateWindow(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -378,13 +378,13 @@ void PROGBAR_SetFont(PROGBAR_Handle hObj, const GUI_FONT GUI_UNI_PTR * pfont) {
 void PROGBAR_SetBarColor(PROGBAR_Handle hObj, unsigned int Index, GUI_COLOR color) {
   PROGBAR_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = PROGBAR_H2P(hObj);
     if (Index < GUI_COUNTOF(pObj->BarColor)) {
       pObj->BarColor[Index] = color;
       WM_InvalidateWindow(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -395,13 +395,13 @@ void PROGBAR_SetBarColor(PROGBAR_Handle hObj, unsigned int Index, GUI_COLOR colo
 void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int Index, GUI_COLOR color) {
   PROGBAR_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = PROGBAR_H2P(hObj);
     if (Index < GUI_COUNTOF(pObj->TextColor)) {
       pObj->TextColor[Index] = color;
       WM_InvalidateWindow(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -415,7 +415,7 @@ void PROGBAR_SetText(PROGBAR_Handle hObj, const char* s) {
     const GUI_FONT GUI_UNI_PTR * pOldFont;
     GUI_RECT r1;
     char acBuffer[5];
-    WM_LOCK();
+    
     pObj = PROGBAR_H2P(hObj);
     pOldFont = GUI_SetFont(pObj->pFont);
     _GetTextRect(pObj, &r1, _GetText(pObj, acBuffer));
@@ -426,7 +426,7 @@ void PROGBAR_SetText(PROGBAR_Handle hObj, const char* s) {
       WM_InvalidateRect(hObj, &r1);
     }
     GUI_SetFont(pOldFont);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -437,11 +437,11 @@ void PROGBAR_SetText(PROGBAR_Handle hObj, const char* s) {
 void PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align) {
   PROGBAR_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = PROGBAR_H2P(hObj);
     pObj->TextAlign = Align;
     WM_InvalidateWindow(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -452,12 +452,12 @@ void PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align) {
 void PROGBAR_SetTextPos(PROGBAR_Handle hObj, int XOff, int YOff) {
   PROGBAR_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = PROGBAR_H2P(hObj);
     pObj->XOff = XOff;
     pObj->YOff = YOff;
     WM_InvalidateWindow(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -468,7 +468,7 @@ void PROGBAR_SetTextPos(PROGBAR_Handle hObj, int XOff, int YOff) {
 void PROGBAR_SetMinMax(PROGBAR_Handle hObj, int Min, int Max) {
   PROGBAR_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = PROGBAR_H2P(hObj);
     if (Max > Min) {
       if ((Max != pObj->Max) || (Min != pObj->Min)) {
@@ -477,7 +477,7 @@ void PROGBAR_SetMinMax(PROGBAR_Handle hObj, int Min, int Max) {
         WM_InvalidateWindow(hObj);
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 

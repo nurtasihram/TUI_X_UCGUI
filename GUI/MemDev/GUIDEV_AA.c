@@ -52,12 +52,9 @@ None.
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_MEMDEV_CopyToLCDAA
-*/
+
 void GUI_MEMDEV_CopyToLCDAA(GUI_MEMDEV_Handle hMem) {
-  GUI_LOCK();
+  
   /* Make sure memory handle is valid */
   if (hMem) {
     GUI_MEMDEV_Handle hMemPrev;
@@ -104,13 +101,10 @@ void GUI_MEMDEV_CopyToLCDAA(GUI_MEMDEV_Handle hMem) {
     /* Reactivate previously used device */
     GUI_MEMDEV_Select(hMemPrev);
   }
-  GUI_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV_CopyFromLCDAA
-*/
+
 void GUI_MEMDEV_CopyFromLCDAA(GUI_MEMDEV_Handle hMem) {
   /* Make sure memory handle is valid */
   if (!hMem) {

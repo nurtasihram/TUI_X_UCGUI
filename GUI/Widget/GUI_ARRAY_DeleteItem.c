@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -48,7 +48,7 @@ void GUI_ARRAY_DeleteItem(GUI_ARRAY* pThis, unsigned int Index) {
     ha = pThis->haHandle;
     if (ha) {
       int NumItems;
-      WM_LOCK();
+      
       pa = (WM_HMEM*) GUI_ALLOC_h2p(ha);
       /* Free the attached item */
       GUI_ALLOC_FreePtr(pa + Index);
@@ -57,7 +57,7 @@ void GUI_ARRAY_DeleteItem(GUI_ARRAY* pThis, unsigned int Index) {
       for (i = Index; i <= NumItems - 1; i++) {
         *(pa + i) = *(pa + i + 1);
       }
-      WM_UNLOCK();
+      
     }
   }
 }

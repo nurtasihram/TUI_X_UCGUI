@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -35,7 +35,7 @@ Purpose     :
 *       FRAMEWIN_SetFont
 */
 void FRAMEWIN_SetFont(FRAMEWIN_Handle hObj, const GUI_FONT GUI_UNI_PTR * pFont) {
-  GUI_LOCK();
+  
   if (hObj) {
     FRAMEWIN_Obj* pObj = FRAMEWIN_H2P(hObj);
     int OldHeight = FRAMEWIN__CalcTitleHeight(pObj);
@@ -44,7 +44,7 @@ void FRAMEWIN_SetFont(FRAMEWIN_Handle hObj, const GUI_FONT GUI_UNI_PTR * pFont) 
     FRAMEWIN__UpdateButtons(pObj, OldHeight);
     FRAMEWIN_Invalidate(hObj);
   }
-  GUI_UNLOCK();
+  
 }
 
 #else

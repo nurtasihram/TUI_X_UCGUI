@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -75,10 +75,10 @@ Purpose     : Implementetion of WM_CreateTimer, WM_DeleteTimer
 *   Allows the application to delete a timer. 
 */
 void WM_DeleteTimer    (WM_HWIN hWin, int UserId) {
-  WM_LOCK();
+  
   GUI_USE_PARA(hWin);
   GUI_USE_PARA(UserId);
-  WM_UNLOCK();
+  
 }
 
 
@@ -96,12 +96,12 @@ void WM_DeleteTimer    (WM_HWIN hWin, int UserId) {
 */
 int WM_CreateTimer               (WM_HWIN hWin, int UserId, int Period, int Mode) {
   int r = 0;
-  WM_LOCK();
+  
   GUI_USE_PARA(hWin);
   GUI_USE_PARA(UserId);
   GUI_USE_PARA(Period);
   GUI_USE_PARA(Mode);
-  WM_UNLOCK();
+  
   return r;
 }
 

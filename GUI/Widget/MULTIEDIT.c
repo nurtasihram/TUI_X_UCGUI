@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -666,7 +666,7 @@ static int _InvalidateCursorPos(MULTIEDIT_OBJ * pObj) {
 static void _SetFlag(MULTIEDIT_HANDLE hObj, int OnOff, U8 Flag) {
   if (hObj) {
     MULTIEDIT_OBJ * pObj;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     if (OnOff) {
       pObj->Flags |= Flag;
@@ -674,7 +674,7 @@ static void _SetFlag(MULTIEDIT_HANDLE hObj, int OnOff, U8 Flag) {
       pObj->Flags &= ~Flag;
     }
     _InvalidateTextArea(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -763,7 +763,7 @@ static int _SetWrapMode(MULTIEDIT_HANDLE hObj, GUI_WRAPMODE WrapMode) {
   r = 0;
   if (hObj) {
     MULTIEDIT_OBJ * pObj;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     r = pObj->WrapMode;
     if (pObj->WrapMode != WrapMode) {
@@ -776,7 +776,7 @@ static int _SetWrapMode(MULTIEDIT_HANDLE hObj, GUI_WRAPMODE WrapMode) {
       Position = _InvalidateCursorPos(pObj);
       _SetCursorPos(hObj, pObj, Position);
     }
-    WM_UNLOCK();
+    
   }
   return r;
 }
@@ -1381,7 +1381,7 @@ MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 {
   MULTIEDIT_HANDLE hObj;
   /* Create the window */
-  WM_LOCK();
+  
   if ((xsize == 0) && (ysize == 0) && (x0 == 0) && (y0 == 0)) {
     GUI_RECT Rect;
     WM_GetClientRectEx(hParent, &Rect);
@@ -1426,7 +1426,7 @@ MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
   } else {
     GUI_DEBUG_ERROROUT_IF(hObj==0, "MULTIEDIT_CreateEx failed")
   }
-  WM_UNLOCK();
+  
   return hObj;
 }
 
@@ -1443,9 +1443,9 @@ MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 int MULTIEDIT_AddKey(MULTIEDIT_HANDLE hObj, U16 Key) {
   int r = 0;
   if (hObj) {
-    WM_LOCK();
+    
     r = _AddKey(hObj, Key);
-    WM_UNLOCK();
+    
   }
   return r;
 }
@@ -1460,7 +1460,7 @@ void MULTIEDIT_SetText(MULTIEDIT_HANDLE hObj, const char* pNew) {
     int NumCharsNew = 0, NumCharsOld = 0;
     int NumBytesNew = 0, NumBytesOld = 0;
     char* pText;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     if (pObj->hText) {
       pText  = (char*) GUI_ALLOC_h2p(pObj->hText);
@@ -1488,7 +1488,7 @@ void MULTIEDIT_SetText(MULTIEDIT_HANDLE hObj, const char* pNew) {
         _InvalidateTextSizeX(pObj);
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1499,7 +1499,7 @@ void MULTIEDIT_SetText(MULTIEDIT_HANDLE hObj, const char* pNew) {
 void MULTIEDIT_GetText(MULTIEDIT_HANDLE hObj, char* sDest, int MaxLen) {
   if (hObj) {
     MULTIEDIT_OBJ* pObj;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     if (pObj) {
       char* pText;
@@ -1513,7 +1513,7 @@ void MULTIEDIT_GetText(MULTIEDIT_HANDLE hObj, char* sDest, int MaxLen) {
       memcpy(sDest, pText, Len);
       *(sDest + Len) = 0;
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1524,7 +1524,7 @@ void MULTIEDIT_GetText(MULTIEDIT_HANDLE hObj, char* sDest, int MaxLen) {
 void MULTIEDIT_GetPrompt(MULTIEDIT_HANDLE hObj, char * sDest, int MaxLen) {
   if (hObj) {
     MULTIEDIT_OBJ * pObj;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     if (pObj) {
       char* sSource = (char*)GUI_ALLOC_h2p(pObj->hText);
@@ -1535,7 +1535,7 @@ void MULTIEDIT_GetPrompt(MULTIEDIT_HANDLE hObj, char * sDest, int MaxLen) {
       memcpy(sDest, sSource, Len);
       *(sDest + Len) = 0;
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1586,13 +1586,13 @@ void MULTIEDIT_SetReadOnly(MULTIEDIT_HANDLE hObj, int OnOff) {
 void MULTIEDIT_SetPasswordMode(MULTIEDIT_HANDLE hObj, int OnOff) {
   if (hObj) {
     MULTIEDIT_OBJ* pObj;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     _SetFlag(hObj, OnOff, MULTIEDIT_SF_PASSWORD);
     _InvalidateCursorXY(pObj);
     _InvalidateNumLines(pObj);
     _InvalidateTextSizeX(pObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1619,13 +1619,13 @@ void MULTIEDIT_SetAutoScrollH(MULTIEDIT_HANDLE hObj, int OnOff) {
 void MULTIEDIT_SetHBorder(MULTIEDIT_HANDLE hObj, unsigned HBorder) {
   if (hObj) {
     MULTIEDIT_OBJ* pObj;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     if ((unsigned)pObj->HBorder != HBorder) {
       pObj->HBorder = HBorder;
       _Invalidate(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1636,7 +1636,7 @@ void MULTIEDIT_SetHBorder(MULTIEDIT_HANDLE hObj, unsigned HBorder) {
 void MULTIEDIT_SetFont(MULTIEDIT_HANDLE hObj, const GUI_FONT GUI_UNI_PTR * pFont) {
   if (hObj) {
     MULTIEDIT_OBJ* pObj;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     if (pObj->pFont != pFont) {
       pObj->pFont = pFont;
@@ -1645,7 +1645,7 @@ void MULTIEDIT_SetFont(MULTIEDIT_HANDLE hObj, const GUI_FONT GUI_UNI_PTR * pFont
       _InvalidateNumLines(pObj);
       _InvalidateTextSizeX(pObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1656,11 +1656,11 @@ void MULTIEDIT_SetFont(MULTIEDIT_HANDLE hObj, const GUI_FONT GUI_UNI_PTR * pFont
 void MULTIEDIT_SetBkColor(MULTIEDIT_HANDLE hObj, unsigned Index, GUI_COLOR color) {
   if (hObj && (Index < NUM_DISP_MODES)) {
     MULTIEDIT_OBJ* pObj;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     pObj->aBkColor[Index] = color;
     _InvalidateTextArea(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1671,11 +1671,11 @@ void MULTIEDIT_SetBkColor(MULTIEDIT_HANDLE hObj, unsigned Index, GUI_COLOR color
 void MULTIEDIT_SetCursorOffset(MULTIEDIT_HANDLE hObj, int Offset) {
   if (hObj) {
     MULTIEDIT_OBJ* pObj;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     _SetCursorPos(hObj, pObj, Offset);
     WM_Invalidate(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1686,11 +1686,11 @@ void MULTIEDIT_SetCursorOffset(MULTIEDIT_HANDLE hObj, int Offset) {
 void MULTIEDIT_SetTextColor(MULTIEDIT_HANDLE hObj, unsigned Index, GUI_COLOR color) {
   if (hObj && (Index < NUM_DISP_MODES)) {
     MULTIEDIT_OBJ* pObj;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     pObj->aColor[Index] = color;
     WM_Invalidate(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1704,7 +1704,7 @@ void MULTIEDIT_SetPrompt(MULTIEDIT_HANDLE hObj, const char* pPrompt) {
     int NumCharsNew = 0, NumCharsOld = 0;
     int NumBytesNew = 0, NumBytesOld = 0;
     char* pText;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     if (pObj->hText) {
       pText = (char*) GUI_ALLOC_h2p(pObj->hText);
@@ -1730,7 +1730,7 @@ void MULTIEDIT_SetPrompt(MULTIEDIT_HANDLE hObj, const char* pPrompt) {
         _InvalidateTextSizeX(pObj);
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1742,7 +1742,7 @@ void MULTIEDIT_SetBufferSize(MULTIEDIT_HANDLE hObj, int BufferSize) {
   if (hObj) {
     MULTIEDIT_OBJ* pObj;
     WM_HMEM hText;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     if ((hText = GUI_ALLOC_AllocZero(BufferSize)) == 0) {
       GUI_DEBUG_ERROROUT("MULTIEDIT_SetBufferSize failed to alloc buffer");
@@ -1758,7 +1758,7 @@ void MULTIEDIT_SetBufferSize(MULTIEDIT_HANDLE hObj, int BufferSize) {
       _InvalidateTextSizeX(pObj);
     }
     _InvalidateTextArea(hObj);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1769,7 +1769,7 @@ void MULTIEDIT_SetBufferSize(MULTIEDIT_HANDLE hObj, int BufferSize) {
 void MULTIEDIT_SetMaxNumChars(MULTIEDIT_HANDLE hObj, unsigned MaxNumChars) {
   if (hObj) {
     MULTIEDIT_OBJ* pObj;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     pObj->MaxNumChars = MaxNumChars;
     if (MaxNumChars < (unsigned)pObj->NumCharsPrompt) {
@@ -1788,7 +1788,7 @@ void MULTIEDIT_SetMaxNumChars(MULTIEDIT_HANDLE hObj, unsigned MaxNumChars) {
         _InvalidateNumChars(pObj);
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -1805,7 +1805,7 @@ int MULTIEDIT_GetTextSize(MULTIEDIT_HANDLE hObj) {
   int r = 0;
   if (hObj) {
     MULTIEDIT_OBJ* pObj;
-    WM_LOCK();
+    
     pObj = MULTIEDIT_H2P(hObj);
     if (pObj->hText) {
       const char* s;
@@ -1813,7 +1813,7 @@ int MULTIEDIT_GetTextSize(MULTIEDIT_HANDLE hObj) {
       s += GUI_UC__NumChars2NumBytes(s, pObj->NumCharsPrompt);
       r = 1 + strlen(s);
     }
-    WM_UNLOCK();
+    
   }
   return r;
 }

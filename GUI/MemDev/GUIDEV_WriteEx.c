@@ -47,10 +47,7 @@ static int _GetPixelIndex(const U8* pData, int x, int y, int bpp, int BytesPerLi
   }
 }
 
-/*********************************************************************
-*
-*       _DrawHLineAlpha
-*/
+
 static void _DrawHLineAlpha(int x0, int y, int x1, int Intens) {
   GUI_MEMDEV* pDev   = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   GUI_USAGE_h hUsage = pDev->hUsage; 
@@ -79,10 +76,7 @@ static void _DrawHLineAlpha(int x0, int y, int x1, int Intens) {
   }
 }
 
-/*********************************************************************
-*
-*       _DrawBitmapLineEx
-*/
+
 static void _DrawBitmapLineEx(int x0, int y0, int xOff, int yOff, int xSize, int xMag, int Alpha,
                               int bpp, int BytesPerLine, const U8* pData) {
   int x, xi, xAct, xStart, xMagAbs, xiMag, xMin, xMax, Cached;
@@ -143,10 +137,7 @@ static void _DrawBitmapLineEx(int x0, int y0, int xOff, int yOff, int xSize, int
   }
 }
 
-/*********************************************************************
-*
-*       _DrawBitmapEx
-*/
+
 static void _DrawBitmapEx(int x0, int y0, int xOff, int yOff, int xSize, int ySize, int xMag, int yMag,
                           int Alpha, int BmpSizeX, int BmpSizeY, int bpp, int BytesPerLine, const U8* pData) {
   int y, yi, yMin, yMax, yEnd, yPrev;
@@ -174,10 +165,7 @@ static void _DrawBitmapEx(int x0, int y0, int xOff, int yOff, int xSize, int ySi
   }
 }
 
-/*********************************************************************
-*
-*       _WriteExToActiveAt
-*/
+
 static void _WriteExToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, int yMag, int Alpha) {
   GUI_MEMDEV* pDev;
   GUI_USAGE_h hUsage; 
@@ -233,15 +221,12 @@ static void _WriteExToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, i
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_MEMDEV_WriteExAt
-*/
+
 void GUI_MEMDEV_WriteExAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, int yMag, int Alpha) {
   if (hMem) {
     GUI_MEMDEV* pDevData;
     GUI_RECT ClipRectPrev;
-    GUI_LOCK();
+    
     pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);
     if (x == GUI_POS_AUTO) {
       x = pDevData->x0;
@@ -251,14 +236,11 @@ void GUI_MEMDEV_WriteExAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, int yM
     LCD_SetClipRectMax();
     _WriteExToActiveAt(hMem, x, y, xMag, yMag, Alpha);
     GUI_Context.ClipRect = ClipRectPrev;
-    GUI_UNLOCK();
+    
   }
 }
 
-/*********************************************************************
-*
-*       GUI_MEMDEV_WriteEx
-*/
+
 void GUI_MEMDEV_WriteEx(GUI_MEMDEV_Handle hMem, int xMag, int yMag, int Alpha) {
   GUI_MEMDEV_WriteExAt(hMem, GUI_POS_AUTO, GUI_POS_AUTO, xMag, yMag, Alpha);
 }

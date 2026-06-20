@@ -75,9 +75,6 @@
     <ClCompile Include="GUI\Core\GUI__ReduceRect.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI__SetText.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI__strcmp.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -112,9 +109,6 @@
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_BMP.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_BMP_Serialize.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_CalcColorDist.c">
@@ -489,9 +483,6 @@
     <ClCompile Include="GUI\Core\GUIStream.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUITask.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUITime.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -762,88 +753,7 @@
     <ClCompile Include="GUI\Widget\BUTTON.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\BUTTON__SetBitmapObj.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\BUTTON_Bitmap.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\BUTTON_BMP.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\BUTTON_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\BUTTON_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\BUTTON_Default.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\BUTTON_Get.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\BUTTON_IsPressed.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\BUTTON_SelfDraw.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\BUTTON_SetTextAlign.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\BUTTON_StreamedBitmap.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\CHECKBOX.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_Default.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_GetState.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_Image.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_IsChecked.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_SetBkColor.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_SetDefaultImage.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_SetFont.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_SetImage.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_SetNumStates.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_SetSpacing.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_SetState.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_SetText.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_SetTextAlign.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX_SetTextColor.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\DIALOG.c">
@@ -852,58 +762,7 @@
     <ClCompile Include="GUI\Widget\DROPDOWN.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\DROPDOWN_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\DROPDOWN_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\DROPDOWN_DeleteItem.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\DROPDOWN_InsertString.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\DROPDOWN_ItemSpacing.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\DROPDOWN_SetAutoScroll.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\DROPDOWN_SetTextAlign.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\DROPDOWN_SetTextHeight.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\EDIT.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\EDIT_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\EDIT_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\EDIT_Default.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\EDIT_GetNumChars.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\EDIT_SetCursorAtChar.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\EDIT_SetInsertMode.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\EDIT_SetpfAddKeyEx.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\EDIT_SetpfUpdateBuffer.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\EDIT_SetSel.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\EDITBin.c">
@@ -919,60 +778,6 @@
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\FRAMEWIN.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN__UpdateButtons.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_AddMenu.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_Button.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_ButtonClose.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_ButtonMax.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_ButtonMin.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_Default.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_Get.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_IsMinMax.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_MinMaxRest.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_SetBorderSize.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_SetColors.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_SetFont.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_SetResizeable.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_SetTitleHeight.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN_SetTitleVis.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\GUI_ARRAY.c">
@@ -1023,211 +828,13 @@
     <ClCompile Include="GUI\Widget\HEADER.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\HEADER__SetDrawObj.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\HEADER_Bitmap.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\HEADER_BMP.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\HEADER_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\HEADER_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\HEADER_StreamedBitmap.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\LISTBOX.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_Default.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_DeleteItem.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_Font.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_GetItemText.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_GetNumItems.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_InsertString.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_ItemDisabled.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_ItemSpacing.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_MultiSel.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_ScrollStep.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_SetAutoScroll.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_SetBkColor.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_SetOwner.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_SetOwnerDraw.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_SetScrollbarWidth.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_SetString.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX_SetTextColor.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\LISTVIEW.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_Default.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_DeleteColumn.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_DeleteRow.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_GetBkColor.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_GetFont.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_GetHeader.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_GetNumColumns.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_GetNumRows.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_GetSel.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_GetTextColor.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_SetBkColor.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_SetColumnWidth.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_SetFont.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_SetGridVis.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_SetItemColor.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_SetItemText.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_SetLBorder.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_SetRBorder.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_SetRowHeight.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_SetSel.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_SetTextAlign.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW_SetTextColor.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\MENU.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU__FindItem.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_Attach.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_Default.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_DeleteItem.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_DisableItem.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_EnableItem.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_GetItem.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_GetItemText.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_GetNumItems.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_InsertItem.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_Popup.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_SetBkColor.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_SetBorderSize.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_SetFont.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_SetItem.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU_SetTextColor.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\MESSAGEBOX.c">
@@ -1236,145 +843,25 @@
     <ClCompile Include="GUI\Widget\MULTIEDIT.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\MULTIEDIT_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MULTIEDIT_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\MULTIPAGE.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MULTIPAGE_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MULTIPAGE_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MULTIPAGE_Default.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\PROGBAR.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\PROGBAR_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\PROGBAR_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\RADIO.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\RADIO_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\RADIO_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\RADIO_Default.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\RADIO_Image.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\RADIO_SetBkColor.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\RADIO_SetDefaultImage.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\RADIO_SetFont.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\RADIO_SetGroupId.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\RADIO_SetImage.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\RADIO_SetText.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\RADIO_SetTextColor.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\SCROLLBAR.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\SCROLLBAR_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\SCROLLBAR_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\SCROLLBAR_Defaults.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\SCROLLBAR_GetValue.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\SCROLLBAR_SetWidth.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\SLIDER.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\SLIDER_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\SLIDER_CreateIndirect.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\TEXT.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\TEXT_Create.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\TEXT_CreateIndirect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\TEXT_SetBkColor.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\TEXT_SetFont.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\TEXT_SetText.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\TEXT_SetTextAlign.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\TEXT_SetTextColor.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\WIDGET.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D1L.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D2L.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_None.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_Simple.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_FillStringInRect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_SetEffect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_SetWidth.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\WINDOW.c">
@@ -1675,6 +1162,513 @@
     <ClCompile Include="GUI\Core\LCD_MixColors256.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\Widget\BUTTON__SetBitmapObj.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\BUTTON_Bitmap.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\BUTTON_BMP.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\BUTTON_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\BUTTON_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\BUTTON_Default.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\BUTTON_Get.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\BUTTON_IsPressed.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\BUTTON_SelfDraw.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\BUTTON_SetTextAlign.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\BUTTON_StreamedBitmap.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_Default.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_GetState.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_Image.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_IsChecked.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_SetBkColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_SetDefaultImage.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_SetFont.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_SetImage.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_SetNumStates.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_SetSpacing.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_SetState.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_SetText.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_SetTextAlign.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX_SetTextColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\DROPDOWN_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\DROPDOWN_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\DROPDOWN_DeleteItem.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\DROPDOWN_InsertString.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\DROPDOWN_ItemSpacing.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\DROPDOWN_SetAutoScroll.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\DROPDOWN_SetTextAlign.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\DROPDOWN_SetTextHeight.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\EDIT_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\EDIT_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\EDIT_Default.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\EDIT_GetNumChars.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\EDIT_SetCursorAtChar.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\EDIT_SetInsertMode.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\EDIT_SetpfAddKeyEx.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\EDIT_SetpfUpdateBuffer.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\EDIT_SetSel.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN__UpdateButtons.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_AddMenu.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_Button.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_ButtonClose.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_ButtonMax.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_ButtonMin.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_Default.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_Get.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_IsMinMax.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_MinMaxRest.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_SetBorderSize.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_SetColors.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_SetFont.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_SetResizeable.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_SetTitleHeight.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN_SetTitleVis.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\HEADER__SetDrawObj.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\HEADER_Bitmap.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\HEADER_BMP.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\HEADER_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\HEADER_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\HEADER_StreamedBitmap.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_Default.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_DeleteItem.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_Font.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_GetItemText.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_GetNumItems.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_InsertString.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_ItemDisabled.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_ItemSpacing.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_MultiSel.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_ScrollStep.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_SetAutoScroll.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_SetBkColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_SetOwner.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_SetOwnerDraw.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_SetScrollbarWidth.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_SetString.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX_SetTextColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_Default.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_DeleteColumn.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_DeleteRow.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_GetBkColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_GetFont.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_GetHeader.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_GetNumColumns.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_GetNumRows.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_GetSel.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_GetTextColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_SetBkColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_SetColumnWidth.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_SetFont.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_SetGridVis.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_SetItemColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_SetItemText.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_SetLBorder.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_SetRBorder.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_SetRowHeight.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_SetSel.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_SetTextAlign.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW_SetTextColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU__FindItem.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_Attach.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_Default.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_DeleteItem.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_DisableItem.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_EnableItem.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_GetItem.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_GetItemText.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_GetNumItems.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_InsertItem.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_Popup.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_SetBkColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_SetBorderSize.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_SetFont.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_SetItem.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU_SetTextColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MULTIEDIT_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MULTIEDIT_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MULTIPAGE_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MULTIPAGE_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MULTIPAGE_Default.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\PROGBAR_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\PROGBAR_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\RADIO_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\RADIO_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\RADIO_Default.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\RADIO_Image.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\RADIO_SetBkColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\RADIO_SetDefaultImage.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\RADIO_SetFont.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\RADIO_SetGroupId.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\RADIO_SetImage.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\RADIO_SetText.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\RADIO_SetTextColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\SCROLLBAR_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\SCROLLBAR_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\SCROLLBAR_Defaults.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\SCROLLBAR_GetValue.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\SCROLLBAR_SetWidth.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\SLIDER_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\SLIDER_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\TEXT_Create.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\TEXT_CreateIndirect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\TEXT_SetBkColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\TEXT_SetFont.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\TEXT_SetText.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\TEXT_SetTextAlign.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\TEXT_SetTextColor.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D1L.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D2L.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET_Effect_None.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET_Effect_Simple.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET_FillStringInRect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET_SetEffect.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET_SetWidth.c">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUI__SetText.c">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">
@@ -1855,5 +1849,8 @@
     <ResourceCompile Include="GUI_X\SimDisp.rc">
       <Filter>GUI_X</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="test_cert.pfx" />
   </ItemGroup>
 </Project>

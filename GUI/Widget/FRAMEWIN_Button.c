@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -42,7 +42,7 @@ WM_HWIN FRAMEWIN_AddButton(FRAMEWIN_Handle hObj, int Flags, int Off, int Id) {
     int Size       = FRAMEWIN_GetTitleHeight(hObj);
     int BorderSize = FRAMEWIN_GetBorderSize(hObj);
     int WinFlags, x;
-    WM_LOCK();
+    
     pObj = FRAMEWIN_H2P(hObj);
     FRAMEWIN__CalcPositions(pObj, &Pos);
     if (Flags & FRAMEWIN_BUTTON_RIGHT) {
@@ -54,7 +54,7 @@ WM_HWIN FRAMEWIN_AddButton(FRAMEWIN_Handle hObj, int Flags, int Off, int Id) {
     }
     r = BUTTON_CreateAsChild(x, BorderSize, Size, Size, hObj, Id, WinFlags);
     BUTTON_SetFocussable(r, 0);
-    WM_UNLOCK();
+    
   }
   return r;
 }

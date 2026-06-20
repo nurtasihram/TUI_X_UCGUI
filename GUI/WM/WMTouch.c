@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -39,10 +39,7 @@ WM_CRITICAL_HANDLE  WM__CHWinLast;
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       WM__IsInModalArea
-*/
+
 int WM__IsInModalArea(WM_HWIN hWin) {
   if ((WM__CHWinModal.hWin == 0) || WM__IsAncestor(hWin, WM__CHWinModal.hWin) || (hWin == WM__CHWinModal.hWin)) {
     return 1;
@@ -80,10 +77,7 @@ void WM__SendPIDMessage(WM_HWIN hWin, WM_MESSAGE* pMsg) {
   }
 }
 
-/*********************************************************************
-*
-*       WM__SendTouchMessage
-*/
+
 void WM__SendTouchMessage(WM_HWIN hWin, WM_MESSAGE* pMsg) {
   GUI_PID_STATE* pState;
   pState     = (GUI_PID_STATE*)pMsg->Data.p;
@@ -102,10 +96,7 @@ void WM__SendTouchMessage(WM_HWIN hWin, WM_MESSAGE* pMsg) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _Screen2Win
-*/
+
 static WM_HWIN _Screen2Win(GUI_PID_STATE* pState) {
   if (WM__hCapture == 0) {
     return WM_Screen2hWin(pState->x, pState->y);
@@ -136,7 +127,7 @@ int WM_HandlePID(void) {
   WM_CRITICAL_HANDLE CHWin;
   GUI_PID_STATE State, StateNew;
   GUI_PID_GetState(&StateNew);
-  WM_LOCK();
+  
   WM__AddCriticalHandle(&CHWin);
   if ((WM_PID__StateLast.x != StateNew.x) || (WM_PID__StateLast.y != StateNew.y) || (WM_PID__StateLast.Pressed != StateNew.Pressed)) {
     #if GUI_SUPPORT_CURSOR
@@ -233,7 +224,7 @@ int WM_HandlePID(void) {
     WM_PID__StateLast = StateNew;
   }
   WM__RemoveCriticalHandle(&CHWin);
-  WM_UNLOCK();
+  
   return r;
 }
 

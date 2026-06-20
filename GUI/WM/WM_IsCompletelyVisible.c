@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -71,10 +71,7 @@ static char _WindowSiblingsOverlapRect(WM_HWIN iWin, GUI_RECT* pRect) {
 }
 
 
-/*********************************************************************
-*
-*       _HasOverlap
-*/
+
 static int _HasOverlap(WM_Obj * pWin, GUI_RECT * pRect) {
   WM_Obj * pParent;
   WM_HMEM hParent;
@@ -146,9 +143,9 @@ static char _IsCompletelyVisible(WM_HWIN hWin) {
 char WM_IsCompletelyVisible(WM_HWIN hWin) {
   int r = 0;
   if (hWin) {
-    WM_LOCK();
+    
     r = _IsCompletelyVisible(hWin);
-    WM_UNLOCK();
+    
   }
   return r;
 }

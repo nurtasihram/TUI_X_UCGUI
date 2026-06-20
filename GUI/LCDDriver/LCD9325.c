@@ -285,19 +285,13 @@ static void  DrawBitLine16BPP(int x, int y, U16 const GUI_UNI_PTR *p, int xsize,
 **********************************************************************
 */
 
-/*********************************************************************
-*
-*       LCD_L0_XorPixel
-*/
+
 void LCD_L0_XorPixel(int x, int y) {
 	LCD_PIXELINDEX PixelIndex = LCD_L0_GetPixelIndex(x, y);
 	LCD_L0_SetPixelIndex(x, y, LCD_NUM_COLORS - PixelIndex - 1);
 }
 
-/*********************************************************************
-*
-*       LCD_L0_DrawHLine
-*/
+
 void LCD_L0_DrawHLine(int x0, int y, int x1) {
 	if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
 		for (; x0 <= x1; x0++) {
@@ -311,10 +305,7 @@ void LCD_L0_DrawHLine(int x0, int y, int x1) {
 	}
 }
 
-/*********************************************************************
-*
-*       LCD_L0_DrawVLine
-*/
+
 void LCD_L0_DrawVLine(int x, int y0, int y1) {
 	if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
 		for (; y0 <= y1; y0++) {
@@ -328,20 +319,14 @@ void LCD_L0_DrawVLine(int x, int y0, int y1) {
 	}
 }
 
-/*********************************************************************
-*
-*       LCD_L0_FillRect
-*/
+
 void LCD_L0_FillRect(int x0, int y0, int x1, int y1) {
 	for (; y0 <= y1; y0++) {
 		LCD_L0_DrawHLine(x0, y0, x1);
 	}
 }
 
-/*********************************************************************
-*
-*       LCD_L0_DrawBitmap
-*/
+
 void LCD_L0_DrawBitmap(int x0, int y0,
 					   int xsize, int ysize,
 					   int BitsPerPixel,
@@ -380,10 +365,7 @@ void LCD_L0_DrawBitmap(int x0, int y0,
 	}
 }
 
-/*********************************************************************
-*
-*       LCD_L0_SetOrg
-*/
+
 void LCD_L0_SetOrg(int x, int y) {
 	GUI_USE_PARA(x);
 	GUI_USE_PARA(y);

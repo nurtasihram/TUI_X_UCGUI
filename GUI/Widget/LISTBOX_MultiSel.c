@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -39,7 +39,7 @@ Purpose     : Implementation of listbox widget
 void LISTBOX_SetMulti(LISTBOX_Handle hObj, int Mode) {
   if (hObj) {
     LISTBOX_Obj* pObj;
-    WM_LOCK();
+    
     pObj = LISTBOX_H2P(hObj);
     if (Mode) {
       if (!(pObj->Flags & LISTBOX_SF_MULTISEL)) {
@@ -52,7 +52,7 @@ void LISTBOX_SetMulti(LISTBOX_Handle hObj, int Mode) {
         LISTBOX__InvalidateInsideArea(hObj);
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -64,14 +64,14 @@ int LISTBOX_GetMulti(LISTBOX_Handle hObj) {
   int Multi = 0;
   if (hObj) {
     LISTBOX_Obj* pObj;
-    WM_LOCK();
+    
     pObj = LISTBOX_H2P(hObj);
     if (!(pObj->Flags & LISTBOX_SF_MULTISEL)) {
       Multi = 0;
     } else {
       Multi = 1;
     }
-    WM_UNLOCK();
+    
   }
   return Multi;
 }
@@ -85,7 +85,7 @@ int LISTBOX_GetItemSel(LISTBOX_Handle hObj, unsigned Index) {
   if (hObj) {
     unsigned NumItems;
     LISTBOX_Obj* pObj;
-    WM_LOCK();
+    
     pObj = LISTBOX_H2P(hObj);
     NumItems = LISTBOX__GetNumItems(pObj);
     if ((Index < NumItems) && (pObj->Flags & LISTBOX_SF_MULTISEL)) {
@@ -97,7 +97,7 @@ int LISTBOX_GetItemSel(LISTBOX_Handle hObj, unsigned Index) {
         }
       }
     }
-    WM_UNLOCK();
+    
   }
   return Ret;
 }
@@ -110,7 +110,7 @@ void LISTBOX_SetItemSel(LISTBOX_Handle hObj, unsigned Index, int OnOff) {
   if (hObj) {
     unsigned NumItems;
     LISTBOX_Obj* pObj;
-    WM_LOCK();
+    
     pObj = LISTBOX_H2P(hObj);
     NumItems = LISTBOX__GetNumItems(pObj);
     if ((Index < NumItems) && (pObj->Flags & LISTBOX_SF_MULTISEL)) {
@@ -130,7 +130,7 @@ void LISTBOX_SetItemSel(LISTBOX_Handle hObj, unsigned Index, int OnOff) {
         }
       }
     }
-    WM_UNLOCK();
+    
   }
 }
 

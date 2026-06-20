@@ -34,16 +34,13 @@ Purpose     : Implementation of memory devices
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_USAGE_Select
-*/
+
 void GUI_USAGE_Select(GUI_USAGE_Handle hUsage) {
   GUI_MEMDEV * pDev;
-  GUI_LOCK();
+  
   pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   pDev->hUsage = hUsage;
-  GUI_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -55,12 +52,12 @@ void GUI_USAGE_Select(GUI_USAGE_Handle hUsage) {
 */
 void GUI_USAGE_DecUseCnt(GUI_USAGE_Handle  hUsage) {
   GUI_USAGE* pThis;
-  GUI_LOCK();
+  
   pThis = GUI_USAGE_H2P(hUsage);
   if (--pThis->UseCnt == 0) {
     GUI_ALLOC_Free(hUsage);
   }
-  GUI_UNLOCK();
+  
 }
 
 /*********************************************************************

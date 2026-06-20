@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -26,10 +26,7 @@ Purpose     : Implementation of GUI_UC_DispString
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _GetLineDistX
-*/
+
 static int _GetLineDistX(const U16 GUI_UNI_PTR *s, int MaxNumChars) {
   int Dist =0;
   if (s) {
@@ -43,10 +40,7 @@ static int _GetLineDistX(const U16 GUI_UNI_PTR *s, int MaxNumChars) {
   return Dist;
 }
 
-/*********************************************************************
-*
-*       _GetLineLen
-*/
+
 static int _GetLineLen(const U16 GUI_UNI_PTR *s, int MaxLen) {
   int Len =0;
   if (!s)
@@ -59,10 +53,7 @@ static int _GetLineLen(const U16 GUI_UNI_PTR *s, int MaxLen) {
   return Len;
 }
 
-/*********************************************************************
-*
-*       _DispLine_UC
-*/
+
 static void _DispLine_UC(const U16 GUI_UNI_PTR *s, int Len, const GUI_RECT *pRect) {
   if (GUI_Context.pClipRect_HL) {
     if (GUI_RectsIntersect(GUI_Context.pClipRect_HL, pRect) == 0)
@@ -77,10 +68,7 @@ static void _DispLine_UC(const U16 GUI_UNI_PTR *s, int Len, const GUI_RECT *pRec
   }
 }
 
-/*********************************************************************
-*
-*       _DispLine
-*/
+
 static void _DispLine(const U16 GUI_UNI_PTR *s, int Len, const GUI_RECT* pr) {
   GUI_RECT r;
   r = *pr;
@@ -104,16 +92,13 @@ static void _DispLine(const U16 GUI_UNI_PTR *s, int Len, const GUI_RECT* pr) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_UC_DispString
-*/
+
 void GUI_UC_DispString(const U16 GUI_UNI_PTR *s) {
   int xAdjust, yAdjust, xOrg;
   int FontSizeY;
   if (!s)
     return;
-  GUI_LOCK();
+  
   FontSizeY = GUI_Context.pAFont->YSize;
   xOrg = GUI_Context.DispPosX;
  /* Adjust vertical position */
@@ -155,7 +140,7 @@ void GUI_UC_DispString(const U16 GUI_UNI_PTR *s) {
   }
   GUI_Context.DispPosY += yAdjust;
   GUI_Context.TextAlign &= ~GUI_TA_HORIZONTAL;
-  GUI_UNLOCK();
+  
 }
 
 /*************************** End of file ****************************/

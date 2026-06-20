@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -38,10 +38,10 @@ GUI_COLOR BUTTON_GetBkColor(BUTTON_Handle hObj,unsigned int Index) {
   GUI_COLOR Color = 0;
   if (hObj && (Index < 2)) {
     BUTTON_Obj * pObj;
-    WM_LOCK();
+    
     pObj = BUTTON_H2P(hObj);
     Color = pObj->Props.aBkColor[Index];
-    WM_UNLOCK();
+    
   }
   return Color;
 }
@@ -54,10 +54,10 @@ const GUI_FONT GUI_UNI_PTR * BUTTON_GetFont(BUTTON_Handle hObj) {
   const GUI_FONT GUI_UNI_PTR * pFont = 0;
   if (hObj) {
     BUTTON_Obj * pObj;
-    WM_LOCK();
+    
     pObj = BUTTON_H2P(hObj);
     pFont = pObj->Props.pFont;
-    WM_UNLOCK();
+    
   }
   return pFont;
 }
@@ -69,7 +69,7 @@ const GUI_FONT GUI_UNI_PTR * BUTTON_GetFont(BUTTON_Handle hObj) {
 void BUTTON_GetText(BUTTON_Handle hObj, char * pBuffer, int MaxLen) {
   if (hObj) {
     BUTTON_Obj * pObj;
-    WM_LOCK();
+    
     pObj = BUTTON_H2P(hObj);
     if (pObj->hpText) {
       const char * pText = (const char*) GUI_ALLOC_h2p(pObj->hpText);
@@ -81,7 +81,7 @@ void BUTTON_GetText(BUTTON_Handle hObj, char * pBuffer, int MaxLen) {
     } else {
       *pBuffer = 0;     /* Empty string */
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -93,10 +93,10 @@ GUI_COLOR BUTTON_GetTextColor(BUTTON_Handle hObj,unsigned int Index) {
   GUI_COLOR Color = 0;
   if (hObj && (Index < 2)) {
     BUTTON_Obj * pObj;
-    WM_LOCK();
+    
     pObj = BUTTON_H2P(hObj);
     Color = pObj->Props.aTextColor[Index];
-    WM_UNLOCK();
+    
   }
   return Color;
 }

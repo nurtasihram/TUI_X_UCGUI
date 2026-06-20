@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -84,12 +84,12 @@ void CHECKBOX_SetNumStates(CHECKBOX_Handle hObj, unsigned NumStates) {
     CHECKBOX_SetDefaultImage(&_abmCheck[1], 3);
   }
   if (hObj && ((NumStates == 2) || (NumStates == 3))) {
-    WM_LOCK();
+    
     pObj = CHECKBOX_H2P(hObj);
     pObj->Props.apBm[2] = CHECKBOX__DefaultProps.apBm[2];
     pObj->Props.apBm[3] = CHECKBOX__DefaultProps.apBm[3];
     pObj->NumStates = NumStates;
-    WM_UNLOCK();
+    
   }
 }
 

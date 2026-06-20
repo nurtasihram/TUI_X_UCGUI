@@ -41,10 +41,7 @@ Purpose     : Implementation of memory devices
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_MEMDEV_CopyFromLCD
-*/
+
 void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV_Handle hMem) {
   /* Make sure memory handle is valid */
   if (!hMem) {

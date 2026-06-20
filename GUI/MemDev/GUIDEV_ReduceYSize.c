@@ -34,10 +34,7 @@ Purpose     : Implementation of memory devices, add. module
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_MEMDEV_ReduceYSize
-*/
+
 void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV_Handle hMem, int YSize) {
   /* Make sure memory handle is valid */
   if (!hMem)
@@ -46,12 +43,12 @@ void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV_Handle hMem, int YSize) {
     return;
   { 
     GUI_MEMDEV * pDevData;
-    GUI_LOCK();
+    
     pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
     if (YSize < pDevData->YSize) {
       pDevData->YSize = YSize;
     }
-    GUI_UNLOCK();
+    
   }
 }
 

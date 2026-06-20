@@ -383,30 +383,6 @@ which ever one you like best.
 
 /*********************************************************************
 *
-*       Support for multitasking systems (locking)
-*
-**********************************************************************
-*/
-
-
-#if !GUI_OS
-  #define GUI_LOCK()
-  #define GUI_UNLOCK()
-  #define GUITASK_INIT()
-  #define GUITASK_COPY_CONTEXT()
-#else
-  void GUI_Lock(void);
-  void GUI_Unlock(void);
-  void GUITASK_Init(void);
-  void GUITASK_CopyContext(void);
-  #define GUI_LOCK()             GUI_Lock()
-  #define GUI_UNLOCK()           GUI_Unlock()
-  #define GUITASK_INIT()         GUITASK_Init()
-  #define GUITASK_COPY_CONTEXT() GUITASK_CopyContext()
-#endif
-
-/*********************************************************************
-*
 *             GUI_CONTEXT
 *
 **********************************************************************

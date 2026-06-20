@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -119,10 +119,7 @@ void GUIMONO_DispChar(U16P c) {
 
 }
 
-/*********************************************************************
-*
-*       GUIMONO_GetCharDistX
-*/
+
 int GUIMONO_GetCharDistX(U16P c) {
   const GUI_FONT_MONO GUI_UNI_PTR * pMono = GUI_Context.pAFont->p.pMono;
   GUI_USE_PARA(c);
@@ -132,19 +129,13 @@ int GUIMONO_GetCharDistX(U16P c) {
 
 }
 
-/*********************************************************************
-*
-*       GUIMONO_GetFontInfo
-*/
+
 void GUIMONO_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO* pfi) {
   GUI_USE_PARA(pFont);
   pfi->Flags = GUI_FONTINFO_FLAG_MONO;
 }
 
-/*********************************************************************
-*
-*       GUIMONO_IsInFont
-*/
+
 char GUIMONO_IsInFont(const GUI_FONT GUI_UNI_PTR * pFont, U16 c) {
   const GUI_FONT_MONO GUI_UNI_PTR * pMono = pFont->p.pMono;
   unsigned int FirstChar = pMono->FirstChar;

@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -28,18 +28,12 @@ Purpose     : Implementation of WM_xxxUserData
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _Min
-*/
+
 static int Min(int v0, int v1) {
   return (v0 < v1) ? v0 : v1;
 }
 
-/*********************************************************************
-*
-*       _CalcNumBytes
-*/
+
 static int _CalcNumBytes(WM_HWIN hWin, int NumBytes) {
   return Min(GUI_ALLOC_GetSize(hWin) - sizeof(WM_Obj), NumBytes);
 }
@@ -65,10 +59,10 @@ int WM_GetUserData(WM_HWIN hWin, void* pDest, int NumBytes) {
   if (hWin) {
     WM_Obj *pWin;
     NumBytes = _CalcNumBytes(hWin, NumBytes);
-    WM_LOCK();
+    
     pWin = WM_H2P(hWin);
     memcpy(pDest, pWin + 1, NumBytes);
-    WM_UNLOCK();
+    
   }
   return NumBytes;
 }
@@ -86,10 +80,10 @@ int WM_SetUserData(WM_HWIN hWin, const void* pSrc, int NumBytes) {
   if (hWin) {
     WM_Obj *pWin;
     NumBytes = _CalcNumBytes(hWin, NumBytes);
-    WM_LOCK();
+    
     pWin = WM_H2P(hWin);
     memcpy(pWin + 1, pSrc, NumBytes);
-    WM_UNLOCK();
+    
   }
   return NumBytes;
 }

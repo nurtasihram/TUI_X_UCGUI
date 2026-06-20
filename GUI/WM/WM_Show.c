@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -47,14 +47,11 @@ void WM_InvalidateWindowDescs(WM_HWIN hWin) {
   }
 }
 
-/*********************************************************************
-*
-*       WM_ShowWindow
-*/
+
 void WM_ShowWindow(WM_HWIN hWin) {
   if (hWin) {
     WM_Obj *pWin;
-    WM_LOCK();
+    
     pWin = WM_H2P(hWin);  
     if ((pWin->Status & WM_SF_ISVIS) == 0) {  /* First check if this is necessary at all */
       pWin->Status |= WM_SF_ISVIS;  /* Set Visibility flag */
@@ -63,7 +60,7 @@ void WM_ShowWindow(WM_HWIN hWin) {
         WM__NotifyVisChanged(hWin, &pWin->Rect);
       #endif
     }
-    WM_UNLOCK();
+    
   }
 }
 

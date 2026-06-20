@@ -63,18 +63,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
   #define WM_SUPPORT_NOTIFY_VIS_CHANGED 0
 #endif
 
-
-/*
-      *************************************************************
-      *                                                           *
-      *               Configuration check                         *
-      *                                                           *
-      *************************************************************
-*/
-
-#define WM_LOCK()   GUI_LOCK()
-#define WM_UNLOCK() GUI_UNLOCK()
-
 /************************************************************
 *
 *          Data types

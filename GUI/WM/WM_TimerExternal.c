@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -165,7 +165,7 @@ static GUI_HMEM _FindTimerByUserId(WM_HWIN hWin, int UserId) {
 static void _OnTimer(int TimerId) {
   TIMER_LINK* pLink;
   GUI_HMEM hLink;
-  WM_LOCK();
+  
   hLink = _FindTimerByTimerId(TimerId);
   if (hLink) {
     WM_MESSAGE Msg;
@@ -178,7 +178,7 @@ static void _OnTimer(int TimerId) {
     /* Since these timers are one shot, we need to delete the link item. */
     _DeleteLinkItem(hLink);
   }
-  WM_UNLOCK();
+  
 }
 
 /*********************************************************************
@@ -191,7 +191,7 @@ static void _OnTimer(int TimerId) {
 */
 void WM_DeleteTimer    (WM_HWIN hWin, int UserId) {
   GUI_HMEM hLink;
-  WM_LOCK();
+  
   hLink = _FindTimerByUserId(hWin, UserId);
   if (hLink) {
     TIMER_LINK* pLink;
@@ -199,7 +199,7 @@ void WM_DeleteTimer    (WM_HWIN hWin, int UserId) {
     GUI_X_DELETE_TIMER(pLink->TimerId);
     _DeleteLinkItem(hLink);
   }
-  WM_UNLOCK();
+  
 }
 
 
@@ -220,7 +220,7 @@ int WM_CreateTimer               (WM_HWIN hWin, int UserId, int Period, int Mode
   int TimerId;
   GUI_HMEM hTimerLink;
   TIMER_LINK* pLink;
-  WM_LOCK();
+  
   TimerId = GUI_X_CREATE_TIMER(Period, _OnTimer);
   if (TimerId) {
     hTimerLink = GUI_ALLOC_AllocZero(sizeof(TIMER_LINK));
@@ -246,7 +246,7 @@ int WM_CreateTimer               (WM_HWIN hWin, int UserId, int Period, int Mode
       GUI_X_DELETE_TIMER(TimerId);
     }
   }
-  WM_UNLOCK();
+  
   return r;
 }
 

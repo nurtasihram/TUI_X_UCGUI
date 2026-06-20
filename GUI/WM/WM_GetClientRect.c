@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -40,30 +40,27 @@ Purpose     : Windows manager, submodule
 */
 void WM_GetClientRectEx(WM_HWIN hWin, GUI_RECT* pRect) {
   WM_Obj *pWin;
-  WM_LOCK();
+  
   if (hWin) {
     if (pRect) {
       pWin = WM_H2P(hWin);  
       WM__GetClientRectWin(pWin, pRect);
     }
   }
-  WM_UNLOCK();
+  
 }
 
-/*********************************************************************
-*
-*       WM_GetClientRect
-*/
+
 void WM_GetClientRect(GUI_RECT* pRect) {
   WM_HWIN hWin;
-  WM_LOCK();
+  
   #if WM_SUPPORT_TRANSPARENCY
     hWin = WM__hATransWindow ? WM__hATransWindow : GUI_Context.hAWin;
   #else
     hWin = GUI_Context.hAWin;
   #endif
   WM_GetClientRectEx(hWin, pRect);
-  WM_UNLOCK();
+  
 }
 
 #else

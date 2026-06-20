@@ -64,10 +64,7 @@ static const LCD_PIXELINDEX aID[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _XY2PTR_BITOFFSET
-*/
+
 static U8* _XY2PTR_BITOFFSET(int x, int y, int* pBitOffset) {
   GUI_ALLOC_DATATYPE_U Offset;
   GUI_MEMDEV* pDev;
@@ -88,10 +85,7 @@ static U8* _XY2PTR_BITOFFSET(int x, int y, int* pBitOffset) {
   return pData + Offset;
 }
 
-/*********************************************************************
-*
-*       _DrawBitLine1BPP
-*/
+
 static void _DrawBitLine1BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * p, int Diff, unsigned int xsize,
                              const LCD_PIXELINDEX* pTrans, GUI_MEMDEV* pDev, PIXELINDEX* pDest)
 {
@@ -172,10 +166,7 @@ static void _DrawBitLine1BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   }
 }
 
-/*********************************************************************
-*
-*       _DrawBitLine2BPP
-*/
+
 static void _DrawBitLine2BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * p, int Diff, int xsize,
                              const LCD_PIXELINDEX* pTrans, GUI_MEMDEV* pDev, PIXELINDEX* pDest)
 {
@@ -223,10 +214,7 @@ static void _DrawBitLine2BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   }
 }
 
-/*********************************************************************
-*
-*       _DrawBitLine4BPP
-*/
+
 static void _DrawBitLine4BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * p, int Diff, int xsize,
                              const LCD_PIXELINDEX* pTrans, GUI_MEMDEV* pDev, PIXELINDEX* pDest)
 {
@@ -297,10 +285,7 @@ static void _DrawBitLine4BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   }
 }
 
-/*********************************************************************
-*
-*       _DrawBitLine8BPP
-*/
+
 static void _DrawBitLine8BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * pSrc, int xsize,
                              const LCD_PIXELINDEX* pTrans, GUI_MEMDEV* pDev, PIXELINDEX* pDest) {
   GUI_USE_PARA(pUsage);
@@ -324,10 +309,7 @@ static void _DrawBitLine8BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   }
 }
 
-/*********************************************************************
-*
-*       _DrawBitLine8BPP_DDB
-*/
+
 static void _DrawBitLine8BPP_DDB(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * pSrc, int xsize, GUI_MEMDEV* pDev, PIXELINDEX* pDest) {
   GUI_USE_PARA(pUsage);
   GUI_USE_PARA(pDest);
@@ -350,10 +332,7 @@ static void _DrawBitLine8BPP_DDB(GUI_USAGE* pUsage, int x, int y, const U8 GUI_U
   }
 }
 
-/*********************************************************************
-*
-*       _DrawBitmap
-*/
+
 static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
                         int BitsPerPixel, int BytesPerLine,
                         const U8 GUI_UNI_PTR * pData, int Diff, const LCD_PIXELINDEX* pTrans)
@@ -417,10 +396,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
   }
 }
 
-/*********************************************************************
-*
-*       _FillRect
-*/
+
 static void _FillRect(int x0, int y0, int x1, int y1) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   U8* pData;
@@ -484,18 +460,12 @@ static void _FillRect(int x0, int y0, int x1, int y1) {
   }
 }
 
-/*********************************************************************
-*
-*       _DrawHLine
-*/
+
 static void _DrawHLine(int x0, int y, int x1) {
   _FillRect(x0, y, x1, y);
 }
 
-/*********************************************************************
-*
-*       _DrawVLine
-*/
+
 static void _DrawVLine(int x , int y0, int y1) {
   GUI_MEMDEV* pDev   = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   GUI_USAGE_h hUsage = pDev->hUsage; 
@@ -526,10 +496,7 @@ static void _DrawVLine(int x , int y0, int y1) {
   }
 }
 
-/*********************************************************************
-*
-*       _SetPixelIndex
-*/
+
 static void _SetPixelIndex(int x, int y, int Index) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   U8* pData;
@@ -542,10 +509,7 @@ static void _SetPixelIndex(int x, int y, int Index) {
   }
 }
 
-/*********************************************************************
-*
-*       _XorPixel
-*/
+
 static void _XorPixel(int x, int y) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   U8* pData;
@@ -557,10 +521,7 @@ static void _XorPixel(int x, int y) {
   }
 }
 
-/*********************************************************************
-*
-*       _GetPixelIndex
-*/
+
 static unsigned int _GetPixelIndex(int x, int y) {
   U8* pData;
   int Bit;

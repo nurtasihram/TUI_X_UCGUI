@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -80,19 +80,18 @@ static void _SubRect(GUI_RECT* pDest, const GUI_RECT* pr0, const GUI_RECT* pr1) 
 void WM_ValidateRect(WM_HWIN hWin, const GUI_RECT*pRect) {
   WM_Obj* pWin;
   if (hWin) {
-    WM_LOCK();
+    
     pWin = WM_HANDLE2PTR(hWin);
     if (pWin->Status & WM_SF_INVALID) {
       if (pRect) {
         _SubRect(&pWin->InvalidRect, &pWin->InvalidRect, pRect);
         if (WM__RectIsNZ(&pWin->InvalidRect))
-          goto Done;
+          return;
       }
       pWin->Status &= ~WM_SF_INVALID;
       WM__NumInvalidWindows--;
     }
-  Done:
-    WM_UNLOCK();
+    
   }
 }
 

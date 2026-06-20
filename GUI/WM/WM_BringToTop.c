@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -39,28 +39,19 @@ typedef struct {
 **********************************************************************
 */
 
-/*********************************************************************
-*
-*       _cbInvalidateOne
-*/
+
 static void _cbInvalidateOne(WM_HWIN hWin, void * p) {
   GUI_USE_PARA(p);
   WM_InvalidateWindow(hWin);
 }
 
-/*********************************************************************
-*
-*       _InvalidateWindowAndDescs
-*/
+
 static void _InvalidateWindowAndDescs(WM_HWIN hWin) {
   WM_InvalidateWindow(hWin);
   WM_ForEachDesc(hWin, _cbInvalidateOne, 0);
 }
 
-/*********************************************************************
-*
-*       _BringToTop
-*/
+
 static void _BringToTop(WM_HWIN hWin) {
   WM_HWIN hNext, hParent;
   WM_Obj * pWin, * pNext;
@@ -91,14 +82,11 @@ static void _BringToTop(WM_HWIN hWin) {
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       WM_BringToTop
-*/
+
 void WM_BringToTop(WM_HWIN hWin) {
-  WM_LOCK();
+  
   _BringToTop(hWin);
-  WM_UNLOCK();
+  
 }
 
 #else

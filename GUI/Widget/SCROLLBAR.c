@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -440,7 +440,7 @@ SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
                                     int WinFlags, int ExFlags, int Id)
 {
   SCROLLBAR_Handle hObj;
-  WM_LOCK();
+  
   /* Set defaults if necessary */
   if ((xsize == 0) && (ysize == 0)) {
     GUI_RECT Rect;
@@ -489,7 +489,7 @@ SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
   } else {
     GUI_DEBUG_ERROROUT_IF(hObj==0, "SCROLLBAR_Create failed")
   }
-  WM_UNLOCK();
+  
   return hObj;
 }
 
@@ -522,10 +522,10 @@ void SCROLLBAR_Inc(SCROLLBAR_Handle hObj) {
 void SCROLLBAR_AddValue(SCROLLBAR_Handle hObj, int Add) {
   SCROLLBAR_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = SCROLLBAR_H2P(hObj);
     SCROLLBAR_SetValue(hObj, pObj->v + Add);
-    WM_UNLOCK();
+    
   }
 }
 
@@ -537,7 +537,7 @@ void SCROLLBAR_SetValue(SCROLLBAR_Handle hObj, int v) {
   SCROLLBAR_Obj* pObj;
   int Max;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = SCROLLBAR_H2P(hObj);
     Max = pObj->NumItems - pObj->PageSize;
     if (Max < 0)
@@ -554,7 +554,7 @@ void SCROLLBAR_SetValue(SCROLLBAR_Handle hObj, int v) {
       WM_InvalidateWindow(hObj);
       WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -565,13 +565,13 @@ void SCROLLBAR_SetValue(SCROLLBAR_Handle hObj, int v) {
 void SCROLLBAR_SetNumItems(SCROLLBAR_Handle hObj, int NumItems) {
   SCROLLBAR_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = SCROLLBAR_H2P(hObj);
     if (pObj->NumItems != NumItems) {
       pObj->NumItems = NumItems;
       WM_InvalidateWindow(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 
@@ -582,13 +582,13 @@ void SCROLLBAR_SetNumItems(SCROLLBAR_Handle hObj, int NumItems) {
 void SCROLLBAR_SetPageSize(SCROLLBAR_Handle hObj, int PageSize) {
   SCROLLBAR_Obj* pObj;
   if (hObj) {
-    WM_LOCK();
+    
     pObj = SCROLLBAR_H2P(hObj);
     if (pObj->PageSize != PageSize) {
       pObj->PageSize = PageSize;
       WM_InvalidateWindow(hObj);
     }
-    WM_UNLOCK();
+    
   }
 }
 

@@ -53,10 +53,7 @@ LCD_PIXELINDEX LCD__aConvTable[LCD_MAX_LOG_COLORS];
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       LCD_GetpPalConvTableUncached
-*/
+
 LCD_PIXELINDEX* LCD_GetpPalConvTableUncached(const LCD_LOGPALETTE GUI_UNI_PTR *  pLogPal) {
   if (pLogPal == NULL) {
     return NULL;
@@ -80,10 +77,7 @@ LCD_PIXELINDEX* LCD_GetpPalConvTableUncached(const LCD_LOGPALETTE GUI_UNI_PTR * 
   return &LCD__aConvTable[0];
 }
 
-/*********************************************************************
-*
-*       LCD_GetpPalConvTable
-*/
+
 LCD_PIXELINDEX* LCD_GetpPalConvTable(const LCD_LOGPALETTE GUI_UNI_PTR *  pLogPal) {
 /* Check cache */
   #if  LCD_SIZEOF_COLORCACHE

@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -36,7 +36,7 @@ void MENU_Popup(MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int
   GUI_USE_PARA(Flags);
   if (hObj && hDestWin) {
     MENU_Obj* pObj;
-    WM_LOCK();
+    
     pObj = MENU_H2P(hObj);
     if (pObj) {
       pObj->Flags  |= MENU_SF_POPUP;
@@ -48,7 +48,7 @@ void MENU_Popup(MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int
       WM_AttachWindowAt(hObj, WM_HBKWIN, x, y);
       MENU__SendMenuMessage(hDestWin, hObj, MENU_ON_OPEN, 0);
     }
-    WM_UNLOCK();
+    
   }
 }
 

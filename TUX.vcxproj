@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -37,7 +37,6 @@
     <ClCompile Include="GUI\Core\GUIPolyR.c" />
     <ClCompile Include="GUI\Core\GUIRealloc.c" />
     <ClCompile Include="GUI\Core\GUIStream.c" />
-    <ClCompile Include="GUI\Core\GUITask.c" />
     <ClCompile Include="GUI\Core\GUITime.c" />
     <ClCompile Include="GUI\Core\GUITimer.c" />
     <ClCompile Include="GUI\Core\GUIUC0.c" />
@@ -52,7 +51,6 @@
     <ClCompile Include="GUI\Core\GUI_ALLOC_AllocInit.c" />
     <ClCompile Include="GUI\Core\GUI_ALLOC_AllocZero.c" />
     <ClCompile Include="GUI\Core\GUI_BMP.c" />
-    <ClCompile Include="GUI\Core\GUI_BMP_Serialize.c" />
     <ClCompile Include="GUI\Core\GUI_CalcColorDist.c" />
     <ClCompile Include="GUI\Core\GUI_ClearRectEx.c" />
     <ClCompile Include="GUI\Core\GUI_Color2VisColor.c" />
@@ -632,6 +630,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GUI_X\SimDisp.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="test_cert.pfx" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -47,22 +47,6 @@
   #define GUI_SUPPORT_MEMDEV  0
 #endif
 
-#ifndef GUI_OS
-  #define GUI_OS              0
-#endif
-
-#ifndef GUI_SUPPORT_LARGE_BITMAPS
-  #if GUI_ALLOC_SIZE > 65535
-    #define GUI_SUPPORT_LARGE_BITMAPS 1
-  #else
-    #define GUI_SUPPORT_LARGE_BITMAPS 0
-  #endif
-#endif
-
-#ifndef GUI_COMPATIBLE_MODE
-  #define GUI_COMPATIBLE_MODE 1
-#endif
-
 #ifndef GUI_SUPPORT_CURSOR
   #define GUI_SUPPORT_CURSOR  (GUI_SUPPORT_MOUSE | GUI_SUPPORT_TOUCH)
 #endif

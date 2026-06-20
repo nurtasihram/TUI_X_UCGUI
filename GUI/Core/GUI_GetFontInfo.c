@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -28,12 +28,9 @@ Purpose     : Get GUI_FONTINFO structure
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       GUI_GetFontInfo
-*/
+
 void GUI_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO * pFontInfo) {
-  GUI_LOCK();
+  
   if (pFont == NULL) {
     pFont = GUI_Context.pAFont;
   }
@@ -41,7 +38,7 @@ void GUI_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO * pFontInf
   pFontInfo->CHeight  = pFont->CHeight;
   pFontInfo->LHeight  = pFont->LHeight;
   pFont->pfGetFontInfo(pFont, pFontInfo);
-  GUI_UNLOCK();
+  
 }
 
 #endif
