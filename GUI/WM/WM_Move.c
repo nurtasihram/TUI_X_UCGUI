@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Static code
@@ -107,9 +105,5 @@ void WM_MoveTo(WM_HWIN hWin, int x, int y) {
     WM__MoveTo(hWin, x, y);
   } 
 }
-
-#else
-  void WM_Move_c(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

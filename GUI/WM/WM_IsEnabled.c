@@ -19,8 +19,6 @@ Purpose     : Windows manager function
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *       Public code
@@ -31,15 +29,11 @@ Purpose     : Windows manager function
 int WM_IsEnabled(WM_HWIN hObj) {
   int r = 0;
   if (hObj) {
-    
+
     r = WM__IsEnabled(hObj);
-    
+
   }
   return r;
 }
-
-#else
-  void WM_IsEnabled_c(void) {} /* avoid empty object files */
-#endif  /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

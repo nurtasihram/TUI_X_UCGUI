@@ -19,9 +19,7 @@ Purpose     : Implementation of GUI_StoreKeyMsg
 
 #include "GUI_Protected.h"
 
-#if GUI_WINSUPPORT
-  #include "WM.h"
-#endif
+#include "WM.h"
 
 /*********************************************************************
 *
@@ -79,22 +77,16 @@ void GUI_ClearKeyBuffer(void) {
 
 
 void GUI_StoreKeyMsg(int Key, int PressedCnt) {
-  #if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
   _KeyMsg.Key = Key;
   _KeyMsg.PressedCnt = PressedCnt;
   _KeyMsgCnt = 1;
   GUI_X_SIGNAL_EVENT();
-  #else
-    GUI_USE_PARA(PressedCnt);
-    GUI_StoreKey(Key);
-  #endif
 }
 
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 int GUI_PollKeyMsg(void) {
   int r = 0;
-  
+
   if (_KeyMsgCnt) {
     int Key;
     _KeyMsgCnt--;
@@ -105,10 +97,9 @@ int GUI_PollKeyMsg(void) {
     }
     r = 1;              /* We have done something */
   }
-  
+
   return r;
 }
-#endif
 
 /*********************************************************************
 *

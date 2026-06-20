@@ -20,10 +20,7 @@ Purpose     : Implementation of GUI_GetClientRect
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
 #include "GUIDebug.h"
-
-#if GUI_WINSUPPORT
-  #include "WM.h"
-#endif
+#include "WM.h"
 
 /*********************************************************************
 *
@@ -35,14 +32,7 @@ Purpose     : Implementation of GUI_GetClientRect
 void GUI_GetClientRect(GUI_RECT* pRect) {
   if (!pRect)
     return;
-  #if GUI_WINSUPPORT
-    WM_GetClientRect(pRect);
-  #else
-    pRect->x0 = 0;
-    pRect->y0 = 0;
-    pRect->x1 = LCD_GET_XSIZE();
-    pRect->y1 = LCD_GET_YSIZE();
-  #endif
+  WM_GetClientRect(pRect);
 }
 
 /*************************** End of file ****************************/

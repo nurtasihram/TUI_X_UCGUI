@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *       Public code
@@ -30,17 +28,13 @@ Purpose     : Windows manager, add. module
 
 const GUI_RECT* WM_SetUserClipRect(const GUI_RECT* pRect) {
   const GUI_RECT* pRectReturn;
-  
+
   pRectReturn = GUI_Context.WM__pUserClipRect;
   GUI_Context.WM__pUserClipRect = pRect;
 /* Activate it ... */
   WM__ActivateClipRect();
-  
+
   return pRectReturn;
 }
-
-#else
-  void WM_SetUserClipRect(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

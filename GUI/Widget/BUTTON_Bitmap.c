@@ -19,8 +19,6 @@ Purpose     : Button bitmap support
 
 #include "BUTTON_Private.h"
 
-#if GUI_WINSUPPORT
-
 
 /*********************************************************************
 *
@@ -44,6 +42,3 @@ void BUTTON_SetBitmap(BUTTON_Handle hObj,unsigned int Index, const GUI_BITMAP* p
   BUTTON_SetBitmapEx(hObj, Index, pBitmap, 0, 0);
 }
 
-#else                            /* Avoid problems with empty object modules */
-  void BUTTON_Bitmap_C(void) {}
-#endif

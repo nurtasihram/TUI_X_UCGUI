@@ -19,8 +19,6 @@ Purpose     : Windows manager, implementation of said function
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -46,9 +44,3 @@ void WM_SetAnchor(WM_HWIN hWin, U16 AnchorFlags) {
     
   }
 }
-
-#else
-  void WM_SetAnchor_C(void) {} /* avoid empty object files */
-#endif
-
-/*************************** End of file ****************************/

@@ -19,8 +19,6 @@ Purpose     : Windows manager routine
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *         Static code
@@ -73,10 +71,5 @@ void WM__NotifyVisChanged(WM_HWIN hWin, GUI_RECT * pRect) {
     _NotifyVisChanged(hParent, pRect);
   }
 }
-
-#else
-  void WM__NotifyVisChanged_c(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
-
 
 /*************************** End of file ****************************/

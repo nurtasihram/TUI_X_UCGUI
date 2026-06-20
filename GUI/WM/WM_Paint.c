@@ -20,7 +20,6 @@ Purpose     : Windows manager, add. module
 #include <stddef.h>
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
 
 /*********************************************************************
 *
@@ -38,7 +37,7 @@ void WM_Paint(WM_HWIN hWin) {
 
   WM_ASSERT_NOT_IN_PAINT();
   if (hWin) {
-    
+
     GUI_SaveContext(&Context);
     pWin = WM_H2P(hWin);
     WM_SelectWindow(hWin);
@@ -50,12 +49,8 @@ void WM_Paint(WM_HWIN hWin) {
     WM__PaintWinAndOverlays(&PaintInfo);
     WM_ValidateWindow(hWin);
     GUI_RestoreContext(&Context);
-    
+
   }
 }
-
-#else
-  void WM_Paint(void) {} /* avoid empty object files */
-#endif /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

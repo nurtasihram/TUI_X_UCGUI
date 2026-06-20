@@ -19,7 +19,7 @@ Purpose     : Implementation of WM_SetFocusOnPrevChild
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
+
 
 /*********************************************************************
 *
@@ -100,10 +100,5 @@ WM_HWIN WM_SetFocusOnPrevChild(WM_HWIN hParent) {
   }
   return r;
 }
-
-#else
-  void WM_SetFocusOnPrevChild_C(void);
-  void WM_SetFocusOnPrevChild_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

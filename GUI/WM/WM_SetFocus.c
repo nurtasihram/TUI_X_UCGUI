@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_SetFocus
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -80,9 +78,3 @@ int WM_SetFocus(WM_HWIN hWin) {
   
   return r;
 }
-
-#else
-  void WM_SetFocus_C(void) {} /* avoid empty object files */
-#endif
-
-/*************************** End of file ****************************/

@@ -19,8 +19,6 @@ Purpose     : Implementation of checkbox widget
 
 #include "CHECKBOX.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *       Exported routines
@@ -34,10 +32,4 @@ Purpose     : Implementation of checkbox widget
 CHECKBOX_Handle CHECKBOX_Create(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags) {
   return CHECKBOX_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id);
 }
-
-#else
-  void CHECKBOX_Create_C(void) {}
-#endif  /* #if GUI_WINSUPPORT */
-
-
 

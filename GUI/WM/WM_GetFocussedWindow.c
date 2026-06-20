@@ -19,8 +19,6 @@ Purpose     : Implementation of said function
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -30,14 +28,10 @@ Purpose     : Implementation of said function
 
 WM_HWIN WM_GetFocussedWindow(void) {
   WM_HWIN r;
-  
+
   r = WM__hWinFocus;
-  
+
   return r;
 }
-
-#else
-  void WM_GetFocussedWindow_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

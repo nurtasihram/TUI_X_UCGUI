@@ -20,8 +20,6 @@ Purpose     : Windows manager, add. module
 #include <stddef.h>           /* needed for definition of NULL */
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *        Macros for internal use
@@ -50,7 +48,7 @@ Purpose     : Windows manager, add. module
 static void _SubRect(GUI_RECT* pDest, const GUI_RECT* pr0, const GUI_RECT* pr1) {
   if ((pDest == NULL) || (pr0 == NULL))
     return;
-  *pDest = *pr0;	 
+  *pDest = *pr0; 	 
   if (pr1 == NULL)
     return;
   /* Check left/right sides */
@@ -80,7 +78,7 @@ static void _SubRect(GUI_RECT* pDest, const GUI_RECT* pr0, const GUI_RECT* pr1) 
 void WM_ValidateRect(WM_HWIN hWin, const GUI_RECT*pRect) {
   WM_Obj* pWin;
   if (hWin) {
-    
+
     pWin = WM_HANDLE2PTR(hWin);
     if (pWin->Status & WM_SF_INVALID) {
       if (pRect) {
@@ -91,12 +89,8 @@ void WM_ValidateRect(WM_HWIN hWin, const GUI_RECT*pRect) {
       pWin->Status &= ~WM_SF_INVALID;
       WM__NumInvalidWindows--;
     }
-    
+
   }
 }
-
-#else
-  void WM_Validate(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

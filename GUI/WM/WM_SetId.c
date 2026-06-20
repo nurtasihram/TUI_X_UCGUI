@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_SetId
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *        Public code
@@ -34,9 +32,5 @@ void WM_SetId(WM_HWIN hObj, int Id) {
   Msg.Data.v = Id;
   WM_SendMessage(hObj, &Msg);
 }
-
-#else
-  void WM_SetId_c(void) {} /* avoid empty object files */
-#endif /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

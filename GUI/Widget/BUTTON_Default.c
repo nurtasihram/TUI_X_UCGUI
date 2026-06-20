@@ -19,7 +19,7 @@ Purpose     : Implementation of button widget
 
 #include "BUTTON_Private.h"
 
-#if GUI_WINSUPPORT
+
 
 /*********************************************************************
 *
@@ -102,9 +102,4 @@ GUI_COLOR BUTTON_GetDefaultBkColor(unsigned Index) {
 int BUTTON_GetDefaultTextAlign(void) {
   return BUTTON__DefaultProps.Align;
 }
-
-#else                            /* Avoid problems with empty object modules */
-  void BUTTON_Default_C(void);
-  void BUTTON_Default_C(void) {}
-#endif
 

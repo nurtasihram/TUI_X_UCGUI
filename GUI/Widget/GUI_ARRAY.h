@@ -1,28 +1,6 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_ARRAY.h
-Purpose     : Array handling routines
----------------------------END-OF-HEADER------------------------------
-*/
-
-#ifndef GUIARRAY_H
-#define GUIARRAY_H
+#pragma once
 
 #include "WM_Intern.h"
-
-#if GUI_WINSUPPORT
 
 typedef enum {
   GUI_ARRAY_STATE_NOT_CREATED,
@@ -37,8 +15,6 @@ typedef struct {
     GUI_ARRAY_STATE InitState;
   #endif
 } GUI_ARRAY;
-
-
 
 int      GUI_ARRAY_AddItem        (GUI_ARRAY* pThis, const void *pNew, int Len);
 void     GUI_ARRAY_Delete         (GUI_ARRAY* pThis);
@@ -61,9 +37,4 @@ void*    GUI_ARRAY_ResizeItem     (GUI_ARRAY* pThis, unsigned int Index, int Len
 #else
   #define GUI_ARRAY_CREATE(pThis)
   #define GUI_ARRAY_CHECK(pThis)
-#endif
-
-
-#endif
-
 #endif

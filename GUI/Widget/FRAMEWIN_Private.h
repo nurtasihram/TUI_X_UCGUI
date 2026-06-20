@@ -1,31 +1,9 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : FRAMEWIN_Private.h
-Purpose     : FRAMEWIN private header file
---------------------END-OF-HEADER-------------------------------------
-*/
-
-#ifndef FRAMEWIN_PRIVATE_H
-#define FRAMEWIN_PRIVATE_H
+#pragma once
 
 #include "WM.h"
 #include "FRAMEWIN.h"
 #include "WIDGET.h"
 #include "GUI_HOOK.h"
-
-#if GUI_WINSUPPORT
 
 /*********************************************************************
 *
@@ -114,6 +92,3 @@ const GUI_FONT GUI_UNI_PTR * FRAMEWIN_GetFont          (FRAMEWIN_Handle hObj);
 int             FRAMEWIN_GetTitleHeight   (FRAMEWIN_Handle hObj);
 void            FRAMEWIN_MinButtonSetState(WM_HWIN hButton, int State);
 void            FRAMEWIN_MaxButtonSetState(WM_HWIN hButton, int State);
-
-#endif   /* GUI_WINSUPPORT */
-#endif   /* FRAMEWIN_H */

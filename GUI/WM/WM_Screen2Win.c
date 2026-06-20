@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Static code
@@ -80,23 +78,19 @@ int WM__IsInWindow(WM_Obj * pWin, int x, int y) {
 
 WM_HWIN WM_Screen2hWin(int x, int y) {
   WM_HWIN r;
-  
+
   r = _Screen2hWin(WM__FirstWin, 0, x, y);
-  
+
   return r;
 }
 
 
 WM_HWIN WM_Screen2hWinEx(WM_HWIN hStop, int x, int y) {
   WM_HWIN r;
-  
+
   r = _Screen2hWin(WM__FirstWin, hStop, x, y);
-  
+
   return r;
 }
-
-#else                                       /* Avoid empty object files */
-  void WM_Screen2Win(void) {}
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

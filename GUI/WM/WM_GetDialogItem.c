@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*******************************************************************
 *
 *       Public code
@@ -57,15 +55,11 @@ static WM_HWIN _GetDialogItem(WM_HWIN hWin, int Id) {
 WM_HWIN WM_GetDialogItem(WM_HWIN hWin, int Id) {
   WM_HWIN r = 0;
   if (hWin) {
-    
+
     r = _GetDialogItem(hWin, Id);
-    
+
   }
   return r;
 }
-
-#else                                       /* Avoid empty object files */
-  void WM_DialogItem_C(void) {}
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

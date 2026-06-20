@@ -20,7 +20,6 @@ Purpose     : Implementation of WM_SetScrollbarV, WM_SetScrollbarH
 #include "WM_Intern.h"
 #include "SCROLLBAR.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 
 
 /*********************************************************************
@@ -101,9 +100,5 @@ int WM_SetScrollbarV(WM_HWIN hWin, int OnOff) {
   
   return r;
 }
-
-#else
-  void WM_SetScrollbar_c(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

@@ -19,8 +19,6 @@ Purpose     : Windows manager, submodule
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -40,31 +38,27 @@ Purpose     : Windows manager, submodule
 */
 void WM_GetClientRectEx(WM_HWIN hWin, GUI_RECT* pRect) {
   WM_Obj *pWin;
-  
+
   if (hWin) {
     if (pRect) {
       pWin = WM_H2P(hWin);  
       WM__GetClientRectWin(pWin, pRect);
     }
   }
-  
+
 }
 
 
 void WM_GetClientRect(GUI_RECT* pRect) {
   WM_HWIN hWin;
-  
+
   #if WM_SUPPORT_TRANSPARENCY
     hWin = WM__hATransWindow ? WM__hATransWindow : GUI_Context.hAWin;
   #else
     hWin = GUI_Context.hAWin;
   #endif
   WM_GetClientRectEx(hWin, pRect);
-  
-}
 
-#else
-  void WM_GetClientRect_Dummy(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
+}
 
 /*************************** End of file ****************************/

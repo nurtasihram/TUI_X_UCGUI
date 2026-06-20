@@ -1,28 +1,6 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : RADIO_Private.h
-Purpose     : RADIO private header file
---------------------END-OF-HEADER-------------------------------------
-*/
-
-#ifndef RADIO_PRIVATE_H
-#define RADIO_PRIVATE_H
+#pragma once
 
 #include "WM.h"
-
-#if GUI_WINSUPPORT
 
 #include "RADIO.h"
 #include "WIDGET.h"
@@ -94,8 +72,3 @@ extern       tRADIO_SetValue*       RADIO__pfHandleSetValue;
 */
 
 void RADIO__SetValue(RADIO_Handle hObj, RADIO_Obj* pObj, int v);
-
-#endif   /* GUI_WINSUPPORT */
-#endif   /* RADIO_PRIVATE_H */
-
-/************************* end of file ******************************/

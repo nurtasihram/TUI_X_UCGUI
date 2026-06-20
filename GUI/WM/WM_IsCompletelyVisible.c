@@ -19,8 +19,6 @@ Purpose     : Windows manager, implementation of said function
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Static code
@@ -143,15 +141,11 @@ static char _IsCompletelyVisible(WM_HWIN hWin) {
 char WM_IsCompletelyVisible(WM_HWIN hWin) {
   int r = 0;
   if (hWin) {
-    
+
     r = _IsCompletelyVisible(hWin);
-    
+
   }
   return r;
 }
-
-#else
-  void WM_IsCompletelyVisible_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

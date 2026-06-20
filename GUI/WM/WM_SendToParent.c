@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -40,9 +38,3 @@ void WM_SendToParent(WM_HWIN hChild, WM_MESSAGE* pMsg) {
     
   }
 }
-
-#else
-  void WM_SendToParent_C(void) {}   /* Avoid empty object files */
-#endif /* GUI_WINSUPPORT */
-
-/*************************** End of file ****************************/

@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -33,7 +31,7 @@ void WM_SetStayOnTop(WM_HWIN hWin, int OnOff) {
   WM_Obj * pWin;
   if (hWin) {
     U16 OldStatus;
-    
+
     pWin = WM_H2P(hWin);
     OldStatus = pWin->Status;
     if (OnOff) {
@@ -48,7 +46,7 @@ void WM_SetStayOnTop(WM_HWIN hWin, int OnOff) {
     if (pWin->Status != OldStatus) {
       WM_AttachWindow(hWin, WM_GetParent(hWin));
     }
-    
+
   }
 }
 
@@ -57,18 +55,14 @@ int WM_GetStayOnTop(WM_HWIN hWin) {
   int Result = 0;
   WM_Obj * pWin;
   if (hWin) {
-    
+
     pWin = WM_H2P(hWin);
     if ((pWin->Status & WM_SF_STAYONTOP) != 0) {
       Result = 1;
     }
-    
+
   }
   return Result;
 }
-
-#else
-  void WM_StayOnTop_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

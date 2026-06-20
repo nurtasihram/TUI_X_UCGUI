@@ -19,8 +19,6 @@ Purpose     : Windows manager routine
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *         Data types
@@ -88,10 +86,5 @@ void WM_BringToTop(WM_HWIN hWin) {
   _BringToTop(hWin);
   
 }
-
-#else
-  void WM_BringToTop_c(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
-
 
 /*************************** End of file ****************************/

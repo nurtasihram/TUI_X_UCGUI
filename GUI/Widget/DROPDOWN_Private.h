@@ -1,30 +1,8 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : DROPDOWN_Private.h
-Purpose     : DROPDOWN private header file
---------------------END-OF-HEADER-------------------------------------
-*/
-
-#ifndef DROPDOWN_PRIVATE_H
-#define DROPDOWN_PRIVATE_H
+#pragma once
 
 #include "DROPDOWN.h"
 #include "WIDGET.h"
 #include "GUI_ARRAY.h"
-
-#if GUI_WINSUPPORT
 
 /************************************************************
 *
@@ -61,6 +39,3 @@ typedef struct {
 } DROPDOWN_Obj;
 
 void DROPDOWN__AdjustHeight(DROPDOWN_Handle hObj, DROPDOWN_Obj* pObj);
-
-#endif /* GUI_WINSUPPORT */
-#endif /* DROPDOWN_PRIVATE_H */

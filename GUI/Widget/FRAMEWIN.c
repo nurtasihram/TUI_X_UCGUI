@@ -23,7 +23,7 @@ Purpose     : Implementation of framewindow widget
 #include "GUI_Protected.h"
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
+
 
 /******************************************************************
 *
@@ -616,6 +616,3 @@ void FRAMEWIN_SetActive(FRAMEWIN_Handle hObj, int State) {
   }
 }
 
-#else
-  void WIDGET_FrameWin(void) {} /* avoid empty object files */
-#endif /* GUI_WINSUPPORT */

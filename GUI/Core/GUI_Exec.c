@@ -18,9 +18,7 @@ Purpose     : Implementation of GUI_Exec
 */
 
 #include "GUI_Protected.h"
-#if GUI_WINSUPPORT
 #include "WM.h"
-#endif
 
 /*********************************************************************
 *
@@ -37,10 +35,8 @@ int GUI_Exec1(void) {
       r = 1;                  /* We have done something */
     }
   }
-  #if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
   if (WM_Exec())
     r = 1;
-  #endif
   return r;
 }
 

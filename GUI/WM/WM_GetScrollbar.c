@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *         Public code
@@ -36,9 +34,5 @@ WM_HWIN WM_GetScrollbarH(WM_HWIN hWin) {
 WM_HWIN WM_GetScrollbarV(WM_HWIN hWin) {
   return WM_GetDialogItem(hWin, GUI_ID_VSCROLL);
 }
-
-#else                                       /* Avoid empty object files */
-  void WM_GetScrollbar_C(void) {}
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

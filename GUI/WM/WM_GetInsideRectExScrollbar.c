@@ -19,8 +19,6 @@ Purpose     : Windows manager, submodule
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -67,9 +65,5 @@ void WM_GetInsideRectExScrollbar(WM_HWIN hWin, GUI_RECT* pRect) {
     }
   }
 }
-
-#else
-  void WM_GetInsideRectExScrollbar(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

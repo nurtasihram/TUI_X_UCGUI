@@ -20,16 +20,6 @@ Purpose     : Implementation of WM_DIAG_ ... functions
 #include <stddef.h>
 #include "WM_Intern.h"
 
-#if defined (__WATCOMC__)
-  #define Sleep()
-#else
-  #if GUI_WINSUPPORT
-    #if WM_SUPPORT_DIAG      /* Only defined if GUI_WINSUPPORT >= 0 */
-      #include "windows.h"   /* Required for sleep only */
-    #endif
-  #endif
-#endif
-
 /*********************************************************************
 *
 *       Static routines
@@ -44,7 +34,6 @@ Purpose     : Implementation of WM_DIAG_ ... functions
 * Function:
 *   Debug code: shows invalid areas
 */
-#if (WM_SUPPORT_DIAG)
 static void _ShowInvalid(WM_HWIN hWin) {
   GUI_CONTEXT Context = GUI_Context;
   GUI_RECT rClient;
@@ -59,7 +48,6 @@ static void _ShowInvalid(WM_HWIN hWin) {
   Sleep(20);
   GUI_Context = Context;
 }
-#endif
 
 /*********************************************************************
 *
@@ -68,7 +56,6 @@ static void _ShowInvalid(WM_HWIN hWin) {
 **********************************************************************
 */
 
-#if (WM_SUPPORT_DIAG)
 void WM_DIAG_EnableInvalidationColoring(int OnOff) {
   if (OnOff) {
     WM__pfShowInvalid = _ShowInvalid;
@@ -76,10 +63,3 @@ void WM_DIAG_EnableInvalidationColoring(int OnOff) {
     WM__pfShowInvalid = NULL;
   }
 }
-
-#else
-  void WM_DIAG_C(void);   /* Avoid "no prototype" warnings */
-  void WM_DIAG_C(void) {} /* Avoid empty object files */
-#endif
-
-/*************************** End of file ****************************/

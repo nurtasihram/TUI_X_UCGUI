@@ -19,8 +19,6 @@ Purpose     : Windows manager, submodule
 
 #include "GUI_Protected.h"
 #include "WM_Intern.h"
-
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 #include "GUIDebug.h"
 #define WM_DEBUG_LEVEL 1
 
@@ -38,7 +36,7 @@ Purpose     : Windows manager, submodule
 */
 void WM_GetWindowRect(GUI_RECT* pRect) {
   WM_HWIN hWin;
-  
+
   if (pRect) {
     WM_Obj* pWin;
     #if WM_SUPPORT_TRANSPARENCY
@@ -49,24 +47,20 @@ void WM_GetWindowRect(GUI_RECT* pRect) {
     pWin = WM_HANDLE2PTR(hWin);
     *pRect = pWin->Rect;
   }
-  
+
 }
 
 
 void WM_GetWindowRectEx(WM_HWIN hWin, GUI_RECT * pRect) {
   if (hWin && pRect) {
     WM_Obj * pWin;
-    
+
     pWin = WM_HANDLE2PTR(hWin);
     if (pWin) {
       *pRect = pWin->Rect;
     }
-    
+
   }
 }
-
-#else
-  void WM_GetWindowRect(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

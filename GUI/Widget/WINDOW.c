@@ -21,7 +21,6 @@ Purpose     : Window routines
 #include <stdlib.h>
 #include <string.h>
 #include "DIALOG.h"
-#if GUI_WINSUPPORT
 
 /*********************************************************************
 *
@@ -169,7 +168,3 @@ WM_HWIN WINDOW_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN
   return hObj;
 }
 
-#else
-  void WINDOW_c(void);
-  void WINDOW_c(void) {} /* avoid empty object files */
-#endif /* GUI_WINSUPPORT */

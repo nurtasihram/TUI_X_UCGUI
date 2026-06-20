@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_SetCapture
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *        Public data
@@ -68,9 +66,3 @@ void WM_ReleaseCapture(void) {
   WM__ReleaseCapture();
   
 }
-
-#else
-  void WM_SetCapture_c(void) {} /* avoid empty object files */
-#endif /* GUI_WINSUPPORT */
-
-/*************************** End of file ****************************/

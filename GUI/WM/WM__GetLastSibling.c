@@ -19,8 +19,6 @@ Purpose     : Implementation of WM__GetLastSibling
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -43,9 +41,5 @@ WM_HWIN WM__GetLastSibling(WM_HWIN hWin) {
   }
   return hWin;
 }
-
-#else
-  void WM__GetLastSibling_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

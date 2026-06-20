@@ -18,8 +18,6 @@ Purpose     : Windows manager, add. module
 */
 
 #include "WM_Intern.h"
-
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 #include "GUIDebug.h"
 
 /*********************************************************************
@@ -53,9 +51,5 @@ void WM__RemoveCriticalHandle(WM_CRITICAL_HANDLE* pCriticalHandle) {
     }
   }
 }
-
-#else
-  void WM_CriticalHandle_C(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_ValidateWindow
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -30,7 +28,7 @@ Purpose     : Implementation of WM_ValidateWindow
 
 void WM_ValidateWindow(WM_HWIN hWin) {
   WM_Obj* pWin;
-  
+
   if (hWin) {
     pWin = WM_HANDLE2PTR(hWin);
     if (pWin->Status & WM_SF_INVALID) {
@@ -38,11 +36,7 @@ void WM_ValidateWindow(WM_HWIN hWin) {
       WM__NumInvalidWindows--;
     }
   }
-  
-}
 
-#else
-  void WM_ValidateWindow_C(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
+}
 
 /*************************** End of file ****************************/

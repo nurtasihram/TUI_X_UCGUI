@@ -19,8 +19,6 @@ Purpose     : Windows manager, submodule
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -41,19 +39,15 @@ int WM_GetInvalidRect(WM_HWIN hWin, GUI_RECT * pRect) {
   int IsInvalid = 0;
   if (hWin) {
     WM_Obj * pWin;
-    
+
     pWin = WM_HANDLE2PTR(hWin);
     if (pWin->Status & WM_SF_INVALID) {
       IsInvalid = 1;
       *pRect = pWin->InvalidRect;
     }
-    
+
   }
   return IsInvalid;
 }
-
-#else
-  void WM_GetInvalidRect_C(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

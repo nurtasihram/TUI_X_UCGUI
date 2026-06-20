@@ -19,8 +19,6 @@ Purpose     : Windows manager, implementation of WM_IsWindow
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -30,14 +28,10 @@ Purpose     : Windows manager, implementation of WM_IsWindow
 
 int WM_IsWindow(WM_HWIN hWin) {
   int r;
-  
+
   r = WM__IsWindow(hWin);
-  
+
   return r;
 }
-
-#else
-  void WM_IsWindow_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

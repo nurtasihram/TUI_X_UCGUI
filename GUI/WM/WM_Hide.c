@@ -18,8 +18,6 @@ Purpose     : Windows manager, add. module
 */
 
 #include "WM_Intern.h"
-
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 #include "GUIDebug.h"
 #define WM_DEBUG_LEVEL 1
 
@@ -33,7 +31,7 @@ Purpose     : Windows manager, add. module
 void WM_HideWindow(WM_HWIN hWin) {
   if (hWin) {
     WM_Obj *pWin;
-    
+
     pWin = WM_HANDLE2PTR(hWin);  
     /* First check if this is necessary at all */
     if (pWin->Status & WM_SF_ISVIS) {
@@ -45,12 +43,8 @@ void WM_HideWindow(WM_HWIN hWin) {
         WM__SendMsgNoData(hWin, WM_NOTIFY_VIS_CHANGED);             /* Notify window that visibility may have changed */
       #endif
     }
-    
+
   }
 }
-
-#else
-  void WM_Hide(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

@@ -26,8 +26,6 @@ Purpose     : Widget core routines
 #include "GUI_Protected.h"
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *       Static data
@@ -464,12 +462,4 @@ const WIDGET_EFFECT* WIDGET_SetDefaultEffect(const WIDGET_EFFECT* pEffect) {
 const WIDGET_EFFECT*  WIDGET_GetDefaultEffect(void) {
   return _pEffectDefault;
 }
-
-
-#else                            /* Avoid problems with empty object modules */
-  void WIDGET_C(void) {}
-#endif /* GUI_WINSUPPORT */
-
-
-
 

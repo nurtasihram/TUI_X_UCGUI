@@ -19,8 +19,6 @@ Purpose     : Implementation of diagnostics info
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -47,10 +45,5 @@ int WM_GetNumInvalidWindows(void) {
 }
 
 
-
-
-#else
-  void WM_GetDiagInfo_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

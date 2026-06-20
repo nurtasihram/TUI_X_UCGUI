@@ -537,148 +537,13 @@
     <ClCompile Include="GUI\Core\LCDGetP.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Font\F4x6.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F6x8.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F08_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F08_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Font\F8x8.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F8x10_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F8x12_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F8x13_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F8x13_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F8x15B_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F8x15B_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F8x16.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F10_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F10_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F10S_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F10S_ASCII.c">
       <Filter>GUI\Font</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Font\F13_1.c">
       <Filter>GUI\Font</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Font\F13_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F13B_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F13B_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F13H_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F13H_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F13HB_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F13HB_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F16_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F16_HK.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F16B_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F16B_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F24_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F24_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F24B_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F24B_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F32_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F32_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F32B_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\F32B_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\FComic18B_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\FComic18B_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\FComic24B_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\FComic24B_ASCII.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\FD24x32.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\FD32.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\FD36x48.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\FD48.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\FD48x64.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\FD60x80.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\FD64.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Font\FD80.c">
       <Filter>GUI\Font</Filter>
     </ClCompile>
     <ClCompile Include="GUI\MemDev\GUIDEV.c">
@@ -1128,12 +993,6 @@
     <ClCompile Include="GUI\WM\WM_StayOnTop.c">
       <Filter>GUI\WM</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\WM\WM_Timer.c">
-      <Filter>GUI\WM</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\WM\WM_TimerExternal.c">
-      <Filter>GUI\WM</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\WM\WM_UserData.c">
       <Filter>GUI\WM</Filter>
     </ClCompile>
@@ -1153,9 +1012,6 @@
       <Filter>GUI\LCDDriver</Filter>
     </ClCompile>
     <ClCompile Include="main.c" />
-    <ClCompile Include="GUI\Font\F16_1.c">
-      <Filter>GUI\Font</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\LCDInfo0.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -1668,6 +1524,17 @@
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI__SetText.c">
       <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\WM\WM_TimerExternal.c" />
+    <ClCompile Include="GUI\WM\WM_Timer.c" />
+    <ClCompile Include="GUI\Font\F08_1.c">
+      <Filter>GUI\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Font\F08_ASCII.c">
+      <Filter>GUI\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Font\F6x8.c">
+      <Filter>GUI\Font</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

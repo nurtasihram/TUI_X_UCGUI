@@ -19,8 +19,6 @@ Purpose     : Windows manager, implementation of said function
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -36,18 +34,14 @@ int WM_IsVisible(WM_HWIN hWin) {
   int r = 0;
   if (hWin) {
     WM_Obj * pWin;
-    
+
     pWin = WM_H2P(hWin);
     if (pWin->Status & WM_SF_ISVIS) {
       r = 1;
     }
-    
+
   }
   return r;
 }
-
-#else
-  void WM_IsVisible_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

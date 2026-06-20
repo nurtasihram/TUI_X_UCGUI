@@ -1,34 +1,11 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : WM_Intern.h
-Purpose     : Windows manager internal include
-----------------------------------------------------------------------
-*/
-
-#ifndef WM_INTERN_H            /* Make sure we only include it once */
-#define WM_INTERN_H            /* Make sure we only include it once */
+#pragma once
 
 #include "WM.h"
 #include "GUI_Protected.h"       /* For GUI_Context */
 
-
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
-
-#if GUI_WINSUPPORT
 
 /*********************************************************************
 *
@@ -112,9 +89,7 @@ extern GUI_PID_STATE          WM_PID__StateLast;
   extern WM_HWIN WM__hATransWindow;
 #endif
 
-#if WM_SUPPORT_DIAG
-  extern void (*WM__pfShowInvalid)(WM_HWIN hWin);
-#endif
+extern void (*WM__pfShowInvalid)(WM_HWIN hWin);
 
 extern WM_CRITICAL_HANDLE     WM__CHWinModal;
 extern WM_CRITICAL_HANDLE     WM__CHWinLast;
@@ -186,12 +161,6 @@ void    WM__PaintWinAndOverlays     (WM_PAINTINFO* pInfo);
 void    WM__AddCriticalHandle       (WM_CRITICAL_HANDLE* pCH);
 void    WM__RemoveCriticalHandle    (WM_CRITICAL_HANDLE* pCH);
 
-#endif   /* GUI_WINSUPPORT */
-
 #if defined(__cplusplus)
   }
 #endif
-
-#endif   /* WM_INTERN_H */
-
-/*************************** End of file ****************************/

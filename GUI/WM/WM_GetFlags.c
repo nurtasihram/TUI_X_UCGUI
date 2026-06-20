@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *         Public code
@@ -31,15 +29,11 @@ Purpose     : Windows manager, add. module
 U16 WM_GetFlags(WM_HWIN hWin) {
   U16 r = 0;
   if (hWin) {
-    
+
     r = WM_H2P(hWin)->Status;
-    
+
   }
   return r;
 }
-
-#else                                       /* Avoid empty object files */
-  void WM_GetFlags_C(void) {}
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

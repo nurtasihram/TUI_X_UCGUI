@@ -1,30 +1,8 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : LISTBOX.h
-Purpose     : LISTBOX widget include
---------------------END-OF-HEADER-------------------------------------
-*/
-
-#ifndef LISTBOX_H
-#define LISTBOX_H
+#pragma once
 
 #include "WM.h"
 #include "WIDGET.h"             /* Req. for WIDGET_DRAW_ITEM_FUNC */
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
-
-#if GUI_WINSUPPORT
 
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
@@ -170,6 +148,3 @@ void        LISTBOX_SetDefaultTextColor   (unsigned Index, GUI_COLOR Color);
 #if defined(__cplusplus)
   }
 #endif
-
-#endif   /* GUI_WINSUPPORT */
-#endif   /* LISTBOX_H */

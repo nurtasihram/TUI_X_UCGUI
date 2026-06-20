@@ -18,7 +18,6 @@ Purpose     : Implementation of WM__GetPrevSibling
 */
 
 #include "WM_Intern.h"
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 
 /*********************************************************************
 *
@@ -47,9 +46,5 @@ WM_HWIN WM__GetPrevSibling(WM_HWIN hWin) {
   }
   return hi;
 }
-
-#else
-  void WM__GetPrevSibling_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

@@ -20,8 +20,6 @@ Purpose     : Touch support
 #include <stddef.h>           /* needed for definition of NULL */
 #include "WM_Intern.h"
 
-#if (GUI_WINSUPPORT)
-
 /*********************************************************************
 *
 *       Public code
@@ -32,10 +30,6 @@ Purpose     : Touch support
 void WM_PID__GetPrevState(GUI_PID_STATE* pPrevState) {
   *pPrevState = WM_PID__StateLast;
 }
-
-#else
-  void WM_PID__GetPrevState_c(void) {} /* avoid empty object files */
-#endif  /* (GUI_WINSUPPORT) */
 
 /*************************** End of file ****************************/
 

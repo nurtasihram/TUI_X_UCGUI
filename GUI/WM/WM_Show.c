@@ -19,7 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 #include "GUIDebug.h"
 #define WM_DEBUG_LEVEL 1
 
@@ -63,9 +62,3 @@ void WM_ShowWindow(WM_HWIN hWin) {
     
   }
 }
-
-#else
-  void WM_Show_c(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
-
-/*************************** End of file ****************************/

@@ -23,7 +23,7 @@ Purpose     : Effect routines
 #include "GUI.h"
 #include "WIDGET.h"
 
-#if GUI_WINSUPPORT
+
 
 /*********************************************************************
 *
@@ -42,11 +42,6 @@ void WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT* pEffect) {
   Msg.Data.p = (const void*)pEffect;
   WM_SendMessage(hObj, &Msg);
 }
-
-#else
-  void WIDGET_SetEffect_c(void) {} /* Avoid problems with empty object modules */
-#endif /* GUI_WINSUPPORT */
-
 
 
 

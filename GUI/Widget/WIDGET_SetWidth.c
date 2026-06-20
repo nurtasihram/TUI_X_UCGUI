@@ -26,7 +26,7 @@ Purpose     : Implementation of WIDGET_SetWidth
 #include "GUI_Protected.h"
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
+
 
 /*********************************************************************
 *
@@ -58,10 +58,6 @@ int WIDGET_SetWidth(WM_HWIN hObj, int Width) {
   return r;
 }
 
-
-#else                            /* Avoid problems with empty object modules */
-  void WIDGET_SetWidth_C(void) {}
-#endif /* GUI_WINSUPPORT */
 
 
 

@@ -18,8 +18,6 @@ Purpose     : Window manager routine
 */
 
 #include "WM_Intern.h"
-
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 #include "GUIDebug.h"
 
 /*********************************************************************
@@ -35,7 +33,7 @@ void WM_BringToBottom(WM_HWIN hWin) {
   WM_Obj* pWin;
   WM_Obj* pPrev;
   WM_Obj* pParent;
-  
+
   if (hWin) {
     pWin = WM_H2P(hWin);
     hPrev = WM__GetPrevSibling(hWin);
@@ -52,11 +50,7 @@ void WM_BringToBottom(WM_HWIN hWin) {
       WM_InvalidateArea(&pWin->Rect);
     }
   }
-  
-}
 
-#else
-  void WM_BringToBottom_c(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
+}
 
 /*************************** End of file ****************************/

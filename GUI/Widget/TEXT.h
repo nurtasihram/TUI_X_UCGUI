@@ -1,31 +1,9 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : TEXT.h
-Purpose     : TEXT include
---------------------END-OF-HEADER-------------------------------------
-*/
-
-#ifndef TEXT_H
-#define TEXT_H
+#pragma once
 
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 #include "WIDGET.h"      /* Req. for Create indirect data structure */
 #include "GUIDebug.h" /* Req. for GUI_DEBUG_LEVEL */
-
-#if GUI_WINSUPPORT
 
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
@@ -136,6 +114,3 @@ typedef struct {
 #if defined(__cplusplus)
   }
 #endif
-
-#endif   /* if GUI_WINSUPPORT */
-#endif   /* TEXT_H */

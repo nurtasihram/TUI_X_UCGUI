@@ -21,7 +21,6 @@ Purpose     : Windows manager, touch support
 #include "WM_Intern.h"
 #include "GUIDebug.h"
 
-#if (GUI_WINSUPPORT)
 
 /*********************************************************************
 *
@@ -228,9 +227,6 @@ int WM_HandlePID(void) {
   return r;
 }
 
-#else
-  void WM_Touch_c(void) {} /* avoid empty object files */
-#endif  /* (GUI_WINSUPPORT & GUI_SUPPORT_TOUCH) */
-
 /*************************** End of file ****************************/
+
 

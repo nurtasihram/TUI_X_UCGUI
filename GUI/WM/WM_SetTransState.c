@@ -19,7 +19,7 @@ Purpose     : Implementation of WM_SetTransState
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT && WM_SUPPORT_TRANSPARENCY
+#if WM_SUPPORT_TRANSPARENCY
 
 /*********************************************************************
 *
@@ -30,7 +30,7 @@ Purpose     : Implementation of WM_SetTransState
 
 void WM_SetTransState(WM_HWIN hWin, unsigned State) {
   WM_Obj *pWin;
-  
+
   if (hWin) {
     pWin = WM_H2P(hWin);
     if (State & WM_CF_HASTRANS) {
@@ -50,13 +50,13 @@ void WM_SetTransState(WM_HWIN hWin, unsigned State) {
       }
     }
   }
-  
+
 }
 
 #else
   void WM_SetTransState_c(void);
   void WM_SetTransState_c(void) {} /* avoid empty object files */
-#endif /* GUI_WINSUPPORT */
+#endif /* WM_SUPPORT_TRANSPARENCY */
 
 /*************************** End of file ****************************/
 

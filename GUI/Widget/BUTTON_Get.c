@@ -22,7 +22,7 @@ Purpose     : Button widget, various (optional) Get routines
 #include "BUTTON_Private.h"
 #include "GUI_Protected.h"
 
-#if GUI_WINSUPPORT
+
 
 /*********************************************************************
 *
@@ -101,6 +101,3 @@ GUI_COLOR BUTTON_GetTextColor(BUTTON_Handle hObj,unsigned int Index) {
   return Color;
 }
 
-#else                            /* Avoid problems with empty object modules */
-  void BUTTON_Get_C(void) {}
-#endif

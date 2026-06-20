@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -36,9 +34,5 @@ void WM_SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE* pState) {
     WM_SendMessage(hWin, &Msg);
   }
 }
-
-#else
-  void WM_SetScrollSize_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

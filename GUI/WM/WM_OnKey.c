@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_OnKey
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -37,7 +35,7 @@ Purpose     : Implementation of WM_OnKey
 int WM_OnKey(int Key, int Pressed) {
   int r = 0;
   WM_MESSAGE Msg;
-  
+
   if (WM__hWinFocus != 0) {
     WM_KEY_INFO Info;
     Info.Key = Key;
@@ -47,13 +45,8 @@ int WM_OnKey(int Key, int Pressed) {
     WM__SendMessage(WM__hWinFocus, &Msg);
     r = 1;
   }
-  
+
   return r;
 }
-
-#else
-  void WM_OnKey_c(void);
-  void WM_OnKey_c(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

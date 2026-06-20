@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_EnableWindow, WM_DisableWindow
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -32,7 +30,7 @@ Purpose     : Implementation of WM_EnableWindow, WM_DisableWindow
 void WM_SetEnableState(WM_HWIN hWin, int State) {
   WM_Obj* pWin;
   U16 Status;
-  
+
   pWin = WM_H2P(hWin);
   Status = pWin->Status;
   if (State) {
@@ -47,7 +45,7 @@ void WM_SetEnableState(WM_HWIN hWin, int State) {
     Msg.Data.v = State;
     WM_SendMessage(hWin, &Msg);
   }
-  
+
 }
 
 
@@ -59,8 +57,5 @@ void WM_EnableWindow(WM_HWIN hWin) {
 void WM_DisableWindow(WM_HWIN hWin) {
   WM_SetEnableState(hWin, 0);
 }
-#else
-  void WM_EnableWindow_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

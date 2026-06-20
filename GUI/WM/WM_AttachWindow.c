@@ -19,8 +19,6 @@ Purpose     : Windows manager routines
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *         Public code
@@ -68,10 +66,6 @@ void WM_AttachWindowAt(WM_HWIN hWin, WM_HWIN hParent, int x, int y) {
   WM_AttachWindow(hWin, hParent);
 }
 
-
-#else
-  void WM_AttachWindow_c(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/
 

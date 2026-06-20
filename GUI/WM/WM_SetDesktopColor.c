@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern_ConfDep.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -41,9 +39,3 @@ GUI_COLOR WM_SetDesktopColor(GUI_COLOR Color) {
 void WM_SetDesktopColors(GUI_COLOR Color) {
   WM_SetDesktopColor(Color);
 }
-
-#else
-  void WM_SetDesktopColor_c(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
-
-/*************************** End of file ****************************/

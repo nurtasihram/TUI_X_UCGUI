@@ -18,8 +18,6 @@ Purpose     : Windows manager, add. module
 */
 
 #include "WM_Intern.h"
-
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 #include "GUIDebug.h"
 #define WM_DEBUG_LEVEL 1
 
@@ -34,17 +32,13 @@ void WM_SetSize(WM_HWIN hWin, int xSize, int ySize) {
   WM_Obj* pWin;
   int dx, dy;
   if (hWin) {
-    
+
     pWin = WM_H2P(hWin);
     dx = xSize - (pWin->Rect.x1 - pWin->Rect.x0 + 1);
     dy = ySize - (pWin->Rect.y1 - pWin->Rect.y0 + 1);
     WM_ResizeWindow(hWin, dx, dy);
-    
+
   }
 }
-
-#else
-  void WM_SetSize_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

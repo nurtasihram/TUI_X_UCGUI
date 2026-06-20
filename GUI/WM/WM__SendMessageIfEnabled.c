@@ -19,8 +19,6 @@ Purpose     : Implementation of WM__SendMessageIfEnabled
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -33,10 +31,5 @@ void WM__SendMessageIfEnabled(WM_HWIN hWin, WM_MESSAGE* pMsg) {
     WM__SendMessage(hWin, pMsg);
   }
 }
-
-#else
-  void WM__SendMessageIfEnabled_c(void);
-  void WM__SendMessageIfEnabled_c(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

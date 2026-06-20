@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -31,9 +29,3 @@ Purpose     : Windows manager, add. module
 int WM_HasFocus(WM_HWIN hWin) {
   return hWin == WM__hWinFocus;
 }
-
-#else
-  void WM_HasFocus_C(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
-
-/*************************** End of file ****************************/

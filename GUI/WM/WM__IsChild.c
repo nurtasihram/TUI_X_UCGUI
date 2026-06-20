@@ -19,8 +19,6 @@ Purpose     : Implementation of WM__IsChild
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -40,9 +38,5 @@ int WM__IsChild(WM_HWIN hWin, WM_HWIN hParent) {
   }
   return r;
 }
-
-#else
-  void WM__IsChild_c(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

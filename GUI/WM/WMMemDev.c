@@ -20,8 +20,6 @@ Purpose     : Windows manager add on, support for memory devices
 #include "WM_Intern.h"
 #include "GUIDebug.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -34,10 +32,10 @@ void WM_EnableMemdev (WM_HWIN hWin) {
   #if GUI_SUPPORT_MEMDEV
     if (hWin) {
       WM_Obj * pWin;
-      
+
       pWin = WM_HANDLE2PTR(hWin);  
       pWin->Status |= (WM_SF_MEMDEV);
-      
+
     }
   #else
     GUI_DEBUG_WARN("WM_EnableMemdev: No effect because disabled in GUIConf.h (GUI_SUPPORT_MEMDEV == 0)");
@@ -50,18 +48,14 @@ void WM_DisableMemdev(WM_HWIN hWin) {
   #if GUI_SUPPORT_MEMDEV
     if (hWin) {
       WM_Obj * pWin;  
-      
+
       pWin = WM_HANDLE2PTR(hWin);  
       pWin->Status &= ~(WM_SF_MEMDEV | WM_SF_MEMDEV_ON_REDRAW);
-      
+
     }
   #else
     GUI_DEBUG_WARN("WM_EnableMemdev: No effect because disabled in GUIConf.h (GUI_SUPPORT_MEMDEV == 0)");
   #endif
 }
-
-#else
-  void WM_MemDev(void) {} /* avoid empty object files */
-#endif /* GUI_WIN_SUPPORT */
 
 /*************************** End of file ****************************/

@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public API code
@@ -31,7 +29,7 @@ Purpose     : Windows manager, add. module
 void WM_MoveChildTo(WM_HWIN hWin, int x, int y) {
   if (hWin) {
     WM_HWIN hParent;
-    
+
     hParent = WM_GetParent(hWin);
     if (hParent) {
       WM_Obj * pParent, * pWin;
@@ -41,12 +39,8 @@ void WM_MoveChildTo(WM_HWIN hWin, int x, int y) {
       y -= pWin->Rect.y0 - pParent->Rect.y0;
       WM__MoveWindow(hWin, x, y);
     }
-    
+
   }
 }
-
-#else
-  void WM_MoveChildTo_c(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

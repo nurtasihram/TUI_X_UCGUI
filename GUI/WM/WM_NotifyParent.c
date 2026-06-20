@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 #include "GUIDebug.h"
 
 /*********************************************************************
@@ -36,9 +34,5 @@ void WM_NotifyParent(WM_HWIN hWin, int Notification) {
   Msg.Data.v  = Notification;
   WM_SendToParent(hWin, &Msg);
 }
-
-#else
-  void WM_NotifyParent_C(void) {}   /* Avoid empty object files */
-#endif /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

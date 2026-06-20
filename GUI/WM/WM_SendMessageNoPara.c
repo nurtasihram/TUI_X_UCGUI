@@ -20,8 +20,6 @@ Purpose     : Implementation of WM_SendMessageNoPara
 #include <stddef.h>           /* needed for definition of NULL */
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -34,10 +32,3 @@ void WM_SendMessageNoPara(WM_HWIN hWin, int MsgId) {
   WM__SendMessageNoPara(hWin, MsgId);
   
 }
-
-#else
-  void WM_SendMessageNoPara_c(void);
-  void WM_SendMessageNoPara_c(void) {} /* avoid empty object files */
-#endif
-
-/*************************** End of file ****************************/

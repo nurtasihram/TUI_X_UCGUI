@@ -19,8 +19,6 @@ Purpose     : Windows manager, optional routines
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *       Public code
@@ -87,9 +85,5 @@ int  WM_SetScrollValue(WM_SCROLL_STATE* pScrollState, int v) {
   WM_CheckScrollBounds(pScrollState);
   return pScrollState->v - vOld;
 }
-
-#else
-  void WM_CheckScrollPos_c(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

@@ -20,7 +20,6 @@ Purpose     : Windows manager, add. module
 #include <stddef.h>
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 #include "GUIDebug.h"
 #define WM_DEBUG_LEVEL 1
 
@@ -91,9 +90,5 @@ void WM__UpdateChildPositions(WM_Obj* pObj, int dx0, int dy0, int dx1, int dy1) 
     }
   }
 }
-
-#else
-  void WM_UpdateChildPositions_C(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *                   Broadcast message
@@ -30,17 +28,13 @@ Purpose     : Windows manager, add. module
 
 int WM_BroadcastMessage( WM_MESSAGE* pMsg) {
   WM_HWIN hWin;
-  
+
   for (hWin = WM__FirstWin; hWin; ) {
     WM_SendMessage(hWin, pMsg);
     hWin = WM_H2P(hWin)->hNextLin;
   }
-  
+
   return 0;
 }
-
-#else
-  void WM_Broadcast(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

@@ -19,8 +19,6 @@ Purpose     : Windows manager, submodule
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -48,9 +46,5 @@ void WM_GetInsideRectEx(WM_HWIN hWin, GUI_RECT* pRect) {
 void WM_GetInsideRect(GUI_RECT* pRect) {
   WM_GetInsideRectEx(GUI_Context.hAWin, pRect);
 }
-
-#else
-  void WM_GetInsideRect_C(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

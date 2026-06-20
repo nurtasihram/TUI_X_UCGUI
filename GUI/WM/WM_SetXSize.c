@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -33,18 +31,14 @@ int WM_SetXSize(WM_HWIN hWin, int XSize) {
   int dx;
   int r = 0;
   if (hWin) {
-    
+
     pWin = WM_H2P(hWin);
     dx = XSize - (pWin->Rect.x1 - pWin->Rect.x0 + 1);
     WM_ResizeWindow(hWin, dx, 0);
     r = pWin->Rect.x1 - pWin->Rect.x0 + 1;
-    
+
   }
   return r;
 }
-
-#else
-  void WM_SetXSize_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

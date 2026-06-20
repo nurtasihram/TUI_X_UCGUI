@@ -23,7 +23,6 @@ Purpose     : Windows manager core
 #define WM_C
 #include "WM_Intern_ConfDep.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 
 /*********************************************************************
 *
@@ -69,9 +68,7 @@ GUI_PID_STATE          WM_PID__StateLast;
   WM_HWIN                WM__hATransWindow;
 #endif
 
-#if WM_SUPPORT_DIAG
-  void (*WM__pfShowInvalid)(WM_HWIN hWin);
-#endif
+void (*WM__pfShowInvalid)(WM_HWIN hWin);
 
 /*********************************************************************
 *
@@ -171,11 +168,9 @@ static void _Invalidate1Abs(WM_HWIN hWin, const GUI_RECT*pRect) {
       GUI_X_SIGNAL_EVENT();
     }
     /* Debug code: shows invalid areas */
-    #if (WM_SUPPORT_DIAG)
       if (WM__pfShowInvalid) {
         (WM__pfShowInvalid)(hWin);
       }
-    #endif
   }
 }
 
@@ -1583,11 +1578,3 @@ void WM_Init(void) {
     _IsInited =1;
 	}
 }
-
-
-#else
-  void WM(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
-
-/*************************** End of file ****************************/
-

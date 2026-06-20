@@ -20,7 +20,7 @@ Purpose     : Implementation of TEXT_SetTextColor
 #include "TEXT.h"
 #include "GUI_Protected.h"
 
-#if GUI_WINSUPPORT
+
 
 /*********************************************************************
 *
@@ -43,13 +43,5 @@ void TEXT_SetTextColor(TEXT_Handle hObj, GUI_COLOR Color) {
     
   }
 }
-
-
-#else  /* avoid empty object files */
-
-void TEXT_SetTextColor_c(void);
-void TEXT_SetTextColor_c(void){}
-
-#endif  /* #if GUI_WINSUPPORT */
 
 

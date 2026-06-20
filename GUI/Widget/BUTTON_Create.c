@@ -20,8 +20,6 @@ Purpose     : Implementation of button widget
 #include <stdlib.h>
 #include "BUTTON_Private.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *       public routines
@@ -43,11 +41,5 @@ BUTTON_Handle BUTTON_Create(int x0, int y0, int xsize, int ysize, int Id, int Fl
 BUTTON_Handle BUTTON_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags) {
   return BUTTON_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id);
 }
-
-#else                            /* Avoid problems with empty object modules */
-  void BUTTON_Create_C(void) {}
-#endif /* GUI_WINSUPPORT */
-
-
 
 

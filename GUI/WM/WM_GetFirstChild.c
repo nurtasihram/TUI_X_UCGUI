@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *         Public code
@@ -30,15 +28,11 @@ Purpose     : Windows manager, add. module
 
 WM_HWIN WM_GetFirstChild(WM_HWIN hWin) {
   if (hWin) {
-    
+
     hWin = WM_H2P(hWin)->hFirstChild;
-    
+
   }
   return hWin;
 }
-
-#else                                       /* Avoid empty object files */
-  void WM_GetFirstChild_C(void) {}
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

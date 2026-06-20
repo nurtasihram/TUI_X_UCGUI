@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_SetCaptureMove
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *        Static data
@@ -61,10 +59,3 @@ void WM_SetCaptureMove(WM_HWIN hWin, const GUI_PID_STATE* pState, int MinVisibil
     }
   }
 }
-
-
-#else
-  void WM_SetCaptureMove_c(void) {} /* avoid empty object files */
-#endif /* GUI_WINSUPPORT */
-
-/*************************** End of file ****************************/

@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -30,17 +28,12 @@ Purpose     : Windows manager, add. module
 
 WM_HWIN WM_GetPrevSibling(WM_HWIN hWin) {
   WM_HWIN hPrev = 0;
-  
+
   if (hWin) {
     hPrev = WM__GetPrevSibling(hWin);
   }
-  
+
   return hPrev;
 }
-
-#else                                       /* Avoid empty object files */
-  void WM_GetPrevSibling_C(void);
-  void WM_GetPrevSibling_C(void) {}
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

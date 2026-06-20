@@ -19,8 +19,6 @@ Purpose     : Windows manager, implementation of WM_IsFocussable
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -39,9 +37,5 @@ int WM_IsFocussable(WM_HWIN hWin) {
   }
   return r;
 }
-
-#else
-  void WM_IsFocussable_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

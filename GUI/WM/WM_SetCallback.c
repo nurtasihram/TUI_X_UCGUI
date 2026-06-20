@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include <stddef.h>
 #include "WM_Intern.h"
-
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 #include "GUIDebug.h"
 
 /*********************************************************************
@@ -34,18 +32,14 @@ WM_CALLBACK* WM_SetCallback (WM_HWIN hWin, WM_CALLBACK* cb) {
   WM_CALLBACK* r = NULL;  
   if (hWin) {
     WM_Obj* pWin;
-    
+
     pWin = WM_H2P(hWin);
     r = pWin->cb;
     pWin->cb = cb; 
     WM_InvalidateWindow(hWin);
-    
+
   }
   return r;
 }
-
-#else
-  void WM_SetCallBack(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

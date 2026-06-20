@@ -23,7 +23,6 @@ Purpose     : Implementation of checkbox widget
 #include "CHECKBOX_Private.h"
 #include "WIDGET.h"
 
-#if GUI_WINSUPPORT
 
 /*********************************************************************
 *
@@ -314,11 +313,4 @@ CHECKBOX_Handle CHECKBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
   
   return hObj;
 }
-
-#else                            /* Avoid problems with empty object modules */
-  void CHECKBOX_C(void);
-  void CHECKBOX_C(void) {}
-#endif  /* #if GUI_WINSUPPORT */
-
-
 

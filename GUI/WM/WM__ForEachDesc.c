@@ -19,8 +19,6 @@ Purpose     : Implementation of WM__ForEachDesc
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *         Public code
@@ -39,10 +37,5 @@ void WM__ForEachDesc(WM_HWIN hWin, WM_tfForEach * pcb, void * pData) {
     WM_ForEachDesc(hChild, pcb, pData);
   }
 }
-
-#else
-  void WM__ForEachDesc_C(void);
-  void WM__ForEachDesc_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

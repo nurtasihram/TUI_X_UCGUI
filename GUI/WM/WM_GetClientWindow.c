@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_GetClientWindow
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *        Public code
@@ -36,9 +34,5 @@ WM_HWIN WM_GetClientWindow(WM_HWIN hObj) {
   return (WM_HWIN)Msg.Data.v;
 
 }
-
-#else                            /* Avoid problems with empty object modules */
-  void WM_GETCLIENTWINDOW_C(void) {}
-#endif /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

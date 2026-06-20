@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_GetWindowSizeX,Y
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Static routines
@@ -80,11 +78,11 @@ int WM__GetWindowSizeY(const WM_Obj* pWin) {
 int WM_GetWindowSizeX(WM_HWIN hWin) {
   int r;
   WM_Obj* pWin;
-  
+
   hWin = _GetDefaultWin(hWin);
   pWin = WM_H2P(hWin);
   r = WM__GetWindowSizeX(pWin);
-  
+
   return r;
 }
 
@@ -97,17 +95,13 @@ int WM_GetWindowSizeX(WM_HWIN hWin) {
 int WM_GetWindowSizeY(WM_HWIN hWin) {
   int r;
   WM_Obj* pWin;
-  
+
   hWin = _GetDefaultWin(hWin);
   pWin = WM_H2P(hWin);
   r = WM__GetWindowSizeY(pWin);
-  
+
   return r;
 }
 
-
-#else
-  void WM_GetWindowSize_C(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

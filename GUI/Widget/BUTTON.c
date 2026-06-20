@@ -21,8 +21,6 @@ Purpose     : Implementation of button widget
 #include <string.h>
 #include "BUTTON_Private.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *       Private config defaults
@@ -445,11 +443,6 @@ void BUTTON_SetFocussable(BUTTON_Handle hObj, int State) {
     WIDGET_AndState(hObj, WIDGET_STATE_FOCUSSABLE);
   }
 }
-
-#else                            /* Avoid problems with empty object modules */
-  void BUTTON_C(void) {}
-#endif /* GUI_WINSUPPORT */
-
 
 
 

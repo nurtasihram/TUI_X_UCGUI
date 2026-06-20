@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_GetDesktopWindow
 
 #include "WM_Intern_ConfDep.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -31,9 +29,5 @@ Purpose     : Implementation of WM_GetDesktopWindow
 WM_HWIN WM_GetDesktopWindow(void) {
   return WM__ahDesktopWin;
 }
-
-#else
-  void WM_GetDesktopWindow_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

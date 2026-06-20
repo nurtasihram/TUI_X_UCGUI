@@ -78,23 +78,16 @@ void GL_DrawCircle(int x0, int y0, int r) {
 
 
 void GUI_DrawCircle(int x0, int y0, int r) {
-  #if (GUI_WINSUPPORT)
     GUI_RECT Rect;
-  #endif
-  
-  #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     Rect.x0 = x0-r;
     Rect.x1 = x0+r;
     Rect.y0 = y0-r;
     Rect.y1 = y0+r;
     WM_ITERATE_START(&Rect); {
-  #endif
     GL_DrawCircle( x0, y0, r);
-  #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
-  #endif
-  
+
 }
 
 
@@ -121,16 +114,11 @@ void GL_FillCircle(int x0, int y0, int r) {
 
 
 void GUI_FillCircle(int x0, int y0, int r) {
-  
-  #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     WM_ITERATE_START(NULL); {
-  #endif
   GL_FillCircle(x0,y0,r);
-  #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
-  #endif
-  
+
 }
 
 /*********************************************************************
@@ -174,21 +162,14 @@ void GL_FillEllipse(int x0, int y0, int rx, int ry) {
 
 
 void GUI_FillEllipse(int x0, int y0, int rx, int ry) {
-  #if (GUI_WINSUPPORT)
     GUI_RECT r;
-  #endif
-  
-  #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     /* Calc rectangle in order to avoid unnecessary drawing ops. */
     r.x0 = x0-rx; r.x1 = x0+rx; r.y0 = y0-ry; r.y1 = y0+ry;
     WM_ITERATE_START(&r); {
-  #endif
   GL_FillEllipse (x0,y0, rx, ry);
-  #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
-  #endif
-  
+
 }
 
 
@@ -224,21 +205,14 @@ void GL_DrawEllipse(int x0, int y0, int rx, int ry) {
 
 
 void GUI_DrawEllipse(int x0, int y0, int rx, int ry) {
-  #if (GUI_WINSUPPORT)
     GUI_RECT r;
-  #endif
-  
-  #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
   /* Calc rectangle in order to avoid unnecessary drawing ops. */
     r.x0 = x0-rx; r.x1 = x0+rx; r.y0 = y0-ry; r.y1 = y0+ry;
     WM_ITERATE_START(&r); {
-  #endif
   GL_DrawEllipse(x0, y0, rx, ry);
-  #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
-  #endif
-  
+
 }
 
 /*************************** End of file ****************************/

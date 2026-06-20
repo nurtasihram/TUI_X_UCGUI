@@ -19,8 +19,6 @@ Purpose     : Implementation of WM__GetFocussedChild
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -35,9 +33,5 @@ WM_HWIN WM__GetFocussedChild(WM_HWIN hWin) {
   }
   return r;
 }
-
-#else
-  void WM__GetFocussedChild_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

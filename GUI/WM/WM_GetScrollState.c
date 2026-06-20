@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_GetScrollState
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *        Public code
@@ -34,9 +32,3 @@ void WM_GetScrollState(WM_HWIN hObj, WM_SCROLL_STATE* pScrollState) {
   Msg.Data.p = pScrollState;
   WM_SendMessage(hObj, &Msg);
 }
-
-#else
-  void WM_GetScrollState_c(void) {} /* avoid empty object files */
-#endif /* GUI_WINSUPPORT */
-
-/*************************** End of file ****************************/

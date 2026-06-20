@@ -7,10 +7,8 @@
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 
-#if GUI_WINSUPPORT
-  #include "WM_GUI.h"
-  #include "WM.h"
-#endif
+#include "WM_GUI.h"
+#include "WM.h"
 
 /*********************************************************************
 *
@@ -40,9 +38,7 @@ static void _InitContext(GUI_CONTEXT* pContext) {
   pContext->pClipRect_HL = &GUI_Context.ClipRect;
   pContext->PenSize      = 1;
   /* Variables in WM module */
-  #if GUI_WINSUPPORT
     pContext->hAWin    = WM_GetDesktopWindow();
-  #endif
   /* Variables in GUI_AA module */
   pContext->Color   = GUI_INVALID_COLOR;
   pContext->BkColor = GUI_INVALID_COLOR;
@@ -60,12 +56,9 @@ static void _InitContext(GUI_CONTEXT* pContext) {
 
 void GUI_ClearRect(int x0, int y0, int x1, int y1) {
   GUI_DRAWMODE PrevDraw;
-  #if GUI_WINSUPPORT
     GUI_RECT r;
-  #endif
-  
+
   PrevDraw = LCD_SetDrawMode(GUI_DRAWMODE_REV);
-  #if GUI_WINSUPPORT
     WM_ADDORG(x0,y0);
     WM_ADDORG(x1,y1);
     r.x0 = x0;
@@ -73,13 +66,10 @@ void GUI_ClearRect(int x0, int y0, int x1, int y1) {
     r.y0 = y0;
     r.y1 = y1;
     WM_ITERATE_START(&r) {
-  #endif
   LCD_FillRect(x0,y0,x1,y1);
-  #if GUI_WINSUPPORT
     } WM_ITERATE_END();
-  #endif
   LCD_SetDrawMode(PrevDraw);
-  
+
 }
 
 

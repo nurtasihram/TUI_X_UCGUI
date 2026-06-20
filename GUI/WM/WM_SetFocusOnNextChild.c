@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_SetFocusOnNextChild
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       static code
@@ -103,9 +101,3 @@ WM_HWIN WM_SetFocusOnNextChild(WM_HWIN hParent) {
   }
   return r;
 }
-
-#else
-  void WM_SetFocusOnNextChild_C(void) {} /* avoid empty object files */
-#endif
-
-/*************************** End of file ****************************/

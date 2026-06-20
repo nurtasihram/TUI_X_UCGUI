@@ -1,26 +1,4 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : MENU_Private.h
-Purpose     : Internal header file
----------------------------END-OF-HEADER------------------------------
-*/
-
-#ifndef MENU_PRIVATE_H
-#define MENU_PRIVATE_H
-
-#if GUI_WINSUPPORT
+#pragma once
 
 #include "WIDGET.h"
 #include "GUI_ARRAY.h"
@@ -124,8 +102,3 @@ void      MENU__SetItemFlags          (MENU_Obj* pObj, unsigned Index, U16 Mask,
 void      MENU__InvalidateItem        (MENU_Handle hObj, const MENU_Obj* pObj, unsigned Index);
 int       MENU__FindItem              (MENU_Handle hObj, U16 ItemId, MENU_Handle* phMenu);
 int       MENU__SendMenuMessage       (MENU_Handle hObj, WM_HWIN hDestWin, U16 MsgType, U16 ItemId);
-
-#endif /* GUI_WINSUPPORT */
-#endif /* MENU_PRIVATE_H */
-
-/*************************** End of file ****************************/

@@ -19,8 +19,6 @@ Purpose     : Windows manager, submodule
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -45,9 +43,5 @@ GUI_COLOR WM_GetBkColor(WM_HWIN hObj) {
   }
   return GUI_INVALID_COLOR;
 }
-
-#else
-  void WM_GetBkColor_C(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

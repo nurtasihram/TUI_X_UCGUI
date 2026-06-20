@@ -19,7 +19,6 @@ Purpose     : Windows manager, optional routines
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
 #if WM_SUPPORT_TRANSPARENCY   /* If 0, WM will not generate any code */
 
 #include "GUIDebug.h"
@@ -33,7 +32,7 @@ Purpose     : Windows manager, optional routines
 
 void WM_SetHasTrans(WM_HWIN hWin) {
   WM_Obj *pWin;
-  
+
   if (hWin) {
     pWin = WM_H2P(hWin);  
     /* First check if this is necessary at all */
@@ -43,13 +42,13 @@ void WM_SetHasTrans(WM_HWIN hWin) {
       WM_InvalidateWindow(hWin);      /* Mark content as invalid */
     }
   }
-  
+
 }
 
 
 void WM_ClrHasTrans(WM_HWIN hWin) {
   WM_Obj *pWin;
-  
+
   if (hWin) {
     pWin = WM_H2P(hWin);  
     /* First check if this is necessary at all */
@@ -59,26 +58,22 @@ void WM_ClrHasTrans(WM_HWIN hWin) {
       WM_InvalidateWindow(hWin);        /* Mark content as invalid */
     }
   }
-  
+
 }
 
 
 int WM_GetHasTrans(WM_HWIN hWin) {
   int r = 0;
   WM_Obj *pWin;
-  
+
   if (hWin) {
     pWin = WM_H2P(hWin);  
     r = pWin->Status & WM_SF_HASTRANS;
   }
-  
+
   return r;
 }
 
 #endif /*WM_SUPPORT_TRANSPARENCY*/
-
-#else
-  void WM_SetTrans_c(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

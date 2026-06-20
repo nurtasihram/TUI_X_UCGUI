@@ -1,8 +1,4 @@
-
-
-#ifndef WM_H            /* Make sure we only include it once */
-#define WM_H
-
+#pragma once
 
 #include "GUI_ConfDefaults.h"
 #include "GUIType.h"      /* Needed because of typedefs only */
@@ -17,22 +13,10 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
   #define WM_SUPPORT_TRANSPARENCY 1 /* Should be defined outside of GUI_WINSUPPORT because of "#if GUI_WINSUPPORT && WM_SUPPORT_TRANSPARENCY" in some files */
 #endif
 
-/* This is for tests only. It will fill the invalid area of a window.
-   Can be used for debugging. */
-#ifndef WM_SUPPORT_DIAG
-  #ifdef WIN32   /* In simulation */
-    #define WM_SUPPORT_DIAG GUI_WINSUPPORT
-  #else
-    #define WM_SUPPORT_DIAG 0
-  #endif
-#endif
-
 /* Make sure we actually have configured windows. If we have not,
   there is no point for a windows manager and it will therefor not
   generate any code !
 */
-
-#if GUI_WINSUPPORT
 
 /*********************************************************************
 *
@@ -432,9 +416,7 @@ void      WM_ForEachDesc   (WM_HWIN hWin, WM_tfForEach * pcb, void * pData);
 *
 *           Diagnostics routines
 */
-#if (WM_SUPPORT_DIAG)
 void WM_DIAG_EnableInvalidationColoring(int OnOff);
-#endif
 
 /*
       *************************************************
@@ -477,13 +459,6 @@ void WM_DIAG_EnableInvalidationColoring(int OnOff);
 
 #endif
 
-
-#endif   /* GUI_WINSUPPORT */
-
 #if defined(__cplusplus)
 }
 #endif 
-
-#endif   /* WM_H */
-
-/*************************** End of file ****************************/

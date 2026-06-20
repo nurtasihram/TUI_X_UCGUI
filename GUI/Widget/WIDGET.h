@@ -1,32 +1,10 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : WIDGET.h
-Purpose     : Widget interface
----------------------------END-OF-HEADER------------------------------
-*/
-
-#ifndef WIDGET_H        /* Avoid multiple inclusion  */
-#define WIDGET_H
+#pragma once
 
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
 
 #include "WM_Intern.h"  /* Window manager, including some internals, which speed things up */
-
-#if GUI_WINSUPPORT
 
 #include "SCROLLBAR.h"
 
@@ -217,15 +195,6 @@ void  WIDGET_SetEffect              (WM_HWIN hObj, const WIDGET_EFFECT* pEffect)
 const WIDGET_EFFECT* WIDGET_GetDefaultEffect(void);
 int   WIDGET_SetWidth(WM_HWIN hObj, int Width);
 
-
-#endif /* GUI_WINSUPPORT */
-
 #if defined(__cplusplus)
   }
 #endif
-
-#endif   /* SLIDER_H */
-
-
-
-

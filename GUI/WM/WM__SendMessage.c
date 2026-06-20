@@ -18,9 +18,8 @@ Purpose     : Implementation of WM__SendMessage
 */
 
 #include <stddef.h>           /* needed for definition of NULL */
+#include <stddef.h>           /* needed for definition of NULL */
 #include "WM_Intern.h"
-
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 
 /*********************************************************************
 *
@@ -38,10 +37,5 @@ void WM__SendMessage(WM_HWIN hWin, WM_MESSAGE* pMsg) {
     WM_DefaultProc(pMsg);
   }
 }
-
-#else
-  void WM__SendMessage_c(void);
-  void WM__SendMessage_c(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

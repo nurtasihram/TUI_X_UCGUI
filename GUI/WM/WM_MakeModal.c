@@ -21,8 +21,6 @@ Purpose     : Windows manager, modal windows
 #include "WM_Intern.h"
 #include "GUIDebug.h"
 
-#if (GUI_WINSUPPORT)
-
 /*********************************************************************
 *
 *       public code
@@ -41,7 +39,7 @@ Purpose     : Windows manager, modal windows
 * Return value:
 */
 void WM_MakeModal(WM_HWIN hWin) {
-  
+
   WM__CHWinModal.hWin = hWin;
   /* Send a message to the window that it is no longer pressed (WM_TOUCH(0)) 
      if it is outside the modal area, because otherwise it will not receive this message any more.
@@ -54,11 +52,7 @@ void WM_MakeModal(WM_HWIN hWin) {
       WM__CHWinLast.hWin = 0;
     } 
   }
-  
-}
 
-#else
-  void WM_MakeModal_c(void) {} /* avoid empty object files */
-#endif  /* (GUI_WINSUPPORT & GUI_SUPPORT_TOUCH) */
+}
 
 /*************************** End of file ****************************/

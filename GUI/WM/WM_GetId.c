@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_GetId
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT
-
 /*********************************************************************
 *
 *        Public code
@@ -34,9 +32,5 @@ int WM_GetId(WM_HWIN hObj) {
   WM_SendMessage(hObj, &Msg);
   return Msg.Data.v;
 }
-
-#else
-  void WM_GetId_c(void) {} /* avoid empty object files */
-#endif /* GUI_WINSUPPORT */
 
 /*************************** End of file ****************************/

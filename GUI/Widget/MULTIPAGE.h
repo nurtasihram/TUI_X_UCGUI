@@ -1,29 +1,7 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : MULTIPAGE.h
-Purpose     : MULTIPAGE include
---------------------END-OF-HEADER-------------------------------------
-*/
-
-#ifndef MULTIPAGE_H
-#define MULTIPAGE_H
+#pragma once
 
 #include "WM.h"
 #include "DIALOG.h"      /* Req. for Create indirect data structure */
-
-#if GUI_WINSUPPORT
 
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
@@ -108,6 +86,3 @@ void                         MULTIPAGE_SetDefaultTextColor(GUI_COLOR Color, unsi
 #if defined(__cplusplus)
   }
 #endif
-
-#endif   /* if GUI_WINSUPPORT */
-#endif   /* MULTIPAGE_H */

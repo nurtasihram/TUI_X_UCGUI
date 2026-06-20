@@ -19,8 +19,6 @@ Purpose     : Implementation of WM__IsAncestor
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -69,8 +67,5 @@ int WM__IsAncestorOrSelf(WM_HWIN hChild, WM_HWIN hParent) {
   }
   return WM__IsAncestor(hChild, hParent);
 }
-#else
-  void WM__IsAncestor_c(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

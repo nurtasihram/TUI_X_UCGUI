@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_SetpfPollPID
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -33,10 +31,5 @@ WM_tfPollPID* WM_SetpfPollPID(WM_tfPollPID* pf) {
   WM_pfPollPID = pf;
   return r;
 }
-
-#else
-  void WM_SetpfPollPID_c(void);
-  void WM_SetpfPollPID_c(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

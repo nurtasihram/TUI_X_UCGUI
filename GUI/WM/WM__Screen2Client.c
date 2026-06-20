@@ -19,8 +19,6 @@ Purpose     : Implementation of WM__Screen2Client
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -31,10 +29,5 @@ Purpose     : Implementation of WM__Screen2Client
 void WM__Screen2Client(const WM_Obj* pWin, GUI_RECT *pRect) {
   GUI_MoveRect(pRect, -pWin->Rect.x0, -pWin->Rect.y0);
 }
-
-#else
-  void WM__Screen2Client_c(void);
-  void WM__Screen2Client_c(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

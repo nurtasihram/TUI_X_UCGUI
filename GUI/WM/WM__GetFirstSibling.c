@@ -19,8 +19,6 @@ Purpose     : Implementation of WM__GetFirstSibling
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -37,9 +35,5 @@ WM_HWIN WM__GetFirstSibling(WM_HWIN hWin) {
   hWin = WM_GetParent(hWin);
   return (hWin) ? WM_HANDLE2PTR(hWin)->hFirstChild : 0;
 }
-
-#else
-  void WM__GetFirstSibling_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

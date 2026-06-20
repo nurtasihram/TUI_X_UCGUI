@@ -19,7 +19,6 @@ Purpose     : Implementation of WM_SetCreateFlags
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 #include "GUIDebug.h"
 
 /*******************************************************************
@@ -34,9 +33,3 @@ U16 WM_SetCreateFlags(U16 Flags) {
   WM__CreateFlags = Flags;
   return r;
 }
-
-#else
-  void WM_SetCreateFlags(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
-
-/*************************** End of file ****************************/

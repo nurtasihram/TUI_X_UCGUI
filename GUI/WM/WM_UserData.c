@@ -20,8 +20,6 @@ Purpose     : Implementation of WM_xxxUserData
 #include "WM_Intern.h"
 #include <string.h>           /* for memcpy, memset */
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Static code
@@ -59,10 +57,10 @@ int WM_GetUserData(WM_HWIN hWin, void* pDest, int NumBytes) {
   if (hWin) {
     WM_Obj *pWin;
     NumBytes = _CalcNumBytes(hWin, NumBytes);
-    
+
     pWin = WM_H2P(hWin);
     memcpy(pDest, pWin + 1, NumBytes);
-    
+
   }
   return NumBytes;
 }
@@ -80,16 +78,12 @@ int WM_SetUserData(WM_HWIN hWin, const void* pSrc, int NumBytes) {
   if (hWin) {
     WM_Obj *pWin;
     NumBytes = _CalcNumBytes(hWin, NumBytes);
-    
+
     pWin = WM_H2P(hWin);
     memcpy(pWin + 1, pSrc, NumBytes);
-    
+
   }
   return NumBytes;
 }
-
-#else
-  void WM_UserData_C(void) {} /* avoid empty object files */
-#endif
 
 /*************************** End of file ****************************/

@@ -22,7 +22,7 @@ Purpose     : Button widget, various (optional) Get routines
 #include "BUTTON_Private.h"
 #include "GUI_Protected.h"
 
-#if GUI_WINSUPPORT
+
 
 /*********************************************************************
 *
@@ -46,6 +46,3 @@ unsigned BUTTON_IsPressed(BUTTON_Handle hObj) {
   return r;
 }
 
-#else                            /* Avoid problems with empty object modules */
-  void BUTTON_IsPressed_C(void) {}
-#endif

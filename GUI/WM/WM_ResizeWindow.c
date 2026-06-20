@@ -19,8 +19,6 @@ Purpose     : Windows manager, add. module
 
 #include <stddef.h>
 #include "WM_Intern.h"
-
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
 #include "GUIDebug.h"
 #define WM_DEBUG_LEVEL 1
 
@@ -37,7 +35,7 @@ void WM_ResizeWindow(WM_HWIN hWin, int dx, int dy) {
   if (((dx | dy) == 0) || (hWin == 0)){ /* Early out if there is nothing to do */
     return;
   }
-  
+
   pWin = WM_HANDLE2PTR(hWin);
   rOld = pWin->Rect;
   rNew = rOld;
@@ -61,11 +59,7 @@ void WM_ResizeWindow(WM_HWIN hWin, int dx, int dy) {
   WM__UpdateChildPositions(pWin, rNew.x0 - rOld.x0, rNew.y0 - rOld.y0, rNew.x1 - rOld.x1, rNew.y1 - rOld.y1);
   GUI__IntersectRect(&pWin->InvalidRect, &pWin->Rect); /* Make sure invalid area is not bigger than window itself */
   WM__SendMsgNoData(hWin, WM_SIZE);                    /* Send size message to the window */
-  
-}
 
-#else
-  void WM_ResizeWindow(void) {} /* avoid empty object files */
-#endif   /* GUI_WINSUPPORT */
+}
 
 /*************************** End of file ****************************/

@@ -19,8 +19,6 @@ Purpose     : Implementation of WM_GetOrg and related functions
 
 #include "WM_Intern.h"
 
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
-
 /*********************************************************************
 *
 *       Public code
@@ -58,10 +56,3 @@ int WM_GetOrgX(void) {
 int WM_GetOrgY(void) {
   return WM_GetWindowOrgY(GUI_Context.hAWin);
 }
-
-
-#else
-  void WM_GetOrg_C(void) {} /* avoid empty object files */
-#endif
-
-/*************************** End of file ****************************/
