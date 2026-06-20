@@ -113,7 +113,7 @@ static int _Log2Phys(int Index) {
     return _ColorIndex[Index];
   } else {
     LCD_COLOR Color = *(_pCursor->pBitmap->pPal->pPalEntries + Index);
-    return LCD_Color2Index(Color);
+    return Color;
   }
 }
 
@@ -243,7 +243,7 @@ const GUI_CURSOR GUI_UNI_PTR * GUI_CURSOR_Select(const GUI_CURSOR GUI_UNI_PTR * 
     i = pBM->pPal->NumEntries > 4 ? 4 : pBM->pPal->NumEntries;
     while (i--) {
       LCD_COLOR Color = *(pBM->pPal->pPalEntries + i);
-      _ColorIndex[i] = LCD_Color2Index(Color);
+      _ColorIndex[i] = Color;
     }
     _Hide();
     AllocSize = pBM->XSize * pBM->YSize * sizeof(LCD_PIXELINDEX);

@@ -40,44 +40,6 @@ typedef struct {
 
 /*********************************************************************
 *
-*     Index2Color
-
-  This function needs to be int the public part of the software
-  since it is needed by the simulation. Most other driver
-  functions are hidden in the private header file.
-*/
-
-typedef LCD_COLOR      tLCDDEV_Index2Color  (int Index);
-typedef unsigned int   tLCDDEV_Color2Index  (LCD_COLOR Color);
-typedef unsigned int   tLCDDEV_GetIndexMask (void);
-
-LCD_COLOR      LCD_L0_Index2Color  (int Index);
-unsigned int   LCD_L0_Color2Index  (LCD_COLOR Color);
-unsigned int   LCD_L0_GetIndexMask  (void);
-
-/*********************************************************************
-*
-*     Color conversion API tables
-*/
-
-typedef struct {
-  tLCDDEV_Color2Index*  pfColor2Index;
-  tLCDDEV_Index2Color*  pfIndex2Color;
-  tLCDDEV_GetIndexMask* pfGetIndexMask;
-} LCD_API_COLOR_CONV;
-
-extern const LCD_API_COLOR_CONV LCD_API_ColorConv_1;
-extern const LCD_API_COLOR_CONV LCD_API_ColorConv_2;
-extern const LCD_API_COLOR_CONV LCD_API_ColorConv_4;
-extern const LCD_API_COLOR_CONV LCD_API_ColorConv_8666;
-
-#define GUI_COLOR_CONV_1    &LCD_API_ColorConv_1
-#define GUI_COLOR_CONV_2    &LCD_API_ColorConv_2
-#define GUI_COLOR_CONV_4    &LCD_API_ColorConv_4
-#define GUI_COLOR_CONV_8666 &LCD_API_ColorConv_8666
-
-/*********************************************************************
-*
 *      LCDDEV function table
 *
 **********************************************************************
@@ -97,7 +59,6 @@ typedef unsigned int tLCDDEV_GetPixelIndex(int x, int y);
 typedef void         tLCDDEV_SetPixelIndex(int x, int y, int ColorIndex);
 typedef void         tLCDDEV_XorPixel     (int x, int y);
 typedef void         tLCDDEV_FillPolygon  (const GUI_POINT* pPoints, int NumPoints, int x0, int y0);
-typedef void         tLCDDEV_FillPolygonAA(const GUI_POINT* pPoints, int NumPoints, int x0, int y0);
 typedef void         tLCDDEV_GetRect      (LCD_RECT*pRect);
 
 /*********************************************************************
@@ -114,9 +75,6 @@ typedef void tLCDDEV_DrawBitmap   (int x0, int y0, int xsize, int ysize,
                        const void* pTrans);   /* Really LCD_PIXELINDEX, but is void to avoid compiler warnings*/
 
 struct tLCDDEV_APIList_struct {
-  tLCDDEV_Color2Index*        pfColor2Index;
-  tLCDDEV_Index2Color*        pfIndex2Color;
-  tLCDDEV_GetIndexMask*       pfGetIndexMask;
   tLCDDEV_DrawBitmap*         pfDrawBitmap;
   tLCDDEV_DrawHLine*          pfDrawHLine;
   tLCDDEV_DrawVLine*          pfDrawVLine;
@@ -127,7 +85,6 @@ struct tLCDDEV_APIList_struct {
   tLCDDEV_XorPixel*           pfXorPixel;
   #if GUI_SUPPORT_MEMDEV
     tLCDDEV_FillPolygon*      pfFillPolygon;
-    tLCDDEV_FillPolygonAA*    pfFillPolygonAA;
     const tLCDDEV_APIList*    pMemDevAPI;
     unsigned                  BitsPerPixel;
   #endif
@@ -200,25 +157,12 @@ LCD_DRAWMODE LCD_SetDrawMode  (LCD_DRAWMODE dm);
 void LCD_SetColorIndex(int Index);
 void LCD_SetBkColorIndex(int Index);
 void LCD_FillRect(int x0, int y0, int x1, int y1);
-typedef void tLCD_SetPixelAA(int x, int y, U8 Intens);
 
 LCD_COLOR    LCD_MixColors256(LCD_COLOR Color, LCD_COLOR BkColor, unsigned Intens);
 LCD_COLOR    LCD_GetPixelColor(int x, int y);     /* Get RGB color of pixel */
 unsigned int LCD_GetPixelIndex(int x, int y);
 int          LCD_GetBkColorIndex (void);
 int          LCD_GetColorIndex (void);
-
-/*      *************************************************************
-        *                                                           *
-        *      LCD  imports                                         *
-        *                  (for routines in LCDColor)               *
-        *                                                           *
-        *************************************************************
-*/
-  
-
-int              LCD_Color2Index     (LCD_COLOR Color);
-LCD_COLOR        LCD_Index2Color     (int Index);
 
 /*********************************************************************
 *

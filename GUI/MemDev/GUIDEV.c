@@ -1,27 +1,5 @@
-/*********************************************************************
-*                SEGGER MICROCONTROLLER SYSTEME GmbH                 *
-*        Solutions for real time microcontroller applications        *
-**********************************************************************
-*                                                                    *
-*        (c) 1996 - 2004  SEGGER Microcontroller Systeme GmbH        *
-*                                                                    *
-*        Internet: www.segger.com    Support:  support@segger.com    *
-*                                                                    *
-**********************************************************************
-
-***** emWin - Graphical user interface for embedded applications *****
-emWin is protected by international copyright laws.   Knowledge of the
-source code may not be used to write a similar product.  This file may
-only be used in accordance with a license and should not be re-
-distributed in any way. We appreciate your understanding and fairness.
-----------------------------------------------------------------------
-File        : GUIDEV.c
-Purpose     : Implementation of memory devices
----------------------------END-OF-HEADER------------------------------
-*/
-
-
 #include <string.h>
+
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 #if GUI_WINSUPPORT
@@ -44,24 +22,6 @@ void GUI_MEMDEV__GetRect(GUI_RECT* pRect) {
   pRect->y0 = pDev->y0;
   pRect->x1 = pDev->x0 + pDev->XSize-1;
   pRect->y1 = pDev->y0 + pDev->YSize-1;
-}
-
-
-unsigned int GUI_MEMDEV__Color2Index(LCD_COLOR Color) {
-  GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
-  return pDev->pfColor2Index(Color);
-}
-
-
-LCD_COLOR GUI_MEMDEV__Index2Color(int Index) {
-  GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
-  return pDev->pfIndex2Color(Index);
-}
-
-
-unsigned int GUI_MEMDEV__GetIndexMask(void) {
-  GUI_MEMDEV * pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
-  return pDev->pfGetIndexMask();
 }
 
 /*********************************************************************
@@ -90,10 +50,7 @@ void GUI_MEMDEV_Delete(GUI_MEMDEV_Handle hMemDev) {
 
 
 GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Flags
-                                        ,const tLCDDEV_APIList * pMemDevAPI
-                                        ,tLCDDEV_Color2Index*        pfColor2Index
-                                        ,tLCDDEV_Index2Color*        pfIndex2Color
-                                        ,tLCDDEV_GetIndexMask*       pfGetIndexMask) {
+                                        ,const tLCDDEV_APIList * pMemDevAPI) {
   I32 MemSize;
   GUI_USAGE_Handle hUsage = 0;
   unsigned int BitsPerPixel, BytesPerLine;
@@ -135,10 +92,6 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
     pDevData->NumColors     = LCD_GET_NUMCOLORS();
     pDevData->BytesPerLine  = BytesPerLine;
     pDevData->hUsage        = hUsage;
-    /* Set color conversion routine pointers */
-    pDevData->pfColor2Index = pfColor2Index;    /* LCD_L0_Color2Index; */
-    pDevData->pfIndex2Color = pfIndex2Color;    /* LCD_L0_Index2Color; */
-    pDevData->pfGetIndexMask= pfGetIndexMask;   /* LCD_L0_GetIndexMask */
 
     pDevData->pAPIList      = pMemDevAPI;
     pDevData->BitsPerPixel  = BitsPerPixel;
@@ -155,25 +108,15 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
 GUI_MEMDEV_Handle GUI_MEMDEV_CreateEx(int x0, int y0, int xSize, int ySize, int Flags) {
   GUI_MEMDEV_Handle hMemDev;
   const tLCDDEV_APIList * pDeviceAPI;
-  tLCDDEV_Color2Index   * pfColor2Index;
-  tLCDDEV_Index2Color   * pfIndex2Color;
-  tLCDDEV_GetIndexMask  * pfGetIndexMask;
-  
+
   pDeviceAPI = LCD_aAPI[0];
   if (GUI_Context.hDevData == 0) {
-    pfColor2Index = GUI_Context.pDeviceAPI->pfColor2Index;    /* LCD_L0_Color2Index; */
-    pfIndex2Color = GUI_Context.pDeviceAPI->pfIndex2Color;    /* LCD_L0_Index2Color; */
-    pfGetIndexMask= GUI_Context.pDeviceAPI->pfGetIndexMask;   /* LCD_L0_GetIndexMask */
   } else {
     /* If a memory device is already selected, we create a compatible one by copying its data */
     GUI_MEMDEV* pDevSel;
     pDevSel = GUI_MEMDEV_H2P(GUI_Context.hDevData);
-    pfColor2Index = pDevSel->pfColor2Index;
-    pfIndex2Color = pDevSel->pfIndex2Color;
-    pfGetIndexMask= pDevSel->pfGetIndexMask;
   }
-  hMemDev = GUI_MEMDEV__CreateFixed(x0, y0, xSize, ySize, Flags, pDeviceAPI->pMemDevAPI, 
-                                    pfColor2Index, pfIndex2Color ,pfGetIndexMask);
+  hMemDev = GUI_MEMDEV__CreateFixed(x0, y0, xSize, ySize, Flags, pDeviceAPI->pMemDevAPI);
   
   return hMemDev;
 }

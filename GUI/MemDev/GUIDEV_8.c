@@ -1,29 +1,5 @@
-/*********************************************************************
-*                SEGGER MICROCONTROLLER SYSTEME GmbH                 *
-*        Solutions for real time microcontroller applications        *
-**********************************************************************
-*                                                                    *
-*        (c) 1996 - 2004  SEGGER Microcontroller Systeme GmbH        *
-*                                                                    *
-*        Internet: www.segger.com    Support:  support@segger.com    *
-*                                                                    *
-**********************************************************************
-
-***** emWin - Graphical user interface for embedded applications *****
-emWin is protected by international copyright laws.   Knowledge of the
-source code may not be used to write a similar product.  This file may
-only be used in accordance with a license and should not be re-
-distributed in any way. We appreciate your understanding and fairness.
-----------------------------------------------------------------------
-File        : GUIDEV_8.c
-Purpose     : Implementation of memory devices
-              This file handles 8 bit memory devices, but also 16 bit
-              memory devices when included by GUIDEV_16.c
----------------------------END-OF-HEADER------------------------------
-*/
-
-
 #include <string.h>
+
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 #if GUI_WINSUPPORT
@@ -85,7 +61,6 @@ static void _DrawBitLine1BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
                              const LCD_PIXELINDEX* pTrans, GUI_MEMDEV* pDev, PIXELINDEX* pDest)
 {
   PIXELINDEX Index1;
-  PIXELINDEX IndexMask;
   unsigned pixels;
   unsigned PixelCnt;
   PixelCnt = 8 - Diff;
@@ -163,7 +138,6 @@ static void _DrawBitLine1BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
       pixels = LCD_aMirror[*(++p)];
     } while (1);
   case LCD_DRAWMODE_XOR:
-    IndexMask = pDev->pfGetIndexMask();
     do {
       /* Prepare loop */
       if (PixelCnt > xsize) {
@@ -173,7 +147,7 @@ static void _DrawBitLine1BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
       /* Write as many pixels as we are allowed to and have loaded in this inner loop */
       do {
         if ((pixels & 1)) {
-          *pDest ^= IndexMask;
+          *pDest ^= ~0;
         }
         *pDest++;
         pixels >>= 1;
@@ -503,12 +477,10 @@ static void _FillRect(int x0, int y0, int x1, int y1) {
     if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
       int RemPixels;
       PIXELINDEX* pDest;
-      PIXELINDEX IndexMask;
       RemPixels = Len;
       pDest  = pData;
-      IndexMask = pDev->pfGetIndexMask();
       do {
-        *pDest = *pDest ^ IndexMask;
+        *pDest = *pDest ^ ~0;
         pDest++;
       } while (--RemPixels);
     } else {  /* Fill */
@@ -538,13 +510,11 @@ static void _DrawVLine(int x , int y0, int y1) {
   unsigned BytesPerLine = pDev->BytesPerLine;
 
   if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
-    PIXELINDEX IndexMask;
-    IndexMask = pDev->pfGetIndexMask();
     do {
       if (hUsage) {
         GUI_USAGE_AddPixel(pUsage, x, y0);
       }
-      *pData = *pData ^ IndexMask;
+      *pData = *pData ^ ~0;
       pData = (PIXELINDEX*)((U8*)pData + pDev->BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
     } while (++y0 <= y1);
   } else {
@@ -578,12 +548,10 @@ static void _SetPixelIndex(int x, int y, int Index) {
 
 
 static void _XorPixel(int x, int y) {
-  PIXELINDEX IndexMask;
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   GUI_USAGE_h hUsage = pDev->hUsage; 
   PIXELINDEX* pData = _XY2PTR(x, y);
-  IndexMask = pDev->pfGetIndexMask();
-  *pData = *pData ^ IndexMask;
+  *pData = *pData ^ ~0;
   if (hUsage) {
     GUI_USAGE_AddPixel(GUI_USAGE_H2P(hUsage), x, y);
   }
@@ -603,9 +571,6 @@ static unsigned int _GetPixelIndex(int x, int y) {
 */
 
 const tLCDDEV_APIList API_LIST = {
-  GUI_MEMDEV__Color2Index,
-  GUI_MEMDEV__Index2Color,
-  GUI_MEMDEV__GetIndexMask,
   (tLCDDEV_DrawBitmap*)_DrawBitmap,
   _DrawHLine,
   _DrawVLine,
@@ -615,7 +580,6 @@ const tLCDDEV_APIList API_LIST = {
   _SetPixelIndex,
   _XorPixel,
   NULL,               /* pfFillPolygon   */
-  NULL,               /* pfFillPolygonAA */
   NULL,               /* MemDevAPI       */
   BITSPERPIXEL        /* BitsPerPixel    */
 };

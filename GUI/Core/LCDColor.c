@@ -71,7 +71,7 @@ LCD_PIXELINDEX* LCD_GetpPalConvTableUncached(const LCD_LOGPALETTE GUI_UNI_PTR * 
     int NumEntries = pLogPal->NumEntries;
     const LCD_COLOR GUI_UNI_PTR * pPalEntry = &pLogPal->pPalEntries[0];
     for (i=0; i< NumEntries; i++) {
-      LCD__aConvTable[i] = LCD_Color2Index(*(pPalEntry+i));
+      LCD__aConvTable[i] = pPalEntry[i];
     }
   }
   return &LCD__aConvTable[0];

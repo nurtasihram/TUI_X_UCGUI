@@ -1,14 +1,10 @@
-
-
-#ifndef  GUI_PROTECTED_H
-#define  GUI_PROTECTED_H
+#pragma once
 
 #include "GUI.h"
 #include "LCD_Protected.h"
 #include "GUIDebug.h"
-#if GUI_WINSUPPORT
-  #include "WM_GUI.h"
-#endif
+
+#include "WM_GUI.h"
 
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
@@ -138,9 +134,6 @@ struct GUI_Usage {
     unsigned               BytesPerLine;
     unsigned               BitsPerPixel;
     GUI_HMEM               hUsage;
-    tLCDDEV_Color2Index*   pfColor2Index;
-    tLCDDEV_Index2Color*   pfIndex2Color;
-    tLCDDEV_GetIndexMask*  pfGetIndexMask;
     const tLCDDEV_APIList* pAPIList;
   } GUI_MEMDEV;
 
@@ -148,15 +141,9 @@ struct GUI_Usage {
 
   void         GUI_MEMDEV__CopyFromLCD (GUI_MEMDEV_Handle hMem);
   void         GUI_MEMDEV__GetRect     (GUI_RECT* pRect);
-  unsigned     GUI_MEMDEV__Color2Index (LCD_COLOR Color);
-  LCD_COLOR    GUI_MEMDEV__Index2Color (int Index);
-  unsigned int GUI_MEMDEV__GetIndexMask(void);
 
   GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Flags
-                                          ,const tLCDDEV_APIList * pMemDevAPI
-                                          ,tLCDDEV_Color2Index*        pfColor2Index
-                                          ,tLCDDEV_Index2Color*        pfIndex2Color
-                                          ,tLCDDEV_GetIndexMask*       pfGetIndexMask);
+                                          ,const tLCDDEV_APIList * pMemDevAPI);
 
 #endif
 
@@ -250,7 +237,6 @@ void GL_DrawLineTo       (int x, int y);
 void GL_DrawLine         (int x0, int y0, int x1, int y1);
 void GL_MoveTo           (int x, int y);
 void GL_FillCircle       (int x0, int y0, int r);
-void GL_FillCircleAA     (int x0, int y0, int r);
 void GL_FillEllipse      (int x0, int y0, int rx, int ry);
 void GL_FillPolygon      (const GUI_POINT* pPoints, int NumPoints, int x0, int y0);
 void GL_SetDefault       (void);
@@ -310,8 +296,6 @@ GUI_COLOR GUI_GetBitmapPixelColor(const GUI_BITMAP GUI_UNI_PTR * pBMP, unsigned 
 }
 #endif 
 
-#endif   /* Avoid multiple inclusion */
-
 /************************************************************
 *
 *         GUI_EXTERN declartions/definitions
@@ -351,5 +335,3 @@ extern const GUI_UC_ENC_APILIST GUI__API_TableNone;
 #endif
 
 #undef GUI_EXTERN
-
-/*************************** End of file ****************************/

@@ -244,21 +244,10 @@ int LCD_Init(void) {
   return r;
 }
 
-
-int LCD_Color2Index(LCD_COLOR Color) {
-  return LCDDEV_L0_Color2Index(Color);
-}
-
-
-LCD_COLOR LCD_Index2Color(int Index) {
-  return LCDDEV_L0_Index2Color(Index);
-}
-
-
 void LCD_SetBkColor(GUI_COLOR color) {
   if (GUI_Context.BkColor != color) {
     GUI_Context.BkColor = color;
-    LCD_SetBkColorIndex(LCD_Color2Index(color));
+    LCD_SetBkColorIndex(color);
   }
 }
 
@@ -266,7 +255,7 @@ void LCD_SetBkColor(GUI_COLOR color) {
 void LCD_SetColor(GUI_COLOR color) {
   if (GUI_Context.Color != color) {
     GUI_Context.Color = color;
-    LCD_SetColorIndex(LCD_Color2Index(color));
+    LCD_SetColorIndex(color);
   }
 }
 

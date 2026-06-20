@@ -56,22 +56,22 @@ static void _DrawHLineAlpha(int x0, int y, int x1, int Intens) {
   if (hUsage) {
     GUI_USAGE_AddHLine(GUI_USAGE_H2P(hUsage), x0, y, Len);
   }
-  Color1 = LCD_Index2Color(LCD_COLORINDEX);
+  Color1 = LCD_COLORINDEX;
   if (pDev->BitsPerPixel == 8) {
     U8* pData;
     pData  = (U8*) GUI_MEMDEV__XY2PTR(x0, y);
     while (Len--) {
-      Color2 = LCD_Index2Color(*(pData));
+      Color2 = *pData;
       Color2 = LCD_MixColors256(Color1, Color2, Intens);
-      *(pData++) = LCD_Color2Index(Color2);
+      *pData++ = Color2;
     }
   } else {
     U16* pData;
     pData  = (U16*) GUI_MEMDEV__XY2PTR(x0, y);
     while (Len--) {
-      Color2 = LCD_Index2Color(*(pData));
+      Color2 = *pData;
       Color2 = LCD_MixColors256(Color1, Color2, Intens);
-      *(pData++) = LCD_Color2Index(Color2);
+      *pData++ = Color2;
     }
   }
 }

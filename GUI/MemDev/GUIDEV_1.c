@@ -537,9 +537,6 @@ static unsigned int _GetPixelIndex(int x, int y) {
 */
 
 const tLCDDEV_APIList API_LIST = {
-  GUI_MEMDEV__Color2Index,
-  GUI_MEMDEV__Index2Color,
-  GUI_MEMDEV__GetIndexMask,
   (tLCDDEV_DrawBitmap*)_DrawBitmap,
   _DrawHLine,
   _DrawVLine,
@@ -549,7 +546,6 @@ const tLCDDEV_APIList API_LIST = {
   _SetPixelIndex,
   _XorPixel,
   NULL,               /* pfFillPolygon   */
-  NULL,               /* pfFillPolygonAA */
   NULL,               /* MemDevAPI       */
   BITSPERPIXEL        /* BitsPerPixel    */
 };

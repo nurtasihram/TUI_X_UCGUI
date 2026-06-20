@@ -11,7 +11,6 @@ extern GUI_CONST_STORAGE U8 LCD_aMirror[256];
 
 void LCD_SelectLCD(void);
 
-unsigned int LCD_L0_Color2Index       (LCD_COLOR Color);
 void         LCD_L0_DrawHLine         (int x0, int y0,  int x1);
 void         LCD_L0_DrawVLine         (int x,  int y0,  int y1);
 void         LCD_L0_FillRect          (int x0, int y0, int x1, int y1);

@@ -478,10 +478,8 @@ char      GUI_SetDecChar(char c);
 **********************************************************************
 */
 
-int       GUI_Color2Index(GUI_COLOR color);
 GUI_COLOR GUI_Color2VisColor(GUI_COLOR color);
 char      GUI_ColorIsAvailable(GUI_COLOR color);
-GUI_COLOR GUI_Index2Color(int Index);
 U32       GUI_CalcColorDist (GUI_COLOR Color0, GUI_COLOR  Color1);
 U32       GUI_CalcVisColorError(GUI_COLOR color);
 
@@ -775,13 +773,10 @@ GUI_HMEM           GUI_ALLOC_Realloc    (GUI_HMEM hOld, int NewSize);
   GUI_MEMDEV_Handle GUI_MEMDEV_Create     (int x0, int y0, int XSize, int YSize);
   GUI_MEMDEV_Handle GUI_MEMDEV_CreateEx   (int x0, int y0, int XSize, int YSize, int Flags);
   GUI_MEMDEV_Handle GUI_MEMDEV_CreateFixed(int x0, int y0, int xsize, int ysize, int Flags,
-                                           const tLCDDEV_APIList * pMemDevAPI,
-                                           const LCD_API_COLOR_CONV * pColorConvAPI);
+                                           const tLCDDEV_APIList * pMemDevAPI);
   void GUI_MEMDEV_Clear         (GUI_MEMDEV_Handle hMem);
   void GUI_MEMDEV_CopyFromLCD   (GUI_MEMDEV_Handle hMem);
-  void GUI_MEMDEV_CopyFromLCDAA (GUI_MEMDEV_Handle hMem);
   void GUI_MEMDEV_CopyToLCD     (GUI_MEMDEV_Handle hMem);
-  void GUI_MEMDEV_CopyToLCDAA   (GUI_MEMDEV_Handle hMem);
   void GUI_MEMDEV_CopyToLCDAt   (GUI_MEMDEV_Handle hMem, int x, int y);
   int  GUI_MEMDEV_CompareWithLCD(GUI_MEMDEV_Handle hMem, int*px, int*py, int *pExp, int*pAct);
   void GUI_MEMDEV_Delete        (GUI_MEMDEV_Handle MemDev);

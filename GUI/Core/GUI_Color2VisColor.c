@@ -30,8 +30,8 @@ GUI_COLOR GUI_Color2VisColor(GUI_COLOR color) {
   I16 Index;
   GUI_COLOR r;
   
-  Index = LCD_Color2Index(color);
-  r = LCD_Index2Color(Index);  
+  Index = (color);
+  r = (Index);  
   
   return r;  
 }

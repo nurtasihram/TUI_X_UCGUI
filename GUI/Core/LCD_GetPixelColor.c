@@ -30,7 +30,7 @@ Purpose     : Get Pixel routines
 */
 
 LCD_COLOR LCD_GetPixelColor(int x, int y) {
-  return LCD_Index2Color(LCD_GetPixelIndex(x,y));
+  return (LCD_GetPixelIndex(x,y));
 }
 
 /*************************** End of file ****************************/

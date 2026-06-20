@@ -80,11 +80,11 @@ static void GL_DrawBitmapEx(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int 
                   xStart    = x;
                   Cached    = 1;
                   if (pBitmap->pMethods) {
-                    Color = pBitmap->pMethods->pfIndex2Color(Index);
+                    Color = Index;
                   } else {
                     Color = pBitmap->pPal->pPalEntries[Index];
                   }
-                  LCD_SetColorIndex(LCDDEV_L0_Color2Index(Color));
+                  LCD_SetColorIndex(Color);
                 }
                 IndexPrev = Index;
               }

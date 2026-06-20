@@ -34,9 +34,6 @@ Purpose     : Selection of LCD display
 */
 
 const tLCDDEV_APIList LCD_L0_APIList = {
-    LCD_L0_Color2Index,
-    LCD_L0_Index2Color,
-    LCD_L0_GetIndexMask,
     (tLCDDEV_DrawBitmap*)LCD_L0_DrawBitmap,
     LCD_L0_DrawHLine,
     LCD_L0_DrawVLine,
@@ -47,7 +44,6 @@ const tLCDDEV_APIList LCD_L0_APIList = {
     LCD_L0_XorPixel,
 #if GUI_SUPPORT_MEMDEV
   NULL,                       /* pfFillPolygon */
-  NULL,                       /* pfFillPolygonAA */
   #if LCD_BITSPERPIXEL <= 8
     &GUI_MEMDEV__APIList8
   #else

@@ -1,30 +1,5 @@
-/*********************************************************************
-*                SEGGER MICROCONTROLLER SYSTEME GmbH                 *
-*        Solutions for real time microcontroller applications        *
-**********************************************************************
-*                                                                    *
-*        (c) 1996 - 2004  SEGGER Microcontroller Systeme GmbH        *
-*                                                                    *
-*        Internet: www.segger.com    Support:  support@segger.com    *
-*                                                                    *
-**********************************************************************
-
-***** emWin - Graphical user interface for embedded applications *****
-emWin is protected by international copyright laws.   Knowledge of the
-source code may not be used to write a similar product.  This file may
-only be used in accordance with a license and should not be re-
-distributed in any way. We appreciate your understanding and fairness.
-----------------------------------------------------------------------
-File        : GUIDEV_Measure.c
-Purpose     : Implementation of measurement devices
-              The purpose of a measurement device is to find out the
-              area (Rectangle) affected by a sequence of drawing
-              operations.
----------------------------END-OF-HEADER------------------------------
-*/
-
-
 #include <string.h>
+
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 #if GUI_WINSUPPORT
@@ -43,9 +18,6 @@ Purpose     : Implementation of measurement devices
 
 typedef struct {
   GUI_RECT rUsed;
-  tLCDDEV_Color2Index*  pfColor2Index;
-  tLCDDEV_Index2Color*  pfIndex2Color;
-  tLCDDEV_GetIndexMask* pfGetIndexMask;
 } GUI_MEASDEV;
 
 /*********************************************************************
@@ -142,25 +114,6 @@ static void _GetRect(LCD_RECT* pRect) {
   pRect->x1 = pRect->y1 =  4095;
 }
 
-
-static unsigned int _Color2Index(LCD_COLOR Color) {
-  GUI_MEASDEV* pDev = GUI_MEASDEV_H2P(GUI_Context.hDevData);
-  return pDev->pfColor2Index(Color);
-}
-
-
-static LCD_COLOR _Index2Color(int Index) {
-  GUI_MEASDEV* pDev = GUI_MEASDEV_H2P(GUI_Context.hDevData);
-  return pDev->pfIndex2Color(Index);
-}
-
-
-static unsigned int _GetIndexMask(void) {
-  GUI_MEASDEV* pDev = GUI_MEASDEV_H2P(GUI_Context.hDevData);
-  return pDev->pfGetIndexMask();
-}
-
-
 static void _CalcPolyRect(GUI_RECT *pr, const GUI_POINT* paPoint, int NumPoints) {
   int i;
   int xMin, xMax, yMin, yMax;
@@ -195,22 +148,11 @@ static void _FillPolygon(const GUI_POINT* paPoint, int NumPoints, int x0, int y0
   _MarkRect(r.x0, r.y0, r.x1, r.y1);
 }
 
-
-static void _FillPolygonAA(const GUI_POINT* paPoint, int NumPoints, int x0, int y0) {
-    GUI_USE_PARA(paPoint);
-    GUI_USE_PARA(NumPoints);
-    GUI_USE_PARA(x0);
-    GUI_USE_PARA(y0);
-}
-
 /*********************************************************************
 *
 *             Device structure
 */
 static const tLCDDEV_APIList _APIList = {
-  _Color2Index,
-  _Index2Color,
-  _GetIndexMask,
   (tLCDDEV_DrawBitmap*)_DrawBitmap,
   _DrawHLine,
   _DrawVLine,
@@ -221,7 +163,6 @@ static const tLCDDEV_APIList _APIList = {
   _XorPixel,
   NULL,
   _FillPolygon,
-  _FillPolygonAA
 };
 
 /*********************************************************************
@@ -263,8 +204,6 @@ GUI_MEASDEV_Handle GUI_MEASDEV_Create(void) {
     GUI_MEASDEV* pDevData;
     
     pDevData = (GUI_MEASDEV*)GUI_ALLOC_h2p(hMemDev);
-    pDevData->pfColor2Index = GUI_Context.pDeviceAPI->pfColor2Index;    
-    pDevData->pfIndex2Color = GUI_Context.pDeviceAPI->pfIndex2Color;
     GUI_MEASDEV_ClearRect(hMemDev);
     
   } else {

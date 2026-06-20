@@ -28,8 +28,8 @@ Purpose     : Implementation of LCD_UpdateColorIndices
 */
 
 void LCD_UpdateColorIndices(void) {
-  LCD_SetColorIndex(LCD_Color2Index(GUI_Context.Color));
-  LCD_SetBkColorIndex(LCD_Color2Index(GUI_Context.BkColor));
+  LCD_SetColorIndex(GUI_Context.Color);
+  LCD_SetBkColorIndex(GUI_Context.BkColor);
 }
 
 /*************************** End of file ****************************/

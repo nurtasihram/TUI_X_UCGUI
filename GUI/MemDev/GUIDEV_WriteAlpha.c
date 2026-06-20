@@ -61,12 +61,12 @@ static void _WriteAlphaToActiveAt(GUI_MEMDEV_Handle hMem, int Intens, int x, int
               Index = *(U16*)pData;
               pData += 2;
             }
-            Color   = LCD_Index2Color(Index);
+            Color   = Index;
             xPos    = xOff + x;
             yPos    = yi +y;
             BkColor = LCD_GetPixelColor(xPos, yPos);
             Color   = LCD_MixColors256(Color, BkColor, Intens);
-            Index   = LCD_Color2Index(Color);
+            Index   = Color;
             LCD_SetPixelIndex(xPos, yPos, Index);
             xOff++;
           } while (--XSize);

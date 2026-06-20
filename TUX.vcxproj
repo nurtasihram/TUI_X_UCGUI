@@ -27,11 +27,9 @@
     <ClCompile Include="GUI\Core\GUICharM.c" />
     <ClCompile Include="GUI\Core\GUICharP.c" />
     <ClCompile Include="GUI\Core\GUICirc.c" />
-    <ClCompile Include="GUI\Core\GUIColor2Index.c" />
     <ClCompile Include="GUI\Core\GUICore.c" />
     <ClCompile Include="GUI\Core\GUICurs.c" />
     <ClCompile Include="GUI\Core\GUIEncJS.c" />
-    <ClCompile Include="GUI\Core\GUIIndex2Color.c" />
     <ClCompile Include="GUI\Core\GUIPolyE.c" />
     <ClCompile Include="GUI\Core\GUIPolyM.c" />
     <ClCompile Include="GUI\Core\GUIPolyR.c" />
@@ -175,7 +173,6 @@
     <ClCompile Include="GUI\Core\GUI__strlen.c" />
     <ClCompile Include="GUI\Core\GUI__Wrap.c" />
     <ClCompile Include="GUI\Core\LCD.c" />
-    <ClCompile Include="GUI\Core\LCDAA.c" />
     <ClCompile Include="GUI\Core\LCDColor.c" />
     <ClCompile Include="GUI\Core\LCDGetP.c" />
     <ClCompile Include="GUI\Core\LCDInfo0.c" />
@@ -200,13 +197,11 @@
     <ClCompile Include="GUI\MemDev\GUIDEV_1.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_16.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_8.c" />
-    <ClCompile Include="GUI\MemDev\GUIDEV_AA.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_Auto.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_Banding.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_Clear.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_CmpWithLCD.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_CopyFromLCD.c" />
-    <ClCompile Include="GUI\MemDev\GUIDEV_CreateFixed.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_GetDataPtr.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_GetXSize.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_GetYSize.c" />

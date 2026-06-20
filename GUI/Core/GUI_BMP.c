@@ -55,7 +55,7 @@ static int _DrawBitmap_Pal(const U8 * pData, int x0, int y0, int XSize, int YSiz
     g = *(pData + 1);
     r = *(pData + 2);
     pData += 4;
-    LCD__aConvTable[i] = LCD_Color2Index(((U32)b << 16) | (g << 8) | r);
+    LCD__aConvTable[i] = ((U32)b << 16) | (g << 8) | r;
   }
   switch (Bpp) {
     case 1:
@@ -90,7 +90,7 @@ static int _DrawBitmap_24bpp(const U8 * pData, int x0, int y0, int XSize, int YS
       b = *(pColor);
       g = *(pColor + 1);
       r = *(pColor + 2);
-      LCD_SetPixelIndex(x0 + x, y0 + y, LCD_Color2Index(((U32)b << 16) | (g << 8) | r));
+      LCD_SetPixelIndex(x0 + x, y0 + y, ((U32)b << 16) | (g << 8) | r);
     }
     pData += BytesPerLine;
   }

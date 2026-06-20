@@ -1,5 +1,4 @@
-#ifndef  GUITYPE_H_INCLUDED
-#define  GUITYPE_H_INCLUDED
+#pragma once
 
 #include "LCD.h"
 #include "GUIConf.h"
@@ -28,7 +27,6 @@ typedef LCD_RECT        GUI_RECT;
 
 typedef struct {
   void      (* pfDraw)(int x0,int y0,int xsize, int ysize, const U8 GUI_UNI_PTR * pPixel, const LCD_LOGPALETTE GUI_UNI_PTR * pLogPal, int xMag, int yMag);
-  GUI_COLOR (* pfIndex2Color)(int Index);
 } GUI_BITMAP_METHODS;
 
 typedef struct {
@@ -136,10 +134,6 @@ typedef struct {
 
 #define GUI_FONTINFO_FLAG_PROP (1<<0)    /* Is proportional */
 #define GUI_FONTINFO_FLAG_MONO (1<<1)    /* Is monospaced */
-#define GUI_FONTINFO_FLAG_AA   (1<<2)    /* Is an antialiased font */
-#define GUI_FONTINFO_FLAG_AA2  (1<<3)    /* Is an antialiased font, 2bpp */
-#define GUI_FONTINFO_FLAG_AA4  (1<<4)    /* Is an antialiased font, 4bpp */
-
 
 /**********************************************************************
 *
@@ -236,51 +230,6 @@ DECLARE_FONT(PROP);
 	GUIPROP_IsInFont,             \
   &GUI_ENC_APIList_SJIS
 
-/* PROPAA: Proportional, antialiased fonts */
-DECLARE_FONT(PROPAA);
-#define GUI_FONTTYPE_PROPAA       \
-  GUIPROPAA_DispChar,             \
-	GUIPROPAA_GetCharDistX,         \
-	GUIPROPAA_GetFontInfo,          \
-	GUIPROPAA_IsInFont,             \
-  (tGUI_ENC_APIList*)0
-
-/* PROPAA: Proportional, antialiased fonts, 2bpp */
-DECLARE_FONT(PROP_AA2);
-#define GUI_FONTTYPE_PROP_AA2       \
-  GUIPROP_AA2_DispChar,             \
-	GUIPROP_AA2_GetCharDistX,         \
-	GUIPROP_AA2_GetFontInfo,          \
-	GUIPROP_AA2_IsInFont,             \
-  (tGUI_ENC_APIList*)0
-
-/* PROPAA: Proportional, antialiased fonts, 2bpp, SJIS encoding */
-DECLARE_FONT(PROP_AA2);
-#define GUI_FONTTYPE_PROP_AA2_SJIS  \
-  GUIPROP_AA2_DispChar,             \
-	GUIPROP_AA2_GetCharDistX,         \
-	GUIPROP_AA2_GetFontInfo,          \
-	GUIPROP_AA2_IsInFont,             \
-  GUI_ENCODE_SJIS
-
-/* PROPAA: Proportional, antialiased fonts, 4bpp */
-DECLARE_FONT(PROP_AA4);
-#define GUI_FONTTYPE_PROP_AA4       \
-  GUIPROP_AA4_DispChar,             \
-	GUIPROP_AA4_GetCharDistX,         \
-	GUIPROP_AA4_GetFontInfo,          \
-	GUIPROP_AA4_IsInFont,             \
-  (tGUI_ENC_APIList*)0
-
-/* PROPAA: Proportional, antialiased fonts, 4bpp, SJIS encoding */
-DECLARE_FONT(PROP_AA4);
-#define GUI_FONTTYPE_PROP_AA4_SJIS  \
-  GUIPROP_AA4_DispChar,             \
-	GUIPROP_AA4_GetCharDistX,         \
-	GUIPROP_AA4_GetFontInfo,          \
-	GUIPROP_AA4_IsInFont,             \
-  GUI_ENCODE_SJIS
-
 #if defined(__cplusplus)
   }
 #endif
@@ -357,6 +306,3 @@ extern const tGUI_SIF_APIList GUI_SIF_APIList_Prop;
 #endif
 #define     GUI_HMEM_NULL     (0)
 typedef     GUI_HMEM      GUI_HWIN;
-#endif  /* GUITYPE_H_INCLUDED */
-
-/*************************** End of file ****************************/

@@ -37,9 +37,7 @@ static void _InitContext(GUI_CONTEXT* pContext) {
   pContext->pAFont       = GUI_DEFAULT_FONT;
   pContext->pClipRect_HL = &GUI_Context.ClipRect;
   pContext->PenSize      = 1;
-  /* Variables in WM module */
-    pContext->hAWin    = WM_GetDesktopWindow();
-  /* Variables in GUI_AA module */
+  pContext->hAWin    = WM_GetDesktopWindow();
   pContext->Color   = GUI_INVALID_COLOR;
   pContext->BkColor = GUI_INVALID_COLOR;
   LCD_SetBkColor(GUI_DEFAULT_BKCOLOR);

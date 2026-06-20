@@ -38,7 +38,7 @@ int GUI_GetBkColorIndex(void) {
 GUI_COLOR GUI_GetBkColor(void) {
   GUI_COLOR r;
   
-  r = LCD_Index2Color(LCD_GetBkColorIndex());
+  r = LCD_GetBkColorIndex();
   
   return r;
 }
@@ -56,7 +56,7 @@ int GUI_GetColorIndex(void) {
 GUI_COLOR GUI_GetColor(void) {
   GUI_COLOR r;
   
-  r = LCD_Index2Color(LCD_GetColorIndex());
+  r = LCD_GetColorIndex();
   
   return r;
 }

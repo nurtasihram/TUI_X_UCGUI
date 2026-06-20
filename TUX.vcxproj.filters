@@ -453,9 +453,6 @@
     <ClCompile Include="GUI\Core\GUICirc.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUIColor2Index.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUICore.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -463,9 +460,6 @@
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUIEncJS.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUIIndex2Color.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUIPolyE.c">
@@ -528,9 +522,6 @@
     <ClCompile Include="GUI\Core\LCD_UpdateColorIndices.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\LCDAA.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\LCDColor.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -558,9 +549,6 @@
     <ClCompile Include="GUI\MemDev\GUIDEV_16.c">
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_AA.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\MemDev\GUIDEV_Auto.c">
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
@@ -574,9 +562,6 @@
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
     <ClCompile Include="GUI\MemDev\GUIDEV_CopyFromLCD.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_CreateFixed.c">
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
     <ClCompile Include="GUI\MemDev\GUIDEV_GetDataPtr.c">
