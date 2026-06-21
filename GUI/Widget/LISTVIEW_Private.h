@@ -1,18 +1,9 @@
 ﻿#pragma once
+
 #include "WM.h"
 #include "LISTVIEW.h"
 #include "GUI_ARRAY.h"
-#define LISTVIEW_ID 0x4567   /* Magic numer, should be unique if possible */
-#define LISTVIEW_H2P(h) (LISTVIEW_Obj*) WM_H2P(h)
-#if GUI_DEBUG_LEVEL > 1
-#define LISTVIEW_ASSERT_IS_VALID_PTR(p) DEBUG_ERROROUT_IF(p->DebugId != LISTVIEW_ID, "xxx.c: Wrong handle type or Object not init'ed")
-#define LISTVIEW_INIT_ID(p)   p->DebugId = LISTVIEW_ID
-#define LISTVIEW_DEINIT_ID(p) p->DebugId = LISTVIEW_ID+1
-#else
-#define LISTVIEW_ASSERT_IS_VALID_PTR(p)
-#define LISTVIEW_INIT_ID(p)
-#define LISTVIEW_DEINIT_ID(p)
-#endif
+
 typedef struct {
 	RGB_COLOR aBkColor[3];
 	RGB_COLOR aTextColor[3];
@@ -41,9 +32,6 @@ typedef struct {
 	WM_SCROLL_STATE ScrollStateV;
 	WM_SCROLL_STATE ScrollStateH;
 	WM_HWIN         hOwner;
-#if GUI_DEBUG_LEVEL > 1
-	int DebugId;
-#endif
 } LISTVIEW_Obj;
 extern LISTVIEW_PROPS LISTVIEW_DefaultProps;
 int      LISTVIEW__UpdateScrollParas(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj);

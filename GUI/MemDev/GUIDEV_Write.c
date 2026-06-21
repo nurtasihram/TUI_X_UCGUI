@@ -34,7 +34,7 @@ void GUI_MEMDEV_WriteAt(GUI_MEMDEV_Handle hMem, int x, int y) {
       GUI_RECT r;
 #endif
 
-    pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
+    pDevData = (GUI_MEMDEV*) (hMem);  /* Convert to pointer */
     if (x == GUI_POS_AUTO) {
       x = pDevData->x0;
       y = pDevData->y0;

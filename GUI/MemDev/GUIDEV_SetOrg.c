@@ -36,13 +36,13 @@ void GUI_MEMDEV_SetOrg(GUI_MEMDEV_Handle hMem, int x0, int y0) {
   }
 
   {
-    GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(hMem);  /* Convert to pointer */
+    GUI_MEMDEV* pDev = (hMem);  /* Convert to pointer */
     pDev->y0 = y0;
     pDev->x0 = x0;
     LCD_SetClipRectMax();
     /* Move usage along */
     if (pDev->hUsage) {
-      GUI_USAGE* pUsage = GUI_USAGE_H2P(pDev->hUsage);
+      GUI_USAGE* pUsage = (pDev->hUsage);
       if (((pUsage->XSize = pDev->XSize) != 0) && ((pUsage->YSize = pDev->YSize) != 0)) {
         pUsage->x0 = x0;
         pUsage->y0 = y0;

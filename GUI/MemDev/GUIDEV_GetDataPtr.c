@@ -28,7 +28,7 @@ void* GUI_MEMDEV_GetDataPtr(GUI_MEMDEV_Handle hMem) {
   GUI_MEMDEV* pDev;
   void *pData;
                      /* Needed so the memory management does not complain */
-  pDev  = GUI_MEMDEV_H2P(hMem);
+  pDev  = (hMem);
 
   pData = (void*)(pDev + 1);
   return pData;

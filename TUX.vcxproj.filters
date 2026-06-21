@@ -734,4 +734,7 @@
       <Filter>GUI_X</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="test_cert.pfx" />
+  </ItemGroup>
 </Project>

@@ -64,7 +64,7 @@ static void _Paint(BUTTON_Obj *pObj, BUTTON_Handle hObj) {
 	ColorIndex = (WM__IsEnabled(hObj)) ? PressedState : 2;
 	GUI_SetFont(pObj->Props.pFont);
 	if (pObj->hpText) {
-		s = (const char *)GUI_ALLOC_h2p(pObj->hpText);
+		s = (const char *)(pObj->hpText);
 	}
 	GUI_GetClientRect(&rClient);
 	/* Start drawing */
@@ -189,7 +189,7 @@ static void _OnPidStateChange(BUTTON_Handle hObj, BUTTON_Obj *pObj, WM_MESSAGE *
 #endif
 void BUTTON_Callback(WM_MESSAGE *pMsg) {
 	BUTTON_Handle hObj = pMsg->hWin;
-	BUTTON_Obj *pObj = BUTTON_H2P(hObj);
+	BUTTON_Obj *pObj = (hObj);
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
 		return;
@@ -243,11 +243,10 @@ BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, BUTTON_Callback,
 								  sizeof(BUTTON_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		BUTTON_Obj *pObj = BUTTON_H2P(hObj);
+		BUTTON_Obj *pObj = (hObj);
 		/* init widget specific variables */
 		WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
-		BUTTON_INIT_ID(pObj);
 		pObj->Props = BUTTON__DefaultProps;
 	}
 	else {
@@ -260,7 +259,7 @@ void BUTTON_SetText(BUTTON_Handle hObj, const char *s) {
 	if (hObj) {
 		BUTTON_Obj *pObj;
 
-		pObj = BUTTON_H2P(hObj);
+		pObj = (hObj);
 		if (GUI__SetText(&pObj->hpText, s)) {
 			BUTTON_Invalidate(hObj);
 		}
@@ -271,8 +270,7 @@ void BUTTON_SetFont(BUTTON_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
 	if (hObj) {
 		BUTTON_Obj *pObj;
 
-		pObj = BUTTON_H2P(hObj);
-		BUTTON_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		pObj->Props.pFont = pfont;
 		BUTTON_Invalidate(hObj);
 
@@ -282,8 +280,7 @@ void BUTTON_SetBkColor(BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color) 
 	if (hObj && (Index <= 2)) {
 		BUTTON_Obj *pObj;
 
-		pObj = BUTTON_H2P(hObj);
-		BUTTON_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		pObj->Props.aBkColor[Index] = Color;
 		BUTTON_Invalidate(hObj);
 
@@ -293,8 +290,7 @@ void BUTTON_SetTextColor(BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color
 	if (hObj && (Index <= 2)) {
 		BUTTON_Obj *pObj;
 
-		pObj = BUTTON_H2P(hObj);
-		BUTTON_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		pObj->Props.aTextColor[Index] = Color;
 		BUTTON_Invalidate(hObj);
 
@@ -384,7 +380,7 @@ RGB_COLOR BUTTON_GetBkColor(BUTTON_Handle hObj, unsigned int Index) {
 	if (hObj && (Index < 2)) {
 		BUTTON_Obj *pObj;
 
-		pObj = BUTTON_H2P(hObj);
+		pObj = (hObj);
 		Color = pObj->Props.aBkColor[Index];
 
 	}
@@ -395,7 +391,7 @@ const GUI_FONT GUI_UNI_PTR *BUTTON_GetFont(BUTTON_Handle hObj) {
 	if (hObj) {
 		BUTTON_Obj *pObj;
 
-		pObj = BUTTON_H2P(hObj);
+		pObj = (hObj);
 		pFont = pObj->Props.pFont;
 
 	}
@@ -404,9 +400,9 @@ const GUI_FONT GUI_UNI_PTR *BUTTON_GetFont(BUTTON_Handle hObj) {
 void BUTTON_GetText(BUTTON_Handle hObj, char *pBuffer, int MaxLen) {
 	if (hObj) {
 		BUTTON_Obj *pObj;
-		pObj = BUTTON_H2P(hObj);
+		pObj = (hObj);
 		if (pObj->hpText) {
-			const char *pText = (const char *)GUI_ALLOC_h2p(pObj->hpText);
+			const char *pText = (const char *)(pObj->hpText);
 			int Len = strlen(pText);
 			if (Len > (MaxLen - 1))
 				Len = MaxLen - 1;
@@ -423,7 +419,7 @@ unsigned BUTTON_IsPressed(BUTTON_Handle hObj) {
 	if (hObj) {
 		BUTTON_Obj *pObj;
 
-		pObj = BUTTON_H2P(hObj);
+		pObj = (hObj);
 		r = (pObj->Widget.State & BUTTON_STATE_PRESSED) ? 1 : 0;
 
 	}
@@ -441,8 +437,7 @@ void BUTTON_SetTextAlign(BUTTON_Handle hObj, int Align) {
 	if (hObj) {
 		BUTTON_Obj *pObj;
 
-		pObj = BUTTON_H2P(hObj);
-		BUTTON_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		pObj->Props.Align = Align;
 		BUTTON_Invalidate(hObj);
 
@@ -452,8 +447,7 @@ void BUTTON_SetTextAlign(BUTTON_Handle hObj, int Align) {
 void BUTTON__SetDrawObj(BUTTON_Handle hObj, int Index, GUI_DRAW_HANDLE hDrawObj) {
 	if (hObj) {
 		BUTTON_Obj *pObj;
-		pObj = BUTTON_H2P(hObj);
-		BUTTON_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if ((unsigned int)Index <= GUI_COUNTOF(pObj->ahDrawObj)) {
 			GUI_ALLOC_FreePtr(&pObj->ahDrawObj[Index]);
 			pObj->ahDrawObj[Index] = hDrawObj;

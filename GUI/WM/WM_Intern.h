@@ -37,8 +37,7 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 
 #define WM_SF_CONST_OUTLINE     WM_CF_CONST_OUTLINE       /* Constant outline.*/
 
-#define WM_HANDLE2PTR(hWin) ((WM_Obj*)GUI_ALLOC_h2p(hWin))    /* older form ... to be eliminated */
-#define WM_H2P(hWin)        ((WM_Obj*)GUI_ALLOC_h2p(hWin))
+#define WM_HANDLE2PTR(hWin) ((WM_Obj*)(hWin))    /* older form ... to be eliminated */
 
 #if GUI_DEBUG_LEVEL  >= GUI_DEBUG_LEVEL_LOG_WARNINGS
 #define WM_ASSERT_NOT_IN_PAINT() { if (WM__PaintCallbackCnt) \

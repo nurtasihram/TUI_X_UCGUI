@@ -81,25 +81,7 @@ MENU_PROPS MENU__DefaultProps = {
   MENU_FONT_DEFAULT
 };
 const WIDGET_EFFECT *MENU__pDefaultEffect = MENU_EFFECT_DEFAULT;
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-#define OBJECT_ID 0x7843   /* Magic nubmer, should be unique if possible */
-#define INIT_ID(p)   p->DebugId = OBJECT_ID
-#define DEINIT_ID(p) p->DebugId = 0
-#else
-#define INIT_ID(p)
-#define DEINIT_ID(p)
-#endif
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-MENU_Obj *MENU_h2p(MENU_Handle h) {
-	MENU_Obj *p = (MENU_Obj *)GUI_ALLOC_h2p(h);
-	if (p) {
-		if (p->DebugId != OBJECT_ID) {
-			return 0;
-		}
-	}
-	return p;
-}
-#endif
+
 static char _IsTopLevelMenu(MENU_Handle hObj, const MENU_Obj *pObj) {
 	if (MENU__SendMenuMessage(hObj, pObj->hOwner, MENU_IS_MENU, 0) == 0) {
 		return 1;
@@ -725,7 +707,7 @@ static void _MENU_Callback(WM_MESSAGE *pMsg) {
 			return;
 		}
 	}
-	pObj = (MENU_Obj *)GUI_ALLOC_h2p(hObj);
+	pObj = (MENU_Obj *)(hObj);
 	switch (pMsg->MsgId) {
 		case WM_MENU:
 			_OnMenu(hObj, pObj, pMsg);
@@ -759,7 +741,7 @@ MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParent,
 	if (hObj) {
 		MENU_Obj *pObj;
 
-		pObj = (MENU_Obj *)GUI_ALLOC_h2p(hObj);
+		pObj = (MENU_Obj *)(hObj);
 		/* Init sub-classes */
 		GUI_ARRAY_CREATE(&pObj->ItemArray);
 		/* init widget specific variables */
@@ -779,7 +761,6 @@ MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParent,
 		pObj->hOwner = 0;
 		pObj->IsSubmenuActive = 0;
 		WIDGET_SetEffect(hObj, MENU__pDefaultEffect);
-		INIT_ID(pObj);
 
 	}
 	else {
@@ -861,7 +842,7 @@ void MENU_AddItem(MENU_Handle hObj, const MENU_ITEM_DATA *pItemData) {
 	if (hObj && pItemData) {
 		MENU_Obj *pObj;
 
-		pObj = MENU_H2P(hObj);
+		pObj = (hObj);
 		if (pObj) {
 			if (GUI_ARRAY_AddItem(&pObj->ItemArray, NULL, 0) == 0) {
 				unsigned Index;
@@ -881,7 +862,7 @@ void MENU_SetOwner(MENU_Handle hObj, WM_HWIN hOwner) {
 	if (hObj) {
 		MENU_Obj *pObj;
 
-		pObj = MENU_H2P(hObj);
+		pObj = (hObj);
 		if (pObj) {
 			pObj->hOwner = hOwner;
 		}
@@ -894,7 +875,7 @@ void MENU_Attach(MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, in
 	if (hObj) {
 		MENU_Obj *pObj;
 
-		pObj = MENU_H2P(hObj);
+		pObj = (hObj);
 		if (pObj) {
 			pObj->Width = ((xSize > 0) ? xSize : 0);
 			pObj->Height = ((ySize > 0) ? ySize : 0);
@@ -969,7 +950,7 @@ void MENU_DeleteItem(MENU_Handle hObj, uint16_t ItemId) {
 		Index = MENU__FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
 			MENU_Obj *pObj;
-			pObj = MENU_H2P(hObj);
+			pObj = (hObj);
 			GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
 			MENU__ResizeMenu(hObj, pObj);
 		}
@@ -984,7 +965,7 @@ void MENU_DisableItem(MENU_Handle hObj, uint16_t ItemId) {
 		Index = MENU__FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
 			MENU_Obj *pObj;
-			pObj = MENU_H2P(hObj);
+			pObj = (hObj);
 			MENU__SetItemFlags(pObj, Index, MENU_IF_DISABLED, MENU_IF_DISABLED);
 			MENU__InvalidateItem(hObj, pObj, Index);
 		}
@@ -999,7 +980,7 @@ void MENU_EnableItem(MENU_Handle hObj, uint16_t ItemId) {
 		Index = MENU__FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
 			MENU_Obj *pObj;
-			pObj = MENU_H2P(hObj);
+			pObj = (hObj);
 			MENU__SetItemFlags(pObj, Index, MENU_IF_DISABLED, 0);
 			MENU__InvalidateItem(hObj, pObj, Index);
 		}
@@ -1015,7 +996,7 @@ void MENU_GetItem(MENU_Handle hObj, uint16_t ItemId, MENU_ITEM_DATA *pItemData) 
 		if (Index >= 0) {
 			MENU_Obj *pObj;
 			MENU_ITEM *pItem;
-			pObj = MENU_H2P(hObj);
+			pObj = (hObj);
 			pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
 			pItemData->Flags = pItem->Flags;
 			pItemData->Id = pItem->Id;
@@ -1034,7 +1015,7 @@ void MENU_GetItemText(MENU_Handle hObj, uint16_t ItemId, char *pBuffer, unsigned
 		if (Index >= 0) {
 			MENU_Obj *pObj;
 			MENU_ITEM *pItem;
-			pObj = MENU_H2P(hObj);
+			pObj = (hObj);
 			pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
 			strncpy(pBuffer, pItem->acText, BufferSize);
 			pBuffer[BufferSize - 1] = 0;
@@ -1048,7 +1029,7 @@ unsigned MENU_GetNumItems(MENU_Handle hObj) {
 	if (hObj) {
 		MENU_Obj *pObj;
 
-		pObj = MENU_H2P(hObj);
+		pObj = (hObj);
 		if (pObj) {
 			r = MENU__GetNumItems(pObj);
 		}
@@ -1064,7 +1045,7 @@ void MENU_InsertItem(MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pI
 		Index = MENU__FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
 			MENU_Obj *pObj;
-			pObj = MENU_H2P(hObj);
+			pObj = (hObj);
 			if (GUI_ARRAY_InsertBlankItem(&pObj->ItemArray, Index) != 0) {
 				if (MENU__SetItem(hObj, pObj, Index, pItemData) == 0) {
 					GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
@@ -1083,7 +1064,7 @@ void MENU_Popup(MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int
 	if (hObj && hDestWin) {
 		MENU_Obj *pObj;
 
-		pObj = MENU_H2P(hObj);
+		pObj = (hObj);
 		if (pObj) {
 			pObj->Flags |= MENU_SF_POPUP;
 			pObj->Width = ((xSize > 0) ? xSize : 0);
@@ -1102,7 +1083,7 @@ void MENU_SetBkColor(MENU_Handle hObj, unsigned ColorIndex, RGB_COLOR Color) {
 	if (hObj) {
 		MENU_Obj *pObj;
 
-		pObj = MENU_H2P(hObj);
+		pObj = (hObj);
 		if (pObj) {
 			if (ColorIndex < GUI_COUNTOF(pObj->Props.aBkColor)) {
 				if (Color != pObj->Props.aBkColor[ColorIndex]) {
@@ -1119,7 +1100,7 @@ void MENU_SetBorderSize(MENU_Handle hObj, unsigned BorderIndex, uint8_t BorderSi
 	if (hObj) {
 		MENU_Obj *pObj;
 
-		pObj = MENU_H2P(hObj);
+		pObj = (hObj);
 		if (pObj) {
 			if (BorderIndex < GUI_COUNTOF(pObj->Props.aBorder)) {
 				if (BorderSize != pObj->Props.aBorder[BorderIndex]) {
@@ -1136,7 +1117,7 @@ void MENU_SetFont(MENU_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
 	if (hObj) {
 		MENU_Obj *pObj;
 
-		pObj = MENU_H2P(hObj);
+		pObj = (hObj);
 		if (pObj) {
 			if (pFont != pObj->Props.pFont) {
 				pObj->Props.pFont = pFont;
@@ -1155,7 +1136,7 @@ void MENU_SetItem(MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pItem
 		Index = MENU__FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
 			MENU_Obj *pObj;
-			pObj = MENU_H2P(hObj);
+			pObj = (hObj);
 			if (MENU__SetItem(hObj, pObj, Index, pItemData) != 0) {
 				MENU__ResizeMenu(hObj, pObj);
 			}
@@ -1168,7 +1149,7 @@ void MENU_SetTextColor(MENU_Handle hObj, unsigned ColorIndex, RGB_COLOR Color) {
 	if (hObj) {
 		MENU_Obj *pObj;
 
-		pObj = MENU_H2P(hObj);
+		pObj = (hObj);
 		if (pObj) {
 			if (ColorIndex < GUI_COUNTOF(pObj->Props.aTextColor)) {
 				if (Color != pObj->Props.aTextColor[ColorIndex]) {
@@ -1184,7 +1165,7 @@ void MENU_SetTextColor(MENU_Handle hObj, unsigned ColorIndex, RGB_COLOR Color) {
 int MENU__FindItem(MENU_Handle hObj, uint16_t ItemId, MENU_Handle *phMenu) {
 	int ItemIndex = -1;
 	MENU_Obj *pObj;
-	pObj = MENU_H2P(hObj);
+	pObj = (hObj);
 	if (pObj) {
 		MENU_ITEM *pItem;
 		unsigned NumItems, i;

@@ -33,21 +33,7 @@ typedef struct {
 	int Flags;
 	int NumTicks;
 	int16_t Width;
-#if GUI_DEBUG_LEVEL >1
-	int DebugId;
-#endif
 } SLIDER_Obj;
-#define SLIDER_ID 0x4544   /* Magic numer, should be unique if possible */
-#define SLIDER_H2P(h) (SLIDER_Obj*) GUI_ALLOC_h2p(h)
-#if GUI_DEBUG_LEVEL > 1
-#define SLIDER_ASSERT_IS_VALID_PTR(p) DEBUG_ERROROUT_IF(p->DebugId != SLIDER_ID, "SLIDER.c: Wrong handle type or Object not init'ed")
-#define SLIDER_INIT_ID(p)   p->DebugId = SLIDER_ID
-#define SLIDER_DEINIT_ID(p) p->DebugId = SLIDER_ID+1
-#else
-#define SLIDER_ASSERT_IS_VALID_PTR(p)
-#define SLIDER_INIT_ID(p)
-#define SLIDER_DEINIT_ID(p)
-#endif
 static RGB_COLOR _DefaultBkColor = SLIDER_BKCOLOR0_DEFAULT;
 static void _Paint(SLIDER_Obj *pObj, WM_HWIN hObj) {
 	GUI_RECT r, rFocus, rSlider, rSlot;
@@ -184,7 +170,7 @@ static void _SLIDER_Callback(WM_MESSAGE *pMsg) {
 	SLIDER_Handle hObj;
 	SLIDER_Obj *pObj;
 	hObj = pMsg->hWin;
-	pObj = SLIDER_H2P(hObj);
+	pObj = (hObj);
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
 		return;
@@ -214,7 +200,7 @@ SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 #endif
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _SLIDER_Callback, sizeof(SLIDER_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		SLIDER_Obj *pObj = SLIDER_H2P(hObj);
+		SLIDER_Obj *pObj = (hObj);
 		uint16_t InitState;
 		/* Handle SpecialFlags */
 		InitState = WIDGET_STATE_FOCUSSABLE;
@@ -224,7 +210,6 @@ SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 		/* init widget specific variables */
 		WIDGET__Init(&pObj->Widget, Id, InitState);
 		/* init member variables */
-		SLIDER_INIT_ID(pObj);
 		pObj->aBkColor[0] = _DefaultBkColor;
 		pObj->aBkColor[1] = SLIDER_BKCOLOR1_DEFAULT;
 		pObj->aColor[0] = SLIDER_COLOR0_DEFAULT;
@@ -243,7 +228,7 @@ void SLIDER_Dec(SLIDER_Handle hObj) {
 	SLIDER_Obj *pObj;
 	if (hObj) {
 
-		pObj = SLIDER_H2P(hObj);
+		pObj = (hObj);
 		if (pObj->v > pObj->Min) {
 			pObj->v--;
 			WM_InvalidateWindow(hObj);
@@ -256,7 +241,7 @@ void SLIDER_Inc(SLIDER_Handle hObj) {
 	SLIDER_Obj *pObj;
 	if (hObj) {
 
-		pObj = SLIDER_H2P(hObj);
+		pObj = (hObj);
 		if (pObj->v < pObj->Max) {
 			pObj->v++;
 			WM_InvalidateWindow(hObj);
@@ -269,7 +254,7 @@ void SLIDER_SetWidth(SLIDER_Handle hObj, int Width) {
 	SLIDER_Obj *pObj;
 	if (hObj) {
 
-		pObj = SLIDER_H2P(hObj);
+		pObj = (hObj);
 		if (pObj->Width != Width) {
 			pObj->Width = Width;
 			WM_InvalidateWindow(hObj);
@@ -281,7 +266,7 @@ void SLIDER_SetValue(SLIDER_Handle hObj, int v) {
 	SLIDER_Obj *pObj;
 	if (hObj) {
 
-		pObj = SLIDER_H2P(hObj);
+		pObj = (hObj);
 		/* Put in min/max range */
 		if (v < pObj->Min) {
 			v = pObj->Min;
@@ -301,7 +286,7 @@ void SLIDER_SetRange(SLIDER_Handle hObj, int Min, int Max) {
 	if (hObj) {
 		SLIDER_Obj *pObj;
 
-		pObj = SLIDER_H2P(hObj);
+		pObj = (hObj);
 		if (Max < Min) {
 			Max = Min;
 		}
@@ -321,7 +306,7 @@ void SLIDER_SetNumTicks(SLIDER_Handle hObj, int NumTicks) {
 	if (hObj && (NumTicks >= 0)) {
 		SLIDER_Obj *pObj;
 
-		pObj = SLIDER_H2P(hObj);
+		pObj = (hObj);
 		pObj->NumTicks = NumTicks;
 		WM_InvalidateWindow(hObj);
 
@@ -331,7 +316,7 @@ void SLIDER_SetBkColor(SLIDER_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		SLIDER_Obj *pObj;
 
-		pObj = SLIDER_H2P(hObj);
+		pObj = (hObj);
 		pObj->aBkColor[0] = Color;
 #if SLIDER_SUPPORT_TRANSPARENCY
 		if (Color <= 0xFFFFFF) {
@@ -353,7 +338,7 @@ int SLIDER_GetValue(SLIDER_Handle hObj) {
 	SLIDER_Obj *pObj;
 	if (hObj) {
 
-		pObj = SLIDER_H2P(hObj);
+		pObj = (hObj);
 		r = pObj->v;
 
 	}

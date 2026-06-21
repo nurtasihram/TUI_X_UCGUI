@@ -29,10 +29,6 @@ typedef struct {
 	uint8_t NumStates;
 	uint8_t CurrentState;
 	WM_HMEM hpText;
-#if GUI_DEBUG_LEVEL > 1
-	int DebugId;
-#endif
 } CHECKBOX_Obj;
-#define CHECKBOX_H2P(h) (CHECKBOX_Obj*) GUI_ALLOC_h2p(h)
 extern CHECKBOX_PROPS CHECKBOX__DefaultProps;
 extern const GUI_BITMAP   CHECKBOX__abmCheck[2];

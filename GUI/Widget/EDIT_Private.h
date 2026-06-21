@@ -25,17 +25,9 @@ struct EDIT_Obj_struct {
 	tEDIT_AddKeyEx *pfAddKeyEx;     /* Handle key input */
 	tEDIT_UpdateBuffer *pfUpdateBuffer;  /* Update textbuffer */
 	EDIT_PROPS Props;
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-	int DebugId;
-#endif
 	int CurrsorShow;	//houhh 20061022...
 };
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-EDIT_Obj *EDIT_h2p(EDIT_Handle h);
-#define EDIT_H2P(h) EDIT_h2p(h)
-#else
-#define EDIT_H2P(h) ((EDIT_Obj*)GUI_ALLOC_h2p(h))
-#endif
+
 extern EDIT_PROPS EDIT__DefaultProps;
 void EDIT__SetCursorPos(EDIT_Obj *pObj, int CursorPos);
 uint16_t  EDIT__GetCurrentChar(EDIT_Obj *pObj);

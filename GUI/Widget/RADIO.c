@@ -37,16 +37,7 @@ RGB_COLOR         RADIO__DefaultTextColor       = RADIO_DEFAULT_TEXT_COLOR;
 const GUI_FONT GUI_UNI_PTR* RADIO__pDefaultFont = RADIO_FONT_DEFAULT;
 const GUI_BITMAP* RADIO__apDefaultImage[]       = {RADIO_IMAGE0_DEFAULT, RADIO_IMAGE1_DEFAULT};
 const GUI_BITMAP* RADIO__pDefaultImageCheck     = RADIO_IMAGE_CHECK_DEFAULT;
-#define RADIO_ID 0x4544   /* Magic numer, should be unique if possible */
-#if GUI_DEBUG_LEVEL > 1
-#define RADIO_ASSERT_IS_VALID_PTR(p) DEBUG_ERROROUT_IF(p->DebugId != RADIO_ID, "xxx.c: Wrong handle type or Object not init'ed")
-#define RADIO_INIT_ID(p)   p->DebugId = RADIO_ID
-#define RADIO_DEINIT_ID(p) p->DebugId = RADIO_ID+1
-#else
-#define RADIO_ASSERT_IS_VALID_PTR(p)
-#define RADIO_INIT_ID(p)
-#define RADIO_DEINIT_ID(p)
-#endif
+
 static void _ResizeRect(GUI_RECT* pDest, const GUI_RECT* pSrc, int Diff) {
   pDest->y0 = pSrc->y0 - Diff;
   pDest->y1 = pSrc->y1 + Diff;
@@ -189,7 +180,7 @@ static void _RADIO_Callback (WM_MESSAGE* pMsg) {
   RADIO_Handle hObj;
   RADIO_Obj*   pObj;
   hObj = pMsg->hWin;
-  pObj = RADIO_H2P(hObj);
+  pObj = (hObj);
   /* Let widget handle the standard messages */
   if (WIDGET_HandleActive(hObj, pMsg) == 0) {
     return;
@@ -248,7 +239,7 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParen
   if (hObj) {
     RADIO_Obj* pObj;
 
-    pObj = RADIO_H2P(hObj);
+    pObj = (hObj);
     /* Init sub-classes */
     GUI_ARRAY_CREATE(&pObj->TextArray);
     for (i = 0; i < NumItems; i++) {
@@ -258,7 +249,6 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParen
     ExFlags &= RADIO_TEXTPOS_LEFT;
     WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE | ExFlags);
     /* Init member variables */
-    RADIO_INIT_ID(pObj);
     pObj->apBmRadio[0] = RADIO__apDefaultImage[0];
     pObj->apBmRadio[1] = RADIO__apDefaultImage[1];
     pObj->pBmCheck     = RADIO__pDefaultImageCheck;
@@ -277,7 +267,7 @@ void RADIO_AddValue(RADIO_Handle hObj, int Add) {
   if (hObj) {
     RADIO_Obj* pObj;
 
-    pObj = RADIO_H2P(hObj);
+    pObj = (hObj);
     RADIO_SetValue(hObj, pObj->Sel + Add);
 
   }
@@ -292,7 +282,7 @@ void RADIO_SetValue(RADIO_Handle hObj, int v) {
   if (hObj) {
     RADIO_Obj* pObj;
 
-    pObj = RADIO_H2P(hObj);
+    pObj = (hObj);
     if (pObj->GroupId && RADIO__pfHandleSetValue) {
       (*RADIO__pfHandleSetValue)(hObj, pObj, v);
     } else {
@@ -309,7 +299,7 @@ int RADIO_GetValue(RADIO_Handle hObj) {
   if (hObj) {
     RADIO_Obj* pObj;
 
-    pObj = RADIO_H2P(hObj);
+    pObj = (hObj);
     r = pObj->Sel;
 
   }
@@ -348,7 +338,7 @@ void RADIO_SetBkColor(RADIO_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		RADIO_Obj *pObj;
 
-		pObj = RADIO_H2P(hObj);
+		pObj = (hObj);
 		if (Color != pObj->BkColor) {
 			pObj->BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
@@ -381,7 +371,7 @@ void RADIO_SetFont(RADIO_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
 	if (hObj) {
 		RADIO_Obj *pObj;
 
-		pObj = RADIO_H2P(hObj);
+		pObj = (hObj);
 		if (pFont != pObj->pFont) {
 			pObj->pFont = pFont;
 			if (GUI_ARRAY_GetNumItems(&pObj->TextArray)) {
@@ -394,7 +384,7 @@ void RADIO_SetFont(RADIO_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
 
 static void _SetValue(RADIO_Handle hObj, int v) {
 	RADIO_Obj *pObj;
-	pObj = RADIO_H2P(hObj);
+	pObj = (hObj);
 	RADIO__SetValue(hObj, pObj, v);
 }
 static int _IsInGroup(WM_HWIN hWin, uint8_t GroupId) {
@@ -426,7 +416,7 @@ static void _ClearSelection(RADIO_Handle hObj, uint8_t GroupId) {
 	WM_HWIN hWin;
 	WM_Obj *pWin;
 	for (hWin = WM__GetFirstSibling(hObj); hWin; hWin = pWin->hNext) {
-		pWin = WM_H2P(hWin);
+		pWin = (hWin);
 		if (hWin != hObj) {
 			if (_IsInGroup(hWin, GroupId)) {
 				RADIO__SetValue(hWin, (RADIO_Obj *)pWin, -1);
@@ -463,7 +453,7 @@ void RADIO_SetGroupId(RADIO_Handle hObj, uint8_t NewGroupId) {
 	if (hObj) {
 		RADIO_Obj *pObj;
 		uint8_t OldGroupId;
-		pObj = RADIO_H2P(hObj);
+		pObj = (hObj);
 		OldGroupId = pObj->GroupId;
 		if (NewGroupId != OldGroupId) {
 			WM_HWIN hFirst;
@@ -503,7 +493,7 @@ void RADIO_SetImage(RADIO_Handle hObj, const GUI_BITMAP *pBitmap, unsigned int I
 	if (hObj) {
 		RADIO_Obj *pObj;
 
-		pObj = RADIO_H2P(hObj);
+		pObj = (hObj);
 		switch (Index) {
 			case RADIO_BI_INACTIV:
 			case RADIO_BI_ACTIV:
@@ -522,7 +512,7 @@ void RADIO_SetText(RADIO_Handle hObj, const char *pText, unsigned Index) {
 	if (hObj) {
 		RADIO_Obj *pObj;
 
-		pObj = RADIO_H2P(hObj);
+		pObj = (hObj);
 		if (Index < (unsigned)pObj->NumItems) {
 			GUI_ARRAY_SetItem(&pObj->TextArray, Index, pText, pText ? (GUI__strlen(pText) + 1) : 0);
 			WM_InvalidateWindow(hObj);
@@ -535,7 +525,7 @@ void RADIO_SetTextColor(RADIO_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		RADIO_Obj *pObj;
 
-		pObj = RADIO_H2P(hObj);
+		pObj = (hObj);
 		if (Color != pObj->TextColor) {
 			pObj->TextColor = Color;
 			if (GUI_ARRAY_GetNumItems(&pObj->TextArray)) {

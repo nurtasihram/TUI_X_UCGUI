@@ -56,16 +56,7 @@ DROPDOWN_PROPS DROPDOWN__DefaultProps = {
   DROPDOWN_BORDER_DEFAULT,
   DROPDOWN_ALIGN_DEFAULT
 };
-#if GUI_DEBUG_LEVEL >1
-#define OBJECT_ID 0x4444   /* Magic numer, should be unique if possible */
-#define ASSERT_IS_VALID_PTR(p) GUI_DEBUG_ERROROUT_IF(p->DebugId != OBJECT_ID, "DROPDOWN.C: Wrong handle type or Object not init'ed")
-#define INIT_ID(p)   p->DebugId = OBJECT_ID
-#define DEINIT_ID(p) p->DebugId = 0
-#else
-#define ASSERT_IS_VALID_PTR(p)
-#define INIT_ID(p)
-#define DEINIT_ID(p)
-#endif
+
 /*********************************************************************
 *
 *       _GetNumItems
@@ -99,7 +90,7 @@ static const char *_GetpItem(DROPDOWN_Obj *pObj, int Index) {
 	const char *s = NULL;
 	WM_HMEM h = _GethItem(pObj, Index);
 	if (h) {
-		s = (const char *)GUI_ALLOC_h2p(h);
+		s = (const char *)(h);
 	}
 	return s;
 }
@@ -112,7 +103,7 @@ static int _Tolower(int Key) {
 static void _SelectByKey(DROPDOWN_Handle hObj, int Key) {
 	int i;
 	DROPDOWN_Obj *pObj;
-	pObj = DROPDOWN_H2P(hObj);
+	pObj = (hObj);
 	Key = _Tolower(Key);
 	for (i = 0; i < _GetNumItems(pObj); i++) {
 		char c = _Tolower(*_GetpItem(pObj, i));
@@ -134,7 +125,7 @@ static void _Paint(DROPDOWN_Handle hObj) {
 	DROPDOWN_Obj *pObj;
 	int TextBorderSize;
 	/* Do some initial calculations */
-	pObj = DROPDOWN_H2P(hObj);
+	pObj = (hObj);
 	Border = pObj->Widget.pEffect->EffectSize;
 	TextBorderSize = pObj->Props.TextBorderSize;
 	GUI_SetFont(pObj->Props.pFont);
@@ -191,7 +182,7 @@ void DROPDOWN__AdjustHeight(DROPDOWN_Handle hObj, DROPDOWN_Obj *pObj) {
 }
 static void _DROPDOWN_Callback(WM_MESSAGE *pMsg) {
 	DROPDOWN_Handle hObj = pMsg->hWin;
-	DROPDOWN_Obj *pObj = DROPDOWN_H2P(hObj);
+	DROPDOWN_Obj *pObj = (hObj);
 	char IsExpandedBeforeMsg;
 	IsExpandedBeforeMsg = pObj->hListWin ? 1 : 0;
 	/* Let widget handle the standard messages */
@@ -255,7 +246,7 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 	if (hObj) {
 		DROPDOWN_Obj *pObj;
 
-		pObj = DROPDOWN_H2P(hObj);
+		pObj = (hObj);
 		/* Init sub-classes */
 		GUI_ARRAY_CREATE(&pObj->Handles);
 		/* init widget specific variables */
@@ -263,7 +254,6 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 		pObj->Flags = ExFlags;
 		pObj->Props = DROPDOWN__DefaultProps;
 		pObj->ScrollbarWidth = 0;
-		INIT_ID(pObj);
 		pObj->ySizeEx = ysize;
 		DROPDOWN__AdjustHeight(hObj, pObj);
 
@@ -274,7 +264,7 @@ void DROPDOWN_Collapse(DROPDOWN_Handle hObj) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
 
-		pObj = DROPDOWN_H2P(hObj);
+		pObj = (hObj);
 		if (pObj->hListWin) {
 			WM_DeleteWindow(pObj->hListWin);
 			pObj->hListWin = 0;
@@ -291,10 +281,10 @@ void DROPDOWN_Expand(DROPDOWN_Handle hObj) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
 
-		pObj = DROPDOWN_H2P(hObj);
+		pObj = (hObj);
 		if (pObj->hListWin == 0) {
 			hParent = WM_GetParent(hObj);
-			pParent = WM_H2P(hParent);
+			pParent = (hParent);
 			xSize = WM__GetWindowSizeX(&pObj->Widget.Win);
 			ySize = pObj->ySizeEx;
 			NumItems = _GetNumItems(pObj);
@@ -354,7 +344,7 @@ void DROPDOWN_AddString(DROPDOWN_Handle hObj, const char *s) {
 	DROPDOWN_Obj *pObj;
 	if (hObj && s) {
 
-		pObj = DROPDOWN_H2P(hObj);
+		pObj = (hObj);
 		GUI_ARRAY_AddItem(&pObj->Handles, s, strlen(s) + 1);
 		DROPDOWN_Invalidate(hObj);
 
@@ -365,8 +355,7 @@ int DROPDOWN_GetNumItems(DROPDOWN_Handle hObj) {
 	int r = 0;
 	if (hObj) {
 
-		pObj = DROPDOWN_H2P(hObj);
-		ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		r = _GetNumItems(pObj);
 
 	}
@@ -377,8 +366,7 @@ void DROPDOWN_SetFont(DROPDOWN_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
 
-		pObj = DROPDOWN_H2P(hObj);
-		ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		OldHeight = GUI_GetYDistOfFont(pObj->Props.pFont);
 		pObj->Props.pFont = pfont;
 		DROPDOWN__AdjustHeight(hObj, pObj);
@@ -398,8 +386,7 @@ void DROPDOWN_SetBkColor(DROPDOWN_Handle hObj, unsigned int Index, RGB_COLOR col
 	if (hObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aBackColor)) {
 
-			pObj = DROPDOWN_H2P(hObj);
-			ASSERT_IS_VALID_PTR(pObj);
+			pObj = (hObj);
 			pObj->Props.aBackColor[Index] = color;
 			DROPDOWN_Invalidate(hObj);
 			if (pObj->hListWin) {
@@ -414,8 +401,7 @@ void DROPDOWN_SetTextColor(DROPDOWN_Handle hObj, unsigned int Index, RGB_COLOR c
 	if (hObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aBackColor)) {
 
-			pObj = DROPDOWN_H2P(hObj);
-			ASSERT_IS_VALID_PTR(pObj);
+			pObj = (hObj);
 			pObj->Props.aTextColor[Index] = color;
 			DROPDOWN_Invalidate(hObj);
 			if (pObj->hListWin) {
@@ -430,8 +416,7 @@ void DROPDOWN_SetSel(DROPDOWN_Handle hObj, int Sel) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
 
-		pObj = DROPDOWN_H2P(hObj);
-		ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		NumItems = _GetNumItems(pObj);
 		MaxSel = NumItems ? NumItems - 1 : 0;
 		if (Sel > MaxSel) {
@@ -460,8 +445,7 @@ int  DROPDOWN_GetSel(DROPDOWN_Handle hObj) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
 
-		pObj = DROPDOWN_H2P(hObj);
-		ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		r = pObj->Sel;
 
 	}
@@ -471,8 +455,7 @@ void DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
 
-		pObj = DROPDOWN_H2P(hObj);
-		ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (Width != (unsigned)pObj->ScrollbarWidth) {
 			pObj->ScrollbarWidth = Width;
 			if (pObj->hListWin) {
@@ -510,7 +493,7 @@ void DROPDOWN_DeleteItem(DROPDOWN_Handle hObj, unsigned int Index) {
 		NumItems = DROPDOWN_GetNumItems(hObj);
 		if (Index < NumItems) {
 
-			pObj = DROPDOWN_H2P(hObj);
+			pObj = (hObj);
 			GUI_ARRAY_DeleteItem(&pObj->Handles, Index);
 			WM_InvalidateWindow(hObj);
 			if (pObj->hListWin) {
@@ -526,13 +509,13 @@ void DROPDOWN_InsertString(DROPDOWN_Handle hObj, const char *s, unsigned int Ind
 		DROPDOWN_Obj *pObj;
 		unsigned int NumItems;
 
-		pObj = DROPDOWN_H2P(hObj);
+		pObj = (hObj);
 		NumItems = DROPDOWN_GetNumItems(hObj);
 		if (Index < NumItems) {
 			WM_HMEM hItem;
 			hItem = GUI_ARRAY_InsertItem(&pObj->Handles, Index, strlen(s) + 1);
 			if (hItem) {
-				char *pBuffer = (char *)GUI_ALLOC_h2p(hItem);
+				char *pBuffer = (char *)(hItem);
 				strcpy(pBuffer, s);
 			}
 			WM_InvalidateWindow(hObj);
@@ -554,7 +537,7 @@ void DROPDOWN_SetItemSpacing(DROPDOWN_Handle hObj, unsigned Value) {
 	if (hObj) {
 		DROPDOWN_Obj *pObj;
 
-		pObj = DROPDOWN_H2P(hObj);
+		pObj = (hObj);
 		pObj->ItemSpacing = Value;
 		if (pObj->hListWin) {
 			LISTBOX_SetItemSpacing(pObj->hListWin, Value);
@@ -567,7 +550,7 @@ unsigned DROPDOWN_GetItemSpacing(DROPDOWN_Handle hObj) {
 	if (hObj) {
 		DROPDOWN_Obj *pObj;
 
-		pObj = DROPDOWN_H2P(hObj);
+		pObj = (hObj);
 		Value = pObj->ItemSpacing;
 
 	}
@@ -579,7 +562,7 @@ void DROPDOWN_SetAutoScroll(DROPDOWN_Handle hObj, int OnOff) {
 		DROPDOWN_Obj *pObj;
 		char Flags;
 
-		pObj = DROPDOWN_H2P(hObj);
+		pObj = (hObj);
 		Flags = pObj->Flags & (~DROPDOWN_SF_AUTOSCROLLBAR);
 		if (OnOff) {
 			Flags |= DROPDOWN_SF_AUTOSCROLLBAR;
@@ -598,7 +581,7 @@ void DROPDOWN_SetTextAlign(DROPDOWN_Handle hObj, int Align) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
 
-		pObj = DROPDOWN_H2P(hObj);
+		pObj = (hObj);
 		pObj->Props.Align = Align;
 		WM_Invalidate(hObj);
 
@@ -609,7 +592,7 @@ void DROPDOWN_SetTextHeight(DROPDOWN_Handle hObj, unsigned TextHeight) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
 
-		pObj = DROPDOWN_H2P(hObj);
+		pObj = (hObj);
 		pObj->TextHeight = TextHeight;
 		DROPDOWN__AdjustHeight(hObj, pObj);
 		WM_Invalidate(hObj);

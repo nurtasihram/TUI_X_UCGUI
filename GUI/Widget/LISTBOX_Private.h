@@ -1,19 +1,10 @@
 ﻿#pragma once
+
 #include "LISTBOX.h"
 #include "WM.h"
 #include "GUI_ARRAY.h"
 #include "WIDGET.h"
-#define LISTBOX_H2P(h) (LISTBOX_Obj*) GUI_ALLOC_h2p(h)
-#if GUI_DEBUG_LEVEL >1
-#define OBJECT_ID 0x4C69   /* Magic numer, should be unique if possible */
-#define ASSERT_IS_VALID_PTR(p) GUI_DEBUG_ERROROUT_IF(p->DebugId != OBJECT_ID, "EDIT.C: Wrong handle type or Object not init'ed")
-#define INIT_ID(p)   p->DebugId = OBJECT_ID
-#define DEINIT_ID(p) p->DebugId = 0
-#else
-#define ASSERT_IS_VALID_PTR(p)
-#define INIT_ID(p)
-#define DEINIT_ID(p)
-#endif
+
 #define LISTBOX_ITEM_SELECTED (1 << 0)
 #define LISTBOX_ITEM_DISABLED (1 << 1)
 typedef struct {
@@ -35,9 +26,6 @@ typedef struct {
   WM_SCROLL_STATE ScrollStateH;
   LISTBOX_PROPS Props;
   WM_HWIN hOwner;
-#if GUI_DEBUG_LEVEL >1
-    int DebugId;
-#endif
   int16_t Sel;                        /* current selection */
   uint8_t Flags;
   uint8_t  ScrollbarWidth;

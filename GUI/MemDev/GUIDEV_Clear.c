@@ -37,10 +37,10 @@ void GUI_MEMDEV_Clear(GUI_MEMDEV_Handle hMem) {
     GUI_MEMDEV* pDev;
     GUI_USAGE_h hUsage;
 
-    pDev = GUI_MEMDEV_H2P(hMem);  /* Convert to pointer */
+    pDev = (hMem);  /* Convert to pointer */
     hUsage = pDev->hUsage;
     if (hUsage) {
-      GUI_USAGE* pUsage = GUI_USAGE_H2P(hUsage);
+      GUI_USAGE* pUsage = (hUsage);
       GUI_USAGE_Clear(pUsage);
     }
 

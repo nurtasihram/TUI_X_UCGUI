@@ -180,7 +180,7 @@ GUI_USAGE_Handle GUI_USAGE_BM_Create(int x0, int y0, int xsize, int ysize, int F
   {
     GUI_USAGE_BM * pUsage;
 
-    pUsage = (GUI_USAGE_BM*)GUI_ALLOC_h2p(hMem);
+    pUsage = (GUI_USAGE_BM*)hMem;
     pUsage->Public.x0    = x0;
     pUsage->Public.y0    = y0;
     pUsage->Public.XSize = xsize;

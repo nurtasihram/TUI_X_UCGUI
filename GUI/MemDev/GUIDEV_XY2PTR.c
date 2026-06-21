@@ -26,7 +26,7 @@ Purpose     : Implementation of memory devices
 #if GUI_SUPPORT_MEMDEV
 
 void* GUI_MEMDEV__XY2PTR(int x, int y) {
-  GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
+  GUI_MEMDEV* pDev = (GUI_Context.hDevData);
   uint8_t *pData = (uint8_t*)(pDev + 1);
 #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
     if ((x >= pDev->x0+pDev->XSize) | (x<pDev->x0) | (y >= pDev->y0+pDev->YSize) | (y<pDev->y0)) {

@@ -32,7 +32,6 @@ typedef struct {
   GUI_RECT rClient;
   GUI_RECT rTitleText;
 } POSITIONS;
-#define FRAMEWIN_H2P(h) (FRAMEWIN_Obj*) GUI_ALLOC_h2p(h)
 extern FRAMEWIN_PROPS FRAMEWIN__DefaultProps;
 void            FRAMEWIN__CalcPositions   (FRAMEWIN_Obj* pObj, POSITIONS* pPos);
 int             FRAMEWIN__CalcTitleHeight (FRAMEWIN_Obj* pObj);

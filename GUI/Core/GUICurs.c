@@ -64,7 +64,7 @@ static void _Undraw(void) {
   /* Save bitmap data */
 
   if (_hBuffer) {
-    pData = (RGB_COLOR*)GUI_ALLOC_h2p(_hBuffer);
+    pData = (RGB_COLOR*)_hBuffer;
     xSize = _Rect.x1 - _Rect.x0 + 1;
     ySize = _Rect.y1 - _Rect.y0 + 1;
     for (y = 0; y < ySize; y++) {
@@ -94,7 +94,7 @@ static void _Draw(void) {
   if (_hBuffer) {
     /* Save bitmap data */
     pBM = _pCursor->pBitmap;
-    pData = (RGB_COLOR*)GUI_ALLOC_h2p(_hBuffer);
+    pData = (RGB_COLOR*)_hBuffer;
     xSize = _Rect.x1 - _Rect.x0 + 1;
     ySize = _Rect.y1 - _Rect.y0 + 1;
     for (y = 0; y < ySize; y++) {
@@ -254,7 +254,7 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
         const GUI_BITMAP GUI_UNI_PTR * pBM = _pCursor->pBitmap;
         /* Save & set clip rect */
         /* Compute helper variables */
-        pData = (RGB_COLOR*)GUI_ALLOC_h2p(_hBuffer);
+        pData = (RGB_COLOR*)_hBuffer;
         xSize = _pCursor->pBitmap->XSize;
         xOff = xNewPos - _x;
         if (xOff > 0) {

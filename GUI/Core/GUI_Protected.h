@@ -61,7 +61,6 @@ typedef void        tUSAGE_AddHLine        (GUI_USAGE* p, int x0, int y0, int le
 typedef void        tUSAGE_Clear           (GUI_USAGE* p);
 typedef void        tUSAGE_Delete          (GUI_USAGE_h h);
 typedef int         tUSAGE_GetNextDirty    (GUI_USAGE* p, int *pxOff, int yOff);
-#define GUI_USAGE_H2P(h) ((GUI_USAGE*)GUI_ALLOC_h2p(h))
 
 void GUI_USAGE_DecUseCnt(GUI_USAGE_Handle  hUsage);
 
@@ -98,7 +97,6 @@ struct GUI_Usage {
     const tLCDDEV_APIList* pAPIList;
   } GUI_MEMDEV;
 
-#define      GUI_MEMDEV_H2P(h) ((GUI_MEMDEV*)GUI_ALLOC_h2p(h))
 
   void         GUI_MEMDEV__CopyFromLCD (GUI_MEMDEV_Handle hMem);
   void         GUI_MEMDEV__GetRect     (GUI_RECT* pRect);
@@ -137,7 +135,6 @@ void GUI__memset    (uint8_t * p, uint8_t Fill, int NumBytes);
 void GUI__memset16  (uint16_t* p, uint16_t Fill, int NumWords);
 int  GUI__strlen    (const char GUI_UNI_PTR * s);
 int  GUI__strcmp    (const char GUI_UNI_PTR * s0, const char GUI_UNI_PTR * s1);
-int  GUI__strcmp_hp (GUI_HMEM hs0, const char GUI_UNI_PTR * s1);
 
 void GL_DispChar         (uint16_t c);
 void GL_DrawBitmap       (const GUI_BITMAP GUI_UNI_PTR * pBM, int x0, int y0);

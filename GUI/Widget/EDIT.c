@@ -42,34 +42,14 @@ EDIT_PROPS EDIT__DefaultProps = {
   EDIT_BKCOLOR0_DEFAULT,
   EDIT_BKCOLOR1_DEFAULT
 };
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-#define OBJECT_ID 0x4569   /* Magic nubmer, should be unique if possible */
-#define INIT_ID(p)   p->DebugId = OBJECT_ID
-#define DEINIT_ID(p) p->DebugId = 0
-#else
-#define INIT_ID(p)
-#define DEINIT_ID(p)
-#endif
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-EDIT_Obj *EDIT_h2p(EDIT_Handle h) {
-	EDIT_Obj *p = (EDIT_Obj *)GUI_ALLOC_h2p(h);
-	if (p) {
-		//houhh 20061022...
-		if (p->DebugId != OBJECT_ID) {
-			GUI_DEBUG_ERROROUT("EDIT.C: Wrong handle type or Object not init'ed");
-			return 0;
-		}
-	}
-	return p;
-}
-#endif
+
 ///////////houhh 20061018...
 static GUI_TIMER_HANDLE Timer1 = 0;	//houhh 20061018...
 static void _Paint(EDIT_Obj *pObj, EDIT_Handle hObj);
 void ShowCurrsor(GUI_TIMER_MESSAGE *TimeMsg) {
 	EDIT_Handle hObj = (EDIT_Handle)TimeMsg->Context;
-	EDIT_Obj *pObj = (EDIT_Obj *)GUI_ALLOC_h2p(hObj);
-	WM_Obj *pWin = WM_H2P(hObj);
+	EDIT_Obj *pObj = (EDIT_Obj *)(hObj);
+	WM_Obj *pWin = (hObj);
 	WM_SelectWindow(hObj);
 	_Paint(pObj, hObj);
 	pObj->CurrsorShow++;
@@ -89,7 +69,7 @@ static void _Paint(EDIT_Obj *pObj, EDIT_Handle hObj) {
 	WM__GetClientRectWin(&pObj->Widget.Win, &r);
 	WIDGET__GetInsideRect(&pObj->Widget, &rFillRect);
 	if (pObj->hpText) {
-		pText = (const char *)GUI_ALLOC_h2p(pObj->hpText);
+		pText = (const char *)(pObj->hpText);
 	}
 	rInside = rFillRect;
 	rInside.x0 += pObj->Props.Border + EDIT_XOFF;
@@ -165,12 +145,12 @@ void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
 	if (hObj) {
 		EDIT_Obj *pObj;
 
-		pObj = EDIT_H2P(hObj);
+		pObj = (hObj);
 		if (pObj->hpText) {
 			const GUI_FONT GUI_UNI_PTR *pOldFont;
 			int xSize, TextWidth, NumChars;
 			const char GUI_UNI_PTR *pText;
-			pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
+			pText = (char *)(pObj->hpText);
 			pOldFont = GUI_SetFont(pObj->Props.pFont);
 			xSize = WM_GetWindowSizeX(hObj);
 			TextWidth = GUI_GetStringDistX(pText);
@@ -223,7 +203,7 @@ static int _IncrementBuffer(EDIT_Obj *pObj, unsigned AddBytes) {
 	if (hNew) {
 		if (!(pObj->hpText)) {
 			char *pText;
-			pText = (char *)GUI_ALLOC_h2p(hNew);
+			pText = (char *)(hNew);
 			*pText = 0;
 		}
 		pObj->BufferSize = NewSize;
@@ -246,7 +226,7 @@ static int _IncrementBuffer(EDIT_Obj *pObj, unsigned AddBytes) {
 static int _IsSpaceInBuffer(EDIT_Obj *pObj, int BytesNeeded) {
 	int NumBytes = 0;
 	if (pObj->hpText) {
-		NumBytes = strlen((char *)GUI_ALLOC_h2p(pObj->hpText));
+		NumBytes = strlen((char *)(pObj->hpText));
 	}
 	BytesNeeded = (BytesNeeded + NumBytes + 1) - pObj->BufferSize;
 	if (BytesNeeded > 0) {
@@ -270,7 +250,7 @@ static int _IsCharsAvailable(EDIT_Obj *pObj, int CharsNeeded) {
 	if ((CharsNeeded > 0) && (pObj->MaxLen > 0)) {
 		int NumChars = 0;
 		if (pObj->hpText) {
-			NumChars = GUI__GetNumChars((char *)GUI_ALLOC_h2p(pObj->hpText));
+			NumChars = GUI__GetNumChars((char *)(pObj->hpText));
 		}
 		if ((CharsNeeded + NumChars) > pObj->MaxLen) {
 			return 0;
@@ -289,7 +269,7 @@ static void _DeleteChar(EDIT_Handle hObj, EDIT_Obj *pObj) {
 	if (pObj->hpText) {
 		unsigned CursorOffset;
 		char *pText;
-		pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
+		pText = (char *)(pObj->hpText);
 		CursorOffset = GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
 		if (CursorOffset < strlen(pText)) {
 			int NumBytes;
@@ -313,7 +293,7 @@ static int _InsertChar(EDIT_Handle hObj, EDIT_Obj *pObj, uint16_t Char) {
 		if (_IsSpaceInBuffer(pObj, BytesNeeded)) {
 			int CursorOffset;
 			char *pText;
-			pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
+			pText = (char *)(pObj->hpText);
 			CursorOffset = GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
 			pText += CursorOffset;
 			memmove(pText + BytesNeeded, pText, strlen(pText) + 1);
@@ -328,7 +308,7 @@ uint16_t EDIT__GetCurrentChar(EDIT_Obj *pObj) {
 	uint16_t Char = 0;
 	if (pObj->hpText) {
 		const char *pText;
-		pText = (const char *)GUI_ALLOC_h2p(pObj->hpText);
+		pText = (const char *)(pObj->hpText);
 		pText += GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
 		Char = GUI_UC_GetCharCode(pText);
 	}
@@ -344,7 +324,7 @@ void EDIT__SetCursorPos(EDIT_Obj *pObj, int CursorPos) {
 	if (pObj->hpText) {
 		char *pText;
 		int NumChars, Offset;
-		pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
+		pText = (char *)(pObj->hpText);
 		NumChars = GUI__GetNumChars(pText);
 		Offset = (pObj->EditMode == GUI_EDIT_MODE_INSERT) ? 0 : 1;
 		if (CursorPos < 0) {
@@ -383,7 +363,7 @@ static void _OnTouch(EDIT_Handle hObj, EDIT_Obj *pObj, WM_MESSAGE *pMsg) {
 static void EDIT__Callback(WM_MESSAGE *pMsg) {
 	int IsEnabled;
 	EDIT_Handle hObj = (EDIT_Handle)pMsg->hWin;
-	EDIT_Obj *pObj = (EDIT_Obj *)GUI_ALLOC_h2p(hObj);
+	EDIT_Obj *pObj = (EDIT_Obj *)(hObj);
 	IsEnabled = WM__IsEnabled(hObj);
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
@@ -428,11 +408,10 @@ EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 	if (hObj) {
 		EDIT_Obj *pObj;
 
-		pObj = (EDIT_Obj *)GUI_ALLOC_h2p(hObj);
+		pObj = (EDIT_Obj *)(hObj);
 		/* init widget specific variables */
 		WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
-		INIT_ID(pObj);
 		pObj->Props = EDIT__DefaultProps;
 		pObj->XSizeCursor = 1;
 		pObj->MaxLen = (MaxLen == 0) ? 8 : MaxLen;
@@ -451,7 +430,7 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 	if (hObj) {
 		EDIT_Obj *pObj;
 
-		pObj = EDIT_H2P(hObj);
+		pObj = (hObj);
 		if (pObj) {
 			if (pObj->pfAddKeyEx) {
 				pObj->pfAddKeyEx(hObj, Key);
@@ -462,7 +441,7 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 						if (pObj->hpText) {
 							char *pText;
 							uint16_t Char;
-							pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
+							pText = (char *)(pObj->hpText);
 							pText += GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
 							Char = GUI_UC_GetCharCode(pText);
 							if (Char < 0x7f) {
@@ -475,7 +454,7 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 						if (pObj->hpText) {
 							char *pText;
 							uint16_t Char;
-							pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
+							pText = (char *)(pObj->hpText);
 							pText += GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
 							Char = GUI_UC_GetCharCode(pText);
 							if (Char > 0x20) {
@@ -530,7 +509,7 @@ void EDIT_SetFont(EDIT_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
 	if (hObj == 0)
 		return;
 
-	pObj = EDIT_H2P(hObj);
+	pObj = (hObj);
 	if (pObj) {
 		pObj->Props.pFont = pfont;
 		EDIT_Invalidate(hObj);
@@ -542,7 +521,7 @@ void EDIT_SetBkColor(EDIT_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	if (hObj == 0)
 		return;
 
-	pObj = EDIT_H2P(hObj);
+	pObj = (hObj);
 	if (pObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
 			pObj->Props.aBkColor[Index] = color;
@@ -556,7 +535,7 @@ void EDIT_SetTextColor(EDIT_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	if (hObj == 0)
 		return;
 
-	pObj = EDIT_H2P(hObj);
+	pObj = (hObj);
 	if (pObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aTextColor)) {
 			pObj->Props.aTextColor[Index] = color;
@@ -569,13 +548,13 @@ void EDIT_SetText(EDIT_Handle hObj, const char *s) {
 	if (hObj) {
 		EDIT_Obj *pObj;
 
-		pObj = EDIT_H2P(hObj);
+		pObj = (hObj);
 		if (s) {
 			int NumBytesNew, NumBytesOld = 0;
 			int NumCharsNew;
 			if (pObj->hpText) {
 				char *pText;
-				pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
+				pText = (char *)(pObj->hpText);
 				NumBytesOld = strlen(pText) + 1;
 			}
 			NumCharsNew = GUI__GetNumChars(s);
@@ -585,7 +564,7 @@ void EDIT_SetText(EDIT_Handle hObj, const char *s) {
 			NumBytesNew = GUI_UC__NumChars2NumBytes(s, NumCharsNew) + 1;
 			if (_IsSpaceInBuffer(pObj, NumBytesNew - NumBytesOld)) {
 				char *pText;
-				pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
+				pText = (char *)(pObj->hpText);
 				memcpy(pText, s, NumBytesNew);
 				pObj->CursorPos = NumBytesNew - 1;
 				if (pObj->CursorPos == pObj->MaxLen) {
@@ -610,11 +589,11 @@ void EDIT_GetText(EDIT_Handle hObj, char *sDest, int MaxLen) {
 		if (hObj) {
 			EDIT_Obj *pObj;
 
-			pObj = EDIT_H2P(hObj);
+			pObj = (hObj);
 			if (pObj->hpText) {
 				char *pText;
 				int NumChars, NumBytes;
-				pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
+				pText = (char *)(pObj->hpText);
 				NumChars = GUI__GetNumChars(pText);
 				if (NumChars > MaxLen) {
 					NumChars = MaxLen;
@@ -632,7 +611,7 @@ int32_t  EDIT_GetValue(EDIT_Handle hObj) {
 	int32_t r = 0;
 	if (hObj) {
 
-		pObj = EDIT_H2P(hObj);
+		pObj = (hObj);
 		r = pObj->CurrentValue;
 
 	}
@@ -642,7 +621,7 @@ void EDIT_SetValue(EDIT_Handle hObj, int32_t Value) {
 	EDIT_Obj *pObj;
 	if (hObj) {
 
-		pObj = EDIT_H2P(hObj);
+		pObj = (hObj);
 		/* Put in min/max range */
 		if (Value < pObj->Min) {
 			Value = pObj->Min;
@@ -665,13 +644,13 @@ void EDIT_SetMaxLen(EDIT_Handle  hObj, int MaxLen) {
 	if (hObj) {
 		EDIT_Obj *pObj;
 
-		pObj = EDIT_H2P(hObj);
+		pObj = (hObj);
 		if (MaxLen != pObj->MaxLen) {
 			if (MaxLen < pObj->MaxLen) {
 				if (pObj->hpText) {
 					char *pText;
 					int   NumChars;
-					pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
+					pText = (char *)(pObj->hpText);
 					NumChars = GUI__GetNumChars(pText);
 					if (NumChars > MaxLen) {
 						int NumBytes;
@@ -692,7 +671,7 @@ void EDIT_SetTextAlign(EDIT_Handle hObj, int Align) {
 	if (hObj == 0)
 		return;
 
-	pObj = EDIT_H2P(hObj);
+	pObj = (hObj);
 	if (pObj) {
 		pObj->Props.Align = Align;
 		EDIT_Invalidate(hObj);
@@ -760,10 +739,10 @@ int EDIT_GetNumChars(EDIT_Handle hObj) {
 	if (hObj) {
 		EDIT_Obj *pObj;
 
-		pObj = EDIT_H2P(hObj);
+		pObj = (hObj);
 		if (pObj->hpText) {
 			char *pText;
-			pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
+			pText = (char *)(pObj->hpText);
 			NumChars = GUI__GetNumChars(pText);
 		}
 
@@ -775,7 +754,7 @@ void EDIT_SetCursorAtChar(EDIT_Handle hObj, int Pos) {
 	if (hObj) {
 		EDIT_Obj *pObj;
 
-		pObj = EDIT_H2P(hObj);
+		pObj = (hObj);
 		EDIT__SetCursorPos(pObj, Pos);
 		EDIT_Invalidate(hObj);
 
@@ -787,7 +766,7 @@ int EDIT_SetInsertMode(EDIT_Handle hObj, int OnOff) {
 	if (hObj) {
 		EDIT_Obj *pObj;
 
-		pObj = EDIT_H2P(hObj);
+		pObj = (hObj);
 		PrevMode = pObj->EditMode;
 		pObj->EditMode = OnOff ? GUI_EDIT_MODE_INSERT : GUI_EDIT_MODE_OVERWRITE;
 
@@ -799,7 +778,7 @@ void EDIT_SetpfAddKeyEx(EDIT_Handle hObj, tEDIT_AddKeyEx *pfAddKeyEx) {
 	if (hObj) {
 		EDIT_Obj *pObj;
 
-		pObj = EDIT_H2P(hObj);
+		pObj = (hObj);
 		pObj->pfAddKeyEx = pfAddKeyEx;
 
 	}
@@ -809,7 +788,7 @@ void EDIT_SetpfUpdateBuffer(EDIT_Handle hObj, tEDIT_UpdateBuffer *pfUpdateBuffer
 	if (hObj) {
 		EDIT_Obj *pObj;
 
-		pObj = EDIT_H2P(hObj);
+		pObj = (hObj);
 		pObj->pfUpdateBuffer = pfUpdateBuffer;
 
 	}
@@ -819,7 +798,7 @@ void EDIT_SetSel(EDIT_Handle hObj, int FirstChar, int LastChar) {
 	if (hObj) {
 		EDIT_Obj *pObj;
 
-		pObj = EDIT_H2P(hObj);
+		pObj = (hObj);
 		if (FirstChar == -1) {
 			pObj->SelSize = 0;
 		}

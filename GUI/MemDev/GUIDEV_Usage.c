@@ -30,7 +30,7 @@ Purpose     : Implementation of memory devices
 void GUI_USAGE_Select(GUI_USAGE_Handle hUsage) {
   GUI_MEMDEV * pDev;
 
-  pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
+  pDev = (GUI_Context.hDevData);
   pDev->hUsage = hUsage;
 
 }
@@ -45,7 +45,7 @@ void GUI_USAGE_Select(GUI_USAGE_Handle hUsage) {
 void GUI_USAGE_DecUseCnt(GUI_USAGE_Handle  hUsage) {
   GUI_USAGE* pThis;
 
-  pThis = GUI_USAGE_H2P(hUsage);
+  pThis = (hUsage);
   if (--pThis->UseCnt == 0) {
     GUI_ALLOC_Free(hUsage);
   }

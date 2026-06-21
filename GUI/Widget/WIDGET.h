@@ -4,7 +4,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
 #include "WM_Intern.h"  /* Window manager, including some internals, which speed things up */
 #include "SCROLLBAR.h"
-#define WIDGET_H2P(hWin)        ((WIDGET*)GUI_ALLOC_h2p(hWin))
 #define WIDGET_STATE_FOCUS              (1<<0)
 #define WIDGET_STATE_VERTICAL           (1<<3)
 #define WIDGET_STATE_FOCUSSABLE         (1<<4)

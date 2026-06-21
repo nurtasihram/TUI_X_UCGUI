@@ -46,7 +46,6 @@ typedef struct {
   RGB_COLOR TextColor;
   RGB_COLOR BkColor;
 } TEXT_Obj;
-#define TEXT_H2P(h) (TEXT_Obj*) GUI_ALLOC_h2p(h)
 #if defined(__cplusplus)
   }
 #endif

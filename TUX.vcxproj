@@ -259,6 +259,9 @@
   <ItemGroup>
     <ResourceCompile Include="GUI_X\SimDisp.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="test_cert.pfx" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

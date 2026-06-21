@@ -23,7 +23,7 @@ WM_HMEM GUI_DRAW_BITMAP_Create(const GUI_BITMAP* pBitmap, int x, int y) {
   hMem = GUI_ALLOC_AllocZero(sizeof(GUI_DRAW));
   if (hMem) {
 
-    pObj = (GUI_DRAW*)GUI_ALLOC_h2p(hMem);
+    pObj = (GUI_DRAW*)(hMem);
     pObj->pConsts    = &_ConstObjData;
     pObj->Data.pData = (const void*)pBitmap;
     pObj->xOff       = x;

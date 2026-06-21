@@ -7,7 +7,6 @@
 #include "GUI_Protected.h"
 #include "WM_Intern.h"
 
-#define WIDGET_H2P(hWin)        ((WIDGET*)GUI_ALLOC_h2p(hWin))
 /*********************************************************************
 *
 *       _WIDGET_EFFECT_3D_DrawUpRect

@@ -302,7 +302,7 @@ static void _SCROLLBAR_Callback(WM_MESSAGE *pMsg) {
 	SCROLLBAR_Handle hObj;
 	SCROLLBAR_Obj *pObj;
 	hObj = pMsg->hWin;
-	pObj = SCROLLBAR_H2P(hObj);
+	pObj = (hObj);
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
 		return;
@@ -358,7 +358,7 @@ SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _SCROLLBAR_Callback,
 								  sizeof(SCROLLBAR_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		SCROLLBAR_Obj *pObj = SCROLLBAR_H2P(hObj);
+		SCROLLBAR_Obj *pObj = (hObj);
 		uint16_t InitState;
 		/* Handle SpecialFlags */
 		InitState = 0;
@@ -374,7 +374,6 @@ SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 		/* init widget specific variables */
 		WIDGET__Init(&pObj->Widget, Id, InitState);
 		/* init member variables */
-		SCROLLBAR_INIT_ID(pObj);
 		pObj->aBkColor[0] = SCROLLBAR__aDefaultBkColor[0];
 		pObj->aBkColor[1] = SCROLLBAR__aDefaultBkColor[1];
 		pObj->aColor[0] = SCROLLBAR__aDefaultColor[0];
@@ -399,7 +398,7 @@ void SCROLLBAR_AddValue(SCROLLBAR_Handle hObj, int Add) {
 	SCROLLBAR_Obj *pObj;
 	if (hObj) {
 
-		pObj = SCROLLBAR_H2P(hObj);
+		pObj = (hObj);
 		SCROLLBAR_SetValue(hObj, pObj->v + Add);
 
 	}
@@ -409,7 +408,7 @@ void SCROLLBAR_SetValue(SCROLLBAR_Handle hObj, int v) {
 	int Max;
 	if (hObj) {
 
-		pObj = SCROLLBAR_H2P(hObj);
+		pObj = (hObj);
 		Max = pObj->NumItems - pObj->PageSize;
 		if (Max < 0)
 			Max = 0;
@@ -432,7 +431,7 @@ void SCROLLBAR_SetNumItems(SCROLLBAR_Handle hObj, int NumItems) {
 	SCROLLBAR_Obj *pObj;
 	if (hObj) {
 
-		pObj = SCROLLBAR_H2P(hObj);
+		pObj = (hObj);
 		if (pObj->NumItems != NumItems) {
 			pObj->NumItems = NumItems;
 			WM_InvalidateWindow(hObj);
@@ -444,7 +443,7 @@ void SCROLLBAR_SetPageSize(SCROLLBAR_Handle hObj, int PageSize) {
 	SCROLLBAR_Obj *pObj;
 	if (hObj) {
 
-		pObj = SCROLLBAR_H2P(hObj);
+		pObj = (hObj);
 		if (pObj->PageSize != PageSize) {
 			pObj->PageSize = PageSize;
 			WM_InvalidateWindow(hObj);
@@ -525,7 +524,7 @@ int SCROLLBAR_GetValue(SCROLLBAR_Handle hObj) {
 	SCROLLBAR_Obj *pObj;
 	if (hObj) {
 
-		pObj = SCROLLBAR_H2P(hObj);
+		pObj = (hObj);
 		r = pObj->v;
 
 	}

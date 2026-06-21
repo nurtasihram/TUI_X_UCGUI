@@ -30,13 +30,13 @@ Purpose     : Implementation of memory devices
 static void _WriteAlphaToActiveAt(GUI_MEMDEV_Handle hMem, int Intens, int x, int y) {
   /* Make sure the memory handle is valid */
   if (hMem) {
-    GUI_MEMDEV * pDev = GUI_MEMDEV_H2P(hMem);
+    GUI_MEMDEV * pDev = (hMem);
     GUI_USAGE_h hUsage = pDev->hUsage;
     GUI_USAGE*  pUsage;
     int YSize = pDev->YSize;
     int yi;
     if (hUsage) {
-      pUsage = GUI_USAGE_H2P(hUsage);
+      pUsage = (hUsage);
       for (yi = 0; yi < YSize; yi++) {
         int xOff = 0;
         int XSize;
@@ -77,7 +77,7 @@ void GUI_MEMDEV_WriteAlphaAt(GUI_MEMDEV_Handle hMem, int Alpha, int x, int y) {
       GUI_RECT r;
 #endif
 
-    pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
+    pDevData = (GUI_MEMDEV*) (hMem);  /* Convert to pointer */
     if (x == GUI_POS_AUTO) {
       x = pDevData->x0;
       y = pDevData->y0;

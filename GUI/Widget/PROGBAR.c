@@ -33,35 +33,10 @@ typedef struct {
 	int16_t TextAlign;
 	int Min, Max;
 	/*  int16_t Options; */
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-	int DebugId;
-#endif
 } PROGBAR_Obj;
 #define Invalidate(h) WM_InvalidateWindow(h)
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-#define OBJECT_ID 0x4569   /* Magic nubmer, should be unique if possible */
-#define INIT_ID(p)   p->DebugId = OBJECT_ID
-#define DEINIT_ID(p) p->DebugId = OBJECT_ID+1
-#else
-#define INIT_ID(p)
-#define DEINIT_ID(p)
-#endif
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-PROGBAR_Obj *PROGBAR_h2p(PROGBAR_Handle h) {
-	PROGBAR_Obj *p = (PROGBAR_Obj *)GUI_ALLOC_h2p(h);
-	if (p) {
-		if (p->DebugId != OBJECT_ID) {
-			return 0;
-		}
-	}
-	return p;
-}
-#define PROGBAR_H2P(h) PROGBAR_h2p(h)
-#else
-#define PROGBAR_H2P(h) (PROGBAR_Obj*) GUI_ALLOC_h2p(h)
-#endif
 static void _FreeText(PROGBAR_Handle hObj) {
-	PROGBAR_Obj *pObj = PROGBAR_H2P(hObj);
+	PROGBAR_Obj *pObj = (hObj);
 	GUI_ALLOC_FreePtr(&pObj->hpText);
 }
 static int _Value2X(const PROGBAR_Obj *pObj, int v) {
@@ -89,7 +64,7 @@ static const char *_GetText(const PROGBAR_Obj *pObj, char *pBuffer) {
 	char *pText;
 	uint8_t value;
 	if (pObj->hpText) {
-		pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
+		pText = (char *)(pObj->hpText);
 	}
 	else {
 		pText = pBuffer;
@@ -138,7 +113,7 @@ static void _Paint(PROGBAR_Handle hObj) {
 	const char *pText;
 	char ac[5];
 	int tm, xPos;
-	pObj = PROGBAR_H2P(hObj);
+	pObj = (hObj);
 	WM_GetClientRect(&rClient);
 	GUI__ReduceRect(&rInside, &rClient, pObj->Widget.pEffect->EffectSize);
 	xPos = _Value2X(pObj, pObj->v);
@@ -162,7 +137,6 @@ static void _Paint(PROGBAR_Handle hObj) {
 }
 static void _Delete(PROGBAR_Handle hObj) {
 	_FreeText(hObj);
-	DEINIT_ID(PROGBAR_H2P(hObj));
 }
 static void _PROGBAR_Callback(WM_MESSAGE *pMsg) {
 	PROGBAR_Handle hObj = (PROGBAR_Handle)pMsg->hWin;
@@ -189,11 +163,10 @@ PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
 	if (hObj) {
 		PROGBAR_Obj *pObj;
 
-		pObj = (PROGBAR_Obj *)GUI_ALLOC_h2p(hObj);
+		pObj = (PROGBAR_Obj *)(hObj);
 		/* init widget specific variables */
 		WIDGET__Init(&pObj->Widget, Id, 0);
 		WIDGET_SetEffect(hObj, &WIDGET_Effect_None); /* Standard effect for progbar: None */
-		INIT_ID(pObj);
 		/* init member variables */
 		pObj->pFont = GUI_DEFAULT_FONT;
 		pObj->BarColor[0] = PROGBAR_DEFAULT_BARCOLOR0;
@@ -211,7 +184,7 @@ void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
 	if (hObj) {
 		PROGBAR_Obj *pObj;
 
-		pObj = PROGBAR_H2P(hObj);
+		pObj = (hObj);
 		/* Put v into legal range */
 		if (v < pObj->Min) {
 			v = pObj->Min;
@@ -256,7 +229,7 @@ void PROGBAR_SetFont(PROGBAR_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
 	PROGBAR_Obj *pObj;
 	if (hObj) {
 
-		pObj = PROGBAR_H2P(hObj);
+		pObj = (hObj);
 		pObj->pFont = pfont;
 		WM_InvalidateWindow(hObj);
 
@@ -266,7 +239,7 @@ void PROGBAR_SetBarColor(PROGBAR_Handle hObj, unsigned int Index, RGB_COLOR colo
 	PROGBAR_Obj *pObj;
 	if (hObj) {
 
-		pObj = PROGBAR_H2P(hObj);
+		pObj = (hObj);
 		if (Index < GUI_COUNTOF(pObj->BarColor)) {
 			pObj->BarColor[Index] = color;
 			WM_InvalidateWindow(hObj);
@@ -278,7 +251,7 @@ void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int Index, RGB_COLOR col
 	PROGBAR_Obj *pObj;
 	if (hObj) {
 
-		pObj = PROGBAR_H2P(hObj);
+		pObj = (hObj);
 		if (Index < GUI_COUNTOF(pObj->TextColor)) {
 			pObj->TextColor[Index] = color;
 			WM_InvalidateWindow(hObj);
@@ -293,7 +266,7 @@ void PROGBAR_SetText(PROGBAR_Handle hObj, const char *s) {
 		GUI_RECT r1;
 		char acBuffer[5];
 
-		pObj = PROGBAR_H2P(hObj);
+		pObj = (hObj);
 		pOldFont = GUI_SetFont(pObj->pFont);
 		_GetTextRect(pObj, &r1, _GetText(pObj, acBuffer));
 		if (GUI__SetText(&pObj->hpText, s)) {
@@ -310,7 +283,7 @@ void PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align) {
 	PROGBAR_Obj *pObj;
 	if (hObj) {
 
-		pObj = PROGBAR_H2P(hObj);
+		pObj = (hObj);
 		pObj->TextAlign = Align;
 		WM_InvalidateWindow(hObj);
 
@@ -320,7 +293,7 @@ void PROGBAR_SetTextPos(PROGBAR_Handle hObj, int XOff, int YOff) {
 	PROGBAR_Obj *pObj;
 	if (hObj) {
 
-		pObj = PROGBAR_H2P(hObj);
+		pObj = (hObj);
 		pObj->XOff = XOff;
 		pObj->YOff = YOff;
 		WM_InvalidateWindow(hObj);
@@ -331,7 +304,7 @@ void PROGBAR_SetMinMax(PROGBAR_Handle hObj, int Min, int Max) {
 	PROGBAR_Obj *pObj;
 	if (hObj) {
 
-		pObj = PROGBAR_H2P(hObj);
+		pObj = (hObj);
 		if (Max > Min) {
 			if ((Max != pObj->Max) || (Min != pObj->Min)) {
 				pObj->Min = Min;

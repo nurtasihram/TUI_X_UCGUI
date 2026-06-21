@@ -14,7 +14,6 @@ typedef struct {
 	WM_HWIN hFocussedChild;
 	WM_DIALOG_STATUS *pDialogStatus;
 } WINDOW_OBJ;
-#define WINDOW_H2P(h) (WINDOW_OBJ*)WM_H2P(h)
 RGB_COLOR WINDOW__DefaultBkColor = WINDOW_BKCOLOR_DEFAULT;
 static void _OnChildHasFocus(WM_HWIN hWin, WINDOW_OBJ *pObj, const WM_MESSAGE *pMsg) {
 	if (pMsg->Data.p) {
@@ -33,7 +32,7 @@ static void _cb(WM_MESSAGE *pMsg) {
 	WINDOW_OBJ *pObj;
 	WM_CALLBACK *cb;
 	hObj = pMsg->hWin;
-	pObj = WINDOW_H2P(hObj);
+	pObj = (hObj);
 	cb = pObj->cb;
 	switch (pMsg->MsgId) {
 		case WM_HANDLE_DIALOG_STATUS:
@@ -94,7 +93,7 @@ WM_HWIN WINDOW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN
 	if (hObj) {
 		WINDOW_OBJ *pObj;
 
-		pObj = WINDOW_H2P(hObj);
+		pObj = (hObj);
 		WIDGET__Init(&pObj->Widget, pCreateInfo->Id, WIDGET_STATE_FOCUSSABLE);
 		pObj->cb = cb;
 		pObj->hFocussedChild = 0;

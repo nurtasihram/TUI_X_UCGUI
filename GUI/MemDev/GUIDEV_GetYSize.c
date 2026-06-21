@@ -35,7 +35,7 @@ int GUI_MEMDEV_GetYSize(GUI_MEMDEV_Handle hMem) {
     hMem = GUI_Context.hDevData;
   }
   if (hMem) {
-    pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
+    pDevData = (GUI_MEMDEV*) (hMem);  /* Convert to pointer */
     r = pDevData->YSize;
   }
 

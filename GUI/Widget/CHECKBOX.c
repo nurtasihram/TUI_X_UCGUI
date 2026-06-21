@@ -44,16 +44,6 @@ CHECKBOX_PROPS CHECKBOX__DefaultProps = {
   CHECKBOX_IMAGE0_DEFAULT,
   CHECKBOX_IMAGE1_DEFAULT
 };
-#define CHECKBOX_ID 0x4544   /* Magic numer, should be unique if possible */
-#if GUI_DEBUG_LEVEL > 1
-#define CHECKBOX_ASSERT_IS_VALID_PTR(p) DEBUG_ERROROUT_IF(p->DebugId != CHECKBOX_ID, "xxx.c: Wrong handle type or Object not init'ed")
-#define CHECKBOX_INIT_ID(p)   p->DebugId = CHECKBOX_ID
-#define CHECKBOX_DEINIT_ID(p) p->DebugId = CHECKBOX_ID+1
-#else
-#define CHECKBOX_ASSERT_IS_VALID_PTR(p)
-#define CHECKBOX_INIT_ID(p)
-#define CHECKBOX_DEINIT_ID(p)
-#endif
 static void _Paint(CHECKBOX_Obj *pObj, CHECKBOX_Handle hObj) {
 	GUI_RECT RectBox = { 0 };
 	int ColorIndex, EffectSize;
@@ -92,7 +82,7 @@ static void _Paint(CHECKBOX_Obj *pObj, CHECKBOX_Handle hObj) {
 		const char *s;
 		GUI_RECT RectText;
 		/* Draw the text */
-		s = (const char *)GUI_ALLOC_h2p(pObj->hpText);
+		s = (const char *)(pObj->hpText);
 		WM_GetClientRect(&RectText);
 		RectText.x0 += RectBox.x1 + 1 + pObj->Props.Spacing;
 		GUI_SetTextMode(GUI_TM_TRANS);
@@ -172,7 +162,7 @@ static void _CHECKBOX_Callback(WM_MESSAGE *pMsg) {
 	CHECKBOX_Handle hObj;
 	CHECKBOX_Obj *pObj;
 	hObj = pMsg->hWin;
-	pObj = CHECKBOX_H2P(hObj);
+	pObj = (hObj);
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
 		return;
@@ -217,10 +207,9 @@ CHECKBOX_Handle CHECKBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _CHECKBOX_Callback,
 								  sizeof(CHECKBOX_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		CHECKBOX_Obj *pObj = CHECKBOX_H2P(hObj);
+		CHECKBOX_Obj *pObj = (hObj);
 		/* init widget specific variables */
 		WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE);
-		CHECKBOX_INIT_ID(pObj);
 		/* init member variables */
 		pObj->Props = CHECKBOX__DefaultProps;
 		pObj->NumStates = 2; /* Default behaviour is 2 states: checked and unchecked */
@@ -279,7 +268,7 @@ int CHECKBOX_GetState(CHECKBOX_Handle hObj) {
 	int Result = 0;
 	CHECKBOX_Obj *pObj;
 	if (hObj) {
-		pObj = CHECKBOX_H2P(hObj);
+		pObj = (hObj);
 		Result = pObj->CurrentState;
 	}
 	return Result;
@@ -293,7 +282,7 @@ int CHECKBOX_IsChecked(CHECKBOX_Handle hObj) {
 void CHECKBOX_SetBkColor(CHECKBOX_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		CHECKBOX_Obj *pObj;
-		pObj = CHECKBOX_H2P(hObj);
+		pObj = (hObj);
 		if (Color != pObj->Props.BkColor) {
 			pObj->Props.BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
@@ -318,7 +307,7 @@ void CHECKBOX_SetDefaultImage(const GUI_BITMAP *pBitmap, unsigned int Index) {
 void CHECKBOX_SetFont(CHECKBOX_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
 	CHECKBOX_Obj *pObj;
 	if (hObj) {
-		pObj = CHECKBOX_H2P(hObj);
+		pObj = (hObj);
 		if (pObj->Props.pFont != pFont) {
 			pObj->Props.pFont = pFont;
 			WM_Invalidate(hObj);
@@ -329,7 +318,7 @@ void CHECKBOX_SetFont(CHECKBOX_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
 void CHECKBOX_SetImage(CHECKBOX_Handle hObj, const GUI_BITMAP *pBitmap, unsigned int Index) {
 	if (hObj) {
 		CHECKBOX_Obj *pObj;
-		pObj = CHECKBOX_H2P(hObj);
+		pObj = (hObj);
 		if (Index <= GUI_COUNTOF(pObj->Props.apBm)) {
 			pObj->Props.apBm[Index] = pBitmap;
 		}
@@ -382,7 +371,7 @@ void CHECKBOX_SetNumStates(CHECKBOX_Handle hObj, unsigned NumStates) {
 		CHECKBOX_SetDefaultImage(&_abmCheck[1], 3);
 	}
 	if (hObj && ((NumStates == 2) || (NumStates == 3))) {
-		pObj = CHECKBOX_H2P(hObj);
+		pObj = (hObj);
 		pObj->Props.apBm[2] = CHECKBOX__DefaultProps.apBm[2];
 		pObj->Props.apBm[3] = CHECKBOX__DefaultProps.apBm[3];
 		pObj->NumStates = NumStates;
@@ -392,7 +381,7 @@ void CHECKBOX_SetNumStates(CHECKBOX_Handle hObj, unsigned NumStates) {
 void CHECKBOX_SetSpacing(CHECKBOX_Handle hObj, unsigned Spacing) {
 	CHECKBOX_Obj *pObj;
 	if (hObj) {
-		pObj = CHECKBOX_H2P(hObj);
+		pObj = (hObj);
 		if ((unsigned)pObj->Props.Spacing != Spacing) {
 			pObj->Props.Spacing = Spacing;
 			WM_Invalidate(hObj);
@@ -403,7 +392,7 @@ void CHECKBOX_SetSpacing(CHECKBOX_Handle hObj, unsigned Spacing) {
 void CHECKBOX_SetState(CHECKBOX_Handle hObj, unsigned State) {
 	CHECKBOX_Obj *pObj;
 	if (hObj) {
-		pObj = CHECKBOX_H2P(hObj);
+		pObj = (hObj);
 		if (State <= (unsigned)pObj->NumStates) {
 			pObj->CurrentState = State;
 			WM_Invalidate(hObj);
@@ -414,7 +403,7 @@ void CHECKBOX_SetState(CHECKBOX_Handle hObj, unsigned State) {
 void CHECKBOX_SetText(CHECKBOX_Handle hObj, const char *s) {
 	CHECKBOX_Obj *pObj;
 	if (hObj && s) {
-		pObj = CHECKBOX_H2P(hObj);
+		pObj = (hObj);
 		if (GUI__SetText(&pObj->hpText, s)) {
 			WM_Invalidate(hObj);
 		}
@@ -424,7 +413,7 @@ void CHECKBOX_SetText(CHECKBOX_Handle hObj, const char *s) {
 void CHECKBOX_SetTextAlign(CHECKBOX_Handle hObj, int Align) {
 	CHECKBOX_Obj *pObj;
 	if (hObj) {
-		pObj = CHECKBOX_H2P(hObj);
+		pObj = (hObj);
 		if (pObj->Props.Align != Align) {
 			pObj->Props.Align = Align;
 			WM_Invalidate(hObj);
@@ -435,7 +424,7 @@ void CHECKBOX_SetTextAlign(CHECKBOX_Handle hObj, int Align) {
 void CHECKBOX_SetTextColor(CHECKBOX_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		CHECKBOX_Obj *pObj;
-		pObj = CHECKBOX_H2P(hObj);
+		pObj = (hObj);
 		if (pObj->Props.TextColor != Color) {
 			pObj->Props.TextColor = Color;
 			WM_Invalidate(hObj);

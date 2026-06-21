@@ -18,41 +18,28 @@ GUI_HMEM GUI_ALLOC_Realloc(GUI_HMEM hOld, int NewSize) {
 	return realloc(hOld, NewSize);
 }
 
-void *GUI_ALLOC_h2p(GUI_HMEM  hMem) {
-	return hMem;
-}
-
 GUI_ALLOC_DATATYPE GUI_ALLOC_GetMaxSize(void) {
 	return 1024 * 1024;
 }
 
 GUI_HMEM GUI_ALLOC_AllocInit(const void *pInitData, GUI_ALLOC_DATATYPE Size) {
-	GUI_HMEM hMem;
-
-	if (Size == 0) {
+	GUI_HMEM pMem;
+	if (Size == 0)
 		return (GUI_HMEM)0;
-	}
-	hMem = GUI_ALLOC_AllocNoInit(Size);
-	if (hMem) {
-		void *pMem;
-		pMem = GUI_ALLOC_h2p(hMem);
-		if (pInitData) {
+	pMem = GUI_ALLOC_AllocNoInit(Size);
+	if (pMem) {
+		if (pInitData) 
 			memcpy(pMem, pInitData, Size);
-		}
-		else {
+		else
 			GUI_MEMSET((uint8_t *)pMem, 0, Size);
-		}
 	}
-
-	return hMem;
+	return pMem;
 }
 
 GUI_HMEM GUI_ALLOC_AllocZero(GUI_ALLOC_DATATYPE Size) {
-	GUI_HMEM hMem;
-	hMem = GUI_ALLOC_AllocNoInit(Size);
-	if (hMem) {
-		GUI_MEMSET((uint8_t *)GUI_ALLOC_h2p(hMem), 0, Size);   /* Zeroinit ! */
-	}
-
-	return hMem;
+	GUI_HMEM pMem;
+	pMem = GUI_ALLOC_AllocNoInit(Size);
+	if (pMem)
+		GUI_MEMSET((uint8_t *)pMem, 0, Size);   /* Zeroinit ! */
+	return pMem;
 }

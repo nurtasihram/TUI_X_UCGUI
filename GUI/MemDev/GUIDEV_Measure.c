@@ -13,10 +13,9 @@ typedef struct {
   GUI_RECT rUsed;
 } GUI_MEASDEV;
 
-#define GUI_MEASDEV_H2P(h) ((GUI_MEASDEV*)GUI_ALLOC_h2p(h))
 
 static void _MarkPixel(int x, int y) {
-  GUI_MEASDEV* pDev = (GUI_MEASDEV*)(GUI_MEMDEV_H2P(GUI_Context.hDevData));
+  GUI_MEASDEV* pDev = (GUI_MEASDEV*)((GUI_Context.hDevData));
   if (x < pDev->rUsed.x0)
     pDev->rUsed.x0 = x;
   if (x > pDev->rUsed.x1)
@@ -28,7 +27,7 @@ static void _MarkPixel(int x, int y) {
 }
 
 static void _MarkRect(int x0, int y0, int x1, int y1) {
-  GUI_MEASDEV* pDev = (GUI_MEASDEV*)(GUI_MEMDEV_H2P(GUI_Context.hDevData));
+  GUI_MEASDEV* pDev = (GUI_MEASDEV*)((GUI_Context.hDevData));
   if (x0 < pDev->rUsed.x0)
     pDev->rUsed.x0 = x0;
   if (x1 > pDev->rUsed.x1)
@@ -142,7 +141,7 @@ void GUI_MEASDEV_ClearRect(GUI_MEASDEV_Handle hMemDev) {
   if (hMemDev) {
     GUI_MEASDEV* pDevData;
 
-    pDevData = (GUI_MEASDEV*)GUI_ALLOC_h2p(hMemDev);
+    pDevData = (GUI_MEASDEV*)(hMemDev);
     pDevData->rUsed.x0 = GUI_XMAX;
     pDevData->rUsed.y0 = GUI_YMAX;
     pDevData->rUsed.x1 = GUI_XMIN;
@@ -159,7 +158,7 @@ GUI_MEASDEV_Handle GUI_MEASDEV_Create(void) {
   if (hMemDev) {
     GUI_MEASDEV* pDevData;
 
-    pDevData = (GUI_MEASDEV*)GUI_ALLOC_h2p(hMemDev);
+    pDevData = (GUI_MEASDEV*)(hMemDev);
     GUI_MEASDEV_ClearRect(hMemDev);
 
   } else {
@@ -185,7 +184,7 @@ void GUI_MEASDEV_GetRect(GUI_MEASDEV_Handle hMem, GUI_RECT* pRect) {
   if (hMem) {
     GUI_MEASDEV* pDev;
 
-    pDev = (GUI_MEASDEV*)GUI_ALLOC_h2p(hMem);
+    pDev = (GUI_MEASDEV*)(hMem);
     if (pRect) {
       pRect->x0 = pDev->rUsed.x0;
       pRect->y0 = pDev->rUsed.y0;

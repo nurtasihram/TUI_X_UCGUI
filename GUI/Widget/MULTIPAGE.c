@@ -46,9 +46,6 @@ typedef struct {
 	const GUI_FONT GUI_UNI_PTR *Font;
 	RGB_COLOR       aBkColor[MULTIPAGE_NUMCOLORS];
 	RGB_COLOR       aTextColor[MULTIPAGE_NUMCOLORS];
-#if GUI_DEBUG_LEVEL >1
-	int DebugId;
-#endif
 } MULTIPAGE_Obj;
 const GUI_FONT GUI_UNI_PTR *MULTIPAGE__pDefaultFont = MULTIPAGE_FONT_DEFAULT;
 unsigned                     MULTIPAGE__DefaultAlign = MULTIPAGE_ALIGN_DEFAULT;
@@ -84,14 +81,14 @@ static void _ShowPage(MULTIPAGE_Obj *pObj, unsigned Index) {
 	WM_HWIN hWin = 0;
 	WM_HWIN hChild;
 	WM_Obj *pChild;
-	WM_Obj *pClient = WM_H2P(pObj->hClient);
+	WM_Obj *pClient = (pObj->hClient);
 	if ((int)Index < pObj->Handles.NumItems) {
 		MULTIPAGE_PAGE *pPage;
 		pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
 		hWin = pPage->hWin;
 	}
 	for (hChild = pClient->hFirstChild; hChild; hChild = pChild->hNext) {
-		pChild = WM_H2P(hChild);
+		pChild = (hChild);
 		if (hChild == hWin) {
 			WM_ShowWindow(hChild);
 			WM_SetFocus(hChild);
@@ -358,7 +355,7 @@ static void _OnTouch(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj, WM_MESSAGE *pMs
 					pState->x = x - WM_GetWindowOrgX(hBelow);
 					pState->y = y - WM_GetWindowOrgY(hBelow);
 					pMsg->hWin = hBelow;
-					(*WM_H2P(hBelow)->cb)(pMsg);
+					(*((WM_Obj *)hBelow)->cb)(pMsg);
 				}
 			}
 			else {
@@ -380,7 +377,7 @@ static void _Callback(WM_MESSAGE *pMsg) {
 	MULTIPAGE_Obj *pObj;
 	int Handled;
 
-	pObj = MULTIPAGE_H2P(hObj);
+	pObj = (hObj);
 	Handled = WIDGET_HandleActive(hObj, pMsg);
 	switch (pMsg->MsgId) {
 		case WM_PAINT:
@@ -424,7 +421,7 @@ static void _ClientCallback(WM_MESSAGE *pMsg) {
 	WM_HWIN hParent = WM_GetParent(hObj);
 	MULTIPAGE_Obj *pParent;
 
-	pParent = MULTIPAGE_H2P(hParent);
+	pParent = (hParent);
 	switch (pMsg->MsgId) {
 		case WM_PAINT:
 			LCD_SetBkColor(pParent->aBkColor[1]);
@@ -456,13 +453,12 @@ MULTIPAGE_Handle MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 		GUI_RECT rClient;
 		int Flags;
 
-		pObj = MULTIPAGE_H2P(hObj);
+		pObj = (hObj);
 		/* Init sub-classes */
 		GUI_ARRAY_CREATE(&pObj->Handles);
 		/* init widget specific variables */
 		WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
-		MULTIPAGE_INIT_ID(pObj);
 		pObj->aBkColor[0] = MULTIPAGE__DefaultBkColor[0];
 		pObj->aBkColor[1] = MULTIPAGE__DefaultBkColor[1];
 		pObj->aTextColor[0] = MULTIPAGE__DefaultTextColor[0];
@@ -490,18 +486,17 @@ void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_HWIN hWin, const char *pText) {
 	GUI_USE_PARA(hWin);
 	if (hObj) {
 
-		pObj = MULTIPAGE_H2P(hObj);
-		MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (!hWin) {
 			/* If we get no handle we must find it. To do this, we search      */
 			/* all children until we found one that has not yet become a page. */
 			MULTIPAGE_PAGE *pPage;
 			WM_HWIN hChild;
 			WM_Obj *pChild;
-			WM_Obj *pClient = WM_H2P(pObj->hClient);
+			WM_Obj *pClient = (pObj->hClient);
 			int i;
 			for (hChild = pClient->hFirstChild; hChild && !hWin; hChild = pChild->hNext) {
-				pChild = WM_H2P(hChild);
+				pChild = (hChild);
 				hWin = hChild;
 				for (i = 0; i < pObj->Handles.NumItems; i++) {
 					pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, i);
@@ -538,8 +533,7 @@ void MULTIPAGE_DeletePage(MULTIPAGE_Handle hObj, unsigned Index, int Delete) {
 	if (hObj) {
 		MULTIPAGE_Obj *pObj;
 
-		pObj = MULTIPAGE_H2P(hObj);
-		MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (pObj) {
 			if ((int)Index < pObj->Handles.NumItems) {
 				WM_HWIN hWin;
@@ -576,8 +570,7 @@ void MULTIPAGE_SelectPage(MULTIPAGE_Handle hObj, unsigned Index) {
 	if (hObj) {
 		MULTIPAGE_Obj *pObj;
 
-		pObj = MULTIPAGE_H2P(hObj);
-		MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (pObj) {
 			if ((int)Index < pObj->Handles.NumItems) {
 				if (Index != pObj->Selection && _GetEnable(pObj, Index)) {
@@ -594,8 +587,7 @@ void MULTIPAGE_DisablePage(MULTIPAGE_Handle hObj, unsigned Index) {
 	if (hObj) {
 		MULTIPAGE_Obj *pObj;
 
-		pObj = MULTIPAGE_H2P(hObj);
-		MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (pObj) {
 			_SetEnable(pObj, Index, 0);
 			WM_InvalidateWindow(hObj);
@@ -607,8 +599,7 @@ void MULTIPAGE_EnablePage(MULTIPAGE_Handle hObj, unsigned Index) {
 	if (hObj) {
 		MULTIPAGE_Obj *pObj;
 
-		pObj = MULTIPAGE_H2P(hObj);
-		MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (pObj) {
 			_SetEnable(pObj, Index, 1);
 			WM_InvalidateWindow(hObj);
@@ -620,8 +611,7 @@ void MULTIPAGE_SetText(MULTIPAGE_Handle hObj, const char *pText, unsigned Index)
 	MULTIPAGE_Obj *pObj;
 	if (hObj && pText) {
 
-		pObj = MULTIPAGE_H2P(hObj);
-		MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (pObj) {
 			if ((int)Index < pObj->Handles.NumItems) {
 				MULTIPAGE_PAGE *pPage;
@@ -643,8 +633,7 @@ void MULTIPAGE_SetBkColor(MULTIPAGE_Handle hObj, RGB_COLOR Color, unsigned Index
 	MULTIPAGE_Obj *pObj;
 	if (hObj && ((int)Index < MULTIPAGE_NUMCOLORS)) {
 
-		pObj = MULTIPAGE_H2P(hObj);
-		MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (pObj) {
 			pObj->aBkColor[Index] = Color;
 			WM_InvalidateWindow(hObj);
@@ -656,8 +645,7 @@ void MULTIPAGE_SetTextColor(MULTIPAGE_Handle hObj, RGB_COLOR Color, unsigned Ind
 	MULTIPAGE_Obj *pObj;
 	if (hObj && ((int)Index < MULTIPAGE_NUMCOLORS)) {
 
-		pObj = MULTIPAGE_H2P(hObj);
-		MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (pObj) {
 			pObj->aTextColor[Index] = Color;
 			WM_InvalidateWindow(hObj);
@@ -669,8 +657,7 @@ void MULTIPAGE_SetFont(MULTIPAGE_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont)
 	MULTIPAGE_Obj *pObj;
 	if (hObj && pFont) {
 
-		pObj = MULTIPAGE_H2P(hObj);
-		MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (pObj) {
 			pObj->Font = pFont;
 			_UpdatePositions(hObj, pObj);
@@ -683,8 +670,7 @@ void MULTIPAGE_SetAlign(MULTIPAGE_Handle hObj, unsigned Align) {
 	GUI_RECT rClient;
 	if (hObj) {
 
-		pObj = MULTIPAGE_H2P(hObj);
-		MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (pObj) {
 			pObj->Align = Align;
 			_CalcClientRect(pObj, &rClient);
@@ -700,8 +686,7 @@ int MULTIPAGE_GetSelection(MULTIPAGE_Handle hObj) {
 	if (hObj) {
 		MULTIPAGE_Obj *pObj;
 
-		pObj = MULTIPAGE_H2P(hObj);
-		MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (pObj) {
 			r = pObj->Selection;
 		}
@@ -714,8 +699,7 @@ WM_HWIN MULTIPAGE_GetWindow(MULTIPAGE_Handle hObj, unsigned Index) {
 	if (hObj) {
 		MULTIPAGE_Obj *pObj;
 
-		pObj = MULTIPAGE_H2P(hObj);
-		MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (pObj) {
 			if ((int)Index < pObj->Handles.NumItems) {
 				MULTIPAGE_PAGE *pPage;
@@ -732,8 +716,7 @@ int MULTIPAGE_IsPageEnabled(MULTIPAGE_Handle hObj, unsigned Index) {
 	if (hObj) {
 		MULTIPAGE_Obj *pObj;
 
-		pObj = MULTIPAGE_H2P(hObj);
-		MULTIPAGE_ASSERT_IS_VALID_PTR(pObj);
+		pObj = (hObj);
 		if (pObj) {
 			r = _GetEnable(pObj, Index);
 		}

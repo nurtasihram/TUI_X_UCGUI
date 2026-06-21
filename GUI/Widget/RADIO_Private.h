@@ -16,11 +16,7 @@ typedef struct {
   RGB_COLOR BkColor;
   RGB_COLOR TextColor;
   const GUI_FONT GUI_UNI_PTR* pFont;
-#if GUI_DEBUG_LEVEL >1
-    int DebugId;
-#endif
 } RADIO_Obj;
-#define RADIO_H2P(h) (RADIO_Obj*) GUI_ALLOC_h2p(h)
 typedef void tRADIO_SetValue(RADIO_Handle hObj, RADIO_Obj* pObj, int v);
 extern const GUI_BITMAP             RADIO__abmRadio[2];
 extern const GUI_BITMAP             RADIO__bmCheck;

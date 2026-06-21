@@ -27,7 +27,7 @@ WM_HMEM GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB* pfDraw, int x, int y) {
   if (hMem) {
     GUI_DRAW* pObj;
 
-    pObj = (GUI_DRAW*)GUI_ALLOC_h2p(hMem);
+    pObj = (GUI_DRAW*)(hMem);
     pObj->pConsts = &_ConstObjData;
     pObj->Data.pfDraw = pfDraw;
     pObj->xOff    = x;

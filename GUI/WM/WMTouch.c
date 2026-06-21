@@ -49,7 +49,7 @@ void WM__SendTouchMessage(WM_HWIN hWin, WM_MESSAGE* pMsg) {
   pState     = (GUI_PID_STATE*)pMsg->Data.p;
   if (pState) {
     WM_Obj* pWin;
-    pWin       = WM_H2P(hWin);
+    pWin       = (hWin);
     pState->x -= pWin->Rect.x0;
     pState->y -= pWin->Rect.y0;
   }
@@ -94,7 +94,7 @@ int WM_HandlePID(void) {
       if ((WM_PID__StateLast.Pressed != StateNew.Pressed) && CHWin.hWin) {
         WM_PID_STATE_CHANGED_INFO Info;
         WM_Obj* pWin;
-        pWin = WM_H2P(CHWin.hWin);
+        pWin = (CHWin.hWin);
         Info.State     = StateNew.Pressed;
         Info.StatePrev = WM_PID__StateLast.Pressed;
         Info.x         = StateNew.x - pWin->Rect.x0;

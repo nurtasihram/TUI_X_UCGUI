@@ -31,16 +31,7 @@ typedef struct {
 	int         Width;
 	int         Height;
 	int         Sel;
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-	int DebugId;
-#endif
 } MENU_Obj;
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-MENU_Obj *MENU_h2p(MENU_Handle h);
-#define MENU_H2P(h) MENU_h2p(h)
-#else
-#define MENU_H2P(h) ((MENU_Obj*)GUI_ALLOC_h2p(h))
-#endif
 extern MENU_PROPS           MENU__DefaultProps;
 extern const WIDGET_EFFECT *MENU__pDefaultEffect;
 void      MENU__RecalcTextWidthOfItems(MENU_Obj *pObj);
@@ -51,4 +42,3 @@ void      MENU__SetItemFlags(MENU_Obj *pObj, unsigned Index, uint16_t Mask, uint
 void      MENU__InvalidateItem(MENU_Handle hObj, const MENU_Obj *pObj, unsigned Index);
 int       MENU__FindItem(MENU_Handle hObj, uint16_t ItemId, MENU_Handle *phMenu);
 int       MENU__SendMenuMessage(MENU_Handle hObj, WM_HWIN hDestWin, uint16_t MsgType, uint16_t ItemId);
-/*************************** End of file ****************************/

@@ -41,12 +41,12 @@ static int _GetPixelIndex(const uint8_t* pData, int x, int y, int bpp, int Bytes
 }
 
 static void _DrawHLineAlpha(int x0, int y, int x1, int Intens) {
-  GUI_MEMDEV* pDev   = GUI_MEMDEV_H2P(GUI_Context.hDevData);
+  GUI_MEMDEV* pDev   = (GUI_Context.hDevData);
   GUI_USAGE_h hUsage = pDev->hUsage;
   RGB_COLOR Color1, Color2;
   int Len = x1 - x0 + 1;
   if (hUsage) {
-    GUI_USAGE_AddHLine(GUI_USAGE_H2P(hUsage), x0, y, Len);
+    GUI_USAGE_AddHLine(((GUI_USAGE *)hUsage), x0, y, Len);
   }
   Color1 = LCD_COLORINDEX;
   if (pDev->BitsPerPixel == 8) {
@@ -162,7 +162,7 @@ static void _WriteExToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, i
   uint8_t* pData;
   int yAct, yPrev, ySize, yi;
   int BytesPerLine, bpp;
-  pDev         = GUI_MEMDEV_H2P(hMem);
+  pDev         = (hMem);
   hUsage       = pDev->hUsage;
   ySize        = pDev->YSize;
   BytesPerLine = pDev->BytesPerLine;
@@ -171,7 +171,7 @@ static void _WriteExToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, i
   yPrev = y + 1;
   if (hUsage) {
     int xOff, xSize, y0;
-    pUsage = GUI_USAGE_H2P(hUsage);
+    pUsage = (hUsage);
     for (yi = 0; yi < ySize; yi++) {
       yAct = y + GUI__DivideRound32(((int32_t)(yi) * yMag), 1000);
       if (yAct != yPrev) {
@@ -209,7 +209,7 @@ void GUI_MEMDEV_WriteExAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, int yM
     GUI_MEMDEV* pDevData;
     GUI_RECT ClipRectPrev;
 
-    pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);
+    pDevData = (GUI_MEMDEV*) (hMem);
     if (x == GUI_POS_AUTO) {
       x = pDevData->x0;
       y = pDevData->y0;

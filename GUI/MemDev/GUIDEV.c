@@ -10,7 +10,7 @@
 #if GUI_SUPPORT_MEMDEV
 
 void GUI_MEMDEV__GetRect(GUI_RECT* pRect) {
-  GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
+  GUI_MEMDEV* pDev = (GUI_Context.hDevData);
   pRect->x0 = pDev->x0;
   pRect->y0 = pDev->y0;
   pRect->x1 = pDev->x0 + pDev->XSize-1;
@@ -25,7 +25,7 @@ void GUI_MEMDEV_Delete(GUI_MEMDEV_Handle hMemDev) {
     if (GUI_Context.hDevData == hMemDev) {
 	    GUI_SelectLCD();
     }
-    pDev = GUI_MEMDEV_H2P(hMemDev);
+    pDev = (hMemDev);
     /* Delete the associated usage device */
     if (pDev->hUsage)
       GUI_USAGE_DecUseCnt(pDev->hUsage);
@@ -69,7 +69,7 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
   }
   if (hMemDev) {
     GUI_MEMDEV* pDevData;
-    pDevData = GUI_MEMDEV_H2P(hMemDev);
+    pDevData = (hMemDev);
     pDevData->x0            = x0;
     pDevData->y0            = y0;
     pDevData->XSize         = xsize;
@@ -97,7 +97,7 @@ GUI_MEMDEV_Handle GUI_MEMDEV_CreateEx(int x0, int y0, int xSize, int ySize, int 
   } else {
     /* If a memory device is already selected, we create a compatible one by copying its data */
     GUI_MEMDEV* pDevSel;
-    pDevSel = GUI_MEMDEV_H2P(GUI_Context.hDevData);
+    pDevSel = (GUI_Context.hDevData);
   }
   hMemDev = GUI_MEMDEV__CreateFixed(x0, y0, xSize, ySize, Flags, pDeviceAPI->pMemDevAPI);
 
@@ -115,7 +115,7 @@ GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem) {
   if (hMem == 0) {
     GUI_SelectLCD();
   } else {
-    GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(hMem);
+    GUI_MEMDEV* pDev = (hMem);
 #if GUI_WINSUPPORT
       WM_Deactivate();
 #endif
@@ -132,7 +132,7 @@ GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem) {
 }
 
 void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem,int x, int y) {
-  GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(hMem);
+  GUI_MEMDEV* pDev = (hMem);
   GUI_USAGE_h hUsage = pDev->hUsage;
   GUI_USAGE*  pUsage;
   int YSize = pDev->YSize;
@@ -142,7 +142,7 @@ void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem,int x, int y) {
   int BytesPerPixel = BitsPerPixel >> 3;
   uint8_t* pData = (uint8_t*)(pDev+1);
   if (hUsage) {
-    pUsage = GUI_USAGE_H2P(hUsage);
+    pUsage = (hUsage);
     for (yi = 0; yi < YSize; yi++) {
       int xOff = 0;
       int XSize;
@@ -179,7 +179,7 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 #endif
 
     hMemPrev = GUI_Context.hDevData;
-    pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
+    pDevData = (GUI_MEMDEV*) (hMem);  /* Convert to pointer */
     /* Make sure LCD is selected as device */
     GUI_SelectLCD();  /* Activate LCD */
     if (x == GUI_POS_AUTO) {

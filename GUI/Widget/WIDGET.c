@@ -10,7 +10,7 @@ const WIDGET_EFFECT *_pEffectDefault = &WIDGET_Effect_3D;
 static void _UpdateChildPostions(WM_HWIN hObj, int Diff) {
 	WM_Obj *pObj;
 
-	pObj = (WM_Obj *)WM_H2P(hObj);
+	pObj = (WM_Obj *)(hObj);
 	WM__UpdateChildPositions(pObj, -Diff, -Diff, Diff, Diff);
 
 }
@@ -111,7 +111,7 @@ int WIDGET__GetYSize(const WIDGET *pWidget) {
   Return width (or height in case of rotation) of window in pixels
 */
 int WIDGET__GetWindowSizeX(WM_HWIN hWin) {
-	WIDGET *pWidget = WIDGET_H2P(hWin);
+	WIDGET *pWidget = (hWin);
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
 		return WM_GetWindowSizeY(hWin);
 	}
@@ -122,7 +122,7 @@ int WIDGET__GetWindowSizeX(WM_HWIN hWin) {
 void WIDGET_SetState(WM_HWIN hObj, int State) {
 	WIDGET *pWidget;
 
-	pWidget = WIDGET_H2P(hObj);
+	pWidget = (hObj);
 	if (State != pWidget->State) {
 		pWidget->State = State;
 		WM_Invalidate(hObj);
@@ -134,7 +134,7 @@ int WIDGET_GetState(WM_HWIN hObj) {
 	WIDGET *pWidget;
 	if (hObj) {
 
-		pWidget = WIDGET_H2P(hObj);
+		pWidget = (hObj);
 		Ret = pWidget->State;
 
 	}
@@ -144,7 +144,7 @@ void WIDGET_OrState(WM_HWIN hObj, int State) {
 	if (hObj) {
 		WIDGET *pWidget;
 
-		pWidget = WIDGET_H2P(hObj);
+		pWidget = (hObj);
 		if (State != (pWidget->State & State)) {
 			pWidget->State |= State;
 			WM_Invalidate(hObj);
@@ -166,7 +166,7 @@ void WIDGET_AndState(WM_HWIN hObj, int Mask) {
 	if (hObj) {
 		WIDGET *pWidget;
 
-		pWidget = WIDGET_H2P(hObj);
+		pWidget = (hObj);
 		StateNew = pWidget->State & (~Mask);
 		if (pWidget->State != StateNew) {
 			pWidget->State = StateNew;
@@ -182,7 +182,7 @@ void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
 }
 int WIDGET_HandleActive(WM_HWIN hObj, WM_MESSAGE *pMsg) {
 	int Diff, Notification;
-	WIDGET *pWidget = WIDGET_H2P(hObj);
+	WIDGET *pWidget = (hObj);
 	switch (pMsg->MsgId) {
 		case WM_WIDGET_SET_EFFECT:
 			Diff = pWidget->pEffect->EffectSize;
@@ -341,7 +341,7 @@ int WIDGET_SetWidth(WM_HWIN hObj, int Width) {
 	int r = 0;
 	if (hObj) {
 
-		pWidget = WIDGET_H2P(hObj);
+		pWidget = (hObj);
 		if (pWidget->State & WIDGET_STATE_VERTICAL) {
 			r = WM_SetXSize(hObj, Width);
 		}

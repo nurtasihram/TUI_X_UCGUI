@@ -466,7 +466,6 @@ GUI_HMEM           GUI_ALLOC_AllocZero  (GUI_ALLOC_DATATYPE size);
 void               GUI_ALLOC_Free       (GUI_HMEM  hMem);
 void               GUI_ALLOC_FreePtr    (GUI_HMEM *phMem);
 GUI_ALLOC_DATATYPE GUI_ALLOC_GetMaxSize (void);
-void*              GUI_ALLOC_h2p        (GUI_HMEM  hMem);
 GUI_HMEM           GUI_ALLOC_Realloc    (GUI_HMEM hOld, int NewSize);
 
 #define GUI_MEMDEV_HASTRANS       0

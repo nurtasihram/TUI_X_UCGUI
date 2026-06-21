@@ -46,7 +46,7 @@ int GUI_ARRAY_AddItem(GUI_ARRAY *pThis, const void *pNew, int Len) {
 			r = 1;            /* Error */
 		}
 		else {
-			pNewBuffer = (WM_HMEM *)GUI_ALLOC_h2p(hNewBuffer);
+			pNewBuffer = (WM_HMEM *)(hNewBuffer);
 			*(pNewBuffer + NumItems) = hNewItem;
 			pThis->haHandle = hNewBuffer;
 			pThis->NumItems++;
@@ -73,7 +73,7 @@ void GUI_ARRAY_Delete(GUI_ARRAY *pThis) {
 	GUI_ARRAY_CHECK(pThis);    /* Sanity checks at higher debug levels only */
 	ha = pThis->haHandle;
 	if (ha) {
-		pa = (WM_HMEM *)GUI_ALLOC_h2p(ha);
+		pa = (WM_HMEM *)(ha);
 		/* Free the attached items, one at a time */
 		for (i = 0; i < pThis->NumItems; i++) {
 			GUI_ALLOC_FreePtr(pa + i);
@@ -113,7 +113,7 @@ int GUI_ARRAY_SethItem(GUI_ARRAY *pThis, unsigned int Index, WM_HMEM hItem) {
 	if (Index < (unsigned)pThis->NumItems) {
 		ha = pThis->haHandle;
 		if (ha) {
-			pa = (WM_HMEM *)GUI_ALLOC_h2p(ha);
+			pa = (WM_HMEM *)(ha);
 			pa += Index;
 			GUI_ALLOC_FreePtr(pa);
 			*pa = hItem;
@@ -149,7 +149,7 @@ WM_HMEM  GUI_ARRAY_SetItem(GUI_ARRAY *pThis, unsigned int Index, const void *pDa
 		ha = pThis->haHandle;
 		if (ha) {
 			WM_HMEM *pa;
-			pa = (WM_HMEM *)GUI_ALLOC_h2p(ha);
+			pa = (WM_HMEM *)(ha);
 			pa += Index;
 			hItem = *pa;
 			/*
@@ -175,7 +175,7 @@ WM_HMEM  GUI_ARRAY_SetItem(GUI_ARRAY *pThis, unsigned int Index, const void *pDa
 			 * Set the item (if needed)
 			 */
 			if (pData && hItem) {
-				char *pItem = (char *)GUI_ALLOC_h2p(hItem);
+				char *pItem = (char *)(hItem);
 				memcpy(pItem, pData, Len);
 			}
 		}
@@ -202,7 +202,7 @@ WM_HMEM GUI_ARRAY_GethItem(const GUI_ARRAY *pThis, unsigned int Index) {
 		WM_HMEM *pa;
 		ha = pThis->haHandle;
 		if (ha) {
-			pa = (WM_HMEM *)GUI_ALLOC_h2p(ha);
+			pa = (WM_HMEM *)(ha);
 			h = *(pa + Index);
 		}
 	}
@@ -229,7 +229,7 @@ void *GUI_ARRAY_GetpItem(const GUI_ARRAY *pThis, unsigned int Index) {
 	GUI_ARRAY_CHECK(pThis);    /* Sanity checks at higher debug levels only */
 	h = GUI_ARRAY_GethItem(pThis, Index);
 	if (h) {
-		p = WM_H2P(h);
+		p = (h);
 	}
 	return p;
 }
@@ -290,7 +290,7 @@ void GUI_ARRAY_DeleteItem(GUI_ARRAY *pThis, unsigned int Index) {
 		if (ha) {
 			int NumItems;
 
-			pa = (WM_HMEM *)GUI_ALLOC_h2p(ha);
+			pa = (WM_HMEM *)(ha);
 			/* Free the attached item */
 			GUI_ALLOC_FreePtr(pa + Index);
 			/* Move the last items to the position of the deleted item */
@@ -321,7 +321,7 @@ void *GUI_ARRAY_ResizeItem(GUI_ARRAY *pThis, unsigned int Index, int Len) {
 	hNew = GUI_ALLOC_AllocZero(Len);
 	if (hNew) {
 		void *pOld = GUI_ARRAY_GetpItem(pThis, Index);
-		void *pNew = GUI_ALLOC_h2p(hNew);
+		void *pNew = (hNew);
 		memcpy(pNew, pOld, Len);
 		if (GUI_ARRAY_SethItem(pThis, Index, hNew)) {
 			GUI_ALLOC_FreePtr(&hNew);    /* Free on error */
@@ -368,8 +368,8 @@ char GUI_ARRAY_InsertBlankItem(GUI_ARRAY *pThis, unsigned int Index) {
 		else {
 			WM_HMEM *pOldBuffer;
 			WM_HMEM *pNewBuffer;
-			pNewBuffer = (WM_HMEM *)GUI_ALLOC_h2p(hNewBuffer);
-			pOldBuffer = (WM_HMEM *)GUI_ALLOC_h2p(pThis->haHandle);
+			pNewBuffer = (WM_HMEM *)(hNewBuffer);
+			pOldBuffer = (WM_HMEM *)(pThis->haHandle);
 			memcpy(pNewBuffer, pOldBuffer, Index * sizeof(WM_HMEM));
 			memcpy(pNewBuffer + (Index + 1), pOldBuffer + Index, (pThis->NumItems - Index) * sizeof(WM_HMEM));
 			GUI_ALLOC_Free(pThis->haHandle);

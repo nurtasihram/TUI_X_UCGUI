@@ -42,7 +42,7 @@ static void _Paint(TEXT_Handle hObj, TEXT_Obj* pObj) {
 #endif
   /* Show the text */
   if (pObj->hpText) {
-    s = (const char*) GUI_ALLOC_h2p(pObj->hpText);
+    s = (const char*) (pObj->hpText);
     GUI_SetTextMode(GUI_TM_TRANS);
     WM_GetClientRect(&Rect);
     GUI_DispStringInRect(s, &Rect, pObj->Align);
@@ -54,7 +54,7 @@ static void _Delete(TEXT_Obj* pObj) {
 }
 static void _TEXT_Callback (WM_MESSAGE*pMsg) {
   TEXT_Handle hObj = pMsg->hWin;
-  TEXT_Obj* pObj = TEXT_H2P(hObj);
+  TEXT_Obj* pObj = (hObj);
   /* Let widget handle the standard messages */
   if (WIDGET_HandleActive(hObj, pMsg) == 0) {
     return;
@@ -85,14 +85,14 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
     TEXT_Obj* pObj;
     WM_HMEM hMem = 0;
 
-    pObj = TEXT_H2P(hObj);
+    pObj = (hObj);
     /* init widget specific variables */
     WIDGET__Init(&pObj->Widget, Id, 0);
     /* init member variables */
     if (pText) {
       hMem = GUI_ALLOC_AllocZero(strlen(pText) + 1);
       if (hMem) {
-        strcpy((char*) GUI_ALLOC_h2p(hMem), pText);
+        strcpy((char*) (hMem), pText);
       }
     }
     pObj->hpText = hMem;
@@ -134,7 +134,7 @@ void TEXT_SetBkColor(TEXT_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		TEXT_Obj *pObj;
 
-		pObj = TEXT_H2P(hObj);
+		pObj = (hObj);
 		pObj->BkColor = Color;
 #if TEXT_SUPPORT_TRANSPARENCY
 		if (Color <= 0xFFFFFF) {
@@ -152,14 +152,14 @@ void TEXT_SetBkColor(TEXT_Handle hObj, RGB_COLOR Color) {
 void TEXT_SetFont(TEXT_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
 	if (hObj) {
 		TEXT_Obj *pObj;
-		pObj = TEXT_H2P(hObj);
+		pObj = (hObj);
 		pObj->pFont = pFont;
 		/*
 		GUI_ALLOC_FreePtr(&pObj->hpText);
 		if (s) {
 		  hMem = GUI_ALLOC_AllocZero(strlen(s)+1);
 		  if (hMem) {
-			strcpy((char *) GUI_ALLOC_h2p(hMem), s);
+			strcpy((char *) (hMem), s);
 		  }
 		  pObj->hpText = hMem;
 		}
@@ -173,7 +173,7 @@ void TEXT_SetText(TEXT_Handle hObj, const char *s) {
 	if (hObj) {
 		TEXT_Obj *pObj;
 
-		pObj = TEXT_H2P(hObj);
+		pObj = (hObj);
 		if (GUI__SetText(&pObj->hpText, s)) {
 			WM_Invalidate(hObj);
 		}
@@ -185,7 +185,7 @@ void TEXT_SetTextAlign(TEXT_Handle hObj, int Align) {
 	if (hObj) {
 		TEXT_Obj *pObj;
 
-		pObj = TEXT_H2P(hObj);
+		pObj = (hObj);
 		pObj->Align = Align;
 		WM_Invalidate(hObj);
 
@@ -195,7 +195,7 @@ void TEXT_SetTextColor(TEXT_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		TEXT_Obj *pObj;
 
-		pObj = TEXT_H2P(hObj);
+		pObj = (hObj);
 		pObj->TextColor = Color;
 		WM_Invalidate(hObj);
 

@@ -3,7 +3,6 @@
 #include "WIDGET.h"
 #include "GUI_ARRAY.h"
 #define DROPDOWN_SF_AUTOSCROLLBAR DROPDOWN_CF_AUTOSCROLLBAR
-#define DROPDOWN_H2P(h) (DROPDOWN_Obj*) GUI_ALLOC_h2p(h)
 typedef struct {
 	const GUI_FONT GUI_UNI_PTR *pFont;
 	RGB_COLOR aBackColor[3];
@@ -24,8 +23,5 @@ typedef struct {
 	uint16_t     ItemSpacing;
 	uint8_t      ScrollbarWidth;
 	char  IsPressed;
-#if GUI_DEBUG_LEVEL >1
-	int DebugId;
-#endif
 } DROPDOWN_Obj;
 void DROPDOWN__AdjustHeight(DROPDOWN_Handle hObj, DROPDOWN_Obj *pObj);

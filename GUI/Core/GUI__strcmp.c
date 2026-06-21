@@ -1,5 +1,3 @@
-
-
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
 
@@ -33,25 +31,3 @@ int GUI__strcmp(const char GUI_UNI_PTR * s0, const char GUI_UNI_PTR * s1) {
   }
   return 0;      /* Equal ! */
 }
-
-/*********************************************************************
-*
-*       GUI__strcmp_hp
-*
-* Purpose:
-*  Replacement for the strcmp function. The advantage is that it can
-*  be called with NULL pointer or 0 handle.
-*  A NULL string is treated as a an empty string ("").
-* Return value:
-*  0 if identical
-*  1 else
-*/
-int GUI__strcmp_hp(GUI_HMEM  hs0, const char GUI_UNI_PTR * s1) {
-  const char* s0 = NULL;
-  if (hs0) {
-    s0 = (const char*)GUI_ALLOC_h2p(hs0);
-  }
-  return GUI__strcmp(s0, s1);
-}
-
-/*************************** End of file ****************************/

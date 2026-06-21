@@ -37,7 +37,7 @@ void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV_Handle hMem) {
     return;
   }
   {
-    GUI_MEMDEV* pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
+    GUI_MEMDEV* pDevData = (GUI_MEMDEV*) (hMem);  /* Convert to pointer */
     GUI_RECT r;
     int y;
     int XMax;
@@ -45,7 +45,7 @@ void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV_Handle hMem) {
     GUI_MEMDEV_Handle hMemOld = GUI_Context.hDevData;
     GUI_MEMDEV_Select(hMem);
     if (pDevData->hUsage)
-      pUsage = GUI_USAGE_H2P(pDevData->hUsage);
+      pUsage = (pDevData->hUsage);
     /* Get bounding rectangle */
     r.y0  = pDevData->y0;
     r.x0  = pDevData->x0;

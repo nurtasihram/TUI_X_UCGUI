@@ -24,7 +24,7 @@
 static const RGB_COLOR aID[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
 static PIXELINDEX* _XY2PTR(int x, int y) {
-  GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
+  GUI_MEMDEV* pDev = (GUI_Context.hDevData);
   uint8_t *pData = (uint8_t*)(pDev + 1);
 #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
     if ((x >= pDev->x0+pDev->XSize) | (x<pDev->x0) | (y >= pDev->y0+pDev->YSize) | (y<pDev->y0)) {
@@ -372,8 +372,8 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
                         const uint8_t GUI_UNI_PTR * pData, int Diff, const RGB_COLOR* pTrans)
 {
   int i;
-  GUI_MEMDEV* pDev   = GUI_MEMDEV_H2P(GUI_Context.hDevData);
-  GUI_USAGE*  pUsage = (pDev->hUsage) ? GUI_USAGE_H2P(pDev->hUsage) : 0;
+  GUI_MEMDEV* pDev   = (GUI_Context.hDevData);
+  GUI_USAGE*  pUsage = (pDev->hUsage) ? (pDev->hUsage) : 0;
   unsigned    BytesPerLineDest;
   PIXELINDEX* pDest;
   BytesPerLineDest = pDev->BytesPerLine;
@@ -433,13 +433,13 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 static void _FillRect(int x0, int y0, int x1, int y1) {
   unsigned BytesPerLine;
   int Len;
-  GUI_MEMDEV* pDev   = GUI_MEMDEV_H2P(GUI_Context.hDevData);
+  GUI_MEMDEV* pDev   = (GUI_Context.hDevData);
   PIXELINDEX* pData  = _XY2PTR(x0, y0);
   BytesPerLine = pDev->BytesPerLine;
   Len = x1 - x0 + 1;
   /* Mark rectangle as modified */
   if (pDev->hUsage) {
-    GUI_USAGE_AddRect(GUI_USAGE_H2P(pDev->hUsage), x0, y0, Len, y1 - y0 + 1);
+    GUI_USAGE_AddRect((pDev->hUsage), x0, y0, Len, y1 - y0 + 1);
   }
   /* Do the drawing */
   for (; y0 <= y1; y0++) {
@@ -470,9 +470,9 @@ static void _DrawHLine(int x0, int y, int x1) {
 }
 
 static void _DrawVLine(int x , int y0, int y1) {
-  GUI_MEMDEV* pDev   = GUI_MEMDEV_H2P(GUI_Context.hDevData);
+  GUI_MEMDEV* pDev   = (GUI_Context.hDevData);
   GUI_USAGE_h hUsage = pDev->hUsage;
-  GUI_USAGE*  pUsage = hUsage ? GUI_USAGE_H2P(hUsage) : NULL;
+  GUI_USAGE*  pUsage = hUsage ? (hUsage) : NULL;
   PIXELINDEX* pData  = _XY2PTR(x, y0);
   unsigned BytesPerLine = pDev->BytesPerLine;
 
@@ -503,22 +503,22 @@ static void _DrawVLine(int x , int y0, int y1) {
 }
 
 static void _SetPixelIndex(int x, int y, int Index) {
-  GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
+  GUI_MEMDEV* pDev = (GUI_Context.hDevData);
   GUI_USAGE_h hUsage = pDev->hUsage;
   PIXELINDEX* pData = _XY2PTR(x, y);
   *pData = Index;
   if (hUsage) {
-    GUI_USAGE_AddPixel(GUI_USAGE_H2P(hUsage), x, y);
+    GUI_USAGE_AddPixel(((GUI_USAGE *)hUsage), x, y);
   }
 }
 
 static void _XorPixel(int x, int y) {
-  GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
+  GUI_MEMDEV* pDev = (GUI_Context.hDevData);
   GUI_USAGE_h hUsage = pDev->hUsage;
   PIXELINDEX* pData = _XY2PTR(x, y);
   *pData = *pData ^ ~0;
   if (hUsage) {
-    GUI_USAGE_AddPixel(GUI_USAGE_H2P(hUsage), x, y);
+    GUI_USAGE_AddPixel(((GUI_USAGE *)hUsage), x, y);
   }
 }
 

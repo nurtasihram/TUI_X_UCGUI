@@ -36,7 +36,7 @@ void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV_Handle hMem, int YSize) {
   {
     GUI_MEMDEV * pDevData;
 
-    pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
+    pDevData = (GUI_MEMDEV*) (hMem);  /* Convert to pointer */
     if (YSize < pDevData->YSize) {
       pDevData->YSize = YSize;
     }
