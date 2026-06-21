@@ -718,9 +718,6 @@
     <ClCompile Include="GUI\Widget\WIDGET_Effect_Simple.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_FillStringInRect.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\WINDOW.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>

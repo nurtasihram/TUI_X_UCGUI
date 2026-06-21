@@ -245,7 +245,6 @@
     <ClCompile Include="GUI\Widget\WIDGET_Effect_3D2L.c" />
     <ClCompile Include="GUI\Widget\WIDGET_Effect_None.c" />
     <ClCompile Include="GUI\Widget\WIDGET_Effect_Simple.c" />
-    <ClCompile Include="GUI\Widget\WIDGET_FillStringInRect.c" />
     <ClCompile Include="GUI\Widget\WINDOW.c" />
     <ClCompile Include="GUI\WM\WM.c" />
     <ClCompile Include="GUI\WM\WMMemDev.c" />
