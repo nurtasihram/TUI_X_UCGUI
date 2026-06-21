@@ -32,41 +32,41 @@
 #define INVALID_LINEPOSB (1 << 4)
 typedef struct {
 	WIDGET Widget;
-	GUI_COLOR aBkColor[NUM_DISP_MODES];
-	GUI_COLOR aColor[NUM_DISP_MODES];
+	RGB_COLOR aBkColor[NUM_DISP_MODES];
+	RGB_COLOR aColor[NUM_DISP_MODES];
 	WM_HMEM hText;
-	U16 MaxNumChars;         /* Maximum number of characters including the prompt */
-	U16 NumChars;            /* Number of characters (text and prompt) in object */
-	U16 NumCharsPrompt;      /* Number of prompt characters */
-	U16 NumLines;            /* Number of text lines needed to show all data */
-	U16 TextSizeX;           /* Size in X of text depending of wrapping mode */
-	U16 BufferSize;
-	U16 CursorLine;          /* Number of current cursor line */
-	U16 CursorPosChar;       /* Character offset number of cursor */
-	U16 CursorPosByte;       /* Byte offset number of cursor */
-	U16 CursorPosX;          /* Cursor position in X */
-	U16 CursorPosY;          /* Cursor position in Y */
-	U16 CacheLinePosByte;    /*  */
-	U16 CacheLineNumber;     /*  */
-	U16 CacheFirstVisibleLine;
-	U16 CacheFirstVisibleByte;
+	uint16_t MaxNumChars;         /* Maximum number of characters including the prompt */
+	uint16_t NumChars;            /* Number of characters (text and prompt) in object */
+	uint16_t NumCharsPrompt;      /* Number of prompt characters */
+	uint16_t NumLines;            /* Number of text lines needed to show all data */
+	uint16_t TextSizeX;           /* Size in X of text depending of wrapping mode */
+	uint16_t BufferSize;
+	uint16_t CursorLine;          /* Number of current cursor line */
+	uint16_t CursorPosChar;       /* Character offset number of cursor */
+	uint16_t CursorPosByte;       /* Byte offset number of cursor */
+	uint16_t CursorPosX;          /* Cursor position in X */
+	uint16_t CursorPosY;          /* Cursor position in Y */
+	uint16_t CacheLinePosByte;    /*  */
+	uint16_t CacheLineNumber;     /*  */
+	uint16_t CacheFirstVisibleLine;
+	uint16_t CacheFirstVisibleByte;
 	WM_SCROLL_STATE ScrollStateV;
 	WM_SCROLL_STATE ScrollStateH;
 	const GUI_FONT GUI_UNI_PTR *pFont;
-	U8 Flags;
-	U8 InvalidFlags;         /* Flags to save validation status */
-	U8 EditMode;
-	U8 HBorder;
+	uint8_t Flags;
+	uint8_t InvalidFlags;         /* Flags to save validation status */
+	uint8_t EditMode;
+	uint8_t HBorder;
 	GUI_WRAPMODE WrapMode;
 #if GUI_DEBUG_LEVEL >1
 	int DebugId;
 #endif
 } MULTIEDIT_OBJ;
-static GUI_COLOR _aDefaultBkColor[2] = {
+static RGB_COLOR _aDefaultBkColor[2] = {
   MULTIEDIT_BKCOLOR0_DEFAULT,
   MULTIEDIT_BKCOLOR1_DEFAULT,
 };
-static GUI_COLOR _aDefaultColor[2] = {
+static RGB_COLOR _aDefaultColor[2] = {
   MULTIEDIT_TEXTCOLOR0_DEFAULT,
   MULTIEDIT_TEXTCOLOR1_DEFAULT,
 };
@@ -130,7 +130,7 @@ static int _GetNumCharsInPrompt(const MULTIEDIT_OBJ *pObj, const char GUI_UNI_PT
 }
 static int _NumChars2XSize(const char GUI_UNI_PTR *pText, int NumChars) {
 	int xSize = 0;
-	U16 Char;
+	uint16_t Char;
 	while (NumChars--) {
 		Char = GUI_UC__GetCharCodeInc(&pText);
 		xSize += GUI_GetCharDistX(Char);
@@ -195,7 +195,7 @@ static int _GetCharDistX(const MULTIEDIT_OBJ *pObj, const char *pText) {
 		r = GUI_GetCharDistX(MULTIEDIT_PASSWORD_CHAR);
 	}
 	else {
-		U16 c;
+		uint16_t c;
 		c = GUI_UC_GetCharCode(pText);
 		r = GUI_GetCharDistX(c);
 	}
@@ -395,7 +395,7 @@ static int _GetNumLines(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 		if (pObj->hText) {
 			int NumChars, NumBytes;
 			char *pText;
-			U16 Char;
+			uint16_t Char;
 			pText = (char *)GUI_ALLOC_h2p(pObj->hText);
 			GUI_SetFont(pObj->pFont);
 			do {
@@ -513,7 +513,7 @@ static int _InvalidateCursorPos(MULTIEDIT_OBJ *pObj) {
 	pObj->CursorPosChar = 0xffff;
 	return Value;
 }
-static void _SetFlag(MULTIEDIT_HANDLE hObj, int OnOff, U8 Flag) {
+static void _SetFlag(MULTIEDIT_HANDLE hObj, int OnOff, uint8_t Flag) {
 	if (hObj) {
 		MULTIEDIT_OBJ *pObj;
 
@@ -640,7 +640,7 @@ static void _SetCursorXY(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, int x, int 
 		char *pLine, *pText;
 		int CursorLine, WrapChars;
 		int SizeX = 0;
-		U16 Char;
+		uint16_t Char;
 		GUI_SetFont(pObj->pFont);
 		CursorLine = y / GUI_GetFontDistY();
 		pLine = _GetpLine(hObj, pObj, CursorLine);
@@ -702,7 +702,7 @@ static int _IsOverwriteAtThisChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 	if (pObj->hText && !(pObj->Flags & MULTIEDIT_CF_INSERT)) {
 		const char *pText;
 		int CurPos, Line1, Line2;
-		U16 Char;
+		uint16_t Char;
 		pText = (const char *)GUI_ALLOC_h2p(pObj->hText);
 		Line1 = pObj->CursorLine;
 		CurPos = _CalcNextValidCursorPos(hObj, pObj, pObj->CursorPosChar + 1, 0, 0);
@@ -857,7 +857,7 @@ static void _DeleteChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 *
 * Create space at the current cursor position and inserts a character.
 */
-static int _InsertChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, U16 Char) {
+static int _InsertChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, uint16_t Char) {
 	if (_IsCharsAvailable(pObj, 1)) {
 		int BytesNeeded;
 		BytesNeeded = GUI_UC__CalcSizeOfChar(Char);
@@ -983,7 +983,7 @@ static void _OnTouch(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, WM_MESSAGE *pMs
 * Returns: 1 if Key has been consumed
 *          0 else
 */
-static int _AddKey(MULTIEDIT_HANDLE hObj, U16 Key) {
+static int _AddKey(MULTIEDIT_HANDLE hObj, uint16_t Key) {
 	int r = 0;               /* Key has not been consumed */
 	MULTIEDIT_OBJ *pObj;
 	pObj = MULTIEDIT_H2P(hObj);
@@ -1041,7 +1041,7 @@ static int _AddKey(MULTIEDIT_HANDLE hObj, U16 Key) {
 				_MoveCursor2NextLine(hObj, pObj);
 			}
 			else {
-				if (_InsertChar(hObj, pObj, (U8)('\n'))) {
+				if (_InsertChar(hObj, pObj, (uint8_t)('\n'))) {
 					if (pObj->Flags & MULTIEDIT_SF_PASSWORD) {
 						_SetCursorPos(hObj, pObj, pObj->CursorPosChar + 1);
 					}
@@ -1200,7 +1200,7 @@ MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 
 	return hObj;
 }
-int MULTIEDIT_AddKey(MULTIEDIT_HANDLE hObj, U16 Key) {
+int MULTIEDIT_AddKey(MULTIEDIT_HANDLE hObj, uint16_t Key) {
 	int r = 0;
 	if (hObj) {
 
@@ -1344,7 +1344,7 @@ void MULTIEDIT_SetFont(MULTIEDIT_HANDLE hObj, const GUI_FONT GUI_UNI_PTR *pFont)
 
 	}
 }
-void MULTIEDIT_SetBkColor(MULTIEDIT_HANDLE hObj, unsigned Index, GUI_COLOR color) {
+void MULTIEDIT_SetBkColor(MULTIEDIT_HANDLE hObj, unsigned Index, RGB_COLOR color) {
 	if (hObj && (Index < NUM_DISP_MODES)) {
 		MULTIEDIT_OBJ *pObj;
 
@@ -1364,7 +1364,7 @@ void MULTIEDIT_SetCursorOffset(MULTIEDIT_HANDLE hObj, int Offset) {
 
 	}
 }
-void MULTIEDIT_SetTextColor(MULTIEDIT_HANDLE hObj, unsigned Index, GUI_COLOR color) {
+void MULTIEDIT_SetTextColor(MULTIEDIT_HANDLE hObj, unsigned Index, RGB_COLOR color) {
 	if (hObj && (Index < NUM_DISP_MODES)) {
 		MULTIEDIT_OBJ *pObj;
 

@@ -32,34 +32,34 @@ Purpose     : Implementation of memory devices
 *       _GetPixelIndex
 *
 */
-static int _GetPixelIndex(const U8* pData, int x, int y, int bpp, int BytesPerLine) {
+static int _GetPixelIndex(const uint8_t* pData, int x, int y, int bpp, int BytesPerLine) {
   if (bpp == 8) {
     return (int)(*(pData + (y * BytesPerLine) + x));
   } else {
-    return (int)(*(const U16*)(pData + (y * BytesPerLine) + (x << 1)));
+    return (int)(*(const uint16_t*)(pData + (y * BytesPerLine) + (x << 1)));
   }
 }
 
 static void _DrawHLineAlpha(int x0, int y, int x1, int Intens) {
   GUI_MEMDEV* pDev   = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   GUI_USAGE_h hUsage = pDev->hUsage;
-  LCD_COLOR Color1, Color2;
+  RGB_COLOR Color1, Color2;
   int Len = x1 - x0 + 1;
   if (hUsage) {
     GUI_USAGE_AddHLine(GUI_USAGE_H2P(hUsage), x0, y, Len);
   }
   Color1 = LCD_COLORINDEX;
   if (pDev->BitsPerPixel == 8) {
-    U8* pData;
-    pData  = (U8*) GUI_MEMDEV__XY2PTR(x0, y);
+    uint8_t* pData;
+    pData  = (uint8_t*) GUI_MEMDEV__XY2PTR(x0, y);
     while (Len--) {
       Color2 = *pData;
       Color2 = LCD_MixColors256(Color1, Color2, Intens);
       *pData++ = Color2;
     }
   } else {
-    U16* pData;
-    pData  = (U16*) GUI_MEMDEV__XY2PTR(x0, y);
+    uint16_t* pData;
+    pData  = (uint16_t*) GUI_MEMDEV__XY2PTR(x0, y);
     while (Len--) {
       Color2 = *pData;
       Color2 = LCD_MixColors256(Color1, Color2, Intens);
@@ -69,9 +69,9 @@ static void _DrawHLineAlpha(int x0, int y, int x1, int Intens) {
 }
 
 static void _DrawBitmapLineEx(int x0, int y0, int xOff, int yOff, int xSize, int xMag, int Alpha,
-                              int bpp, int BytesPerLine, const U8* pData) {
+                              int bpp, int BytesPerLine, const uint8_t* pData) {
   int x, xi, xAct, xStart, xMagAbs, xiMag, xMin, xMax, Cached;
-  LCD_PIXELINDEX Index = 0, IndexPrev = 0;
+  RGB_COLOR Index = 0, IndexPrev = 0;
   /* Use clipping rect */
   xMin = GUI_Context.ClipRect.x0 - x0;
   xMax = GUI_Context.ClipRect.x1 - x0;
@@ -129,7 +129,7 @@ static void _DrawBitmapLineEx(int x0, int y0, int xOff, int yOff, int xSize, int
 }
 
 static void _DrawBitmapEx(int x0, int y0, int xOff, int yOff, int xSize, int ySize, int xMag, int yMag,
-                          int Alpha, int BmpSizeX, int BmpSizeY, int bpp, int BytesPerLine, const U8* pData) {
+                          int Alpha, int BmpSizeX, int BmpSizeY, int bpp, int BytesPerLine, const uint8_t* pData) {
   int y, yi, yMin, yMax, yEnd, yPrev;
   yMin = GUI_Context.ClipRect.y0;
   yMax = GUI_Context.ClipRect.y1;
@@ -139,11 +139,11 @@ static void _DrawBitmapEx(int x0, int y0, int xOff, int yOff, int xSize, int ySi
   if (yMag < 0) {
     y0 -= (BmpSizeY - 1) * yMag / 1000;
   }
-  yEnd  = y0 + GUI__DivideRound32(((I32)(yOff) * yMag), 1000);
+  yEnd  = y0 + GUI__DivideRound32(((int32_t)(yOff) * yMag), 1000);
   yPrev = yEnd + 1;
   for (yi = yOff; yi < (yOff + ySize); yi++) {
     y = yEnd;
-    yEnd = y0 + GUI__DivideRound32(((I32)(yi + 1) * yMag), 1000);
+    yEnd = y0 + GUI__DivideRound32(((int32_t)(yi + 1) * yMag), 1000);
     if (y != yPrev) {
       yPrev = y;
       do {
@@ -159,21 +159,21 @@ static void _WriteExToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, i
   GUI_MEMDEV* pDev;
   GUI_USAGE_h hUsage;
   GUI_USAGE*  pUsage;
-  U8* pData;
+  uint8_t* pData;
   int yAct, yPrev, ySize, yi;
   int BytesPerLine, bpp;
   pDev         = GUI_MEMDEV_H2P(hMem);
   hUsage       = pDev->hUsage;
   ySize        = pDev->YSize;
   BytesPerLine = pDev->BytesPerLine;
-  pData        = (U8*)(pDev + 1);
+  pData        = (uint8_t*)(pDev + 1);
   bpp          = pDev->BitsPerPixel;
   yPrev = y + 1;
   if (hUsage) {
     int xOff, xSize, y0;
     pUsage = GUI_USAGE_H2P(hUsage);
     for (yi = 0; yi < ySize; yi++) {
-      yAct = y + GUI__DivideRound32(((I32)(yi) * yMag), 1000);
+      yAct = y + GUI__DivideRound32(((int32_t)(yi) * yMag), 1000);
       if (yAct != yPrev) {
         xOff  = 0;
         xSize = GUI_USAGE_GetNextDirty(pUsage, &xOff, yi);
@@ -185,7 +185,7 @@ static void _WriteExToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, i
           }
           _DrawBitmapEx(x, y, 0, y0, pDev->XSize, yi - y0 + 1, xMag, yMag, Alpha,
                         pDev->XSize, pDev->YSize, bpp, BytesPerLine, pData);
-          yPrev = y + GUI__DivideRound32(((I32)(yi) * yMag), 1000);
+          yPrev = y + GUI__DivideRound32(((int32_t)(yi) * yMag), 1000);
         } else {
           /* Draw the partial line which needs to be drawn */
           while (xSize) {

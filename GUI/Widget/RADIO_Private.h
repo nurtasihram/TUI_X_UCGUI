@@ -8,17 +8,17 @@ typedef struct {
   const GUI_BITMAP* apBmRadio[2];
   const GUI_BITMAP* pBmCheck;
   GUI_ARRAY TextArray;
-  I16 Sel;                   /* current selection */
-  U16 Spacing;
-  U16 Height;
-  U16 NumItems;
-  U8  GroupId;
-  GUI_COLOR BkColor;
-  GUI_COLOR TextColor;
+  int16_t Sel;                   /* current selection */
+  uint16_t Spacing;
+  uint16_t Height;
+  uint16_t NumItems;
+  uint8_t  GroupId;
+  RGB_COLOR BkColor;
+  RGB_COLOR TextColor;
   const GUI_FONT GUI_UNI_PTR* pFont;
-  #if GUI_DEBUG_LEVEL >1
+#if GUI_DEBUG_LEVEL >1
     int DebugId;
-  #endif
+#endif
 } RADIO_Obj;
 #define RADIO_H2P(h) (RADIO_Obj*) GUI_ALLOC_h2p(h)
 typedef void tRADIO_SetValue(RADIO_Handle hObj, RADIO_Obj* pObj, int v);
@@ -27,7 +27,7 @@ extern const GUI_BITMAP             RADIO__bmCheck;
 extern const GUI_BITMAP*            RADIO__apDefaultImage[2];
 extern const GUI_BITMAP*            RADIO__pDefaultImageCheck;
 extern const GUI_FONT GUI_UNI_PTR*  RADIO__pDefaultFont;
-extern       GUI_COLOR              RADIO__DefaultTextColor;
+extern       RGB_COLOR              RADIO__DefaultTextColor;
 extern       tRADIO_SetValue*       RADIO__pfHandleSetValue;
 void RADIO__SetValue(RADIO_Handle hObj, RADIO_Obj* pObj, int v);
 

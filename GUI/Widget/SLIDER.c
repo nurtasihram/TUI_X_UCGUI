@@ -27,12 +27,12 @@
 #endif
 typedef struct {
 	WIDGET Widget;
-	GUI_COLOR aBkColor[2];
-	GUI_COLOR aColor[2];
+	RGB_COLOR aBkColor[2];
+	RGB_COLOR aColor[2];
 	int Min, Max, v;
 	int Flags;
 	int NumTicks;
-	I16 Width;
+	int16_t Width;
 #if GUI_DEBUG_LEVEL >1
 	int DebugId;
 #endif
@@ -48,7 +48,7 @@ typedef struct {
 #define SLIDER_INIT_ID(p)
 #define SLIDER_DEINIT_ID(p)
 #endif
-static GUI_COLOR _DefaultBkColor = SLIDER_BKCOLOR0_DEFAULT;
+static RGB_COLOR _DefaultBkColor = SLIDER_BKCOLOR0_DEFAULT;
 static void _Paint(SLIDER_Obj *pObj, WM_HWIN hObj) {
 	GUI_RECT r, rFocus, rSlider, rSlot;
 	int x0, xsize, i, Range, NumTicks;
@@ -79,7 +79,7 @@ static void _Paint(SLIDER_Obj *pObj, WM_HWIN hObj) {
 	/* Calculate Slider position */
 	rSlider = r;
 	rSlider.y0 = 5;
-	rSlider.x0 = x0 + (U32)xsize * (U32)(pObj->v - pObj->Min) / Range - pObj->Width / 2;
+	rSlider.x0 = x0 + (uint32_t)xsize * (uint32_t)(pObj->v - pObj->Min) / Range - pObj->Width / 2;
 	rSlider.x1 = rSlider.x0 + pObj->Width;
 	/* Calculate Slot position */
 	rSlot.x0 = x0;
@@ -143,7 +143,7 @@ static void _OnTouch(SLIDER_Handle hObj, SLIDER_Obj *pObj, WM_MESSAGE *pMsg) {
 			else {
 				int Div;
 				Div = xsize ? xsize : 1;     /* Make sure we do not divide by 0, even though xsize should never be 0 in this case anyhow */
-				Sel = pObj->Min + ((U32)Range * (U32)x + Div / 2) / Div;
+				Sel = pObj->Min + ((uint32_t)Range * (uint32_t)x + Div / 2) / Div;
 			}
 			if (WM_IsFocussable(hObj)) {
 				WM_SetFocus(hObj);
@@ -215,7 +215,7 @@ SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _SLIDER_Callback, sizeof(SLIDER_Obj) - sizeof(WM_Obj));
 	if (hObj) {
 		SLIDER_Obj *pObj = SLIDER_H2P(hObj);
-		U16 InitState;
+		uint16_t InitState;
 		/* Handle SpecialFlags */
 		InitState = WIDGET_STATE_FOCUSSABLE;
 		if (ExFlags & SLIDER_CF_VERTICAL) {
@@ -327,7 +327,7 @@ void SLIDER_SetNumTicks(SLIDER_Handle hObj, int NumTicks) {
 
 	}
 }
-void SLIDER_SetBkColor(SLIDER_Handle hObj, GUI_COLOR Color) {
+void SLIDER_SetBkColor(SLIDER_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		SLIDER_Obj *pObj;
 
@@ -345,7 +345,7 @@ void SLIDER_SetBkColor(SLIDER_Handle hObj, GUI_COLOR Color) {
 
 	}
 }
-void SLIDER_SetDefaultBkColor(GUI_COLOR Color) {
+void SLIDER_SetDefaultBkColor(RGB_COLOR Color) {
 	_DefaultBkColor = Color;
 }
 int SLIDER_GetValue(SLIDER_Handle hObj) {

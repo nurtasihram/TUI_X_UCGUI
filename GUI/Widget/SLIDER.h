@@ -23,12 +23,12 @@ SLIDER_Handle SLIDER_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWI
    widget will depend on the type of widget. */
 void SLIDER_Inc         (SLIDER_Handle hObj);
 void SLIDER_Dec         (SLIDER_Handle hObj);
-void SLIDER_SetBkColor  (SLIDER_Handle hObj, GUI_COLOR Color);
+void SLIDER_SetBkColor  (SLIDER_Handle hObj, RGB_COLOR Color);
 void SLIDER_SetWidth    (SLIDER_Handle hObj, int Width);
 void SLIDER_SetValue    (SLIDER_Handle hObj, int v);
 void SLIDER_SetRange    (SLIDER_Handle hObj, int Min, int Max);
 void SLIDER_SetNumTicks (SLIDER_Handle hObj, int NumTicks);
-void SLIDER_SetDefaultBkColor(GUI_COLOR Color);
+void SLIDER_SetDefaultBkColor(RGB_COLOR Color);
 int SLIDER_GetValue(SLIDER_Handle hObj);
 #if defined(__cplusplus)
   }

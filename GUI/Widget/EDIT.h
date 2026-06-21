@@ -80,21 +80,21 @@ EDIT_Handle EDIT_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hP
 */
 
 /* Methods changing preferences */
-void EDIT_SetDefaultBkColor(unsigned int Index, GUI_COLOR Color);
+void EDIT_SetDefaultBkColor(unsigned int Index, RGB_COLOR Color);
 void EDIT_SetDefaultFont(const GUI_FONT* pFont);
 void EDIT_SetDefaultTextAlign(int Align);
-void EDIT_SetDefaultTextColor(unsigned int Index, GUI_COLOR Color);
+void EDIT_SetDefaultTextColor(unsigned int Index, RGB_COLOR Color);
 
 /* Query preferences */
-GUI_COLOR                    EDIT_GetDefaultBkColor(unsigned int Index);
+RGB_COLOR                    EDIT_GetDefaultBkColor(unsigned int Index);
 const GUI_FONT GUI_UNI_PTR * EDIT_GetDefaultFont(void);
 int                          EDIT_GetDefaultTextAlign(void);
-GUI_COLOR                    EDIT_GetDefaultTextColor(unsigned int Index);
+RGB_COLOR                    EDIT_GetDefaultTextColor(unsigned int Index);
 
 /* Methods changing properties */
 void EDIT_AddKey           (EDIT_Handle hObj, int Key);
 void EDIT_ClearCursor      (EDIT_Handle hObj);
-void EDIT_SetBkColor       (EDIT_Handle hObj, unsigned int Index, GUI_COLOR color);
+void EDIT_SetBkColor       (EDIT_Handle hObj, unsigned int Index, RGB_COLOR color);
 void EDIT_SetCursorAtChar  (EDIT_Handle hObj, int Pos);
 void EDIT_SetCursorAtPixel (EDIT_Handle hObj, int xPos);
 void EDIT_SetFont          (EDIT_Handle hObj, const GUI_FONT GUI_UNI_PTR * pfont);
@@ -104,28 +104,28 @@ void EDIT_SetpfAddKeyEx    (EDIT_Handle hObj, tEDIT_AddKeyEx * pfAddKeyEx);
 void EDIT_SetpfUpdateBuffer(EDIT_Handle hObj, tEDIT_UpdateBuffer * pfUpdateBuffer);
 void EDIT_SetText          (EDIT_Handle hObj, const char* s);
 void EDIT_SetTextAlign     (EDIT_Handle hObj, int Align);
-void EDIT_SetTextColor     (EDIT_Handle hObj, unsigned int Index, GUI_COLOR color);
+void EDIT_SetTextColor     (EDIT_Handle hObj, unsigned int Index, RGB_COLOR color);
 void EDIT_SetSel           (EDIT_Handle hObj, int FirstChar, int LastChar);
 
 /* Get/Set user input */
 float EDIT_GetFloatValue(EDIT_Handle hObj);
 void  EDIT_GetText      (EDIT_Handle hObj, char* sDest, int MaxLen);
-I32   EDIT_GetValue     (EDIT_Handle hObj);
+int32_t   EDIT_GetValue     (EDIT_Handle hObj);
 void  EDIT_SetFloatValue(EDIT_Handle hObj, float Value);
-void  EDIT_SetValue     (EDIT_Handle hObj, I32 Value);
+void  EDIT_SetValue     (EDIT_Handle hObj, int32_t Value);
 int   EDIT_GetNumChars  (EDIT_Handle hObj);
 
 
 
-void  EDIT_SetHexMode(EDIT_Handle hEdit, U32 Value, U32 Min, U32 Max);
-void  EDIT_SetBinMode(EDIT_Handle hEdit, U32 Value, U32 Min, U32 Max);
-void  EDIT_SetDecMode(EDIT_Handle hEdit, I32 Value, I32 Min, I32 Max, int Shift, U8 Flags);
-void  EDIT_SetFloatMode(EDIT_Handle hEdit, float Value, float Min, float Max, int Shift, U8 Flags);
+void  EDIT_SetHexMode(EDIT_Handle hEdit, uint32_t Value, uint32_t Min, uint32_t Max);
+void  EDIT_SetBinMode(EDIT_Handle hEdit, uint32_t Value, uint32_t Min, uint32_t Max);
+void  EDIT_SetDecMode(EDIT_Handle hEdit, int32_t Value, int32_t Min, int32_t Max, int Shift, uint8_t Flags);
+void  EDIT_SetFloatMode(EDIT_Handle hEdit, float Value, float Min, float Max, int Shift, uint8_t Flags);
 
-U32   GUI_EditHex(U32 Value, U32 Min, U32 Max, int Len, int xsize);
-U32   GUI_EditBin(U32 Value, U32 Min, U32 Max, int Len, int xsize);
-I32   GUI_EditDec(I32 Value, I32 Min, I32 Max, int Len, int xsize, int Shift, U8 Flags);
-float GUI_EditFloat(float Value, float Min, float Max, int Len, int xsize, int Shift, U8 Flags);
+uint32_t   GUI_EditHex(uint32_t Value, uint32_t Min, uint32_t Max, int Len, int xsize);
+uint32_t   GUI_EditBin(uint32_t Value, uint32_t Min, uint32_t Max, int Len, int xsize);
+int32_t   GUI_EditDec(int32_t Value, int32_t Min, int32_t Max, int Len, int xsize, int Shift, uint8_t Flags);
+float GUI_EditFloat(float Value, float Min, float Max, int Len, int xsize, int Shift, uint8_t Flags);
 void  GUI_EditString(char * pString, int Len, int xsize);
 
 

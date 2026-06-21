@@ -8,10 +8,10 @@
 #endif
 
 void LCD_SelectLCD(void) {
-  #if GUI_SUPPORT_DEVICES
+#if GUI_SUPPORT_DEVICES
     GUI_Context.pDeviceAPI   = LCD_aAPI[0];
     GUI_Context.hDevData = 0;
-  #endif
+#endif
   GUI_Context.pClipRect_HL = &GUI_Context.ClipRect;
   LCD_SetClipRectMax();
 }

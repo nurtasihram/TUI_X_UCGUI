@@ -68,7 +68,7 @@
 #define reflect_to_self(...)  { __VA_ARGS__; retself; }
 #define reflect_to_child(...) { __VA_ARGS__; retchild; }
 
-#define _if(...) __VA_ARGS__ ? 
+#define _if(...) __VA_ARGS__ ?
 #define _else :
 #define _elif(...) : __VA_ARGS__ ?
 #define _return

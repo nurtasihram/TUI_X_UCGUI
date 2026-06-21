@@ -52,7 +52,7 @@ void         LISTBOX_InsertString    (LISTBOX_Handle hObj, const char* s, unsign
 int          LISTBOX_OwnerDraw       (const WIDGET_ITEM_DRAW_INFO * pDrawItemInfo);
 void         LISTBOX_SetAutoScrollH  (LISTBOX_Handle hObj, int OnOff);
 void         LISTBOX_SetAutoScrollV  (LISTBOX_Handle hObj, int OnOff);
-void         LISTBOX_SetBkColor      (LISTBOX_Handle hObj, unsigned int Index, GUI_COLOR color);
+void         LISTBOX_SetBkColor      (LISTBOX_Handle hObj, unsigned int Index, RGB_COLOR color);
 void         LISTBOX_SetFont         (LISTBOX_Handle hObj, const GUI_FONT GUI_UNI_PTR * pFont);
 void         LISTBOX_SetItemDisabled (LISTBOX_Handle hObj, unsigned Index, int OnOff);
 void         LISTBOX_SetItemSel      (LISTBOX_Handle hObj, unsigned Index, int OnOff);
@@ -65,17 +65,17 @@ void         LISTBOX_SetSel          (LISTBOX_Handle hObj, int Sel);
 void         LISTBOX_SetScrollbarWidth(LISTBOX_Handle hObj, unsigned Width);
 void         LISTBOX_SetString       (LISTBOX_Handle hObj, const char* s, unsigned int Index);
 void         LISTBOX_SetText         (LISTBOX_Handle hObj, const GUI_ConstString* ppText);
-GUI_COLOR    LISTBOX_SetTextColor    (LISTBOX_Handle hObj, unsigned int Index, GUI_COLOR Color);
+RGB_COLOR    LISTBOX_SetTextColor    (LISTBOX_Handle hObj, unsigned int Index, RGB_COLOR Color);
 int          LISTBOX_UpdateScrollers (LISTBOX_Handle hObj);
 void         LISTBOX_InvalidateItem  (LISTBOX_Handle hObj, int Index);
 const GUI_FONT GUI_UNI_PTR* LISTBOX_GetDefaultFont(void);
 int         LISTBOX_GetDefaultScrollStepH (void);
-GUI_COLOR   LISTBOX_GetDefaultBkColor     (unsigned Index);
-GUI_COLOR   LISTBOX_GetDefaultTextColor   (unsigned Index);
+RGB_COLOR   LISTBOX_GetDefaultBkColor     (unsigned Index);
+RGB_COLOR   LISTBOX_GetDefaultTextColor   (unsigned Index);
 void        LISTBOX_SetDefaultFont        (const GUI_FONT GUI_UNI_PTR * pFont);
 void        LISTBOX_SetDefaultScrollStepH (int Value);
-void        LISTBOX_SetDefaultBkColor     (unsigned Index, GUI_COLOR Color);
-void        LISTBOX_SetDefaultTextColor   (unsigned Index, GUI_COLOR Color);
+void        LISTBOX_SetDefaultBkColor     (unsigned Index, RGB_COLOR Color);
+void        LISTBOX_SetDefaultTextColor   (unsigned Index, RGB_COLOR Color);
 #define LISTBOX_SetBackColor(hObj, Index, Color) LISTBOX_SetBkColor(hObj, Index, Color)
 #define LISTBOX_DeleteString  LISTBOX_DeleteItem
 #if defined(__cplusplus)

@@ -4,7 +4,7 @@
 #include "GUI_Private.h"
 
 #if GUI_WINSUPPORT
-  #include "WM.h"
+#include "WM.h"
 #endif
 
 void GUI_SelectLCD(void) {

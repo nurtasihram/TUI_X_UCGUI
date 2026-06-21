@@ -9,7 +9,7 @@ typedef struct {
   GUI_TIMER_CALLBACK* cb;
   GUI_TIMER_HANDLE hNext;
   int Flags;
-	U32 Context;
+	uint32_t Context;
 	GUI_TIMER_TIME t0;
 	GUI_TIMER_TIME Period;
 } GUI_TIMER_Obj;
@@ -112,7 +112,7 @@ int GUI_TIMER_Exec(void) {
   return r;
 }
 
-GUI_TIMER_HANDLE GUI_TIMER_Create(GUI_TIMER_CALLBACK* cb, int Time, U32 Context, int Flags) {
+GUI_TIMER_HANDLE GUI_TIMER_Create(GUI_TIMER_CALLBACK* cb, int Time, uint32_t Context, int Flags) {
   GUI_TIMER_HANDLE hObj;
   GUI_TIMER_Obj* pObj;
 
@@ -156,7 +156,7 @@ void GUI_TIMER_SetTime(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Time) {
 }
 
 //////
-void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, U32 Context) {
+void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, uint32_t Context) {
    {
    	GUI_TIMER_Obj* pObj = GUI_TIMER_H2P(hObj);
     pObj->Context = Context;

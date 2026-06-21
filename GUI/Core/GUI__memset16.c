@@ -10,7 +10,7 @@
 * Purpose:
 *  Equivalent to the memset function, for 16 bit Data.
 */
-void GUI__memset16(U16 * p, U16 Fill, int NumWords) {
+void GUI__memset16(uint16_t * p, uint16_t Fill, int NumWords) {
   /* Code for 16 bit CPUs */
   if (sizeof(int) == 2) { /* May some compilers generate a warning at this line: Condition is alwaws true/false */
     if (NumWords >= 8) {  /* May some compilers generate a warning at this line: Unreachable code */
@@ -31,7 +31,7 @@ void GUI__memset16(U16 * p, U16 Fill, int NumWords) {
   } else {
     int NumInts;          /* May some compilers generate a warning at this line: Unreachable code */
     /* Write 16 bit until we are done or have reached an int boundary */
-    if (2 & (U32)p) {
+    if (2 & (uint32_t)p) {
       *p++ = Fill;
       NumWords--;
     }
@@ -58,7 +58,7 @@ void GUI__memset16(U16 * p, U16 Fill, int NumWords) {
         *pInt++ = FillInt;
         NumInts--;
       }
-      p = (U16*)pInt;
+      p = (uint16_t*)pInt;
     }
     /* Fill the remainder */
     if (NumWords & 1) {

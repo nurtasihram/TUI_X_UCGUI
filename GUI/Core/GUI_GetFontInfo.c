@@ -3,8 +3,6 @@
 #include "GUI_Protected.h"
 #include <stddef.h>
 
-#if GUI_COMPILER_SUPPORTS_FP
-
 void GUI_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO * pFontInfo) {
 
   if (pFont == NULL) {
@@ -16,7 +14,3 @@ void GUI_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO * pFontInf
   pFont->pfGetFontInfo(pFont, pFontInfo);
 
 }
-
-#endif
-
-/*************************** End of file ****************************/

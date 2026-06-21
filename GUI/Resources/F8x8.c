@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -1146,7 +1146,7 @@ GUI_CONST_STORAGE unsigned char GUI_F8x8_acFont[][8] = {
    ________}
 
 
- /* sharps eg á, 101  */
+ /* sharps eg ï¿½, 101  */
  ,{
    __XXX___,
    _XX_XX__,
@@ -2036,8 +2036,8 @@ GUI_CONST_STORAGE GUI_FONT_MONO GUI_F8x8_Mono = {
  8,                     /* XDist */
  1                      /* BytesPerLine */
 };
-  
-GUI_CONST_STORAGE GUI_FONT GUI_Font8x8 = { 
+
+GUI_CONST_STORAGE GUI_FONT GUI_Font8x8 = {
   GUI_FONTTYPE_MONO
   ,8
   ,8
@@ -2047,7 +2047,7 @@ GUI_CONST_STORAGE GUI_FONT GUI_Font8x8 = {
   , 7, 5, 7
 };
 
-GUI_CONST_STORAGE GUI_FONT GUI_Font8x9 = { 
+GUI_CONST_STORAGE GUI_FONT GUI_Font8x9 = {
   GUI_FONTTYPE_MONO
   ,8
   ,9

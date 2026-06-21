@@ -33,7 +33,7 @@
 #endif
 typedef struct {
 	WM_HWIN hWin;
-	U8      Status;
+	uint8_t      Status;
 	char    acText;
 } MULTIPAGE_PAGE;
 typedef struct {
@@ -44,16 +44,16 @@ typedef struct {
 	int             ScrollState;
 	unsigned        Align;
 	const GUI_FONT GUI_UNI_PTR *Font;
-	GUI_COLOR       aBkColor[MULTIPAGE_NUMCOLORS];
-	GUI_COLOR       aTextColor[MULTIPAGE_NUMCOLORS];
+	RGB_COLOR       aBkColor[MULTIPAGE_NUMCOLORS];
+	RGB_COLOR       aTextColor[MULTIPAGE_NUMCOLORS];
 #if GUI_DEBUG_LEVEL >1
 	int DebugId;
 #endif
 } MULTIPAGE_Obj;
 const GUI_FONT GUI_UNI_PTR *MULTIPAGE__pDefaultFont = MULTIPAGE_FONT_DEFAULT;
 unsigned                     MULTIPAGE__DefaultAlign = MULTIPAGE_ALIGN_DEFAULT;
-GUI_COLOR                    MULTIPAGE__DefaultBkColor[2] = { MULTIPAGE_BKCOLOR0_DEFAULT, MULTIPAGE_BKCOLOR1_DEFAULT };
-GUI_COLOR                    MULTIPAGE__DefaultTextColor[2] = { MULTIPAGE_TEXTCOLOR0_DEFAULT, MULTIPAGE_TEXTCOLOR1_DEFAULT };
+RGB_COLOR                    MULTIPAGE__DefaultBkColor[2] = { MULTIPAGE_BKCOLOR0_DEFAULT, MULTIPAGE_BKCOLOR1_DEFAULT };
+RGB_COLOR                    MULTIPAGE__DefaultTextColor[2] = { MULTIPAGE_TEXTCOLOR0_DEFAULT, MULTIPAGE_TEXTCOLOR1_DEFAULT };
 static void _AddScrollbar(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj, int x, int y, int w, int h) {
 	SCROLLBAR_Handle hScroll;
 	if ((hScroll = WM_GetScrollbarH(hObj)) == 0) {
@@ -639,7 +639,7 @@ void MULTIPAGE_SetText(MULTIPAGE_Handle hObj, const char *pText, unsigned Index)
 
 	}
 }
-void MULTIPAGE_SetBkColor(MULTIPAGE_Handle hObj, GUI_COLOR Color, unsigned Index) {
+void MULTIPAGE_SetBkColor(MULTIPAGE_Handle hObj, RGB_COLOR Color, unsigned Index) {
 	MULTIPAGE_Obj *pObj;
 	if (hObj && ((int)Index < MULTIPAGE_NUMCOLORS)) {
 
@@ -652,7 +652,7 @@ void MULTIPAGE_SetBkColor(MULTIPAGE_Handle hObj, GUI_COLOR Color, unsigned Index
 
 	}
 }
-void MULTIPAGE_SetTextColor(MULTIPAGE_Handle hObj, GUI_COLOR Color, unsigned Index) {
+void MULTIPAGE_SetTextColor(MULTIPAGE_Handle hObj, RGB_COLOR Color, unsigned Index) {
 	MULTIPAGE_Obj *pObj;
 	if (hObj && ((int)Index < MULTIPAGE_NUMCOLORS)) {
 
@@ -758,8 +758,8 @@ MULTIPAGE_Handle MULTIPAGE_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateI
 unsigned MULTIPAGE_GetDefaultAlign(void) {
 	return MULTIPAGE__DefaultAlign;
 }
-GUI_COLOR MULTIPAGE_GetDefaultBkColor(unsigned Index) {
-	GUI_COLOR Color = GUI_INVALID_COLOR;
+RGB_COLOR MULTIPAGE_GetDefaultBkColor(unsigned Index) {
+	RGB_COLOR Color = GUI_INVALID_COLOR;
 	if (Index < GUI_COUNTOF(MULTIPAGE__DefaultBkColor)) {
 		Color = MULTIPAGE__DefaultBkColor[Index];
 	}
@@ -768,8 +768,8 @@ GUI_COLOR MULTIPAGE_GetDefaultBkColor(unsigned Index) {
 const GUI_FONT GUI_UNI_PTR *MULTIPAGE_GetDefaultFont(void) {
 	return MULTIPAGE__pDefaultFont;
 }
-GUI_COLOR MULTIPAGE_GetDefaultTextColor(unsigned Index) {
-	GUI_COLOR Color = GUI_INVALID_COLOR;
+RGB_COLOR MULTIPAGE_GetDefaultTextColor(unsigned Index) {
+	RGB_COLOR Color = GUI_INVALID_COLOR;
 	if (Index < GUI_COUNTOF(MULTIPAGE__DefaultTextColor)) {
 		Color = MULTIPAGE__DefaultTextColor[Index];
 	}
@@ -778,7 +778,7 @@ GUI_COLOR MULTIPAGE_GetDefaultTextColor(unsigned Index) {
 void MULTIPAGE_SetDefaultAlign(unsigned Align) {
 	MULTIPAGE__DefaultAlign = Align;
 }
-void MULTIPAGE_SetDefaultBkColor(GUI_COLOR Color, unsigned Index) {
+void MULTIPAGE_SetDefaultBkColor(RGB_COLOR Color, unsigned Index) {
 	if (Index < GUI_COUNTOF(MULTIPAGE__DefaultBkColor)) {
 		MULTIPAGE__DefaultBkColor[Index] = Color;
 	}
@@ -786,7 +786,7 @@ void MULTIPAGE_SetDefaultBkColor(GUI_COLOR Color, unsigned Index) {
 void MULTIPAGE_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
 	MULTIPAGE__pDefaultFont = pFont;
 }
-void MULTIPAGE_SetDefaultTextColor(GUI_COLOR Color, unsigned Index) {
+void MULTIPAGE_SetDefaultTextColor(RGB_COLOR Color, unsigned Index) {
 	if (Index < GUI_COUNTOF(MULTIPAGE__DefaultTextColor)) {
 		MULTIPAGE__DefaultTextColor[Index] = Color;
 	}

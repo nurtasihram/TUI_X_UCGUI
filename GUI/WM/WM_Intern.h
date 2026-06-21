@@ -41,11 +41,11 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #define WM_H2P(hWin)        ((WM_Obj*)GUI_ALLOC_h2p(hWin))
 
 #if GUI_DEBUG_LEVEL  >= GUI_DEBUG_LEVEL_LOG_WARNINGS
-  #define WM_ASSERT_NOT_IN_PAINT() { if (WM__PaintCallbackCnt) \
+#define WM_ASSERT_NOT_IN_PAINT() { if (WM__PaintCallbackCnt) \
                                        GUI_DEBUG_ERROROUT("Function may not be called from within a paint event"); \
                                    }
 #else
-  #define WM_ASSERT_NOT_IN_PAINT()
+#define WM_ASSERT_NOT_IN_PAINT()
 #endif
 
 typedef struct {
@@ -63,12 +63,12 @@ typedef struct WM_CRITICAL_HANDLE {
   volatile WM_HWIN hWin;
 } WM_CRITICAL_HANDLE;
 
-extern U16                    WM__CreateFlags;
+extern uint16_t                    WM__CreateFlags;
 extern WM_HWIN                WM__hCapture;
 extern WM_HWIN                WM__hWinFocus;
 extern char                   WM__CaptureReleaseAuto;
 extern WM_tfPollPID*          WM_pfPollPID;
-extern U8                     WM__PaintCallbackCnt;      /* Public for assertions only */
+extern uint8_t                     WM__PaintCallbackCnt;      /* Public for assertions only */
 extern GUI_PID_STATE          WM_PID__StateLast;
 
 #if WM_SUPPORT_TRANSPARENCY
@@ -82,13 +82,13 @@ extern WM_CRITICAL_HANDLE     WM__CHWinModal;
 extern WM_CRITICAL_HANDLE     WM__CHWinLast;
 
 #ifdef WM_C
-  #define GUI_EXTERN
+#define GUI_EXTERN
 #else
-  #define GUI_EXTERN extern
+#define GUI_EXTERN extern
 #endif
 
-GUI_EXTERN U16     WM__NumWindows;
-GUI_EXTERN U16     WM__NumInvalidWindows;
+GUI_EXTERN uint16_t     WM__NumWindows;
+GUI_EXTERN uint16_t     WM__NumInvalidWindows;
 GUI_EXTERN WM_HWIN WM__FirstWin;
 GUI_EXTERN WM_CRITICAL_HANDLE*  WM__pFirstCriticalHandle;
 #undef GUI_EXTERN
@@ -125,7 +125,7 @@ int     WM__RectIsNZ                (const GUI_RECT* pr);
 void    WM__RemoveWindowFromList    (WM_HWIN hWin);
 void    WM__RemoveFromLinList       (WM_HWIN hWin);
 void    WM__Screen2Client           (const WM_Obj* pWin, GUI_RECT *pRect);
-void    WM__SendMsgNoData           (WM_HWIN hWin, U8 MsgId);
+void    WM__SendMsgNoData           (WM_HWIN hWin, uint8_t MsgId);
 void    WM__SendMessage             (WM_HWIN hWin, WM_MESSAGE* pm);
 void    WM__SendMessageIfEnabled    (WM_HWIN hWin, WM_MESSAGE* pm);
 void    WM__SendMessageNoPara       (WM_HWIN hWin, int MsgId);
@@ -136,7 +136,7 @@ void    WM__UpdateChildPositions    (WM_Obj* pObj, int dx0, int dy0, int dx1, in
 void    WM_PID__GetPrevState        (GUI_PID_STATE* pPrevState);
 void    WM__SendTouchMessage        (WM_HWIN hWin, WM_MESSAGE* pMsg);
 
-U16     WM_GetFlags(WM_HWIN hWin);
+uint16_t     WM_GetFlags(WM_HWIN hWin);
 void    WM__PaintWinAndOverlays     (WM_PAINTINFO* pInfo);
 void    WM__AddCriticalHandle       (WM_CRITICAL_HANDLE* pCH);
 void    WM__RemoveCriticalHandle    (WM_CRITICAL_HANDLE* pCH);

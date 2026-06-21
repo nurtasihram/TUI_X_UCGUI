@@ -3,16 +3,16 @@
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 #if GUI_WINSUPPORT
-  #include "WM.h"
+#include "WM.h"
 #endif
 
 /* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
 
 #ifndef PIXELINDEX
-  #define PIXELINDEX                      U8
-  #define BITSPERPIXEL                     8
-  #define API_LIST      GUI_MEMDEV__APIList8
+#define PIXELINDEX                      uint8_t
+#define BITSPERPIXEL                     8
+#define API_LIST      GUI_MEMDEV__APIList8
 #endif
 
 /*********************************************************************
@@ -21,21 +21,21 @@
 *
 * This table serves as translation table for DDBs
 */
-static const LCD_PIXELINDEX aID[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+static const RGB_COLOR aID[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
 static PIXELINDEX* _XY2PTR(int x, int y) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
-  U8 *pData = (U8*)(pDev + 1);
-  #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
+  uint8_t *pData = (uint8_t*)(pDev + 1);
+#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
     if ((x >= pDev->x0+pDev->XSize) | (x<pDev->x0) | (y >= pDev->y0+pDev->YSize) | (y<pDev->y0)) {
     }
-  #endif
+#endif
   pData += (GUI_ALLOC_DATATYPE_U)(y - pDev->y0) * (GUI_ALLOC_DATATYPE_U)pDev->BytesPerLine;
   return ((PIXELINDEX*)pData) + x - pDev->x0;
 }
 
-static void _DrawBitLine1BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * p, int Diff, unsigned int xsize,
-                             const LCD_PIXELINDEX* pTrans, GUI_MEMDEV* pDev, PIXELINDEX* pDest)
+static void _DrawBitLine1BPP(GUI_USAGE* pUsage, int x, int y, const uint8_t GUI_UNI_PTR * p, int Diff, unsigned int xsize,
+                             const RGB_COLOR* pTrans, GUI_MEMDEV* pDev, PIXELINDEX* pDest)
 {
   PIXELINDEX Index1;
   unsigned pixels;
@@ -137,11 +137,11 @@ static void _DrawBitLine1BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   }
 }
 
-static void _DrawBitLine2BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * p, int Diff, int xsize,
-                             const LCD_PIXELINDEX* pTrans, PIXELINDEX* pDest)
+static void _DrawBitLine2BPP(GUI_USAGE* pUsage, int x, int y, const uint8_t GUI_UNI_PTR * p, int Diff, int xsize,
+                             const RGB_COLOR* pTrans, PIXELINDEX* pDest)
 {
-  U8 pixels;
-  U8  PixelCnt;
+  uint8_t pixels;
+  uint8_t  PixelCnt;
   PixelCnt = 4 - Diff;
   pixels = (*p) << (Diff << 1);
   switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
@@ -203,11 +203,11 @@ static void _DrawBitLine2BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   }
 }
 
-static void _DrawBitLine4BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * p, int Diff, int xsize,
-                             const LCD_PIXELINDEX* pTrans, PIXELINDEX* pDest)
+static void _DrawBitLine4BPP(GUI_USAGE* pUsage, int x, int y, const uint8_t GUI_UNI_PTR * p, int Diff, int xsize,
+                             const RGB_COLOR* pTrans, PIXELINDEX* pDest)
 {
-  U8 pixels;
-  U8 PixelCnt;
+  uint8_t pixels;
+  uint8_t PixelCnt;
   PixelCnt = 2 - Diff;
   pixels = (*p) << (Diff << 2);
   switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
@@ -307,8 +307,8 @@ static void _DrawBitLine4BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   }
 }
 
-static void _DrawBitLine8BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * pSrc, int xsize,
-                             const LCD_PIXELINDEX* pTrans, PIXELINDEX* pDest) {
+static void _DrawBitLine8BPP(GUI_USAGE* pUsage, int x, int y, const uint8_t GUI_UNI_PTR * pSrc, int xsize,
+                             const RGB_COLOR* pTrans, PIXELINDEX* pDest) {
   switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
   case 0:    /* Write mode */
     do {
@@ -335,21 +335,21 @@ static void _DrawBitLine8BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
 
 #if GUI_UNI_PTR_USED
 
-static void _Memcopy(PIXELINDEX * pDest, const U8 GUI_UNI_PTR * pSrc, int NumBytes) {
+static void _Memcopy(PIXELINDEX * pDest, const uint8_t GUI_UNI_PTR * pSrc, int NumBytes) {
   while(NumBytes--) {
     *pDest++ = *pSrc++;
   }
 }
 #endif
 
-static void _DrawBitLine8BPP_DDB(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * pSrc, int xsize, PIXELINDEX* pDest) {
+static void _DrawBitLine8BPP_DDB(GUI_USAGE* pUsage, int x, int y, const uint8_t GUI_UNI_PTR * pSrc, int xsize, PIXELINDEX* pDest) {
   switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
   case 0:    /* Write mode */
-    #if GUI_UNI_PTR_USED
+#if GUI_UNI_PTR_USED
       _Memcopy(pDest, pSrc, xsize);
-    #else
+#else
       memcpy(pDest, pSrc, xsize);
-    #endif
+#endif
     break;
   case LCD_DRAWMODE_TRANS:
     do {
@@ -369,7 +369,7 @@ static void _DrawBitLine8BPP_DDB(GUI_USAGE* pUsage, int x, int y, const U8 GUI_U
 
 static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
                         int BitsPerPixel, int BytesPerLine,
-                        const U8 GUI_UNI_PTR * pData, int Diff, const LCD_PIXELINDEX* pTrans)
+                        const uint8_t GUI_UNI_PTR * pData, int Diff, const RGB_COLOR* pTrans)
 {
   int i;
   GUI_MEMDEV* pDev   = GUI_MEMDEV_H2P(GUI_Context.hDevData);
@@ -389,9 +389,9 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
   /* handle 16 bpp bitmaps in high color modes, but only without palette */
   if (BitsPerPixel == 16) {
     for (i = 0; i < ysize; i++) {
-      _DrawBitLine16BPP_DDB(pUsage, x0, i + y0, (const U16*)pData, xsize, pDest);
+      _DrawBitLine16BPP_DDB(pUsage, x0, i + y0, (const uint16_t*)pData, xsize, pDest);
       pData += BytesPerLine;
-      pDest = (PIXELINDEX*)((U8*)pDest + BytesPerLineDest);
+      pDest = (PIXELINDEX*)((uint8_t*)pDest + BytesPerLineDest);
     }
     return;
   }
@@ -405,7 +405,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
         _DrawBitLine8BPP_DDB(pUsage, x0, i + y0, pData, xsize, pDest);
       }
       pData += BytesPerLine;
-      pDest = (PIXELINDEX*)((U8*)pDest + BytesPerLineDest);
+      pDest = (PIXELINDEX*)((uint8_t*)pDest + BytesPerLineDest);
     }
     return;
   }
@@ -426,7 +426,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
       break;
     }
     pData += BytesPerLine;
-    pDest = (PIXELINDEX*)((U8*)pDest + BytesPerLineDest);
+    pDest = (PIXELINDEX*)((uint8_t*)pDest + BytesPerLineDest);
   }
 }
 
@@ -453,15 +453,15 @@ static void _FillRect(int x0, int y0, int x1, int y1) {
         pDest++;
       } while (--RemPixels);
     } else {  /* Fill */
-      #if BITSPERPIXEL == 8
+#if BITSPERPIXEL == 8
         GUI_MEMSET(pData, LCD_COLORINDEX, Len);
-      #elif BITSPERPIXEL == 16
+#elif BITSPERPIXEL == 16
         GUI__memset16(pData, LCD_COLORINDEX, Len);
-      #else
-        #error Unsupported
-      #endif
+#else
+#error Unsupported
+#endif
     }
-    pData = (PIXELINDEX*)((U8*)pData + BytesPerLine);
+    pData = (PIXELINDEX*)((uint8_t*)pData + BytesPerLine);
   }
 }
 
@@ -482,21 +482,21 @@ static void _DrawVLine(int x , int y0, int y1) {
         GUI_USAGE_AddPixel(pUsage, x, y0);
       }
       *pData = *pData ^ ~0;
-      pData = (PIXELINDEX*)((U8*)pData + pDev->BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
+      pData = (PIXELINDEX*)((uint8_t*)pData + pDev->BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
     } while (++y0 <= y1);
   } else {
     if (hUsage) {
       do {
         GUI_USAGE_AddPixel(pUsage, x, y0);
         *pData = LCD_COLORINDEX;
-        pData = (PIXELINDEX*)((U8*)pData + BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
+        pData = (PIXELINDEX*)((uint8_t*)pData + BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
       } while (++y0 <= y1);
     } else {
       unsigned NumPixels;
       NumPixels = y1 - y0 + 1;
       do {
         *pData = LCD_COLORINDEX;
-        pData = (PIXELINDEX*)((U8*)pData + BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
+        pData = (PIXELINDEX*)((uint8_t*)pData + BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
       } while (--NumPixels);
     }
   }

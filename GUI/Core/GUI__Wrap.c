@@ -2,7 +2,7 @@
 
 #include "GUI_Protected.h"
 
-static int _IsLineEnd(U16 Char) {
+static int _IsLineEnd(uint16_t Char) {
   if (!Char || (Char == '\n')) {
     return 1;
   }
@@ -11,7 +11,7 @@ static int _IsLineEnd(U16 Char) {
 
 static int _GetWordWrap(const char GUI_UNI_PTR * s, int xSize) {
   int xDist = 0, NumChars = 0, WordWrap = 0;
-  U16 Char, PrevChar = 0;
+  uint16_t Char, PrevChar = 0;
   while (1) {
     Char = GUI_UC__GetCharCodeInc(&s);   /* Similar to:  *s++ */
     /* Let's first check if the line end is reached. In this case we are done. */
@@ -39,7 +39,7 @@ static int _GetWordWrap(const char GUI_UNI_PTR * s, int xSize) {
 
 static int _GetCharWrap(const char GUI_UNI_PTR * s, int xSize) {
   int xDist = 0, NumChars = 0;
-  U16 Char;
+  uint16_t Char;
   while ((Char = GUI_UC__GetCharCodeInc(&s)) != 0) {
     xDist += GUI_GetCharDistX(Char);
     if ((NumChars && (xDist > xSize)) || (Char == '\n')) {
@@ -80,7 +80,7 @@ int GUI__WrapGetNumCharsDisp(const char GUI_UNI_PTR * pText, int xSize, GUI_WRAP
 
 int GUI__WrapGetNumCharsToNextLine(const char GUI_UNI_PTR * pText, int xSize, GUI_WRAPMODE WrapMode) {
   int NumChars;
-  U16 Char;
+  uint16_t Char;
   NumChars = GUI__WrapGetNumCharsDisp(pText, xSize, WrapMode);
   pText   += GUI_UC__NumChars2NumBytes(pText, NumChars);
   Char     = GUI_UC__GetCharCodeInc(&pText);

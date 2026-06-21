@@ -3,7 +3,7 @@
 #include "GUI_Protected.h"
 
 #if (GUI_WINSUPPORT)
-static void CL_DispChar(U16 c) {
+static void CL_DispChar(uint16_t c) {
   GUI_RECT r;
   WM_ADDORG(GUI_Context.DispPosX, GUI_Context.DispPosY);
   r.x1 = (r.x0 = GUI_Context.DispPosX) + GUI_GetCharDistX(c) - 1;
@@ -18,25 +18,25 @@ static void CL_DispChar(U16 c) {
 }
 #endif
 
-void GUI_DispChar(U16 c) {
+void GUI_DispChar(uint16_t c) {
 
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     CL_DispChar(c);
-  #else
+#else
     GL_DispChar(c);
-  #endif
+#endif
 
 }
 
-void GUI_DispCharAt(U16 c, I16P x, I16P y) {
+void GUI_DispCharAt(uint16_t c, int16_t x, int16_t y) {
 
   GUI_Context.DispPosX = x;
   GUI_Context.DispPosY = y;
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     CL_DispChar(c);
-  #else
+#else
     GL_DispChar(c);
-  #endif
+#endif
 
 }
 

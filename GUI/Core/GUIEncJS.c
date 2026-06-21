@@ -3,18 +3,18 @@
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
 
-static U16 DB2SJIS(U8 Byte0, U8 Byte1) {
-  return Byte1 | (((U16)Byte0)<<8);
+static uint16_t DB2SJIS(uint8_t Byte0, uint8_t Byte1) {
+  return Byte1 | (((uint16_t)Byte0)<<8);
 }
 
 static int _GetLineDistX_SJIS(const char GUI_UNI_PTR *s, int Len) {
   int Dist =0;
   if (s) {
-    U8 c0;
-    while (((c0=*(const U8*)s) !=0) && Len >=0) {
+    uint8_t c0;
+    while (((c0=*(const uint8_t*)s) !=0) && Len >=0) {
       s++; Len--;
       if (c0 > 127) {
-        U8  c1 = *(const U8*)s++;
+        uint8_t  c1 = *(const uint8_t*)s++;
         Len--;
         Dist += GUI_GetCharDistX(DB2SJIS(c0, c1));
       } else {
@@ -37,8 +37,8 @@ static int _GetLineDistX_SJIS(const char GUI_UNI_PTR *s, int Len) {
 */
 static int _GetLineLen_SJIS(const char GUI_UNI_PTR *s, int MaxLen) {
   int Len =0;
-  U8 c0;
-  while (((c0=*(const U8*)s) !=0) && Len < MaxLen) {
+  uint8_t c0;
+  while (((c0=*(const uint8_t*)s) !=0) && Len < MaxLen) {
     s++;
     if (c0 > 127) {
       Len++; s++;
@@ -53,11 +53,11 @@ static int _GetLineLen_SJIS(const char GUI_UNI_PTR *s, int MaxLen) {
 }
 
 static void _DispLine_SJIS(const char GUI_UNI_PTR *s, int Len) {
-  U8 c0;
+  uint8_t c0;
   while (--Len >=0) {
-    c0=*(const U8*)s++;
+    c0=*(const uint8_t*)s++;
     if (c0 > 127) {
-      U8  c1 = *(const U8*)s++;
+      uint8_t  c1 = *(const uint8_t*)s++;
       Len--;
       GL_DispChar (DB2SJIS(c0, c1));
     } else {

@@ -10,7 +10,7 @@ GUI_HMEM GUI_ALLOC_AllocZero(GUI_ALLOC_DATATYPE Size) {
   GUI_HMEM hMem;
   hMem = GUI_ALLOC_AllocNoInit(Size);
   if (hMem) {
-    GUI_MEMSET((U8*)GUI_ALLOC_h2p(hMem), 0, Size);   /* Zeroinit ! */
+    GUI_MEMSET((uint8_t*)GUI_ALLOC_h2p(hMem), 0, Size);   /* Zeroinit ! */
   }
 
   return hMem;

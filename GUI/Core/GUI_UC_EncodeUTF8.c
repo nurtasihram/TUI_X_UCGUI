@@ -9,9 +9,9 @@
 * Purpose:
 *   Return the UNICODE character code of the current character.
 */
-static U16 _GetCharCode(const char GUI_UNI_PTR * s) {
-  U16 r;
-  U8 Char = *(const U8*)s;
+static uint16_t _GetCharCode(const char GUI_UNI_PTR * s) {
+  uint16_t r;
+  uint8_t Char = *(const uint8_t*)s;
   if ((Char & 0x80) == 0) {                /* Single byte (ASCII)  */
     r = Char;
   } else if ((Char & 0xe0) == 0xc0) {      /* Double byte sequence */
@@ -41,7 +41,7 @@ static U16 _GetCharCode(const char GUI_UNI_PTR * s) {
 *   Return the number of bytes of the current character.
 */
 static int _GetCharSize(const char GUI_UNI_PTR * s) {
-  U8 Char = *s;
+  uint8_t Char = *s;
   if ((Char & 0x80) == 0) {
     return 1;
   } else if ((Char & 0xe0) == 0xc0) {
@@ -59,7 +59,7 @@ static int _GetCharSize(const char GUI_UNI_PTR * s) {
 * Purpose:
 *   Return the number of bytes needed for the given character.
 */
-static int _CalcSizeOfChar(U16 Char) {
+static int _CalcSizeOfChar(uint16_t Char) {
   int r;
   if (Char & 0xF800) {                /* Single byte (ASCII)  */
     r = 3;
@@ -78,7 +78,7 @@ static int _CalcSizeOfChar(U16 Char) {
 * Purpose:
 *   Encode character into 1/2/3 bytes.
 */
-static int _Encode(char *s, U16 Char) {
+static int _Encode(char *s, uint16_t Char) {
   int r;
   r = _CalcSizeOfChar(Char);
   switch (r) {
@@ -99,7 +99,7 @@ static int _Encode(char *s, U16 Char) {
 }
 
 static const GUI_UC_ENC_APILIST _API_Table = {
-  _GetCharCode,     /*  return character code as U16 (Unicode) */
+  _GetCharCode,     /*  return character code as uint16_t (Unicode) */
   _GetCharSize,     /*  return size of character: 1/2/3        */
   _CalcSizeOfChar,  /*  return size of character: 1/2/3        */
   _Encode           /*  Encode character into 1/2/3 bytes      */

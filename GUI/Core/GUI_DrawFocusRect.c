@@ -18,15 +18,15 @@ void GUI_DrawFocusRect(const GUI_RECT *pRect, int Dist) {
   GUI_RECT r;
   GUI__ReduceRect(&r, pRect, Dist);
 
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     WM_ADDORG(r.x0, r.y0);
     WM_ADDORG(r.x1, r.y1);
     WM_ITERATE_START(&r); {
-  #endif
+#endif
     _DrawFocusRect(&r);
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
-  #endif
+#endif
 
 }
 

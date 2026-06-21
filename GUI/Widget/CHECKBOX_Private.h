@@ -16,18 +16,18 @@
 #endif
 typedef struct {
 	const GUI_FONT GUI_UNI_PTR *pFont;
-	GUI_COLOR aBkColorBox[2]; /* Colors used to draw the box background */
-	GUI_COLOR BkColor;        /* Widget background color */
-	GUI_COLOR TextColor;
-	I16 Align;
-	U8  Spacing;
+	RGB_COLOR aBkColorBox[2]; /* Colors used to draw the box background */
+	RGB_COLOR BkColor;        /* Widget background color */
+	RGB_COLOR TextColor;
+	int16_t Align;
+	uint8_t  Spacing;
 	const GUI_BITMAP *apBm[4];
 } CHECKBOX_PROPS;
 typedef struct {
 	WIDGET Widget;
 	CHECKBOX_PROPS Props;
-	U8 NumStates;
-	U8 CurrentState;
+	uint8_t NumStates;
+	uint8_t CurrentState;
 	WM_HMEM hpText;
 #if GUI_DEBUG_LEVEL > 1
 	int DebugId;

@@ -10,15 +10,15 @@
 #define MENU_SF_POPUP             (1<<7)  /* Internal flag only */
 typedef struct {
 	MENU_Handle hSubmenu;
-	U16         Id;
-	U16         Flags;
+	uint16_t         Id;
+	uint16_t         Flags;
 	int         TextWidth;
 	char        acText[1];
 } MENU_ITEM;
 typedef struct {
-	GUI_COLOR                   aTextColor[5];
-	GUI_COLOR                   aBkColor[5];
-	U8                          aBorder[4];
+	RGB_COLOR                   aTextColor[5];
+	RGB_COLOR                   aBkColor[5];
+	uint8_t                          aBorder[4];
 	const GUI_FONT GUI_UNI_PTR *pFont;
 } MENU_PROPS;
 typedef struct {
@@ -26,7 +26,7 @@ typedef struct {
 	MENU_PROPS  Props;
 	GUI_ARRAY   ItemArray;
 	WM_HWIN     hOwner;
-	U16         Flags;
+	uint16_t         Flags;
 	char        IsSubmenuActive;
 	int         Width;
 	int         Height;
@@ -47,8 +47,8 @@ void      MENU__RecalcTextWidthOfItems(MENU_Obj *pObj);
 void      MENU__ResizeMenu(MENU_Handle hObj, MENU_Obj *pObj);
 unsigned  MENU__GetNumItems(MENU_Obj *pObj);
 char      MENU__SetItem(MENU_Handle hObj, MENU_Obj *pObj, unsigned Index, const MENU_ITEM_DATA *pItemData);
-void      MENU__SetItemFlags(MENU_Obj *pObj, unsigned Index, U16 Mask, U16 Flags);
+void      MENU__SetItemFlags(MENU_Obj *pObj, unsigned Index, uint16_t Mask, uint16_t Flags);
 void      MENU__InvalidateItem(MENU_Handle hObj, const MENU_Obj *pObj, unsigned Index);
-int       MENU__FindItem(MENU_Handle hObj, U16 ItemId, MENU_Handle *phMenu);
-int       MENU__SendMenuMessage(MENU_Handle hObj, WM_HWIN hDestWin, U16 MsgType, U16 ItemId);
+int       MENU__FindItem(MENU_Handle hObj, uint16_t ItemId, MENU_Handle *phMenu);
+int       MENU__SendMenuMessage(MENU_Handle hObj, WM_HWIN hDestWin, uint16_t MsgType, uint16_t ItemId);
 /*************************** End of file ****************************/

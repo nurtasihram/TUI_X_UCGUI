@@ -3,10 +3,10 @@
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
 
-static int _GetLineDistX(const U16 GUI_UNI_PTR *s, int MaxNumChars) {
+static int _GetLineDistX(const uint16_t GUI_UNI_PTR *s, int MaxNumChars) {
   int Dist =0;
   if (s) {
-    U16 Char;
+    uint16_t Char;
     while (((Char = *s) != 0) && MaxNumChars >= 0) {
       s++;
       MaxNumChars--;
@@ -16,7 +16,7 @@ static int _GetLineDistX(const U16 GUI_UNI_PTR *s, int MaxNumChars) {
   return Dist;
 }
 
-static int _GetLineLen(const U16 GUI_UNI_PTR *s, int MaxLen) {
+static int _GetLineLen(const uint16_t GUI_UNI_PTR *s, int MaxLen) {
   int Len =0;
   if (!s)
     return 0;
@@ -28,13 +28,13 @@ static int _GetLineLen(const U16 GUI_UNI_PTR *s, int MaxLen) {
   return Len;
 }
 
-static void _DispLine_UC(const U16 GUI_UNI_PTR *s, int Len, const GUI_RECT *pRect) {
+static void _DispLine_UC(const uint16_t GUI_UNI_PTR *s, int Len, const GUI_RECT *pRect) {
   if (GUI_Context.pClipRect_HL) {
     if (GUI_RectsIntersect(GUI_Context.pClipRect_HL, pRect) == 0)
       return;
   }
   {
-    U16 c0;
+    uint16_t c0;
     while (--Len >=0) {
       c0=*s++;
       GL_DispChar(c0);
@@ -42,24 +42,24 @@ static void _DispLine_UC(const U16 GUI_UNI_PTR *s, int Len, const GUI_RECT *pRec
   }
 }
 
-static void _DispLine(const U16 GUI_UNI_PTR *s, int Len, const GUI_RECT* pr) {
+static void _DispLine(const uint16_t GUI_UNI_PTR *s, int Len, const GUI_RECT* pr) {
   GUI_RECT r;
   r = *pr;
-  #if GUI_WINSUPPORT
+#if GUI_WINSUPPORT
   WM_ADDORG(r.x0,r.y0);
   WM_ADDORG(r.x1,r.y1);
   WM_ITERATE_START(&r) {
-  #endif
+#endif
      GUI_Context.DispPosX = r.x0;
      GUI_Context.DispPosY = r.y0;
      _DispLine_UC(s, Len, &r);    /* Do the actual drawing via routine call. */
-  #if GUI_WINSUPPORT
+#if GUI_WINSUPPORT
   } WM_ITERATE_END();
   WM_SUBORG(GUI_Context.DispPosX, GUI_Context.DispPosY);
-  #endif
+#endif
 }
 
-void GUI_UC_DispString(const U16 GUI_UNI_PTR *s) {
+void GUI_UC_DispString(const uint16_t GUI_UNI_PTR *s) {
   int xAdjust, yAdjust, xOrg;
   int FontSizeY;
   if (!s)

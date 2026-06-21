@@ -27,7 +27,7 @@ GUI_HMEM GUI_ALLOC_AllocInit(const void *pInitData, GUI_ALLOC_DATATYPE Size) {
     if (pInitData) {
       memcpy(pMem, pInitData, Size);
     } else {
-      GUI_MEMSET((U8*)pMem, 0, Size);
+      GUI_MEMSET((uint8_t*)pMem, 0, Size);
     }
   }
 

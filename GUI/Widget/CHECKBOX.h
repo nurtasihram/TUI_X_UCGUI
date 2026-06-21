@@ -20,21 +20,21 @@ CHECKBOX_Handle CHECKBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInf
 CHECKBOX_Handle CHECKBOX_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
                                         int WinFlags, int ExFlags, int Id);
 int                          CHECKBOX_GetDefaultAlign    (void);
-GUI_COLOR                    CHECKBOX_GetDefaultBkColor  (void);
+RGB_COLOR                    CHECKBOX_GetDefaultBkColor  (void);
 const GUI_FONT GUI_UNI_PTR * CHECKBOX_GetDefaultFont     (void);
 int                          CHECKBOX_GetDefaultSpacing  (void);
 int                          CHECKBOX_GetDefaultTextAlign(void);
-GUI_COLOR                    CHECKBOX_GetDefaultTextColor(void);
+RGB_COLOR                    CHECKBOX_GetDefaultTextColor(void);
 void                         CHECKBOX_SetDefaultAlign    (int Align);
-void                         CHECKBOX_SetDefaultBkColor  (GUI_COLOR Color);
+void                         CHECKBOX_SetDefaultBkColor  (RGB_COLOR Color);
 void                         CHECKBOX_SetDefaultFont     (const GUI_FONT GUI_UNI_PTR * pFont);
 void                         CHECKBOX_SetDefaultImage    (const GUI_BITMAP * pBitmap, unsigned int Index);
 void                         CHECKBOX_SetDefaultSpacing  (int Spacing);
 void                         CHECKBOX_SetDefaultTextAlign(int Align);
-void                         CHECKBOX_SetDefaultTextColor(GUI_COLOR Color);
+void                         CHECKBOX_SetDefaultTextColor(RGB_COLOR Color);
 int  CHECKBOX_GetState    (CHECKBOX_Handle hObj);
 int  CHECKBOX_IsChecked   (CHECKBOX_Handle hObj);
-void CHECKBOX_SetBkColor  (CHECKBOX_Handle hObj, GUI_COLOR Color);
+void CHECKBOX_SetBkColor  (CHECKBOX_Handle hObj, RGB_COLOR Color);
 void CHECKBOX_SetFont     (CHECKBOX_Handle hObj, const GUI_FONT GUI_UNI_PTR * pFont);
 void CHECKBOX_SetImage    (CHECKBOX_Handle hObj, const GUI_BITMAP * pBitmap, unsigned int Index);
 void CHECKBOX_SetNumStates(CHECKBOX_Handle hObj, unsigned NumStates);
@@ -42,7 +42,7 @@ void CHECKBOX_SetSpacing  (CHECKBOX_Handle hObj, unsigned Spacing);
 void CHECKBOX_SetState    (CHECKBOX_Handle hObj, unsigned State);
 void CHECKBOX_SetText     (CHECKBOX_Handle hObj, const char * pText);
 void CHECKBOX_SetTextAlign(CHECKBOX_Handle hObj, int Align);
-void CHECKBOX_SetTextColor(CHECKBOX_Handle hObj, GUI_COLOR Color);
+void CHECKBOX_SetTextColor(CHECKBOX_Handle hObj, RGB_COLOR Color);
 #define CHECKBOX_Check(hObj)   CHECKBOX_SetState(hObj, 1)
 #define CHECKBOX_Uncheck(hObj) CHECKBOX_SetState(hObj, 0)
 #if defined(__cplusplus)

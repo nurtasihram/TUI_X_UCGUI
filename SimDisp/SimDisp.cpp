@@ -307,7 +307,7 @@ private:
 	}
 	bool bLastIconic = false, bResizeable = false;
 	tSimDisp_OnResize pfnOnResize = O;
-	inline bool OnWindowPosChanging(RefAs<WindowPos *> pWndPos) { 
+	inline bool OnWindowPosChanging(RefAs<WindowPos *> pWndPos) {
 		if ((pWndPos->Flags() & SWP::NoSize) == SWP::NoSize)
 			return false;
 		if (bLastIconic) {

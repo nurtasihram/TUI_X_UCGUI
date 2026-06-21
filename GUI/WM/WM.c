@@ -16,13 +16,13 @@ typedef struct {
 	int EntranceCnt;
 } WM_IVR_CONTEXT;
 
-U8                     WM_IsActive;
-U16                    WM__CreateFlags;
+uint8_t                     WM_IsActive;
+uint16_t                    WM__CreateFlags;
 WM_HWIN                WM__hCapture;
 WM_HWIN                WM__hWinFocus;
 char                   WM__CaptureReleaseAuto;
 WM_tfPollPID *WM_pfPollPID;
-U8                     WM__PaintCallbackCnt;      /* Public for assertions only */
+uint8_t                     WM__PaintCallbackCnt;      /* Public for assertions only */
 GUI_PID_STATE          WM_PID__StateLast;
 
 #if WM_SUPPORT_TRANSPARENCY
@@ -532,7 +532,7 @@ void WM_SendMessage(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 	}
 }
 
-void WM__SendMsgNoData(WM_HWIN hWin, U8 MsgId) {
+void WM__SendMsgNoData(WM_HWIN hWin, uint8_t MsgId) {
 	WM_MESSAGE Msg;
 	Msg.hWin = hWin;
 	Msg.MsgId = MsgId;
@@ -621,7 +621,7 @@ void WM_InvalidateArea(const GUI_RECT *pRect) {
 }
 
 WM_HWIN WM_CreateWindowAsChild(int x0, int y0, int width, int height
-							   , WM_HWIN hParent, U16 Style, WM_CALLBACK *cb
+							   , WM_HWIN hParent, uint16_t Style, WM_CALLBACK *cb
 							   , int NumExtraBytes) {
 	WM_Obj *pWin;
 	WM_HWIN hWin;
@@ -696,7 +696,7 @@ WM_HWIN WM_CreateWindowAsChild(int x0, int y0, int width, int height
 	return hWin;
 }
 
-WM_HWIN WM_CreateWindow(int x0, int y0, int width, int height, U16 Style, WM_CALLBACK *cb, int NumExtraBytes) {
+WM_HWIN WM_CreateWindow(int x0, int y0, int width, int height, uint16_t Style, WM_CALLBACK *cb, int NumExtraBytes) {
 	return WM_CreateWindowAsChild(x0, y0, width, height, 0 /* No parent */, Style, cb, NumExtraBytes);
 }
 
@@ -1941,7 +1941,7 @@ void WM_DIAG_EnableInvalidationColoring(int OnOff) {
 
 void WM_SetEnableState(WM_HWIN hWin, int State) {
 	WM_Obj *pWin;
-	U16 Status;
+	uint16_t Status;
 
 	pWin = WM_H2P(hWin);
 	Status = pWin->Status;
@@ -1984,7 +1984,7 @@ void WM_ForEachDesc(WM_HWIN hWin, WM_tfForEach *pcb, void *pData) {
 	If a window does not define a background color, the default
 	procedure returns GUI_INVALID_COLOR
 */
-GUI_COLOR WM_GetBkColor(WM_HWIN hObj) {
+RGB_COLOR WM_GetBkColor(WM_HWIN hObj) {
 	if (hObj) {
 		WM_MESSAGE Msg;
 		Msg.MsgId = WM_GET_BKCOLOR;
@@ -2095,8 +2095,8 @@ WM_HWIN WM_GetFirstChild(WM_HWIN hWin) {
 	return hWin;
 }
 
-U16 WM_GetFlags(WM_HWIN hWin) {
-	U16 r = 0;
+uint16_t WM_GetFlags(WM_HWIN hWin) {
+	uint16_t r = 0;
 	if (hWin) {
 
 		r = WM_H2P(hWin)->Status;
@@ -2154,7 +2154,7 @@ void WM_GetInsideRect(GUI_RECT *pRect) {
 void WM_GetInsideRectExScrollbar(WM_HWIN hWin, GUI_RECT *pRect) {
 	GUI_RECT rWin, rInside, rScrollbar;
 	WM_HWIN hBarV, hBarH;
-	U16 WinFlags;
+	uint16_t WinFlags;
 	if (hWin) {
 		if (pRect) {
 			hBarH = WM_GetDialogItem(hWin, GUI_ID_HSCROLL);
@@ -2809,10 +2809,10 @@ void WM_SendToParent(WM_HWIN hChild, WM_MESSAGE *pMsg) {
 	}
 }
 
-void WM_SetAnchor(WM_HWIN hWin, U16 AnchorFlags) {
+void WM_SetAnchor(WM_HWIN hWin, uint16_t AnchorFlags) {
 	if (hWin) {
 		WM_Obj *pWin;
-		U16 Mask;
+		uint16_t Mask;
 
 		pWin = WM_H2P(hWin);
 		Mask = (WM_SF_ANCHOR_LEFT | WM_SF_ANCHOR_RIGHT | WM_SF_ANCHOR_TOP | WM_SF_ANCHOR_BOTTOM);
@@ -2894,21 +2894,21 @@ void WM_SetCaptureMove(WM_HWIN hWin, const GUI_PID_STATE *pState, int MinVisibil
 	}
 }
 
-U16 WM_SetCreateFlags(U16 Flags) {
-	U16 r = WM__CreateFlags;
+uint16_t WM_SetCreateFlags(uint16_t Flags) {
+	uint16_t r = WM__CreateFlags;
 	WM__CreateFlags = Flags;
 	return r;
 }
 
-GUI_COLOR WM_SetDesktopColor(GUI_COLOR Color) {
-	GUI_COLOR r;
+RGB_COLOR WM_SetDesktopColor(RGB_COLOR Color) {
+	RGB_COLOR r;
 	r = WM__aBkColor;
 	WM__aBkColor = Color;
 	WM_InvalidateWindow(WM__ahDesktopWin);
 	return r;
 }
 
-void WM_SetDesktopColors(GUI_COLOR Color) {
+void WM_SetDesktopColors(RGB_COLOR Color) {
 	WM_SetDesktopColor(Color);
 }
 
@@ -3347,7 +3347,7 @@ void WM_ShowWindow(WM_HWIN hWin) {
 void WM_SetStayOnTop(WM_HWIN hWin, int OnOff) {
 	WM_Obj *pWin;
 	if (hWin) {
-		U16 OldStatus;
+		uint16_t OldStatus;
 
 		pWin = WM_H2P(hWin);
 		OldStatus = pWin->Status;

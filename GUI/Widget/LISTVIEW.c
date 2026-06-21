@@ -615,24 +615,24 @@ const GUI_FONT GUI_UNI_PTR *LISTVIEW_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *
 	LISTVIEW_DefaultProps.pFont = pFont;
 	return pOldFont;
 }
-GUI_COLOR LISTVIEW_SetDefaultTextColor(unsigned Index, GUI_COLOR Color) {
-	GUI_COLOR OldColor = 0;
+RGB_COLOR LISTVIEW_SetDefaultTextColor(unsigned Index, RGB_COLOR Color) {
+	RGB_COLOR OldColor = 0;
 	if (Index < GUI_COUNTOF(LISTVIEW_DefaultProps.aTextColor)) {
 		OldColor = LISTVIEW_DefaultProps.aTextColor[Index];
 		LISTVIEW_DefaultProps.aTextColor[Index] = Color;
 	}
 	return OldColor;
 }
-GUI_COLOR LISTVIEW_SetDefaultBkColor(unsigned Index, GUI_COLOR Color) {
-	GUI_COLOR OldColor = 0;
+RGB_COLOR LISTVIEW_SetDefaultBkColor(unsigned Index, RGB_COLOR Color) {
+	RGB_COLOR OldColor = 0;
 	if (Index < GUI_COUNTOF(LISTVIEW_DefaultProps.aBkColor)) {
 		OldColor = LISTVIEW_DefaultProps.aBkColor[Index];
 		LISTVIEW_DefaultProps.aBkColor[Index] = Color;
 	}
 	return OldColor;
 }
-GUI_COLOR LISTVIEW_SetDefaultGridColor(GUI_COLOR Color) {
-	GUI_COLOR OldColor = LISTVIEW_DefaultProps.GridColor;
+RGB_COLOR LISTVIEW_SetDefaultGridColor(RGB_COLOR Color) {
+	RGB_COLOR OldColor = LISTVIEW_DefaultProps.GridColor;
 	LISTVIEW_DefaultProps.GridColor = Color;
 	return OldColor;
 }
@@ -717,8 +717,8 @@ void LISTVIEW_DeleteRow(LISTVIEW_Handle hObj, unsigned Index) {
 }
 
 
-GUI_COLOR LISTVIEW_GetBkColor(LISTVIEW_Handle hObj, unsigned Index) {
-	GUI_COLOR Color = GUI_INVALID_COLOR;
+RGB_COLOR LISTVIEW_GetBkColor(LISTVIEW_Handle hObj, unsigned Index) {
+	RGB_COLOR Color = GUI_INVALID_COLOR;
 	if (hObj) {
 		LISTVIEW_Obj *pObj;
 
@@ -791,8 +791,8 @@ int LISTVIEW_GetSel(LISTVIEW_Handle hObj) {
 	return r;
 }
 
-GUI_COLOR LISTVIEW_GetTextColor(LISTVIEW_Handle hObj, unsigned Index) {
-	GUI_COLOR Color = GUI_INVALID_COLOR;
+RGB_COLOR LISTVIEW_GetTextColor(LISTVIEW_Handle hObj, unsigned Index) {
+	RGB_COLOR Color = GUI_INVALID_COLOR;
 	if (hObj) {
 		LISTVIEW_Obj *pObj;
 
@@ -805,7 +805,7 @@ GUI_COLOR LISTVIEW_GetTextColor(LISTVIEW_Handle hObj, unsigned Index) {
 	return Color;
 }
 
-void LISTVIEW_SetBkColor(LISTVIEW_Handle hObj, unsigned int Index, GUI_COLOR Color) {
+void LISTVIEW_SetBkColor(LISTVIEW_Handle hObj, unsigned int Index, RGB_COLOR Color) {
 	if (hObj) {
 		LISTVIEW_Obj *pObj;
 		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
@@ -885,7 +885,7 @@ static LISTVIEW_ITEM_INFO *_GetpItemInfo(LISTVIEW_Handle hObj, unsigned Column, 
 	}
 	return pItemInfo;
 }
-void LISTVIEW_SetItemTextColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, GUI_COLOR Color) {
+void LISTVIEW_SetItemTextColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, RGB_COLOR Color) {
 	LISTVIEW_ITEM_INFO *pItemInfo;
 
 	pItemInfo = _GetpItemInfo(hObj, Column, Row, Index);
@@ -894,7 +894,7 @@ void LISTVIEW_SetItemTextColor(LISTVIEW_Handle hObj, unsigned Column, unsigned R
 	}
 
 }
-void LISTVIEW_SetItemBkColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, GUI_COLOR Color) {
+void LISTVIEW_SetItemBkColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, RGB_COLOR Color) {
 	LISTVIEW_ITEM_INFO *pItemInfo;
 
 	pItemInfo = _GetpItemInfo(hObj, Column, Row, Index);
@@ -1013,7 +1013,7 @@ void LISTVIEW_SetTextAlign(LISTVIEW_Handle hObj, unsigned int Index, int Align) 
 	}
 }
 
-void LISTVIEW_SetTextColor(LISTVIEW_Handle hObj, unsigned int Index, GUI_COLOR Color) {
+void LISTVIEW_SetTextColor(LISTVIEW_Handle hObj, unsigned int Index, RGB_COLOR Color) {
 	if (hObj) {
 		LISTVIEW_Obj *pObj;
 		if (Index < GUI_COUNTOF(pObj->Props.aTextColor)) {

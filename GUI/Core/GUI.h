@@ -298,41 +298,41 @@ which ever one you like best.
 
 typedef struct {
   /* Variables in LCD module */
-  U32 aColorIndex[2];
-  LCD_RECT       ClipRect;
-  U8             DrawMode;
-  U8             TextStyle;
+  uint32_t aColorIndex[2];
+  GUI_RECT       ClipRect;
+  uint8_t             DrawMode;
+  uint8_t             TextStyle;
 /* Variables in GL module */
   GUI_RECT* pClipRect_HL; /* High level clip rectangle ... Speed optimization so drawing routines can optimize */
 /* Variables in GUICHAR module */
   const GUI_FONT           GUI_UNI_PTR * pAFont;
   const GUI_UC_ENC_APILIST * pUC_API; /* Unicode encoding API */
-  I16P LBorder;
-  I16P DispPosX, DispPosY;
-  I16P DrawPosX, DrawPosY;
-  I16P TextMode, TextAlign;
-  GUI_COLOR Color, BkColor; /* Required only when changing devices and for speed opt (caching) */
+  int16_t LBorder;
+  int16_t DispPosX, DispPosY;
+  int16_t DrawPosX, DrawPosY;
+  int16_t TextMode, TextAlign;
+  RGB_COLOR Color, BkColor; /* Required only when changing devices and for speed opt (caching) */
 /* Variables in WM module */
   const GUI_RECT* WM__pUserClipRect;
   GUI_HWIN hAWin;
   int xOff, yOff;
 /* Variables in MEMDEV module (with memory devices only) */
-  #if GUI_SUPPORT_DEVICES
+#if GUI_SUPPORT_DEVICES
     const tLCDDEV_APIList* pDeviceAPI;  /* function pointers only */
     GUI_HMEM    hDevData;
     GUI_RECT    ClipRectPrev;
-  #endif
+#endif
 } GUI_CONTEXT;
 
 /* Rename GUI_SaveContext in order to avoid crashes if wrong GUIConf is used */
 #if   ( GUI_WINSUPPORT &&  GUI_SUPPORT_DEVICES)
-  #define GUI_SaveContext GUI_SaveContext_W_M
+#define GUI_SaveContext GUI_SaveContext_W_M
 #elif (!GUI_WINSUPPORT &&  GUI_SUPPORT_DEVICES)
-  #define GUI_SaveContext GUI_SaveContext_M
+#define GUI_SaveContext GUI_SaveContext_M
 #elif ( GUI_WINSUPPORT && !GUI_SUPPORT_DEVICES)
-  #define GUI_SaveContext GUI_SaveContext_W
+#define GUI_SaveContext GUI_SaveContext_W
 #else
-  #define GUI_SaveContext GUI_SaveContext_
+#define GUI_SaveContext GUI_SaveContext_
 #endif
 
 int          GUI_Init(void);
@@ -349,29 +349,13 @@ void GUI__IntersectRect (GUI_RECT* pDest, const GUI_RECT* pr0);
 void GUI__ReduceRect    (GUI_RECT* pDest, const GUI_RECT *pRect, int Dist);
 
 int  GUI__DivideRound     (int a, int b);
-I32  GUI__DivideRound32   (I32 a, I32 b);
+int32_t  GUI__DivideRound32   (int32_t a, int32_t b);
 int  GUI__SetText(GUI_HMEM* phText, const char* s);
 
-GUI_COLOR GUI_GetBkColor     (void);
-GUI_COLOR GUI_GetColor       (void);
-void      GUI_SetBkColor   (GUI_COLOR);
-void      GUI_SetColor     (GUI_COLOR);
-
-void GUI_Log      (const char *s);
-void GUI_Log1     (const char *s, int p0);
-void GUI_Log2     (const char *s, int p0, int p1);
-void GUI_Log3     (const char *s, int p0, int p1, int p2);
-void GUI_Log4     (const char *s, int p0, int p1, int p2,int p3);
-void GUI_Warn     (const char *s);
-void GUI_Warn1    (const char *s, int p0);
-void GUI_Warn2    (const char *s, int p0, int p1);
-void GUI_Warn3    (const char *s, int p0, int p1, int p2);
-void GUI_Warn4    (const char *s, int p0, int p1, int p2, int p3);
-void GUI_ErrorOut (const char *s);
-void GUI_ErrorOut1(const char *s, int p0);
-void GUI_ErrorOut2(const char *s, int p0, int p1);
-void GUI_ErrorOut3(const char *s, int p0, int p1, int p2);
-void GUI_ErrorOut4(const char *s, int p0, int p1, int p2, int p3);
+RGB_COLOR GUI_GetBkColor     (void);
+RGB_COLOR GUI_GetColor       (void);
+void      GUI_SetBkColor   (RGB_COLOR);
+void      GUI_SetColor     (RGB_COLOR);
 
 int  GUI_BMP_Draw         (const void * pFileData, int x0, int y0);
 int  GUI_BMP_GetXSize     (const void * pFileData);
@@ -407,8 +391,8 @@ typedef struct {
   const GUI_CURSOR GUI_UNI_PTR * GUI_CURSOR_Select     (const GUI_CURSOR GUI_UNI_PTR * pCursor);
   void               GUI_CURSOR_Show       (void);
 #else
-  #define GUI_CURSOR_Show()
-  #define GUI_CURSOR_Clear();
+#define GUI_CURSOR_Show()
+#define GUI_CURSOR_Clear();
 #endif
 
 extern GUI_CONST_STORAGE GUI_CURSOR GUI_CursorArrowS,  GUI_CursorArrowSI;
@@ -427,9 +411,9 @@ extern GUI_CONST_STORAGE GUI_BITMAP GUI_BitmapCrossM, GUI_BitmapCrossMI;
 extern GUI_CONST_STORAGE GUI_BITMAP GUI_BitmapCrossL, GUI_BitmapCrossLI;
 
 void  GUI_DispCEOL (void);
-void  GUI_DispChar  (U16 c);
-void  GUI_DispChars (U16 c, int Cnt);
-void  GUI_DispCharAt(U16 c, I16P x, I16P y);
+void  GUI_DispChar  (uint16_t c);
+void  GUI_DispChars (uint16_t c, int Cnt);
+void  GUI_DispCharAt(uint16_t c, int16_t x, int16_t y);
 void  GUI_DispString         (const char GUI_UNI_PTR *s);
 void  GUI_DispStringAt       (const char GUI_UNI_PTR *s, int x, int y);
 void  GUI_DispStringAtCEOL   (const char GUI_UNI_PTR *s, int x, int y);
@@ -443,7 +427,7 @@ int   GUI_GetYAdjust(void);
 int   GUI_GetDispPosX(void);
 int   GUI_GetDispPosY(void);
 const GUI_FONT GUI_UNI_PTR * GUI_GetFont(void);
-int   GUI_GetCharDistX(U16 c);
+int   GUI_GetCharDistX(uint16_t c);
 int   GUI_GetStringDistX(const char GUI_UNI_PTR *s);
 int   GUI_GetFontDistY(void);
 int   GUI_GetFontSizeY(void);
@@ -452,7 +436,7 @@ int   GUI_GetYSizeOfFont(const GUI_FONT GUI_UNI_PTR * pFont);
 int   GUI_GetYDistOfFont(const GUI_FONT GUI_UNI_PTR * pFont);
 int   GUI_GetTextAlign(void);
 int   GUI_GetTextMode(void);
-char  GUI_IsInFont(const GUI_FONT GUI_UNI_PTR * pFont, U16 c);
+char  GUI_IsInFont(const GUI_FONT GUI_UNI_PTR * pFont, uint16_t c);
 int   GUI_SetTextAlign(int Align);
 int   GUI_SetTextMode(int Mode);
 char  GUI_SetTextStyle(char Style);
@@ -466,15 +450,15 @@ void  GUI_DispNextLine(void);
 void GUI_SIF_CreateFont(void * pFontData, GUI_FONT * pFont, const GUI_SIF_TYPE * pFontType);
 void GUI_SIF_DeleteFont(GUI_FONT * pFont);
 
-int   GUI_UC_Encode           (char* s, U16 Char);
+int   GUI_UC_Encode           (char* s, uint16_t Char);
 int   GUI_UC_GetCharSize      (const char GUI_UNI_PTR * s);
-U16   GUI_UC_GetCharCode      (const char GUI_UNI_PTR * s);
+uint16_t   GUI_UC_GetCharCode      (const char GUI_UNI_PTR * s);
 void  GUI_UC_SetEncodeNone    (void);
 void  GUI_UC_SetEncodeUTF8    (void);
 
-void GUI_UC_DispString(const U16 GUI_UNI_PTR *s);
-void GUI_UC2DB (U16 Code, U8* pOut);
-U16  GUI_DB2UC (U8 Byte0, U8 Byte1);
+void GUI_UC_DispString(const uint16_t GUI_UNI_PTR *s);
+void GUI_UC2DB (uint16_t Code, uint8_t* pOut);
+uint16_t  GUI_DB2UC (uint8_t Byte0, uint8_t Byte1);
 
 #if !defined(GUI_ALLOC_ALLOC)
   /* diagnostics */
@@ -570,13 +554,13 @@ int     GUI_MessageBox   (const char * sMessage, const char * sCaption, int Flag
 
 typedef struct {
   GUI_TIMER_TIME Time;
-  U32            Context;
+  uint32_t            Context;
 } GUI_TIMER_MESSAGE;
 
 typedef GUI_HMEM GUI_TIMER_HANDLE;
 typedef void GUI_TIMER_CALLBACK(/*const*/ GUI_TIMER_MESSAGE* pTM);
 
-GUI_TIMER_HANDLE GUI_TIMER_Create   (GUI_TIMER_CALLBACK* cb, int Time,  U32 Context, int Flags);
+GUI_TIMER_HANDLE GUI_TIMER_Create   (GUI_TIMER_CALLBACK* cb, int Time,  uint32_t Context, int Flags);
 void             GUI_TIMER_Delete   (GUI_TIMER_HANDLE hObj);
 
 /* Methods changing properties */
@@ -586,7 +570,7 @@ void GUI_TIMER_SetDelay  (GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Delay);
 void GUI_TIMER_Restart   (GUI_TIMER_HANDLE hObj);
 int  GUI_TIMER_Exec(void);
 
-void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, U32 Context);	//houhh 20061020
+void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, uint32_t Context);	//houhh 20061020
 
 /* Message layer */
 void GUI_StoreKeyMsg(int Key, int Pressed);

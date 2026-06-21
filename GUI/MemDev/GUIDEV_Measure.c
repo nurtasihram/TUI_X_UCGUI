@@ -3,7 +3,7 @@
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 #if GUI_WINSUPPORT
-  #include "WM.h"
+#include "WM.h"
 #endif
 
 /* Memory device capabilities are compiled only if support for them is enabled.*/
@@ -41,8 +41,8 @@ static void _MarkRect(int x0, int y0, int x1, int y1) {
 
 static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
                        int BitsPerPixel, int BytesPerLine,
-                       const U8 GUI_UNI_PTR * pData, int Diff,
-                       const LCD_PIXELINDEX* pTrans)
+                       const uint8_t GUI_UNI_PTR * pData, int Diff,
+                       const RGB_COLOR* pTrans)
 {
   GUI_USE_PARA(BitsPerPixel);
   GUI_USE_PARA(BytesPerLine);
@@ -79,7 +79,7 @@ static void _FillRect(int x0, int y0, int x1, int y1) {
   _MarkRect(x0, y0, x1, y1);
 }
 
-static void _GetRect(LCD_RECT* pRect) {
+static void _GetRect(GUI_RECT* pRect) {
   pRect->x0 = pRect->y0 = -4095;
   pRect->x1 = pRect->y1 =  4095;
 }
@@ -171,9 +171,9 @@ void GUI_MEASDEV_Select(GUI_MEASDEV_Handle hMem) {
   if (hMem == 0) {
     GUI_SelectLCD();
   } else {
-    #if GUI_WINSUPPORT
+#if GUI_WINSUPPORT
       WM_Deactivate();
-    #endif
+#endif
     GUI_Context.hDevData     = hMem;
     GUI_Context.pDeviceAPI   = &_APIList;
     GUI_Context.pClipRect_HL = NULL;

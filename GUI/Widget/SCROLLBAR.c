@@ -26,9 +26,9 @@
 #ifndef SCROLLBAR_DEFAULT_WIDTH
 #define SCROLLBAR_DEFAULT_WIDTH 11
 #endif
-GUI_COLOR SCROLLBAR__aDefaultBkColor[2] = { SCROLLBAR_BKCOLOR0_DEFAULT, SCROLLBAR_BKCOLOR1_DEFAULT };
-GUI_COLOR SCROLLBAR__aDefaultColor[2] = { SCROLLBAR_COLOR0_DEFAULT, SCROLLBAR_COLOR1_DEFAULT };
-I16       SCROLLBAR__DefaultWidth = SCROLLBAR_DEFAULT_WIDTH;
+RGB_COLOR SCROLLBAR__aDefaultBkColor[2] = { SCROLLBAR_BKCOLOR0_DEFAULT, SCROLLBAR_BKCOLOR1_DEFAULT };
+RGB_COLOR SCROLLBAR__aDefaultColor[2] = { SCROLLBAR_COLOR0_DEFAULT, SCROLLBAR_COLOR1_DEFAULT };
+int16_t       SCROLLBAR__DefaultWidth = SCROLLBAR_DEFAULT_WIDTH;
 /*********************************************************************
 *
 *       _GetArrowSize
@@ -359,7 +359,7 @@ SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 								  sizeof(SCROLLBAR_Obj) - sizeof(WM_Obj));
 	if (hObj) {
 		SCROLLBAR_Obj *pObj = SCROLLBAR_H2P(hObj);
-		U16 InitState;
+		uint16_t InitState;
 		/* Handle SpecialFlags */
 		InitState = 0;
 		if (ExFlags & SCROLLBAR_CF_VERTICAL) {
@@ -488,13 +488,13 @@ SCROLLBAR_Handle SCROLLBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateI
 	return hThis;
 }
 int       SCROLLBAR_GetDefaultWidth(void) { return SCROLLBAR__DefaultWidth; }
-GUI_COLOR SCROLLBAR_GetDefaultBkColor(unsigned int Index) {
+RGB_COLOR SCROLLBAR_GetDefaultBkColor(unsigned int Index) {
 	if (Index < GUI_COUNTOF(SCROLLBAR__aDefaultBkColor)) {
 		return SCROLLBAR__aDefaultBkColor[Index];
 	}
 	return 0;
 }
-GUI_COLOR SCROLLBAR_GetDefaultColor(unsigned int Index) {
+RGB_COLOR SCROLLBAR_GetDefaultColor(unsigned int Index) {
 	if (Index < GUI_COUNTOF(SCROLLBAR__aDefaultColor)) {
 		return SCROLLBAR__aDefaultColor[Index];
 	}
@@ -505,15 +505,15 @@ int  SCROLLBAR_SetDefaultWidth(int DefaultWidth) {
 	SCROLLBAR__DefaultWidth = DefaultWidth;
 	return OldWidth;
 }
-GUI_COLOR SCROLLBAR_SetDefaultBkColor(GUI_COLOR Color, unsigned int Index) {
-	GUI_COLOR OldColor = 0;
+RGB_COLOR SCROLLBAR_SetDefaultBkColor(RGB_COLOR Color, unsigned int Index) {
+	RGB_COLOR OldColor = 0;
 	if (Index < GUI_COUNTOF(SCROLLBAR__aDefaultBkColor)) {
 		SCROLLBAR__aDefaultBkColor[Index] = Color;
 	}
 	return OldColor;
 }
-GUI_COLOR SCROLLBAR_SetDefaultColor(GUI_COLOR Color, unsigned int Index) {
-	GUI_COLOR OldColor = 0;
+RGB_COLOR SCROLLBAR_SetDefaultColor(RGB_COLOR Color, unsigned int Index) {
+	RGB_COLOR OldColor = 0;
 	if (Index < GUI_COUNTOF(SCROLLBAR__aDefaultColor)) {
 		SCROLLBAR__aDefaultColor[Index] = Color;
 	}

@@ -40,8 +40,8 @@ typedef struct {
 typedef struct {
   WM_Obj      Win;
   const WIDGET_EFFECT* pEffect;
-  I16 Id;
-  U16 State;
+  int16_t Id;
+  uint16_t State;
 } WIDGET;
 /*********************************************************************
 *
@@ -67,7 +67,7 @@ struct GUI_DRAW {
     const void * pData;
     GUI_DRAW_SELF_CB* pfDraw;
   } Data;
-  I16 xOff, yOff;
+  int16_t xOff, yOff;
 };
 typedef WM_HMEM GUI_DRAW_HANDLE;
 /* GUI_DRAW_ API */
@@ -89,12 +89,12 @@ void      WIDGET__EFFECT_DrawDown(WIDGET* pWidget);
 void      WIDGET__EFFECT_DrawUpRect(WIDGET* pWidget, GUI_RECT* pRect);
 void      WIDGET__FillRectEx(WIDGET* pWidget, const GUI_RECT* pRect);
 int       WIDGET__GetWindowSizeX(WM_HWIN hWin);
-GUI_COLOR WIDGET__GetBkColor(WM_HWIN hObj);
+RGB_COLOR WIDGET__GetBkColor(WM_HWIN hObj);
 int       WIDGET__GetXSize(const WIDGET* pWidget);
 int       WIDGET__GetYSize(const WIDGET* pWidget);
 void      WIDGET__GetClientRect(WIDGET* pWidget, GUI_RECT* pRect);
 void      WIDGET__GetInsideRect(WIDGET* pWidget, GUI_RECT* pRect);
-void      WIDGET__Init(WIDGET* pWidget, int Id, U16 State);
+void      WIDGET__Init(WIDGET* pWidget, int Id, uint16_t State);
 void      WIDGET__RotateRect90(WIDGET* pWidget, GUI_RECT* pDest, const GUI_RECT* pRect);
 void      WIDGET__SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE* pVState, const WM_SCROLL_STATE* pState);
 void      WIDGET__FillStringInRect(const char GUI_UNI_PTR * pText, const GUI_RECT * pFillRect, const GUI_RECT * pTextRectMax, const GUI_RECT * pTextRectAct);

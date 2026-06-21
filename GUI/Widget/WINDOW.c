@@ -15,7 +15,7 @@ typedef struct {
 	WM_DIALOG_STATUS *pDialogStatus;
 } WINDOW_OBJ;
 #define WINDOW_H2P(h) (WINDOW_OBJ*)WM_H2P(h)
-GUI_COLOR WINDOW__DefaultBkColor = WINDOW_BKCOLOR_DEFAULT;
+RGB_COLOR WINDOW__DefaultBkColor = WINDOW_BKCOLOR_DEFAULT;
 static void _OnChildHasFocus(WM_HWIN hWin, WINDOW_OBJ *pObj, const WM_MESSAGE *pMsg) {
 	if (pMsg->Data.p) {
 		const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo = (const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *)pMsg->Data.p;
@@ -103,6 +103,6 @@ WM_HWIN WINDOW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN
 	return hObj;
 }
 
-void WINDOW_SetDefaultBkColor(GUI_COLOR Color) {
+void WINDOW_SetDefaultBkColor(RGB_COLOR Color) {
 	WINDOW__DefaultBkColor = Color;
 }

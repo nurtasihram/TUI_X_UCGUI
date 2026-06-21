@@ -94,7 +94,7 @@ public: // Property - AuthorityID
 public: // Property - AuthorityCount
 	/* S */ UCHAR &SubAuthorityCount() assert_reflect_as(auto pCount = GetSidSubAuthorityCount(this->pSID), *pCount);
 	/* R */ UCHAR  SubAuthorityCount() const assert_reflect_as(auto pCount = GetSidSubAuthorityCount(this->pSID), *pCount);
-public: // 
+public: //
 	//GetWindowsAccountDomainSid
 	//IsWellKnownSid
 
@@ -341,7 +341,7 @@ public: // Property - Revision
 
 	inline Iterator operator[](DWORD dwAceIndex) reflect_as({ self, dwAceIndex });
 	inline const Iterator operator[](DWORD dwAceIndex) const reflect_as({ self, dwAceIndex });
-	
+
 	inline Iterator begin() reflect_as({ self, 0 });
 	inline const Iterator begin() const reflect_as({ self, 0 });
 	inline Iterator end() reflect_as({ self, Count() });

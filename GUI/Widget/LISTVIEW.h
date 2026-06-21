@@ -24,31 +24,31 @@ void             LISTVIEW_AddRow        (LISTVIEW_Handle hObj, const GUI_ConstSt
 void             LISTVIEW_DecSel        (LISTVIEW_Handle hObj);
 void             LISTVIEW_DeleteColumn  (LISTVIEW_Handle hObj, unsigned Index);
 void             LISTVIEW_DeleteRow     (LISTVIEW_Handle hObj, unsigned Index);
-GUI_COLOR        LISTVIEW_GetBkColor    (LISTVIEW_Handle hObj, unsigned Index);
+RGB_COLOR        LISTVIEW_GetBkColor    (LISTVIEW_Handle hObj, unsigned Index);
 const GUI_FONT GUI_UNI_PTR * LISTVIEW_GetFont       (LISTVIEW_Handle hObj);
 HEADER_Handle    LISTVIEW_GetHeader     (LISTVIEW_Handle hObj);
 unsigned         LISTVIEW_GetNumColumns (LISTVIEW_Handle hObj);
 unsigned         LISTVIEW_GetNumRows    (LISTVIEW_Handle hObj);
 int              LISTVIEW_GetSel        (LISTVIEW_Handle hObj);
-GUI_COLOR        LISTVIEW_GetTextColor  (LISTVIEW_Handle hObj, unsigned Index);
+RGB_COLOR        LISTVIEW_GetTextColor  (LISTVIEW_Handle hObj, unsigned Index);
 void             LISTVIEW_IncSel        (LISTVIEW_Handle hObj);
-void             LISTVIEW_SetBkColor    (LISTVIEW_Handle hObj, unsigned int Index, GUI_COLOR Color);
+void             LISTVIEW_SetBkColor    (LISTVIEW_Handle hObj, unsigned int Index, RGB_COLOR Color);
 void             LISTVIEW_SetColumnWidth(LISTVIEW_Handle hObj, unsigned int Index, int Width);
 void             LISTVIEW_SetFont       (LISTVIEW_Handle hObj, const GUI_FONT GUI_UNI_PTR * pFont);
 int              LISTVIEW_SetGridVis    (LISTVIEW_Handle hObj, int Show);
-void             LISTVIEW_SetItemBkColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, GUI_COLOR Color);
+void             LISTVIEW_SetItemBkColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, RGB_COLOR Color);
 void             LISTVIEW_SetItemText   (LISTVIEW_Handle hObj, unsigned Column, unsigned Row, const char * s);
-void             LISTVIEW_SetItemTextColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, GUI_COLOR Color);
+void             LISTVIEW_SetItemTextColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, RGB_COLOR Color);
 void             LISTVIEW_SetLBorder    (LISTVIEW_Handle hObj, unsigned BorderSize);
 void             LISTVIEW_SetRBorder    (LISTVIEW_Handle hObj, unsigned BorderSize);
 unsigned         LISTVIEW_SetRowHeight  (LISTVIEW_Handle hObj, unsigned RowHeight);
 void             LISTVIEW_SetSel        (LISTVIEW_Handle hObj, int Sel);
 void             LISTVIEW_SetTextAlign  (LISTVIEW_Handle hObj, unsigned int Index, int Align);
-void             LISTVIEW_SetTextColor  (LISTVIEW_Handle hObj, unsigned int Index, GUI_COLOR Color);
-GUI_COLOR        LISTVIEW_SetDefaultBkColor  (unsigned Index, GUI_COLOR Color);
+void             LISTVIEW_SetTextColor  (LISTVIEW_Handle hObj, unsigned int Index, RGB_COLOR Color);
+RGB_COLOR        LISTVIEW_SetDefaultBkColor  (unsigned Index, RGB_COLOR Color);
 const GUI_FONT GUI_UNI_PTR * LISTVIEW_SetDefaultFont     (const GUI_FONT GUI_UNI_PTR * pFont);
-GUI_COLOR        LISTVIEW_SetDefaultGridColor(GUI_COLOR Color);
-GUI_COLOR        LISTVIEW_SetDefaultTextColor(unsigned Index, GUI_COLOR Color);
+RGB_COLOR        LISTVIEW_SetDefaultGridColor(RGB_COLOR Color);
+RGB_COLOR        LISTVIEW_SetDefaultTextColor(unsigned Index, RGB_COLOR Color);
 #if defined(__cplusplus)
   }
 #endif

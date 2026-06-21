@@ -3,7 +3,7 @@
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
 
-static void _DrawGraph(I16 *pay, int NumPoints, int xOff, int yOff) {
+static void _DrawGraph(int16_t *pay, int NumPoints, int xOff, int yOff) {
   int i;
   int y0, y1;
   int yClip0, yClip1;
@@ -43,16 +43,16 @@ static void _DrawGraph(I16 *pay, int NumPoints, int xOff, int yOff) {
 }
 
 
-void GUI_DrawGraph(I16 *pay, int NumPoints, int x0, int y0) {
+void GUI_DrawGraph(int16_t *pay, int NumPoints, int x0, int y0) {
 
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     WM_ITERATE_START(NULL); {
-  #endif
+#endif
   _DrawGraph(pay, NumPoints, x0, y0);
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
-  #endif
+#endif
 
 }
 

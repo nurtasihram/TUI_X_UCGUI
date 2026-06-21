@@ -12,7 +12,7 @@
 *   This is the routine that displays a character. It is used by all
 *   other routines which display characters as a subroutine.
 */
-void GUIMONO_DispChar(U16P c) {
+void GUIMONO_DispChar(uint16_t c) {
   int c0, c1;
   const unsigned char GUI_UNI_PTR * pd;
   int x = GUI_Context.DispPosX;
@@ -22,7 +22,7 @@ void GUIMONO_DispChar(U16P c) {
   unsigned int FirstChar = pMono->FirstChar;
   /* translate character into 2 characters to display : c0,c1 */
   /* Check if regular character first. */
-  if ((c >= (U16P)FirstChar) &&(c <= (U16P)pMono->LastChar)) {
+  if ((c >= (uint16_t)FirstChar) &&(c <= (uint16_t)pMono->LastChar)) {
     pd = pMono->pData;
     c0 = ((int)c) - FirstChar;
     c1 = -1;
@@ -32,7 +32,7 @@ void GUIMONO_DispChar(U16P c) {
     pd = pMono->pTransData;
     if (pti) {
       FirstChar = pti->FirstChar;
-      if ((c >= (U16P)FirstChar) && (c <= (U16P)pti->LastChar)) {
+      if ((c >= (uint16_t)FirstChar) && (c <= (uint16_t)pti->LastChar)) {
         GUI_FONT_TRANSLIST const GUI_UNI_PTR * ptl;
         c -= pti->FirstChar;
         ptl = pti->pList;
@@ -56,7 +56,7 @@ void GUIMONO_DispChar(U16P c) {
     DrawMode = GUI_Context.TextMode;
     /* call drawing routine */
     {
-      U8 OldMode = LCD_SetDrawMode(DrawMode);
+      uint8_t OldMode = LCD_SetDrawMode(DrawMode);
       LCD_DrawBitmap( x, y,
                          XSize, YSize,
                          GUI_Context.pAFont->XMag,  GUI_Context.pAFont->YMag,
@@ -95,7 +95,7 @@ void GUIMONO_DispChar(U16P c) {
 
 }
 
-int GUIMONO_GetCharDistX(U16P c) {
+int GUIMONO_GetCharDistX(uint16_t c) {
   const GUI_FONT_MONO GUI_UNI_PTR * pMono = GUI_Context.pAFont->p.pMono;
   GUI_USE_PARA(c);
 //  return pMono->XDist;
@@ -109,11 +109,11 @@ void GUIMONO_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO* pfi) 
   pfi->Flags = GUI_FONTINFO_FLAG_MONO;
 }
 
-char GUIMONO_IsInFont(const GUI_FONT GUI_UNI_PTR * pFont, U16 c) {
+char GUIMONO_IsInFont(const GUI_FONT GUI_UNI_PTR * pFont, uint16_t c) {
   const GUI_FONT_MONO GUI_UNI_PTR * pMono = pFont->p.pMono;
   unsigned int FirstChar = pMono->FirstChar;
   /* Check if regular character first. */
-  if ((c >= (U16P)FirstChar) &&(c <= (U16P)pMono->LastChar)) {
+  if ((c >= (uint16_t)FirstChar) &&(c <= (uint16_t)pMono->LastChar)) {
     return 1;  /* Yes, we have it ! */
   } else {
    /* Check if character is in translation table */

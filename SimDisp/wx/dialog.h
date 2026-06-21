@@ -118,7 +118,7 @@ public: // Property - PointSize
 public: // Property - Color
 	/* W */ inline auto    &Color(COLORREF rgbColors) reflect_to_self(self->rgbColors = rgbColors);
 	/* R */ inline RGBColor Color() const reflect_as(self->rgbColors);
-public: // Property - 
+public: // Property -
 	// LPCFHOOKPROC    lpfnHook;
 	// LPARAM          lCustData;
 	// HDC             hDC;
@@ -261,7 +261,7 @@ public:
 	DialogControl(Classes classId) : className({ (wchar_t)classId.yield() }) {}
 	DialogControl(LPCWSTR pCaption, Classes classId = Classes::Static) :
 		className({ (wchar_t)classId.yield() }), caption(pCaption) {}
-	DialogControl(LPCWSTR pCaption, WORD id) : 
+	DialogControl(LPCWSTR pCaption, WORD id) :
 		className({ (wchar_t)id }), caption(pCaption) { dit.id = id; }
 
 #pragma region Properties
@@ -314,7 +314,7 @@ class DialogFactory {
 public:
 	DialogFactory() {}
 	DialogFactory(LPCWSTR pCaption) : caption(pCaption) {}
-	
+
 	inline auto &Add(const DialogControl &dc) reflect_to_self(dits.push_back(dc));
 
 #pragma region Properties

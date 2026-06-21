@@ -10,7 +10,7 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 
 /* Support for transparency. Switching it off makes Wm smaller and faster */
 #ifndef WM_SUPPORT_TRANSPARENCY
-  #define WM_SUPPORT_TRANSPARENCY 1 /* Should be defined outside of GUI_WINSUPPORT because of "#if GUI_WINSUPPORT && WM_SUPPORT_TRANSPARENCY" in some files */
+#define WM_SUPPORT_TRANSPARENCY 1 /* Should be defined outside of GUI_WINSUPPORT because of "#if GUI_WINSUPPORT && WM_SUPPORT_TRANSPARENCY" in some files */
 #endif
 
 /* Make sure we actually have configured windows. If we have not,
@@ -18,26 +18,22 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
   generate any code !
 */
 
-#ifndef WM_ASSERT
-  #define WM_ASSERT(expr) GUI_DEBUG_ASSERT(expr)
-#endif
-
 #ifndef WM_SUPPORT_TOUCH
-  #define WM_SUPPORT_TOUCH        GUI_SUPPORT_TOUCH
+#define WM_SUPPORT_TOUCH        GUI_SUPPORT_TOUCH
 #endif
 
 #ifndef WM_SUPPORT_OBSTRUCT
-  #define WM_SUPPORT_OBSTRUCT 1
+#define WM_SUPPORT_OBSTRUCT 1
 #endif
 
 /* Allow older API calls */
 #ifndef WM_COMPATIBLE_MODE
-  #define WM_COMPATIBLE_MODE 1
+#define WM_COMPATIBLE_MODE 1
 #endif
 
 /* Send a message if visibility of a window has changed */
 #ifndef WM_SUPPORT_NOTIFY_VIS_CHANGED
-  #define WM_SUPPORT_NOTIFY_VIS_CHANGED 0
+#define WM_SUPPORT_NOTIFY_VIS_CHANGED 0
 #endif
 
 typedef struct {
@@ -55,8 +51,8 @@ typedef struct {
 
 typedef struct {
   int x,y;
-  U8  State;
-  U8  StatePrev;
+  uint8_t  State;
+  uint8_t  StatePrev;
 } WM_PID_STATE_CHANGED_INFO;
 
 /*********************************************************************
@@ -67,9 +63,9 @@ The following is the list of windows messages.
 */
 
 #define WM_CREATE                   0x0001  /* The first message received, right after client has actually been created */
-#define WM_MOVE                     0x0003  /* window has been moved (Same as WIN32) */
+#define WM_MOVE                     0x0003  /* window has been moved */
 
-#define WM_SIZE                     0x0005  /* Is sent to a window after its size has changed (Same as WIN32, do not change !) */
+#define WM_SIZE                     0x0005  /* Is sent to a window after its size has changed */
 
 #define WM_DELETE                   11      /* Delete (Destroy) command: This tells the client to free its data strutures since the window
                                                it is associates with no longer exists.*/
@@ -116,9 +112,9 @@ The following is the list of windows messages.
                                                selection changed */
 #define WM_MENU                     44      /* Send to owner window of menu widget */
 
-#define WM_TIMER                    0x0113  /* Timer has expired              (Keep the same as WIN32) */
+#define WM_TIMER                    0x0113  /* Timer has expired */
 #define WM_WIDGET                   0x0300  /* 256 messages reserved for Widget messages */
-#define WM_USER                     0x0400  /* Reserved for user messages ... (Keep the same as WIN32) */
+#define WM_USER                     0x0400  /* Reserved for user messages ...  */
 
 /*********************************************************************
 *
@@ -190,7 +186,7 @@ typedef struct {
   union {
     const void* p;            /* Some messages need more info ... Pointer is declared "const" because some systems (M16C) have 4 byte const, byte 2 byte default ptrs */
     int v;
-    GUI_COLOR Color;
+    RGB_COLOR Color;
   } Data;
 } WM_MESSAGE;
 
@@ -204,7 +200,7 @@ typedef struct {
   WM_HWIN hParent;
   WM_HWIN hFirstChild;
   WM_HWIN hNext;
-  U16 Status;	          /* Some status flags */
+  uint16_t Status;	          /* Some status flags */
 } WM_Obj;
 
 typedef void WM_tfPollPID(void);
@@ -215,7 +211,7 @@ void WM_Deactivate(void);
 void WM_Init      (void);
 int  WM_Exec      (void);    /* Execute all jobs ... Return 0 if nothing was done. */
 int  WM_Exec1     (void);    /* Execute one job  ... Return 0 if nothing was done. */
-U16  WM_SetCreateFlags(U16 Flags);
+uint16_t  WM_SetCreateFlags(uint16_t Flags);
 WM_tfPollPID* WM_SetpfPollPID(WM_tfPollPID* pf);
 void WM_SetCapture(WM_HWIN hObj, int AutoRelease);
 void WM_SetCaptureMove(WM_HWIN hWin, const GUI_PID_STATE* pState, int MinVisibility); /* Not yet documented */
@@ -225,8 +221,8 @@ void    WM_AttachWindow              (WM_HWIN hWin, WM_HWIN hParent);
 void    WM_AttachWindowAt            (WM_HWIN hWin, WM_HWIN hParent, int x, int y);
 int     WM_CheckScrollPos            (WM_SCROLL_STATE* pScrollState, int Pos, int LowerDist, int UpperDist); /* not to be documented (may change in future version) */
 void    WM_ClrHasTrans               (WM_HWIN hWin);
-WM_HWIN WM_CreateWindow              (int x0, int y0, int xSize, int ySize, U16 Style, WM_CALLBACK* cb, int NumExtraBytes);
-WM_HWIN WM_CreateWindowAsChild       (int x0, int y0, int xSize, int ySize, WM_HWIN hWinParent, U16 Style, WM_CALLBACK* cb, int NumExtraBytes);
+WM_HWIN WM_CreateWindow              (int x0, int y0, int xSize, int ySize, uint16_t Style, WM_CALLBACK* cb, int NumExtraBytes);
+WM_HWIN WM_CreateWindowAsChild       (int x0, int y0, int xSize, int ySize, WM_HWIN hWinParent, uint16_t Style, WM_CALLBACK* cb, int NumExtraBytes);
 void    WM_DeleteWindow              (WM_HWIN hWin);
 void    WM_DetachWindow              (WM_HWIN hWin);
 int     WM_GetHasTrans               (WM_HWIN hWin);
@@ -250,7 +246,7 @@ void    WM_ValidateWindow            (WM_HWIN hWin);
 int     WM_GetInvalidRect            (WM_HWIN hWin, GUI_RECT * pRect);
 void    WM_SetStayOnTop              (WM_HWIN hWin, int OnOff);
 int     WM_GetStayOnTop              (WM_HWIN hWin);
-void    WM_SetAnchor                 (WM_HWIN hWin, U16 AnchorFlags);
+void    WM_SetAnchor                 (WM_HWIN hWin, uint16_t AnchorFlags);
 
 /* Move/resize windows */
 void WM_MoveWindow                (WM_HWIN hWin, int dx, int dy);
@@ -299,14 +295,14 @@ WM_HWIN WM_GetScrollbarV          (WM_HWIN hWin);
 WM_HWIN WM_GetScrollbarH          (WM_HWIN hWin);
 WM_HWIN WM_GetScrollPartner       (WM_HWIN hWin);
 WM_HWIN WM_GetClientWindow        (WM_HWIN hObj);
-GUI_COLOR WM_GetBkColor           (WM_HWIN hObj);
+RGB_COLOR WM_GetBkColor           (WM_HWIN hObj);
 
 /* Change Z-Order of windows */
 void WM_BringToBottom(WM_HWIN hWin);
 void WM_BringToTop(WM_HWIN hWin);
 
-GUI_COLOR WM_SetDesktopColor(GUI_COLOR Color);
-void WM_SetDesktopColors(GUI_COLOR Color);
+RGB_COLOR WM_SetDesktopColor(RGB_COLOR Color);
+void WM_SetDesktopColors(RGB_COLOR Color);
 
 /* Select window used for drawing operations */
 WM_HWIN WM_SelectWindow           (WM_HWIN  hWin);
@@ -372,34 +368,34 @@ void WM_DIAG_EnableInvalidationColoring(int OnOff);
 */
 
 #if WM_COMPATIBLE_MODE
-  #define HBWIN             WM_HWIN
-  #define HBWIN_NULL        WM_HWIN_NULL
+#define HBWIN             WM_HWIN
+#define HBWIN_NULL        WM_HWIN_NULL
 
-  #define WM_HideWin        WM_HideWindow
-  #define WM_ShowWin        WM_ShowWindow
-  #define WM_GetKey         GUI_GetKey
-  #define WM_WaitKey        GUI_WaitKey
+#define WM_HideWin        WM_HideWindow
+#define WM_ShowWin        WM_ShowWindow
+#define WM_GetKey         GUI_GetKey
+#define WM_WaitKey        GUI_WaitKey
 
-  #define WM_ExecIdle       WM_Exec
-  #define WM_ExecIdle1      WM_Exec1
+#define WM_ExecIdle       WM_Exec
+#define WM_ExecIdle1      WM_Exec1
 
-  #define WM_Invalidate     WM_InvalidateWindow
-  #define WM_GetWinRect     WM_GetWindowRect
-  #define WM_GetWinOrgX     WM_GetWindowOrgX
-  #define WM_GetWinOrgY     WM_GetWindowOrgY
-  #define WM_GetWinSizeX    WM_GetWindowSizeX
-  #define WM_GetWinSizeY    WM_GetWindowSizeY
-  #define WM_GetXSize       WM_GetWindowSizeX
-  #define WM_GetYSize       WM_GetWindowSizeY
-  #define WM_SelWin         WM_SelectWindow
-  #define WM_GetBackgroundWindow  WM_GetDesktopWindow
-  #define WM_GetForegroundWindow    0
-  #define WM_SetForegroundWindow    WM_BringToTop
-  #define WM_SetUserClipArea WM_SetUserClipRect
+#define WM_Invalidate     WM_InvalidateWindow
+#define WM_GetWinRect     WM_GetWindowRect
+#define WM_GetWinOrgX     WM_GetWindowOrgX
+#define WM_GetWinOrgY     WM_GetWindowOrgY
+#define WM_GetWinSizeX    WM_GetWindowSizeX
+#define WM_GetWinSizeY    WM_GetWindowSizeY
+#define WM_GetXSize       WM_GetWindowSizeX
+#define WM_GetYSize       WM_GetWindowSizeY
+#define WM_SelWin         WM_SelectWindow
+#define WM_GetBackgroundWindow  WM_GetDesktopWindow
+#define WM_GetForegroundWindow    0
+#define WM_SetForegroundWindow    WM_BringToTop
+#define WM_SetUserClipArea WM_SetUserClipRect
 
-  #define WM_Start()
-  #define WM_Stop()
-  #define WM_SetBkWindowColor(Color)  WM_SetDesktopColor(Color)
+#define WM_Start()
+#define WM_Stop()
+#define WM_SetBkWindowColor(Color)  WM_SetDesktopColor(Color)
 
 #endif
 

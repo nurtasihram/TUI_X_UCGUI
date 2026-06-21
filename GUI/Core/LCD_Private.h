@@ -5,15 +5,11 @@
 #include "GUI.h"
 
 typedef struct {
-  LCD_COLOR * paColor;
-  I16         NumEntries;
+  RGB_COLOR * paColor;
+  int16_t         NumEntries;
 } LCD_LUT_INFO;
 
-#if GUI_COMPILER_SUPPORTS_FP
-
 extern const struct tLCDDEV_APIList_struct * /* const */ LCD_aAPI[1];
-
-#endif
 
 #define LCD_BKCOLORINDEX GUI_Context.aColorIndex[0]
 #define LCD_COLORINDEX   GUI_Context.aColorIndex[1]
@@ -24,6 +20,6 @@ void LCD_DrawBitmap   (int x0, int y0,
                        int xMul, int yMul,
                        int BitsPerPixel,
                        int BytesPerLine,
-                       const U8 GUI_UNI_PTR * pPixel,
-                       const LCD_PIXELINDEX* pTrans);
+                       const uint8_t GUI_UNI_PTR * pPixel,
+                       const RGB_COLOR* pTrans);
 void LCD_UpdateColorIndices(void);

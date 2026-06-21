@@ -6,22 +6,22 @@ typedef struct {
 	int                          Align;
 	int                          Border;
 	const GUI_FONT GUI_UNI_PTR *pFont;
-	GUI_COLOR                    aTextColor[2];
-	GUI_COLOR                    aBkColor[2];
+	RGB_COLOR                    aTextColor[2];
+	RGB_COLOR                    aBkColor[2];
 } EDIT_PROPS;
 struct EDIT_Obj_struct {
 	WIDGET Widget;
 	WM_HMEM hpText;
-	I16 MaxLen;
-	U16 BufferSize;
-	I32 Min, Max;            /* Min max values as normalized floats (integers) */
-	U8 NumDecs;              /* Number of decimals */
-	U32 CurrentValue;        /* Current value */
+	int16_t MaxLen;
+	uint16_t BufferSize;
+	int32_t Min, Max;            /* Min max values as normalized floats (integers) */
+	uint8_t NumDecs;              /* Number of decimals */
+	uint32_t CurrentValue;        /* Current value */
 	int CursorPos;           /* Cursor position. 0 means left most */
 	unsigned SelSize;        /* Number of selected characters */
-	U8 EditMode;             /* Insert or overwrite mode */
-	U8 XSizeCursor;          /* Size of cursor when working in insert mode */
-	U8 Flags;
+	uint8_t EditMode;             /* Insert or overwrite mode */
+	uint8_t XSizeCursor;          /* Size of cursor when working in insert mode */
+	uint8_t Flags;
 	tEDIT_AddKeyEx *pfAddKeyEx;     /* Handle key input */
 	tEDIT_UpdateBuffer *pfUpdateBuffer;  /* Update textbuffer */
 	EDIT_PROPS Props;
@@ -38,4 +38,4 @@ EDIT_Obj *EDIT_h2p(EDIT_Handle h);
 #endif
 extern EDIT_PROPS EDIT__DefaultProps;
 void EDIT__SetCursorPos(EDIT_Obj *pObj, int CursorPos);
-U16  EDIT__GetCurrentChar(EDIT_Obj *pObj);
+uint16_t  EDIT__GetCurrentChar(EDIT_Obj *pObj);

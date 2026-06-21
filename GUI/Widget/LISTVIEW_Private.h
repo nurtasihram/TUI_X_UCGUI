@@ -14,17 +14,17 @@
 #define LISTVIEW_DEINIT_ID(p)
 #endif
 typedef struct {
-	GUI_COLOR aBkColor[3];
-	GUI_COLOR aTextColor[3];
+	RGB_COLOR aBkColor[3];
+	RGB_COLOR aTextColor[3];
 } LISTVIEW_ITEM_INFO;
 typedef struct {
 	WM_HMEM hItemInfo;
 	char acText[1];
 } LISTVIEW_ITEM;
 typedef struct {
-	GUI_COLOR                    aBkColor[3];
-	GUI_COLOR                    aTextColor[3];
-	GUI_COLOR                    GridColor;
+	RGB_COLOR                    aBkColor[3];
+	RGB_COLOR                    aTextColor[3];
+	RGB_COLOR                    GridColor;
 	const GUI_FONT GUI_UNI_PTR *pFont;
 } LISTVIEW_PROPS;
 typedef struct {

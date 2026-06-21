@@ -10,13 +10,13 @@
 
 /* Define default fonts */
 #ifndef TEXT_FONT_DEFAULT
-  #define TEXT_FONT_DEFAULT &GUI_Font13_1
+#define TEXT_FONT_DEFAULT &GUI_Font13_1
 #endif
 #ifndef TEXT_DEFAULT_TEXT_COLOR
-  #define TEXT_DEFAULT_TEXT_COLOR GUI_BLACK
+#define TEXT_DEFAULT_TEXT_COLOR GUI_BLACK
 #endif
 static const GUI_FONT GUI_UNI_PTR * _pDefaultFont = TEXT_FONT_DEFAULT;
-static GUI_COLOR        _DefaultTextColor = TEXT_DEFAULT_TEXT_COLOR;
+static RGB_COLOR        _DefaultTextColor = TEXT_DEFAULT_TEXT_COLOR;
 static void _FreeAttached(TEXT_Obj* pObj) {
   GUI_ALLOC_FreePtr(&pObj->hpText);
 }
@@ -27,19 +27,19 @@ static void _Paint(TEXT_Handle hObj, TEXT_Obj* pObj) {
   LCD_SetColor(pObj->TextColor);
   GUI_SetFont    (pObj->pFont);
   /* Fill with parents background color */
-  #if !TEXT_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent*/
+#if !TEXT_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent*/
     if (pObj->BkColor == GUI_INVALID_COLOR) {
       LCD_SetBkColor(WIDGET__GetBkColor(hObj));
     } else {
       LCD_SetBkColor(pObj->BkColor);
     }
     GUI_Clear();
-  #else
+#else
     if (!WM_GetHasTrans(hObj)) {
       LCD_SetBkColor(pObj->BkColor);
       GUI_Clear();
     }
-  #endif
+#endif
   /* Show the text */
   if (pObj->hpText) {
     s = (const char*) GUI_ALLOC_h2p(pObj->hpText);
@@ -76,9 +76,9 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 {
   TEXT_Handle hObj;
   /* Create the window */
-  #if TEXT_SUPPORT_TRANSPARENCY
+#if TEXT_SUPPORT_TRANSPARENCY
     WinFlags |= WM_CF_HASTRANS;
-  #endif
+#endif
   hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _TEXT_Callback,
                                 sizeof(TEXT_Obj) - sizeof(WM_Obj));
   if (hObj) {
@@ -89,7 +89,6 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
     /* init widget specific variables */
     WIDGET__Init(&pObj->Widget, Id, 0);
     /* init member variables */
-    TEXT_INIT_ID(pObj);
     if (pText) {
       hMem = GUI_ALLOC_AllocZero(strlen(pText) + 1);
       if (hMem) {
@@ -109,7 +108,7 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 void TEXT_SetDefaultFont(const GUI_FONT GUI_UNI_PTR * pFont) {
   _pDefaultFont = pFont;
 }
-void TEXT_SetDefaultTextColor(GUI_COLOR Color) {
+void TEXT_SetDefaultTextColor(RGB_COLOR Color) {
   _DefaultTextColor = Color;
 }
 const GUI_FONT GUI_UNI_PTR * TEXT_GetDefaultFont(void) {
@@ -131,7 +130,7 @@ TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HW
 	return hThis;
 }
 
-void TEXT_SetBkColor(TEXT_Handle hObj, GUI_COLOR Color) {
+void TEXT_SetBkColor(TEXT_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		TEXT_Obj *pObj;
 
@@ -192,7 +191,7 @@ void TEXT_SetTextAlign(TEXT_Handle hObj, int Align) {
 
 	}
 }
-void TEXT_SetTextColor(TEXT_Handle hObj, GUI_COLOR Color) {
+void TEXT_SetTextColor(TEXT_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		TEXT_Obj *pObj;
 

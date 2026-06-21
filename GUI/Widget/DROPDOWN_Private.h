@@ -6,23 +6,23 @@
 #define DROPDOWN_H2P(h) (DROPDOWN_Obj*) GUI_ALLOC_h2p(h)
 typedef struct {
 	const GUI_FONT GUI_UNI_PTR *pFont;
-	GUI_COLOR aBackColor[3];
-	GUI_COLOR aTextColor[3];
-	I16       TextBorderSize;
-	I16       Align;
+	RGB_COLOR aBackColor[3];
+	RGB_COLOR aTextColor[3];
+	int16_t       TextBorderSize;
+	int16_t       Align;
 } DROPDOWN_PROPS;
 typedef struct {
 	WIDGET  Widget;
-	I16     Sel;                        /* current selection */
-	I16     ySizeEx;                    /* Drop down size */
-	I16     TextHeight;
+	int16_t     Sel;                        /* current selection */
+	int16_t     ySizeEx;                    /* Drop down size */
+	int16_t     TextHeight;
 	GUI_ARRAY Handles;
 	WM_SCROLL_STATE ScrollState;
 	DROPDOWN_PROPS Props;
 	WM_HWIN hListWin;
-	U8      Flags;
-	U16     ItemSpacing;
-	U8      ScrollbarWidth;
+	uint8_t      Flags;
+	uint16_t     ItemSpacing;
+	uint8_t      ScrollbarWidth;
 	char  IsPressed;
 #if GUI_DEBUG_LEVEL >1
 	int DebugId;

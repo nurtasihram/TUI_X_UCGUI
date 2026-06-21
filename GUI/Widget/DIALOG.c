@@ -8,12 +8,12 @@
 #ifndef DIALOG_BKCOLOR0_DEFAULT
 #define DIALOG_BKCOLOR0_DEFAULT 0xc0c0c0
 #endif
-static LCD_COLOR _BkColor = DIALOG_BKCOLOR0_DEFAULT;
-LCD_COLOR DIALOG_GetBkColor(void) {
+static RGB_COLOR _BkColor = DIALOG_BKCOLOR0_DEFAULT;
+RGB_COLOR DIALOG_GetBkColor(void) {
 	return _BkColor;
 }
-LCD_COLOR DIALOG_SetBkColor(LCD_COLOR BkColor) {
-	LCD_COLOR r;
+RGB_COLOR DIALOG_SetBkColor(RGB_COLOR BkColor) {
+	RGB_COLOR r;
 	r = _BkColor;
 	_BkColor = BkColor;
 	return r;

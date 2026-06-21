@@ -3,37 +3,18 @@
 #include "LCD.h"
 #include "GUIConf.h"
 
-/*      *************************************************************
-        *                                                           *
-        *                Simple types                               *
-        *                                                           *
-        *************************************************************
-*/
-
 typedef const char *  GUI_ConstString;
 
-/*      *************************************************************
-        *                                                           *
-        *                Structures                                 *
-        *                                                           *
-        *************************************************************
-*/
-
-typedef LCD_COLOR       GUI_COLOR;
-typedef LCD_LOGPALETTE  GUI_LOGPALETTE;
-typedef LCD_DRAWMODE    GUI_DRAWMODE;
-typedef LCD_RECT        GUI_RECT;
-
 typedef struct {
-  void      (* pfDraw)(int x0,int y0,int xsize, int ysize, const U8 GUI_UNI_PTR * pPixel, const LCD_LOGPALETTE GUI_UNI_PTR * pLogPal, int xMag, int yMag);
+  void      (* pfDraw)(int x0,int y0,int xsize, int ysize, const uint8_t GUI_UNI_PTR * pPixel, const GUI_LOGPALETTE GUI_UNI_PTR * pLogPal, int xMag, int yMag);
 } GUI_BITMAP_METHODS;
 
 typedef struct {
-  U16P XSize;
-  U16P YSize;
-  U16P BytesPerLine;
-  U16P BitsPerPixel;
-  const U8 GUI_UNI_PTR * pData;
+  uint16_t XSize;
+  uint16_t YSize;
+  uint16_t BytesPerLine;
+  uint16_t BitsPerPixel;
+  const uint8_t GUI_UNI_PTR * pData;
   const GUI_LOGPALETTE GUI_UNI_PTR * pPal;
   const GUI_BITMAP_METHODS * pMethods;
 } GUI_BITMAP;
@@ -55,44 +36,44 @@ typedef struct {
    indices of images to display on top of each other;
    '? -> index('a'), index('?) */
 typedef struct {
-  I16P c0;
-  I16P c1;
+  int16_t c0;
+  int16_t c1;
 } GUI_FONT_TRANSLIST;
 
 typedef struct {
-  U16P FirstChar;
-  U16P LastChar;
+  uint16_t FirstChar;
+  uint16_t LastChar;
   const GUI_FONT_TRANSLIST GUI_UNI_PTR * pList;
 } GUI_FONT_TRANSINFO;
 
 typedef struct {
-  U8 XSize;
-  U8 XDist;
-  U8 BytesPerLine;
+  uint8_t XSize;
+  uint8_t XDist;
+  uint8_t BytesPerLine;
   const unsigned char GUI_UNI_PTR * pData;
 } GUI_CHARINFO;
 
 typedef struct GUI_FONT_PROP {
-  U16P First;                                /* first character               */
-  U16P Last;                                 /* last character                */
+  uint16_t First;                                /* first character               */
+  uint16_t Last;                                 /* last character                */
   const GUI_CHARINFO GUI_UNI_PTR * paCharInfo;            /* address of first character    */
   const struct GUI_FONT_PROP GUI_UNI_PTR * pNext;        /* pointer to next */
 } GUI_FONT_PROP;
 
 typedef struct {
   const unsigned char GUI_UNI_PTR * pData;
-  const U8 GUI_UNI_PTR * pTransData;
+  const uint8_t GUI_UNI_PTR * pTransData;
   const GUI_FONT_TRANSINFO GUI_UNI_PTR * pTrans;
-  U16P FirstChar;
-  U16P LastChar;
-  U8 XSize;
-  U8 XDist;
-  U8 BytesPerLine;
+  uint16_t FirstChar;
+  uint16_t LastChar;
+  uint8_t XSize;
+  uint8_t XDist;
+  uint8_t BytesPerLine;
 } GUI_FONT_MONO;
 
 typedef struct GUI_FONT_INFO {
-  U16P First;                        /* first character               */
-  U16P Last;                         /* last character                */
+  uint16_t First;                        /* first character               */
+  uint16_t Last;                         /* last character                */
   const GUI_CHARINFO* paCharInfo;    /* address of first character    */
   const struct GUI_FONT_INFO* pNext; /* pointer to next */
 } GUI_FONT_INFO;
@@ -108,19 +89,19 @@ This structure is used when retrieving information about a font.
 It is designed for future expansion without incompatibilities.
 */
 typedef struct {
-  U16 Flags;
-  U8 Baseline;
-  U8 LHeight;     /* height of a small lower case character (a,x) */
-  U8 CHeight;     /* height of a small upper case character (A,X) */
+  uint16_t Flags;
+  uint8_t Baseline;
+  uint8_t LHeight;     /* height of a small lower case character (a,x) */
+  uint8_t CHeight;     /* height of a small upper case character (A,X) */
 } GUI_FONTINFO;
 
 #define GUI_FONTINFO_FLAG_PROP (1<<0)    /* Is proportional */
 #define GUI_FONTINFO_FLAG_MONO (1<<1)    /* Is monospaced */
 
-typedef U16  tGUI_GetCharCode(const char GUI_UNI_PTR *s);
+typedef uint16_t  tGUI_GetCharCode(const char GUI_UNI_PTR *s);
 typedef int  tGUI_GetCharSize(const char GUI_UNI_PTR *s);
-typedef int  tGUI_CalcSizeOfChar(U16 Char);
-typedef int  tGUI_Encode(char *s, U16 Char);
+typedef int  tGUI_CalcSizeOfChar(uint16_t Char);
+typedef int  tGUI_Encode(char *s, uint16_t Char);
 
 typedef struct {
   tGUI_GetCharCode*            pfGetCharCode;
@@ -156,16 +137,16 @@ So it ends up to be a void pointer.
 
 typedef struct GUI_FONT GUI_FONT;
 
-typedef void GUI_DISPCHAR(U16 c);
-typedef int  GUI_GETCHARDISTX(U16P c);
+typedef void GUI_DISPCHAR(uint16_t c);
+typedef int  GUI_GETCHARDISTX(uint16_t c);
 typedef void GUI_GETFONTINFO(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO * pfi);
-typedef char GUI_ISINFONT   (const GUI_FONT GUI_UNI_PTR * pFont, U16 c);
+typedef char GUI_ISINFONT   (const GUI_FONT GUI_UNI_PTR * pFont, uint16_t c);
 
 #define DECLARE_FONT(Type)                                     \
-void GUI##Type##_DispChar    (U16P c);                         \
-int  GUI##Type##_GetCharDistX(U16P c);                         \
+void GUI##Type##_DispChar    (uint16_t c);                         \
+int  GUI##Type##_GetCharDistX(uint16_t c);                         \
 void GUI##Type##_GetFontInfo (const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO * pfi); \
-char GUI##Type##_IsInFont    (const GUI_FONT GUI_UNI_PTR * pFont, U16 c)
+char GUI##Type##_IsInFont    (const GUI_FONT GUI_UNI_PTR * pFont, uint16_t c)
 
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
@@ -208,8 +189,8 @@ struct GUI_FONT {
   GUI_GETFONTINFO*  pfGetFontInfo;
   GUI_ISINFONT*     pfIsInFont;
   const tGUI_ENC_APIList* pafEncode;
-  U8 YSize;
-  U8 YDist;
+  uint8_t YSize;
+  uint8_t YDist;
   char XMag;
   char YMag;
   union {
@@ -217,32 +198,32 @@ struct GUI_FONT {
     const GUI_FONT_MONO GUI_UNI_PTR * pMono;
     const GUI_FONT_PROP GUI_UNI_PTR * pProp;
   } p;
-  U8 Baseline;
-  U8 LHeight;     /* height of a small lower case character (a,x) */
-  U8 CHeight;     /* height of a small upper case character (A,X) */
+  uint8_t Baseline;
+  uint8_t LHeight;     /* height of a small lower case character (a,x) */
+  uint8_t CHeight;     /* height of a small upper case character (A,X) */
 };
 
 typedef struct {
-  U32 ID;           /* Font file ID */
-  U16 YSize;        /* Height of font */
-  U16 YDist;        /* Space of font Y */
-  U16 Baseline;     /* Index of baseline */
-  U16 LHeight;      /* Height of a small lower case character (a) */
-  U16 CHeight;      /* Height of a upper case character (A) */
-  U16 NumAreas;     /* Number of character areas */
+  uint32_t ID;           /* Font file ID */
+  uint16_t YSize;        /* Height of font */
+  uint16_t YDist;        /* Space of font Y */
+  uint16_t Baseline;     /* Index of baseline */
+  uint16_t LHeight;      /* Height of a small lower case character (a) */
+  uint16_t CHeight;      /* Height of a upper case character (A) */
+  uint16_t NumAreas;     /* Number of character areas */
 } GUI_SI_FONT;
 
 typedef struct {
-  U16 First;        /* Index of first character */
-  U16 Last;         /* Index of last character */
+  uint16_t First;        /* Index of first character */
+  uint16_t Last;         /* Index of last character */
 } GUI_SIF_CHAR_AREA;
 
 typedef struct {
-  U16 XSize;        /* Size of bitmap data in X */
-  U16 XDist;        /* Number of pixels for increment cursor in X */
-  U16 BytesPerLine; /* Number of bytes per line */
-  U16 Dummy;
-  U32 OffData;      /* Offset of pixel data */
+  uint16_t XSize;        /* Size of bitmap data in X */
+  uint16_t XDist;        /* Number of pixels for increment cursor in X */
+  uint16_t BytesPerLine; /* Number of bytes per line */
+  uint16_t Dummy;
+  uint32_t OffData;      /* Offset of pixel data */
 } GUI_SIF_CHARINFO;
 
 typedef struct tGUI_SIF_APIList_struct {
@@ -266,7 +247,7 @@ extern const tGUI_SIF_APIList GUI_SIF_APIList_Prop;
 */
 
 #ifndef     GUI_HMEM
-  #define     GUI_HMEM        I16P
+#define     GUI_HMEM        int16_t
 #endif
 #define     GUI_HMEM_NULL     (0)
 typedef     GUI_HMEM      GUI_HWIN;

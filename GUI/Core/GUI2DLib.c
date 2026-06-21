@@ -19,7 +19,6 @@ static void _DrawRect(int x0, int y0, int x1, int y1) {
 
 void GUI_DrawRect(int x0, int y0, int x1, int y1) {
 #if (GUI_WINSUPPORT)
-	int Off;
 	GUI_RECT r;
 #endif
 

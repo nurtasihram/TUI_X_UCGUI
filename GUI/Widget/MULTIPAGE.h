@@ -20,21 +20,21 @@ void        MULTIPAGE_SelectPage    (MULTIPAGE_Handle hObj, unsigned Index);
 void        MULTIPAGE_EnablePage    (MULTIPAGE_Handle hObj, unsigned Index);
 void        MULTIPAGE_DisablePage   (MULTIPAGE_Handle hObj, unsigned Index);
 void        MULTIPAGE_SetText       (MULTIPAGE_Handle hObj, const char* pText, unsigned Index);
-void        MULTIPAGE_SetBkColor    (MULTIPAGE_Handle hObj, GUI_COLOR Color, unsigned Index);
-void        MULTIPAGE_SetTextColor  (MULTIPAGE_Handle hObj, GUI_COLOR Color, unsigned Index);
+void        MULTIPAGE_SetBkColor    (MULTIPAGE_Handle hObj, RGB_COLOR Color, unsigned Index);
+void        MULTIPAGE_SetTextColor  (MULTIPAGE_Handle hObj, RGB_COLOR Color, unsigned Index);
 void        MULTIPAGE_SetFont       (MULTIPAGE_Handle hObj, const GUI_FONT GUI_UNI_PTR * pFont);
 void        MULTIPAGE_SetAlign      (MULTIPAGE_Handle hObj, unsigned Align);
 int         MULTIPAGE_GetSelection  (MULTIPAGE_Handle hObj);
 WM_HWIN     MULTIPAGE_GetWindow     (MULTIPAGE_Handle hObj, unsigned Index);
 int         MULTIPAGE_IsPageEnabled (MULTIPAGE_Handle hObj, unsigned Index);
 unsigned                     MULTIPAGE_GetDefaultAlign(void);
-GUI_COLOR                    MULTIPAGE_GetDefaultBkColor(unsigned Index);
+RGB_COLOR                    MULTIPAGE_GetDefaultBkColor(unsigned Index);
 const GUI_FONT GUI_UNI_PTR * MULTIPAGE_GetDefaultFont(void);
-GUI_COLOR                    MULTIPAGE_GetDefaultTextColor(unsigned Index);
+RGB_COLOR                    MULTIPAGE_GetDefaultTextColor(unsigned Index);
 void                         MULTIPAGE_SetDefaultAlign(unsigned Align);
-void                         MULTIPAGE_SetDefaultBkColor(GUI_COLOR Color, unsigned Index);
+void                         MULTIPAGE_SetDefaultBkColor(RGB_COLOR Color, unsigned Index);
 void                         MULTIPAGE_SetDefaultFont(const GUI_FONT GUI_UNI_PTR * pFont);
-void                         MULTIPAGE_SetDefaultTextColor(GUI_COLOR Color, unsigned Index);
+void                         MULTIPAGE_SetDefaultTextColor(RGB_COLOR Color, unsigned Index);
 #if defined(__cplusplus)
   }
 #endif

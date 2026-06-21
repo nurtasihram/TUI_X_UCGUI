@@ -5,27 +5,27 @@
 #include "WIDGET.h"
 #define LISTBOX_H2P(h) (LISTBOX_Obj*) GUI_ALLOC_h2p(h)
 #if GUI_DEBUG_LEVEL >1
-  #define OBJECT_ID 0x4C69   /* Magic numer, should be unique if possible */
-  #define ASSERT_IS_VALID_PTR(p) GUI_DEBUG_ERROROUT_IF(p->DebugId != OBJECT_ID, "EDIT.C: Wrong handle type or Object not init'ed")
-  #define INIT_ID(p)   p->DebugId = OBJECT_ID
-  #define DEINIT_ID(p) p->DebugId = 0
+#define OBJECT_ID 0x4C69   /* Magic numer, should be unique if possible */
+#define ASSERT_IS_VALID_PTR(p) GUI_DEBUG_ERROROUT_IF(p->DebugId != OBJECT_ID, "EDIT.C: Wrong handle type or Object not init'ed")
+#define INIT_ID(p)   p->DebugId = OBJECT_ID
+#define DEINIT_ID(p) p->DebugId = 0
 #else
-  #define ASSERT_IS_VALID_PTR(p)
-  #define INIT_ID(p)
-  #define DEINIT_ID(p)
+#define ASSERT_IS_VALID_PTR(p)
+#define INIT_ID(p)
+#define DEINIT_ID(p)
 #endif
 #define LISTBOX_ITEM_SELECTED (1 << 0)
 #define LISTBOX_ITEM_DISABLED (1 << 1)
 typedef struct {
-  U16  xSize, ySize;
-  U8   Status;
+  uint16_t  xSize, ySize;
+  uint8_t   Status;
   char acText[1];
 } LISTBOX_ITEM;
 typedef struct {
   const GUI_FONT GUI_UNI_PTR* pFont;
-  U16                         ScrollStepH;
-  GUI_COLOR aBackColor[4];
-  GUI_COLOR aTextColor[4];
+  uint16_t                         ScrollStepH;
+  RGB_COLOR aBackColor[4];
+  RGB_COLOR aTextColor[4];
 } LISTBOX_PROPS;
 typedef struct {
   WIDGET Widget;
@@ -35,13 +35,13 @@ typedef struct {
   WM_SCROLL_STATE ScrollStateH;
   LISTBOX_PROPS Props;
   WM_HWIN hOwner;
-  #if GUI_DEBUG_LEVEL >1
+#if GUI_DEBUG_LEVEL >1
     int DebugId;
-  #endif
-  I16 Sel;                        /* current selection */
-  U8 Flags;
-  U8  ScrollbarWidth;
-  U16 ItemSpacing;
+#endif
+  int16_t Sel;                        /* current selection */
+  uint8_t Flags;
+  uint8_t  ScrollbarWidth;
+  uint16_t ItemSpacing;
 } LISTBOX_Obj;
 extern LISTBOX_PROPS LISTBOX_DefaultProps;
 unsigned    LISTBOX__GetNumItems           (const LISTBOX_Obj* pObj);

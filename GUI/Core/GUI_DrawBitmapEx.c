@@ -5,8 +5,8 @@
 
 static void GL_DrawBitmapEx(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0,
                             int xCenter, int yCenter, int xMag, int yMag) {
-  LCD_PIXELINDEX Index, IndexPrev = 0;
-  LCD_COLOR Color;
+  RGB_COLOR Index, IndexPrev = 0;
+  RGB_COLOR Color;
   int x, y, xi, yi, xSize, ySize, xAct, xStart, xMagAbs, xiMag, yMin, yMax, yEnd, yPrev, yStep;
   char Cached, HasTrans = 0;
   /* Use clipping rect to reduce calculation */
@@ -16,8 +16,8 @@ static void GL_DrawBitmapEx(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int 
   xSize    = pBitmap->XSize;
   ySize    = pBitmap->YSize;
   xMagAbs  = ((xMag < 0) ? -xMag : xMag);
-  x0      -= (I32)((xMag < 0) ? xSize - xCenter - 1 : xCenter) * (I32)(xMagAbs) / (I32)(1000);
-  yEnd     = y0 + GUI__DivideRound32(((I32)(-yCenter) * (I32)(yMag)), 1000);
+  x0      -= (int32_t)((xMag < 0) ? xSize - xCenter - 1 : xCenter) * (int32_t)(xMagAbs) / (int32_t)(1000);
+  yEnd     = y0 + GUI__DivideRound32(((int32_t)(-yCenter) * (int32_t)(yMag)), 1000);
   yPrev    = yEnd + 1;
   yStep = (yMag < 0) ? -1 : 1;
   if (pBitmap->pPal) {
@@ -27,7 +27,7 @@ static void GL_DrawBitmapEx(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int 
   }
   for (yi = 0; yi < ySize; yi++) {
     y = yEnd;
-    yEnd = y0 + GUI__DivideRound32(((I32)(yi + 1 - yCenter) * (I32)(yMag)), 1000);
+    yEnd = y0 + GUI__DivideRound32(((int32_t)(yi + 1 - yCenter) * (int32_t)(yMag)), 1000);
     if (y != yPrev) {
       yPrev = y;
       do {
@@ -83,34 +83,34 @@ static void GL_DrawBitmapEx(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int 
 
 void GUI_DrawBitmapEx(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0,
                       int xCenter, int yCenter, int xMag, int yMag) {
-  GUI_COLOR OldColor;
-  #if (GUI_WINSUPPORT)
+  RGB_COLOR OldColor;
+#if (GUI_WINSUPPORT)
     GUI_RECT r;
-  #endif
+#endif
 
   OldColor = GUI_GetColor();
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     WM_ADDORG(x0, y0);
     if (xMag >= 0) {
-      r.x0 = x0 + GUI__DivideRound32(((I32)(-xCenter) * (I32)(xMag)), 1000);
-      r.x1 = x0 + GUI__DivideRound32(((I32)(pBitmap->XSize - xCenter - 1) * (I32)(xMag)), 1000);
+      r.x0 = x0 + GUI__DivideRound32(((int32_t)(-xCenter) * (int32_t)(xMag)), 1000);
+      r.x1 = x0 + GUI__DivideRound32(((int32_t)(pBitmap->XSize - xCenter - 1) * (int32_t)(xMag)), 1000);
     } else {
-      r.x1 = x0 + GUI__DivideRound32(((I32)(-xCenter) * (I32)(xMag)), 1000);
-      r.x0 = x0 + GUI__DivideRound32(((I32)(pBitmap->XSize - xCenter - 1) * (I32)(xMag)), 1000);
+      r.x1 = x0 + GUI__DivideRound32(((int32_t)(-xCenter) * (int32_t)(xMag)), 1000);
+      r.x0 = x0 + GUI__DivideRound32(((int32_t)(pBitmap->XSize - xCenter - 1) * (int32_t)(xMag)), 1000);
     }
     if (yMag >= 0) {
-      r.y0 = y0 + GUI__DivideRound32(((I32)(-yCenter) * (I32)(yMag)), 1000);
-      r.y1 = y0 + GUI__DivideRound32(((I32)(pBitmap->YSize - yCenter - 1) * (I32)(yMag)), 1000);
+      r.y0 = y0 + GUI__DivideRound32(((int32_t)(-yCenter) * (int32_t)(yMag)), 1000);
+      r.y1 = y0 + GUI__DivideRound32(((int32_t)(pBitmap->YSize - yCenter - 1) * (int32_t)(yMag)), 1000);
     } else {
-      r.y1 = y0 + GUI__DivideRound32(((I32)(-yCenter) * (I32)(yMag)), 1000);
-      r.y0 = y0 + GUI__DivideRound32(((I32)(pBitmap->YSize - yCenter - 1) * (I32)(yMag)), 1000);
+      r.y1 = y0 + GUI__DivideRound32(((int32_t)(-yCenter) * (int32_t)(yMag)), 1000);
+      r.y0 = y0 + GUI__DivideRound32(((int32_t)(pBitmap->YSize - yCenter - 1) * (int32_t)(yMag)), 1000);
     }
     WM_ITERATE_START(&r) {
-  #endif
+#endif
   GL_DrawBitmapEx(pBitmap, x0, y0, xCenter, yCenter, xMag, yMag);
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
-  #endif
+#endif
   GUI_SetColor(OldColor);
 
 }

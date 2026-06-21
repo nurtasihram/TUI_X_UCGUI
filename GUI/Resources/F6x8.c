@@ -6,7 +6,7 @@
 *                       (c) Copyright 2002, Micrium Inc., Weston, FL
 *                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
 *
-*              µC/GUI is protected by international copyright laws. Knowledge of the
+*              ï¿½C/GUI is protected by international copyright laws. Knowledge of the
 *              source code may not be used to write a similar product. This file may
 *              only be used in accordance with a license and should not be redistributed
 *              in any way. We appreciate your understanding and fairness.
@@ -21,7 +21,7 @@ Height      : 8
 #include "GUI_FontIntern.h"
 
 #ifndef GUI_NOFCHARS
-  #define GUI_NOFCHARS (163)
+#define GUI_NOFCHARS (163)
 #endif
 
 /*      *********************************
@@ -1241,7 +1241,7 @@ GUI_CONST_STORAGE unsigned char GUI_acFont6x8[GUI_NOFCHARS][8] = {
 #endif
 #if (GUI_NOFCHARS>101)
 
-/* sharps eg á, 101  */
+/* sharps eg ï¿½, 101  */
  ,{
    ________,
    _XX_____,

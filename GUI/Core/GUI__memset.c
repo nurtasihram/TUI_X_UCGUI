@@ -14,10 +14,10 @@
 *  in the library)
 *  Main idea is to write int-wise.
 */
-void GUI__memset(U8* p, U8 Fill, int NumBytes) {
+void GUI__memset(uint8_t* p, uint8_t Fill, int NumBytes) {
   int NumInts;
   /* Write bytes until we are done or have reached an int boundary */
-  while (NumBytes && ((sizeof(int) - 1) & (U32)p)) {
+  while (NumBytes && ((sizeof(int) - 1) & (uint32_t)p)) {
     *p++ = Fill;
     NumBytes--;
   }
@@ -46,7 +46,7 @@ void GUI__memset(U8* p, U8 Fill, int NumBytes) {
       *pInt++ = FillInt;
       NumInts--;
     }
-    p = (U8*)pInt;
+    p = (uint8_t*)pInt;
   }
   /* Fill the remainder byte wise */
   while (NumBytes) {

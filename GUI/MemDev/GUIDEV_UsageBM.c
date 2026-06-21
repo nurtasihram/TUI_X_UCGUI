@@ -35,17 +35,17 @@ typedef struct {
 } GUI_USAGE_BM;
 
 static void GUI_USAGE_BM_AddPixel(GUI_USAGE* p, int x, int y) {
-  U8* pData;
+  uint8_t* pData;
   GUI_USAGE_BM * pThis = (GUI_USAGE_BM*)p;
-  #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
+#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
     if ((x >= pThis->Public.x0 + pThis->Public.XSize) | (x < pThis->Public.x0)
       | (y >= pThis->Public.y0 + pThis->Public.YSize) | (y < pThis->Public.y0))
     {
-      GUI_DEBUG_ERROROUT2("GUI_USAGE_BM_AddPixel: parameters out of bounds",x,y);
+      GUI_DEBUG_ERROROUT("GUI_USAGE_BM_AddPixel: parameters out of bounds",x,y);
     }
-  #endif
+#endif
   x -= pThis->Public.x0;
-  pData =  (U8*)(pThis+1);
+  pData =  (uint8_t*)(pThis+1);
   pData += (y-pThis->Public.y0) * pThis->Private.BytesPerLine;
   pData += x>>3;
   *pData|= 0x80>>(x&7);
@@ -56,22 +56,22 @@ static void GUI_USAGE_BM_AddHLine(GUI_USAGE* p, int x, int y, int len) {
   while (len-- >0)
     GUI_USAGE_BM_AddPixel(h, x++,y);
 #else
-  U8* pData;
+  uint8_t* pData;
   GUI_USAGE_BM * pThis = (GUI_USAGE_BM*)p;
   /* Asserts */
-  GUI_DEBUG_ERROROUT3_IF( x<pThis->Public.x0, "GUIDEV.c: MarkPixels: negative x offset, Act= %d, Border= %d, Clip= %d"
+  GUI_DEBUG_ERROROUT_IF( x<pThis->Public.x0, "GUIDEV.c: MarkPixels: negative x offset, Act= %d, Border= %d, Clip= %d"
                     ,x, pThis->Public.x0, GUI_Context.ClipRect.x0);
   /* Calculate pointers */
   x -= pThis->Public.x0;
-  pData =  (U8*)(pThis+1);
+  pData =  (uint8_t*)(pThis+1);
   pData += (y-pThis->Public.y0) * pThis->Private.BytesPerLine;
   pData += x>>3;
   /* Set bits */
   {
     int x1 = x+len-1;   /* last pixel */
     int NumBytes = (x1>>3) - (x>>3);
-    U8 Mask0 = 0xff >> (x&7);
-    U8 Mask1 = 0xff << (7-(x1&7));
+    uint8_t Mask0 = 0xff >> (x&7);
+    uint8_t Mask1 = 0xff << (7-(x1&7));
     if (NumBytes ==0) {
       *pData |= (Mask0&Mask1);
     } else {
@@ -97,7 +97,7 @@ static int GUI_USAGE_BM_GetNextDirty(GUI_USAGE* p, int *pxOff, int yOff) {
   int xEnd;
   GUI_USAGE_BM * pThis = (GUI_USAGE_BM*)p;
   int xSize = pThis->Public.XSize;
-  U8* pData = (U8*)(pThis+1);
+  uint8_t* pData = (uint8_t*)(pThis+1);
   if (yOff >= pThis->Public.YSize) {
     return 0;
   }
@@ -109,7 +109,7 @@ static int GUI_USAGE_BM_GetNextDirty(GUI_USAGE* p, int *pxOff, int yOff) {
 /* Find first bit */
     int BytesLeft = ((xSize-1) >>3) - (x>>3);
     /* Check first byte */
-    U8 Data = (*pData++) << (x&7);
+    uint8_t Data = (*pData++) << (x&7);
     while (Data == 0) {
       if (BytesLeft ==0)
         return 0;

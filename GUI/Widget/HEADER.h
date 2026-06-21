@@ -17,19 +17,19 @@ HEADER_Handle HEADER_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWI
 #define HEADER_Paint(hObj)         WM_Paint           (hObj)
 #define HEADER_Invalidate(hObj)    WM_InvalidateWindow(hObj)
 /* Set defaults */
-GUI_COLOR          HEADER_SetDefaultBkColor  (GUI_COLOR Color);
+RGB_COLOR          HEADER_SetDefaultBkColor  (RGB_COLOR Color);
 const GUI_CURSOR GUI_UNI_PTR * HEADER_SetDefaultCursor   (const GUI_CURSOR * pCursor);
 const GUI_FONT GUI_UNI_PTR *   HEADER_SetDefaultFont     (const GUI_FONT GUI_UNI_PTR * pFont);
 int                HEADER_SetDefaultBorderH (int Spacing);
 int                HEADER_SetDefaultBorderV (int Spacing);
-GUI_COLOR          HEADER_SetDefaultTextColor(GUI_COLOR Color);
+RGB_COLOR          HEADER_SetDefaultTextColor(RGB_COLOR Color);
 /* Get defaults */
-GUI_COLOR          HEADER_GetDefaultBkColor  (void);
+RGB_COLOR          HEADER_GetDefaultBkColor  (void);
 const GUI_CURSOR GUI_UNI_PTR * HEADER_GetDefaultCursor   (void);
 const GUI_FONT GUI_UNI_PTR *   HEADER_GetDefaultFont     (void);
 int                HEADER_GetDefaultBorderH  (void);
 int                HEADER_GetDefaultBorderV  (void);
-GUI_COLOR          HEADER_GetDefaultTextColor(void);
+RGB_COLOR          HEADER_GetDefaultTextColor(void);
 void HEADER_AddItem            (HEADER_Handle hObj, int Width, const char * s, int Align);
 void HEADER_DeleteItem         (HEADER_Handle hObj, unsigned Index);
 int  HEADER_GetHeight          (HEADER_Handle hObj);
@@ -37,7 +37,7 @@ int  HEADER_GetItemWidth       (HEADER_Handle hObj, unsigned int Index);
 int  HEADER_GetNumItems        (HEADER_Handle hObj);
 void HEADER_SetBitmap          (HEADER_Handle hObj, unsigned int Index, const GUI_BITMAP * pBitmap);
 void HEADER_SetBitmapEx        (HEADER_Handle hObj, unsigned int Index, const GUI_BITMAP * pBitmap, int x, int y);
-void HEADER_SetBkColor         (HEADER_Handle hObj, GUI_COLOR Color);
+void HEADER_SetBkColor         (HEADER_Handle hObj, RGB_COLOR Color);
 void HEADER_SetBMP             (HEADER_Handle hObj, unsigned int Index, const void * pBitmap);
 void HEADER_SetBMPEx           (HEADER_Handle hObj, unsigned int Index, const void * pBitmap, int x, int y);
 void HEADER_SetFont            (HEADER_Handle hObj, const GUI_FONT GUI_UNI_PTR * pFont);
@@ -46,12 +46,12 @@ void HEADER_SetTextAlign       (HEADER_Handle hObj, unsigned int Index, int Alig
 void HEADER_SetItemText        (HEADER_Handle hObj, unsigned int Index, const char * s);
 void HEADER_SetItemWidth       (HEADER_Handle hObj, unsigned int Index, int Width);
 void HEADER_SetScrollPos       (HEADER_Handle hObj, int ScrollPos);
-void HEADER_SetTextColor       (HEADER_Handle hObj, GUI_COLOR Color);
+void HEADER_SetTextColor       (HEADER_Handle hObj, RGB_COLOR Color);
 #ifdef HEADER_SPACING_H
-  #define HEADER_BORDER_H_DEFAULT HEADER_SPACING_H
+#define HEADER_BORDER_H_DEFAULT HEADER_SPACING_H
 #endif
 #ifdef HEADER_SPACING_V
-  #define HEADER_BORDER_V_DEFAULT HEADER_SPACING_V
+#define HEADER_BORDER_V_DEFAULT HEADER_SPACING_V
 #endif
 #define HEADER_SetDefaultSpacingH(Value) HEADER_SetDefaultBorderH(Value)
 #define HEADER_SetDefaultSpacingV(Value) HEADER_SetDefaultBorderV(Value)

@@ -38,11 +38,11 @@ static int _VarY = 1;
 static int _PrevTime;
 
 
-const LCD_COLOR ColorsSmilie0[] = {
+const RGB_COLOR ColorsSmilie0[] = {
 	 0xFFFFFF,0x000000,0x0000FF
 };
 
-const LCD_COLOR ColorsSmilie1[] = {
+const RGB_COLOR ColorsSmilie1[] = {
 	 0xFFFFFF,0x000000,0x00FFFF
 };
 
@@ -189,8 +189,8 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 			char acBuffer[100];
 			const GUI_BITMAP *pBm;
 			const GUI_FONT *pOldFont = 0;
-			LCD_COLOR aColor[4] = { GUI_BLACK, GUI_WHITE, GUI_WHITE, GUI_GRAY };
-			LCD_COLOR aBkColor[4] = { GUI_WHITE, GUI_GRAY, GUI_BLUE, 0xC0C0C0 };
+			RGB_COLOR aColor[4] = { GUI_BLACK, GUI_WHITE, GUI_WHITE, GUI_GRAY };
+			RGB_COLOR aBkColor[4] = { GUI_WHITE, GUI_GRAY, GUI_BLUE, 0xC0C0C0 };
 			IsDisabled = LISTBOX_GetItemDisabled(pDrawItemInfo->hWin, pDrawItemInfo->ItemIndex);
 			IsSelected = LISTBOX_GetItemSel(hWin, Index);
 			MultiSel = LISTBOX_GetMulti(hWin);
@@ -344,7 +344,7 @@ static void _cbCallback(WM_MESSAGE *pMsg) {
 #define ID_MENU_EDIT_DELETE (GUI_ID_USER + 14)
 #define ID_MENU_HELP_ABOUT  (GUI_ID_USER + 15)
 #include "MENU.h"
-static void _AddMenuItem(MENU_Handle hMenu, MENU_Handle hSubmenu, const char *pText, U16 Id, U16 Flags) {
+static void _AddMenuItem(MENU_Handle hMenu, MENU_Handle hSubmenu, const char *pText, uint16_t Id, uint16_t Flags) {
 	MENU_ITEM_DATA Item;
 	Item.pText = pText;
 	Item.hSubmenu = hSubmenu;

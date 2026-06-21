@@ -23,9 +23,9 @@
 */
 static void _InitContext(GUI_CONTEXT* pContext) {
   /* memset(..,0,..) is not required, as this function is called only at startup of the GUI when data is 0 */
-  #if GUI_SUPPORT_DEVICES
+#if GUI_SUPPORT_DEVICES
     pContext->pDeviceAPI   = LCD_aAPI[0]; /* &LCD_L0_APIList; */
-  #endif
+#endif
   pContext->pClipRect_HL = &GUI_Context.ClipRect;
   LCD_L0_GetRect(&pContext->ClipRect);
   pContext->pAFont       = GUI_DEFAULT_FONT;

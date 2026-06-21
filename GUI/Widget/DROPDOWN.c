@@ -393,7 +393,7 @@ void DROPDOWN_SetFont(DROPDOWN_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
 
 	}
 }
-void DROPDOWN_SetBkColor(DROPDOWN_Handle hObj, unsigned int Index, GUI_COLOR color) {
+void DROPDOWN_SetBkColor(DROPDOWN_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aBackColor)) {
@@ -409,7 +409,7 @@ void DROPDOWN_SetBkColor(DROPDOWN_Handle hObj, unsigned int Index, GUI_COLOR col
 		}
 	}
 }
-void DROPDOWN_SetTextColor(DROPDOWN_Handle hObj, unsigned int Index, GUI_COLOR color) {
+void DROPDOWN_SetTextColor(DROPDOWN_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aBackColor)) {

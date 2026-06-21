@@ -14,12 +14,12 @@ PROGBAR_Handle PROGBAR_CreateEx      (int x0, int y0, int xsize, int ysize, WM_H
 #define PROGBAR_DisableMemdev(hObj) WM_DisableMemdev(hObj)
 #define PROGBAR_Delete(hObj)        WM_DeleteWindow(hObj)
 #define PROGBAR_Paint(hObj)         WM_Paint(hObj)
-void            PROGBAR_SetBarColor (PROGBAR_Handle hObj, unsigned int index, GUI_COLOR color);
+void            PROGBAR_SetBarColor (PROGBAR_Handle hObj, unsigned int index, RGB_COLOR color);
 void            PROGBAR_SetFont     (PROGBAR_Handle hObj, const GUI_FONT GUI_UNI_PTR * pfont);
 void            PROGBAR_SetMinMax   (PROGBAR_Handle hObj, int Min, int Max);
 void            PROGBAR_SetText     (PROGBAR_Handle hObj, const char* s);
 void            PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align);
-void            PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int index, GUI_COLOR color);
+void            PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int index, RGB_COLOR color);
 void            PROGBAR_SetTextPos  (PROGBAR_Handle hObj, int XOff, int YOff);
 void            PROGBAR_SetValue    (PROGBAR_Handle hObj, int v);
 #if defined(__cplusplus)

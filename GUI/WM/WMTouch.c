@@ -83,9 +83,9 @@ int WM_HandlePID(void) {
 
   WM__AddCriticalHandle(&CHWin);
   if ((WM_PID__StateLast.x != StateNew.x) || (WM_PID__StateLast.y != StateNew.y) || (WM_PID__StateLast.Pressed != StateNew.Pressed)) {
-    #if GUI_SUPPORT_CURSOR
+#if GUI_SUPPORT_CURSOR
       GUI_CURSOR_SetPosition(StateNew.x, StateNew.y);
-    #endif
+#endif
     CHWin.hWin = _Screen2Win(&StateNew);
     if (WM__IsInModalArea(CHWin.hWin)) {
       /*
@@ -132,7 +132,7 @@ int WM_HandlePID(void) {
               State.Pressed = 0;
               Msg.Data.p = (void*)&State;
             }
-            GUI_DEBUG_LOG1 ("\nSending WM_Touch to LastWindow %d (out of area)", WM__CHWinLast.hWin);
+            GUI_DEBUG_LOG ("\nSending WM_Touch to LastWindow %d (out of area)", WM__CHWinLast.hWin);
             WM__SendTouchMessage(WM__CHWinLast.hWin, &Msg);
             WM__CHWinLast.hWin = 0;
           }
@@ -158,7 +158,7 @@ int WM_HandlePID(void) {
       /*
        * Send WM_MOUSEOVER message
        */
-      #if GUI_SUPPORT_MOUSE
+#if GUI_SUPPORT_MOUSE
       else {
         /* Send WM_MOUSEOVER Message */
         if (CHWin.hWin) {
@@ -171,7 +171,7 @@ int WM_HandlePID(void) {
           }
         }
       }
-      #endif
+#endif
     }
     /* Store the new state */
     WM_PID__StateLast = StateNew;

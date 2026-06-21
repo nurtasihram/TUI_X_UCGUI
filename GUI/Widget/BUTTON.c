@@ -280,7 +280,7 @@ void BUTTON_SetFont(BUTTON_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
 
 	}
 }
-void BUTTON_SetBkColor(BUTTON_Handle hObj, unsigned int Index, GUI_COLOR Color) {
+void BUTTON_SetBkColor(BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color) {
 	if (hObj && (Index <= 2)) {
 		BUTTON_Obj *pObj;
 
@@ -291,7 +291,7 @@ void BUTTON_SetBkColor(BUTTON_Handle hObj, unsigned int Index, GUI_COLOR Color) 
 
 	}
 }
-void BUTTON_SetTextColor(BUTTON_Handle hObj, unsigned int Index, GUI_COLOR Color) {
+void BUTTON_SetTextColor(BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color) {
 	if (hObj && (Index <= 2)) {
 		BUTTON_Obj *pObj;
 
@@ -348,12 +348,12 @@ BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, W
 void BUTTON_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
 	BUTTON__DefaultProps.pFont = pFont;
 }
-void BUTTON_SetDefaultTextColor(GUI_COLOR Color, unsigned Index) {
+void BUTTON_SetDefaultTextColor(RGB_COLOR Color, unsigned Index) {
 	if (Index < GUI_COUNTOF(BUTTON__DefaultProps.aTextColor)) {
 		BUTTON__DefaultProps.aTextColor[Index] = Color;
 	}
 }
-void BUTTON_SetDefaultBkColor(GUI_COLOR Color, unsigned Index) {
+void BUTTON_SetDefaultBkColor(RGB_COLOR Color, unsigned Index) {
 	if (Index < GUI_COUNTOF(BUTTON__DefaultProps.aBkColor)) {
 		BUTTON__DefaultProps.aBkColor[Index] = Color;
 	}
@@ -364,15 +364,15 @@ void BUTTON_SetDefaultTextAlign(int Align) {
 const GUI_FONT GUI_UNI_PTR *BUTTON_GetDefaultFont(void) {
 	return BUTTON__DefaultProps.pFont;
 }
-GUI_COLOR BUTTON_GetDefaultTextColor(unsigned Index) {
-	GUI_COLOR Color = GUI_INVALID_COLOR;
+RGB_COLOR BUTTON_GetDefaultTextColor(unsigned Index) {
+	RGB_COLOR Color = GUI_INVALID_COLOR;
 	if (Index < GUI_COUNTOF(BUTTON__DefaultProps.aTextColor)) {
 		Color = BUTTON__DefaultProps.aTextColor[Index];
 	}
 	return Color;
 }
-GUI_COLOR BUTTON_GetDefaultBkColor(unsigned Index) {
-	GUI_COLOR Color = GUI_INVALID_COLOR;
+RGB_COLOR BUTTON_GetDefaultBkColor(unsigned Index) {
+	RGB_COLOR Color = GUI_INVALID_COLOR;
 	if (Index < GUI_COUNTOF(BUTTON__DefaultProps.aBkColor)) {
 		Color = BUTTON__DefaultProps.aBkColor[Index];
 	}
@@ -381,8 +381,8 @@ GUI_COLOR BUTTON_GetDefaultBkColor(unsigned Index) {
 int BUTTON_GetDefaultTextAlign(void) {
 	return BUTTON__DefaultProps.Align;
 }
-GUI_COLOR BUTTON_GetBkColor(BUTTON_Handle hObj, unsigned int Index) {
-	GUI_COLOR Color = 0;
+RGB_COLOR BUTTON_GetBkColor(BUTTON_Handle hObj, unsigned int Index) {
+	RGB_COLOR Color = 0;
 	if (hObj && (Index < 2)) {
 		BUTTON_Obj *pObj;
 

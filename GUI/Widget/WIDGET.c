@@ -74,8 +74,8 @@ void WIDGET__GetClientRect(WIDGET *pWidget, GUI_RECT *pRect) {
 		WM_GetClientRect(pRect);
 	}
 }
-GUI_COLOR WIDGET__GetBkColor(WM_HWIN hObj) {
-	GUI_COLOR BkColor = WM_GetBkColor(WM_GetParent(hObj));
+RGB_COLOR WIDGET__GetBkColor(WM_HWIN hObj) {
+	RGB_COLOR BkColor = WM_GetBkColor(WM_GetParent(hObj));
 	if (BkColor == GUI_INVALID_COLOR) {
 		BkColor = DIALOG_GetBkColor();
 	}
@@ -162,7 +162,7 @@ void WIDGET_OrState(WM_HWIN hObj, int State) {
 	...(..., 3);   // Clears bit 0, 1 int the state member
 */
 void WIDGET_AndState(WM_HWIN hObj, int Mask) {
-	U16 StateNew;
+	uint16_t StateNew;
 	if (hObj) {
 		WIDGET *pWidget;
 
@@ -175,7 +175,7 @@ void WIDGET_AndState(WM_HWIN hObj, int Mask) {
 
 	}
 }
-void WIDGET__Init(WIDGET *pWidget, int Id, U16 State) {
+void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
 	pWidget->pEffect = _pEffectDefault;
 	pWidget->State = State;
 	pWidget->Id = Id;

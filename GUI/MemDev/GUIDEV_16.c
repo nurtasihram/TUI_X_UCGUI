@@ -24,17 +24,17 @@ Purpose     : Implementation of memory devices
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 #if GUI_WINSUPPORT
-  #include "WM.h"
+#include "WM.h"
 #endif
 
 /* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
 
-#define PIXELINDEX                      U16
+#define PIXELINDEX                      uint16_t
 #define BITSPERPIXEL                     16
 #define API_LIST      GUI_MEMDEV__APIList16
 
-static void _DrawBitLine16BPP_DDB(GUI_USAGE* pUsage, int x, int y, const U16 *pSrc, int xsize, PIXELINDEX* pDest) {
+static void _DrawBitLine16BPP_DDB(GUI_USAGE* pUsage, int x, int y, const uint16_t *pSrc, int xsize, PIXELINDEX* pDest) {
   switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
   case 0:    /* Write mode */
     memcpy(pDest, pSrc, xsize * 2);

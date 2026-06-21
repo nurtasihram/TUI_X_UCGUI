@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ ²£¥Íªº Include ÀÉ®×¡C
-// ¥Ñ SimDisp.rc ¨Ï¥Î
+// Microsoft Visual C++ ï¿½ï¿½ï¿½Íªï¿½ Include ï¿½É®×¡C
+// ï¿½ï¿½ SimDisp.rc ï¿½Ï¥ï¿½
 //
 #define IDC_LED_NUM                     100
 #define IDC_LED_CAPS                    101
@@ -117,7 +117,7 @@
 #define SCAN_CODE_129 0x035D
 
 // Next default values for new objects
-// 
+//
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        104

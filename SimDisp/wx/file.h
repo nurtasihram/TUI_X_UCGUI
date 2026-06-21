@@ -69,7 +69,7 @@ enum_flags(FileShares, DWORD,
 	Read   = FILE_SHARE_READ,
 	Write  = FILE_SHARE_WRITE,
 	Delete = FILE_SHARE_DELETE);
-enum_class(FileTypes, DWORD, 
+enum_class(FileTypes, DWORD,
 	enum_default Unknown = FILE_TYPE_UNKNOWN,
 	Disk      = FILE_TYPE_DISK,
 	Char      = FILE_TYPE_CHAR,
@@ -244,7 +244,7 @@ public:
 
 	inline DWORD Read(LPVOID lpBuffer, DWORD dwNumberOfBytesToRead) assert_reflect_as(ReadFile(self, lpBuffer, dwNumberOfBytesToRead, &dwNumberOfBytesToRead, O), dwNumberOfBytesToRead);
 	inline DWORD Write(LPCVOID lpBuffer, DWORD dwNumberOfBytesToRead) assert_reflect_as(WriteFile(self, lpBuffer, dwNumberOfBytesToRead, &dwNumberOfBytesToRead, O), dwNumberOfBytesToRead);
-	
+
 	inline void Flush() assert_reflect_as(FlushFileBuffers(self));
 
 #pragma region Properties

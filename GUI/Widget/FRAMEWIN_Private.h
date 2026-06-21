@@ -5,12 +5,12 @@
 #include "GUI_HOOK.h"
 typedef struct {
   const GUI_FONT GUI_UNI_PTR * pFont;
-  GUI_COLOR                    aBarColor[2];
-  GUI_COLOR                    aTextColor[2];
-  GUI_COLOR                    ClientColor;
-  I16                          TitleHeight;
-  I16                          BorderSize;
-  I16                          IBorderSize;
+  RGB_COLOR                    aBarColor[2];
+  RGB_COLOR                    aTextColor[2];
+  RGB_COLOR                    ClientColor;
+  int16_t                          TitleHeight;
+  int16_t                          BorderSize;
+  int16_t                          IBorderSize;
 } FRAMEWIN_PROPS;
 typedef struct {
   WIDGET Widget;
@@ -20,15 +20,15 @@ typedef struct {
   WM_HWIN hMenu;
   WM_HWIN hText;
   GUI_RECT rRestore;
-  I16 TextAlign;
-  U16 Flags;
+  int16_t TextAlign;
+  uint16_t Flags;
   WM_HWIN hFocussedChild;          /* Handle to focussed child .. default none (0) */
   WM_DIALOG_STATUS* pDialogStatus;
   GUI_HOOK* pFirstHook;
 } FRAMEWIN_Obj;
 typedef struct {
-  I16 TitleHeight;
-  I16 MenuHeight;
+  int16_t TitleHeight;
+  int16_t MenuHeight;
   GUI_RECT rClient;
   GUI_RECT rTitleText;
 } POSITIONS;

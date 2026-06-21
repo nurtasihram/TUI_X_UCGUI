@@ -29,11 +29,11 @@ void SCROLLBAR_SetPageSize (SCROLLBAR_Handle hObj, int PageSize);
 void SCROLLBAR_SetValue    (SCROLLBAR_Handle hObj, int v);
 int  SCROLLBAR_SetWidth    (SCROLLBAR_Handle hObj, int Width);
 void SCROLLBAR_SetState    (SCROLLBAR_Handle hObj, const WM_SCROLL_STATE* pState);
-GUI_COLOR SCROLLBAR_GetDefaultBkColor(unsigned int Index); /* Not yet documented */
-GUI_COLOR SCROLLBAR_GetDefaultColor  (unsigned int Index); /* Not yet documented */
+RGB_COLOR SCROLLBAR_GetDefaultBkColor(unsigned int Index); /* Not yet documented */
+RGB_COLOR SCROLLBAR_GetDefaultColor  (unsigned int Index); /* Not yet documented */
 int       SCROLLBAR_GetDefaultWidth  (void);
-GUI_COLOR SCROLLBAR_SetDefaultBkColor(GUI_COLOR Color, unsigned int Index); /* Not yet documented */
-GUI_COLOR SCROLLBAR_SetDefaultColor  (GUI_COLOR Color, unsigned int Index); /* Not yet documented */
+RGB_COLOR SCROLLBAR_SetDefaultBkColor(RGB_COLOR Color, unsigned int Index); /* Not yet documented */
+RGB_COLOR SCROLLBAR_SetDefaultColor  (RGB_COLOR Color, unsigned int Index); /* Not yet documented */
 int       SCROLLBAR_SetDefaultWidth  (int DefaultWidth);
 int SCROLLBAR_GetValue(SCROLLBAR_Handle hObj);
 #if defined(__cplusplus)

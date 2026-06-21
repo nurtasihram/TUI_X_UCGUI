@@ -8,10 +8,10 @@ typedef WM_HWIN GUI_WIDGET_CREATE_FUNC       (const GUI_WIDGET_CREATE_INFO* pCre
 struct GUI_WIDGET_CREATE_INFO_struct {
   GUI_WIDGET_CREATE_FUNC* pfCreateIndirect;
   const char* pName;                     /* Text ... Not used on all widgets */
-  I16 Id;                                /* ID ... should be unique in a dialog */
-  I16 x0, y0, xSize, ySize;              /* Define position and size */
-  U16 Flags;                             /* Widget specific create flags (opt.) */
-  I32 Para;                              /* Widget specific parameter (opt.) */
+  int16_t Id;                                /* ID ... should be unique in a dialog */
+  int16_t x0, y0, xSize, ySize;              /* Define position and size */
+  uint16_t Flags;                             /* Widget specific create flags (opt.) */
+  int32_t Para;                              /* Widget specific parameter (opt.) */
 };
 WM_HWIN BUTTON_CreateIndirect   (const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
 WM_HWIN CHECKBOX_CreateIndirect (const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
@@ -27,8 +27,8 @@ WM_HWIN GUI_CreateDialogBox   (const GUI_WIDGET_CREATE_INFO* paWidget, int NumWi
 void    GUI_SetDialogStatusPtr(WM_HWIN hDialog, WM_DIALOG_STATUS* pDialogStatus); /* not to documented */
 WM_DIALOG_STATUS*  GUI_GetDialogStatusPtr(WM_HWIN hDialog);                       /* not to documented */
 void    GUI_EndDialog(WM_HWIN hWin, int r);
-LCD_COLOR DIALOG_GetBkColor(void);                                                /* obsolete */
-LCD_COLOR DIALOG_SetBkColor(LCD_COLOR BkColor);                                   /* obsolete */
+RGB_COLOR DIALOG_GetBkColor(void);                                                /* obsolete */
+RGB_COLOR DIALOG_SetBkColor(RGB_COLOR BkColor);                                   /* obsolete */
 #if defined(__cplusplus)
   }
 #endif

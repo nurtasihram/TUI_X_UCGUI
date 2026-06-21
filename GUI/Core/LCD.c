@@ -6,14 +6,14 @@
 void LCD_SetClipRectMax(void) {
 	LCDDEV_L0_GetRect(&GUI_Context.ClipRect);
 }
-void LCD_L0_GetRect(LCD_RECT *pRect) {
+void LCD_L0_GetRect(GUI_RECT *pRect) {
 	pRect->x0 = 0;
 	pRect->y0 = 0;
 	pRect->x1 = LCD_XSIZE - 1;
 	pRect->y1 = LCD_YSIZE - 1;
 }
 void LCD_SetClipRectEx(const GUI_RECT *pRect) {
-	LCD_RECT r;
+	GUI_RECT r;
 	LCDDEV_L0_GetRect(&r);
 	GUI__IntersectRects(&GUI_Context.ClipRect, pRect, &r);
 }
@@ -41,38 +41,38 @@ void LCD_SetBkColorIndex(int Index) {
 	LCD_ACOLORINDEX[_GetColorIndex(0)] = Index;
 }
 
-GUI_COLOR GUI_GetBkColor(void) {
+RGB_COLOR GUI_GetBkColor(void) {
 	return LCD_BKCOLORINDEX;
 }
-GUI_COLOR GUI_GetColor(void) {
+RGB_COLOR GUI_GetColor(void) {
 	return LCD_COLORINDEX;
 }
 
-void GUI_SetBkColor(GUI_COLOR color) {
+void GUI_SetBkColor(RGB_COLOR color) {
 	LCD_SetBkColor(color);
 }
-void GUI_SetColor(GUI_COLOR color) {
+void GUI_SetColor(RGB_COLOR color) {
 	LCD_SetColor(color);
 }
 
-void LCD_SetBkColor(GUI_COLOR color) {
+void LCD_SetBkColor(RGB_COLOR color) {
 	if (GUI_Context.BkColor != color) {
 		GUI_Context.BkColor = color;
 		LCD_SetBkColorIndex(color);
 	}
 }
 
-void LCD_SetColor(GUI_COLOR color) {
+void LCD_SetColor(RGB_COLOR color) {
 	if (GUI_Context.Color != color) {
 		GUI_Context.Color = color;
 		LCD_SetColorIndex(color);
 	}
 }
 
-LCD_DRAWMODE LCD_SetDrawMode(LCD_DRAWMODE dm) {
-	LCD_DRAWMODE OldDM = GUI_Context.DrawMode;
+GUI_DRAWMODE LCD_SetDrawMode(GUI_DRAWMODE dm) {
+	GUI_DRAWMODE OldDM = GUI_Context.DrawMode;
 	if ((GUI_Context.DrawMode ^ dm) & LCD_DRAWMODE_REV) {
-		LCD_PIXELINDEX temp = LCD_BKCOLORINDEX;
+		RGB_COLOR temp = LCD_BKCOLORINDEX;
 		LCD_BKCOLORINDEX = LCD_COLORINDEX;
 		LCD_COLORINDEX = temp;
 	}
@@ -105,8 +105,8 @@ void LCD_SetPixelIndex(int x, int y, int ColorIndex) {
 	LCDDEV_L0_SetPixelIndex(x, y, ColorIndex);
 }
 
-LCD_COLOR LCD_GetPixelColor(int x, int y) {
-	LCD_RECT r;
+RGB_COLOR LCD_GetPixelColor(int x, int y) {
+	GUI_RECT r;
 	LCDDEV_L0_GetRect(&r);
 	if (x < r.x0) {
 		return 0;
@@ -158,8 +158,8 @@ void LCD_FillRect(int x0, int y0, int x1, int y1) {
 
 void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize, int xMul, int yMul,
 					int BitsPerPixel, int BytesPerLine,
-					const U8 GUI_UNI_PTR *pPixel, const LCD_PIXELINDEX *pTrans) {
-	U8  Data = 0;
+					const uint8_t GUI_UNI_PTR *pPixel, const RGB_COLOR *pTrans) {
+	uint8_t  Data = 0;
 	int x1, y1;
 	/* Handle rotation if necessary */
 	/* Handle the optional Y-magnification */
@@ -230,9 +230,9 @@ void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize, int xMul, int yMul,
 			if ((yMax >= GUI_Context.ClipRect.y0) && (y <= GUI_Context.ClipRect.y1)) {
 				int BitsLeft = 0;
 				int xi;
-				const U8 GUI_UNI_PTR *pDataLine = pPixel;
+				const uint8_t GUI_UNI_PTR *pDataLine = pPixel;
 				for (x = x0, xi = 0; xi < xsize; xi++, x += xMul) {
-					U8  Index;
+					uint8_t  Index;
 					if (!BitsLeft) {
 						Data = *pDataLine++;
 						BitsLeft = 8;
@@ -241,7 +241,7 @@ void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize, int xMul, int yMul,
 					Data <<= BitsPerPixel;
 					BitsLeft -= BitsPerPixel;
 					if (Index || ((GUI_Context.DrawMode & LCD_DRAWMODE_TRANS) == 0)) {
-						LCD_PIXELINDEX  OldColor = LCD_COLORINDEX;
+						RGB_COLOR  OldColor = LCD_COLORINDEX;
 						if (pTrans) {
 							LCD_COLORINDEX = *(pTrans + Index);
 						}

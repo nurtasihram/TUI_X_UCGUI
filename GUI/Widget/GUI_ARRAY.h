@@ -6,11 +6,11 @@ typedef enum {
   GUI_ARRAY_STATE_DELETED
 } GUI_ARRAY_STATE;
 typedef struct {
-  U16 NumItems;
+  uint16_t NumItems;
   WM_HMEM haHandle;   /* Handle to buffer holding handles */
-  #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
+#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
     GUI_ARRAY_STATE InitState;
-  #endif
+#endif
 } GUI_ARRAY;
 int      GUI_ARRAY_AddItem        (GUI_ARRAY* pThis, const void *pNew, int Len);
 void     GUI_ARRAY_Delete         (GUI_ARRAY* pThis);
@@ -27,9 +27,9 @@ void*    GUI_ARRAY_ResizeItem     (GUI_ARRAY* pThis, unsigned int Index, int Len
 #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
   void GUI_ARRAY_Create (      GUI_ARRAY * pThis);
   void GUI_ARRAY_Check  (const GUI_ARRAY * pThis);
-  #define GUI_ARRAY_CREATE(pThis) GUI_ARRAY_Create(pThis)
-  #define GUI_ARRAY_CHECK(pThis)  GUI_ARRAY_Check(pThis)
+#define GUI_ARRAY_CREATE(pThis) GUI_ARRAY_Create(pThis)
+#define GUI_ARRAY_CHECK(pThis)  GUI_ARRAY_Check(pThis)
 #else
-  #define GUI_ARRAY_CREATE(pThis)
-  #define GUI_ARRAY_CHECK(pThis)
+#define GUI_ARRAY_CREATE(pThis)
+#define GUI_ARRAY_CHECK(pThis)
 #endif

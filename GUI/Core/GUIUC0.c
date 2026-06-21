@@ -13,7 +13,7 @@
 *   - Byte0: First byte, msb
 *   - Byte1: Last  byte, lsb
 */
-void GUI_UC2DB(U16 Code, U8* pOut) {
+void GUI_UC2DB(uint16_t Code, uint8_t* pOut) {
 /* move regular ASCII to (unused) 0xE000-0xE0ff area */
   if (Code < 0x100) {
     if (Code !=0)  /* end marker ? */
@@ -38,15 +38,15 @@ void GUI_UC2DB(U16 Code, U8* pOut) {
 *   - Byte0: First byte, msb
 *   - Byte1: Last  byte, lsb
 */
-U16 GUI_DB2UC(U8 Byte0, U8 Byte1) {
+uint16_t GUI_DB2UC(uint8_t Byte0, uint8_t Byte1) {
   if (Byte0==0)
     return 0;
   if ((Byte0&0xfe) == 0xe0) {
     if (Byte0 == 0xe0)        /* ASCII */
       return Byte1;
-    return ((U16)Byte1)<<8;   /* low byte was zero */
+    return ((uint16_t)Byte1)<<8;   /* low byte was zero */
   }
-  return Byte1 | (((U16)Byte0)<<8);
+  return Byte1 | (((uint16_t)Byte0)<<8);
 }
 
 /*************************** End of file ****************************/

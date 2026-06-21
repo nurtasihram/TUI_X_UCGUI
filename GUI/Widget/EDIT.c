@@ -101,7 +101,7 @@ static void _Paint(EDIT_Obj *pObj, EDIT_Handle hObj) {
 		const char GUI_UNI_PTR *p = pText;
 		CursorWidth = ((pObj->XSizeCursor > 0) ? (pObj->XSizeCursor) : (1));
 		if (pText) {
-			U16 Char;
+			uint16_t Char;
 			int i;
 			//  pObj->SelSize = 3;	//houhh 20061023...
 			if ((pObj->EditMode != GUI_EDIT_MODE_INSERT) || (pObj->SelSize)) {
@@ -194,7 +194,7 @@ void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
 			}
 			else {
 				int i, x, xLenChar;
-				U16 Char;
+				uint16_t Char;
 				for (i = 0, x = 0; (i < NumChars) && (x < xPos); i++) {
 					Char = GUI_UC__GetCharCodeInc(&pText);
 					xLenChar = GUI_GetCharDistX(Char);
@@ -307,7 +307,7 @@ static void _DeleteChar(EDIT_Handle hObj, EDIT_Obj *pObj) {
 *
 * Create space at the current cursor position and inserts a character.
 */
-static int _InsertChar(EDIT_Handle hObj, EDIT_Obj *pObj, U16 Char) {
+static int _InsertChar(EDIT_Handle hObj, EDIT_Obj *pObj, uint16_t Char) {
 	if (_IsCharsAvailable(pObj, 1)) {
 		int BytesNeeded;
 		BytesNeeded = GUI_UC__CalcSizeOfChar(Char);
@@ -325,8 +325,8 @@ static int _InsertChar(EDIT_Handle hObj, EDIT_Obj *pObj, U16 Char) {
 	}
 	return 0;
 }
-U16 EDIT__GetCurrentChar(EDIT_Obj *pObj) {
-	U16 Char = 0;
+uint16_t EDIT__GetCurrentChar(EDIT_Obj *pObj) {
+	uint16_t Char = 0;
 	if (pObj->hpText) {
 		const char *pText;
 		pText = (const char *)GUI_ALLOC_h2p(pObj->hpText);
@@ -369,16 +369,16 @@ static void _OnTouch(EDIT_Handle hObj, EDIT_Obj *pObj, WM_MESSAGE *pMsg) {
 	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
 		static int StartPress = 0;	//houhh 20061023...
 		if (pState->Pressed) {
-			GUI_DEBUG_LOG1("EDIT__Callback(WM_TOUCH, Pressed, Handle %d)\n", 1);
+			GUI_DEBUG_LOG("EDIT__Callback(WM_TOUCH, Pressed, Handle %d)\n", 1);
 			EDIT_SetCursorAtPixel(hObj, pState->x);
 			StartPress = pObj->CursorPos;	//houhh 20061023...
 		}
 		else {
-			GUI_DEBUG_LOG1("EDIT__Callback(WM_TOUCH, Released, Handle %d)\n", 1);
+			GUI_DEBUG_LOG("EDIT__Callback(WM_TOUCH, Released, Handle %d)\n", 1);
 		}
 	}
 	else {
-		GUI_DEBUG_LOG1("_EDIT_Callback(WM_TOUCH, Moved out, Handle %d)\n", 1);
+		GUI_DEBUG_LOG("_EDIT_Callback(WM_TOUCH, Moved out, Handle %d)\n", 1);
 	}
 }
 static void EDIT__Callback(WM_MESSAGE *pMsg) {
@@ -463,7 +463,7 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 					case GUI_KEY_UP:
 						if (pObj->hpText) {
 							char *pText;
-							U16 Char;
+							uint16_t Char;
 							pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
 							pText += GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
 							Char = GUI_UC_GetCharCode(pText);
@@ -476,7 +476,7 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 					case GUI_KEY_DOWN:
 						if (pObj->hpText) {
 							char *pText;
-							U16 Char;
+							uint16_t Char;
 							pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
 							pText += GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
 							Char = GUI_UC_GetCharCode(pText);
@@ -539,7 +539,7 @@ void EDIT_SetFont(EDIT_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
 	}
 
 }
-void EDIT_SetBkColor(EDIT_Handle hObj, unsigned int Index, GUI_COLOR color) {
+void EDIT_SetBkColor(EDIT_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	EDIT_Obj *pObj;
 	if (hObj == 0)
 		return;
@@ -553,7 +553,7 @@ void EDIT_SetBkColor(EDIT_Handle hObj, unsigned int Index, GUI_COLOR color) {
 	}
 
 }
-void EDIT_SetTextColor(EDIT_Handle hObj, unsigned int Index, GUI_COLOR color) {
+void EDIT_SetTextColor(EDIT_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	EDIT_Obj *pObj;
 	if (hObj == 0)
 		return;
@@ -629,9 +629,9 @@ void EDIT_GetText(EDIT_Handle hObj, char *sDest, int MaxLen) {
 		}
 	}
 }
-I32  EDIT_GetValue(EDIT_Handle hObj) {
+int32_t  EDIT_GetValue(EDIT_Handle hObj) {
 	EDIT_Obj *pObj;
-	I32 r = 0;
+	int32_t r = 0;
 	if (hObj) {
 
 		pObj = EDIT_H2P(hObj);
@@ -640,7 +640,7 @@ I32  EDIT_GetValue(EDIT_Handle hObj) {
 	}
 	return r;
 }
-void EDIT_SetValue(EDIT_Handle hObj, I32 Value) {
+void EDIT_SetValue(EDIT_Handle hObj, int32_t Value) {
 	EDIT_Obj *pObj;
 	if (hObj) {
 
@@ -652,7 +652,7 @@ void EDIT_SetValue(EDIT_Handle hObj, I32 Value) {
 		if (Value > pObj->Max) {
 			Value = pObj->Max;
 		}
-		if (pObj->CurrentValue != (U32)Value) {
+		if (pObj->CurrentValue != (uint32_t)Value) {
 			pObj->CurrentValue = Value;
 			if (pObj->pfUpdateBuffer) {
 				pObj->pfUpdateBuffer(hObj);
@@ -732,25 +732,25 @@ void EDIT_SetDefaultTextAlign(int Align) {
 int EDIT_GetDefaultTextAlign(void) {
 	return EDIT__DefaultProps.Align;
 }
-void EDIT_SetDefaultTextColor(unsigned int Index, GUI_COLOR Color) {
+void EDIT_SetDefaultTextColor(unsigned int Index, RGB_COLOR Color) {
 	if (Index <= GUI_COUNTOF(EDIT__DefaultProps.aTextColor)) {
 		EDIT__DefaultProps.aTextColor[Index] = Color;
 	}
 }
-void EDIT_SetDefaultBkColor(unsigned int Index, GUI_COLOR Color) {
+void EDIT_SetDefaultBkColor(unsigned int Index, RGB_COLOR Color) {
 	if (Index <= GUI_COUNTOF(EDIT__DefaultProps.aBkColor)) {
 		EDIT__DefaultProps.aBkColor[Index] = Color;
 	}
 }
-GUI_COLOR EDIT_GetDefaultTextColor(unsigned int Index) {
-	GUI_COLOR Color = 0;
+RGB_COLOR EDIT_GetDefaultTextColor(unsigned int Index) {
+	RGB_COLOR Color = 0;
 	if (Index <= GUI_COUNTOF(EDIT__DefaultProps.aTextColor)) {
 		Color = EDIT__DefaultProps.aTextColor[Index];
 	}
 	return Color;
 }
-GUI_COLOR EDIT_GetDefaultBkColor(unsigned int Index) {
-	GUI_COLOR Color = 0;
+RGB_COLOR EDIT_GetDefaultBkColor(unsigned int Index) {
+	RGB_COLOR Color = 0;
 	if (Index <= GUI_COUNTOF(EDIT__DefaultProps.aBkColor)) {
 		Color = EDIT__DefaultProps.aBkColor[Index];
 	}

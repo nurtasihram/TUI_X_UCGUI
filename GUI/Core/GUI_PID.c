@@ -7,7 +7,7 @@
 #include "GUI_Protected.h"
 
 #if GUI_WINSUPPORT
-  #include "WM.h"
+#include "WM.h"
 #endif
 
 static GUI_PID_STATE _State;
@@ -21,9 +21,9 @@ static GUI_PID_STATE _State;
 *   the PID handler.
 */
 static void _PID_Load(void) {
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     WM_pfHandlePID = WM_HandlePID;
-  #endif
+#endif
 }
 
 int GUI_PID_GetState(GUI_PID_STATE *pState) {

@@ -3,7 +3,7 @@
 #include "GUI.h"
 #include "LCD_Protected.h"    /* private modul definitions & config */
 
-GUI_CONST_STORAGE U8 LCD_aMirror[256] = {
+GUI_CONST_STORAGE uint8_t LCD_aMirror[256] = {
   ________, X_______, _X______, XX______, __X_____, X_X_____, _XX_____, XXX_____,
   ___X____, X__X____, _X_X____, XX_X____, __XX____, X_XX____, _XXX____, XXXX____,
   ____X___, X___X___, _X__X___, XX__X___, __X_X___, X_X_X___, _XX_X___, XXX_X___,

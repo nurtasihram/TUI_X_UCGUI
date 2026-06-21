@@ -248,10 +248,10 @@ CHECKBOX_Handle CHECKBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInf
 void CHECKBOX_SetDefaultSpacing(int Spacing) {
 	CHECKBOX__DefaultProps.Spacing = Spacing;
 }
-void CHECKBOX_SetDefaultTextColor(GUI_COLOR Color) {
+void CHECKBOX_SetDefaultTextColor(RGB_COLOR Color) {
 	CHECKBOX__DefaultProps.TextColor = Color;
 }
-void CHECKBOX_SetDefaultBkColor(GUI_COLOR Color) {
+void CHECKBOX_SetDefaultBkColor(RGB_COLOR Color) {
 	CHECKBOX__DefaultProps.BkColor = Color;
 }
 void CHECKBOX_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
@@ -263,10 +263,10 @@ void CHECKBOX_SetDefaultAlign(int Align) {
 int CHECKBOX_GetDefaultSpacing(void) {
 	return CHECKBOX__DefaultProps.Spacing;
 }
-GUI_COLOR CHECKBOX_GetDefaultTextColor(void) {
+RGB_COLOR CHECKBOX_GetDefaultTextColor(void) {
 	return CHECKBOX__DefaultProps.TextColor;
 }
-GUI_COLOR CHECKBOX_GetDefaultBkColor(void) {
+RGB_COLOR CHECKBOX_GetDefaultBkColor(void) {
 	return CHECKBOX__DefaultProps.BkColor;
 }
 const GUI_FONT GUI_UNI_PTR *CHECKBOX_GetDefaultFont(void) {
@@ -291,7 +291,7 @@ int CHECKBOX_IsChecked(CHECKBOX_Handle hObj) {
 	return (CHECKBOX_GetState(hObj) == 1) ? 1 : 0;
 }
 
-void CHECKBOX_SetBkColor(CHECKBOX_Handle hObj, GUI_COLOR Color) {
+void CHECKBOX_SetBkColor(CHECKBOX_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		CHECKBOX_Obj *pObj;
 		pObj = CHECKBOX_H2P(hObj);
@@ -338,8 +338,8 @@ void CHECKBOX_SetImage(CHECKBOX_Handle hObj, const GUI_BITMAP *pBitmap, unsigned
 }
 void CHECKBOX_SetNumStates(CHECKBOX_Handle hObj, unsigned NumStates) {
 	/* Colors */
-	static const GUI_COLOR _aColorDisabled[] = { CHECKBOX_FGCOLOR0_DEFAULT, CHECKBOX_BKCOLOR0_DEFAULT };
-	static const GUI_COLOR _aColorEnabled[] = { CHECKBOX_FGCOLOR1_DEFAULT, CHECKBOX_BKCOLOR1_DEFAULT };
+	static const RGB_COLOR _aColorDisabled[] = { CHECKBOX_FGCOLOR0_DEFAULT, CHECKBOX_BKCOLOR0_DEFAULT };
+	static const RGB_COLOR _aColorEnabled[] = { CHECKBOX_FGCOLOR1_DEFAULT, CHECKBOX_BKCOLOR1_DEFAULT };
 
 	/* Palettes */
 	static const GUI_LOGPALETTE _PalCheckDisabled = {
@@ -433,7 +433,7 @@ void CHECKBOX_SetTextAlign(CHECKBOX_Handle hObj, int Align) {
 	}
 }
 
-void CHECKBOX_SetTextColor(CHECKBOX_Handle hObj, GUI_COLOR Color) {
+void CHECKBOX_SetTextColor(CHECKBOX_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		CHECKBOX_Obj *pObj;
 		pObj = CHECKBOX_H2P(hObj);
@@ -446,8 +446,8 @@ void CHECKBOX_SetTextColor(CHECKBOX_Handle hObj, GUI_COLOR Color) {
 
 
 /* Colors */
-static const GUI_COLOR _aColorDisabled[] = { CHECKBOX_FGCOLOR0_DEFAULT, CHECKBOX_BKCOLOR0_DEFAULT };
-static const GUI_COLOR _aColorEnabled[] = { CHECKBOX_FGCOLOR1_DEFAULT, CHECKBOX_BKCOLOR1_DEFAULT };
+static const RGB_COLOR _aColorDisabled[] = { CHECKBOX_FGCOLOR0_DEFAULT, CHECKBOX_BKCOLOR0_DEFAULT };
+static const RGB_COLOR _aColorEnabled[] = { CHECKBOX_FGCOLOR1_DEFAULT, CHECKBOX_BKCOLOR1_DEFAULT };
 /* Palettes */
 static const GUI_LOGPALETTE _PalCheckDisabled = {
   2,	/* number of entries */

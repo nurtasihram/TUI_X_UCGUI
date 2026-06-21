@@ -24,13 +24,13 @@ MULTIEDIT_HANDLE MULTIEDIT_Create        (int x0, int y0, int xsize, int ysize, 
                                           int BufferSize);
 MULTIEDIT_HANDLE MULTIEDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo,
                                           WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
-int  MULTIEDIT_AddKey           (MULTIEDIT_HANDLE hObj, U16 Key);
+int  MULTIEDIT_AddKey           (MULTIEDIT_HANDLE hObj, uint16_t Key);
 void MULTIEDIT_GetPrompt        (MULTIEDIT_HANDLE hObj, char* sDest, int MaxNumChars);
 int  MULTIEDIT_GetTextSize      (MULTIEDIT_HANDLE hObj);
 void MULTIEDIT_GetText          (MULTIEDIT_HANDLE hObj, char* sDest, int MaxNumChars);
 void MULTIEDIT_SetAutoScrollH   (MULTIEDIT_HANDLE hObj, int OnOff);
 void MULTIEDIT_SetAutoScrollV   (MULTIEDIT_HANDLE hObj, int OnOff);
-void MULTIEDIT_SetBkColor       (MULTIEDIT_HANDLE hObj, unsigned Index, GUI_COLOR color);
+void MULTIEDIT_SetBkColor       (MULTIEDIT_HANDLE hObj, unsigned Index, RGB_COLOR color);
 void MULTIEDIT_SetCursorCharPos (MULTIEDIT_HANDLE hObj, int x, int y);       /* Not yet implemented */
 void MULTIEDIT_SetCursorPixelPos(MULTIEDIT_HANDLE hObj, int x, int y);       /* Not yet implemented */
 void MULTIEDIT_SetCursorOffset  (MULTIEDIT_HANDLE hObj, int Offset);
@@ -43,7 +43,7 @@ void MULTIEDIT_SetPrompt        (MULTIEDIT_HANDLE hObj, const char* sPrompt);
 void MULTIEDIT_SetReadOnly      (MULTIEDIT_HANDLE hObj, int OnOff);
 void MULTIEDIT_SetPasswordMode  (MULTIEDIT_HANDLE hObj, int OnOff);
 void MULTIEDIT_SetText          (MULTIEDIT_HANDLE hObj, const char* s);
-void MULTIEDIT_SetTextColor     (MULTIEDIT_HANDLE hObj, unsigned Index, GUI_COLOR color);
+void MULTIEDIT_SetTextColor     (MULTIEDIT_HANDLE hObj, unsigned Index, RGB_COLOR color);
 void MULTIEDIT_SetWrapNone      (MULTIEDIT_HANDLE hObj);
 void MULTIEDIT_SetWrapChar      (MULTIEDIT_HANDLE hObj);
 void MULTIEDIT_SetWrapWord      (MULTIEDIT_HANDLE hObj);

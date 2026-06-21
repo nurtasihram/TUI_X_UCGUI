@@ -237,7 +237,7 @@ public:
 	Pen(Null) {}
 	Pen(Pen &p) : super(p) {}
 	Pen(Pen &&p) : super(p) {}
-	
+
 	using super::operator=;
 
 	static inline Pen White() reflect_as((HPEN)::GetStockObject(WHITE_PEN));
@@ -310,7 +310,7 @@ public:
 	Brush(Null) {}
 	Brush(Brush &b) : super(b) {}
 	Brush(Brush &&b) : super(b) {}
-	
+
 	using super::operator=;
 
 	static inline Brush SysColor(WX::SysColor sc) assert_reflect_as(auto hbr = GetSysColorBrush(sc.yield()), hbr);
@@ -881,7 +881,7 @@ public:
 
 	inline auto&Radio(UINT idFirst, UINT idLast, UINT idCheck) assert_reflect_as_self(CheckMenuRadioItem(hMenu, idFirst, idLast, idCheck, MF_BYCOMMAND));
 	inline auto&RadioIndex(UINT indFirst, UINT indLast, UINT indCheck) assert_reflect_as_self(CheckMenuRadioItem(hMenu, indFirst, indLast, indCheck, MF_BYPOSITION));
-	
+
 	enum_flags(Tracks, UINT,
 		LeftButton          = TPM_LEFTBUTTON,
 		RightButton         = TPM_RIGHTBUTTON,
@@ -1038,7 +1038,7 @@ enum_class(CharSet, int,
 	Russian        = RUSSIAN_CHARSET,
 	Mac            = MAC_CHARSET,
 	Baltic         = BALTIC_CHARSET);
-enum_class(OutPrecis, BYTE, 
+enum_class(OutPrecis, BYTE,
 	Default        = OUT_DEFAULT_PRECIS,
 	String         = OUT_STRING_PRECIS,
 	Character      = OUT_CHARACTER_PRECIS,
@@ -1050,7 +1050,7 @@ enum_class(OutPrecis, BYTE,
 	Outline        = OUT_OUTLINE_PRECIS,
 	ScreenOutline  = OUT_SCREEN_OUTLINE_PRECIS,
 	PostScriptOnly = OUT_PS_ONLY_PRECIS);
-enum_class(ClipPrecis, BYTE, 
+enum_class(ClipPrecis, BYTE,
 	Default        = CLIP_DEFAULT_PRECIS,
 	Character      = CLIP_CHARACTER_PRECIS,
 	Stroke         = CLIP_STROKE_PRECIS,

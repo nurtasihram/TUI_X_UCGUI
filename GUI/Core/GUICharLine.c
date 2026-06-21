@@ -10,14 +10,10 @@ static void _DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT
     if (GUI_RectsIntersect(GUI_Context.pClipRect_HL, pRect) == 0)
       return;
   }
-  #if GUI_COMPILER_SUPPORTS_FP
   if (GUI_Context.pAFont->pafEncode) {
     GUI_Context.pAFont->pafEncode->pfDispLine(s, MaxNumChars);
   } else {
-  #else
-  {
-  #endif
-    U16 Char;
+    uint16_t Char;
     while (--MaxNumChars >= 0) {
       Char = GUI_UC__GetCharCodeInc(&s);
       GUI_Context.pAFont->pfDispChar(Char);
@@ -31,13 +27,11 @@ static void _DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT
 int GUI__GetLineNumChars(const char GUI_UNI_PTR *s, int MaxNumChars) {
   int NumChars = 0;
   if (s) {
-    #if GUI_COMPILER_SUPPORTS_FP
       if (GUI_Context.pAFont->pafEncode) {
         return GUI_Context.pAFont->pafEncode->pfGetLineLen(s, MaxNumChars);
       }
-    #endif
     for (; NumChars < MaxNumChars; NumChars++) {
-      U16 Data = GUI_UC__GetCharCodeInc(&s);
+      uint16_t Data = GUI_UC__GetCharCodeInc(&s);
       if ((Data == 0) || (Data == '\n')) {
         break;
       }
@@ -55,12 +49,10 @@ int GUI__GetLineNumChars(const char GUI_UNI_PTR *s, int MaxNumChars) {
 int GUI__GetLineDistX(const char GUI_UNI_PTR *s, int MaxNumChars) {
   int Dist = 0;
   if (s) {
-    U16 Char;
-    #if GUI_COMPILER_SUPPORTS_FP
+    uint16_t Char;
       if (GUI_Context.pAFont->pafEncode) {
         return GUI_Context.pAFont->pafEncode->pfGetLineDistX(s, MaxNumChars);
       }
-    #endif
     while (--MaxNumChars >= 0) {
       Char  = GUI_UC__GetCharCodeInc(&s);
       Dist += GUI_GetCharDistX(Char);
@@ -73,19 +65,19 @@ void GUI__DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT* p
   GUI_RECT r;
   {
     r = *pr;
-    #if GUI_WINSUPPORT
+#if GUI_WINSUPPORT
     WM_ADDORG(r.x0, r.y0);
     WM_ADDORG(r.x1, r.y1);
     WM_ITERATE_START(&r) {
-    #endif
+#endif
       GUI_Context.DispPosX = r.x0;
       GUI_Context.DispPosY = r.y0;
       /* Do the actual drawing via routine call. */
       _DispLine(s, MaxNumChars, &r);
-    #if GUI_WINSUPPORT
+#if GUI_WINSUPPORT
     } WM_ITERATE_END();
     WM_SUBORG(GUI_Context.DispPosX, GUI_Context.DispPosY);
-    #endif
+#endif
   }
 }
 

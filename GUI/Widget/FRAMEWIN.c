@@ -62,7 +62,7 @@ FRAMEWIN_PROPS FRAMEWIN__DefaultProps = {
   FRAMEWIN_BORDER_DEFAULT,
   FRAMEWIN_IBORDER_DEFAULT
 };
-static I16 FRAMEWIN__MinVisibility = 5;
+static int16_t FRAMEWIN__MinVisibility = 5;
 static void _SetActive(FRAMEWIN_Handle hObj, int State) {
 	FRAMEWIN_Obj *pObj;
 	pObj = FRAMEWIN_H2P(hObj);
@@ -535,22 +535,22 @@ void FRAMEWIN_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
 const GUI_FONT GUI_UNI_PTR *FRAMEWIN_GetDefaultFont(void) {
 	return FRAMEWIN__DefaultProps.pFont;
 }
-void FRAMEWIN_SetDefaultBarColor(unsigned Index, GUI_COLOR Color) {
+void FRAMEWIN_SetDefaultBarColor(unsigned Index, RGB_COLOR Color) {
 	if (Index < GUI_COUNTOF(FRAMEWIN__DefaultProps.aBarColor)) {
 		FRAMEWIN__DefaultProps.aBarColor[Index] = Color;
 	}
 }
-GUI_COLOR FRAMEWIN_GetDefaultBarColor(unsigned Index) {
-	GUI_COLOR Color = 0;
+RGB_COLOR FRAMEWIN_GetDefaultBarColor(unsigned Index) {
+	RGB_COLOR Color = 0;
 	if (Index < GUI_COUNTOF(FRAMEWIN__DefaultProps.aBarColor)) {
 		Color = FRAMEWIN__DefaultProps.aBarColor[Index];
 	}
 	return Color;
 }
-void FRAMEWIN_SetDefaultClientColor(GUI_COLOR Color) {
+void FRAMEWIN_SetDefaultClientColor(RGB_COLOR Color) {
 	FRAMEWIN__DefaultProps.ClientColor = Color;
 }
-GUI_COLOR FRAMEWIN_GetDefaultClientColor(void) {
+RGB_COLOR FRAMEWIN_GetDefaultClientColor(void) {
 	return FRAMEWIN__DefaultProps.ClientColor;
 }
 void FRAMEWIN_SetDefaultTitleHeight(int Height) {
@@ -565,13 +565,13 @@ void FRAMEWIN_SetDefaultBorderSize(int DefaultBorderSize) {
 int FRAMEWIN_GetDefaultBorderSize(void) {
 	return FRAMEWIN__DefaultProps.BorderSize;
 }
-void FRAMEWIN_SetDefaultTextColor(unsigned Index, GUI_COLOR Color) {
+void FRAMEWIN_SetDefaultTextColor(unsigned Index, RGB_COLOR Color) {
 	if (Index < GUI_COUNTOF(FRAMEWIN__DefaultProps.aTextColor)) {
 		FRAMEWIN__DefaultProps.aTextColor[Index] = Color;
 	}
 }
-GUI_COLOR FRAMEWIN_GetDefaultTextColor(unsigned Index) {
-	GUI_COLOR Color = 0;
+RGB_COLOR FRAMEWIN_GetDefaultTextColor(unsigned Index) {
+	RGB_COLOR Color = 0;
 	if (Index < GUI_COUNTOF(FRAMEWIN__DefaultProps.aTextColor)) {
 		Color = FRAMEWIN__DefaultProps.aTextColor[Index];
 	}
@@ -752,7 +752,7 @@ void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
 	}
 }
 
-void FRAMEWIN_SetBarColor(FRAMEWIN_Handle hObj, unsigned Index, GUI_COLOR Color) {
+void FRAMEWIN_SetBarColor(FRAMEWIN_Handle hObj, unsigned Index, RGB_COLOR Color) {
 	if (hObj) {
 		FRAMEWIN_Obj *pObj;
 		pObj = FRAMEWIN_H2P(hObj);
@@ -762,7 +762,7 @@ void FRAMEWIN_SetBarColor(FRAMEWIN_Handle hObj, unsigned Index, GUI_COLOR Color)
 		}
 	}
 }
-void FRAMEWIN_SetTextColor(FRAMEWIN_Handle hObj, GUI_COLOR Color) {
+void FRAMEWIN_SetTextColor(FRAMEWIN_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		FRAMEWIN_Obj *pObj;
 		int i;
@@ -773,7 +773,7 @@ void FRAMEWIN_SetTextColor(FRAMEWIN_Handle hObj, GUI_COLOR Color) {
 		FRAMEWIN_Invalidate(hObj);
 	}
 }
-void FRAMEWIN_SetTextColorEx(FRAMEWIN_Handle hObj, unsigned Index, GUI_COLOR Color) {
+void FRAMEWIN_SetTextColorEx(FRAMEWIN_Handle hObj, unsigned Index, RGB_COLOR Color) {
 	if (hObj) {
 		FRAMEWIN_Obj *pObj;
 		pObj = FRAMEWIN_H2P(hObj);
@@ -783,7 +783,7 @@ void FRAMEWIN_SetTextColorEx(FRAMEWIN_Handle hObj, unsigned Index, GUI_COLOR Col
 		}
 	}
 }
-void FRAMEWIN_SetClientColor(FRAMEWIN_Handle hObj, GUI_COLOR Color) {
+void FRAMEWIN_SetClientColor(FRAMEWIN_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		FRAMEWIN_Obj *pObj;
 		pObj = FRAMEWIN_H2P(hObj);
@@ -828,7 +828,7 @@ static int      _CaptureFlags;
 static const GUI_CURSOR GUI_UNI_PTR *_pOldCursor;
 #endif
 #if GUI_SUPPORT_CURSOR
-static GUI_CONST_STORAGE GUI_COLOR _ColorsCursor[] = {
+static GUI_CONST_STORAGE RGB_COLOR _ColorsCursor[] = {
 	 0x0000FF,0x000000,0xFFFFFF
 };
 static GUI_CONST_STORAGE GUI_LOGPALETTE _PalCursor = {

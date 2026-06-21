@@ -3,22 +3,22 @@
 #include "GUI_Protected.h"
 
 void GUI_DrawHLine(int y0, int x0, int x1) {
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     GUI_RECT r;
-  #endif
+#endif
 
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     WM_ADDORGX(x1);
     r.x0 = x0;
     r.x1 = x1;
     r.y1 = r.y0 = y0;
     WM_ITERATE_START(&r) {
-  #endif
+#endif
   LCD_HL_DrawHLine(x0, y0, x1);
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
-  #endif
+#endif
 
 }
 

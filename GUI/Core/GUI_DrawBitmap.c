@@ -20,11 +20,9 @@ void GL_DrawBitmap(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0) {
   PrevDraw = GUI_SetDrawMode(0);  /* No Get... at this point */
   GUI_SetDrawMode((pPal && pPal->HasTrans) ? (PrevDraw|GUI_DRAWMODE_TRANS) : PrevDraw &(~GUI_DRAWMODE_TRANS));
   if (pBitmap->pMethods) {
-    #if GUI_COMPILER_SUPPORTS_FP      /* Do not support this on VERY simple chips and compilers */
-      pBitmap->pMethods->pfDraw(x0, y0, pBitmap->XSize ,pBitmap->YSize, (U8 const *)pBitmap->pData, pBitmap->pPal, 1, 1);
-    #endif
+    pBitmap->pMethods->pfDraw(x0, y0, pBitmap->XSize ,pBitmap->YSize, (uint8_t const *)pBitmap->pData, pBitmap->pPal, 1, 1);
   } else {
-    const LCD_PIXELINDEX* pTrans = pBitmap->pPal ? pBitmap->pPal->pPalEntries : NULL;
+    const RGB_COLOR* pTrans = pBitmap->pPal ? pBitmap->pPal->pPalEntries : NULL;
     if (!pTrans) {
       pTrans = (pBitmap->BitsPerPixel != 1) ? NULL : &LCD_BKCOLORINDEX;
     }
@@ -40,20 +38,20 @@ void GL_DrawBitmap(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0) {
 }
 
 void GUI_DrawBitmap(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0) {
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     GUI_RECT r;
-  #endif
+#endif
 
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     r.x1 = (r.x0 = x0) + pBitmap->XSize-1;
     r.y1 = (r.y0 = y0) + pBitmap->YSize-1;
     WM_ITERATE_START(&r) {
-  #endif
+#endif
   GL_DrawBitmap(pBitmap, x0, y0);
-  #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
-  #endif
+#endif
 
 }
 

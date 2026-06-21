@@ -159,7 +159,7 @@ public:
 	ButtonSplitInfo() {}
 	ButtonSplitInfo(const BUTTON_SPLITINFO &bs) : RefStruct<BUTTON_SPLITINFO>(bs) {}
 public: // mask
-	// MKAS BCSIF_GLYPH 
+	// MKAS BCSIF_GLYPH
 public: // Property - Glyph
 //		HIMAGELIST  himlGlyph;
 public: // Property - Styles
@@ -181,7 +181,7 @@ public: // Property - Margin
 	/* W */ inline auto &Margin(LRect margin) reflect_to_self(self->margin = margin);
 	/* R */ inline LRect Margin() const reflect_as(self->margin);
 public: // Property - Align
-	enum_class(Aligns, UINT, 
+	enum_class(Aligns, UINT,
 		Left     = BUTTON_IMAGELIST_ALIGN_LEFT,
 		Right    = BUTTON_IMAGELIST_ALIGN_RIGHT,
 		Top      = BUTTON_IMAGELIST_ALIGN_TOP,
@@ -322,7 +322,7 @@ public: // Property - ThumbTop
 public: // Property - ThumbBottom
 	/* W */ inline auto &ThumbBottom(int xyThumbBottom) reflect_to_self(self->xyThumbBottom = xyThumbBottom);
 	/* R */ inline int   ThumbBottom() const reflect_as(self->xyThumbBottom);
-public: // Property - 
+public: // Property -
 	//DWORD rgstate[CCHILDREN_SCROLLBAR + 1];
 };
 BaseOf_CommCtl(class ScrollBarBase) {
@@ -558,7 +558,7 @@ public:
 			retself;
 		}
 		inline int ID() const reflect_as(idCommand);
-	public: // Property - 
+	public: // Property -
 	public:
 		inline void Delete() assert_reflect_as_self(tb.Send(TB_DELETEBUTTON, idCommand));
 
@@ -814,7 +814,7 @@ public: // Property - BandRowHeight
 #pragma endregion
 
 #pragma region Properties
-//public: // Property - 
+//public: // Property -
 //	/* W */ inline auto &Info(); // RB_GETBARINFO
 //	/* R */ inline bool  Info() const; // RB_SETBARINFO
 public: // Property - Parent

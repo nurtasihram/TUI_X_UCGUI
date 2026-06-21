@@ -43,15 +43,15 @@ static void _WriteAlphaToActiveAt(GUI_MEMDEV_Handle hMem, int Intens, int x, int
         XSize = GUI_USAGE_GetNextDirty(pUsage, &xOff, yi);
         /* Draw the partial line which needs to be drawn */
         for (; XSize; ) {
-          U8* pData;
-          pData = (U8*)GUI_MEMDEV__XY2PTREx(pDev, xOff, yi);
+          uint8_t* pData;
+          pData = (uint8_t*)GUI_MEMDEV__XY2PTREx(pDev, xOff, yi);
           do {
-            LCD_COLOR Color, BkColor;
+            RGB_COLOR Color, BkColor;
             int xPos, yPos, Index;
             if (pDev->BitsPerPixel == 8) {
               Index = *pData++;
             } else {
-              Index = *(U16*)pData;
+              Index = *(uint16_t*)pData;
               pData += 2;
             }
             Color   = Index;
@@ -73,24 +73,24 @@ static void _WriteAlphaToActiveAt(GUI_MEMDEV_Handle hMem, int Intens, int x, int
 void GUI_MEMDEV_WriteAlphaAt(GUI_MEMDEV_Handle hMem, int Alpha, int x, int y) {
   if (hMem) {
     GUI_MEMDEV* pDevData;
-    #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
       GUI_RECT r;
-    #endif
+#endif
 
     pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
     if (x == GUI_POS_AUTO) {
       x = pDevData->x0;
       y = pDevData->y0;
     }
-    #if (GUI_WINSUPPORT)
+#if (GUI_WINSUPPORT)
       r.x1 = (r.x0 = x) + pDevData->XSize-1;
       r.y1 = (r.y0 = y) + pDevData->YSize-1;;
       WM_ITERATE_START(&r) {
       _WriteAlphaToActiveAt(hMem, Alpha, x,y);
       } WM_ITERATE_END();
-    #else
+#else
       _WriteAlphaToActiveAt(hMem, Alpha, x,y);
-    #endif
+#endif
 
   }
 }

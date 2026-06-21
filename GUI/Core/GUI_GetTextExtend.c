@@ -6,7 +6,7 @@ void GUI_GetTextExtend(GUI_RECT* pRect, const char GUI_UNI_PTR * s, int MaxNumCh
   int xMax      = 0;
   int NumLines  = 0;
   int LineSizeX = 0;
-  U16 Char;
+  uint16_t Char;
   pRect->x0 = GUI_Context.DispPosX;
   pRect->y0 = GUI_Context.DispPosY;
   while (MaxNumChars--) {

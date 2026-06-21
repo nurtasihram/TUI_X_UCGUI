@@ -914,23 +914,23 @@ void LISTBOX_SetDefaultScrollStepH(int Value) {
 int LISTBOX_GetDefaultScrollStepH(void) {
 	return LISTBOX_DefaultProps.ScrollStepH;
 }
-void LISTBOX_SetDefaultBkColor(unsigned Index, GUI_COLOR Color) {
+void LISTBOX_SetDefaultBkColor(unsigned Index, RGB_COLOR Color) {
 	if (Index < GUI_COUNTOF(LISTBOX_DefaultProps.aBackColor)) {
 		LISTBOX_DefaultProps.aBackColor[Index] = Color;
 	}
 }
-GUI_COLOR LISTBOX_GetDefaultBkColor(unsigned Index) {
+RGB_COLOR LISTBOX_GetDefaultBkColor(unsigned Index) {
 	if (Index < GUI_COUNTOF(LISTBOX_DefaultProps.aBackColor)) {
 		return LISTBOX_DefaultProps.aBackColor[Index];
 	}
 	return GUI_INVALID_COLOR;
 }
-void LISTBOX_SetDefaultTextColor(unsigned Index, GUI_COLOR Color) {
+void LISTBOX_SetDefaultTextColor(unsigned Index, RGB_COLOR Color) {
 	if (Index < GUI_COUNTOF(LISTBOX_DefaultProps.aTextColor)) {
 		LISTBOX_DefaultProps.aTextColor[Index] = Color;
 	}
 }
-GUI_COLOR LISTBOX_GetDefaultTextColor(unsigned Index) {
+RGB_COLOR LISTBOX_GetDefaultTextColor(unsigned Index) {
 	if (Index < GUI_COUNTOF(LISTBOX_DefaultProps.aTextColor)) {
 		return LISTBOX_DefaultProps.aTextColor[Index];
 	}
@@ -1268,7 +1268,7 @@ void LISTBOX_SetAutoScrollV(LISTBOX_Handle hObj, int State) {
 	}
 }
 
-void LISTBOX_SetBkColor(LISTBOX_Handle hObj, unsigned Index, GUI_COLOR color) {
+void LISTBOX_SetBkColor(LISTBOX_Handle hObj, unsigned Index, RGB_COLOR color) {
 	LISTBOX_Obj *pObj;
 	if (hObj) {
 		if ((unsigned int)Index < GUI_COUNTOF(pObj->Props.aBackColor)) {
@@ -1340,8 +1340,8 @@ void LISTBOX_SetString(LISTBOX_Handle hObj, const char *s, unsigned int Index) {
 	}
 }
 
-GUI_COLOR LISTBOX_SetTextColor(LISTBOX_Handle hObj, unsigned int Index, GUI_COLOR Color) {
-	GUI_COLOR r = GUI_INVALID_COLOR;
+RGB_COLOR LISTBOX_SetTextColor(LISTBOX_Handle hObj, unsigned int Index, RGB_COLOR Color) {
+	RGB_COLOR r = GUI_INVALID_COLOR;
 	if (hObj) {
 		LISTBOX_Obj *pObj;
 		if (Index < GUI_COUNTOF(pObj->Props.aBackColor)) {

@@ -27,18 +27,18 @@ Purpose     : Implementation of memory devices
 
 void* GUI_MEMDEV__XY2PTR(int x, int y) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
-  U8 *pData = (U8*)(pDev + 1);
-  #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
+  uint8_t *pData = (uint8_t*)(pDev + 1);
+#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
     if ((x >= pDev->x0+pDev->XSize) | (x<pDev->x0) | (y >= pDev->y0+pDev->YSize) | (y<pDev->y0)) {
-      GUI_DEBUG_ERROROUT2("GUI_MEMDEV__XY2PTR: parameters out of bounds",x,y);
+      GUI_DEBUG_ERROROUT("GUI_MEMDEV__XY2PTR: parameters out of bounds",x,y);
     }
-  #endif
+#endif
   pData += (y - pDev->y0) * pDev->BytesPerLine;
   return pData + (x - pDev->x0) * (pDev->BitsPerPixel / 8);
 }
 
 void* GUI_MEMDEV__XY2PTREx(GUI_MEMDEV* pDev, int x, int y) {
-  U8 *pData = (U8*)(pDev + 1);
+  uint8_t *pData = (uint8_t*)(pDev + 1);
   pData += y * pDev->BytesPerLine;
   return pData + x * (pDev->BitsPerPixel / 8);
 }

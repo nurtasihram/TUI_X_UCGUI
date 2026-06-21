@@ -10,35 +10,27 @@ int GUI_UC_GetCharSize(const char GUI_UNI_PTR * s) {
   return r;
 }
 
-U16 GUI_UC_GetCharCode(const char GUI_UNI_PTR * s) {
-  U16 r;
+uint16_t GUI_UC_GetCharCode(const char GUI_UNI_PTR * s) {
+  uint16_t r;
 
   r =  GUI_Context.pUC_API->pfGetCharCode(s);
 
   return r;
 }
 
-int GUI_UC_Encode(char* s, U16 Char) {
-  #if GUI_COMPILER_SUPPORTS_FP
+int GUI_UC_Encode(char* s, uint16_t Char) {
     int r;
-
     r = GUI_Context.pUC_API->pfEncode(s, Char);
-
     return r;
-  #else
-    GUI_USE_PARA(s);
-    GUI_USE_PARA(Char);
-    return 0;
-  #endif
 }
 
-int GUI_UC__CalcSizeOfChar(U16 Char) {
+int GUI_UC__CalcSizeOfChar(uint16_t Char) {
   return GUI_Context.pUC_API->pfCalcSizeOfChar(Char);
 }
 
-U16 GUI_UC__GetCharCodeInc(const char GUI_UNI_PTR ** ps) {
+uint16_t GUI_UC__GetCharCodeInc(const char GUI_UNI_PTR ** ps) {
   const char GUI_UNI_PTR * s;
-  U16 r;
+  uint16_t r;
   s   = *ps;
   r   = GUI_UC__GetCharCode(s);
   s  += GUI_UC__GetCharSize(s);

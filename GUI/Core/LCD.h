@@ -1,36 +1,29 @@
 #pragma once
 
+#include <stdint.h>
+
 #include "GUI_ConfDefaults.h" /* Used for GUI_UNI_PTR */
 
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
 
-#define I8    signed char
-#define U8  unsigned char     /* unsigned 8  bits. */
-#define I16   signed short    /*   signed 16 bits. */
-#define U16 unsigned short    /* unsigned 16 bits. */
-#define I32   signed long   /*   signed 32 bits. */
-#define U32 unsigned long   /* unsigned 32 bits. */
-#define I16P I16              /*   signed 16 bits OR MORE ! */
-#define U16P U16              /* unsigned 16 bits OR MORE ! */
-
 #define LCD_DRAWMODE_NORMAL (0)
 #define LCD_DRAWMODE_XOR    (1<<0)
 #define LCD_DRAWMODE_TRANS  (1<<1)
 #define LCD_DRAWMODE_REV    (1<<2)
 
-typedef int LCD_DRAWMODE;
-typedef U32 LCD_COLOR;
+typedef int GUI_DRAWMODE;
+typedef uint32_t RGB_COLOR;
 
-typedef struct { I16P x,y; } GUI_POINT;
-typedef struct { I16 x0,y0,x1,y1; } LCD_RECT;
+typedef struct { int16_t x, y; } GUI_POINT;
+typedef struct { int16_t x0, y0, x1, y1; } GUI_RECT;
 
 typedef struct {
   int              NumEntries;
   char             HasTrans;
-  const LCD_COLOR GUI_UNI_PTR * pPalEntries;
-} LCD_LOGPALETTE;
+  const RGB_COLOR GUI_UNI_PTR * pPalEntries;
+} GUI_LOGPALETTE;
 
 /* This is used for the simulation only ! */
 typedef struct {
@@ -59,16 +52,14 @@ typedef unsigned int tLCDDEV_GetPixelIndex(int x, int y);
 typedef void         tLCDDEV_SetPixelIndex(int x, int y, int ColorIndex);
 typedef void         tLCDDEV_XorPixel     (int x, int y);
 typedef void         tLCDDEV_FillPolygon  (const GUI_POINT* pPoints, int NumPoints, int x0, int y0);
-typedef void         tLCDDEV_GetRect      (LCD_RECT*pRect);
+typedef void         tLCDDEV_GetRect      (GUI_RECT*pRect);
 
-#if GUI_COMPILER_SUPPORTS_FP
-  typedef struct tLCDDEV_APIList_struct tLCDDEV_APIList;
-#endif
+typedef struct tLCDDEV_APIList_struct tLCDDEV_APIList;
 
 typedef void tLCDDEV_DrawBitmap   (int x0, int y0, int xsize, int ysize,
                        int BitsPerPixel, int BytesPerLine,
-                       const U8 GUI_UNI_PTR * pData, int Diff,
-                       const void* pTrans);   /* Really LCD_PIXELINDEX, but is void to avoid compiler warnings*/
+                       const uint8_t GUI_UNI_PTR * pData, int Diff,
+                       const void* pTrans);   /* Really RGB_COLOR, but is void to avoid compiler warnings*/
 
 struct tLCDDEV_APIList_struct {
   tLCDDEV_DrawBitmap*         pfDrawBitmap;
@@ -79,21 +70,19 @@ struct tLCDDEV_APIList_struct {
   tLCDDEV_GetRect*            pfGetRect;
   tLCDDEV_SetPixelIndex*      pfSetPixelIndex;
   tLCDDEV_XorPixel*           pfXorPixel;
-  #if GUI_SUPPORT_MEMDEV
+#if GUI_SUPPORT_MEMDEV
     tLCDDEV_FillPolygon*      pfFillPolygon;
     const tLCDDEV_APIList*    pMemDevAPI;
     unsigned                  BitsPerPixel;
-  #endif
-};
-#if GUI_COMPILER_SUPPORTS_FP
-  extern const struct tLCDDEV_APIList_struct GUI_MEMDEV__APIList1;
-  extern const struct tLCDDEV_APIList_struct GUI_MEMDEV__APIList8;
-  extern const struct tLCDDEV_APIList_struct GUI_MEMDEV__APIList16;
-
-  #define GUI_MEMDEV_APILIST_1  &GUI_MEMDEV__APIList1
-  #define GUI_MEMDEV_APILIST_8  &GUI_MEMDEV__APIList8
-  #define GUI_MEMDEV_APILIST_16 &GUI_MEMDEV__APIList16
 #endif
+};
+extern const struct tLCDDEV_APIList_struct GUI_MEMDEV__APIList1;
+extern const struct tLCDDEV_APIList_struct GUI_MEMDEV__APIList8;
+extern const struct tLCDDEV_APIList_struct GUI_MEMDEV__APIList16;
+
+#define GUI_MEMDEV_APILIST_1  &GUI_MEMDEV__APIList1
+#define GUI_MEMDEV_APILIST_8  &GUI_MEMDEV__APIList8
+#define GUI_MEMDEV_APILIST_16 &GUI_MEMDEV__APIList16
 
 int LCD_GetXSize(void);
 int LCD_GetYSize(void);
@@ -102,23 +91,23 @@ void LCD_DrawHLine(int x0, int y0,  int x1);
 void LCD_DrawPixel(int x0, int y0);
 void LCD_DrawVLine  (int x, int y0,  int y1);
 
-void LCD_SetClipRectEx(const LCD_RECT* pRect);
+void LCD_SetClipRectEx(const GUI_RECT* pRect);
 void LCD_SetClipRectMax(void);
 
 /* Initialize LCD using config-paramters */
 int LCD_Init(void);
 
-void LCD_SetBkColor   (LCD_COLOR Color); /* Set background color */
-void LCD_SetColor     (LCD_COLOR Color); /* Set foreground color */
+void LCD_SetBkColor   (RGB_COLOR Color); /* Set background color */
+void LCD_SetColor     (RGB_COLOR Color); /* Set foreground color */
 void LCD_SetPixelIndex(int x, int y, int ColorIndex);
 
-LCD_DRAWMODE LCD_SetDrawMode  (LCD_DRAWMODE dm);
+GUI_DRAWMODE LCD_SetDrawMode  (GUI_DRAWMODE dm);
 void LCD_SetColorIndex(int Index);
 void LCD_SetBkColorIndex(int Index);
 void LCD_FillRect(int x0, int y0, int x1, int y1);
 
-LCD_COLOR    LCD_MixColors256(LCD_COLOR Color, LCD_COLOR BkColor, unsigned Intens);
-LCD_COLOR    LCD_GetPixelColor(int x, int y);     /* Get RGB color of pixel */
+RGB_COLOR    LCD_MixColors256(RGB_COLOR Color, RGB_COLOR BkColor, unsigned Intens);
+RGB_COLOR    LCD_GetPixelColor(int x, int y);     /* Get RGB color of pixel */
 
 void LCD_X_Init(void);
 

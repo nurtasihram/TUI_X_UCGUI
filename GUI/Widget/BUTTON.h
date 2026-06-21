@@ -29,14 +29,14 @@ BUTTON_Handle BUTTON_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_HWI
 BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
 BUTTON_Handle BUTTON_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
                                     int WinFlags, int ExFlags, int Id);
-GUI_COLOR                    BUTTON_GetDefaultBkColor  (unsigned Index);
+RGB_COLOR                    BUTTON_GetDefaultBkColor  (unsigned Index);
 const GUI_FONT GUI_UNI_PTR * BUTTON_GetDefaultFont     (void);
 int                          BUTTON_GetDefaultTextAlign(void);
-GUI_COLOR                    BUTTON_GetDefaultTextColor(unsigned Index);
-void                         BUTTON_SetDefaultBkColor  (GUI_COLOR Color, unsigned Index);
+RGB_COLOR                    BUTTON_GetDefaultTextColor(unsigned Index);
+void                         BUTTON_SetDefaultBkColor  (RGB_COLOR Color, unsigned Index);
 void                         BUTTON_SetDefaultFont     (const GUI_FONT GUI_UNI_PTR * pFont);
 void                         BUTTON_SetDefaultTextAlign(int Align);
-void                         BUTTON_SetDefaultTextColor(GUI_COLOR Color, unsigned Index);
+void                         BUTTON_SetDefaultTextColor(RGB_COLOR Color, unsigned Index);
 #define BUTTON_EnableMemdev(hObj)  WM_EnableMemdev    (hObj)
 #define BUTTON_DisableMemdev(hObj) WM_DisableMemdev   (hObj)
 #define BUTTON_Delete(hObj)        WM_DeleteWindow    (hObj)
@@ -50,14 +50,14 @@ void                         BUTTON_SetDefaultTextColor(GUI_COLOR Color, unsigne
 * overwritten callback.
 */
 void BUTTON_Callback(WM_MESSAGE *pMsg);
-GUI_COLOR        BUTTON_GetBkColor         (BUTTON_Handle hObj, unsigned int Index);
+RGB_COLOR        BUTTON_GetBkColor         (BUTTON_Handle hObj, unsigned int Index);
 const GUI_FONT GUI_UNI_PTR * BUTTON_GetFont(BUTTON_Handle hObj);
 void             BUTTON_GetText            (BUTTON_Handle hObj, char * pBuffer, int MaxLen);
-GUI_COLOR        BUTTON_GetTextColor       (BUTTON_Handle hObj, unsigned int Index);
+RGB_COLOR        BUTTON_GetTextColor       (BUTTON_Handle hObj, unsigned int Index);
 unsigned         BUTTON_IsPressed          (BUTTON_Handle hObj);
 void             BUTTON_SetBitmap          (BUTTON_Handle hObj, unsigned int Index, const GUI_BITMAP * pBitmap);
 void             BUTTON_SetBitmapEx        (BUTTON_Handle hObj, unsigned int Index, const GUI_BITMAP * pBitmap, int x, int y);
-void             BUTTON_SetBkColor         (BUTTON_Handle hObj, unsigned int Index, GUI_COLOR Color);
+void             BUTTON_SetBkColor         (BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color);
 void             BUTTON_SetBMP             (BUTTON_Handle hObj, unsigned int Index, const void * pBitmap);
 void             BUTTON_SetBMPEx           (BUTTON_Handle hObj, unsigned int Index, const void * pBitmap, int x, int y);
 void             BUTTON_SetFont            (BUTTON_Handle hObj, const GUI_FONT GUI_UNI_PTR * pfont);
@@ -66,7 +66,7 @@ void             BUTTON_SetPressed         (BUTTON_Handle hObj, int State);
 void             BUTTON_SetFocussable      (BUTTON_Handle hObj, int State);
 void             BUTTON_SetText            (BUTTON_Handle hObj, const char* s);
 void             BUTTON_SetTextAlign       (BUTTON_Handle hObj, int Align);
-void             BUTTON_SetTextColor       (BUTTON_Handle hObj, unsigned int Index, GUI_COLOR Color);
+void             BUTTON_SetTextColor       (BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color);
 void             BUTTON_SetSelfDrawEx      (BUTTON_Handle hObj, unsigned int Index, void (*pDraw)(void), int x, int y); /* Not to be doc. */
 void             BUTTON_SetSelfDraw        (BUTTON_Handle hObj, unsigned int Index, void (*pDraw)(void));               /* Not to be doc. */
 #define BUTTON_STATE_HASFOCUS 0

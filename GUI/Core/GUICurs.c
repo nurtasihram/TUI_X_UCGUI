@@ -10,11 +10,11 @@ static GUI_RECT          _Rect;
 static char              _CursorIsVis;        /* Currently visible ? */
 static char              _CursorOn;
 static const GUI_CURSOR GUI_UNI_PTR * _pCursor;
-static U8                _CursorDeActCnt;
+static uint8_t                _CursorDeActCnt;
 static int               _AllocSize;
 static int               _x, _y;              /* Position of hot spot */
 static GUI_RECT          _ClipRect;
-static LCD_PIXELINDEX    _ColorIndex[4];      /* Color-Cache */
+static RGB_COLOR    _ColorIndex[4];      /* Color-Cache */
 
 /*********************************************************************
 *
@@ -60,11 +60,11 @@ static int _GetPixelIndex(int x, int y) {
 */
 static void _Undraw(void) {
   int x, y, xSize, ySize;
-  LCD_PIXELINDEX* pData;
+  RGB_COLOR* pData;
   /* Save bitmap data */
 
   if (_hBuffer) {
-    pData = (LCD_PIXELINDEX*)GUI_ALLOC_h2p(_hBuffer);
+    pData = (RGB_COLOR*)GUI_ALLOC_h2p(_hBuffer);
     xSize = _Rect.x1 - _Rect.x0 + 1;
     ySize = _Rect.y1 - _Rect.y0 + 1;
     for (y = 0; y < ySize; y++) {
@@ -81,20 +81,20 @@ static int _Log2Phys(int Index) {
   if (Index < 4) {
     return _ColorIndex[Index];
   } else {
-    LCD_COLOR Color = *(_pCursor->pBitmap->pPal->pPalEntries + Index);
+    RGB_COLOR Color = *(_pCursor->pBitmap->pPal->pPalEntries + Index);
     return Color;
   }
 }
 
 static void _Draw(void) {
   int x, y, xSize, ySize;
-  LCD_PIXELINDEX* pData;
+  RGB_COLOR* pData;
   const GUI_BITMAP GUI_UNI_PTR * pBM;
 
   if (_hBuffer) {
     /* Save bitmap data */
     pBM = _pCursor->pBitmap;
-    pData = (LCD_PIXELINDEX*)GUI_ALLOC_h2p(_hBuffer);
+    pData = (RGB_COLOR*)GUI_ALLOC_h2p(_hBuffer);
     xSize = _Rect.x1 - _Rect.x0 + 1;
     ySize = _Rect.y1 - _Rect.y0 + 1;
     for (y = 0; y < ySize; y++) {
@@ -197,11 +197,11 @@ const GUI_CURSOR GUI_UNI_PTR * GUI_CURSOR_Select(const GUI_CURSOR GUI_UNI_PTR * 
     pBM = pCursor->pBitmap;
     i = pBM->pPal->NumEntries > 4 ? 4 : pBM->pPal->NumEntries;
     while (i--) {
-      LCD_COLOR Color = *(pBM->pPal->pPalEntries + i);
+      RGB_COLOR Color = *(pBM->pPal->pPalEntries + i);
       _ColorIndex[i] = Color;
     }
     _Hide();
-    AllocSize = pBM->XSize * pBM->YSize * sizeof(LCD_PIXELINDEX);
+    AllocSize = pBM->XSize * pBM->YSize * sizeof(RGB_COLOR);
     if (AllocSize != _AllocSize) {
       GUI_ALLOC_Free(_hBuffer);
       _hBuffer = 0;
@@ -246,7 +246,7 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
   int x, xStart, xStep, xEnd, xOff, xOverlapMin, xOverlapMax;
   int y, yStart, yStep, yEnd, yOff, yOverlapMin, yOverlapMax;
   int xSize;
-  LCD_PIXELINDEX* pData;
+  RGB_COLOR* pData;
 
   if (_hBuffer) {
     if ((_x != xNewPos) | (_y != yNewPos)) {
@@ -254,7 +254,7 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
         const GUI_BITMAP GUI_UNI_PTR * pBM = _pCursor->pBitmap;
         /* Save & set clip rect */
         /* Compute helper variables */
-        pData = (LCD_PIXELINDEX*)GUI_ALLOC_h2p(_hBuffer);
+        pData = (RGB_COLOR*)GUI_ALLOC_h2p(_hBuffer);
         xSize = _pCursor->pBitmap->XSize;
         xOff = xNewPos - _x;
         if (xOff > 0) {
@@ -294,8 +294,8 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
           for (x= xStart; x != xEnd; x += xStep) {
             char xyOverlaps, xyNewOverlaps;
             int BitmapPixel;
-            LCD_PIXELINDEX Pixel;
-            LCD_PIXELINDEX* pSave = pData + x + y * xSize;
+            RGB_COLOR Pixel;
+            RGB_COLOR* pSave = pData + x + y * xSize;
             int xNew = x + xOff;
             BitmapPixel = GUI_GetBitmapPixelIndex(pBM, x, y);
             xyOverlaps    = (x    >= xOverlapMin) && (x    <= xOverlapMax) && yOverlaps;
@@ -315,7 +315,7 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
             *pSave = Pixel;
             /* Write new  ... We could write pixel by pixel here */
             if (BitmapPixel) {
-              LCD_PIXELINDEX NewPixel = _Log2Phys(BitmapPixel);
+              RGB_COLOR NewPixel = _Log2Phys(BitmapPixel);
               _SetPixelIndex(_Rect.x0 + xNew, _Rect.y0 + yNew, NewPixel);
             }
           }

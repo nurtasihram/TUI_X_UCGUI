@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "GUI_Protected.h"
 
-static void GUI__cbDrawTextStyle(U16 Char) {
+static void GUI__cbDrawTextStyle(uint16_t Char) {
   int x0, x1;
   x1 = GUI_Context.DispPosX - 1;
   x0 = x1 - GUI_Context.pAFont->pfGetCharDistX(Char) + 1;

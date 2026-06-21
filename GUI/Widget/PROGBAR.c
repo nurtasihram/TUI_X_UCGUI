@@ -26,13 +26,13 @@ typedef struct {
 	WIDGET Widget;
 	int v;
 	const GUI_FONT GUI_UNI_PTR *pFont;
-	GUI_COLOR BarColor[2];
-	GUI_COLOR TextColor[2];
+	RGB_COLOR BarColor[2];
+	RGB_COLOR TextColor[2];
 	WM_HMEM hpText;
-	I16 XOff, YOff;
-	I16 TextAlign;
+	int16_t XOff, YOff;
+	int16_t TextAlign;
 	int Min, Max;
-	/*  I16 Options; */
+	/*  int16_t Options; */
 #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
 	int DebugId;
 #endif
@@ -75,7 +75,7 @@ static int _Value2X(const PROGBAR_Obj *pObj, int v) {
 	if (v > Max) {
 		v = Max;
 	}
-	return EffectSize + ((xSize - 2 * EffectSize) * (I32)(v - Min)) / (Max - Min);
+	return EffectSize + ((xSize - 2 * EffectSize) * (int32_t)(v - Min)) / (Max - Min);
 }
 static void _DrawPart(const PROGBAR_Obj *pObj, int Index,
 					  int xText, int yText, const char *pText) {
@@ -87,7 +87,7 @@ static void _DrawPart(const PROGBAR_Obj *pObj, int Index,
 }
 static const char *_GetText(const PROGBAR_Obj *pObj, char *pBuffer) {
 	char *pText;
-	U8 value;
+	uint8_t value;
 	if (pObj->hpText) {
 		pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
 	}
@@ -262,7 +262,7 @@ void PROGBAR_SetFont(PROGBAR_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
 
 	}
 }
-void PROGBAR_SetBarColor(PROGBAR_Handle hObj, unsigned int Index, GUI_COLOR color) {
+void PROGBAR_SetBarColor(PROGBAR_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	PROGBAR_Obj *pObj;
 	if (hObj) {
 
@@ -274,7 +274,7 @@ void PROGBAR_SetBarColor(PROGBAR_Handle hObj, unsigned int Index, GUI_COLOR colo
 
 	}
 }
-void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int Index, GUI_COLOR color) {
+void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	PROGBAR_Obj *pObj;
 	if (hObj) {
 

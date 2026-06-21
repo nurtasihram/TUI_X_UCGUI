@@ -15,11 +15,11 @@
 * Parameters:
 *   Intens:    Intensity of first color in 257 steps, from 0 to 256, where 256 equals 100%
 */
-LCD_COLOR LCD_MixColors256(LCD_COLOR Color, LCD_COLOR BkColor, unsigned Intens) {
+RGB_COLOR LCD_MixColors256(RGB_COLOR Color, RGB_COLOR BkColor, unsigned Intens) {
   /* Calc Color seperations for FgColor first */
-  U32 R = (Color & 0xff)    * Intens;
-  U32 G = (Color & 0xff00)  * Intens;
-  U32 B = (Color & 0xff0000)* Intens;
+  uint32_t R = (Color & 0xff)    * Intens;
+  uint32_t G = (Color & 0xff00)  * Intens;
+  uint32_t B = (Color & 0xff0000)* Intens;
   /* Add Color seperations for BkColor */
   Intens = 256 - Intens;
   R += (BkColor & 0xff)     * Intens;

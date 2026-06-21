@@ -13,10 +13,10 @@
 #define BUTTON_DEINIT_ID(p)
 #endif
 typedef struct {
-	GUI_COLOR aBkColor[3];
-	GUI_COLOR aTextColor[3];
+	RGB_COLOR aBkColor[3];
+	RGB_COLOR aTextColor[3];
 	const GUI_FONT GUI_UNI_PTR *pFont;
-	I16 Align;
+	int16_t Align;
 } BUTTON_PROPS;
 typedef struct {
 	WIDGET Widget;

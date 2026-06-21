@@ -9,29 +9,29 @@
 #ifndef GUI_ALLOC_ALLOC
 
 #if GUI_ALLOC_SIZE==0
-  #error GUI_ALLOC_SIZE needs to be > 0 when using this module
+#error GUI_ALLOC_SIZE needs to be > 0 when using this module
 #endif
 
 /* Permit automatic defragmentation when necessary */
 #ifndef GUI_ALLOC_AUTDEFRAG
-  #define GUI_ALLOC_AUTDEFRAG 1
+#define GUI_ALLOC_AUTDEFRAG 1
 #endif
 
 #ifndef GUI_BLOCK_ALIGN        /* 2 means 4 bytes, 1 means 2 bytes      */
-  #define GUI_BLOCK_ALIGN 2    /* 1 can be used on 16-bit CPUs and CPUs */
+#define GUI_BLOCK_ALIGN 2    /* 1 can be used on 16-bit CPUs and CPUs */
 #endif                         /* which do not require aligned 32-bit   */
                                /* values (such as x86)                  */
 
 #ifndef GUI_MAXBLOCKS
-  #define GUI_MAXBLOCKS (2 + GUI_ALLOC_SIZE / 32)
+#define GUI_MAXBLOCKS (2 + GUI_ALLOC_SIZE / 32)
 #endif
 
 #ifndef GUI_ALLOC_LOCATION
-  #define GUI_ALLOC_LOCATION
+#define GUI_ALLOC_LOCATION
 #endif
 
 #ifndef GUI_MEM_ALLOC          /* Allows us in some systems to place the GUI memory */
-  #define GUI_MEM_ALLOC        /* in a different memory space ... eg "__far"        */
+#define GUI_MEM_ALLOC        /* in a different memory space ... eg "__far"        */
 #endif
 
 #define Min(v0,v1) ((v0>v1) ? v1 : v0)
@@ -40,14 +40,14 @@
 #define HMEM2PTR(hMem) (void*)&GUI_Heap.abHeap[aBlock[hMem].Off]
 
 #if GUI_MAXBLOCKS >= 256
-  #define HANDLE U16
+#define HANDLE uint16_t
 #else
-  #define HANDLE U8
+#define HANDLE uint8_t
 #endif
 
 typedef union {
   int aintHeap[GUI_ALLOC_SIZE / 4];   /* required for proper alignement */
-  U8  abHeap[GUI_ALLOC_SIZE];
+  uint8_t  abHeap[GUI_ALLOC_SIZE];
 } GUI_HEAP;
 
 typedef struct {
@@ -87,16 +87,16 @@ static GUI_ALLOC_DATATYPE _GetSize(GUI_HMEM  hMem) {
 static void _Free(GUI_HMEM hMem) {
   GUI_ALLOC_DATATYPE Size;
   /* Do some error checking ... */
-  #if GUI_DEBUG_LEVEL>0
+#if GUI_DEBUG_LEVEL>0
     /* Block not allocated ? */
     if (aBlock[hMem].Size == 0) {
       return;
     }
-  #endif
+#endif
   Size = aBlock[hMem].Size;
-  #ifdef WIN32
+#ifdef WIN32
     GUI_MEMSET(&GUI_Heap.abHeap[aBlock[hMem].Off], 0xcc, Size);
-  #endif
+#endif
   GUI_ALLOC.NumFreeBytes += Size;
   GUI_ALLOC.NumUsedBytes -= Size;
   aBlock[hMem].Size = 0;
@@ -167,7 +167,7 @@ static GUI_HMEM _CreateHole(GUI_ALLOC_DATATYPE Size) {
     if (NumFreeBytes < Size) {
       GUI_ALLOC_DATATYPE NumBytesBeforeBlock = aBlock[iNext].Off - (aBlock[i].Off+aBlock[i].Size);
       if (NumBytesBeforeBlock) {
-        U8* pData = &GUI_Heap.abHeap[aBlock[iNext].Off];
+        uint8_t* pData = &GUI_Heap.abHeap[aBlock[iNext].Off];
         memmove(pData-NumBytesBeforeBlock, pData, aBlock[iNext].Size);
         aBlock[iNext].Off -=NumBytesBeforeBlock;
       }
@@ -199,11 +199,11 @@ static GUI_HMEM _Alloc(GUI_ALLOC_DATATYPE size) {
     return 0;
   /* Locate or Create hole of sufficient size */
   hMemIns = _FindHole(size);
-  #if GUI_ALLOC_AUTDEFRAG
+#if GUI_ALLOC_AUTDEFRAG
     if (hMemIns == -1) {
       hMemIns = _CreateHole(size);
     }
-  #endif
+#endif
   /* Occupy hole */
   if (hMemIns==-1) {
     return 0;
@@ -255,14 +255,14 @@ GUI_HMEM GUI_ALLOC_AllocNoInit(GUI_ALLOC_DATATYPE Size) {
 }
 
 void* GUI_ALLOC_h2p(GUI_HMEM  hMem) {
-  #if GUI_DEBUG_LEVEL > 0
+#if GUI_DEBUG_LEVEL > 0
     if (!hMem) {
       return 0;
     }
     if (aBlock[hMem].Size == 0) {
     }
 
-  #endif
+#endif
   return HMEM2PTR(hMem);
 }
 
@@ -349,7 +349,7 @@ GUI_HMEM GUI_ALLOC_AllocNoInit(GUI_ALLOC_DATATYPE Size) {
 }
 
 void* GUI_ALLOC_h2p(GUI_HMEM  hMem) {
-  U8* p = (U8*)GUI_ALLOC_H2P(hMem);    /* Pointer to memory block from memory manager */
+  uint8_t* p = (uint8_t*)GUI_ALLOC_H2P(hMem);    /* Pointer to memory block from memory manager */
   p += sizeof(INFO);                   /* Convert to pointer to usable area */
   return p;
 }
@@ -359,20 +359,20 @@ GUI_ALLOC_DATATYPE GUI_ALLOC_GetMaxSize(void) {
 }
 
 void GUI_ALLOC_Init(void) {
-  #ifdef GUI_ALLOC_INIT
+#ifdef GUI_ALLOC_INIT
     GUI_ALLOC_INIT();
-  #endif
+#endif
 }
 
 #endif
 
 GUI_ALLOC_DATATYPE GUI_ALLOC_GetSize(GUI_HMEM  hMem) {
   /* Do the error checking first */
-  #if GUI_DEBUG_LEVEL>0
+#if GUI_DEBUG_LEVEL>0
     if (!hMem) {
       return 0;
     }
-  #endif
+#endif
   return _GetSize(hMem);
 }
 

@@ -45,7 +45,7 @@ public:
 
 	inline bool Compare(HANDLE h) const reflect_as(CompareObjectHandles(self, h));
 	//inline auto CopyTo() {
-	//		DuplicateHandle(GetCurrentProcess(), self, 
+	//		DuplicateHandle(GetCurrentProcess(), self,
 	//			_In_ HANDLE hTargetProcessHandle,
 	//			_Outptr_ LPHANDLE lpTargetHandle,
 
@@ -277,7 +277,7 @@ constexpr UINT MaxLenNotice = 32767;
 
 #pragma region String
 
-enum_class(CodePages, UINT, 
+enum_class(CodePages, UINT,
 	Active       = CP_ACP,
 	OEM          = CP_OEMCP,
 	Macintosh    = CP_MACCP,
@@ -491,7 +491,7 @@ inline String Fits(const CharType *lpString, size_t MaxLen, CodePages cp) {
 #else
 		assert((tLen = WideCharToMultiByte(cp.yield(), 0, lpString, (int)uLen, O, 0, O, O)) > 0);
 #endif
-		// if (tLen != uLen) warnning glyphs missing 
+		// if (tLen != uLen) warnning glyphs missing
 		auto lpsz = String::Alloc(tLen);
 #ifdef UNICODE
 		assert(tLen == MultiByteToWideChar(cp.yield(), 0, lpString, (int)uLen, lpsz, tLen));
@@ -577,7 +577,7 @@ inline void Fill(AnyType *lpArray, const AnyType &Sample, size_t Len) {
 
 #pragma endregion
 
-#pragma region Numeral Format 
+#pragma region Numeral Format
 enum class Symbol : uint8_t { Def = 0, Neg, Pos, Space };
 enum class Cap : uint8_t { Small = 0, Big };
 enum class Align : uint8_t { Space = 0, Zero };
@@ -737,7 +737,7 @@ private:
 private:
 	inline uint8_t _radix() const reflect_as(radix_type == Rad::Dec ? 10 : (2 << (uint8_t)radix_type));
 	inline TCHAR _alfa_char() const reflect_as((alfa_type == Cap::Big ? _T('A') : _T('a')) - 10);
-	inline auto _push(uintptr_t uint_part, LPTSTR hpBuffer, 
+	inline auto _push(uintptr_t uint_part, LPTSTR hpBuffer,
 					  uint8_t radix, TCHAR alfa,
 					  bool neg) const {
 		auto lpBuffer = __push(uint_part, hpBuffer, alfa, radix, int_trunc ? int_calign : 32);
@@ -750,7 +750,7 @@ private:
 		}
 		if (neg)
 			*--lpBuffer = _T('-');
-		elif (symbol == Symbol::Pos) 
+		elif (symbol == Symbol::Pos)
 			*--lpBuffer = _T('+');
 		elif (symbol == Symbol::Space)
 			*--lpBuffer = _T(' ');

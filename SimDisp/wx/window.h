@@ -112,7 +112,7 @@ public:
 
 	inline LRESULT Call(UINT Msg, WPARAM wParam, LPARAM lParam) const reflect_as(CallWindowProc(pfnWndProc, hWnd, Msg, wParam, lParam));
 	inline LRESULT Call(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) const reflect_as(CallWindowProc(pfnWndProc, hWnd, Msg, wParam, lParam));
-	
+
 	inline auto &operator*=(HWND hWnd) reflect_to_self(this->hWnd = hWnd);
 	inline LRESULT operator()(UINT Msg, WPARAM wParam, LPARAM lParam) const reflect_as(Call(Msg, wParam, lParam));
 	inline LRESULT operator()(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) const reflect_as(Call(hWnd, Msg, wParam, lParam));
@@ -908,7 +908,7 @@ public: // Property - IconSmall
 public: // Property - Styles
 	/* W */ inline auto &Styles(Style style) check_reflect_to_child(SetWindowLongPtr(self, GWL_STYLE, style.yield()));
 	/* R */ inline Style Styles() const reflect_as(force_cast<Style>(GetWindowLongPtr(self, GWL_STYLE)));
-public: // Property - StylesEx 
+public: // Property - StylesEx
 	/* W */ inline auto   &StylesEx(StyleEx styleEx) check_reflect_to_child(SetWindowLongPtr(self, GWL_EXSTYLE, styleEx.yield()));
 	/* R */ inline StyleEx StylesEx() const reflect_as(force_cast<StyleEx>(GetWindowLongPtr(self, GWL_EXSTYLE)));
 public: // Property - ID

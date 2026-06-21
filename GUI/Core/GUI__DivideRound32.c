@@ -10,7 +10,7 @@
 * to minimize the effects of rounding which occur if we simply
 * divide.
 */
-I32 GUI__DivideRound32(I32 a, I32 b) {
+int32_t GUI__DivideRound32(int32_t a, int32_t b) {
   if (b) {
     if (a < 0) {
       return (a - (b >> 1)) / b;

@@ -12,7 +12,7 @@ void GUI_DispNextLine(void) {
 
 }
 
-void GL_DispChar(U16 c) {
+void GL_DispChar(uint16_t c) {
   /* check for control characters */
   if (c == '\n') {
     GUI_DispNextLine();
@@ -64,7 +64,7 @@ int GUI_GetFontDistY(void) {
   return r;
 }
 
-int GUI_GetCharDistX(U16 c) {
+int GUI_GetCharDistX(uint16_t c) {
   int r;
 
   r = GUI_Context.pAFont->pfGetCharDistX(c);

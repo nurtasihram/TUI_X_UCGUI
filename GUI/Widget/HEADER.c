@@ -35,8 +35,8 @@
 static const GUI_CURSOR GUI_UNI_PTR *_pOldCursor;
 /* Default values */
 static const GUI_CURSOR GUI_UNI_PTR *_pDefaultCursor = HEADER_CURSOR_DEFAULT;
-static GUI_COLOR          _DefaultBkColor = HEADER_BKCOLOR_DEFAULT;
-static GUI_COLOR          _DefaultTextColor = HEADER_TEXTCOLOR_DEFAULT;
+static RGB_COLOR          _DefaultBkColor = HEADER_BKCOLOR_DEFAULT;
+static RGB_COLOR          _DefaultTextColor = HEADER_TEXTCOLOR_DEFAULT;
 static int                _DefaultBorderH = HEADER_BORDER_H_DEFAULT;
 static int                _DefaultBorderV = HEADER_BORDER_V_DEFAULT;
 static const GUI_FONT GUI_UNI_PTR *_pDefaultFont = HEADER_FONT_DEFAULT;
@@ -290,13 +290,13 @@ const GUI_CURSOR GUI_UNI_PTR *HEADER_SetDefaultCursor(const GUI_CURSOR *pCursor)
 	_pDefaultCursor = pCursor;
 	return pOldCursor;
 }
-GUI_COLOR HEADER_SetDefaultBkColor(GUI_COLOR Color) {
-	GUI_COLOR OldColor = _DefaultBkColor;
+RGB_COLOR HEADER_SetDefaultBkColor(RGB_COLOR Color) {
+	RGB_COLOR OldColor = _DefaultBkColor;
 	_DefaultBkColor = Color;
 	return OldColor;
 }
-GUI_COLOR HEADER_SetDefaultTextColor(GUI_COLOR Color) {
-	GUI_COLOR OldColor = _DefaultTextColor;
+RGB_COLOR HEADER_SetDefaultTextColor(RGB_COLOR Color) {
+	RGB_COLOR OldColor = _DefaultTextColor;
 	_DefaultTextColor = Color;
 	return OldColor;
 }
@@ -316,8 +316,8 @@ const GUI_FONT GUI_UNI_PTR *HEADER_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pF
 	return pOldFont;
 }
 const GUI_CURSOR GUI_UNI_PTR *HEADER_GetDefaultCursor(void) { return _pDefaultCursor; }
-GUI_COLOR          HEADER_GetDefaultBkColor(void) { return _DefaultBkColor; }
-GUI_COLOR          HEADER_GetDefaultTextColor(void) { return _DefaultTextColor; }
+RGB_COLOR          HEADER_GetDefaultBkColor(void) { return _DefaultBkColor; }
+RGB_COLOR          HEADER_GetDefaultTextColor(void) { return _DefaultTextColor; }
 int                HEADER_GetDefaultBorderH(void) { return _DefaultBorderH; }
 int                HEADER_GetDefaultBorderV(void) { return _DefaultBorderV; }
 const GUI_FONT GUI_UNI_PTR *HEADER_GetDefaultFont(void) { return _pDefaultFont; }
@@ -339,7 +339,7 @@ void HEADER_SetHeight(HEADER_Handle hObj, int Height) {
 		WM_InvalidateWindow(WM_GetParent(hObj));
 	}
 }
-void HEADER_SetTextColor(HEADER_Handle hObj, GUI_COLOR Color) {
+void HEADER_SetTextColor(HEADER_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		HEADER_Obj *pObj;
 
@@ -349,7 +349,7 @@ void HEADER_SetTextColor(HEADER_Handle hObj, GUI_COLOR Color) {
 
 	}
 }
-void HEADER_SetBkColor(HEADER_Handle hObj, GUI_COLOR Color) {
+void HEADER_SetBkColor(HEADER_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		HEADER_Obj *pObj;
 

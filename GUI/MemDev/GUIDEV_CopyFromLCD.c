@@ -38,7 +38,7 @@ void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV_Handle hMem) {
   }
   {
     GUI_MEMDEV* pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
-    LCD_RECT r;
+    GUI_RECT r;
     int y;
     int XMax;
     GUI_USAGE* pUsage = 0;
@@ -59,7 +59,7 @@ void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV_Handle hMem) {
     XMax = r.x1;
     for (y = r.y0; y <= r.y1; y++) {
       int x = r.x0;
-      LCD_PIXELINDEX* pData = (LCD_PIXELINDEX*)GUI_MEMDEV__XY2PTR(x,y);
+      RGB_COLOR* pData = (RGB_COLOR*)GUI_MEMDEV__XY2PTR(x,y);
       if (pUsage)
         GUI_USAGE_AddHLine(pUsage, x, y, r.x1 - r.x0 + 1);
       for (; x <= XMax; x++) {

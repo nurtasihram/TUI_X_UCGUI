@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "GUI_Protected.h"
 
-static GUI_CONST_STORAGE GUI_COLOR _aColor[] = {
+static GUI_CONST_STORAGE RGB_COLOR _aColor[] = {
   0x0000FF, 0x000000, 0xFFFFFF
 };
 
