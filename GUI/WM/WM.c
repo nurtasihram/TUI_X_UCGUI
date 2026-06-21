@@ -104,17 +104,6 @@ static void _Invalidate1Abs(WM_HWIN hWin, const GUI_RECT *pRect) {
 			pWin->InvalidRect = r;
 			pWin->Status |= WM_SF_INVALID;
 			WM__NumInvalidWindows++;
-			/* Optional code: Call external routine to notify that drawing is required */
-#ifdef GUI_X_REDRAW
-			{
-				GUI_RECT r;
-				r = pWin->Rect;
-				if (WM__ClipAtParentBorders(&r, hWin)) {
-					GUI_X_REDRAW(); /* Call hook function to signal an invalidation */
-				}
-			}
-#endif
-			GUI_X_SIGNAL_EVENT();
 		}
 		/* Debug code: shows invalid areas */
 		if (WM__pfShowInvalid) {
@@ -1071,7 +1060,7 @@ int WM__InitIVRSearch(const GUI_RECT *pMaxRect) {
 }
 
 void WM_SetDefault(void) {
-	GL_SetDefault();
+	GUI_SetDefault();
 	GUI_Context.WM__pUserClipRect = NULL;   /* No add. clipping */
 }
 

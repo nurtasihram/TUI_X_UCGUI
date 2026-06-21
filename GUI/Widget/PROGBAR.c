@@ -88,12 +88,24 @@ static void _DrawPart(const PROGBAR_Obj *pObj, int Index,
 }
 static const char *_GetText(const PROGBAR_Obj *pObj, char *pBuffer) {
 	char *pText;
+	U8 value;
 	if (pObj->hpText) {
 		pText = (char *)GUI_ALLOC_h2p(pObj->hpText);
 	}
 	else {
 		pText = pBuffer;
-		GUI_AddDecMin((100 * (I32)(pObj->v - pObj->Min)) / (pObj->Max - pObj->Min), &pBuffer);
+		value = 100 * (pObj->v - pObj->Min) / (pObj->Max - pObj->Min);
+		if (value == 100) {
+			*pBuffer++ = '1';
+			*pBuffer++ = '0';
+			*pBuffer++ = '0';
+		} else {
+			if (value >= 10) {
+				*pBuffer++ = '0' + value / 10;
+				value %= 10;
+			}
+			*pBuffer++ = '0' + value;
+		}
 		*pBuffer++ = '%';
 		*pBuffer = 0;
 	}

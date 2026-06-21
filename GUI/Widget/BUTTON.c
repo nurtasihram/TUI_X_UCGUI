@@ -329,12 +329,6 @@ void BUTTON_SetBitmap(BUTTON_Handle hObj, unsigned int Index, const GUI_BITMAP *
 	BUTTON_SetBitmapEx(hObj, Index, pBitmap, 0, 0);
 }
 
-void BUTTON_SetBMPEx(BUTTON_Handle hObj, unsigned int Index, const void *pBitmap, int x, int y) {
-	BUTTON__SetDrawObj(hObj, Index, GUI_DRAW_BMP_Create(pBitmap, x, y));
-}
-void BUTTON_SetBMP(BUTTON_Handle hObj, unsigned int Index, const void *pBitmap) {
-	BUTTON_SetBMPEx(hObj, Index, pBitmap, 0, 0);
-}
 BUTTON_Handle BUTTON_Create(int x0, int y0, int xsize, int ysize, int Id, int Flags) {
 	return BUTTON_CreateEx(x0, y0, xsize, ysize, WM_HMEM_NULL, Flags, 0, Id);
 }

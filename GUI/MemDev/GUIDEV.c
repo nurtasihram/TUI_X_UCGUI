@@ -74,7 +74,6 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
     pDevData->y0            = y0;
     pDevData->XSize         = xsize;
     pDevData->YSize         = ysize;
-    pDevData->NumColors     = LCD_GET_NUMCOLORS();
     pDevData->BytesPerLine  = BytesPerLine;
     pDevData->hUsage        = hUsage;
 

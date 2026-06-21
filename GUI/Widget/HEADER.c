@@ -505,13 +505,6 @@ void HEADER_SetBitmap(HEADER_Handle hObj, unsigned Index, const GUI_BITMAP *pBit
 	HEADER_SetBitmapEx(hObj, Index, pBitmap, 0, 0);
 }
 
-void HEADER_SetBMPEx(HEADER_Handle hObj, unsigned int Index, const void *pBitmap, int x, int y) {
-	HEADER__SetDrawObj(hObj, Index, GUI_DRAW_BMP_Create(pBitmap, x, y));
-	WM_InvalidateWindow(hObj);
-}
-void HEADER_SetBMP(HEADER_Handle hObj, unsigned int Index, const void *pBitmap) {
-	HEADER_SetBMPEx(hObj, Index, pBitmap, 0, 0);
-}
 
 HEADER_Handle HEADER_CreateAttached(WM_HWIN hParent, int Id, int SpecialFlags) {
 	return HEADER_CreateEx(0, 0, 0, 0, hParent, WM_CF_SHOW, SpecialFlags, Id);

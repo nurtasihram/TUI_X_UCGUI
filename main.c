@@ -441,9 +441,7 @@ void main(void) {
 		/* Let window know how to send feedback (close info & return value) */
 		GUI_SetDialogStatusPtr(hDialog, &DialogStatus);
 		while (!DialogStatus.Done) {
-			if (!GUI_Exec()) {
-				GUI_X_WAIT_EVENT();      /* Wait for event (keyboard, mouse or whatever) */
-			}
+			GUI_Exec();
 		}
 	}
 }
@@ -494,9 +492,7 @@ void main(void) {
 	WM_SetScrollbarH(hListView, 1);
 	WM_SetScrollbarV(hListView, 1);
 	for (;;) {
-		if (!GUI_Exec()) {
-			GUI_X_WAIT_EVENT();      /* Wait for event (keyboard, mouse or whatever) */
-		}
+		GUI_Exec();
 	}
 }
 #endif

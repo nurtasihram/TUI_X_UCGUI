@@ -48,26 +48,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
   #define GUI_DEFAULT_COLOR   GUI_WHITE
 #endif
 
-#ifndef GUI_X_SIGNAL_EVENT
-  #define GUI_X_SIGNAL_EVENT()
-#endif
-
-#ifndef GUI_X_WAIT_EVENT
-  #define GUI_X_WAIT_EVENT() GUI_X_ExecIdle()
-#endif
-
-/*      *********************************
-        *                               *
-        *      Angles                   *
-        *                               *
-        *********************************
-*/
-
-#define GUI_45DEG  512
-#define GUI_90DEG  (2*GUI_45DEG)
-#define GUI_180DEG (4*GUI_45DEG)
-#define GUI_360DEG (8*GUI_45DEG)
-
 typedef enum { GUI_WRAPMODE_NONE, GUI_WRAPMODE_WORD, GUI_WRAPMODE_CHAR } GUI_WRAPMODE;
 
 typedef GUI_HMEM GUI_USAGE_Handle;
@@ -112,7 +92,6 @@ struct GUI_Usage {
 #if GUI_SUPPORT_MEMDEV
   typedef struct /*GUI_MEMDEV*/ {
     I16P                   x0, y0, XSize, YSize;
-    int                    NumColors;
     unsigned               BytesPerLine;
     unsigned               BitsPerPixel;
     GUI_HMEM               hUsage;
@@ -133,27 +112,6 @@ struct GUI_Usage {
 #define LCD_HL_DrawPixel             LCD_DrawPixel
 
 #define GUI_ZEROINIT(Obj) GUI_MEMSET(Obj, 0, sizeof(Obj))
-int  GUI_cos(int angle);
-int  GUI_sin(int angle);
-void GL_DrawLine1(int x0, int y0, int x1, int y1);
-extern const U32 GUI_Pow10[10];
-
-/* GUIAALib.c --- direct anti-aliased drawing */
-int  GUI_AA_Init(int x0, int x1);
-int  GUI_AA_Init_HiRes(int x0, int x1);
-void GUI_AA_Exit(void);
-I16 GUI_AA_HiRes2Pixel(int HiRes);
-
-void GL_FillCircleAA_HiRes(int x0, int y0, int r);
-
-/* Conversion routines */
-void GUI_AddHex     (U32 v, U8 Len, char**ps);
-void GUI_AddBin     (U32 v, U8 Len, char**ps);
-void GUI_AddDecMin  (I32 v, char**ps);
-void GUI_AddDec     (I32 v, U8 Len, char**ps);
-void GUI_AddDecShift(I32 v, U8 Len, U8 Shift, char**ps);
-long GUI_AddSign    (long v, char**ps);
-int  GUI_Long2Len   (I32 v);
 
 #define GUI_UC__GetCharSize(sText)  GUI_Context.pUC_API->pfGetCharSize(sText)
 #define GUI_UC__GetCharCode(sText)  GUI_Context.pUC_API->pfGetCharCode(sText)
@@ -181,26 +139,8 @@ int  GUI__strlen    (const char GUI_UNI_PTR * s);
 int  GUI__strcmp    (const char GUI_UNI_PTR * s0, const char GUI_UNI_PTR * s1);
 int  GUI__strcmp_hp (GUI_HMEM hs0, const char GUI_UNI_PTR * s1);
 
-/* Reading data routines */
-U16 GUI__Read16(const U8 ** ppData);
-U32 GUI__Read32(const U8 ** ppData);
-
 void GL_DispChar         (U16 c);
-void GL_DrawArc          (int x0, int y0, int rx, int ry, int a0, int a1);
 void GL_DrawBitmap       (const GUI_BITMAP GUI_UNI_PTR * pBM, int x0, int y0);
-void GL_DrawCircle       (int x0, int y0, int r);
-void GL_DrawEllipse      (int x0, int y0, int rx, int ry);
-void GL_DrawHLine        (int y0, int x0, int x1);
-void GL_DrawPolygon      (const GUI_POINT* pPoints, int NumPoints, int x0, int y0);
-void GL_DrawPoint        (int x, int y);
-void GL_DrawLineRel      (int dx, int dy);
-void GL_DrawLineTo       (int x, int y);
-void GL_DrawLine         (int x0, int y0, int x1, int y1);
-void GL_MoveTo           (int x, int y);
-void GL_FillCircle       (int x0, int y0, int r);
-void GL_FillEllipse      (int x0, int y0, int rx, int ry);
-void GL_FillPolygon      (const GUI_POINT* pPoints, int NumPoints, int x0, int y0);
-void GL_SetDefault       (void);
 
 /************************************************************
 *
@@ -245,7 +185,6 @@ GUI_COLOR GUI_GetBitmapPixelColor(const GUI_BITMAP GUI_UNI_PTR * pBMP, unsigned 
 #endif
 
 GUI_EXTERN GUI_SADDR GUI_CONTEXT        GUI_Context;        /* Thread wide globals */
-GUI_EXTERN GUI_SADDR char               GUI_DecChar;
 GUI_EXTERN           GUI_tfTimer*       GUI_pfTimerExec;
 GUI_EXTERN           WM_tfHandlePID*    WM_pfHandlePID;
 GUI_EXTERN      void (*GUI_pfDispCharStyle)(U16 Char);

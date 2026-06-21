@@ -98,14 +98,11 @@ struct tLCDDEV_APIList_struct {
 int LCD_GetXSize(void);
 int LCD_GetYSize(void);
 
-U32 LCD_GetNumColors(void);
-
 int LCD_GetBitsPerPixel(void);
 int LCD_GetFixedPalette(void);
 
 #define LCD_GET_XSIZE()        LCD_GetXSize()
 #define LCD_GET_YSIZE()        LCD_GetYSize()
-#define LCD_GET_NUMCOLORS()    LCD_GetNumColors()
 #define LCD_GET_BITSPERPIXEL() LCD_GetBitsPerPixel()
 
 typedef void         tLCD_HL_DrawHLine    (int x0, int y0,  int x1);

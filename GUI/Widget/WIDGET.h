@@ -76,7 +76,6 @@ int  GUI_DRAW__GetXSize(GUI_DRAW_HANDLE hDrawObj);
 int  GUI_DRAW__GetYSize(GUI_DRAW_HANDLE hDrawObj);
 /* GUI_DRAW_ Constructurs for different objects */
 WM_HMEM GUI_DRAW_BITMAP_Create  (const GUI_BITMAP* pBitmap, int x, int y);
-WM_HMEM GUI_DRAW_BMP_Create     (const void* pBMP, int x, int y);
 WM_HMEM GUI_DRAW_STREAMED_Create(const GUI_BITMAP_STREAM * pBitmap, int x, int y);
 WM_HMEM GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB* pfDraw, int x, int y);
 extern const WIDGET_EFFECT WIDGET_Effect_3D;

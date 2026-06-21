@@ -61,9 +61,7 @@ int     GUI_ExecCreatedDialog(WM_HWIN hDialog) {
 	/* Let window know how to send feedback (close info & return value) */
 	GUI_SetDialogStatusPtr(hDialog, &DialogStatus);
 	while (!DialogStatus.Done) {
-		if (!GUI_Exec()) {
-			GUI_X_WAIT_EVENT();      /* Wait for event (keyboard, mouse or whatever) */
-		}
+		GUI_Exec();
 	}
 	return DialogStatus.ReturnValue;
 }

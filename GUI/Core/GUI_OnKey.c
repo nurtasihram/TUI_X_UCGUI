@@ -28,7 +28,6 @@ void GUI_StoreKey(int Key) {
   if (!_Key) {
     _Key = Key;
   }
-  GUI_X_SIGNAL_EVENT();
 }
 
 void GUI_ClearKeyBuffer(void) {
@@ -39,7 +38,6 @@ void GUI_StoreKeyMsg(int Key, int PressedCnt) {
   _KeyMsg.Key = Key;
   _KeyMsg.PressedCnt = PressedCnt;
   _KeyMsgCnt = 1;
-  GUI_X_SIGNAL_EVENT();
 }
 
 int GUI_PollKeyMsg(void) {
