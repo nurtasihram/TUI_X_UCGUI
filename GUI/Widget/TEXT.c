@@ -9,12 +9,8 @@
 #include "TEXT_Private.h"
 
 /* Define default fonts */
-#ifndef TEXT_FONT_DEFAULT
 #define TEXT_FONT_DEFAULT &GUI_Font13_1
-#endif
-#ifndef TEXT_DEFAULT_TEXT_COLOR
 #define TEXT_DEFAULT_TEXT_COLOR GUI_BLACK
-#endif
 static const GUI_FONT GUI_UNI_PTR * _pDefaultFont = TEXT_FONT_DEFAULT;
 static RGB_COLOR        _DefaultTextColor = TEXT_DEFAULT_TEXT_COLOR;
 static void _FreeAttached(TEXT_Obj* pObj) {

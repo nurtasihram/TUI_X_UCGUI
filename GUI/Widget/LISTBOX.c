@@ -15,41 +15,19 @@
 #include "LISTBOX_Private.h"
 
 /* Support for 3D effects */
-#ifndef LISTBOX_USE_3D
 #define LISTBOX_USE_3D 1
-#endif
 /* Define default fonts */
-#ifndef LISTBOX_FONT_DEFAULT
 #define LISTBOX_FONT_DEFAULT &GUI_Font13_1
-#endif
 /* Define colors */
-#ifndef LISTBOX_BKCOLOR0_DEFAULT
 #define LISTBOX_BKCOLOR0_DEFAULT GUI_WHITE     /* Not selected */
-#endif
-#ifndef LISTBOX_BKCOLOR1_DEFAULT
 #define LISTBOX_BKCOLOR1_DEFAULT GUI_GRAY      /* Selected, no focus */
-#endif
-#ifndef LISTBOX_BKCOLOR2_DEFAULT
 #define LISTBOX_BKCOLOR2_DEFAULT GUI_BLUE      /* Selected, focus */
-#endif
-#ifndef LISTBOX_BKCOLOR3_DEFAULT
 #define LISTBOX_BKCOLOR3_DEFAULT 0xC0C0C0      /* Disabled */
-#endif
-#ifndef LISTBOX_TEXTCOLOR0_DEFAULT
 #define LISTBOX_TEXTCOLOR0_DEFAULT GUI_BLACK   /* Not selected */
-#endif
-#ifndef LISTBOX_TEXTCOLOR1_DEFAULT
 #define LISTBOX_TEXTCOLOR1_DEFAULT GUI_WHITE   /* Selected, no focus */
-#endif
-#ifndef LISTBOX_TEXTCOLOR2_DEFAULT
 #define LISTBOX_TEXTCOLOR2_DEFAULT GUI_WHITE   /* Selected, focus */
-#endif
-#ifndef LISTBOX_TEXTCOLOR3_DEFAULT
 #define LISTBOX_TEXTCOLOR3_DEFAULT GUI_GRAY    /* Disabled */
-#endif
-#ifndef LISTBOX_SCROLLSTEP_H_DEFAULT
 #define LISTBOX_SCROLLSTEP_H_DEFAULT 10
-#endif
 LISTBOX_PROPS LISTBOX_DefaultProps = {
   LISTBOX_FONT_DEFAULT,
   LISTBOX_SCROLLSTEP_H_DEFAULT,

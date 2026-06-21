@@ -7,18 +7,10 @@
 #include "DIALOG.h"
 #include "MESSAGEBOX.h"
 
-#ifndef MESSAGEBOX_BORDER
 #define MESSAGEBOX_BORDER 4
-#endif
-#ifndef MESSAGEBOX_XSIZEOK
 #define MESSAGEBOX_XSIZEOK 50
-#endif
-#ifndef MESSAGEBOX_YSIZEOK
 #define MESSAGEBOX_YSIZEOK 20
-#endif
-#ifndef MESSAGEBOX_BKCOLOR
 #define MESSAGEBOX_BKCOLOR GUI_WHITE
-#endif
 #define ID_FRAME 100
 static void _MESSAGEBOX_cbCallback(WM_MESSAGE *pMsg) {
 	WM_HWIN hWin = pMsg->hWin;

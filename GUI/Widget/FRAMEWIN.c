@@ -12,45 +12,25 @@
 #include "FRAMEWIN_Private.h"
 
 /* Support for 3D effects */
-#ifndef FRAMEWIN_CLIENTCOLOR_DEFAULT
 #define FRAMEWIN_CLIENTCOLOR_DEFAULT 0xc0c0c0
-#endif
 /* Default for top frame size */
-#ifndef FRAMEWIN_TITLEHEIGHT_DEFAULT
 #define FRAMEWIN_TITLEHEIGHT_DEFAULT 0
-#endif
 /* Default for left/right/top/bottom frame size */
-#ifndef FRAMEWIN_BORDER_DEFAULT
 #define FRAMEWIN_BORDER_DEFAULT 3
-#endif
 /* Default for inner frame size */
-#ifndef FRAMEWIN_IBORDER_DEFAULT
 #define FRAMEWIN_IBORDER_DEFAULT 1
-#endif
 /* Default font */
-#ifndef FRAMEWIN_DEFAULT_FONT
 #define FRAMEWIN_DEFAULT_FONT &GUI_Font8_1
-#endif
 /* Default barcolor when framewin is active */
-#ifndef FRAMEWIN_BARCOLOR_ACTIVE_DEFAULT
 #define FRAMEWIN_BARCOLOR_ACTIVE_DEFAULT 0xFF0000
-#endif
 /* Default barcolor when framewin is inactive */
-#ifndef FRAMEWIN_BARCOLOR_INACTIVE_DEFAULT
 #define FRAMEWIN_BARCOLOR_INACTIVE_DEFAULT 0x404040
-#endif
 /* Default framecolor */
-#ifndef FRAMEWIN_FRAMECOLOR_DEFAULT
 #define FRAMEWIN_FRAMECOLOR_DEFAULT 0xAAAAAA
-#endif
 /* Default textcolor when framewin is active */
-#ifndef FRAMEWIN_TEXTCOLOR0_DEFAULT
 #define FRAMEWIN_TEXTCOLOR0_DEFAULT GUI_WHITE
-#endif
 /* Default textcolor when framewin is inactive */
-#ifndef FRAMEWIN_TEXTCOLOR1_DEFAULT
 #define FRAMEWIN_TEXTCOLOR1_DEFAULT GUI_WHITE
-#endif
 FRAMEWIN_PROPS FRAMEWIN__DefaultProps = {
   FRAMEWIN_DEFAULT_FONT,
   FRAMEWIN_BARCOLOR_INACTIVE_DEFAULT,

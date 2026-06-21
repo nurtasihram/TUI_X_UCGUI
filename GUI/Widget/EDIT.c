@@ -8,31 +8,15 @@
 #include "EDIT_Private.h"
 
 /* Define default fonts */
-#ifndef EDIT_FONT_DEFAULT
 #define EDIT_FONT_DEFAULT &GUI_Font13_1
-#endif
-#ifndef EDIT_ALIGN_DEFAULT
 #define EDIT_ALIGN_DEFAULT GUI_TA_LEFT | GUI_TA_VCENTER
-#endif
 /* Define colors */
-#ifndef EDIT_BKCOLOR0_DEFAULT
 #define EDIT_BKCOLOR0_DEFAULT 0xC0C0C0
-#endif
-#ifndef EDIT_BKCOLOR1_DEFAULT
 #define EDIT_BKCOLOR1_DEFAULT GUI_WHITE
-#endif
-#ifndef EDIT_TEXTCOLOR0_DEFAULT
 #define EDIT_TEXTCOLOR0_DEFAULT GUI_BLACK
-#endif
-#ifndef EDIT_TEXTCOLOR1_DEFAULT
 #define EDIT_TEXTCOLOR1_DEFAULT GUI_BLACK
-#endif
-#ifndef EDIT_BORDER_DEFAULT
 #define EDIT_BORDER_DEFAULT 1
-#endif
-#ifndef EDIT_XOFF
 #define EDIT_XOFF 1
-#endif
 EDIT_PROPS EDIT__DefaultProps = {
   EDIT_ALIGN_DEFAULT,
   EDIT_BORDER_DEFAULT,

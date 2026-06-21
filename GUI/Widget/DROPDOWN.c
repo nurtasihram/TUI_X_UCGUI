@@ -17,34 +17,16 @@
 #include "DROPDOWN_Private.h"
 
 /* Define default fonts */
-#ifndef DROPDOWN_FONT_DEFAULT
 #define DROPDOWN_FONT_DEFAULT &GUI_Font13_1
-#endif
 /* Define colors */
-#ifndef DROPDOWN_BKCOLOR0_DEFAULT
 #define DROPDOWN_BKCOLOR0_DEFAULT GUI_WHITE     /* Not selected */
-#endif
-#ifndef DROPDOWN_BKCOLOR1_DEFAULT
 #define DROPDOWN_BKCOLOR1_DEFAULT GUI_GRAY      /* Selected, no focus */
-#endif
-#ifndef DROPDOWN_BKCOLOR2_DEFAULT
 #define DROPDOWN_BKCOLOR2_DEFAULT GUI_BLUE      /* Selected, focus */
-#endif
-#ifndef DROPDOWN_TEXTCOLOR0_DEFAULT
 #define DROPDOWN_TEXTCOLOR0_DEFAULT GUI_BLACK   /* Not selected */
-#endif
-#ifndef DROPDOWN_TEXTCOLOR1_DEFAULT
 #define DROPDOWN_TEXTCOLOR1_DEFAULT GUI_WHITE   /* Selected, no focus */
-#endif
-#ifndef DROPDOWN_TEXTCOLOR2_DEFAULT
 #define DROPDOWN_TEXTCOLOR2_DEFAULT GUI_WHITE   /* Selected, focus */
-#endif
-#ifndef DROPDOWN_BORDER_DEFAULT
 #define DROPDOWN_BORDER_DEFAULT 2
-#endif
-#ifndef DROPDOWN_ALIGN_DEFAULT
 #define DROPDOWN_ALIGN_DEFAULT GUI_TA_LEFT      /* Default text alignment */
-#endif
 DROPDOWN_PROPS DROPDOWN__DefaultProps = {
   DROPDOWN_FONT_DEFAULT,
   DROPDOWN_BKCOLOR0_DEFAULT,

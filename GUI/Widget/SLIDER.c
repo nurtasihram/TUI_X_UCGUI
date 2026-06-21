@@ -5,26 +5,14 @@
 
 #include "SLIDER.h"
 
-#ifndef SLIDER_SUPPORT_TRANSPARENCY
 #define SLIDER_SUPPORT_TRANSPARENCY WM_SUPPORT_TRANSPARENCY
-#endif
 /* Support for 3D effects */
-#ifndef SLIDER_USE_3D
 #define SLIDER_USE_3D 1
-#endif
 /* Define colors */
-#ifndef SLIDER_BKCOLOR0_DEFAULT
 #define SLIDER_BKCOLOR0_DEFAULT 0xc0c0c0
-#endif
-#ifndef SLIDER_BKCOLOR1_DEFAULT
 #define SLIDER_BKCOLOR1_DEFAULT GUI_WHITE
-#endif
-#ifndef SLIDER_COLOR0_DEFAULT
 #define SLIDER_COLOR0_DEFAULT 0xc0c0c0
-#endif
-#ifndef SLIDER_COLOR1_DEFAULT
 #define SLIDER_COLOR1_DEFAULT GUI_BLACK
-#endif
 typedef struct {
 	WIDGET Widget;
 	RGB_COLOR aBkColor[2];

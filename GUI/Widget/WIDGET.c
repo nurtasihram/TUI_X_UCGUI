@@ -354,9 +354,7 @@ int WIDGET_SetWidth(WM_HWIN hObj, int Width) {
 }
 
 
-#ifndef WIDGET_FILL_TEXT_USES_TRANS
 #define WIDGET_FILL_TEXT_USES_TRANS 0
-#endif
 
 /*********************************************************************
 *

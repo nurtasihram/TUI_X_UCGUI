@@ -8,61 +8,29 @@
 #include "MENU_Private.h"
 
 /* Define default font */
-#ifndef MENU_FONT_DEFAULT
 #define MENU_FONT_DEFAULT         &GUI_Font13_1
-#endif
 /* Define default effect */
-#ifndef MENU_EFFECT_DEFAULT
 #define MENU_EFFECT_DEFAULT       &WIDGET_Effect_3D1L
-#endif
 /* Define colors, index 0, enabled, not selected */
-#ifndef MENU_TEXTCOLOR0_DEFAULT
 #define MENU_TEXTCOLOR0_DEFAULT   GUI_BLACK
-#endif
-#ifndef MENU_BKCOLOR0_DEFAULT
 #define MENU_BKCOLOR0_DEFAULT     GUI_LIGHTGRAY
-#endif
 /* Define colors, index 1, enabled, selected */
-#ifndef MENU_TEXTCOLOR1_DEFAULT
 #define MENU_TEXTCOLOR1_DEFAULT   GUI_WHITE
-#endif
-#ifndef MENU_BKCOLOR1_DEFAULT
 #define MENU_BKCOLOR1_DEFAULT     0x980000
-#endif
 /* Define colors, index 2, disabled, not selected */
-#ifndef MENU_TEXTCOLOR2_DEFAULT
 #define MENU_TEXTCOLOR2_DEFAULT   0x7C7C7C
-#endif
-#ifndef MENU_BKCOLOR2_DEFAULT
 #define MENU_BKCOLOR2_DEFAULT     GUI_LIGHTGRAY
-#endif
 /* Define colors, index 3, disabled, selected */
-#ifndef MENU_TEXTCOLOR3_DEFAULT
 #define MENU_TEXTCOLOR3_DEFAULT   GUI_LIGHTGRAY
-#endif
-#ifndef MENU_BKCOLOR3_DEFAULT
 #define MENU_BKCOLOR3_DEFAULT     0x980000
-#endif
 /* Define colors, index 4, active submenu */
-#ifndef MENU_TEXTCOLOR4_DEFAULT
 #define MENU_TEXTCOLOR4_DEFAULT   GUI_WHITE
-#endif
-#ifndef MENU_BKCOLOR4_DEFAULT
 #define MENU_BKCOLOR4_DEFAULT     0x7C7C7C
-#endif
 /* Define borders */
-#ifndef MENU_BORDER_LEFT_DEFAULT
 #define MENU_BORDER_LEFT_DEFAULT    4
-#endif
-#ifndef MENU_BORDER_RIGHT_DEFAULT
 #define MENU_BORDER_RIGHT_DEFAULT   4
-#endif
-#ifndef MENU_BORDER_TOP_DEFAULT
 #define MENU_BORDER_TOP_DEFAULT     2
-#endif
-#ifndef MENU_BORDER_BOTTOM_DEFAULT
 #define MENU_BORDER_BOTTOM_DEFAULT  2
-#endif
 MENU_PROPS MENU__DefaultProps = {
   MENU_TEXTCOLOR0_DEFAULT,
   MENU_TEXTCOLOR1_DEFAULT,

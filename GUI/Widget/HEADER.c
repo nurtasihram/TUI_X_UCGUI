@@ -7,30 +7,16 @@
 #include "HEADER.h"
 #include "HEADER_Private.h"
 
-#ifndef HEADER_SUPPORT_DRAG
 #define HEADER_SUPPORT_DRAG 1
-#endif
-#ifndef HEADER_BORDER_V_DEFAULT
 #define HEADER_BORDER_V_DEFAULT 0
-#endif
-#ifndef HEADER_BORDER_H_DEFAULT
 #define HEADER_BORDER_H_DEFAULT 2
-#endif
 /* Define default fonts */
-#ifndef HEADER_FONT_DEFAULT
 #define HEADER_FONT_DEFAULT &GUI_Font13_1
-#endif
 /* Define colors */
-#ifndef HEADER_BKCOLOR_DEFAULT
 #define HEADER_BKCOLOR_DEFAULT 0xAAAAAA
-#endif
-#ifndef HEADER_TEXTCOLOR_DEFAULT
 #define HEADER_TEXTCOLOR_DEFAULT GUI_BLACK
-#endif
 /* Define cursors */
-#ifndef HEADER_CURSOR_DEFAULT
 #define HEADER_CURSOR_DEFAULT &GUI_CursorHeaderM
-#endif
 /* Remember the old cursor */
 static const GUI_CURSOR GUI_UNI_PTR *_pOldCursor;
 /* Default values */

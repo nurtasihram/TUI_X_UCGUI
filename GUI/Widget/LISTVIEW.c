@@ -15,35 +15,17 @@
 #include "LISTVIEW_Private.h"
 
 /* Define default fonts */
-#ifndef LISTVIEW_FONT_DEFAULT
 #define LISTVIEW_FONT_DEFAULT &GUI_Font13_1
-#endif
 /* Define colors */
-#ifndef LISTVIEW_BKCOLOR0_DEFAULT
 #define LISTVIEW_BKCOLOR0_DEFAULT GUI_WHITE     /* Not selected */
-#endif
-#ifndef LISTVIEW_BKCOLOR1_DEFAULT
 #define LISTVIEW_BKCOLOR1_DEFAULT GUI_GRAY      /* Selected, no focus */
-#endif
-#ifndef LISTVIEW_BKCOLOR2_DEFAULT
 #define LISTVIEW_BKCOLOR2_DEFAULT GUI_BLUE      /* Selected, focus */
-#endif
-#ifndef LISTVIEW_TEXTCOLOR0_DEFAULT
 #define LISTVIEW_TEXTCOLOR0_DEFAULT GUI_BLACK   /* Not selected */
-#endif
-#ifndef LISTVIEW_TEXTCOLOR1_DEFAULT
 #define LISTVIEW_TEXTCOLOR1_DEFAULT GUI_WHITE   /* Selected, no focus */
-#endif
-#ifndef LISTVIEW_TEXTCOLOR2_DEFAULT
 #define LISTVIEW_TEXTCOLOR2_DEFAULT GUI_WHITE   /* Selected, focus */
-#endif
-#ifndef LISTVIEW_GRIDCOLOR_DEFAULT
 #define LISTVIEW_GRIDCOLOR_DEFAULT GUI_LIGHTGRAY
-#endif
 /* Define default alignment */
-#ifndef LISTVIEW_ALIGN_DEFAULT
 #define LISTVIEW_ALIGN_DEFAULT (GUI_TA_VCENTER | GUI_TA_HCENTER)
-#endif
 LISTVIEW_PROPS LISTVIEW_DefaultProps = {
   LISTVIEW_BKCOLOR0_DEFAULT,
   LISTVIEW_BKCOLOR1_DEFAULT,

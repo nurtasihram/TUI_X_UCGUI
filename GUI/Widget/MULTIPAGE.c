@@ -11,26 +11,14 @@
 #define MAX(a, b)	((a > b) ? a : b)
 
 /* Define default fonts */
-#ifndef MULTIPAGE_FONT_DEFAULT
 #define MULTIPAGE_FONT_DEFAULT        &GUI_Font13_1
-#endif
-#ifndef MULTIPAGE_ALIGN_DEFAULT
 #define MULTIPAGE_ALIGN_DEFAULT       (MULTIPAGE_ALIGN_LEFT | MULTIPAGE_ALIGN_TOP)
-#endif
 /* Define colors */
 #define MULTIPAGE_NUMCOLORS 2
-#ifndef MULTIPAGE_BKCOLOR0_DEFAULT
 #define MULTIPAGE_BKCOLOR0_DEFAULT    0xD0D0D0 /* disabled page */
-#endif
-#ifndef MULTIPAGE_BKCOLOR1_DEFAULT
 #define MULTIPAGE_BKCOLOR1_DEFAULT    0xC0C0C0 /* enabled page */
-#endif
-#ifndef MULTIPAGE_TEXTCOLOR0_DEFAULT
 #define MULTIPAGE_TEXTCOLOR0_DEFAULT  0x808080 /* disabled page */
-#endif
-#ifndef MULTIPAGE_TEXTCOLOR1_DEFAULT
 #define MULTIPAGE_TEXTCOLOR1_DEFAULT  0x000000 /* enabled page */
-#endif
 typedef struct {
 	WM_HWIN hWin;
 	uint8_t      Status;

@@ -6,22 +6,12 @@
 #include "WM_Intern.h"
 
 /* Define default fonts */
-#ifndef MULTIEDIT_FONT_DEFAULT
 #define MULTIEDIT_FONT_DEFAULT &GUI_Font13_1
-#endif
 /* Define colors */
-#ifndef MULTIEDIT_BKCOLOR0_DEFAULT
 #define MULTIEDIT_BKCOLOR0_DEFAULT   GUI_WHITE
-#endif
-#ifndef MULTIEDIT_BKCOLOR1_DEFAULT
 #define MULTIEDIT_BKCOLOR1_DEFAULT   0xC0C0C0
-#endif
-#ifndef MULTIEDIT_TEXTCOLOR0_DEFAULT
 #define MULTIEDIT_TEXTCOLOR0_DEFAULT GUI_BLACK
-#endif
-#ifndef MULTIEDIT_TEXTCOLOR1_DEFAULT
 #define MULTIEDIT_TEXTCOLOR1_DEFAULT GUI_BLACK
-#endif
 /* Define character for password mode */
 #define MULTIEDIT_PASSWORD_CHAR   '*'
 #define NUM_DISP_MODES 2

@@ -10,29 +10,15 @@
 #include "CHECKBOX_Private.h"
 
 /* Define default fonts */
-#ifndef CHECKBOX_FONT_DEFAULT
 #define CHECKBOX_FONT_DEFAULT &GUI_Font13_1
-#endif
 /* Define default images */
-#ifndef CHECKBOX_IMAGE0_DEFAULT
 #define CHECKBOX_IMAGE0_DEFAULT &CHECKBOX__abmCheck[0]
-#endif
-#ifndef CHECKBOX_IMAGE1_DEFAULT
 #define CHECKBOX_IMAGE1_DEFAULT &CHECKBOX__abmCheck[1]
-#endif
 /* Define widget background color */
-#ifndef CHECKBOX_BKCOLOR_DEFAULT
 #define CHECKBOX_BKCOLOR_DEFAULT 0xC0C0C0           /* Text background color */
-#endif
-#ifndef CHECKBOX_SPACING_DEFAULT
 #define CHECKBOX_SPACING_DEFAULT 4
-#endif
-#ifndef CHECKBOX_TEXTCOLOR_DEFAULT
 #define CHECKBOX_TEXTCOLOR_DEFAULT GUI_BLACK
-#endif
-#ifndef CHECKBOX_TEXTALIGN_DEFAULT
 #define CHECKBOX_TEXTALIGN_DEFAULT (GUI_TA_LEFT | GUI_TA_VCENTER)
-#endif
 CHECKBOX_PROPS CHECKBOX__DefaultProps = {
   CHECKBOX_FONT_DEFAULT,
   CHECKBOX_BKCOLOR0_DEFAULT,

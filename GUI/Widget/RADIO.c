@@ -8,29 +8,17 @@
 #include "RADIO_Private.h"
 
 /* Define default image inactiv */
-#ifndef RADIO_IMAGE0_DEFAULT
 #define RADIO_IMAGE0_DEFAULT        &RADIO__abmRadio[0]
-#endif
 /* Define default image activ */
-#ifndef RADIO_IMAGE1_DEFAULT
 #define RADIO_IMAGE1_DEFAULT        &RADIO__abmRadio[1]
-#endif
 /* Define default image check */
-#ifndef RADIO_IMAGE_CHECK_DEFAULT
 #define RADIO_IMAGE_CHECK_DEFAULT   &RADIO__bmCheck
-#endif
 /* Define default font */
-#ifndef RADIO_FONT_DEFAULT
 #define RADIO_FONT_DEFAULT          &GUI_Font13_1
-#endif
 /* Define default text color */
-#ifndef RADIO_DEFAULT_TEXT_COLOR
 #define RADIO_DEFAULT_TEXT_COLOR    GUI_BLACK
-#endif
 /* Define default background color */
-#ifndef RADIO_DEFAULT_BKCOLOR
 #define RADIO_DEFAULT_BKCOLOR       0xC0C0C0
-#endif
 #define RADIO_BORDER                  2
 tRADIO_SetValue* RADIO__pfHandleSetValue;
 RGB_COLOR         RADIO__DefaultTextColor       = RADIO_DEFAULT_TEXT_COLOR;
@@ -536,12 +524,8 @@ void RADIO_SetTextColor(RADIO_Handle hObj, RGB_COLOR Color) {
 	}
 }
 
-#ifndef RADIO_BKCOLOR0_DEFAULT
 #define RADIO_BKCOLOR0_DEFAULT 0xc0c0c0           /* Inactive color */
-#endif
-#ifndef RADIO_BKCOLOR1_DEFAULT
 #define RADIO_BKCOLOR1_DEFAULT GUI_WHITE          /* Active color */
-#endif
 
 
 /* Colors */
