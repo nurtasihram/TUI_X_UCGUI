@@ -93,15 +93,15 @@ WM_HWIN MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags)
 		xSizeFrame = xSizeCaption + BorderSize * 2;
 	}
 	/* Check maximum */
-	if (xSizeFrame > LCD_GET_XSIZE()) {
-		xSizeFrame = LCD_GET_XSIZE();
+	if (xSizeFrame > LCD_GetXSize()) {
+		xSizeFrame = LCD_GetXSize();
 	}
-	if (ySizeFrame > LCD_GET_YSIZE()) {
-		ySizeFrame = LCD_GET_YSIZE();
+	if (ySizeFrame > LCD_GetYSize()) {
+		ySizeFrame = LCD_GetYSize();
 	}
 	/* Calculate position of framewin */
-	x0 = (LCD_GET_XSIZE() - xSizeFrame) / 2;
-	y0 = (LCD_GET_YSIZE() - ySizeFrame) / 2;
+	x0 = (LCD_GetXSize() - xSizeFrame) / 2;
+	y0 = (LCD_GetYSize() - ySizeFrame) / 2;
 	/* restore modified Context */
 	GUI_SetFont(pOldFont);
 	/* Fill frame win resource */

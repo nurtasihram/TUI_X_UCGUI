@@ -28,7 +28,6 @@ static U16 _GetCharCode(const char GUI_UNI_PTR * s) {
     Char &= 0x3f;
     r |= Char;
   } else {
-    GUI_DEBUG_ERROROUT("Illegal character during UTF-8 decoding!");
     r = 1;       /* Illegal character. To avoid endless loops in upper layers, we return 1 rather than 0. */
   }
   return r;
@@ -50,7 +49,6 @@ static int _GetCharSize(const char GUI_UNI_PTR * s) {
   } else if ((Char & 0xf0) == 0xe0) {
     return 3;
   }
-  GUI_DEBUG_ERROROUT("Illegal character during UTF-8 decoding!");
   return 1;       /* Illegal character. To avoid endless loops in upper layers, we return 1 rather than 0. */
 }
 

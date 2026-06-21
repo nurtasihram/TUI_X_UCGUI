@@ -54,8 +54,8 @@ void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV_Handle hMem) {
     /* Make sure bounds are within LCD area so we can call driver directly */
     LCD_LIMIT(r.x0, <, 0);
     LCD_LIMIT(r.y0, <, 0);
-    LCD_LIMIT(r.x1, >, LCD_GET_XSIZE() - 1);
-    LCD_LIMIT(r.y1, >, LCD_GET_YSIZE() - 1);
+    LCD_LIMIT(r.x1, >, LCD_GetXSize() - 1);
+    LCD_LIMIT(r.y1, >, LCD_GetYSize() - 1);
     XMax = r.x1;
     for (y = r.y0; y <= r.y1; y++) {
       int x = r.x0;

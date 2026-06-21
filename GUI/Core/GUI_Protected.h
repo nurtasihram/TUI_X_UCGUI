@@ -108,8 +108,8 @@ struct GUI_Usage {
 
 #endif
 
-#define LCD_HL_DrawHLine             LCD_DrawHLine
-#define LCD_HL_DrawPixel             LCD_DrawPixel
+#define LCD_HL_DrawHLine LCD_DrawHLine
+#define LCD_HL_DrawPixel LCD_DrawPixel
 
 #define GUI_ZEROINIT(Obj) GUI_MEMSET(Obj, 0, sizeof(Obj))
 

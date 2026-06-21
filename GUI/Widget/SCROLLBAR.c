@@ -312,7 +312,6 @@ static void _SCROLLBAR_Callback(WM_MESSAGE *pMsg) {
 			SCROLLBAR__InvalidatePartner(hObj);
 			break;
 		case WM_PAINT:
-			GUI_DEBUG_LOG("SCROLLBAR: _Callback(WM_PAINT)\n");
 			_Paint(pObj);
 			return;
 		case WM_TOUCH:
@@ -386,7 +385,6 @@ SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 		SCROLLBAR__InvalidatePartner(hObj);
 	}
 	else {
-		GUI_DEBUG_ERROROUT_IF(hObj == 0, "SCROLLBAR_Create failed")
 	}
 
 	return hObj;

@@ -51,7 +51,6 @@ PROGBAR_Obj *PROGBAR_h2p(PROGBAR_Handle h) {
 	PROGBAR_Obj *p = (PROGBAR_Obj *)GUI_ALLOC_h2p(h);
 	if (p) {
 		if (p->DebugId != OBJECT_ID) {
-			GUI_DEBUG_ERROROUT("PROGBAR.C: Wrong handle type or Object not init'ed");
 			return 0;
 		}
 	}

@@ -42,8 +42,6 @@ static void  _DrawBitLine1BPP(int x, int y, U8 const GUI_UNI_PTR *p, int Diff, i
 			break;
 	}
 }
-
-#if (LCD_MAX_LOG_COLORS > 2)
 static void  _DrawBitLine2BPP(int x, int y, U8 const GUI_UNI_PTR *p, int Diff, int xsize, const LCD_PIXELINDEX *pTrans) {
 	LCD_PIXELINDEX Pixels = *p;
 	int CurrentPixel = Diff;
@@ -107,9 +105,6 @@ static void  _DrawBitLine2BPP(int x, int y, U8 const GUI_UNI_PTR *p, int Diff, i
 			break;
 	}
 }
-#endif
-
-#if (LCD_MAX_LOG_COLORS > 4)
 static void  _DrawBitLine4BPP(int x, int y, U8 const GUI_UNI_PTR *p, int Diff, int xsize, const LCD_PIXELINDEX *pTrans) {
 	LCD_PIXELINDEX Pixels = *p;
 	int CurrentPixel = Diff;
@@ -173,9 +168,6 @@ static void  _DrawBitLine4BPP(int x, int y, U8 const GUI_UNI_PTR *p, int Diff, i
 			break;
 	}
 }
-#endif
-
-#if (LCD_MAX_LOG_COLORS > 16)
 static void  _DrawBitLine8BPP(int x, int y, U8 const GUI_UNI_PTR *p, int xsize, const LCD_PIXELINDEX *pTrans) {
 	LCD_PIXELINDEX Pixel;
 	switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
@@ -212,9 +204,6 @@ static void  _DrawBitLine8BPP(int x, int y, U8 const GUI_UNI_PTR *p, int xsize, 
 			break;
 	}
 }
-#endif
-
-#if (LCD_BITSPERPIXEL > 8)
 static void  DrawBitLine16BPP(int x, int y, U16 const GUI_UNI_PTR *p, int xsize, const LCD_PIXELINDEX *pTrans) {
 	LCD_PIXELINDEX pixel;
 	if ((GUI_Context.DrawMode & LCD_DRAWMODE_TRANS) == 0) {
@@ -249,7 +238,6 @@ static void  DrawBitLine16BPP(int x, int y, U16 const GUI_UNI_PTR *p, int xsize,
 		}
 	}
 }
-#endif
 
 void LCD_L0_XorPixel(int x, int y) {
 	LCD_PIXELINDEX PixelIndex = LCD_L0_GetPixelIndex(x, y);
@@ -301,32 +289,19 @@ void LCD_L0_DrawBitmap(int x0, int y0,
 			case 1:
 				_DrawBitLine1BPP(x0, i + y0, pData, Diff, xsize, pTrans);
 				break;
-#if (LCD_MAX_LOG_COLORS > 2)
 			case 2:
 				_DrawBitLine2BPP(x0, i + y0, pData, Diff, xsize, pTrans);
 				break;
-#endif
-#if (LCD_MAX_LOG_COLORS > 4)
 			case 4:
 				_DrawBitLine4BPP(x0, i + y0, pData, Diff, xsize, pTrans);
 				break;
-#endif
-#if (LCD_MAX_LOG_COLORS > 16)
 			case 8:
 				_DrawBitLine8BPP(x0, i + y0, pData, xsize, pTrans);
 				break;
-#endif
-#if (LCD_BITSPERPIXEL > 8)
 			case 16:
 				DrawBitLine16BPP(x0, i + y0, (const U16 *)pData, xsize, pTrans);
 				break;
-#endif
 		}
 		pData += BytesPerLine;
 	}
-}
-
-void LCD_L0_SetOrg(int x, int y) {
-	GUI_USE_PARA(x);
-	GUI_USE_PARA(y);
 }

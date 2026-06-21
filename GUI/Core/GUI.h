@@ -7,10 +7,6 @@
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
 
-#if defined (__C51__) && GUI_SUPPORT_MEMDEV
-  #error __C51__ (Keil) can not support function pointers sufficiently !  -> Disable memory devices  -> GUI_SUPPORT_MEMDEV 0
-#endif
-
 #define GUI_COUNTOF(a) (sizeof(a) / sizeof(a[0]))
 
 /************************************************************
@@ -171,16 +167,6 @@ Note that we have chosen the values to be close to existing
 #define GUI_TS_STRIKETHRU       (1 << 1)
 #define GUI_TS_OVERLINE         (1 << 2)
 
-#define GUI_LS_SOLID        (0)
-#define GUI_LS_DASH         (1)
-#define GUI_LS_DOT          (2)
-#define GUI_LS_DASHDOT      (3)
-#define GUI_LS_DASHDOTDOT   (4)
-
-#define GUI_PS_ROUND        (0)
-#define GUI_PS_FLAT         (1)
-#define GUI_PS_SQUARE       (2)
-
 /*      *********************************
         *
         *      Standard colors
@@ -317,19 +303,15 @@ typedef struct {
   U8             DrawMode;
   U8             TextStyle;
 /* Variables in GL module */
-  GUI_RECT* pClipRect_HL;                /* High level clip rectangle ... Speed optimization so drawing routines can optimize */
-  U8        PenSize;
-  U8        PenShape;
-  U8        LineStyle;
-  U8        FillStyle;
+  GUI_RECT* pClipRect_HL; /* High level clip rectangle ... Speed optimization so drawing routines can optimize */
 /* Variables in GUICHAR module */
   const GUI_FONT           GUI_UNI_PTR * pAFont;
-  const GUI_UC_ENC_APILIST * pUC_API;    /* Unicode encoding API */
+  const GUI_UC_ENC_APILIST * pUC_API; /* Unicode encoding API */
   I16P LBorder;
   I16P DispPosX, DispPosY;
   I16P DrawPosX, DrawPosY;
   I16P TextMode, TextAlign;
-  GUI_COLOR Color, BkColor;           /* Required only when changing devices and for speed opt (caching) */
+  GUI_COLOR Color, BkColor; /* Required only when changing devices and for speed opt (caching) */
 /* Variables in WM module */
   const GUI_RECT* WM__pUserClipRect;
   GUI_HWIN hAWin;
@@ -356,7 +338,6 @@ typedef struct {
 int          GUI_Init(void);
 void         GUI_SetDefault(void);
 GUI_DRAWMODE GUI_SetDrawMode(GUI_DRAWMODE dm);
-const char * GUI_GetVersionString(void);
 void         GUI_SaveContext   (      GUI_CONTEXT* pContext);
 void         GUI_RestoreContext(const GUI_CONTEXT* pContext);
 
@@ -371,34 +352,10 @@ int  GUI__DivideRound     (int a, int b);
 I32  GUI__DivideRound32   (I32 a, I32 b);
 int  GUI__SetText(GUI_HMEM* phText, const char* s);
 
-
 GUI_COLOR GUI_GetBkColor     (void);
 GUI_COLOR GUI_GetColor       (void);
-int       GUI_GetBkColorIndex(void);
-int       GUI_GetColorIndex  (void);
-U8        GUI_GetPenSize     (void);
-U8        GUI_GetPenShape    (void);
-U8        GUI_GetLineStyle   (void);
-U8        GUI_GetFillStyle   (void);
-
 void      GUI_SetBkColor   (GUI_COLOR);
 void      GUI_SetColor     (GUI_COLOR);
-void      GUI_SetBkColorIndex(int Index);
-void      GUI_SetColorIndex(int Index);
-
-U8        GUI_SetPenSize   (U8 Size);
-U8        GUI_SetPenShape  (U8 Shape);
-U8        GUI_SetLineStyle (U8 Style);
-U8        GUI_SetFillStyle (U8 Style);
-
-/* Get/Set Character used as decimal point (usually '.' or ',') */
-char      GUI_GetDecChar(void);
-char      GUI_SetDecChar(char c);
-
-GUI_COLOR GUI_Color2VisColor(GUI_COLOR color);
-char      GUI_ColorIsAvailable(GUI_COLOR color);
-U32       GUI_CalcColorDist (GUI_COLOR Color0, GUI_COLOR  Color1);
-U32       GUI_CalcVisColorError(GUI_COLOR color);
 
 void GUI_Log      (const char *s);
 void GUI_Log1     (const char *s, int p0);
@@ -422,44 +379,19 @@ int  GUI_BMP_GetYSize     (const void * pFileData);
 void GUI_Clear            (void);
 void GUI_ClearRect        (int x0, int y0, int x1, int y1);
 void GUI_ClearRectEx      (const GUI_RECT* pRect);
-void GUI_DrawArc          (int x0, int y0, int rx, int ry, int a0, int a1);
 void GUI_DrawBitmap       (const GUI_BITMAP GUI_UNI_PTR * pBM, int x0, int y0);
-void GUI_DrawBitmapMag    (const GUI_BITMAP GUI_UNI_PTR * pBM, int x0, int y0, int XMul, int YMul);
 void GUI_DrawBitmapEx     (const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0, int xCenter, int yCenter, int xMag, int yMag);
-void GUI_DrawBitmapExp    (int x0, int y0, int XSize, int YSize, int XMul,  int YMul, int BitsPerPixel, int BytesPerLine, const U8 GUI_UNI_PTR * pData, const GUI_LOGPALETTE GUI_UNI_PTR * pPal);
-void GUI_DrawCircle       (int x0, int y0, int r);
-void GUI_DrawEllipse      (int x0, int y0, int rx, int ry);
-void GUI_DrawGraph        (I16 *pay, int NumPoints, int x0, int y0);
 void GUI_DrawHLine        (int y0, int x0, int x1);
-void GUI_DrawLine         (int x0, int y0, int x1, int y1);
-void GUI_DrawLineRel      (int dx, int dy);
-void GUI_DrawLineTo       (int x, int y);
-void GUI_DrawPie          (int x0, int y0, int r, int a0, int a1, int Type);
 void GUI_DrawPixel        (int x, int y);
 void GUI_DrawPoint        (int x, int y);
-void GUI_DrawPolygon      (const GUI_POINT* pPoints, int NumPoints, int x0, int y0);
-void GUI_DrawPolyLine     (const GUI_POINT* pPoints, int NumPoints, int x0, int y0);
 void GUI_DrawFocusRect    (const GUI_RECT *pRect, int Dist);
 void GUI_DrawRect         (int x0, int y0, int x1, int y1);
 void GUI_DrawRectEx       (const GUI_RECT *pRect);
 void GUI_DrawVLine        (int x0, int y0, int y1);
-void GUI_FillCircle       (int x0, int y0, int r);
-void GUI_FillEllipse      (int x0, int y0, int rx, int ry);
-void GUI_FillPolygon      (const GUI_POINT* pPoints, int NumPoints, int x0, int y0);
 void GUI_FillRect         (int x0, int y0, int x1, int y1);
 void GUI_FillRectEx       (const GUI_RECT* pRect);
 void GUI_GetClientRect    (GUI_RECT* pRect);
 void GUI_InvertRect       (int x0, int y0, int x1, int y1);
-void GUI_MoveRel          (int dx, int dy);
-void GUI_MoveTo           (int x, int y);
-
-typedef struct {
-  int XSize;
-  int YSize;
-} GUI_JPEG_INFO;
-
-int  GUI_JPEG_Draw        (const void * pFileData, int DataSize, int x0, int y0);
-int  GUI_JPEG_GetInfo     (const void * pFileData, int DataSize, GUI_JPEG_INFO* pInfo);
 
 typedef struct {
   const GUI_UNI_PTR GUI_BITMAP * pBitmap;
@@ -525,7 +457,6 @@ int   GUI_SetTextAlign(int Align);
 int   GUI_SetTextMode(int Mode);
 char  GUI_SetTextStyle(char Style);
 int   GUI_SetLBorder(int x);
-void  GUI_SetOrg(int x, int y);
 const GUI_FONT GUI_UNI_PTR * GUI_SetFont(const GUI_FONT GUI_UNI_PTR * pNewFont);
 char  GUI_GotoXY(int x, int y);
 char  GUI_GotoX(int x);
@@ -544,42 +475,6 @@ void  GUI_UC_SetEncodeUTF8    (void);
 void GUI_UC_DispString(const U16 GUI_UNI_PTR *s);
 void GUI_UC2DB (U16 Code, U8* pOut);
 U16  GUI_DB2UC (U8 Byte0, U8 Byte1);
-
-/*    *********************************
-      *                               *
-      *         GUIVAL.C              *
-      *                               *
-      *********************************
-*/
-
-void GUI_DispBin  (U32  v, U8 Len);
-void GUI_DispBinAt(U32  v, I16P x, I16P y, U8 Len);
-void GUI_DispDec  (I32 v, U8 Len);
-void GUI_DispDecAt (I32 v, I16P x, I16P y, U8 Len);
-void GUI_DispDecMin(I32 v);
-void GUI_DispDecShift(I32 v, U8 Len, U8 Shift);
-void GUI_DispDecSpace(I32 v, U8 MaxDigits);
-void GUI_DispHex  (U32 v, U8 Len);
-void GUI_DispHexAt(U32 v, I16P x, I16P y, U8 Len);
-void GUI_DispSDec(I32 v, U8 Len);
-void GUI_DispSDecShift(I32 v, U8 Len, U8 Shift);
-
-/*    *********************************
-      *                               *
-      *         GUIVALF.C             *
-      *                               *
-      *********************************
-
-Routines to display floating point values. These routines use the routines
-defined in the module GUIVAL.C as base routines.
-
-*/
-
-void GUI_DispFloat    (float v, char Len);
-void GUI_DispFloatFix (float v, char Len, char Fract);
-void GUI_DispFloatMin (float v, char Fract);
-void GUI_DispSFloatFix(float v, char Len, char Fract);
-void GUI_DispSFloatMin(float v, char Fract);
 
 #if !defined(GUI_ALLOC_ALLOC)
   /* diagnostics */
@@ -628,7 +523,6 @@ GUI_HMEM           GUI_ALLOC_Realloc    (GUI_HMEM hOld, int NewSize);
   void GUI_MEMDEV_CopyFromLCD   (GUI_MEMDEV_Handle hMem);
   void GUI_MEMDEV_CopyToLCD     (GUI_MEMDEV_Handle hMem);
   void GUI_MEMDEV_CopyToLCDAt   (GUI_MEMDEV_Handle hMem, int x, int y);
-  int  GUI_MEMDEV_CompareWithLCD(GUI_MEMDEV_Handle hMem, int*px, int*py, int *pExp, int*pAct);
   void GUI_MEMDEV_Delete        (GUI_MEMDEV_Handle MemDev);
   int  GUI_MEMDEV_GetXSize      (GUI_MEMDEV_Handle hMem);
   int  GUI_MEMDEV_GetYSize      (GUI_MEMDEV_Handle hMem);
@@ -654,17 +548,6 @@ void               GUI_MEASDEV_Delete (GUI_MEASDEV_Handle hMemDev);
 void               GUI_MEASDEV_Select (GUI_MEASDEV_Handle hMem);
 void               GUI_MEASDEV_GetRect(GUI_MEASDEV_Handle hMem, GUI_RECT *pRect);
 void               GUI_MEASDEV_ClearRect(GUI_MEASDEV_Handle hMem);
-
-void GUI_RotatePolygon(GUI_POINT* pDest, const GUI_POINT* pSrc, int NumPoints, float Angle);
-void GUI_MagnifyPolygon(GUI_POINT* pDest, const GUI_POINT* pSrc, int NumPoints, int Mag);
-void GUI_EnlargePolygon(GUI_POINT* pDest, const GUI_POINT* pSrc, int NumPoints, int Len);
-
-void GUI_DrawStreamedBitmap(const GUI_BITMAP_STREAM *pBitmapStream, int x, int y);
-
-typedef void GUI_CALLBACK_VOID_U8_P(U8 Data, void * p);
-
-void GUI_BMP_SerializeEx(GUI_CALLBACK_VOID_U8_P * pfSerialize, int x0, int y0, int xSize, int ySize, void * p);
-void GUI_BMP_Serialize  (GUI_CALLBACK_VOID_U8_P * pfSerialize, void * p);
 
 void GUI_Delay  (int Period);
 int  GUI_GetTime(void);
@@ -721,8 +604,6 @@ int  GUI_WaitKey(void);
 void GUI_StoreKey(int c);
 void GUI_ClearKeyBuffer(void);
 
-void GUI_WaitEvent(void);
-
 void GUI_PID_StoreState(const GUI_PID_STATE *pState);
 int  GUI_PID_GetState  (      GUI_PID_STATE *pState);
 
@@ -734,35 +615,6 @@ void GUI_TOUCH_GetUnstable  (int* px, int* py);  /* for diagnostics only */
 void GUI_TOUCH_StoreState   (int x, int y);
 void GUI_TOUCH_StoreStateEx (const GUI_PID_STATE *pState);
 void GUI_TOUCH_StoreUnstable(int x, int y);
-
-void GUI_MOUSE_DRIVER_PS2_Init(void);               /* optional */
-void GUI_MOUSE_DRIVER_PS2_OnRx(unsigned char Data);
-
-void GUI_TOUCH_Exec(void);
-int  GUI_TOUCH_Calibrate(int Coord, int Log0, int Log1, int Phys0, int Phys1);
-void GUI_TOUCH_SetDefaultCalibration(void);
-int  GUI_TOUCH_GetxPhys(void);    /* for diagnostics only */
-int  GUI_TOUCH_GetyPhys(void);    /* for diagnostics only */
-void GUI_TOUCH_GetCalData(int Coord, int* pMin,int* pMax);
-
-/*********************************************************************
-*
-*          TOUCH
-*
-*          imports
-*
-**********************************************************************
-
-Please note: The following functions are required by the module.
-They need to be part of your application software (or rather, part
-of the hardware-layer of your software).
-*/
-
-void GUI_TOUCH_X_ActivateX(void);
-void GUI_TOUCH_X_ActivateY(void);
-void GUI_TOUCH_X_Disable(void);
-int  GUI_TOUCH_X_MeasureX(void);
-int  GUI_TOUCH_X_MeasureY(void);
 
 #define	________	0x0
 #define	_______X	0x1

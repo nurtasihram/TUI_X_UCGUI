@@ -38,22 +38,6 @@ typedef struct {
   const GUI_BITMAP_METHODS * pMethods;
 } GUI_BITMAP;
 
-/* This structure may not be changed because the data that it
-   expects is read in binary form (via any kind of interface,
-   at runtime).
-   This structure should therefor not be changed.
-*/
-typedef struct {
-  U16 ID;           /* Version 1.00 => 100*/
-  U16 Version;
-  U16 XSize;
-  U16 YSize;
-  U16 BytesPerLine;
-  U16 BitsPerPixel;
-  U16 NumColors;
-  U16 HasTrans;
-} GUI_BITMAP_STREAM;
-
 typedef struct {
   int x,y;
   unsigned char Pressed;

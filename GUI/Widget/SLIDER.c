@@ -191,7 +191,6 @@ static void _SLIDER_Callback(WM_MESSAGE *pMsg) {
 	}
 	switch (pMsg->MsgId) {
 		case WM_PAINT:
-			GUI_DEBUG_LOG("SLIDER: _Callback(WM_PAINT)\n");
 			_Paint(pObj, hObj);
 			return;
 		case WM_TOUCH:
@@ -236,7 +235,6 @@ SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 		pObj->NumTicks = -1;
 	}
 	else {
-		GUI_DEBUG_ERROROUT_IF(hObj == 0, "SLIDER_Create failed")
 	}
 
 	return hObj;

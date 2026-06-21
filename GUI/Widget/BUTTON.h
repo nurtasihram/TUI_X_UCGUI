@@ -64,8 +64,6 @@ void             BUTTON_SetFont            (BUTTON_Handle hObj, const GUI_FONT G
 void             BUTTON_SetState           (BUTTON_Handle hObj, int State);                                    /* Not to be doc. */
 void             BUTTON_SetPressed         (BUTTON_Handle hObj, int State);
 void             BUTTON_SetFocussable      (BUTTON_Handle hObj, int State);
-void             BUTTON_SetStreamedBitmap  (BUTTON_Handle hObj, unsigned int Index, const GUI_BITMAP_STREAM * pBitmap);
-void             BUTTON_SetStreamedBitmapEx(BUTTON_Handle hObj, unsigned int Index, const GUI_BITMAP_STREAM * pBitmap, int x, int y);
 void             BUTTON_SetText            (BUTTON_Handle hObj, const char* s);
 void             BUTTON_SetTextAlign       (BUTTON_Handle hObj, int Align);
 void             BUTTON_SetTextColor       (BUTTON_Handle hObj, unsigned int Index, GUI_COLOR Color);

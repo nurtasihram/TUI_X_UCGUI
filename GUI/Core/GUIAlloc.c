@@ -86,12 +86,10 @@ static GUI_ALLOC_DATATYPE _GetSize(GUI_HMEM  hMem) {
 
 static void _Free(GUI_HMEM hMem) {
   GUI_ALLOC_DATATYPE Size;
-  GUI_DEBUG_LOG1("\nGUI_ALLOC_Free(%d)", hMem);
   /* Do some error checking ... */
   #if GUI_DEBUG_LEVEL>0
     /* Block not allocated ? */
     if (aBlock[hMem].Size == 0) {
-      GUI_DEBUG_ERROROUT("GUI_ALLOC_Free(): Invalid hMem");
       return;
     }
   #endif
@@ -127,7 +125,6 @@ static GUI_HMEM _FindFreeHandle(void) {
     if (aBlock[i].Size ==0)
 	  return i;
   }
-  GUI_DEBUG_ERROROUT1("Insufficient memory handles configured (GUI_MAXBLOCKS == %d (See GUIConf.h))", GUI_MAXBLOCKS);
   return GUI_HMEM_NULL;
 }
 
@@ -195,7 +192,6 @@ static GUI_HMEM _Alloc(GUI_ALLOC_DATATYPE size) {
   size = _Size2LegalSize(size);
   /* Check if memory is available at all ...*/
   if (size > GUI_ALLOC.NumFreeBytes) {
-    GUI_DEBUG_WARN1("GUI_ALLOC_Alloc: Insufficient memory configured (Trying to alloc % bytes)", size);
     return 0;
   }
   /* Locate free handle */
@@ -210,7 +206,6 @@ static GUI_HMEM _Alloc(GUI_ALLOC_DATATYPE size) {
   #endif
   /* Occupy hole */
   if (hMemIns==-1) {
-    GUI_DEBUG_ERROROUT1("GUI_ALLOC_Alloc: Could not allocate %d bytes",size);
     return 0;
 	}
   {
@@ -239,7 +234,6 @@ static GUI_HMEM _Alloc(GUI_ALLOC_DATATYPE size) {
 }
 
 void GUI_ALLOC_Init(void) {
-  GUI_DEBUG_LOG("\nGUI_ALLOC_Init...");
   GUI_ALLOC.NumFreeBlocksMin = GUI_ALLOC.NumFreeBlocks = GUI_MAXBLOCKS-1;
   GUI_ALLOC.NumFreeBytesMin  = GUI_ALLOC.NumFreeBytes  = GUI_ALLOC_SIZE;
   GUI_ALLOC.NumUsedBlocks = 0;
@@ -255,10 +249,7 @@ GUI_HMEM GUI_ALLOC_AllocNoInit(GUI_ALLOC_DATATYPE Size) {
   if (Size == 0) {
     return (GUI_HMEM)0;
   }
-
-  GUI_DEBUG_LOG2("\nGUI_ALLOC_AllocNoInit... requesting %d, %d avail", Size, GUI_ALLOC.NumFreeBytes);
   hMem = _Alloc(Size);
-  GUI_DEBUG_LOG1("\nGUI_ALLOC_AllocNoInit : Handle", hMem);
 
   return hMem;
 }
@@ -266,11 +257,9 @@ GUI_HMEM GUI_ALLOC_AllocNoInit(GUI_ALLOC_DATATYPE Size) {
 void* GUI_ALLOC_h2p(GUI_HMEM  hMem) {
   #if GUI_DEBUG_LEVEL > 0
     if (!hMem) {
-      GUI_DEBUG_ERROROUT("\n"__FILE__ " GUI_ALLOC_h2p: illegal argument (0 handle)");
       return 0;
     }
     if (aBlock[hMem].Size == 0) {
-      GUI_DEBUG_ERROROUT("Dereferencing free block");
     }
 
   #endif
@@ -381,7 +370,6 @@ GUI_ALLOC_DATATYPE GUI_ALLOC_GetSize(GUI_HMEM  hMem) {
   /* Do the error checking first */
   #if GUI_DEBUG_LEVEL>0
     if (!hMem) {
-      GUI_DEBUG_ERROROUT("\n"__FILE__ " GUI_ALLOC_h2p: illegal argument (0 handle)");
       return 0;
     }
   #endif
@@ -392,8 +380,6 @@ void GUI_ALLOC_Free(GUI_HMEM hMem) {
   if (hMem == GUI_HMEM_NULL) { /* Note: This is not an error, it is permitted */
     return;
   }
-
-  GUI_DEBUG_LOG1("\nGUI_ALLOC_Free(%d)", hMem);
   _Free(hMem);
 
 }

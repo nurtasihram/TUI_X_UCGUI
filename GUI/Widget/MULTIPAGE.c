@@ -482,7 +482,6 @@ MULTIPAGE_Handle MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 
 	}
 	else {
-		GUI_DEBUG_ERROROUT_IF(hObj == 0, "MULTIPAGE_Create failed")
 	}
 	return hObj;
 }

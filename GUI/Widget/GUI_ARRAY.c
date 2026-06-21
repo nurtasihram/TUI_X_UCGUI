@@ -32,7 +32,6 @@ int GUI_ARRAY_AddItem(GUI_ARRAY *pThis, const void *pNew, int Len) {
 	/* Alloc memory for new item */
 	if (Len) {
 		if ((hNewItem = GUI_ALLOC_AllocInit(pNew, Len)) == 0) {
-			GUI_DEBUG_ERROROUT("GUI_ARRAY_AddItem failed to alloc buffer");
 			r = 1;            /* Error */
 		}
 	}
@@ -43,7 +42,6 @@ int GUI_ARRAY_AddItem(GUI_ARRAY *pThis, const void *pNew, int Len) {
 		/* Add the handle to new item to the buffer */
 		hNewBuffer = GUI_ALLOC_Realloc(pThis->haHandle, (NumItems + 1) * sizeof(WM_HMEM));
 		if (hNewBuffer == 0) {
-			GUI_DEBUG_ERROROUT("GUI_ARRAY_AddItem failed to alloc buffer");
 			GUI_ALLOC_Free(hNewItem);
 			r = 1;            /* Error */
 		}
@@ -252,7 +250,6 @@ void *GUI_ARRAY_GetpItem(const GUI_ARRAY *pThis, unsigned int Index) {
 * Purpose:
 */
 void GUI_ARRAY_Create(GUI_ARRAY *pThis) {
-	GUI_DEBUG_ERROROUT_IF(pThis->InitState != GUI_ARRAY_STATE_NOT_CREATED, "GUI_ARRAY_Create: GUI_ARRAY not initialized to 0");
 	pThis->InitState = GUI_ARRAY_STATE_CREATED;
 }
 /*********************************************************************
@@ -263,13 +260,10 @@ void GUI_ARRAY_Create(GUI_ARRAY *pThis) {
 */
 void GUI_ARRAY_Check(const GUI_ARRAY *pThis) {
 	if (pThis->InitState == GUI_ARRAY_STATE_DELETED) {
-		GUI_DEBUG_ERROROUT("GUI_ARRAY_Check: GUI_ARRAY has been deleted");
 	}
 	else if (pThis->InitState == GUI_ARRAY_STATE_NOT_CREATED) {
-		GUI_DEBUG_ERROROUT("GUI_ARRAY_Check: GUI_ARRAY has not been created");
 	}
 	else if (pThis->InitState != GUI_ARRAY_STATE_CREATED) {
-		GUI_DEBUG_ERROROUT("GUI_ARRAY_Check: GUI_ARRAY in unknown state");
 	}
 }
 #endif /* GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL */
@@ -365,13 +359,11 @@ char GUI_ARRAY_InsertBlankItem(GUI_ARRAY *pThis, unsigned int Index) {
 	GUI_ARRAY_CHECK(pThis);    /* Sanity checks at higher debug levels only */
 
 	if (Index >= (unsigned)pThis->NumItems) {
-		GUI_DEBUG_ERROROUT("GUI_ARRAY_InsertBlankItem: Illegal index");
 	}
 	else {
 		WM_HMEM hNewBuffer;
 		hNewBuffer = GUI_ALLOC_AllocZero(sizeof(WM_HMEM) * (pThis->NumItems + 1));
 		if (hNewBuffer == 0) {
-			GUI_DEBUG_ERROROUT("GUI_ARRAY_InsertBlankItem: Failed to alloc buffer");
 		}
 		else {
 			WM_HMEM *pOldBuffer;

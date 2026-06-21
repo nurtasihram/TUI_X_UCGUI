@@ -98,30 +98,12 @@ struct tLCDDEV_APIList_struct {
 int LCD_GetXSize(void);
 int LCD_GetYSize(void);
 
-int LCD_GetBitsPerPixel(void);
-int LCD_GetFixedPalette(void);
-
-#define LCD_GET_XSIZE()        LCD_GetXSize()
-#define LCD_GET_YSIZE()        LCD_GetYSize()
-#define LCD_GET_BITSPERPIXEL() LCD_GetBitsPerPixel()
-
-typedef void         tLCD_HL_DrawHLine    (int x0, int y0,  int x1);
-typedef void         tLCD_HL_DrawPixel    (int x0, int y0);
-
-typedef struct {
-  tLCD_HL_DrawHLine*          pfDrawHLine;
-  tLCD_HL_DrawPixel*          pfDrawPixel;
-} tLCD_HL_APIList;
-
 void LCD_DrawHLine(int x0, int y0,  int x1);
 void LCD_DrawPixel(int x0, int y0);
 void LCD_DrawVLine  (int x, int y0,  int y1);
 
 void LCD_SetClipRectEx(const LCD_RECT* pRect);
 void LCD_SetClipRectMax(void);
-
-/* Get device capabilities (0 if not supported) */
-I32  LCD_GetDevCap(int Index);
 
 /* Initialize LCD using config-paramters */
 int LCD_Init(void);
@@ -137,9 +119,6 @@ void LCD_FillRect(int x0, int y0, int x1, int y1);
 
 LCD_COLOR    LCD_MixColors256(LCD_COLOR Color, LCD_COLOR BkColor, unsigned Intens);
 LCD_COLOR    LCD_GetPixelColor(int x, int y);     /* Get RGB color of pixel */
-unsigned int LCD_GetPixelIndex(int x, int y);
-int          LCD_GetBkColorIndex (void);
-int          LCD_GetColorIndex (void);
 
 void LCD_X_Init(void);
 

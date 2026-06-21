@@ -28,7 +28,6 @@ static PIXELINDEX* _XY2PTR(int x, int y) {
   U8 *pData = (U8*)(pDev + 1);
   #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
     if ((x >= pDev->x0+pDev->XSize) | (x<pDev->x0) | (y >= pDev->y0+pDev->YSize) | (y<pDev->y0)) {
-      GUI_DEBUG_ERROROUT2("_XY2PTR: parameters out of bounds",x,y);
     }
   #endif
   pData += (GUI_ALLOC_DATATYPE_U)(y - pDev->y0) * (GUI_ALLOC_DATATYPE_U)pDev->BytesPerLine;
@@ -43,8 +42,6 @@ static void _DrawBitLine1BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   unsigned PixelCnt;
   PixelCnt = 8 - Diff;
   pixels = LCD_aMirror[*p] >> Diff;
-
-  GUI_DEBUG_ERROROUT3_IF( x < pDev->x0, "GUIDEV.c: DrawBitLine1BPP, Act= %d, Border= %d, Clip= %d", x,pDev->x0, GUI_Context.ClipRect.x0);
 
   switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
   case 0:    /* Write mode */

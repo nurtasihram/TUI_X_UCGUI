@@ -523,7 +523,6 @@ LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 
 	}
 	else {
-		GUI_DEBUG_ERROROUT_IF(hObj == 0, "LISTVIEW_Create failed")
 	}
 	return hObj;
 }

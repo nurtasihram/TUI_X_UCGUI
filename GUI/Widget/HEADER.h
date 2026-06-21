@@ -46,8 +46,6 @@ void HEADER_SetTextAlign       (HEADER_Handle hObj, unsigned int Index, int Alig
 void HEADER_SetItemText        (HEADER_Handle hObj, unsigned int Index, const char * s);
 void HEADER_SetItemWidth       (HEADER_Handle hObj, unsigned int Index, int Width);
 void HEADER_SetScrollPos       (HEADER_Handle hObj, int ScrollPos);
-void HEADER_SetStreamedBitmap  (HEADER_Handle hObj, unsigned int Index, const GUI_BITMAP_STREAM * pBitmap);
-void HEADER_SetStreamedBitmapEx(HEADER_Handle hObj, unsigned int Index, const GUI_BITMAP_STREAM * pBitmap, int x, int y);
 void HEADER_SetTextColor       (HEADER_Handle hObj, GUI_COLOR Color);
 #ifdef HEADER_SPACING_H
   #define HEADER_BORDER_H_DEFAULT HEADER_SPACING_H

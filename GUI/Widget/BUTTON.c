@@ -451,13 +451,6 @@ void BUTTON_SetTextAlign(BUTTON_Handle hObj, int Align) {
 	}
 }
 
-void BUTTON_SetStreamedBitmapEx(BUTTON_Handle hObj, unsigned int Index, const GUI_BITMAP_STREAM *pBitmap, int x, int y) {
-	BUTTON__SetDrawObj(hObj, Index, GUI_DRAW_STREAMED_Create(pBitmap, x, y));
-}
-void BUTTON_SetStreamedBitmap(BUTTON_Handle hObj, unsigned int Index, const GUI_BITMAP_STREAM *pBitmap) {
-	BUTTON_SetStreamedBitmapEx(hObj, Index, pBitmap, 0, 0);
-}
-
 void BUTTON__SetDrawObj(BUTTON_Handle hObj, int Index, GUI_DRAW_HANDLE hDrawObj) {
 	if (hObj) {
 		BUTTON_Obj *pObj;

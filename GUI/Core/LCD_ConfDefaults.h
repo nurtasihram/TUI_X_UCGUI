@@ -20,10 +20,6 @@
   #define LCD_SWAP_BYTE_ORDER (0)    /* only for 16 bit bus, default is not swapped */
 #endif
 
-#ifndef  LCD_MAX_LOG_COLORS
-  #define  LCD_MAX_LOG_COLORS (256)
-#endif
-
 /* Optionally swap red and blue components */
 #ifndef LCD_SWAP_RB
   #define LCD_SWAP_RB 0

@@ -8,15 +8,9 @@
 #endif
 
 void GUI_SelectLCD(void) {
-
-  #if GUI_SUPPORT_DEVICES
-    LCD_SelectLCD();
-    LCD_UpdateColorIndices();
-    #if GUI_WINSUPPORT
-      WM_Activate();
-    #endif
-  #endif
-
+  LCD_SelectLCD();
+  LCD_UpdateColorIndices();
+  WM_Activate();
 }
 
 /*************************** End of file ****************************/

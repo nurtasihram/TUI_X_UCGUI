@@ -50,7 +50,6 @@ static void _Paint(TEXT_Handle hObj, TEXT_Obj* pObj) {
 }
 static void _Delete(TEXT_Obj* pObj) {
   /* Delete attached objects (if any) */
-  GUI_DEBUG_LOG("TEXT: Delete() Deleting attached items");
   _FreeAttached(pObj);
 }
 static void _TEXT_Callback (WM_MESSAGE*pMsg) {
@@ -62,11 +61,9 @@ static void _TEXT_Callback (WM_MESSAGE*pMsg) {
   }
   switch (pMsg->MsgId) {
   case WM_PAINT:
-    GUI_DEBUG_LOG("TEXT: _Callback(WM_PAINT)\n");
     _Paint(hObj, pObj);
     return;
   case WM_DELETE:
-    GUI_DEBUG_LOG("TEXT: _Callback(WM_DELETE)\n");
     _Delete(pObj);
     break;       /* No return here ... WM_DefaultProc needs to be called */
   }
@@ -106,7 +103,6 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
     pObj->TextColor = _DefaultTextColor;
 
   } else {
-    GUI_DEBUG_ERROROUT_IF(hObj==0, "TEXT_Create failed")
   }
   return hObj;
 }

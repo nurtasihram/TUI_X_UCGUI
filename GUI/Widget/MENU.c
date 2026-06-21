@@ -94,7 +94,6 @@ MENU_Obj *MENU_h2p(MENU_Handle h) {
 	MENU_Obj *p = (MENU_Obj *)GUI_ALLOC_h2p(h);
 	if (p) {
 		if (p->DebugId != OBJECT_ID) {
-			GUI_DEBUG_ERROROUT("MENU.c: Wrong handle type or Object not init'ed");
 			return 0;
 		}
 	}
@@ -784,7 +783,6 @@ MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParent,
 
 	}
 	else {
-		GUI_DEBUG_ERROROUT_IF(hObj == 0, "MENU_CreateEx failed")
 	}
 	return hObj;
 }

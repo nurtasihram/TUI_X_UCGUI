@@ -87,13 +87,7 @@
     <ClCompile Include="GUI\Core\GUI_ALLOC_AllocZero.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CalcColorDist.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_ClearRectEx.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_Color2VisColor.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Resources\GUI_CursorArrowL.c">
@@ -201,12 +195,6 @@
     <ClCompile Include="GUI\Core\GUI_DrawBitmapEx.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_DrawBitmapExp.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_DrawBitmapMag.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_DrawFocusRect.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -240,9 +228,6 @@
     <ClCompile Include="GUI\Core\GUI_GetClientRect.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetColor.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_GetDispPos.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -253,9 +238,6 @@
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_GetFontSizeY.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetLineStyle.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_GetStringDistX.c">
@@ -294,9 +276,6 @@
     <ClCompile Include="GUI\Core\GUI_OnKey.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_Pen.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_PID.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -306,16 +285,7 @@
     <ClCompile Include="GUI\Core\GUI_SaveContext.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SelectLayer.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_SelectLCD.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetColor.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetColorIndex.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_SetDrawMode.c">
@@ -325,15 +295,6 @@
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_SetLBorder.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetLineStyle.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetOrg.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetPixelIndex.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_SetTextAlign.c">
@@ -384,9 +345,6 @@
     <ClCompile Include="GUI\Core\GUIRealloc.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUIStream.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUITime.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -394,42 +352,6 @@
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUIUC0.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_API.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_DrawVLine.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_GetColorIndex.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_GetPixelColor.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_L0_Generic.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_Mirror.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_SelectLCD.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_SetClipRectEx.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_UpdateColorIndices.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCDColor.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCDGetP.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Resources\F8x8.c">
@@ -460,9 +382,6 @@
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
     <ClCompile Include="GUI\MemDev\GUIDEV_Clear.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_CmpWithLCD.c">
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
     <ClCompile Include="GUI\MemDev\GUIDEV_CopyFromLCD.c">
@@ -517,12 +436,6 @@
       <Filter>GUI\LCDDriver</Filter>
     </ClCompile>
     <ClCompile Include="main.c" />
-    <ClCompile Include="GUI\Core\LCDInfo0.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_MixColors256.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI__SetText.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -625,10 +538,31 @@
     <ClCompile Include="GUI\Widget\FRAMEWIN.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\GUI_DRAW_STREAMED.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI2DLib.c" />
+    <ClCompile Include="GUI\Core\LCD.c">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\LCD_API.c">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\LCD_DrawVLine.c">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\LCD_L0_Generic.c">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\LCD_Mirror.c">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\LCD_MixColors256.c">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\LCD_SelectLCD.c">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\LCD_UpdateColorIndices.c">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">
@@ -662,18 +596,6 @@
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\GUIType.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Core\LCD.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Core\LCD_ConfDefaults.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Core\LCD_Private.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Core\LCD_Protected.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\WM\WM.h">
@@ -798,6 +720,18 @@
     </ClInclude>
     <ClInclude Include="GUI\Widget\FRAMEWIN_Private.h">
       <Filter>GUI\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Core\LCD.h">
+      <Filter>GUI\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Core\LCD_ConfDefaults.h">
+      <Filter>GUI\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Core\LCD_Private.h">
+      <Filter>GUI\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Core\LCD_Protected.h">
+      <Filter>GUI\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -164,7 +164,6 @@ static void _OnTouch(RADIO_Handle hObj, RADIO_Obj* pObj, WM_MESSAGE*pMsg) {
   }
   WM_NotifyParent(hObj, Notification);
   if (Hit == 1) {
-    GUI_DEBUG_LOG("RADIO: Hit\n");
     GUI_StoreKey(pObj->Widget.Id);
   }
 }
@@ -197,7 +196,6 @@ static void _RADIO_Callback (WM_MESSAGE* pMsg) {
   }
   switch (pMsg->MsgId) {
   case WM_PAINT:
-    GUI_DEBUG_LOG("RADIO: _Callback(WM_PAINT)\n");
     _OnPaint(hObj, pObj);
     return;
   case WM_GET_RADIOGROUP:
@@ -272,7 +270,6 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParen
     pObj->Height       = Height;
 
   } else {
-    GUI_DEBUG_ERROROUT_IF(hObj==0, "RADIO_Create failed")
   }
   return hObj;
 }

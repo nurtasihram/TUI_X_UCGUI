@@ -24,8 +24,7 @@ void GL_DrawBitmap(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0) {
       pBitmap->pMethods->pfDraw(x0, y0, pBitmap->XSize ,pBitmap->YSize, (U8 const *)pBitmap->pData, pBitmap->pPal, 1, 1);
     #endif
   } else {
-    const LCD_PIXELINDEX* pTrans;
-    pTrans = LCD_GetpPalConvTable(pBitmap->pPal);
+    const LCD_PIXELINDEX* pTrans = pBitmap->pPal ? pBitmap->pPal->pPalEntries : NULL;
     if (!pTrans) {
       pTrans = (pBitmap->BitsPerPixel != 1) ? NULL : &LCD_BKCOLORINDEX;
     }

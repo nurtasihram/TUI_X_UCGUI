@@ -281,7 +281,6 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 		pObj->ScrollPos = 0;
 	}
 	else {
-		GUI_DEBUG_ERROROUT_IF(hObj == 0, "HEADER_Create failed")
 	}
 
 	return hObj;
@@ -516,14 +515,6 @@ HEADER_Handle HEADER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, W
 	hThis = HEADER_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
 							hWinParent, pCreateInfo->Flags, 0, pCreateInfo->Id);
 	return hThis;
-}
-
-void HEADER_SetStreamedBitmapEx(HEADER_Handle hObj, unsigned int Index, const GUI_BITMAP_STREAM *pBitmap, int x, int y) {
-	HEADER__SetDrawObj(hObj, Index, GUI_DRAW_STREAMED_Create(pBitmap, x, y));
-	WM_InvalidateWindow(hObj);
-}
-void HEADER_SetStreamedBitmap(HEADER_Handle hObj, unsigned int Index, const GUI_BITMAP_STREAM *pBitmap) {
-	HEADER_SetStreamedBitmapEx(hObj, Index, pBitmap, 0, 0);
 }
 
 void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW_HANDLE hDrawObj) {

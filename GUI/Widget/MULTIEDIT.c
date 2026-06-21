@@ -1188,7 +1188,6 @@ MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 				pObj->hText = hText;
 			}
 			else {
-				GUI_DEBUG_ERROROUT("MULTIEDIT_CreateEx failed to alloc buffer");
 				WM_DeleteWindow(hObj);
 				hObj = 0;
 			}
@@ -1197,7 +1196,6 @@ MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 		_ManageScrollers(hObj);
 	}
 	else {
-		GUI_DEBUG_ERROROUT_IF(hObj == 0, "MULTIEDIT_CreateEx failed")
 	}
 
 	return hObj;
@@ -1418,7 +1416,6 @@ void MULTIEDIT_SetBufferSize(MULTIEDIT_HANDLE hObj, int BufferSize) {
 
 		pObj = MULTIEDIT_H2P(hObj);
 		if ((hText = GUI_ALLOC_AllocZero(BufferSize)) == 0) {
-			GUI_DEBUG_ERROROUT("MULTIEDIT_SetBufferSize failed to alloc buffer");
 		}
 		else {
 			GUI_ALLOC_FreePtr(&pObj->hText);

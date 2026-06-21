@@ -53,7 +53,6 @@ static U8* _XY2PTR_BITOFFSET(int x, int y, int* pBitOffset) {
   pData = (U8*)(pDev + 1);
   #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
     if ((x >= pDev->x0+pDev->XSize) | (x<pDev->x0) | (y >= pDev->y0+pDev->YSize) | (y<pDev->y0)) {
-      GUI_DEBUG_ERROROUT2("_XY2PTR: parameters out of bounds", x, y);
     }
   #endif
   x -= pDev->x0;

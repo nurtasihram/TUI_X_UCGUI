@@ -45,9 +45,6 @@ typedef struct {
   I16 Align;
   GUI_COLOR TextColor;
   GUI_COLOR BkColor;
-  #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-    int DebugId;
-  #endif
 } TEXT_Obj;
 #define TEXT_H2P(h) (TEXT_Obj*) GUI_ALLOC_h2p(h)
 #if defined(__cplusplus)

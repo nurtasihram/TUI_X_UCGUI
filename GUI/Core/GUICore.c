@@ -30,7 +30,6 @@ static void _InitContext(GUI_CONTEXT* pContext) {
   LCD_L0_GetRect(&pContext->ClipRect);
   pContext->pAFont       = GUI_DEFAULT_FONT;
   pContext->pClipRect_HL = &GUI_Context.ClipRect;
-  pContext->PenSize      = 1;
   pContext->hAWin    = WM_GetDesktopWindow();
   pContext->Color   = GUI_INVALID_COLOR;
   pContext->BkColor = GUI_INVALID_COLOR;

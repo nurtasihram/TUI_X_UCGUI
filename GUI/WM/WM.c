@@ -649,7 +649,6 @@ WM_HWIN WM_CreateWindowAsChild(int x0, int y0, int width, int height
 		}
 	}
 	if ((hWin = (WM_HWIN)GUI_ALLOC_AllocZero(NumExtraBytes + sizeof(WM_Obj))) == 0) {
-		GUI_DEBUG_ERROROUT("WM_CreateWindow: No memory to create window");
 	}
 	else {
 		WM__NumWindows++;
@@ -748,10 +747,6 @@ void WM_DeleteWindow(WM_HWIN hWin) {
 		/* Select a valid window */
 		WM_SelectWindow(WM__FirstWin);
 	}
-	else {
-		GUI_DEBUG_WARN("WM_DeleteWindow: Invalid handle");
-	}
-
 }
 
 /*********************************************************************
@@ -2822,10 +2817,7 @@ void WM_SetAnchor(WM_HWIN hWin, U16 AnchorFlags) {
 		pWin = WM_H2P(hWin);
 		Mask = (WM_SF_ANCHOR_LEFT | WM_SF_ANCHOR_RIGHT | WM_SF_ANCHOR_TOP | WM_SF_ANCHOR_BOTTOM);
 
-		GUI_DEBUG_WARN_IF(AnchorFlags & ~(Mask), "WM_SetAnchor.c: Wrong anchor flags");
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_PARA
 		AnchorFlags &= Mask;
-#endif
 
 		pWin->Status &= ~(Mask);
 		pWin->Status |= AnchorFlags;

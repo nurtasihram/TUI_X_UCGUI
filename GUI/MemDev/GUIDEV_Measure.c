@@ -163,7 +163,6 @@ GUI_MEASDEV_Handle GUI_MEASDEV_Create(void) {
     GUI_MEASDEV_ClearRect(hMemDev);
 
   } else {
-    GUI_DEBUG_WARN("GUI_MEASDEV_Create: Alloc failed");
   }
   return hMemDev;
 }

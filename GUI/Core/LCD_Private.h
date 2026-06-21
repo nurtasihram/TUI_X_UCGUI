@@ -19,7 +19,6 @@ extern const struct tLCDDEV_APIList_struct * /* const */ LCD_aAPI[1];
 #define LCD_COLORINDEX   GUI_Context.aColorIndex[1]
 #define LCD_ACOLORINDEX  GUI_Context.aColorIndex
 
-extern LCD_PIXELINDEX LCD__aConvTable[LCD_MAX_LOG_COLORS];
 void LCD_DrawBitmap   (int x0, int y0,
                        int xsize, int ysize,
                        int xMul, int yMul,
