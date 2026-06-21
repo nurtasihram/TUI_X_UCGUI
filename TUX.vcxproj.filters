@@ -120,67 +120,67 @@
     <ClCompile Include="GUI\Core\GUI_Color2VisColor.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorArrowL.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorArrowL.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorArrowLI.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorArrowLI.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorArrowLPx.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorArrowLPx.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorArrowM.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorArrowM.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorArrowMI.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorArrowMI.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorArrowMPx.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorArrowMPx.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorArrowS.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorArrowS.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorArrowSI.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorArrowSI.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorArrowSPx.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorArrowSPx.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorCrossL.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorCrossL.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorCrossLI.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorCrossLI.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorCrossLPx.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorCrossLPx.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorCrossM.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorCrossM.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorCrossMI.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorCrossMI.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorCrossMPx.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorCrossMPx.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorCrossS.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorCrossS.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorCrossSI.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorCrossSI.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorCrossSPx.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorCrossSPx.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorHeaderM.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorHeaderM.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorHeaderMI.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorHeaderMI.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorHeaderMPx.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorHeaderMPx.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_CursorPal.c">
@@ -528,13 +528,13 @@
     <ClCompile Include="GUI\Core\LCDGetP.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Font\F8x8.c">
+    <ClCompile Include="GUI\Resources\F8x8.c">
       <Filter>GUI\Font</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Font\F13_1.c">
+    <ClCompile Include="GUI\Resources\F13_1.c">
       <Filter>GUI\Font</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Font\F13_ASCII.c">
+    <ClCompile Include="GUI\Resources\F13_ASCII.c">
       <Filter>GUI\Font</Filter>
     </ClCompile>
     <ClCompile Include="GUI\MemDev\GUIDEV.c">
@@ -622,13 +622,13 @@
     <ClCompile Include="GUI\Core\GUI__SetText.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Font\F08_1.c">
+    <ClCompile Include="GUI\Resources\F08_1.c">
       <Filter>GUI\Font</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Font\F08_ASCII.c">
+    <ClCompile Include="GUI\Resources\F08_ASCII.c">
       <Filter>GUI\Font</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Font\F6x8.c">
+    <ClCompile Include="GUI\Resources\F6x8.c">
       <Filter>GUI\Font</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\BUTTON.c">
