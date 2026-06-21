@@ -20,7 +20,6 @@ Purpose     : Implementation of memory devices
 ---------------------------END-OF-HEADER------------------------------
 */
 
-
 #include <string.h>
 #include "GUI_Private.h"
 #include "GUIDebug.h"
@@ -28,20 +27,12 @@ Purpose     : Implementation of memory devices
   #include "WM.h"
 #endif
 
-/* Memory device capabilities are compiled only if support for them is enabled.*/ 
+/* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
-
-/*********************************************************************
-*
-*       Macros
-*
-**********************************************************************
-*/
 
 #define PIXELINDEX                      U16
 #define BITSPERPIXEL                     16
 #define API_LIST      GUI_MEMDEV__APIList16
-
 
 static void _DrawBitLine16BPP_DDB(GUI_USAGE* pUsage, int x, int y, const U16 *pSrc, int xsize, PIXELINDEX* pDest) {
   switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
@@ -77,8 +68,6 @@ static void _DrawBitLine16BPP_DDB(GUI_USAGE* pUsage, int x, int y, const U16 *pS
 
 #else
 
-void GUIDEV16_C(void) {}
 
 #endif /* GUI_SUPPORT_MEMDEV */
 
-/*************************** end of file ****************************/

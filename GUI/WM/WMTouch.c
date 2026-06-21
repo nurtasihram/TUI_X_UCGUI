@@ -1,43 +1,11 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : WMTouch.c
-Purpose     : Windows manager, touch support
-----------------------------------------------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include "WM_Intern.h"
 #include "GUIDebug.h"
 
-
-/*********************************************************************
-*
-*          Public data
-*
-**********************************************************************
-*/
-
 WM_CRITICAL_HANDLE  WM__CHWinModal;
 WM_CRITICAL_HANDLE  WM__CHWinLast;
-
-/*********************************************************************
-*
-*          Modul internal routines
-*
-**********************************************************************
-*/
 
 int WM__IsInModalArea(WM_HWIN hWin) {
   if ((WM__CHWinModal.hWin == 0) || WM__IsAncestor(hWin, WM__CHWinModal.hWin) || (hWin == WM__CHWinModal.hWin)) {
@@ -76,7 +44,6 @@ void WM__SendPIDMessage(WM_HWIN hWin, WM_MESSAGE* pMsg) {
   }
 }
 
-
 void WM__SendTouchMessage(WM_HWIN hWin, WM_MESSAGE* pMsg) {
   GUI_PID_STATE* pState;
   pState     = (GUI_PID_STATE*)pMsg->Data.p;
@@ -89,29 +56,16 @@ void WM__SendTouchMessage(WM_HWIN hWin, WM_MESSAGE* pMsg) {
   WM__SendPIDMessage(hWin, pMsg);
 }
 
-/*********************************************************************
-*
-*          Static code
-*
-**********************************************************************
-*/
-
 static WM_HWIN _Screen2Win(GUI_PID_STATE* pState) {
   if (WM__hCapture == 0) {
     return WM_Screen2hWin(pState->x, pState->y);
-  } 
+  }
   return WM__hCapture;
 }
 
 /*********************************************************************
 *
-*       Public code
-*
-**********************************************************************
-*/
-/*********************************************************************
-*
-*       WM_HandlePID       
+*       WM_HandlePID
 *
 * Polls the touch screen. If something has changed,
 * sends a message to the concerned window.
@@ -126,7 +80,7 @@ int WM_HandlePID(void) {
   WM_CRITICAL_HANDLE CHWin;
   GUI_PID_STATE State, StateNew;
   GUI_PID_GetState(&StateNew);
-  
+
   WM__AddCriticalHandle(&CHWin);
   if ((WM_PID__StateLast.x != StateNew.x) || (WM_PID__StateLast.y != StateNew.y) || (WM_PID__StateLast.Pressed != StateNew.Pressed)) {
     #if GUI_SUPPORT_CURSOR
@@ -171,7 +125,7 @@ int WM_HandlePID(void) {
               Msg.Data.p = NULL;
             } else {
               /* Last window needs to know that it has been "Released"
-               * Send last coordinates 
+               * Send last coordinates
                */
               State.x       = WM_PID__StateLast.x;
               State.y       = WM_PID__StateLast.y;
@@ -223,10 +177,9 @@ int WM_HandlePID(void) {
     WM_PID__StateLast = StateNew;
   }
   WM__RemoveCriticalHandle(&CHWin);
-  
+
   return r;
 }
 
 /*************************** End of file ****************************/
-
 

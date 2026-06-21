@@ -1,34 +1,7 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUITOUCH.C
-Purpose     : Touch screen manager
-----------------------------------------------------------------------
-This module handles the touch screen. It is configured in the file
-GUITouch.conf.h (Should be located in the Config\ directory).
-----------------------------------------------------------------------
-*/
+
 
 #include "LCD_Private.h"      /* private modul definitions & config */
 #include "GUI_Protected.h"
-
-/*********************************************************************
-*
-*       Static data
-*
-**********************************************************************
-*/
 
 static int  _ScreenX              = 0;    /* x-pos              */
 static int  _ScreenY              = 0;    /* y-pos              */
@@ -36,12 +9,6 @@ static int  _NumBytesInBuffer     = 0;    /* bytes in rx buffer */
 static U8   _Buttons              = 0;    /* button status      */
 static U8   _abInBuffer[3];               /* mouse rx buffer    */
 
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
 /*********************************************************************
 *
 *       _EvaPacket
@@ -76,7 +43,7 @@ static void _EvaPacket(void) {
   }  /* direction is negative, move down */ else {
     _ScreenY  -= a;
   }
-  /* check min/max positions */    
+  /* check min/max positions */
   if (_ScreenX < 0) {
     _ScreenX = 0;
   } else if (_ScreenX > LCD_XSIZE-1) {
@@ -93,12 +60,6 @@ static void _EvaPacket(void) {
   GUI_MOUSE_StoreState(&State);
 }
 
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
 /*********************************************************************
 *
 *       GUI_MOUSE_DRIVER_PS2_OnRx
@@ -124,9 +85,8 @@ void GUI_MOUSE_DRIVER_PS2_OnRx(unsigned char Data) {
   }
 }
 
-
 void GUI_MOUSE_DRIVER_PS2_Init(void) {
-  _NumBytesInBuffer = 0; 
+  _NumBytesInBuffer = 0;
 }
 
 /*************************** End of file ****************************/

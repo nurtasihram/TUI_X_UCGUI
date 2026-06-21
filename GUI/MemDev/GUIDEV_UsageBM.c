@@ -20,20 +20,12 @@ Purpose     : Implementation of memory devices
 ---------------------------END-OF-HEADER------------------------------
 */
 
-
 #include <string.h>
 #include "GUI_Protected.h"
 #include "GUIDebug.h"
 
-/* Memory device capabilities are compiled only if support for them is enabled.*/ 
+/* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
-
-/*********************************************************************
-*
-*       GUI_USAGE_BM structure
-*
-**********************************************************************
-*/
 
 typedef struct {
   GUI_USAGE Public;
@@ -41,13 +33,6 @@ typedef struct {
     int BytesPerLine;
   } Private;
 } GUI_USAGE_BM;
-
-/*********************************************************************
-*
-*       static code
-*
-**********************************************************************
-*/
 
 static void GUI_USAGE_BM_AddPixel(GUI_USAGE* p, int x, int y) {
   U8* pData;
@@ -60,12 +45,11 @@ static void GUI_USAGE_BM_AddPixel(GUI_USAGE* p, int x, int y) {
     }
   #endif
   x -= pThis->Public.x0;
-  pData =  (U8*)(pThis+1); 
+  pData =  (U8*)(pThis+1);
   pData += (y-pThis->Public.y0) * pThis->Private.BytesPerLine;
   pData += x>>3;
   *pData|= 0x80>>(x&7);
 }
-
 
 static void GUI_USAGE_BM_AddHLine(GUI_USAGE* p, int x, int y, int len) {
 #if 0   /* Enable for the slower, but smaller version ... xxx*/
@@ -79,11 +63,11 @@ static void GUI_USAGE_BM_AddHLine(GUI_USAGE* p, int x, int y, int len) {
                     ,x, pThis->Public.x0, GUI_Context.ClipRect.x0);
   /* Calculate pointers */
   x -= pThis->Public.x0;
-  pData =  (U8*)(pThis+1); 
+  pData =  (U8*)(pThis+1);
   pData += (y-pThis->Public.y0) * pThis->Private.BytesPerLine;
   pData += x>>3;
   /* Set bits */
-  {  
+  {
     int x1 = x+len-1;   /* last pixel */
     int NumBytes = (x1>>3) - (x>>3);
     U8 Mask0 = 0xff >> (x&7);
@@ -103,12 +87,10 @@ static void GUI_USAGE_BM_AddHLine(GUI_USAGE* p, int x, int y, int len) {
 #endif
 }
 
-
 static void GUI_USAGE_BM_Clear(GUI_USAGE* p) {
   GUI_USAGE_BM * pThis = (GUI_USAGE_BM*) p;
   memset (pThis+1, 0, pThis->Public.YSize * pThis->Private.BytesPerLine);
 }
-
 
 static int GUI_USAGE_BM_GetNextDirty(GUI_USAGE* p, int *pxOff, int yOff) {
   int x = *pxOff;
@@ -168,15 +150,10 @@ static int GUI_USAGE_BM_GetNextDirty(GUI_USAGE* p, int *pxOff, int yOff) {
   return xEnd-x+1;
 }
 
-
 static void _GUI_USAGE_BM_Delete(GUI_MEMDEV_Handle hDevUsage) {
   GUI_ALLOC_Free(hDevUsage);
 }
 
-/*********************************************************************
-*
-*       API List
-*/
 static const tUSAGE_APIList API = {
   GUI_USAGE_BM_AddPixel,     /* tUSAGE_AddPixel*         */
   GUI_USAGE_BM_AddHLine,     /* tUSAGE_AddHLine*         */
@@ -186,13 +163,6 @@ static const tUSAGE_APIList API = {
   GUI_USAGE_BM_GetNextDirty  /* tUSAGE_GetNextDirty*     */
 
 };
-
-/*********************************************************************
-*
-*       Exported routines
-*
-**********************************************************************
-*/
 
 GUI_USAGE_Handle GUI_USAGE_BM_Create(int x0, int y0, int xsize, int ysize, int Flags) {
   int MemSize;
@@ -205,11 +175,11 @@ GUI_USAGE_Handle GUI_USAGE_BM_Create(int x0, int y0, int xsize, int ysize, int F
   /* Check if we can alloc sufficient memory */
   if (!hMem) {
     GUI_DEBUG_ERROROUT("GUI_USAGE_BM_Create: Too little memory");
-    return 0;    
+    return 0;
   }
   {
     GUI_USAGE_BM * pUsage;
-    
+
     pUsage = (GUI_USAGE_BM*)GUI_ALLOC_h2p(hMem);
     pUsage->Public.x0    = x0;
     pUsage->Public.y0    = y0;
@@ -218,7 +188,7 @@ GUI_USAGE_Handle GUI_USAGE_BM_Create(int x0, int y0, int xsize, int ysize, int F
     pUsage->Public.pAPI  = &API;
     pUsage->Public.UseCnt= 1;
     pUsage->Private.BytesPerLine= BytesPerLine;
-    
+
   }
   return hMem;
 }
@@ -229,4 +199,3 @@ void GUIDEV_UsageBM(void) {} /* avoid empty object files */
 
 #endif /* GUI_SUPPORT_MEMDEV */
 
-/*************************** end of file ****************************/

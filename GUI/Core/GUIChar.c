@@ -1,40 +1,16 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUIChar.C
-Purpose     : Implementation of character and string services
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include <stdio.h>
 #include "GUI_Protected.h"
- 
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
+
 
 void GUI_DispNextLine(void) {
-  
+
   GUI_Context.DispPosY += GUI_GetFontDistY();
   GUI_Context.DispPosX  = GUI_Context.LBorder;
-  
-}
 
+}
 
 void GL_DispChar(U16 c) {
   /* check for control characters */
@@ -42,12 +18,12 @@ void GL_DispChar(U16 c) {
     GUI_DispNextLine();
   } else {
     if (c != '\r') {
-      
+
       GUI_Context.pAFont->pfDispChar(c);
       if (GUI_pfDispCharStyle) {
         GUI_pfDispCharStyle(c);
       }
-      
+
     }
   }
 }
@@ -63,7 +39,7 @@ void GL_DispChar(U16 c) {
 */
 int GUI_GetYAdjust(void) {
   int r = 0;
-  
+
   switch (GUI_Context.TextAlign & GUI_TA_VERTICAL) {
 	case GUI_TA_BOTTOM:
 		r = GUI_Context.pAFont->YSize - 1;
@@ -74,27 +50,25 @@ int GUI_GetYAdjust(void) {
 	case GUI_TA_BASELINE:
 		r = GUI_Context.pAFont->YSize / 2;
 	}
-  
+
   return r;
 }
-
 
 int GUI_GetFontDistY(void) {
   int r;
-  
+
 //  r = GUI_Context.pAFont->YDist;
   r = GUI_Context.pAFont->YDist * GUI_Context.pAFont->YMag;
 
-  
+
   return r;
 }
 
-
 int GUI_GetCharDistX(U16 c) {
   int r;
-  
+
   r = GUI_Context.pAFont->pfGetCharDistX(c);
-  
+
   return r;
 }
 

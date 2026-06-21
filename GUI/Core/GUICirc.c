@@ -1,45 +1,7 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUICirc.C
-Purpose     : Circle and ellipse drawing functions
-----------------------------------------------------------------------
-Version-Date---Author-Explanation
-----------------------------------------------------------------------
-1.00.02 011115 JE     a) GL_FillEllipse, GL_FillCircle, GL_DrawCircle changed
-1.00.01 011113 JE     a) GL_DrawEllipse changed
-1.00.00 991206 RS     First release
-----------------------------------------------------------------------
-Known problems or limitations with current version
-----------------------------------------------------------------------
-None.
-----------------------------------------------------------------------
-Open issues
-----------------------------------------------------------------------
-None
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Private.h"
-
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
 
 static void Draw8Point(int x0,int y0, int xoff, int yoff) {
   LCD_HL_DrawPixel(x0+xoff,y0+yoff);
@@ -53,13 +15,6 @@ static void Draw8Point(int x0,int y0, int xoff, int yoff) {
     LCD_HL_DrawPixel(x0-yoff,y0-xoff);
   }
 }
-
-/*********************************************************************
-*
-*       Public code, circle
-*
-**********************************************************************
-*/
 
 void GL_DrawCircle(int x0, int y0, int r) {
   I32 i;
@@ -76,7 +31,6 @@ void GL_DrawCircle(int x0, int y0, int r) {
   }
 }
 
-
 void GUI_DrawCircle(int x0, int y0, int r) {
     GUI_RECT Rect;
     WM_ADDORG(x0,y0);
@@ -89,7 +43,6 @@ void GUI_DrawCircle(int x0, int y0, int r) {
     } WM_ITERATE_END();
 
 }
-
 
 void GL_FillCircle(int x0, int y0, int r) {
   I32 i;
@@ -111,7 +64,6 @@ void GL_FillCircle(int x0, int y0, int r) {
     LCD_HL_DrawHLine(x0-x,y0-i, x0+x);
   }
 }
-
 
 void GUI_FillCircle(int x0, int y0, int r) {
     WM_ADDORG(x0,y0);
@@ -160,7 +112,6 @@ void GL_FillEllipse(int x0, int y0, int rx, int ry) {
   }
 }
 
-
 void GUI_FillEllipse(int x0, int y0, int rx, int ry) {
     GUI_RECT r;
     WM_ADDORG(x0,y0);
@@ -171,7 +122,6 @@ void GUI_FillEllipse(int x0, int y0, int rx, int ry) {
     } WM_ITERATE_END();
 
 }
-
 
 void GL_DrawEllipse(int x0, int y0, int rx, int ry) {
   I32 OutConst, Sum, SumY;
@@ -202,7 +152,6 @@ void GL_DrawEllipse(int x0, int y0, int rx, int ry) {
     xOld = x;
   }
 }
-
 
 void GUI_DrawEllipse(int x0, int y0, int rx, int ry) {
     GUI_RECT r;

@@ -1,31 +1,7 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_DrawBitmapEx.c
-Purpose     : Draws a bitmap with free magnification
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include "GUI_Private.h"
 #include "stdlib.h"
-
-/*********************************************************************
-*
-*       static code
-*
-**********************************************************************
-*/
 
 static void GL_DrawBitmapEx(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0,
                             int xCenter, int yCenter, int xMag, int yMag) {
@@ -105,20 +81,13 @@ static void GL_DrawBitmapEx(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int 
   }
 }
 
-/*********************************************************************
-*
-*       public code
-*
-**********************************************************************
-*/
-
 void GUI_DrawBitmapEx(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0,
                       int xCenter, int yCenter, int xMag, int yMag) {
   GUI_COLOR OldColor;
   #if (GUI_WINSUPPORT)
     GUI_RECT r;
   #endif
-  
+
   OldColor = GUI_GetColor();
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x0, y0);
@@ -143,7 +112,7 @@ void GUI_DrawBitmapEx(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0,
     } WM_ITERATE_END();
   #endif
   GUI_SetColor(OldColor);
-  
+
 }
 
 /*************************** End of file ****************************/

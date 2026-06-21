@@ -1,31 +1,7 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : WMMemDev.C
-Purpose     : Windows manager add on, support for memory devices
-----------------------------------------------------------------------
-*/
+
 
 #include "WM_Intern.h"
 #include "GUIDebug.h"
-
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
 
 void WM_EnableMemdev (WM_HWIN hWin) {
   GUI_USE_PARA(hWin);
@@ -33,7 +9,7 @@ void WM_EnableMemdev (WM_HWIN hWin) {
     if (hWin) {
       WM_Obj * pWin;
 
-      pWin = WM_HANDLE2PTR(hWin);  
+      pWin = WM_HANDLE2PTR(hWin);
       pWin->Status |= (WM_SF_MEMDEV);
 
     }
@@ -42,14 +18,13 @@ void WM_EnableMemdev (WM_HWIN hWin) {
   #endif
 }
 
-
 void WM_DisableMemdev(WM_HWIN hWin) {
   GUI_USE_PARA(hWin);
   #if GUI_SUPPORT_MEMDEV
     if (hWin) {
-      WM_Obj * pWin;  
+      WM_Obj * pWin;
 
-      pWin = WM_HANDLE2PTR(hWin);  
+      pWin = WM_HANDLE2PTR(hWin);
       pWin->Status &= ~(WM_SF_MEMDEV | WM_SF_MEMDEV_ON_REDRAW);
 
     }

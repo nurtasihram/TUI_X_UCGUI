@@ -24,21 +24,14 @@ Purpose     : Implementation of memory devices
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 
-/* Memory device capabilities are compiled only if support for them is enabled.*/ 
+/* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
-
-/*********************************************************************
-*
-*       Static routines
-*
-**********************************************************************
-*/
 
 static void _WriteAlphaToActiveAt(GUI_MEMDEV_Handle hMem, int Intens, int x, int y) {
   /* Make sure the memory handle is valid */
   if (hMem) {
     GUI_MEMDEV * pDev = GUI_MEMDEV_H2P(hMem);
-    GUI_USAGE_h hUsage = pDev->hUsage; 
+    GUI_USAGE_h hUsage = pDev->hUsage;
     GUI_USAGE*  pUsage;
     int YSize = pDev->YSize;
     int yi;
@@ -77,20 +70,13 @@ static void _WriteAlphaToActiveAt(GUI_MEMDEV_Handle hMem, int Intens, int x, int
   }
 }
 
-/*********************************************************************
-*
-*       Exported routines
-*
-**********************************************************************
-*/
-
 void GUI_MEMDEV_WriteAlphaAt(GUI_MEMDEV_Handle hMem, int Alpha, int x, int y) {
   if (hMem) {
     GUI_MEMDEV* pDevData;
     #if (GUI_WINSUPPORT)
       GUI_RECT r;
     #endif
-    
+
     pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
     if (x == GUI_POS_AUTO) {
       x = pDevData->x0;
@@ -105,10 +91,9 @@ void GUI_MEMDEV_WriteAlphaAt(GUI_MEMDEV_Handle hMem, int Alpha, int x, int y) {
     #else
       _WriteAlphaToActiveAt(hMem, Alpha, x,y);
     #endif
-    
+
   }
 }
-
 
 void GUI_MEMDEV_WriteAlpha(GUI_MEMDEV_Handle hMem, int Alpha) {
   GUI_MEMDEV_WriteAlphaAt(hMem, Alpha, GUI_POS_AUTO, GUI_POS_AUTO);
@@ -116,8 +101,6 @@ void GUI_MEMDEV_WriteAlpha(GUI_MEMDEV_Handle hMem, int Alpha) {
 
 #else
 
-void GUIDEV_WriteAlpha_C(void) {}
 
 #endif /* GUI_SUPPORT_MEMDEV */
 
-/*************************** end of file ****************************/

@@ -20,20 +20,12 @@ Purpose     : Implementation of memory devices, add. module
 ---------------------------END-OF-HEADER------------------------------
 */
 
-
 #include "GUI_Protected.h"
 #include "GUIDebug.h"
 #include <string.h>
 
-/* Memory device capabilities are compiled only if support for them is enabled. */ 
+/* Memory device capabilities are compiled only if support for them is enabled. */
 #if GUI_SUPPORT_MEMDEV
-
-/*********************************************************************
-*
-*       public code
-*
-**********************************************************************
-*/
 
 void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV_Handle hMem, int YSize) {
   /* Make sure memory handle is valid */
@@ -41,21 +33,20 @@ void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV_Handle hMem, int YSize) {
     hMem = GUI_Context.hDevData;
   if (!hMem)
     return;
-  { 
+  {
     GUI_MEMDEV * pDevData;
-    
+
     pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
     if (YSize < pDevData->YSize) {
       pDevData->YSize = YSize;
     }
-    
+
   }
 }
 
 #else
-        
+
 void GUIDEV_ReduceYSize(void) {} /* avoid empty object files */
 
 #endif /* GUI_MEMDEV_SUPPORT */
 
-/*************************** end of file ****************************/

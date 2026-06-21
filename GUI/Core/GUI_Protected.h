@@ -56,7 +56,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
   #define GUI_X_WAIT_EVENT() GUI_X_ExecIdle()
 #endif
 
-
 /*      *********************************
         *                               *
         *      Angles                   *
@@ -69,21 +68,12 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #define GUI_180DEG (4*GUI_45DEG)
 #define GUI_360DEG (8*GUI_45DEG)
 
-/*****************************************************
-*
-*        Usage internals
-*
-******************************************************
-*/
-
 typedef enum { GUI_WRAPMODE_NONE, GUI_WRAPMODE_WORD, GUI_WRAPMODE_CHAR } GUI_WRAPMODE;
 
 typedef GUI_HMEM GUI_USAGE_Handle;
 typedef struct tsUSAGE_APIList tUSAGE_APIList;
 typedef struct GUI_Usage GUI_USAGE;
 #define GUI_USAGE_h GUI_USAGE_Handle
-
-
 
 typedef GUI_USAGE_h tUSAGE_CreateCompatible(GUI_USAGE* p);
 typedef void        tUSAGE_AddPixel        (GUI_USAGE* p, int x, int y);
@@ -92,7 +82,6 @@ typedef void        tUSAGE_Clear           (GUI_USAGE* p);
 typedef void        tUSAGE_Delete          (GUI_USAGE_h h);
 typedef int         tUSAGE_GetNextDirty    (GUI_USAGE* p, int *pxOff, int yOff);
 #define GUI_USAGE_H2P(h) ((GUI_USAGE*)GUI_ALLOC_h2p(h))
-
 
 void GUI_USAGE_DecUseCnt(GUI_USAGE_Handle  hUsage);
 
@@ -120,13 +109,6 @@ struct GUI_Usage {
   I16 UseCnt;
 };
 
-/*****************************************************
-*
-*        GUI_MEMDEV
-*
-******************************************************
-*/
-
 #if GUI_SUPPORT_MEMDEV
   typedef struct /*GUI_MEMDEV*/ {
     I16P                   x0, y0, XSize, YSize;
@@ -147,22 +129,8 @@ struct GUI_Usage {
 
 #endif
 
-/*******************************************************************
-*
-*                   LCD_HL_ level defines
-*
-********************************************************************
-*/
-
 #define LCD_HL_DrawHLine             LCD_DrawHLine
 #define LCD_HL_DrawPixel             LCD_DrawPixel
-
-/*********************************************************************
-*
-*                     Helper functions
-*
-***********************************************************************
-*/
 
 #define GUI_ZEROINIT(Obj) GUI_MEMSET(Obj, 0, sizeof(Obj))
 int  GUI_cos(int angle);
@@ -217,13 +185,6 @@ int  GUI__strcmp_hp (GUI_HMEM hs0, const char GUI_UNI_PTR * s1);
 U16 GUI__Read16(const U8 ** ppData);
 U32 GUI__Read32(const U8 ** ppData);
 
-/*********************************************************************
-*
-*             2d - GL
-*
-**********************************************************************
-*/
-
 void GL_DispChar         (U16 c);
 void GL_DrawArc          (int x0, int y0, int rx, int ry, int a0, int a1);
 void GL_DrawBitmap       (const GUI_BITMAP GUI_UNI_PTR * pBM, int x0, int y0);
@@ -253,14 +214,6 @@ typedef char GUI_CURSOR_tfTempHide  (const GUI_RECT* pRect);
 typedef void GUI_CURSOR_tfTempUnhide(void);
 typedef int  WM_tfHandlePID(void);
 
-
-/************************************************************
-*
-*        Cursors 
-*
-*************************************************************
-*/
-
 extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_ArrowS[45];
 extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_ArrowM[60];
 extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_ArrowL[150];
@@ -269,39 +222,17 @@ extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_CrossM[126];
 extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_CrossL[248];
 extern GUI_CONST_STORAGE unsigned char  GUI_PixelsHeaderM[5 * 17];
 
-
 extern GUI_CONST_STORAGE GUI_LOGPALETTE GUI_CursorPal;
 extern GUI_CONST_STORAGE GUI_LOGPALETTE GUI_CursorPalI;
 
-/************************************************************
-*
-*        Text rotation
-*
-*************************************************************
-*/
-
 extern GUI_RECT  GUI_RectDispString; /* Used by LCD_Rotate...() and GUI_DispStringInRect() */
-
-/*********************************************************************
-*
-*             Bitmap related functions
-*
-**********************************************************************
-*/
 
 int       GUI_GetBitmapPixelIndex(const GUI_BITMAP GUI_UNI_PTR * pBMP, unsigned x, unsigned y);
 GUI_COLOR GUI_GetBitmapPixelColor(const GUI_BITMAP GUI_UNI_PTR * pBMP, unsigned x, unsigned y);
 
 #if defined(__cplusplus)
 }
-#endif 
-
-/************************************************************
-*
-*         GUI_EXTERN declartions/definitions
-*
-*************************************************************
-*/
+#endif
 
 #ifdef  GL_CORE_C
   #define GUI_EXTERN

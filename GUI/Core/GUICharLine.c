@@ -1,32 +1,8 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUICharLine.C
-Purpose     : Implementation of character and string services
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include <stdio.h>
 #include "GUI_Protected.h"
-
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
 
 static void _DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT *pRect) {
   /* Check if we have anything to do at all ... */
@@ -51,13 +27,6 @@ static void _DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT
     }
   }
 }
-
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
 
 int GUI__GetLineNumChars(const char GUI_UNI_PTR *s, int MaxNumChars) {
   int NumChars = 0;
@@ -99,7 +68,6 @@ int GUI__GetLineDistX(const char GUI_UNI_PTR *s, int MaxNumChars) {
   }
   return Dist;
 }
-
 
 void GUI__DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT* pr) {
   GUI_RECT r;

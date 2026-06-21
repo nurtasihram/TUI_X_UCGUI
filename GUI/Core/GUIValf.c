@@ -1,31 +1,7 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUIValF.C
-Purpose     : Displaying floating point values
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include "GUI_Protected.h"
 #include "math.h"
-
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
 
 static void _DispFloatFix(float f, char Len, char Decs, int DrawPlusSign) {
   f *= GUI_Pow10[(unsigned)Decs];
@@ -38,17 +14,9 @@ static void _DispFloatFix(float f, char Len, char Decs, int DrawPlusSign) {
   }
 }
 
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
-
 void GUI_DispFloatFix(float f, char Len, char Decs) {
   _DispFloatFix(f, Len, Decs, 0);
 }
-
 
 void GUI_DispFloatMin(float f, char Fract) {
   char Len;
@@ -58,7 +26,6 @@ void GUI_DispFloatMin(float f, char Fract) {
   }
   _DispFloatFix(f, (char)(Len + Fract + (Fract ? 1 : 0)), (char)Fract, 0);
 }
-
 
 void GUI_DispFloat(float f, char Len) {
   int Decs;
@@ -71,11 +38,9 @@ void GUI_DispFloat(float f, char Len) {
   _DispFloatFix(f, Len, (char)Decs, 0);
 }
 
-
 void GUI_DispSFloatFix(float f, char Len, char Fract) {
   _DispFloatFix (f, Len, Fract, 1);
 }
-
 
 void GUI_DispSFloatMin(float f, char Fract) {
   char Len;

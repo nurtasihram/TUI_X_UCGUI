@@ -24,28 +24,18 @@ Purpose     : Implementation of said function
 
 #if GUI_SUPPORT_MEMDEV
 
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
-
 void* GUI_MEMDEV_GetDataPtr(GUI_MEMDEV_Handle hMem) {
   GUI_MEMDEV* pDev;
   void *pData;
                      /* Needed so the memory management does not complain */
   pDev  = GUI_MEMDEV_H2P(hMem);
-  
+
   pData = (void*)(pDev + 1);
   return pData;
 }
 
-
 #else
 
-void GUI_MEMDEV_GetDataPtr_C(void) {}
 
 #endif /* GUI_SUPPORT_MEMDEV */
 
-/*************************** end of file ****************************/

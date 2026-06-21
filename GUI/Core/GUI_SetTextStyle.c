@@ -1,32 +1,8 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_SetTextStyle.C
-Purpose     : Implementation of various text styles
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include <stdio.h>
 #include "GUI_Protected.h"
-
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
 
 static void GUI__cbDrawTextStyle(U16 Char) {
   int x0, x1;
@@ -55,20 +31,13 @@ static void GUI__cbDrawTextStyle(U16 Char) {
   }
 }
 
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
-
 char GUI_SetTextStyle(char Style) {
   char OldStyle;
-  
+
   OldStyle = GUI_Context.TextStyle;
   GUI_pfDispCharStyle = GUI__cbDrawTextStyle;    /* Init function pointer (function in this module) */
   GUI_Context.TextStyle = Style;
-  
+
   return OldStyle;
 }
 

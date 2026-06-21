@@ -28,15 +28,8 @@ Purpose     : Implementation of memory devices
   #include "WM.h"
 #endif
 
-/* Memory device capabilities are compiled only if support for them is enabled.*/ 
+/* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
-
-/*********************************************************************
-*
-*       Macros
-*
-**********************************************************************
-*/
 
 #ifndef PIXELINDEX
   #define PIXELINDEX                      U8
@@ -46,24 +39,11 @@ Purpose     : Implementation of memory devices
 
 /*********************************************************************
 *
-*       static consts
-*
-**********************************************************************
-*/
-/*********************************************************************
-*
 *       ID translation table
 *
 * This table serves as translation table for DDBs
 */
 static const LCD_PIXELINDEX aID[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-
-/*********************************************************************
-*
-*       static code
-*
-**********************************************************************
-*/
 
 static U8* _XY2PTR_BITOFFSET(int x, int y, int* pBitOffset) {
   GUI_ALLOC_DATATYPE_U Offset;
@@ -84,7 +64,6 @@ static U8* _XY2PTR_BITOFFSET(int x, int y, int* pBitOffset) {
   }
   return pData + Offset;
 }
-
 
 static void _DrawBitLine1BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * p, int Diff, unsigned int xsize,
                              const LCD_PIXELINDEX* pTrans, GUI_MEMDEV* pDev, PIXELINDEX* pDest)
@@ -166,7 +145,6 @@ static void _DrawBitLine1BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   }
 }
 
-
 static void _DrawBitLine2BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * p, int Diff, int xsize,
                              const LCD_PIXELINDEX* pTrans, GUI_MEMDEV* pDev, PIXELINDEX* pDest)
 {
@@ -213,7 +191,6 @@ static void _DrawBitLine2BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
     break;
   }
 }
-
 
 static void _DrawBitLine4BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * p, int Diff, int xsize,
                              const LCD_PIXELINDEX* pTrans, GUI_MEMDEV* pDev, PIXELINDEX* pDest)
@@ -285,7 +262,6 @@ static void _DrawBitLine4BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   }
 }
 
-
 static void _DrawBitLine8BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * pSrc, int xsize,
                              const LCD_PIXELINDEX* pTrans, GUI_MEMDEV* pDev, PIXELINDEX* pDest) {
   GUI_USE_PARA(pUsage);
@@ -309,7 +285,6 @@ static void _DrawBitLine8BPP(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_P
   }
 }
 
-
 static void _DrawBitLine8BPP_DDB(GUI_USAGE* pUsage, int x, int y, const U8 GUI_UNI_PTR * pSrc, int xsize, GUI_MEMDEV* pDev, PIXELINDEX* pDest) {
   GUI_USE_PARA(pUsage);
   GUI_USE_PARA(pDest);
@@ -331,7 +306,6 @@ static void _DrawBitLine8BPP_DDB(GUI_USAGE* pUsage, int x, int y, const U8 GUI_U
     break;
   }
 }
-
 
 static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
                         int BitsPerPixel, int BytesPerLine,
@@ -357,7 +331,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
     for (i = 0; i < ysize; i++) {
       _DrawBitLine16BPP_DDB(pUsage, x0, i + y0, (const U16*)pData, xsize, pDev, pDest);
       pData += BytesPerLine;
-      pDest = (PIXELINDEX*)((U8*)pDest + BytesPerLineDest); 
+      pDest = (PIXELINDEX*)((U8*)pDest + BytesPerLineDest);
     }
     return;
   }
@@ -371,7 +345,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
         _DrawBitLine8BPP_DDB(pUsage, x0, i + y0, pData, xsize, pDev, pDest);
       }
       pData += BytesPerLine;
-      pDest = (PIXELINDEX*)((U8*)pDest + BytesPerLineDest); 
+      pDest = (PIXELINDEX*)((U8*)pDest + BytesPerLineDest);
     }
     return;
   }
@@ -392,10 +366,9 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
       break;
     }
     pData += BytesPerLine;
-    pDest = (PIXELINDEX*)((U8*)pDest + BytesPerLineDest); 
+    pDest = (PIXELINDEX*)((U8*)pDest + BytesPerLineDest);
   }
 }
-
 
 static void _FillRect(int x0, int y0, int x1, int y1) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
@@ -460,15 +433,13 @@ static void _FillRect(int x0, int y0, int x1, int y1) {
   }
 }
 
-
 static void _DrawHLine(int x0, int y, int x1) {
   _FillRect(x0, y, x1, y);
 }
 
-
 static void _DrawVLine(int x , int y0, int y1) {
   GUI_MEMDEV* pDev   = GUI_MEMDEV_H2P(GUI_Context.hDevData);
-  GUI_USAGE_h hUsage = pDev->hUsage; 
+  GUI_USAGE_h hUsage = pDev->hUsage;
   GUI_USAGE*  pUsage = hUsage ? GUI_USAGE_H2P(hUsage) : NULL;
   U8* pData;
   int Bit, Mask;
@@ -496,7 +467,6 @@ static void _DrawVLine(int x , int y0, int y1) {
   }
 }
 
-
 static void _SetPixelIndex(int x, int y, int Index) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   U8* pData;
@@ -509,7 +479,6 @@ static void _SetPixelIndex(int x, int y, int Index) {
   }
 }
 
-
 static void _XorPixel(int x, int y) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   U8* pData;
@@ -521,20 +490,12 @@ static void _XorPixel(int x, int y) {
   }
 }
 
-
 static unsigned int _GetPixelIndex(int x, int y) {
   U8* pData;
   int Bit;
   pData = _XY2PTR_BITOFFSET(x, y, &Bit);
   return (*pData >> Bit) & 1;
 }
-
-/*********************************************************************
-*
-*       Device structure
-*
-**********************************************************************
-*/
 
 const tLCDDEV_APIList API_LIST = {
   (tLCDDEV_DrawBitmap*)_DrawBitmap,
@@ -552,8 +513,6 @@ const tLCDDEV_APIList API_LIST = {
 
 #else
 
-void GUIDEV1_C(void) {}
 
 #endif /* GUI_SUPPORT_MEMDEV */
 
-/*************************** end of file ****************************/

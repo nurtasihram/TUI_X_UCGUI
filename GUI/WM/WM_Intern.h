@@ -40,7 +40,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #define WM_HANDLE2PTR(hWin) ((WM_Obj*)GUI_ALLOC_h2p(hWin))    /* older form ... to be eliminated */
 #define WM_H2P(hWin)        ((WM_Obj*)GUI_ALLOC_h2p(hWin))
 
-
 #if GUI_DEBUG_LEVEL  >= GUI_DEBUG_LEVEL_LOG_WARNINGS
   #define WM_ASSERT_NOT_IN_PAINT() { if (WM__PaintCallbackCnt) \
                                        GUI_DEBUG_ERROROUT("Function may not be called from within a paint event"); \
@@ -49,12 +48,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
   #define WM_ASSERT_NOT_IN_PAINT()
 #endif
 
-/*********************************************************************
-*
-*       Data types & structures
-*
-**********************************************************************
-*/
 typedef struct {
   WM_HWIN hWin;
   WM_Obj* pWin;
@@ -70,12 +63,6 @@ typedef struct WM_CRITICAL_HANDLE {
   volatile WM_HWIN hWin;
 } WM_CRITICAL_HANDLE;
 
-/*********************************************************************
-*
-*       Data (extern)
-*
-**********************************************************************
-*/
 extern U16                    WM__CreateFlags;
 extern WM_HWIN                WM__hCapture;
 extern WM_HWIN                WM__hWinFocus;
@@ -105,13 +92,6 @@ GUI_EXTERN U16     WM__NumInvalidWindows;
 GUI_EXTERN WM_HWIN WM__FirstWin;
 GUI_EXTERN WM_CRITICAL_HANDLE*  WM__pFirstCriticalHandle;
 #undef GUI_EXTERN
-
-/*********************************************************************
-*
-*       Prototypes
-*
-**********************************************************************
-*/
 
 void    WM__ActivateClipRect        (void);
 int     WM__ClipAtParentBorders     (GUI_RECT* pRect, WM_HWIN hWin);

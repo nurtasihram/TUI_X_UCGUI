@@ -25,13 +25,6 @@ Purpose     : Implementation of memory devices
 
 #if GUI_SUPPORT_MEMDEV
 
-/*********************************************************************
-*
-*       modul internal routines
-*
-**********************************************************************
-*/
-
 void* GUI_MEMDEV__XY2PTR(int x, int y) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   U8 *pData = (U8*)(pDev + 1);
@@ -44,7 +37,6 @@ void* GUI_MEMDEV__XY2PTR(int x, int y) {
   return pData + (x - pDev->x0) * (pDev->BitsPerPixel / 8);
 }
 
-
 void* GUI_MEMDEV__XY2PTREx(GUI_MEMDEV* pDev, int x, int y) {
   U8 *pData = (U8*)(pDev + 1);
   pData += y * pDev->BytesPerLine;
@@ -53,8 +45,6 @@ void* GUI_MEMDEV__XY2PTREx(GUI_MEMDEV* pDev, int x, int y) {
 
 #else
 
-void GUIDEV_XY2PTR_C(void) {}
 
 #endif /* GUI_SUPPORT_MEMDEV */
 
-/*************************** end of file ****************************/

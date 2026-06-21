@@ -1,21 +1,4 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_DispStringInRect.c
-Purpose     : Implementation of GUI_DispStringInRect
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include <stdio.h>
@@ -23,13 +6,7 @@ Purpose     : Implementation of GUI_DispStringInRect
 #if GUI_WINSUPPORT
   #include "WM.h"
 #endif
- 
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
+
 
 void GUI__DispStringInRect(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAlign, int MaxNumChars) {
   GUI_RECT r;
@@ -96,13 +73,12 @@ void GUI__DispStringInRect(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextA
   }
 }
 
-
 #if (GUI_WINSUPPORT)
 void GUI_DispStringInRectMax(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAlign, int MaxLen) {
   if (s) {
     const GUI_RECT *pOldClipRect = NULL;
     GUI_RECT r;
-    
+
     if (pRect) {
       pOldClipRect = WM_SetUserClipRect(pRect);
       if (pOldClipRect) {
@@ -112,7 +88,7 @@ void GUI_DispStringInRectMax(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int Tex
     }
     GUI__DispStringInRect(s, pRect, TextAlign, MaxLen);
     WM_SetUserClipRect(pOldClipRect);
-    
+
   }
 }
 
@@ -121,17 +97,16 @@ void GUI_DispStringInRectMax(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int Tex
 void GUI_DispStringInRectMax(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAlign, int MaxLen) {
   GUI_RECT Rect_Old, r;
   if (s && pRect) {
-    
+
     Rect_Old = GUI_Context.ClipRect;
     GUI__IntersectRects(&r, pRect, &Rect_Old);
     LCD_SetClipRectEx(&r);
     GUI__DispStringInRect(s, pRect, TextAlign, MaxLen);
     LCD_SetClipRectEx(&Rect_Old);
-    
+
   }
 }
 #endif
-
 
 void GUI_DispStringInRect(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAlign) {
   GUI_DispStringInRectMax(s, pRect, TextAlign, 0x7fff);

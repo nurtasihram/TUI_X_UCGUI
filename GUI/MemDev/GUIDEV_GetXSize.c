@@ -24,20 +24,13 @@ Purpose     : Implementation of memory devices, add. module
 #include "GUI_Protected.h"
 #include "GUIDebug.h"
 
-/* Memory device capabilities are compiled only if support for them is enabled. */ 
+/* Memory device capabilities are compiled only if support for them is enabled. */
 #if GUI_SUPPORT_MEMDEV
-
-/*********************************************************************
-*
-*       public code
-*
-**********************************************************************
-*/
 
 int GUI_MEMDEV_GetXSize(GUI_MEMDEV_Handle hMem) {
   int r = 0;
   GUI_MEMDEV* pDevData;
-  
+
   if (hMem == 0) {
     hMem = GUI_Context.hDevData;
   }
@@ -45,14 +38,12 @@ int GUI_MEMDEV_GetXSize(GUI_MEMDEV_Handle hMem) {
     pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
     r = pDevData->XSize;
   }
-  
+
   return r;
 }
 
 #else
 
-void GUIDEV_GetXSize_C(void) {} /* avoid empty object files */
 
 #endif /* GUI_MEMDEV_SUPPORT */
 
-/*************************** end of file ****************************/

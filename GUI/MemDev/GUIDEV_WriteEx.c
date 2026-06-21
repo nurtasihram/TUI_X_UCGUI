@@ -20,20 +20,13 @@ Purpose     : Implementation of memory devices
 ---------------------------END-OF-HEADER------------------------------
 */
 
-
 #include <string.h>
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 
-/* Memory device capabilities are compiled only if support for them is enabled.*/ 
+/* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
 
-/*********************************************************************
-*
-*       static code
-*
-**********************************************************************
-*/
 /*********************************************************************
 *
 *       _GetPixelIndex
@@ -47,10 +40,9 @@ static int _GetPixelIndex(const U8* pData, int x, int y, int bpp, int BytesPerLi
   }
 }
 
-
 static void _DrawHLineAlpha(int x0, int y, int x1, int Intens) {
   GUI_MEMDEV* pDev   = GUI_MEMDEV_H2P(GUI_Context.hDevData);
-  GUI_USAGE_h hUsage = pDev->hUsage; 
+  GUI_USAGE_h hUsage = pDev->hUsage;
   LCD_COLOR Color1, Color2;
   int Len = x1 - x0 + 1;
   if (hUsage) {
@@ -76,7 +68,6 @@ static void _DrawHLineAlpha(int x0, int y, int x1, int Intens) {
   }
 }
 
-
 static void _DrawBitmapLineEx(int x0, int y0, int xOff, int yOff, int xSize, int xMag, int Alpha,
                               int bpp, int BytesPerLine, const U8* pData) {
   int x, xi, xAct, xStart, xMagAbs, xiMag, xMin, xMax, Cached;
@@ -92,7 +83,7 @@ static void _DrawBitmapLineEx(int x0, int y0, int xOff, int yOff, int xSize, int
   Cached  =  0;
   for (xi = 0; xi < xSize; xi++) {
     xiMag += xMagAbs;
-    if (xiMag >= 1000) {  
+    if (xiMag >= 1000) {
       if (x <= xMax) {
         xAct  = (xMag > 0) ? xi : xSize - xi - 1;
         Index = _GetPixelIndex(pData, xOff + xAct, yOff, bpp, BytesPerLine);
@@ -137,7 +128,6 @@ static void _DrawBitmapLineEx(int x0, int y0, int xOff, int yOff, int xSize, int
   }
 }
 
-
 static void _DrawBitmapEx(int x0, int y0, int xOff, int yOff, int xSize, int ySize, int xMag, int yMag,
                           int Alpha, int BmpSizeX, int BmpSizeY, int bpp, int BytesPerLine, const U8* pData) {
   int y, yi, yMin, yMax, yEnd, yPrev;
@@ -165,10 +155,9 @@ static void _DrawBitmapEx(int x0, int y0, int xOff, int yOff, int xSize, int ySi
   }
 }
 
-
 static void _WriteExToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, int yMag, int Alpha) {
   GUI_MEMDEV* pDev;
-  GUI_USAGE_h hUsage; 
+  GUI_USAGE_h hUsage;
   GUI_USAGE*  pUsage;
   U8* pData;
   int yAct, yPrev, ySize, yi;
@@ -215,18 +204,11 @@ static void _WriteExToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, i
   }
 }
 
-/*********************************************************************
-*
-*        public code
-*
-**********************************************************************
-*/
-
 void GUI_MEMDEV_WriteExAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, int yMag, int Alpha) {
   if (hMem) {
     GUI_MEMDEV* pDevData;
     GUI_RECT ClipRectPrev;
-    
+
     pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);
     if (x == GUI_POS_AUTO) {
       x = pDevData->x0;
@@ -236,10 +218,9 @@ void GUI_MEMDEV_WriteExAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, int yM
     LCD_SetClipRectMax();
     _WriteExToActiveAt(hMem, x, y, xMag, yMag, Alpha);
     GUI_Context.ClipRect = ClipRectPrev;
-    
+
   }
 }
-
 
 void GUI_MEMDEV_WriteEx(GUI_MEMDEV_Handle hMem, int xMag, int yMag, int Alpha) {
   GUI_MEMDEV_WriteExAt(hMem, GUI_POS_AUTO, GUI_POS_AUTO, xMag, yMag, Alpha);
@@ -247,8 +228,6 @@ void GUI_MEMDEV_WriteEx(GUI_MEMDEV_Handle hMem, int xMag, int yMag, int Alpha) {
 
 #else
 
-void GUIDEV_WriteEx_C(void) {}
 
 #endif /* GUI_SUPPORT_MEMDEV */
 
-/*************************** end of file ****************************/

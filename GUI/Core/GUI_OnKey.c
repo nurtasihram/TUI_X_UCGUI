@@ -1,32 +1,8 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_OnKey.c
-Purpose     : Implementation of GUI_StoreKeyMsg
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include "GUI_Protected.h"
 
 #include "WM.h"
-
-/*********************************************************************
-*
-*       Static data
-*
-**********************************************************************
-*/
 
 #if GUI_WINSUPPORT
 
@@ -40,28 +16,13 @@ static struct {
 
 static int _Key;
 
-/*********************************************************************
-*
-*       Public data
-*
-**********************************************************************
-*/
-
 GUI_KEY_MSG_HOOK* GUI_pfKeyMsgHook;
-
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
 
 int GUI_GetKey(void) {
   int r = _Key;
   _Key = 0;
   return r;
 }
-
 
 void GUI_StoreKey(int Key) {
   if (!_Key) {
@@ -70,11 +31,9 @@ void GUI_StoreKey(int Key) {
   GUI_X_SIGNAL_EVENT();
 }
 
-
 void GUI_ClearKeyBuffer(void) {
   while (GUI_GetKey());
 }
-
 
 void GUI_StoreKeyMsg(int Key, int PressedCnt) {
   _KeyMsg.Key = Key;
@@ -82,7 +41,6 @@ void GUI_StoreKeyMsg(int Key, int PressedCnt) {
   _KeyMsgCnt = 1;
   GUI_X_SIGNAL_EVENT();
 }
-
 
 int GUI_PollKeyMsg(void) {
   int r = 0;

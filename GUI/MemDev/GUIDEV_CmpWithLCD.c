@@ -32,13 +32,6 @@ Version-Date---Author-Explanation
 
 #if GUI_SUPPORT_MEMDEV
 
-/*********************************************************************
-*
-*       public code
-*
-**********************************************************************
-*/
-
 int GUI_MEMDEV_CompareWithLCD(GUI_MEMDEV_Handle hMem, int *px, int *py, int *pExp, int *pAct) {
 	int Ret = 0;
 	/* Make sure memory handle is valid */
@@ -48,7 +41,7 @@ int GUI_MEMDEV_CompareWithLCD(GUI_MEMDEV_Handle hMem, int *px, int *py, int *pEx
 	if (!hMem) {
 		return 1;
 	}
-	
+
 	{
 		GUI_MEMDEV *pDevData = (GUI_MEMDEV *)GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
 		int y = pDevData->y0;
@@ -92,7 +85,7 @@ int GUI_MEMDEV_CompareWithLCD(GUI_MEMDEV_Handle hMem, int *px, int *py, int *pEx
 		}
 	}
 Skip:
-	
+
 	return Ret;
 }
 
@@ -102,4 +95,3 @@ void GUIDEV_CmpWithLCD(void) {} /* avoid empty object files */
 
 #endif /* GUI_SUPPORT_MEMDEV */
 
-/*************************** end of file ****************************/

@@ -27,31 +27,30 @@
   #define LCDDEV_L0_XorPixel            LCD_L0_XorPixel
 #endif
 
-void LCD_L0_DrawBitmap    (int x0, int y0, int xsize, int ysize, 
-                           int BitsPerPixel, int BytesPerLine, 
+void LCD_L0_DrawBitmap    (int x0, int y0, int xsize, int ysize,
+                           int BitsPerPixel, int BytesPerLine,
                            const U8 GUI_UNI_PTR * pData, int Diff, const LCD_PIXELINDEX* pTrans);
-void LCD_L0_1_DrawBitmap  (int x0, int y0, int xsize, int ysize, 
-                           int BitsPerPixel, int BytesPerLine, 
+void LCD_L0_1_DrawBitmap  (int x0, int y0, int xsize, int ysize,
+                           int BitsPerPixel, int BytesPerLine,
                            const U8 GUI_UNI_PTR * pData, int Diff, const LCD_PIXELINDEX* pTrans);
-void LCD_L0_2_DrawBitmap  (int x0, int y0, int xsize, int ysize, 
-                           int BitsPerPixel, int BytesPerLine, 
+void LCD_L0_2_DrawBitmap  (int x0, int y0, int xsize, int ysize,
+                           int BitsPerPixel, int BytesPerLine,
                            const U8 GUI_UNI_PTR * pData, int Diff, const LCD_PIXELINDEX* pTrans);
-void LCD_L0_3_DrawBitmap  (int x0, int y0, int xsize, int ysize, 
-                           int BitsPerPixel, int BytesPerLine, 
+void LCD_L0_3_DrawBitmap  (int x0, int y0, int xsize, int ysize,
+                           int BitsPerPixel, int BytesPerLine,
                            const U8 GUI_UNI_PTR * pData, int Diff, const LCD_PIXELINDEX* pTrans);
-void LCD_L0_4_DrawBitmap  (int x0, int y0, int xsize, int ysize, 
-                           int BitsPerPixel, int BytesPerLine, 
+void LCD_L0_4_DrawBitmap  (int x0, int y0, int xsize, int ysize,
+                           int BitsPerPixel, int BytesPerLine,
                            const U8 GUI_UNI_PTR * pData, int Diff, const LCD_PIXELINDEX* pTrans);
-void LCD_L0_MAG_DrawBitmap(int x0, int y0, int xsize, int ysize, 
-                           int BitsPerPixel, int BytesPerLine, 
+void LCD_L0_MAG_DrawBitmap(int x0, int y0, int xsize, int ysize,
+                           int BitsPerPixel, int BytesPerLine,
                            const U8 GUI_UNI_PTR * pData, int Diff, const LCD_PIXELINDEX* pTrans);
-void LCD_L0_DELTA_DrawBitmap(int x0, int y0, int xsize, int ysize, 
-                           int BitsPerPixel, int BytesPerLine, 
+void LCD_L0_DELTA_DrawBitmap(int x0, int y0, int xsize, int ysize,
+                           int BitsPerPixel, int BytesPerLine,
                            const U8 GUI_UNI_PTR * pData, int Diff, const LCD_PIXELINDEX* pTrans);
 
 LCD_PIXELINDEX*  LCD_GetpPalConvTable(const LCD_LOGPALETTE GUI_UNI_PTR *  pLogPal);
 LCD_PIXELINDEX*  LCD_GetpPalConvTableUncached(const LCD_LOGPALETTE GUI_UNI_PTR *  pLogPal);
-
 
 #define GUI_POS_AUTO -4095   /* Position value for auto-pos */
 

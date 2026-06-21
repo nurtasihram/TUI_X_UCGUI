@@ -5,13 +5,6 @@
 
 #include "GUIConf.h"
 
-/**********************************************************************
-*
-*       Defaults for config switches
-*
-***********************************************************************
-*/
-
 /* Define "universal pointer". Normally, this is not needed (define will expand to nothing)
    However, on some systems (AVR - IAR compiler) it can be necessary ( -> __generic),
    since a default pointer can access RAM only, not the built-in Flash
@@ -96,7 +89,6 @@ with parameters. In this case, we do not use function pointers, but limit the fu
 #ifndef   GUI_MEMSET
   #define GUI_MEMSET GUI__memset
 #endif
-
 
 #endif   /* ifdef GUI_CONFDEFAULTS_H */
 /*************************** End of file ****************************/

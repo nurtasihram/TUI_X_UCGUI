@@ -7,22 +7,10 @@
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
 
-/*********************************************************************
-*
-*        Limitations for certain C51 Keil  (__C51__)
-*
-**********************************************************************
-*/
 #if defined (__C51__) && GUI_SUPPORT_MEMDEV
   #error __C51__ (Keil) can not support function pointers sufficiently !  -> Disable memory devices  -> GUI_SUPPORT_MEMDEV 0
 #endif
 
-/*********************************************************************
-*
-*        macros, function replacement
-*
-**********************************************************************
-*/
 #define GUI_COUNTOF(a) (sizeof(a) / sizeof(a[0]))
 
 /************************************************************
@@ -54,7 +42,6 @@ Note that we have chosen the values to be close to existing
 
 #define GUI_KEY_F1                40
 #define GUI_KEY_F2                41
-
 
 /*********************************************************************
 *
@@ -179,31 +166,10 @@ Note that we have chosen the values to be close to existing
 
 #define GUI_ID_USER     0x800
 
-/*********************************************************************
-*
-*               Constants  needed for GL
-*
-**********************************************************************
-*/
-
-/**********************************
-*
-*      Text styles
-*
-***********************************
-*/
-
 #define GUI_TS_NORMAL           (0)
 #define GUI_TS_UNDERLINE        (1 << 0)
 #define GUI_TS_STRIKETHRU       (1 << 1)
 #define GUI_TS_OVERLINE         (1 << 2)
-
-/**********************************
-*
-*      Line styles
-*
-***********************************
-*/
 
 #define GUI_LS_SOLID        (0)
 #define GUI_LS_DASH         (1)
@@ -211,19 +177,9 @@ Note that we have chosen the values to be close to existing
 #define GUI_LS_DASHDOT      (3)
 #define GUI_LS_DASHDOTDOT   (4)
 
-
-/**********************************
-*
-*      Pen shapes
-*
-***********************************
-*/
-
 #define GUI_PS_ROUND        (0)
 #define GUI_PS_FLAT         (1)
 #define GUI_PS_SQUARE       (2)
-
-
 
 /*      *********************************
         *
@@ -279,7 +235,6 @@ Note: The external declarations for the fonts are now also included in
       this file.
 */
 
-
 /* Proportional fonts */
 extern GUI_CONST_STORAGE GUI_FONT GUI_Font8_ASCII,  GUI_Font8_1;
 extern GUI_CONST_STORAGE GUI_FONT GUI_Font13_ASCII, GUI_Font13_1;
@@ -287,7 +242,6 @@ extern GUI_CONST_STORAGE GUI_FONT GUI_Font13_ASCII, GUI_Font13_1;
 /* Monospaced */
 extern GUI_CONST_STORAGE GUI_FONT GUI_Font8x8, GUI_Font8x9;
 extern GUI_CONST_STORAGE GUI_FONT GUI_Font6x8, GUI_Font6x9;
-
 
 /*
       *********************************
@@ -399,26 +353,12 @@ typedef struct {
   #define GUI_SaveContext GUI_SaveContext_
 #endif
 
-/*********************************************************************
-*
-*             General routines
-*
-**********************************************************************
-*/
 int          GUI_Init(void);
 void         GUI_SetDefault(void);
 GUI_DRAWMODE GUI_SetDrawMode(GUI_DRAWMODE dm);
 const char * GUI_GetVersionString(void);
 void         GUI_SaveContext   (      GUI_CONTEXT* pContext);
 void         GUI_RestoreContext(const GUI_CONTEXT* pContext);
-
-
-/*********************************************************************
-*
-*           Rectangle helper functions
-*
-**********************************************************************
-*/
 
 int  GUI_RectsIntersect(const GUI_RECT* pr0, const GUI_RECT* pr1);
 void GUI_MoveRect       (GUI_RECT *pRect, int x, int y);
@@ -427,26 +367,11 @@ int  GUI__IntersectRects(GUI_RECT* pDest, const GUI_RECT* pr0, const GUI_RECT* p
 void GUI__IntersectRect (GUI_RECT* pDest, const GUI_RECT* pr0);
 void GUI__ReduceRect    (GUI_RECT* pDest, const GUI_RECT *pRect, int Dist);
 
-/*********************************************************************
-*
-*       Misc helper functions
-*
-**********************************************************************
-*/
-
 int  GUI__DivideRound     (int a, int b);
 I32  GUI__DivideRound32   (I32 a, I32 b);
 int  GUI__SetText(GUI_HMEM* phText, const char* s);
 
 
-
-/*********************************************************************
-*
-*      Get / Set Attributes
-*
-**********************************************************************
-*/
- 
 GUI_COLOR GUI_GetBkColor     (void);
 GUI_COLOR GUI_GetColor       (void);
 int       GUI_GetBkColorIndex(void);
@@ -470,25 +395,11 @@ U8        GUI_SetFillStyle (U8 Style);
 char      GUI_GetDecChar(void);
 char      GUI_SetDecChar(char c);
 
-
-/*********************************************************************
-*
-*       Color / Index related functions
-*
-**********************************************************************
-*/
-
 GUI_COLOR GUI_Color2VisColor(GUI_COLOR color);
 char      GUI_ColorIsAvailable(GUI_COLOR color);
 U32       GUI_CalcColorDist (GUI_COLOR Color0, GUI_COLOR  Color1);
 U32       GUI_CalcVisColorError(GUI_COLOR color);
 
-/*********************************************************************
-*
-*       Logging (for debugging primarily)
-*
-**********************************************************************
-*/
 void GUI_Log      (const char *s);
 void GUI_Log1     (const char *s, int p0);
 void GUI_Log2     (const char *s, int p0, int p1);
@@ -504,13 +415,6 @@ void GUI_ErrorOut1(const char *s, int p0);
 void GUI_ErrorOut2(const char *s, int p0, int p1);
 void GUI_ErrorOut3(const char *s, int p0, int p1, int p2);
 void GUI_ErrorOut4(const char *s, int p0, int p1, int p2, int p3);
-
-/*********************************************************************
-*
-*             2d - GL
-*
-**********************************************************************
-*/
 
 int  GUI_BMP_Draw         (const void * pFileData, int x0, int y0);
 int  GUI_BMP_GetXSize     (const void * pFileData);
@@ -549,12 +453,6 @@ void GUI_InvertRect       (int x0, int y0, int x1, int y1);
 void GUI_MoveRel          (int dx, int dy);
 void GUI_MoveTo           (int x, int y);
 
-/*********************************************************************
-*
-*       JPEG support
-*
-**********************************************************************
-*/
 typedef struct {
   int XSize;
   int YSize;
@@ -562,13 +460,6 @@ typedef struct {
 
 int  GUI_JPEG_Draw        (const void * pFileData, int DataSize, int x0, int y0);
 int  GUI_JPEG_GetInfo     (const void * pFileData, int DataSize, GUI_JPEG_INFO* pInfo);
-
-/*********************************************************************
-*
-*              Cursor routines
-*
-**********************************************************************
-*/
 
 typedef struct {
   const GUI_UNI_PTR GUI_BITMAP * pBitmap;
@@ -588,12 +479,6 @@ typedef struct {
   #define GUI_CURSOR_Clear();
 #endif
 
-/*********************************************************************
-*
-*       Cursors and their bitmaps
-*
-**********************************************************************
-*/
 extern GUI_CONST_STORAGE GUI_CURSOR GUI_CursorArrowS,  GUI_CursorArrowSI;
 extern GUI_CONST_STORAGE GUI_CURSOR GUI_CursorArrowM,  GUI_CursorArrowMI;
 extern GUI_CONST_STORAGE GUI_CURSOR GUI_CursorArrowL,  GUI_CursorArrowLI;
@@ -608,13 +493,6 @@ extern GUI_CONST_STORAGE GUI_BITMAP GUI_BitmapArrowL, GUI_BitmapArrowLI;
 extern GUI_CONST_STORAGE GUI_BITMAP GUI_BitmapCrossS, GUI_BitmapCrossSI;
 extern GUI_CONST_STORAGE GUI_BITMAP GUI_BitmapCrossM, GUI_BitmapCrossMI;
 extern GUI_CONST_STORAGE GUI_BITMAP GUI_BitmapCrossL, GUI_BitmapCrossLI;
-
-/*********************************************************************
-*
-*              Text related routines
-*
-**********************************************************************
-*/
 
 void  GUI_DispCEOL (void);
 void  GUI_DispChar  (U16 c);
@@ -654,21 +532,8 @@ char  GUI_GotoX(int x);
 char  GUI_GotoY(int y);
 void  GUI_DispNextLine(void);
 
-/*********************************************************************
-*
-*       Position independent fonts
-*
-**********************************************************************
-*/
 void GUI_SIF_CreateFont(void * pFontData, GUI_FONT * pFont, const GUI_SIF_TYPE * pFontType);
 void GUI_SIF_DeleteFont(GUI_FONT * pFont);
-
-/*********************************************************************
-*
-*         Unicode support
-*
-**********************************************************************
-*/
 
 int   GUI_UC_Encode           (char* s, U16 Char);
 int   GUI_UC_GetCharSize      (const char GUI_UNI_PTR * s);
@@ -716,14 +581,6 @@ void GUI_DispFloatMin (float v, char Fract);
 void GUI_DispSFloatFix(float v, char Len, char Fract);
 void GUI_DispSFloatMin(float v, char Fract);
 
-
-/*********************************************************************
-*
-*         Dynamic memory management
-*
-**********************************************************************
-*/
-
 #if !defined(GUI_ALLOC_ALLOC)
   /* diagnostics */
   GUI_ALLOC_DATATYPE  GUI_ALLOC_GetUsed        (void);
@@ -740,13 +597,6 @@ GUI_ALLOC_DATATYPE GUI_ALLOC_GetMaxSize (void);
 void*              GUI_ALLOC_h2p        (GUI_HMEM  hMem);
 void               GUI_ALLOC_Init       (void);
 GUI_HMEM           GUI_ALLOC_Realloc    (GUI_HMEM hOld, int NewSize);
-
-/*********************************************************************
-*
-*      Memory device: GUI_MEMDEV
-*
-**********************************************************************
-*/
 
 #define GUI_MEMDEV_HASTRANS       0
 #define GUI_MEMDEV_NOTRANS    (1<<0)
@@ -797,13 +647,6 @@ GUI_HMEM           GUI_ALLOC_Realloc    (GUI_HMEM hOld, int NewSize);
 
 void GUI_SelectLCD(void);
 
-/**************************************************************
-*
-*      Measure device: GUI_MEASDEV
-*
-***************************************************************
-*/
-
 typedef GUI_HMEM GUI_MEASDEV_Handle;
 
 GUI_MEASDEV_Handle GUI_MEASDEV_Create (void);
@@ -812,41 +655,17 @@ void               GUI_MEASDEV_Select (GUI_MEASDEV_Handle hMem);
 void               GUI_MEASDEV_GetRect(GUI_MEASDEV_Handle hMem, GUI_RECT *pRect);
 void               GUI_MEASDEV_ClearRect(GUI_MEASDEV_Handle hMem);
 
-/************************************************************
-*
-*                 Polygon helpers
-*
-*************************************************************
-*/
 void GUI_RotatePolygon(GUI_POINT* pDest, const GUI_POINT* pSrc, int NumPoints, float Angle);
 void GUI_MagnifyPolygon(GUI_POINT* pDest, const GUI_POINT* pSrc, int NumPoints, int Mag);
 void GUI_EnlargePolygon(GUI_POINT* pDest, const GUI_POINT* pSrc, int NumPoints, int Len);
 
-/************************************************************
-*
-*                 Streamed bitmap
-*
-*************************************************************
-*/
 void GUI_DrawStreamedBitmap(const GUI_BITMAP_STREAM *pBitmapStream, int x, int y);
 
-/************************************************************
-*
-*                 BMP-export
-*
-*************************************************************
-*/
 typedef void GUI_CALLBACK_VOID_U8_P(U8 Data, void * p);
 
 void GUI_BMP_SerializeEx(GUI_CALLBACK_VOID_U8_P * pfSerialize, int x0, int y0, int xSize, int ySize, void * p);
 void GUI_BMP_Serialize  (GUI_CALLBACK_VOID_U8_P * pfSerialize, void * p);
 
-/*********************************************************************
-*
-*      Time / execution related routines
-*
-**********************************************************************
-*/
 void GUI_Delay  (int Period);
 int  GUI_GetTime(void);
 int  GUI_Exec(void);         /* Execute all jobs ... Return 0 if nothing was done. */
@@ -865,13 +684,6 @@ int     GUI_MessageBox   (const char * sMessage, const char * sCaption, int Flag
 
 #define GUI_MB_OK                20
 #define GUI_MB_WARNING           21
-
-/*********************************************************************
-*
-*                 GUI_TIMER module
-*
-**********************************************************************
-*/
 
 typedef struct {
   GUI_TIMER_TIME Time;
@@ -893,13 +705,6 @@ int  GUI_TIMER_Exec(void);
 
 void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, U32 Context);	//houhh 20061020
 
-/******************************************************************
-*
-*                 Keyboard
-*
-*******************************************************************
-*/
-
 /* Message layer */
 void GUI_StoreKeyMsg(int Key, int Pressed);
 void GUI_SendKeyMsg (int Key, int Pressed);
@@ -916,31 +721,13 @@ int  GUI_WaitKey(void);
 void GUI_StoreKey(int c);
 void GUI_ClearKeyBuffer(void);
 
-/*********************************************************************
-*
-*       Task syncronisation (depends on configuration)
-*/
 void GUI_WaitEvent(void);
-
-/*********************************************************************
-*
-*          PID  (Pointer input device ... mouse/touch) 
-*/
 
 void GUI_PID_StoreState(const GUI_PID_STATE *pState);
 int  GUI_PID_GetState  (      GUI_PID_STATE *pState);
 
-/*********************************************************************
-*
-*        Mouse, generic
-*/
 int  GUI_MOUSE_GetState  (      GUI_PID_STATE *pState);
 void GUI_MOUSE_StoreState(const GUI_PID_STATE *pState);
-
-/*********************************************************************
-*
-*          TOUCH screen, generic
-*/
 
 int  GUI_TOUCH_GetState     (GUI_PID_STATE *pState);
 void GUI_TOUCH_GetUnstable  (int* px, int* py);  /* for diagnostics only */
@@ -948,26 +735,15 @@ void GUI_TOUCH_StoreState   (int x, int y);
 void GUI_TOUCH_StoreStateEx (const GUI_PID_STATE *pState);
 void GUI_TOUCH_StoreUnstable(int x, int y);
 
-
-/*********************************************************************
-*
-*        Mouse, PS2 driver
-*/
 void GUI_MOUSE_DRIVER_PS2_Init(void);               /* optional */
 void GUI_MOUSE_DRIVER_PS2_OnRx(unsigned char Data);
 
-
-/*********************************************************************
-*
-*          TOUCH screen, analog driver
-*/
 void GUI_TOUCH_Exec(void);
 int  GUI_TOUCH_Calibrate(int Coord, int Log0, int Log1, int Phys0, int Phys1);
 void GUI_TOUCH_SetDefaultCalibration(void);
 int  GUI_TOUCH_GetxPhys(void);    /* for diagnostics only */
 int  GUI_TOUCH_GetyPhys(void);    /* for diagnostics only */
 void GUI_TOUCH_GetCalData(int Coord, int* pMin,int* pMax);
-
 
 /*********************************************************************
 *
@@ -987,13 +763,6 @@ void GUI_TOUCH_X_ActivateY(void);
 void GUI_TOUCH_X_Disable(void);
 int  GUI_TOUCH_X_MeasureX(void);
 int  GUI_TOUCH_X_MeasureY(void);
-
-/**************************************************************
-*
-*      Defines for constants
-*
-***************************************************************
-*/
 
 #define	________	0x0
 #define	_______X	0x1
@@ -1252,15 +1021,8 @@ int  GUI_TOUCH_X_MeasureY(void);
 #define	XXXXXXX_	0xfe
 #define	XXXXXXXX	0xff
 
-/**************************************************************
-*
-*      Compatibility with older versions
-*
-***************************************************************
-*/
-
 #define GUI_DispString_UC  GUI_UC_DispString
 
 #if defined(__cplusplus)
 }
-#endif 
+#endif

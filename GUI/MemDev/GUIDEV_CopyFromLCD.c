@@ -23,24 +23,10 @@ Purpose     : Implementation of memory devices
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 
-/* Memory device capabilities are compiled only if support for them is enabled. */ 
+/* Memory device capabilities are compiled only if support for them is enabled. */
 #if GUI_SUPPORT_MEMDEV
 
-/*********************************************************************
-*
-*       defines
-*
-**********************************************************************
-*/
-
 #define LCD_LIMIT(Var, Op, Limit) if (Var Op Limit) Var = Limit
-
-/*********************************************************************
-*
-*       public code
-*
-**********************************************************************
-*/
 
 void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV_Handle hMem) {
   /* Make sure memory handle is valid */
@@ -58,7 +44,7 @@ void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV_Handle hMem) {
     GUI_USAGE* pUsage = 0;
     GUI_MEMDEV_Handle hMemOld = GUI_Context.hDevData;
     GUI_MEMDEV_Select(hMem);
-    if (pDevData->hUsage) 
+    if (pDevData->hUsage)
       pUsage = GUI_USAGE_H2P(pDevData->hUsage);
     /* Get bounding rectangle */
     r.y0  = pDevData->y0;
@@ -74,7 +60,7 @@ void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV_Handle hMem) {
     for (y = r.y0; y <= r.y1; y++) {
       int x = r.x0;
       LCD_PIXELINDEX* pData = (LCD_PIXELINDEX*)GUI_MEMDEV__XY2PTR(x,y);
-      if (pUsage) 
+      if (pUsage)
         GUI_USAGE_AddHLine(pUsage, x, y, r.x1 - r.x0 + 1);
       for (; x <= XMax; x++) {
         *pData++ = LCD_L0_GetPixelIndex(x, y);
@@ -86,4 +72,3 @@ void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV_Handle hMem) {
 
 #endif /* GUI_MEMDEV_SUPPORT */
 
-/*************************** end of file ****************************/

@@ -27,10 +27,10 @@ typedef struct { I16P x,y; } GUI_POINT;
 typedef struct { I16 x0,y0,x1,y1; } LCD_RECT;
 
 typedef struct {
-  int              NumEntries; 
-  char             HasTrans;         
-  const LCD_COLOR GUI_UNI_PTR * pPalEntries; 
-} LCD_LOGPALETTE; 
+  int              NumEntries;
+  char             HasTrans;
+  const LCD_COLOR GUI_UNI_PTR * pPalEntries;
+} LCD_LOGPALETTE;
 
 /* This is used for the simulation only ! */
 typedef struct {
@@ -61,10 +61,6 @@ typedef void         tLCDDEV_XorPixel     (int x, int y);
 typedef void         tLCDDEV_FillPolygon  (const GUI_POINT* pPoints, int NumPoints, int x0, int y0);
 typedef void         tLCDDEV_GetRect      (LCD_RECT*pRect);
 
-/*********************************************************************
-*
-*     Memory device API tables
-*/
 #if GUI_COMPILER_SUPPORTS_FP
   typedef struct tLCDDEV_APIList_struct tLCDDEV_APIList;
 #endif
@@ -112,13 +108,6 @@ int LCD_GetFixedPalette(void);
 #define LCD_GET_NUMCOLORS()    LCD_GetNumColors()
 #define LCD_GET_BITSPERPIXEL() LCD_GetBitsPerPixel()
 
-
-/*********************************************************************
-*
-*      LCD_CLIP function table
-*
-**********************************************************************
-*/
 typedef void         tLCD_HL_DrawHLine    (int x0, int y0,  int x1);
 typedef void         tLCD_HL_DrawPixel    (int x0, int y0);
 
@@ -130,15 +119,6 @@ typedef struct {
 void LCD_DrawHLine(int x0, int y0,  int x1);
 void LCD_DrawPixel(int x0, int y0);
 void LCD_DrawVLine  (int x, int y0,  int y1);
-
-
-
-/*********************************************************************
-*
-*              Declarations for LCD_
-*
-**********************************************************************
-*/
 
 void LCD_SetClipRectEx(const LCD_RECT* pRect);
 void LCD_SetClipRectMax(void);
@@ -163,13 +143,6 @@ LCD_COLOR    LCD_GetPixelColor(int x, int y);     /* Get RGB color of pixel */
 unsigned int LCD_GetPixelIndex(int x, int y);
 int          LCD_GetBkColorIndex (void);
 int          LCD_GetColorIndex (void);
-
-/*********************************************************************
-*
-*       LCD_X_...
-*
-**********************************************************************
-*/
 
 void LCD_X_Init(void);
 

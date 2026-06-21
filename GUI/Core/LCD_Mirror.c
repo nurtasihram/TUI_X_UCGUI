@@ -1,32 +1,8 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : LCD_Mirror.c
-Purpose     : Data for 8 bit mirroring
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include "GUI.h"
 #include "LCD_Protected.h"    /* private modul definitions & config */
 
-
-/*********************************************************************
-*
-*       Public data
-*
-**********************************************************************
-*/
 GUI_CONST_STORAGE U8 LCD_aMirror[256] = {
   ________, X_______, _X______, XX______, __X_____, X_X_____, _XX_____, XXX_____,
   ___X____, X__X____, _X_X____, XX_X____, __XX____, X_XX____, _XXX____, XXXX____,

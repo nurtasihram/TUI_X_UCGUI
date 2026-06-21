@@ -19,25 +19,11 @@
   #endif
 #endif
 
-/*******************************************************************
-*
-*               Commandline
-*
-********************************************************************
-*/
-
 #ifdef WIN32
   #define GUI_DEBUG_GETCMDLINE() SIM_GetCmdLine()
 #else
   #define GUI_DEBUG_GETCMDLINE() 0
 #endif
-
-/*******************************************************************
-*
-*               Error macros
-*
-********************************************************************
-*/
 
 /* Make sure the macros are actually defined */
 
@@ -65,13 +51,6 @@
   #define GUI_DEBUG_ERROROUT4_IF(exp,s,p0,p1,p2,p3)
 #endif
 
-/*******************************************************************
-*
-*               Warning macros
-*
-********************************************************************
-*/
-
 /* Make sure the macros are actually defined */
 
 #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_LOG_WARNINGS
@@ -98,12 +77,6 @@
   #define GUI_DEBUG_WARN4_IF(exp,s,p0,p1,p2,p3)
 #endif
 
-/*******************************************************************
-*
-*               Logging macros
-*
-********************************************************************
-*/
 /* Make sure the macros are actually defined */
 
 #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_LOG_ALL
@@ -130,12 +103,6 @@
   #define GUI_DEBUG_LOG4_IF(exp,s,p0,p1,p2,p3)
 #endif
 
-/*******************************************************************
-*
-*               Asserts
-*
-********************************************************************
-*/
 #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_LOG_ERRORS
   #define GUI_DEBUG_ASSERT(exp)                     { if (!exp) GUI_DEBUG_ERROROUT(#exp); }
 #else

@@ -1,33 +1,9 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUIChar.C
-Purpose     : Implementation of memory devices
-----------------------------------------------------------------------
-Version-Date---Author-Explanation
-----------------------------------------------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Private.h"
- 
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
+
+
 /*********************************************************************
 *
 *       GUIMONO_DispChar
@@ -104,21 +80,20 @@ void GUIMONO_DispChar(U16P c) {
       if (GUI_Context.pAFont->YDist > GUI_Context.pAFont->YSize) {
         if (DrawMode != LCD_DRAWMODE_TRANS) {
           LCD_SetDrawMode(DrawMode ^ LCD_DRAWMODE_REV);  /* Reverse so we can fill with BkColor */
-          LCD_FillRect(x, 
-                       y + GUI_Context.pAFont->YSize * GUI_Context.pAFont->YDist, 
-                       x + XSize * GUI_Context.pAFont->XMag, 
+          LCD_FillRect(x,
+                       y + GUI_Context.pAFont->YSize * GUI_Context.pAFont->YDist,
+                       x + XSize * GUI_Context.pAFont->XMag,
                        y + GUI_Context.pAFont->YDist);
         }
       }
       LCD_SetDrawMode(OldMode);
-    } 
+    }
   }
 //houhh 20061119...
 //  GUI_Context.DispPosX+=pMono->XDist;
   GUI_Context.DispPosX+=pMono->XDist * GUI_Context.pAFont->XMag;
 
 }
-
 
 int GUIMONO_GetCharDistX(U16P c) {
   const GUI_FONT_MONO GUI_UNI_PTR * pMono = GUI_Context.pAFont->p.pMono;
@@ -129,12 +104,10 @@ int GUIMONO_GetCharDistX(U16P c) {
 
 }
 
-
 void GUIMONO_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO* pfi) {
   GUI_USE_PARA(pFont);
   pfi->Flags = GUI_FONTINFO_FLAG_MONO;
 }
-
 
 char GUIMONO_IsInFont(const GUI_FONT GUI_UNI_PTR * pFont, U16 c) {
   const GUI_FONT_MONO GUI_UNI_PTR * pMono = pFont->p.pMono;

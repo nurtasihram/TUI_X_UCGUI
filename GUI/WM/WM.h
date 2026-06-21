@@ -18,13 +18,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
   generate any code !
 */
 
-/*********************************************************************
-*
-*              Config defaults
-*
-**********************************************************************
-*/
-
 #ifndef WM_ASSERT
   #define WM_ASSERT(expr) GUI_DEBUG_ASSERT(expr)
 #endif
@@ -47,13 +40,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
   #define WM_SUPPORT_NOTIFY_VIS_CHANGED 0
 #endif
 
-/************************************************************
-*
-*          Data types
-*
-*************************************************************
-*/
-
 typedef struct {
   int Key, PressedCnt;
 } WM_KEY_INFO;
@@ -73,15 +59,12 @@ typedef struct {
   U8  StatePrev;
 } WM_PID_STATE_CHANGED_INFO;
 
-
-
 /*********************************************************************
 *
 *               Messages Ids
 
 The following is the list of windows messages.
 */
-
 
 #define WM_CREATE                   0x0001  /* The first message received, right after client has actually been created */
 #define WM_MOVE                     0x0003  /* window has been moved (Same as WIN32) */
@@ -121,7 +104,7 @@ The following is the list of windows messages.
 
 #define WM_NOTIFY_CLIENTCHANGE      37      /* Client area may have changed */
 #define WM_NOTIFY_PARENT            38      /* Notify parent. Information is detailed as notification code */
-#define WM_NOTIFY_PARENT_REFLECTION 39      /* Notify parent reflection. 
+#define WM_NOTIFY_PARENT_REFLECTION 39      /* Notify parent reflection.
                                                Sometimes send back as a result of the WM_NOTIFY_PARENT message
                                                to let child react on behalf of its parent.
                                                Information is detailed as notification code */
@@ -136,7 +119,6 @@ The following is the list of windows messages.
 #define WM_TIMER                    0x0113  /* Timer has expired              (Keep the same as WIN32) */
 #define WM_WIDGET                   0x0300  /* 256 messages reserved for Widget messages */
 #define WM_USER                     0x0400  /* Reserved for user messages ... (Keep the same as WIN32) */
-
 
 /*********************************************************************
 *
@@ -158,23 +140,14 @@ The following is the list of windows messages.
 
 #define WM_NOTIFICATION_WIDGET             11      /* Space for widget defined notifications */
 #define WM_NOTIFICATION_USER               16      /* Space for  application (user) defined notifications */
-/*********************************************************************
-*
-*       Memory management
-*/
 
 #define WM_HWIN        GUI_HWIN
 #define WM_HWIN_NULL   GUI_HMEM_NULL
 #define WM_HMEM        GUI_HMEM
 #define WM_HMEM_NULL   GUI_HMEM_NULL
 
-/*********************************************************************
-*
-*       Window defines
-*/
 #define WM_HBKWIN      WM_GetDesktopWindow()                /* Handle of background window */
 #define WM_UNATTACHED  ((WM_HMEM)-1)                        /* Do not attach to a window */
-
 
 /*********************************************************************
 *
@@ -210,11 +183,6 @@ The following is the list of windows messages.
 #define WM_CF_RESERVED3        (1<<14)
 #define WM_CF_RESERVED4        (1<<15)
 
-/*********************************************************************
-*
-*           Window manager types
-*/
-
 typedef struct {
   int MsgId;            /* type of message */
   WM_HWIN hWin;         /* Destination window */
@@ -242,9 +210,6 @@ typedef struct {
 typedef void WM_tfPollPID(void);
 typedef void WM_tfForEach(WM_HWIN hWin, void * pData);
 
-
-
-
 void WM_Activate  (void);
 void WM_Deactivate(void);
 void WM_Init      (void);
@@ -255,13 +220,6 @@ WM_tfPollPID* WM_SetpfPollPID(WM_tfPollPID* pf);
 void WM_SetCapture(WM_HWIN hObj, int AutoRelease);
 void WM_SetCaptureMove(WM_HWIN hWin, const GUI_PID_STATE* pState, int MinVisibility); /* Not yet documented */
 void WM_ReleaseCapture(void);
-
-/*********************************************************************
-*
-*           Window manager interface
-*
-**********************************************************************
-*/
 
 void    WM_AttachWindow              (WM_HWIN hWin, WM_HWIN hParent);
 void    WM_AttachWindowAt            (WM_HWIN hWin, WM_HWIN hParent, int x, int y);
@@ -307,7 +265,6 @@ void WM_DeleteTimer               (WM_HWIN hWin, int UserId); /* not to be docum
 int  WM_SetScrollbarH             (WM_HWIN hWin, int OnOff); /* not to be documented (may change in future version) */
 int  WM_SetScrollbarV             (WM_HWIN hWin, int OnOff); /* not to be documented (may change in future version) */
 
-
 /* Diagnostics */
 int WM_GetNumWindows(void);
 int WM_GetNumInvalidWindows(void);
@@ -315,7 +272,6 @@ int WM_GetNumInvalidWindows(void);
 /* Scroll state related functions */
 int  WM_SetScrollValue   (WM_SCROLL_STATE* pScrollState, int v); /* not to be documented (may change in future version) */
 void WM_CheckScrollBounds(WM_SCROLL_STATE* pScrollState); /* not to be documented (may change in future version) */
-
 
 /* Set (new) callback function */
 WM_CALLBACK* WM_SetCallback       (WM_HWIN Win, WM_CALLBACK* cb);
@@ -371,7 +327,6 @@ void WM_DisableMemdev             (WM_HWIN hWin);
 int WM_OnKey(int Key, int Pressed);
 void WM_MakeModal(WM_HWIN hWin);
 
-
 /******************************************************************
 *
 *           Message related funcions
@@ -401,21 +356,11 @@ void      WM_GetScrollState       (WM_HWIN hObj, WM_SCROLL_STATE* pScrollState);
 int       WM_GetUserData          (WM_HWIN hWin,       void* pDest, int SizeOfBuffer);
 int       WM_SetUserData          (WM_HWIN hWin, const void* pSrc,  int SizeOfBuffer);
 
-
-/*********************************************************************
-*
-*           Misc routines
-*/
-
 int       WM_HandlePID   (void);
 WM_HWIN   WM_Screen2hWin   (int x, int y);
 WM_HWIN   WM_Screen2hWinEx (WM_HWIN hStop, int x, int y);
 void      WM_ForEachDesc   (WM_HWIN hWin, WM_tfForEach * pcb, void * pData);
 
-/*********************************************************************
-*
-*           Diagnostics routines
-*/
 void WM_DIAG_EnableInvalidationColoring(int OnOff);
 
 /*
@@ -452,7 +397,6 @@ void WM_DIAG_EnableInvalidationColoring(int OnOff);
   #define WM_SetForegroundWindow    WM_BringToTop
   #define WM_SetUserClipArea WM_SetUserClipRect
 
-
   #define WM_Start()
   #define WM_Stop()
   #define WM_SetBkWindowColor(Color)  WM_SetDesktopColor(Color)
@@ -461,4 +405,4 @@ void WM_DIAG_EnableInvalidationColoring(int OnOff);
 
 #if defined(__cplusplus)
 }
-#endif 
+#endif

@@ -1,31 +1,6 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_SIF.c
-Purpose     : Implementation of system independend fonts
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include "GUI_Private.h"
-
-/*********************************************************************
-*
-*       Exported code
-*
-**********************************************************************
-*/
-
 
 void GUI_SIF_CreateFont(void * pFontData, GUI_FONT * pFont, const GUI_SIF_TYPE * pFontType) {
   const U8 * pSrc = (const U8 *)pFontData;
@@ -56,7 +31,6 @@ void GUI_SIF_CreateFont(void * pFontData, GUI_FONT * pFont, const GUI_SIF_TYPE *
   /* Use the new font */
   GUI_SetFont(pFont);
 }
-
 
 void GUI_SIF_DeleteFont(GUI_FONT * pFont) {
   GUI_USE_PARA(pFont);

@@ -1,22 +1,4 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : LCD.c
-Purpose     : Link between GUI and LCD_L0
-              Performs most of the clipping.
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #define LCD_C
 
@@ -24,13 +6,6 @@ Purpose     : Link between GUI and LCD_L0
 #include "GUI_Private.h"
 #include "LCD_Private.h"
 #include "GUIDebug.h"
-
-/*********************************************************************
-*
-*       Defines
-*
-**********************************************************************
-*/
 
 #define RETURN_IF_Y_OUT() \
   if (y < GUI_Context.ClipRect.y0) return;             \
@@ -48,33 +23,17 @@ Purpose     : Link between GUI and LCD_L0
   if (y0 < GUI_Context.ClipRect.y0) { y0 = GUI_Context.ClipRect.y0; } \
   if (y1 > GUI_Context.ClipRect.y1) { y1 = GUI_Context.ClipRect.y1; }
 
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
-
 static int _GetColorIndex(int i)  /* i is 0 or 1 */ {
   return  (GUI_Context.DrawMode & LCD_DRAWMODE_REV) ? i-1 : i;
 }
-
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
 
 void LCD_SetColorIndex(int Index) {
   LCD_ACOLORINDEX[_GetColorIndex(1)] = Index;
 }
 
-
 void LCD_SetBkColorIndex(int Index) {
   LCD_ACOLORINDEX[_GetColorIndex(0)] = Index;
 }
-
 
 LCD_DRAWMODE LCD_SetDrawMode(LCD_DRAWMODE dm) {
   LCD_DRAWMODE OldDM = GUI_Context.DrawMode;
@@ -87,7 +46,6 @@ LCD_DRAWMODE LCD_SetDrawMode(LCD_DRAWMODE dm) {
   return OldDM;
 }
 
-
 void LCD_DrawPixel(int x, int y) {
   RETURN_IF_Y_OUT();
   RETURN_IF_X_OUT();
@@ -98,7 +56,6 @@ void LCD_DrawPixel(int x, int y) {
   }
 }
 
-
 void LCD_DrawHLine(int x0, int y,  int x1) {
   /* Perform clipping and check if there is something to do */
   RETURN_IF_Y_OUT();
@@ -108,7 +65,6 @@ void LCD_DrawHLine(int x0, int y,  int x1) {
   /* Call driver to draw */
   LCDDEV_L0_DrawHLine(x0, y, x1);
 }
-
 
 void LCD_FillRect(int x0, int y0, int x1, int y1) {
   /* Perform clipping and check if there is something to do */
@@ -121,7 +77,6 @@ void LCD_FillRect(int x0, int y0, int x1, int y1) {
   /* Call driver to draw */
   LCDDEV_L0_FillRect(x0,y0,x1,y1);
 }
-
 
 void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize, int xMul, int yMul,
                        int BitsPerPixel, int BytesPerLine,
@@ -223,11 +178,9 @@ void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize, int xMul, int yMul,
   }
 }
 
-
 void LCD_SetClipRectMax(void) {
   LCDDEV_L0_GetRect(&GUI_Context.ClipRect);
 }
-
 
 int LCD_Init(void) {
   int r = 0;
@@ -250,7 +203,6 @@ void LCD_SetBkColor(GUI_COLOR color) {
     LCD_SetBkColorIndex(color);
   }
 }
-
 
 void LCD_SetColor(GUI_COLOR color) {
   if (GUI_Context.Color != color) {

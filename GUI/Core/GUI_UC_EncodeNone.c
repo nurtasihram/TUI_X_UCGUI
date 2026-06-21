@@ -1,30 +1,7 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_UC_EncodeNone.c
-Purpose     : Encoding routines for non unicode systems (default)
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include "GUI_Protected.h"
 
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
 /*********************************************************************
 *
 *       _GetCharCode
@@ -72,13 +49,6 @@ static int _Encode(char *s, U16 Char) {
   return 1;
 }
 
-/*********************************************************************
-*
-*       Static data
-*
-**********************************************************************
-*/
-
 const GUI_UC_ENC_APILIST GUI__API_TableNone = {
   _GetCharCode,     /*  return character code as U16 */
   _GetCharSize,     /*  return size of character: 1 */
@@ -86,17 +56,10 @@ const GUI_UC_ENC_APILIST GUI__API_TableNone = {
   _Encode           /*  Encode character */
 };
 
-/*********************************************************************
-*
-*       Exported code
-*
-**********************************************************************
-*/
-
 void GUI_UC_SetEncodeNone(void) {
-  
+
   GUI_Context.pUC_API = &GUI__API_TableNone;
-  
+
 }
 
 /*************************** End of file ****************************/

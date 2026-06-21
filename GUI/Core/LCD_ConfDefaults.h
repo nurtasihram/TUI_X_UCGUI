@@ -13,13 +13,6 @@
   #define LCD_NUM_COLORS (1L<<LCD_BITSPERPIXEL)
 #endif
 
-/*********************************************************************
-*
-*      Map the defines for controller 0 to general defines
-*
-**********************************************************************
-*/
-
 /* Allow use of multiple physical lines for one logical line ...
    Used for delta-type LCDs, where value should be 2 */
 
@@ -56,13 +49,6 @@
   #define LCD_VYSIZE          LCD_VYSIZE_0
 #endif
 
-/*********************************************************************
-*
-*      Defaults for Display 0 (first display)
-*
-**********************************************************************
-*/
-
 #if !defined (LCD_PHYSCOLORS)
   #if   (LCD_BITSPERPIXEL == 1) | (LCD_BITSPERPIXEL == 2) | (LCD_BITSPERPIXEL == 4)
     #ifndef LCD_FIXEDPALETTE
@@ -95,12 +81,5 @@
 #ifndef LCD_USE_PARA
   #define LCD_USE_PARA(para) para=para;
 #endif
-
-/*********************************************************************
-*
-*      Global defaults for all displays
-*
-**********************************************************************
-*/
 
 #define LCD_PIXELINDEX U32

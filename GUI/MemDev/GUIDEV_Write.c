@@ -24,15 +24,8 @@ Purpose     : Implementation of memory devices
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 
-/* Memory device capabilities are compiled only if support for them is enabled.*/ 
+/* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
-
-/*********************************************************************
-*
-*       Exported routines
-*
-**********************************************************************
-*/
 
 void GUI_MEMDEV_WriteAt(GUI_MEMDEV_Handle hMem, int x, int y) {
   if (hMem) {
@@ -40,7 +33,7 @@ void GUI_MEMDEV_WriteAt(GUI_MEMDEV_Handle hMem, int x, int y) {
     #if (GUI_WINSUPPORT)
       GUI_RECT r;
     #endif
-    
+
     pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
     if (x == GUI_POS_AUTO) {
       x = pDevData->x0;
@@ -57,10 +50,9 @@ void GUI_MEMDEV_WriteAt(GUI_MEMDEV_Handle hMem, int x, int y) {
     #else
       GUI_MEMDEV__WriteToActiveAt(hMem,x,y);
     #endif
-    
+
   }
 }
-
 
 void GUI_MEMDEV_Write(GUI_MEMDEV_Handle hMem) {
   GUI_MEMDEV_WriteAt(hMem, GUI_POS_AUTO, GUI_POS_AUTO);
@@ -68,8 +60,6 @@ void GUI_MEMDEV_Write(GUI_MEMDEV_Handle hMem) {
 
 #else
 
-void GUIDEV_Write_C(void) {}
 
 #endif /* GUI_SUPPORT_MEMDEV */
 
-/*************************** end of file ****************************/

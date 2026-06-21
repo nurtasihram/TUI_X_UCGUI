@@ -3,9 +3,9 @@
 #include "LCD.h"
 
 typedef struct {
-  int              NumEntries; 
-  const LCD_COLOR* pPalEntries; 
-} LCD_PHYSPALETTE; 
+  int              NumEntries;
+  const LCD_COLOR* pPalEntries;
+} LCD_PHYSPALETTE;
 
 extern GUI_CONST_STORAGE U8 LCD_aMirror[256];
 

@@ -2,17 +2,6 @@
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 
-/*********************************************************************
-*
-*       Static functions
-*
-**********************************************************************
-*/
-
-/*********************************************************************
-*
-*       Draw Bitmap 1 BPP
-*/
 static void  _DrawBitLine1BPP(int x, int y, U8 const GUI_UNI_PTR *p, int Diff, int xsize, const LCD_PIXELINDEX *pTrans) {
 	LCD_PIXELINDEX Index0 = *(pTrans + 0);
 	LCD_PIXELINDEX Index1 = *(pTrans + 1);
@@ -54,10 +43,6 @@ static void  _DrawBitLine1BPP(int x, int y, U8 const GUI_UNI_PTR *p, int Diff, i
 	}
 }
 
-/*********************************************************************
-*
-*       Draw Bitmap 2 BPP
-*/
 #if (LCD_MAX_LOG_COLORS > 2)
 static void  _DrawBitLine2BPP(int x, int y, U8 const GUI_UNI_PTR *p, int Diff, int xsize, const LCD_PIXELINDEX *pTrans) {
 	LCD_PIXELINDEX Pixels = *p;
@@ -124,10 +109,6 @@ static void  _DrawBitLine2BPP(int x, int y, U8 const GUI_UNI_PTR *p, int Diff, i
 }
 #endif
 
-/*********************************************************************
-*
-*       Draw Bitmap 4 BPP
-*/
 #if (LCD_MAX_LOG_COLORS > 4)
 static void  _DrawBitLine4BPP(int x, int y, U8 const GUI_UNI_PTR *p, int Diff, int xsize, const LCD_PIXELINDEX *pTrans) {
 	LCD_PIXELINDEX Pixels = *p;
@@ -194,10 +175,6 @@ static void  _DrawBitLine4BPP(int x, int y, U8 const GUI_UNI_PTR *p, int Diff, i
 }
 #endif
 
-/*********************************************************************
-*
-*       Draw Bitmap 8 BPP
-*/
 #if (LCD_MAX_LOG_COLORS > 16)
 static void  _DrawBitLine8BPP(int x, int y, U8 const GUI_UNI_PTR *p, int xsize, const LCD_PIXELINDEX *pTrans) {
 	LCD_PIXELINDEX Pixel;
@@ -237,10 +214,6 @@ static void  _DrawBitLine8BPP(int x, int y, U8 const GUI_UNI_PTR *p, int xsize, 
 }
 #endif
 
-/*********************************************************************
-*
-*       Draw Bitmap 16 BPP
-*/
 #if (LCD_BITSPERPIXEL > 8)
 static void  DrawBitLine16BPP(int x, int y, U16 const GUI_UNI_PTR *p, int xsize, const LCD_PIXELINDEX *pTrans) {
 	LCD_PIXELINDEX pixel;
@@ -278,19 +251,10 @@ static void  DrawBitLine16BPP(int x, int y, U16 const GUI_UNI_PTR *p, int xsize,
 }
 #endif
 
-/*********************************************************************
-*
-*       Exported functions
-*
-**********************************************************************
-*/
-
-
 void LCD_L0_XorPixel(int x, int y) {
 	LCD_PIXELINDEX PixelIndex = LCD_L0_GetPixelIndex(x, y);
 	LCD_L0_SetPixelIndex(x, y, LCD_NUM_COLORS - PixelIndex - 1);
 }
-
 
 void LCD_L0_DrawHLine(int x0, int y, int x1) {
 	if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
@@ -305,7 +269,6 @@ void LCD_L0_DrawHLine(int x0, int y, int x1) {
 	}
 }
 
-
 void LCD_L0_DrawVLine(int x, int y0, int y1) {
 	if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
 		for (; y0 <= y1; y0++) {
@@ -319,13 +282,11 @@ void LCD_L0_DrawVLine(int x, int y0, int y1) {
 	}
 }
 
-
 void LCD_L0_FillRect(int x0, int y0, int x1, int y1) {
 	for (; y0 <= y1; y0++) {
 		LCD_L0_DrawHLine(x0, y0, x1);
 	}
 }
-
 
 void LCD_L0_DrawBitmap(int x0, int y0,
 					   int xsize, int ysize,
@@ -364,7 +325,6 @@ void LCD_L0_DrawBitmap(int x0, int y0,
 		pData += BytesPerLine;
 	}
 }
-
 
 void LCD_L0_SetOrg(int x, int y) {
 	GUI_USE_PARA(x);

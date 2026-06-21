@@ -1,21 +1,4 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_PID.C
-Purpose     : PID (Pointer input device) management
-----------------------------------------------------------------------
-*/
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,21 +10,8 @@ Purpose     : PID (Pointer input device) management
   #include "WM.h"
 #endif
 
-/*********************************************************************
-*
-*       Static data
-*
-**********************************************************************
-*/
-
 static GUI_PID_STATE _State;
 
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
 /*********************************************************************
 *
 *       _PID_Load
@@ -56,18 +26,10 @@ static void _PID_Load(void) {
   #endif
 }
 
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
-
 int GUI_PID_GetState(GUI_PID_STATE *pState) {
   *pState = _State;
   return (pState->Pressed != 0) ? 1 : 0;
 }
-
 
 void GUI_PID_StoreState(const GUI_PID_STATE *pState) {
   _PID_Load();

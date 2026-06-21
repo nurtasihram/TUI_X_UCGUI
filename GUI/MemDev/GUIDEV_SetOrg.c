@@ -20,20 +20,12 @@ Purpose     : Implementation of memory devices, add. module
 ---------------------------END-OF-HEADER------------------------------
 */
 
-
 #include "GUI_Protected.h"
 #include "GUIDebug.h"
 #include <string.h>
 
-/* Memory device capabilities are compiled only if support for them is enabled. */ 
+/* Memory device capabilities are compiled only if support for them is enabled. */
 #if GUI_SUPPORT_MEMDEV
-
-/*********************************************************************
-*
-*       public code
-*
-**********************************************************************
-*/
 
 void GUI_MEMDEV_SetOrg(GUI_MEMDEV_Handle hMem, int x0, int y0) {
   /* Make sure memory handle is valid */
@@ -42,7 +34,7 @@ void GUI_MEMDEV_SetOrg(GUI_MEMDEV_Handle hMem, int x0, int y0) {
       return;
     }
   }
-  
+
   {
     GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(hMem);  /* Convert to pointer */
     pDev->y0 = y0;
@@ -57,7 +49,7 @@ void GUI_MEMDEV_SetOrg(GUI_MEMDEV_Handle hMem, int x0, int y0) {
       }
     }
   }
-  
+
 }
 
 #else
@@ -66,4 +58,3 @@ void GUIDEV_SetOrg(void) {} /* avoid empty object files */
 
 #endif /* GUI_MEMDEV_SUPPORT */
 
-/*************************** end of file ****************************/

@@ -1,31 +1,8 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_DrawPolyLine.c
-Purpose     : Implementation of GUI_DrawPolyline
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
 
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
 /*********************************************************************
 *
 *       _DrawPolyLine
@@ -40,15 +17,8 @@ static void _DrawPolyLine(const GUI_POINT*pPoints, int NumPoints, int x0, int y0
   }
 }
 
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
-
 void GUI_DrawPolyLine(const GUI_POINT* pPoints, int NumPoints, int x0, int y0) {
-  
+
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     WM_ITERATE_START(NULL); {
@@ -57,7 +27,7 @@ void GUI_DrawPolyLine(const GUI_POINT* pPoints, int NumPoints, int x0, int y0) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  
+
 }
 
 /*************************** End of file ****************************/

@@ -2,20 +2,12 @@
 
 #include "GUI_Protected.h"
 
-/*********************************************************************
-*
-*       static code
-*
-**********************************************************************
-*/
-
 static int _IsLineEnd(U16 Char) {
   if (!Char || (Char == '\n')) {
     return 1;
   }
   return 0;
 }
-
 
 static int _GetWordWrap(const char GUI_UNI_PTR * s, int xSize) {
   int xDist = 0, NumChars = 0, WordWrap = 0;
@@ -45,7 +37,6 @@ static int _GetWordWrap(const char GUI_UNI_PTR * s, int xSize) {
   return WordWrap;
 }
 
-
 static int _GetCharWrap(const char GUI_UNI_PTR * s, int xSize) {
   int xDist = 0, NumChars = 0;
   U16 Char;
@@ -59,17 +50,10 @@ static int _GetCharWrap(const char GUI_UNI_PTR * s, int xSize) {
   return NumChars;
 }
 
-
 static int _GetNoWrap(const char GUI_UNI_PTR * s) {
   return GUI__GetLineNumChars(s, 0x7FFF);
 }
 
-/*********************************************************************
-*
-*       puplic code
-*
-**********************************************************************
-*/
 /*********************************************************************
 *
 *       GUI__WrapGetNumCharsDisp
@@ -94,7 +78,6 @@ int GUI__WrapGetNumCharsDisp(const char GUI_UNI_PTR * pText, int xSize, GUI_WRAP
   return r;
 }
 
-
 int GUI__WrapGetNumCharsToNextLine(const char GUI_UNI_PTR * pText, int xSize, GUI_WRAPMODE WrapMode) {
   int NumChars;
   U16 Char;
@@ -113,7 +96,6 @@ int GUI__WrapGetNumCharsToNextLine(const char GUI_UNI_PTR * pText, int xSize, GU
   }
   return NumChars;
 }
-
 
 int GUI__WrapGetNumBytesToNextLine(const char GUI_UNI_PTR * pText, int xSize, GUI_WRAPMODE WrapMode) {
   int NumChars, NumBytes;

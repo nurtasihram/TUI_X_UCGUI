@@ -6,35 +6,14 @@
   #include "WM.h"
 #endif
 
-/* Memory device capabilities are compiled only if support for them is enabled.*/ 
+/* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
-
-/*********************************************************************
-*
-*       typedefs
-*
-**********************************************************************
-*/
 
 typedef struct {
   GUI_RECT rUsed;
 } GUI_MEASDEV;
 
-/*********************************************************************
-*
-*       defines
-*
-**********************************************************************
-*/
-
 #define GUI_MEASDEV_H2P(h) ((GUI_MEASDEV*)GUI_ALLOC_h2p(h))
-
-/*********************************************************************
-*
-*       static code
-*
-**********************************************************************
-*/
 
 static void _MarkPixel(int x, int y) {
   GUI_MEASDEV* pDev = (GUI_MEASDEV*)(GUI_MEMDEV_H2P(GUI_Context.hDevData));
@@ -48,7 +27,6 @@ static void _MarkPixel(int x, int y) {
     pDev->rUsed.y1 = y;
 }
 
-
 static void _MarkRect(int x0, int y0, int x1, int y1) {
   GUI_MEASDEV* pDev = (GUI_MEASDEV*)(GUI_MEMDEV_H2P(GUI_Context.hDevData));
   if (x0 < pDev->rUsed.x0)
@@ -60,7 +38,6 @@ static void _MarkRect(int x0, int y0, int x1, int y1) {
   if (y1 > pDev->rUsed.y1)
     pDev->rUsed.y1 = y1;
 }
-
 
 static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
                        int BitsPerPixel, int BytesPerLine,
@@ -75,39 +52,32 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
   _MarkRect(x0, y0, x0 + xsize - 1, y0 + ysize - 1);
 }
 
-
 static void _DrawHLine(int x0, int y,  int x1) {
   _MarkRect(x0, y, x1, y);
 }
 
-
 static void _DrawVLine(int x , int y0,  int y1) {
   _MarkRect(x, y0, x, y1);
 }
-
 
 static void _SetPixelIndex(int x, int y, int Index) {
   GUI_USE_PARA(Index);
   _MarkPixel(x, y);
 }
 
-
 static void _XorPixel(int x, int y) {
   _MarkPixel(x, y);
 }
 
-
-static unsigned int _GetPixelIndex(int x, int y) { 
+static unsigned int _GetPixelIndex(int x, int y) {
   GUI_USE_PARA(x);
   GUI_USE_PARA(y);
   return 0;
 }
 
-
 static void _FillRect(int x0, int y0, int x1, int y1) {
   _MarkRect(x0, y0, x1, y1);
 }
-
 
 static void _GetRect(LCD_RECT* pRect) {
   pRect->x0 = pRect->y0 = -4095;
@@ -140,7 +110,6 @@ static void _CalcPolyRect(GUI_RECT *pr, const GUI_POINT* paPoint, int NumPoints)
   pr->y1 = yMax;
 }
 
-
 static void _FillPolygon(const GUI_POINT* paPoint, int NumPoints, int x0, int y0) {
   GUI_RECT r;
   _CalcPolyRect(&r, paPoint, NumPoints);
@@ -148,10 +117,6 @@ static void _FillPolygon(const GUI_POINT* paPoint, int NumPoints, int x0, int y0
   _MarkRect(r.x0, r.y0, r.x1, r.y1);
 }
 
-/*********************************************************************
-*
-*             Device structure
-*/
 static const tLCDDEV_APIList _APIList = {
   (tLCDDEV_DrawBitmap*)_DrawBitmap,
   _DrawHLine,
@@ -165,13 +130,6 @@ static const tLCDDEV_APIList _APIList = {
   _FillPolygon,
 };
 
-/*********************************************************************
-*
-*       Exported routines
-*
-**********************************************************************
-*/
-
 void GUI_MEASDEV_Delete(GUI_MEASDEV_Handle hMemDev) {
   /* Make sure memory device is not used */
   if ((GUI_Context.hDevData = hMemDev) != 0) {
@@ -180,20 +138,18 @@ void GUI_MEASDEV_Delete(GUI_MEASDEV_Handle hMemDev) {
   GUI_ALLOC_Free(hMemDev);
 }
 
-
 void GUI_MEASDEV_ClearRect(GUI_MEASDEV_Handle hMemDev) {
   if (hMemDev) {
     GUI_MEASDEV* pDevData;
-    
+
     pDevData = (GUI_MEASDEV*)GUI_ALLOC_h2p(hMemDev);
     pDevData->rUsed.x0 = GUI_XMAX;
     pDevData->rUsed.y0 = GUI_YMAX;
     pDevData->rUsed.x1 = GUI_XMIN;
     pDevData->rUsed.y1 = GUI_YMIN;
-    
-  } 
-}
 
+  }
+}
 
 GUI_MEASDEV_Handle GUI_MEASDEV_Create(void) {
   int MemSize;
@@ -202,16 +158,15 @@ GUI_MEASDEV_Handle GUI_MEASDEV_Create(void) {
   hMemDev = GUI_ALLOC_AllocZero(MemSize);
   if (hMemDev) {
     GUI_MEASDEV* pDevData;
-    
+
     pDevData = (GUI_MEASDEV*)GUI_ALLOC_h2p(hMemDev);
     GUI_MEASDEV_ClearRect(hMemDev);
-    
+
   } else {
     GUI_DEBUG_WARN("GUI_MEASDEV_Create: Alloc failed");
   }
   return hMemDev;
 }
-
 
 void GUI_MEASDEV_Select(GUI_MEASDEV_Handle hMem) {
   if (hMem == 0) {
@@ -227,11 +182,10 @@ void GUI_MEASDEV_Select(GUI_MEASDEV_Handle hMem) {
   }
 }
 
-
 void GUI_MEASDEV_GetRect(GUI_MEASDEV_Handle hMem, GUI_RECT* pRect) {
   if (hMem) {
     GUI_MEASDEV* pDev;
-    
+
     pDev = (GUI_MEASDEV*)GUI_ALLOC_h2p(hMem);
     if (pRect) {
       pRect->x0 = pDev->rUsed.x0;
@@ -239,7 +193,7 @@ void GUI_MEASDEV_GetRect(GUI_MEASDEV_Handle hMem, GUI_RECT* pRect) {
       pRect->x1 = pDev->rUsed.x1;
       pRect->y1 = pDev->rUsed.y1;
     }
-    
+
   }
 }
 
@@ -249,4 +203,3 @@ void GUIDEV_Measure(void) {} /* avoid empty object files */
 
 #endif /* GUI_MEMDEV_SUPPORT */
 
-/*************************** end of file ****************************/

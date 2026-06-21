@@ -1,36 +1,12 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_DrawVLine.C
-Purpose     : Implementation of GUI_DrawVLine
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include "GUI_Protected.h"
-
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
 
 void GUI_DrawVLine(int x0, int y0, int y1) {
   #if (GUI_WINSUPPORT)
     GUI_RECT r;
   #endif
-  
+
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     WM_ADDORGY(y1);
@@ -43,7 +19,7 @@ void GUI_DrawVLine(int x0, int y0, int y1) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  
+
 }
 
 /*************************** End of file ****************************/

@@ -1,50 +1,18 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUIPolyE.c
-Purpose     : Polygon enlarge
-----------------------------------------------------------------------
-*/
+
 
 #include <math.h>
 #include "GUI.h"
 #include "GUIDebug.h"
 
-/*********************************************************************
-*
-*       Types
-*
-**********************************************************************
-*/
-
 typedef struct {
   float x, y;
 } tfPoint;
-
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
 
 static int _fround(float f) {
   if (f>0)
     return f+0.5;
   return f-0.5;
 }
-
 
 static void _Normalize(tfPoint* pfPoint) {
   float fx = pfPoint->x;
@@ -56,7 +24,6 @@ static void _Normalize(tfPoint* pfPoint) {
   }
 }
 
-
 static void _ReverseLen(tfPoint* pfPoint) {
   float fx = pfPoint->x;
   float fy = pfPoint->y;
@@ -67,20 +34,12 @@ static void _ReverseLen(tfPoint* pfPoint) {
   }
 }
 
-
 static void _GetVect(tfPoint* pfPoint, const GUI_POINT* pSrc, int NumPoints, int Index) {
   int Off0 = (Index + NumPoints-1) % NumPoints;
   int Off1 = Index % NumPoints;
-  pfPoint->x = pSrc[Off1].x - pSrc[Off0].x; 
-  pfPoint->y = pSrc[Off1].y - pSrc[Off0].y; 
+  pfPoint->x = pSrc[Off1].x - pSrc[Off0].x;
+  pfPoint->y = pSrc[Off1].y - pSrc[Off0].y;
 }
-
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
 
 #if 0
 void GUI_EnlargePolygon(GUI_POINT* pDest, const GUI_POINT* pSrc, int NumPoints, int Len) {

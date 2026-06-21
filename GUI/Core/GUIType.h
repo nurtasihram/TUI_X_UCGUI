@@ -12,7 +12,6 @@
 
 typedef const char *  GUI_ConstString;
 
-
 /*      *************************************************************
         *                                                           *
         *                Structures                                 *
@@ -107,7 +106,6 @@ typedef struct {
   U8 BytesPerLine;
 } GUI_FONT_MONO;
 
-
 typedef struct GUI_FONT_INFO {
   U16P First;                        /* first character               */
   U16P Last;                         /* last character                */
@@ -135,12 +133,6 @@ typedef struct {
 #define GUI_FONTINFO_FLAG_PROP (1<<0)    /* Is proportional */
 #define GUI_FONTINFO_FLAG_MONO (1<<1)    /* Is monospaced */
 
-/**********************************************************************
-*
-*         UNICODE Encoding
-*
-***********************************************************************
-*/
 typedef U16  tGUI_GetCharCode(const char GUI_UNI_PTR *s);
 typedef int  tGUI_GetCharSize(const char GUI_UNI_PTR *s);
 typedef int  tGUI_CalcSizeOfChar(U16 Char);
@@ -153,13 +145,6 @@ typedef struct {
   tGUI_Encode*                 pfEncode;
 } GUI_UC_ENC_APILIST;
 
-/**********************************************************************
-*
-*                 FONT Encoding
-*
-***********************************************************************
-*/
-
 typedef int  tGUI_GetLineDistX(const char GUI_UNI_PTR *s, int Len);
 typedef int  tGUI_GetLineLen(const char GUI_UNI_PTR *s, int MaxLen);
 typedef void tGL_DispLine(const char GUI_UNI_PTR *s, int Len);
@@ -171,7 +156,6 @@ typedef struct {
 } tGUI_ENC_APIList;
 
 extern const tGUI_ENC_APIList GUI_ENC_APIList_SJIS;
-
 
 /*
       ****************************************
@@ -235,9 +219,9 @@ DECLARE_FONT(PROP);
 #endif
 
 struct GUI_FONT {
-  GUI_DISPCHAR*     pfDispChar; 
-  GUI_GETCHARDISTX* pfGetCharDistX; 
-  GUI_GETFONTINFO*  pfGetFontInfo; 
+  GUI_DISPCHAR*     pfDispChar;
+  GUI_GETCHARDISTX* pfGetCharDistX;
+  GUI_GETFONTINFO*  pfGetFontInfo;
   GUI_ISINFONT*     pfIsInFont;
   const tGUI_ENC_APIList* pafEncode;
   U8 YSize;
@@ -254,10 +238,6 @@ struct GUI_FONT {
   U8 CHeight;     /* height of a small upper case character (A,X) */
 };
 
-/*********************************************************************
-*
-*       Position independent font structures
-*/
 typedef struct {
   U32 ID;           /* Font file ID */
   U16 YSize;        /* Height of font */

@@ -12,12 +12,6 @@
 
 /*********************************************************************
 *
-*       Static code
-*
-**********************************************************************
-*/
-/*********************************************************************
-*
 *       _InitContext
 *
 * Purpose
@@ -45,13 +39,6 @@ static void _InitContext(GUI_CONTEXT* pContext) {
   pContext->pUC_API = &GUI__API_TableNone;
 }
 
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
-
 void GUI_ClearRect(int x0, int y0, int x1, int y1) {
   GUI_DRAWMODE PrevDraw;
     GUI_RECT r;
@@ -69,7 +56,6 @@ void GUI_ClearRect(int x0, int y0, int x1, int y1) {
   LCD_SetDrawMode(PrevDraw);
 
 }
-
 
 void GUI_Clear(void) {
   GUI_GotoXY(0,0);     /* Reset text cursor to upper left */

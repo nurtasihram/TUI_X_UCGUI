@@ -24,15 +24,8 @@ Purpose     : Implementation of memory devices, add. module
 #include "GUIDebug.h"
 #include <string.h>
 
-/* Memory device capabilities are compiled only if support for them is enabled. */ 
+/* Memory device capabilities are compiled only if support for them is enabled. */
 #if GUI_SUPPORT_MEMDEV
-
-/*********************************************************************
-*
-*       public code
-*
-**********************************************************************
-*/
 
 void GUI_MEMDEV_Clear(GUI_MEMDEV_Handle hMem) {
   if (!hMem) {
@@ -43,14 +36,14 @@ void GUI_MEMDEV_Clear(GUI_MEMDEV_Handle hMem) {
   {
     GUI_MEMDEV* pDev;
     GUI_USAGE_h hUsage;
-    
+
     pDev = GUI_MEMDEV_H2P(hMem);  /* Convert to pointer */
-    hUsage = pDev->hUsage; 
+    hUsage = pDev->hUsage;
     if (hUsage) {
       GUI_USAGE* pUsage = GUI_USAGE_H2P(hUsage);
       GUI_USAGE_Clear(pUsage);
     }
-    
+
   }
 }
 
@@ -60,4 +53,3 @@ void GUIDEV_Clear(void) {} /* avoid empty object files */
 
 #endif /* GUI_MEMDEV_SUPPORT */
 
-/*************************** end of file ****************************/

@@ -1,31 +1,6 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_SIF_Prop.c
-Purpose     : Implementation of system independend fonts
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include "GUI_Private.h"
-
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
-
 
 static int _GetNumCharAreas(const GUI_FONT GUI_UNI_PTR * pFont) {
   U16 NumCharAreas;
@@ -35,12 +10,11 @@ static int _GetNumCharAreas(const GUI_FONT GUI_UNI_PTR * pFont) {
   return NumCharAreas;
 }
 
-
 static const U8 * _GetpCharInfo(const GUI_FONT GUI_UNI_PTR * pFont, U16P c) {
   const U8 * pCharArea, * pCharInfo;
   int NumCharAreas;
   NumCharAreas = _GetNumCharAreas(pFont);                 /* Get # of char areas */
-  pCharArea = (const U8 *)pFont->p.pFontData 
+  pCharArea = (const U8 *)pFont->p.pFontData
               + sizeof(GUI_SI_FONT);                      /* Set char area pointer to first char area */
   pCharInfo = pCharArea
               + sizeof(GUI_SIF_CHAR_AREA) * NumCharAreas; /* Set char info pointer to first character info */
@@ -56,14 +30,6 @@ static const U8 * _GetpCharInfo(const GUI_FONT GUI_UNI_PTR * pFont, U16P c) {
   } while(--NumCharAreas);
   return 0;
 }
-
-/*********************************************************************
-*
-*       Exported code
-*
-**********************************************************************
-*/
-
 
 static void _GUI_SIF_DispChar(U16P c) {
   const U8 * pCharInfo, * pData;
@@ -96,9 +62,9 @@ static void _GUI_SIF_DispChar(U16P c) {
       if (DrawMode != LCD_DRAWMODE_TRANS) {
         LCD_COLOR OldColor = GUI_GetColor();
         GUI_SetColor(GUI_GetBkColor());
-        LCD_FillRect(GUI_Context.DispPosX, 
-                     GUI_Context.DispPosY + YSize, 
-                     GUI_Context.DispPosX + CharInfo.XSize, 
+        LCD_FillRect(GUI_Context.DispPosX,
+                     GUI_Context.DispPosY + YSize,
+                     GUI_Context.DispPosX + CharInfo.XSize,
                      GUI_Context.DispPosY + YDist);
         GUI_SetColor(OldColor);
       }
@@ -107,7 +73,6 @@ static void _GUI_SIF_DispChar(U16P c) {
     GUI_Context.DispPosX += CharInfo.XDist;
   }
 }
-
 
 static int _GUI_SIF_GetCharDistX(U16P c) {
   const U8 * pCharInfo;
@@ -120,7 +85,6 @@ static int _GUI_SIF_GetCharDistX(U16P c) {
   return DistX;
 }
 
-
 static void _GUI_SIF_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO * pfi) {
   const U8 * pData;
   pData = (const U8 *)pFont->p.pFontData + 4 /* Skip XSize and XDist */;
@@ -130,14 +94,12 @@ static void _GUI_SIF_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINF
   pfi->Flags    = GUI_FONTINFO_FLAG_PROP;
 }
 
-
 static char _GUI_SIF_IsInFont(const GUI_FONT GUI_UNI_PTR * pFont, U16 c) {
   const U8 * pCharInfo;
   GUI_USE_PARA(pFont);
   pCharInfo = _GetpCharInfo(GUI_Context.pAFont, c);
   return (pCharInfo) ? 1 : 0;
 }
-
 
 const tGUI_SIF_APIList GUI_SIF_APIList_Prop = {
   _GUI_SIF_DispChar,

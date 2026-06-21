@@ -1,31 +1,7 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_UC_DispString.c
-Purpose     : Implementation of GUI_UC_DispString
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
-
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
 
 static int _GetLineDistX(const U16 GUI_UNI_PTR *s, int MaxNumChars) {
   int Dist =0;
@@ -40,7 +16,6 @@ static int _GetLineDistX(const U16 GUI_UNI_PTR *s, int MaxNumChars) {
   return Dist;
 }
 
-
 static int _GetLineLen(const U16 GUI_UNI_PTR *s, int MaxLen) {
   int Len =0;
   if (!s)
@@ -52,7 +27,6 @@ static int _GetLineLen(const U16 GUI_UNI_PTR *s, int MaxLen) {
   }
   return Len;
 }
-
 
 static void _DispLine_UC(const U16 GUI_UNI_PTR *s, int Len, const GUI_RECT *pRect) {
   if (GUI_Context.pClipRect_HL) {
@@ -67,7 +41,6 @@ static void _DispLine_UC(const U16 GUI_UNI_PTR *s, int Len, const GUI_RECT *pRec
     }
   }
 }
-
 
 static void _DispLine(const U16 GUI_UNI_PTR *s, int Len, const GUI_RECT* pr) {
   GUI_RECT r;
@@ -86,19 +59,12 @@ static void _DispLine(const U16 GUI_UNI_PTR *s, int Len, const GUI_RECT* pr) {
   #endif
 }
 
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
-
 void GUI_UC_DispString(const U16 GUI_UNI_PTR *s) {
   int xAdjust, yAdjust, xOrg;
   int FontSizeY;
   if (!s)
     return;
-  
+
   FontSizeY = GUI_Context.pAFont->YSize;
   xOrg = GUI_Context.DispPosX;
  /* Adjust vertical position */
@@ -109,20 +75,20 @@ void GUI_UC_DispString(const U16 GUI_UNI_PTR *s) {
     int LineLen= _GetLineLen(s,0x7fff);
     int xLineSize = _GetLineDistX(s, LineLen);
   /* Check if x-position needs to be changed due to h-alignment */
-    switch (GUI_Context.TextAlign & GUI_TA_HORIZONTAL) { 
+    switch (GUI_Context.TextAlign & GUI_TA_HORIZONTAL) {
     case GUI_TA_CENTER: xAdjust= xLineSize/2; break;
     case GUI_TA_RIGHT:  xAdjust= xLineSize; break;
     default:            xAdjust= 0;
     }
     r.x0 = GUI_Context.DispPosX -= xAdjust;
-    r.x1 = r.x0 + xLineSize-1;    
+    r.x1 = r.x0 + xLineSize-1;
     r.y0 = GUI_Context.DispPosY;
-    r.y1 = r.y0 + FontSizeY-1;    
+    r.y1 = r.y0 + FontSizeY-1;
     _DispLine(s, LineLen, &r);
     GUI_Context.DispPosY = r.y0;
     s += LineLen;
     if (*s=='\n') {
-      switch (GUI_Context.TextAlign & GUI_TA_HORIZONTAL) { 
+      switch (GUI_Context.TextAlign & GUI_TA_HORIZONTAL) {
       case GUI_TA_CENTER:
       case GUI_TA_RIGHT:
         GUI_Context.DispPosX = xOrg;
@@ -140,7 +106,7 @@ void GUI_UC_DispString(const U16 GUI_UNI_PTR *s) {
   }
   GUI_Context.DispPosY += yAdjust;
   GUI_Context.TextAlign &= ~GUI_TA_HORIZONTAL;
-  
+
 }
 
 /*************************** End of file ****************************/

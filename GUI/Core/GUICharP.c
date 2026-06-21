@@ -1,31 +1,8 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUICharP.C
-Purpose     : Implementation of Proportional fonts
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Private.h"
- 
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
+
 
 static const GUI_FONT_PROP GUI_UNI_PTR * GUIPROP_FindChar(const GUI_FONT_PROP GUI_UNI_PTR* pProp, U16P c) {
   for (; pProp; pProp = pProp->pNext) {
@@ -37,12 +14,6 @@ static const GUI_FONT_PROP GUI_UNI_PTR * GUIPROP_FindChar(const GUI_FONT_PROP GU
 
 /*********************************************************************
 *
-*       Public code
-*
-**********************************************************************
-*/
-/*********************************************************************
-*
 *       GUIPROP_DispChar
 *
 * Purpose:
@@ -51,7 +22,6 @@ static const GUI_FONT_PROP GUI_UNI_PTR * GUIPROP_FindChar(const GUI_FONT_PROP GU
 */
 void GUIPROP_DispChar(U16P c) {
   int BytesPerLine;
-
 
   GUI_DRAWMODE DrawMode = GUI_Context.TextMode;
   const GUI_FONT_PROP GUI_UNI_PTR * pProp = GUIPROP_FindChar(GUI_Context.pAFont->p.pProp, c);
@@ -78,9 +48,9 @@ void GUIPROP_DispChar(U16P c) {
       if (DrawMode != LCD_DRAWMODE_TRANS) {
         LCD_COLOR OldColor = GUI_GetColor();
         GUI_SetColor(GUI_GetBkColor());
-        LCD_FillRect(GUI_Context.DispPosX, 
-                     GUI_Context.DispPosY + YSize, 
-                     GUI_Context.DispPosX + pCharInfo->XSize, 
+        LCD_FillRect(GUI_Context.DispPosX,
+                     GUI_Context.DispPosY + YSize,
+                     GUI_Context.DispPosX + pCharInfo->XSize,
                      GUI_Context.DispPosY + YDist);
         GUI_SetColor(OldColor);
       }
@@ -90,18 +60,15 @@ void GUIPROP_DispChar(U16P c) {
   }
 }
 
-
 int GUIPROP_GetCharDistX(U16P c) {
   const GUI_FONT_PROP GUI_UNI_PTR * pProp = GUIPROP_FindChar(GUI_Context.pAFont->p.pProp, c);
   return (pProp) ? (pProp->paCharInfo+(c-pProp->First))->XSize * GUI_Context.pAFont->XMag : 0;
 }
 
-
 void GUIPROP_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO* pfi) {
   GUI_USE_PARA(pFont);
   pfi->Flags = GUI_FONTINFO_FLAG_PROP;
 }
-
 
 char GUIPROP_IsInFont(const GUI_FONT GUI_UNI_PTR * pFont, U16 c) {
   const GUI_FONT_PROP GUI_UNI_PTR * pProp = GUIPROP_FindChar(pFont->p.pProp, c);

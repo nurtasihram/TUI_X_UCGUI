@@ -2058,7 +2058,6 @@ WM_HWIN WM_GetDesktopWindow(void) {
 	return WM__ahDesktopWin;
 }
 
-
 int WM_GetNumWindows(void) {
 	return WM__NumWindows;
 }
@@ -2067,12 +2066,6 @@ int WM_GetNumInvalidWindows(void) {
 	return WM__NumInvalidWindows;
 }
 
-/*******************************************************************
-*
-*       Public code
-*
-********************************************************************
-*/
 /*******************************************************************
 *
 *       WM__GetDialogItem
@@ -2919,13 +2912,6 @@ void WM_SetCaptureMove(WM_HWIN hWin, const GUI_PID_STATE *pState, int MinVisibil
 		}
 	}
 }
-
-/*******************************************************************
-*
-*           Public code
-*
-********************************************************************
-*/
 
 U16 WM_SetCreateFlags(U16 Flags) {
 	U16 r = WM__CreateFlags;

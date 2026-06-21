@@ -6,15 +6,8 @@
   #include "WM.h"
 #endif
 
-/* Memory device capabilities are compiled only if support for them is enabled.*/ 
+/* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
-
-/*********************************************************************
-*
-*       internal routines
-*
-**********************************************************************
-*/
 
 void GUI_MEMDEV__GetRect(GUI_RECT* pRect) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
@@ -24,16 +17,9 @@ void GUI_MEMDEV__GetRect(GUI_RECT* pRect) {
   pRect->y1 = pDev->y0 + pDev->YSize-1;
 }
 
-/*********************************************************************
-*
-*       Exported routines
-*
-**********************************************************************
-*/
-
 void GUI_MEMDEV_Delete(GUI_MEMDEV_Handle hMemDev) {
 /* Make sure memory device is not used */
-  
+
   if (hMemDev) {
     GUI_MEMDEV* pDev;
     if (GUI_Context.hDevData == hMemDev) {
@@ -45,9 +31,8 @@ void GUI_MEMDEV_Delete(GUI_MEMDEV_Handle hMemDev) {
       GUI_USAGE_DecUseCnt(pDev->hUsage);
     GUI_ALLOC_Free(hMemDev);
   }
-  
-}
 
+}
 
 GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Flags
                                         ,const tLCDDEV_APIList * pMemDevAPI) {
@@ -73,8 +58,8 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
   /* Check if we can alloc sufficient memory */
   if (ysize <= 0) {
     GUI_DEBUG_WARN("GUI_MEMDEV_Create: Too little memory");
-    
-    return 0;    
+
+    return 0;
   }
   MemSize = ysize * BytesPerLine + sizeof(GUI_MEMDEV);
   if (Flags & GUI_MEMDEV_NOTRANS) {
@@ -104,7 +89,6 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
   return hMemDev;
 }
 
-
 GUI_MEMDEV_Handle GUI_MEMDEV_CreateEx(int x0, int y0, int xSize, int ySize, int Flags) {
   GUI_MEMDEV_Handle hMemDev;
   const tLCDDEV_APIList * pDeviceAPI;
@@ -117,7 +101,7 @@ GUI_MEMDEV_Handle GUI_MEMDEV_CreateEx(int x0, int y0, int xSize, int ySize, int 
     pDevSel = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   }
   hMemDev = GUI_MEMDEV__CreateFixed(x0, y0, xSize, ySize, Flags, pDeviceAPI->pMemDevAPI);
-  
+
   return hMemDev;
 }
 
@@ -125,10 +109,9 @@ GUI_MEMDEV_Handle GUI_MEMDEV_Create(int x0, int y0, int xsize, int ysize) {
   return GUI_MEMDEV_CreateEx(x0, y0, xsize, ysize, GUI_MEMDEV_HASTRANS);
 }
 
-
 GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem) {
   GUI_MEMDEV_Handle r;
-  
+
   r = GUI_Context.hDevData;
   if (hMem == 0) {
     GUI_SelectLCD();
@@ -145,14 +128,13 @@ GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem) {
     GUI_Context.pDeviceAPI = pDev->pAPIList;
     LCD_SetClipRectMax();
   }
-  
+
   return r;
 }
 
-
 void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem,int x, int y) {
   GUI_MEMDEV* pDev = GUI_MEMDEV_H2P(hMem);
-  GUI_USAGE_h hUsage = pDev->hUsage; 
+  GUI_USAGE_h hUsage = pDev->hUsage;
   GUI_USAGE*  pUsage;
   int YSize = pDev->YSize;
   int yi;
@@ -189,7 +171,6 @@ void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem,int x, int y) {
   }
 }
 
-
 void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
   if (hMem) {
     GUI_MEMDEV_Handle hMemPrev;
@@ -197,7 +178,7 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
   #if (GUI_WINSUPPORT)
     GUI_RECT r;
   #endif
-    
+
     hMemPrev = GUI_Context.hDevData;
     pDevData = (GUI_MEMDEV*) GUI_ALLOC_h2p(hMem);  /* Convert to pointer */
     /* Make sure LCD is selected as device */
@@ -220,10 +201,9 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
   #endif
     /* Reactivate previously used device */
     GUI_MEMDEV_Select(hMemPrev);
-    
+
   }
 }
-
 
 void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV_Handle hMem) {
   GUI_MEMDEV_CopyToLCDAt(hMem, GUI_POS_AUTO, GUI_POS_AUTO);
@@ -231,8 +211,6 @@ void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV_Handle hMem) {
 
 #else
 
-void GUIDEV_C(void) {}
 
 #endif /* GUI_SUPPORT_MEMDEV */
 
-/*************************** end of file ****************************/

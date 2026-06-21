@@ -20,27 +20,19 @@ Purpose     : Implementation of memory devices
 ---------------------------END-OF-HEADER------------------------------
 */
 
-
 #include <string.h>
 #include "GUI_Protected.h"
 #include "GUIDebug.h"
 
-/* Memory device capabilities are compiled only if support for them is enabled.*/ 
+/* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
-
-/*********************************************************************
-*
-*       public code
-*
-**********************************************************************
-*/
 
 void GUI_USAGE_Select(GUI_USAGE_Handle hUsage) {
   GUI_MEMDEV * pDev;
-  
+
   pDev = GUI_MEMDEV_H2P(GUI_Context.hDevData);
   pDev->hUsage = hUsage;
-  
+
 }
 
 /*********************************************************************
@@ -52,12 +44,12 @@ void GUI_USAGE_Select(GUI_USAGE_Handle hUsage) {
 */
 void GUI_USAGE_DecUseCnt(GUI_USAGE_Handle  hUsage) {
   GUI_USAGE* pThis;
-  
+
   pThis = GUI_USAGE_H2P(hUsage);
   if (--pThis->UseCnt == 0) {
     GUI_ALLOC_Free(hUsage);
   }
-  
+
 }
 
 /*********************************************************************
@@ -79,4 +71,3 @@ void GUIDEV_Usage(void) {} /* avoid empty object files */
 
 #endif /* GUI_SUPPORT_MEMDEV */
 
-/*************************** end of file ****************************/

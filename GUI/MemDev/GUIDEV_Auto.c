@@ -23,27 +23,18 @@ Purpose     : Implementation of automatic banding memory devices
 #include "GUI_Protected.h"
 #include "GUIDebug.h"
 
-/* Memory device capabilities are compiled only if support for them is enabled. */ 
+/* Memory device capabilities are compiled only if support for them is enabled. */
 
 #if GUI_SUPPORT_MEMDEV
-
-/*********************************************************************
-*
-*       public code
-*
-**********************************************************************
-*/
 
 int GUI_MEMDEV_CreateAuto(GUI_AUTODEV* pAutoDev) {
   pAutoDev->FirstCall = 1;
   return 0;
 }
 
-
 void GUI_MEMDEV_DeleteAuto(GUI_AUTODEV* pAutoDev) {
   GUI_USE_PARA(pAutoDev);
 }
-
 
 int GUI_MEMDEV_DrawAuto(GUI_AUTODEV* pAutoDev, GUI_AUTODEV_INFO* pAutoDevInfo, GUI_CALLBACK_VOID_P* pfDraw, void* pData) {
   GUI_RECT rTemp;
@@ -88,4 +79,3 @@ void GUIDEV_Auto(void) {} /* avoid empty object files */
 
 #endif /* GUI_SUPPORT_MEMDEV */
 
-/*************************** end of file ****************************/

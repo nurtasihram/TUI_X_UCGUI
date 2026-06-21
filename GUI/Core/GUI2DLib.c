@@ -1,41 +1,10 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI2DLib.C
-Purpose     : Main part of the 2D graphics library
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
 #include "GUIDebug.h"
 
-/*********************************************************************
-*
-*       defines
-*
-**********************************************************************
-*/
-
 #define ABS(v) ((v>0) ? v : -v)
-
-/*********************************************************************
-*
-*       static code, helper functions
-*
-**********************************************************************
-*/
 
 static void _SwapInt(int* pa, int* pb) {
   int t;
@@ -43,7 +12,6 @@ static void _SwapInt(int* pa, int* pb) {
   *pa = *pb;
   *pb = t;
 }
-
 
 static int Abs(int v) {
   return ABS(v);
@@ -93,7 +61,6 @@ static const U16 aSin[] = {
   1024     /* 16/16 *90� */
 };
 
-
 int GUI_sin(int angle) {
   char IsNeg =0;
   int i;
@@ -130,7 +97,6 @@ int GUI_sin(int angle) {
 #endif
   return (IsNeg) ? 0-t : t;
 }
-
 
 int GUI_cos(int angle) {
   return GUI_sin(angle+GUI_90DEG);
@@ -183,7 +149,6 @@ static int _atan0_45(int q) {
   return r;
 }
 
-
 static int _atan2(I32 x, I32 y) {
   U8 q =0;
   int angle;
@@ -200,7 +165,7 @@ static int _atan2(I32 x, I32 y) {
     int t = y;
     y=x;
     x=t;
-    q |= (1<<2);  
+    q |= (1<<2);
   }
   y <<=10;
   y += (x/2);
@@ -217,7 +182,6 @@ static int _atan2(I32 x, I32 y) {
   }
   return angle;
 }
-
 
 static int _SetLineColor(int i) {
   switch (GUI_Context.LineStyle) {
@@ -242,12 +206,11 @@ static int _SetLineColor(int i) {
       return 1;
     else if ((i>=20) && (i<22))
       return 1;
-    else 
+    else
       return 0;
   }
   return 0;
 }
-
 
 #if 0
 int _atan2(int xDiff, int yDiff) {
@@ -255,7 +218,6 @@ int _atan2(int xDiff, int yDiff) {
   return (int)(atanf*(16384.0/6.2831852));
 }
 #endif
-
 
 static void _CalcOrto(int xDiff, int yDiff, I32 r, int*px, int*py) {
   I32 x,y;
@@ -298,13 +260,6 @@ static void _DrawLineEnd(int x0, int y0) {
   }
 }
 
-/*********************************************************************
-*
-*       DrawLine, public
-*
-**********************************************************************
-*/
-
 void GL_DrawLine(int x0, int y0, int x1, int y1) {
   if (GUI_Context.PenSize ==1) {
     GL_DrawLine1(x0,y0,x1,y1);
@@ -312,7 +267,7 @@ void GL_DrawLine(int x0, int y0, int x1, int y1) {
     int xdiff, ydiff;
     xdiff = x0-x1;
     ydiff = y0-y1;
-    if (xdiff | ydiff) {    
+    if (xdiff | ydiff) {
       GUI_POINT Poly[4];
       int xOff, yOff;
       int xOffP, yOffP, xOffM, yOffM;
@@ -334,11 +289,11 @@ void GL_DrawLine(int x0, int y0, int x1, int y1) {
       }
       Poly[0].x = x0+xOffP;
       Poly[0].y = y0+yOffP;
-      Poly[1].x = x0-xOffM; 
-      Poly[1].y = y0-yOffM; 
+      Poly[1].x = x0-xOffM;
+      Poly[1].y = y0-yOffM;
       Poly[2].x = x1-xOffM;
       Poly[2].y = y1-yOffM;
-      Poly[3].x = x1+xOffP; 
+      Poly[3].x = x1+xOffP;
       Poly[3].y = y1+yOffP;
       GL_FillPolygon(&Poly[0], 4, 0,0);
       _DrawLineEnd(x0,y0);
@@ -347,9 +302,8 @@ void GL_DrawLine(int x0, int y0, int x1, int y1) {
   }
 }
 
-
 void GUI_DrawLine(int x0, int y0, int x1, int y1) {
-  
+
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     WM_ADDORG(x1,y1);
@@ -359,9 +313,8 @@ void GUI_DrawLine(int x0, int y0, int x1, int y1) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  
-}
 
+}
 
 void GL_DrawPolygon(const GUI_POINT*pPoints, int NumPoints, int x0, int y0) {
   const GUI_POINT* pPoint = pPoints;
@@ -378,9 +331,8 @@ void GL_DrawPolygon(const GUI_POINT*pPoints, int NumPoints, int x0, int y0) {
   }
 }
 
-
 void GUI_DrawPolygon(const GUI_POINT* pPoints, int NumPoints, int x0, int y0) {
-  
+
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     WM_ITERATE_START(NULL); {
@@ -389,24 +341,16 @@ void GUI_DrawPolygon(const GUI_POINT* pPoints, int NumPoints, int x0, int y0) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  
-}
 
-/*********************************************************************
-*
-*       Draw Line to group
-*
-**********************************************************************
-*/
+}
 
 static void GL_DrawLineRelNM(int dx, int dy) {
-  GL_DrawLine (GUI_Context.DrawPosX,    GUI_Context.DrawPosY, 
-               GUI_Context.DrawPosX+dx, GUI_Context.DrawPosY+dy); 
+  GL_DrawLine (GUI_Context.DrawPosX,    GUI_Context.DrawPosY,
+               GUI_Context.DrawPosX+dx, GUI_Context.DrawPosY+dy);
 }
 
-
 void GUI_DrawLineRel(int dx, int dy) {
-  
+
   #if (GUI_WINSUPPORT)
     WM_ITERATE_START(NULL); {
   #endif
@@ -415,24 +359,21 @@ void GUI_DrawLineRel(int dx, int dy) {
     } WM_ITERATE_END();
   #endif
   GUI_MoveRel(dx,dy);
-  
+
 }
 
-
 void GL_DrawLineTo(int x, int y) {
-  GL_DrawLine (GUI_Context.DrawPosX, GUI_Context.DrawPosY, x, y); 
+  GL_DrawLine (GUI_Context.DrawPosX, GUI_Context.DrawPosY, x, y);
   GUI_Context.DrawPosX = x;
   GUI_Context.DrawPosY = y;
 }
 
-
 static void GL_DrawLineToNM(int x, int y) {
-  GL_DrawLine (GUI_Context.DrawPosX, GUI_Context.DrawPosY, x, y); 
+  GL_DrawLine (GUI_Context.DrawPosX, GUI_Context.DrawPosY, x, y);
 }
 
-
 void GUI_DrawLineTo(int x, int y) {
-  
+
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x,y);
     WM_ITERATE_START(NULL); {
@@ -442,39 +383,29 @@ void GUI_DrawLineTo(int x, int y) {
     } WM_ITERATE_END();
   #endif
   GL_MoveTo(x,y);
-  
-}
 
+}
 
 void GUI_MoveRel(int dx, int dy) { /*tbd: GL_LinePos. */
-  
+
   GUI_Context.DrawPosX += dx;
   GUI_Context.DrawPosY += dy;
-  
-}
 
+}
 
 void GL_MoveTo(int x, int y) {
   GUI_Context.DrawPosX = x;
   GUI_Context.DrawPosY = y;
 }
 
-
 void GUI_MoveTo(int x, int y) {
-  
+
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x,y);
   #endif
   GL_MoveTo(x,y);
-  
-}
 
-/*********************************************************************
-*
-*       Rectangle filling / inverting
-*
-**********************************************************************
-*/
+}
 
 static void _DrawRect(int x0, int y0, int x1, int y1) {
   LCD_DrawHLine(x0, y0, x1);
@@ -483,13 +414,12 @@ static void _DrawRect(int x0, int y0, int x1, int y1) {
   LCD_DrawVLine(x1, y0 + 1, y1 - 1);
 }
 
-
 void GUI_DrawRect(int x0, int y0, int x1, int y1) {
   #if (GUI_WINSUPPORT)
     int Off;
     GUI_RECT r;
   #endif
-  
+
   #if (GUI_WINSUPPORT)
     Off = GUI_Context.PenSize -1;
     WM_ADDORG(x0,y0);
@@ -504,15 +434,8 @@ void GUI_DrawRect(int x0, int y0, int x1, int y1) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  
-}
 
-/*********************************************************************
-*
-*       DrawLine, internal, 1 pixel
-*
-**********************************************************************
-*/
+}
 
 void GL_DrawLine1(int x0, int y0, int x1, int y1) {
   int xdiff = x1-x0;
@@ -579,13 +502,6 @@ void GL_DrawLine1(int x0, int y0, int x1, int y1) {
   }
 }
 
-/*********************************************************************
-*
-*       Draw point
-*
-**********************************************************************
-*/
-
 void GL_DrawPoint(int x, int y) {
   if (GUI_Context.PenSize == 1) {
     LCD_HL_DrawPixel(x, y);
@@ -594,9 +510,8 @@ void GL_DrawPoint(int x, int y) {
   }
 }
 
-
 void GUI_DrawPoint(int x, int y) {
-  
+
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x, y);
     WM_ITERATE_START(NULL); {
@@ -605,7 +520,7 @@ void GUI_DrawPoint(int x, int y) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  
+
 }
 
 /*************************** End of file ****************************/

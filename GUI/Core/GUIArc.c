@@ -1,44 +1,8 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUIARCFloat.C
-Purpose     : Draw Arc routines based on floating point
-----------------------------------------------------------------------
-Version-Date---Author-Explanation
-----------------------------------------------------------------------
-2.00.00 000325 RS     First release of the new algorithm
-----------------------------------------------------------------------
-Known problems or limitations with current version
-----------------------------------------------------------------------
-None.
-----------------------------------------------------------------------
-Open issues
-----------------------------------------------------------------------
-None
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include <math.h>
 #include "GUI_Protected.h"
-
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
 
 static void _CalcX(int*px, int y, U32 r2) {
   int x =*px;
@@ -57,7 +21,6 @@ static void _CalcX(int*px, int y, U32 r2) {
 	*px = x-1;
 }
 
-
 static float _CalcInterSectLin(float y, float y0, float y1, float x0, float x1) {
   if (y1==y0) {
 	  return y0;
@@ -67,7 +30,6 @@ static float _CalcInterSectLin(float y, float y0, float y1, float x0, float x1) 
 	}
 }
 
-
 static void _DrawArc(int x0, int y0, int rx, int ry, int Angle0, int Angle1, int xMul, int yMul) {
   float afx[4];
   float afy[4];
@@ -75,10 +37,10 @@ static void _DrawArc(int x0, int y0, int rx, int ry, int Angle0, int Angle1, int
 	float ro = rx+(GUI_Context.PenSize+1.5)/2;
   float fAngle0 = Angle0*3.1415926/180;
   float fAngle1 = Angle1*3.1415926/180;
-  float sin0 = sin(fAngle0); 
-  float sin1 = sin(fAngle1); 
-  float cos0 = cos(fAngle0); 
-  float cos1 = cos(fAngle1); 
+  float sin0 = sin(fAngle0);
+  float sin1 = sin(fAngle1);
+  float cos0 = cos(fAngle0);
+  float cos1 = cos(fAngle1);
   U32   ri2 = ri*ri;
   U32   ro2 = ro*ro;
 	int y, yMax, yMin;
@@ -116,12 +78,12 @@ static void _DrawArc(int x0, int y0, int rx, int ry, int Angle0, int Angle1, int
       if ((float)y< afy[1]) {
         xMaxDisp = _CalcInterSectLin(y,afy[0], afy[1], afx[0], afx[1]);
 			} else {
-        xMaxDisp = xMax;			
+        xMaxDisp = xMax;
 			}
       if ((float)y > afy[2]) {
         xMinDisp = _CalcInterSectLin(y,afy[2], afy[3], afx[2], afx[3]);
 			} else {
-        xMinDisp = xMin;			
+        xMinDisp = xMin;
 			}
       if (xMul>0)
         LCD_HL_DrawHLine(xMinDisp+x0, yMul*y+y0, xMaxDisp+x0);
@@ -132,20 +94,13 @@ static void _DrawArc(int x0, int y0, int rx, int ry, int Angle0, int Angle1, int
 #if 0  /* Test code */
 {
   int i;
-  GUI_SetColor( GUI_WHITE ); 
+  GUI_SetColor( GUI_WHITE );
 	for (i=0; i<4; i++)
     LCD_HL_DrawPixel(afx[i]+x0, afy[i]+y0);
 }
 #endif
   GUI_USE_PARA(ry);
 }
-
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
 
 void GL_DrawArc(int x0, int y0, int rx, int ry, int a0, int a1) {
   int aEnd;
@@ -203,9 +158,8 @@ DoFirst:
 goto DoFirst;
 }
 
-
 void GUI_DrawArc(int x0, int y0, int rx, int ry, int a0, int a1) {
-  
+
   #if (GUI_WINSUPPORT)
     WM_ADDORG(x0,y0);
     WM_ITERATE_START(NULL) {
@@ -214,7 +168,7 @@ void GUI_DrawArc(int x0, int y0, int rx, int ry, int a0, int a1) {
   #if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
   #endif
-  
+
 }
 
 /*************************** End of file ****************************/

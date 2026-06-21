@@ -1,41 +1,9 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUITimer.c
-Purpose     : Supplies timers
-----------------------------------------------------------------------
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
 
-/*********************************************************************
-*
-*       Defines
-*
-**********************************************************************
-*/
-
 #define GUI_TIMER_H2P(h) (GUI_TIMER_Obj*)GUI_ALLOC_h2p(h)
-
-/*********************************************************************
-*
-*       Types
-*
-**********************************************************************
-*/
 
 typedef struct {
   GUI_TIMER_CALLBACK* cb;
@@ -46,22 +14,8 @@ typedef struct {
 	GUI_TIMER_TIME Period;
 } GUI_TIMER_Obj;
 
-/*********************************************************************
-*
-*       Static data
-*
-**********************************************************************
-*/
-
 GUI_TIMER_HANDLE hFirstTimer;
 GUI_TIMER_HANDLE _hActiveTimer;
-
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
 
 static void _Unlink(GUI_TIMER_HANDLE hTimer) {
   GUI_TIMER_Obj* pTimer = GUI_TIMER_H2P(hTimer);
@@ -80,9 +34,9 @@ static void _Unlink(GUI_TIMER_HANDLE hTimer) {
     if (pi->hNext == hTimer) {
       pi->hNext = pTimer->hNext;
       break;
-		}        
+		}
     hi = pi->hNext;
-  }  
+  }
 }
 
 /*********************************************************************
@@ -133,13 +87,6 @@ Append:
   }
 }
 
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
-
 int GUI_TIMER_Exec(void) {
   int r = 0;
   GUI_TIMER_TIME t = GUI_GetTime();
@@ -161,15 +108,14 @@ int GUI_TIMER_Exec(void) {
 		GUI_TIMER_Obj* pObj = GUI_TIMER_H2P(hObj);
     pObj->t0 = Time;
     */
-  }  
+  }
   return r;
 }
-
 
 GUI_TIMER_HANDLE GUI_TIMER_Create(GUI_TIMER_CALLBACK* cb, int Time, U32 Context, int Flags) {
   GUI_TIMER_HANDLE hObj;
   GUI_TIMER_Obj* pObj;
-  
+
   GUI_USE_PARA(Flags);
   GUI_USE_PARA(Time);
   GUI_pfTimerExec = GUI_TIMER_Exec;
@@ -183,33 +129,30 @@ GUI_TIMER_HANDLE GUI_TIMER_Create(GUI_TIMER_CALLBACK* cb, int Time, U32 Context,
 		pObj->t0 = Time;	//houhh 20061018...
     /* Link it */
 		_Link(hObj);
-	} 
+	}
   return hObj;
 }
 
-
 void GUI_TIMER_Delete(GUI_TIMER_HANDLE hObj) {
 /* Unlink Timer */
-  
+
   _Unlink(hObj);
   GUI_ALLOC_Free(hObj);
-  
-}
 
+}
 
 void GUI_TIMER_SetPeriod(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Period) {
    {
     GUI_TIMER_Obj* pObj = GUI_TIMER_H2P(hObj);
     pObj->Period = Period;
-  }  
+  }
 }
-
 
 void GUI_TIMER_SetTime(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Time) {
    {
    	GUI_TIMER_Obj* pObj = GUI_TIMER_H2P(hObj);
     pObj->t0 = Time;
-  }  
+  }
 }
 
 //////
@@ -217,10 +160,9 @@ void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, U32 Context) {
    {
    	GUI_TIMER_Obj* pObj = GUI_TIMER_H2P(hObj);
     pObj->Context = Context;
-  }  
+  }
 }
 //////
-
 
 void GUI_TIMER_SetDelay(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Delay) {
    {
@@ -228,13 +170,12 @@ void GUI_TIMER_SetDelay(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Delay) {
     pObj->t0 = Delay;
 		_Unlink(hObj);
 		_Link(hObj);
-  }  
+  }
 }
-
 
 void GUI_TIMER_Restart(GUI_TIMER_HANDLE hObj) {
   GUI_TIMER_Obj* pObj;
-  
+
   {
     if (hObj == 0) {
       hObj = _hActiveTimer;
@@ -243,7 +184,7 @@ void GUI_TIMER_Restart(GUI_TIMER_HANDLE hObj) {
     pObj->t0 = GUI_GetTime() +pObj->Period;
 		_Unlink(hObj);
 		_Link(hObj);
-  }  
+  }
 }
 
 /*************************** End of file ****************************/

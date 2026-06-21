@@ -1,34 +1,10 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : LCDColor.C
-Purpose     : Color conversion routines for LCD-drivers
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #define LCDCOLOR_C
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Private.h"
 #include "LCD_Private.h"      /* inter modul definitions & Config */
-
-/*********************************************************************
-*
-*       Defines, config defaults
-*
-**********************************************************************
-*/
 
 #ifndef  LCD_SIZEOF_COLORCACHE
   #define LCD_SIZEOF_COLORCACHE 0
@@ -38,21 +14,7 @@ Purpose     : Color conversion routines for LCD-drivers
   static  const LCD_LOGPALETTE * pLogPalCache;
 #endif
 
-/*********************************************************************
-*
-*       Public data
-*
-**********************************************************************
-*/
-
 LCD_PIXELINDEX LCD__aConvTable[LCD_MAX_LOG_COLORS];
-
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
 
 LCD_PIXELINDEX* LCD_GetpPalConvTableUncached(const LCD_LOGPALETTE GUI_UNI_PTR *  pLogPal) {
   if (pLogPal == NULL) {
@@ -76,7 +38,6 @@ LCD_PIXELINDEX* LCD_GetpPalConvTableUncached(const LCD_LOGPALETTE GUI_UNI_PTR * 
   }
   return &LCD__aConvTable[0];
 }
-
 
 LCD_PIXELINDEX* LCD_GetpPalConvTable(const LCD_LOGPALETTE GUI_UNI_PTR *  pLogPal) {
 /* Check cache */

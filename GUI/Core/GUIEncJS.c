@@ -1,38 +1,11 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUIEncSJ.C
-Purpose     : Implementation of Shift JIS decoding
-----------------------------------------------------------------------
-Version-Date---Author-Explanation
----------------------------END-OF-HEADER------------------------------
-*/
+
 
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
 
-/*********************************************************************
-*
-*       Static code
-*
-**********************************************************************
-*/
-
 static U16 DB2SJIS(U8 Byte0, U8 Byte1) {
   return Byte1 | (((U16)Byte0)<<8);
 }
-
 
 static int _GetLineDistX_SJIS(const char GUI_UNI_PTR *s, int Len) {
   int Dist =0;
@@ -79,7 +52,6 @@ static int _GetLineLen_SJIS(const char GUI_UNI_PTR *s, int MaxLen) {
   return Len;
 }
 
-
 static void _DispLine_SJIS(const char GUI_UNI_PTR *s, int Len) {
   U8 c0;
   while (--Len >=0) {
@@ -94,10 +66,6 @@ static void _DispLine_SJIS(const char GUI_UNI_PTR *s, int Len) {
   }
 }
 
-/*********************************************************************
-*
-*       GUI_ENC_APIList_SJIS, API list
-*/
 const tGUI_ENC_APIList GUI_ENC_APIList_SJIS = {
   _GetLineDistX_SJIS,
   _GetLineLen_SJIS,
