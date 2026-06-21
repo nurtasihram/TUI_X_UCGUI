@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
@@ -17,17 +17,9 @@ The following are defaults for config switches which affect the
 interface specified in this module
 */
 
-/*********************************************************************
-*
-*       Defines
-*
-**********************************************************************
-*/
 
-/************************************************************
-*
-*       Create / Status flags
-*/
+
+
 #define EDIT_CF_LEFT    GUI_TA_LEFT
 #define EDIT_CF_RIGHT   GUI_TA_RIGHT
 #define EDIT_CF_HCENTER GUI_TA_HCENTER
@@ -36,28 +28,14 @@ interface specified in this module
 #define EDIT_CF_TOP     GUI_TA_TOP
 #define EDIT_CF_BOTTOM  GUI_TA_BOTTOM
 
-/*********************************************************************
-*
-*       Color indices
-*/
+
 #define EDIT_CI_DISABLED 0
 #define EDIT_CI_ENABLED  1
 
-/************************************************************
-*
-*       States
-*/
 
-/*********************************************************************
-*
-*       Types
-*
-**********************************************************************
-*/
 typedef WM_HMEM EDIT_Handle;
 typedef void tEDIT_AddKeyEx    (EDIT_Handle hObj, int Key);
 typedef void tEDIT_UpdateBuffer(EDIT_Handle hObj);
-
 
 /*
       *************************************************************
@@ -71,7 +49,6 @@ typedef void tEDIT_UpdateBuffer(EDIT_Handle hObj);
 */
 /* Note: the parameters to a create function may vary.
          Some widgets may have multiple create functions */
-
 
 EDIT_Handle EDIT_Create        (int x0, int y0, int xsize, int ysize, int Id, int MaxLen, int Flags);
 EDIT_Handle EDIT_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, int MaxLen);
@@ -138,12 +115,7 @@ void  EDIT_SetFloatValue(EDIT_Handle hObj, float Value);
 void  EDIT_SetValue     (EDIT_Handle hObj, I32 Value);
 int   EDIT_GetNumChars  (EDIT_Handle hObj);
 
-/*********************************************************************
-*
-*             Routines for editing values
-*
-**********************************************************************
-*/
+
 
 void  EDIT_SetHexMode(EDIT_Handle hEdit, U32 Value, U32 Min, U32 Max);
 void  EDIT_SetBinMode(EDIT_Handle hEdit, U32 Value, U32 Min, U32 Max);
@@ -156,12 +128,7 @@ I32   GUI_EditDec(I32 Value, I32 Min, I32 Max, int Len, int xsize, int Shift, U8
 float GUI_EditFloat(float Value, float Min, float Max, int Len, int xsize, int Shift, U8 Flags);
 void  GUI_EditString(char * pString, int Len, int xsize);
 
-/*********************************************************************
-*
-*             Flags
-*
-**********************************************************************
-*/
+
 
 /* Signed or normal mode */
 #define GUI_EDIT_NORMAL 0

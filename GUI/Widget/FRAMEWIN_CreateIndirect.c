@@ -1,36 +1,6 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : FRAMEWIN_CreateIndirect.c
-Purpose     : Implementation of framewin widget
----------------------------END-OF-HEADER------------------------------
-*/
 
 #include "FRAMEWIN.h"
 
-#if GUI_WINSUPPORT
-
-/*********************************************************************
-*
-*       Exported routines
-*
-**********************************************************************
-*/
-/*********************************************************************
-*
-*       FRAMEWIN_CreateIndirect
-*/
 FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent,
                                        int x0, int y0, WM_CALLBACK* cb) {
   FRAMEWIN_Handle hObj;
@@ -39,6 +9,3 @@ FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInf
   return hObj;
 }
 
-#else  /* avoid empty object files */
-  void FRAMEWIN_CreateIndirect_C(void) {}
-#endif

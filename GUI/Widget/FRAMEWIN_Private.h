@@ -1,17 +1,8 @@
 #pragma once
-
 #include "WM.h"
 #include "FRAMEWIN.h"
 #include "WIDGET.h"
 #include "GUI_HOOK.h"
-
-/*********************************************************************
-*
-*         Object definition
-*
-**********************************************************************
-*/
-
 typedef struct {
   const GUI_FONT GUI_UNI_PTR * pFont;
   GUI_COLOR                    aBarColor[2];
@@ -21,7 +12,6 @@ typedef struct {
   I16                          BorderSize;
   I16                          IBorderSize;
 } FRAMEWIN_PROPS;
-
 typedef struct {
   WIDGET Widget;
   FRAMEWIN_PROPS Props;
@@ -36,58 +26,18 @@ typedef struct {
   WM_DIALOG_STATUS* pDialogStatus;
   GUI_HOOK* pFirstHook;
 } FRAMEWIN_Obj;
-
-/*********************************************************************
-*
-*         Types
-*
-**********************************************************************
-*/
-
 typedef struct {
   I16 TitleHeight;
   I16 MenuHeight;
   GUI_RECT rClient;
   GUI_RECT rTitleText;
 } POSITIONS;
-
-/*********************************************************************
-*
-*              Macros for internal use
-*
-**********************************************************************
-*/
-
 #define FRAMEWIN_H2P(h) (FRAMEWIN_Obj*) GUI_ALLOC_h2p(h)
-
-/*********************************************************************
-*
-*        public data (internal defaults)
-*
-**********************************************************************
-*/
-
 extern FRAMEWIN_PROPS FRAMEWIN__DefaultProps;
-
-/*********************************************************************
-*
-*        public functions (internal)
-*
-**********************************************************************
-*/
-
 void            FRAMEWIN__CalcPositions   (FRAMEWIN_Obj* pObj, POSITIONS* pPos);
 int             FRAMEWIN__CalcTitleHeight (FRAMEWIN_Obj* pObj);
 void            FRAMEWIN__UpdatePositions (FRAMEWIN_Obj* pObj);
 void            FRAMEWIN__UpdateButtons   (FRAMEWIN_Obj* pObj, int OldHeight);
-
-/*********************************************************************
-*
-*        public functions
-*
-**********************************************************************
-*/
-
 const GUI_FONT GUI_UNI_PTR * FRAMEWIN_GetFont          (FRAMEWIN_Handle hObj);
 int             FRAMEWIN_GetTitleHeight   (FRAMEWIN_Handle hObj);
 void            FRAMEWIN_MinButtonSetState(WM_HWIN hButton, int State);

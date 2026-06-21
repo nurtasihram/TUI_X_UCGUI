@@ -1,40 +1,9 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : FRAMEWIN.c
-Purpose     : FRAMEWIN_SetBorderSize
----------------------------END-OF-HEADER------------------------------
-*/
 
 #include "FRAMEWIN_Private.h"
 #include "WIDGET.h"
 
-#if GUI_WINSUPPORT
-
-/*********************************************************************
-*
-*       Exported code
-*
-**********************************************************************
-*/
-
-/*********************************************************************
-*
-*       FRAMEWIN_SetBorderSize
-*/
 void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
-  
+
   if (hObj) {
     GUI_RECT r;
     WM_Obj * pChild;
@@ -60,9 +29,6 @@ void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
     FRAMEWIN__UpdatePositions(pObj);
     FRAMEWIN_Invalidate(hObj);
   }
-  
-}
 
-#else
-  void FRAMEWIN_SetBorderSize_C(void) {} /* avoid empty object files */
-#endif /* GUI_WINSUPPORT */
+}
+ /* GUI_WINSUPPORT */

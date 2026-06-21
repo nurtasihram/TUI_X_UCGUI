@@ -1,21 +1,10 @@
-#pragma once
-
+﻿#pragma once
 #include "WIDGET.h"
 #include "HEADER.h"
 #include "WM.h"
 #include "GUI_ARRAY.h"
-
-/*********************************************************************
-*
-*       Macros for internal use
-*
-**********************************************************************
-*/
-
 #define HEADER_ID 0x4567   /* Magic numer, should be unique if possible */
-
 #define HEADER_H2P(h) (HEADER_Obj*) WM_H2P(h)
-
 #if GUI_DEBUG_LEVEL > 1
   #define HEADER_ASSERT_IS_VALID_PTR(p) DEBUG_ERROROUT_IF(p->DebugId != HEADER_ID, "xxx.c: Wrong handle type or Object not init'ed")
   #define HEADER_INIT_ID(p)   p->DebugId = HEADER_ID
@@ -25,21 +14,12 @@
   #define HEADER_INIT_ID(p)
   #define HEADER_DEINIT_ID(p)
 #endif
-
-/*********************************************************************
-*
-*       Object definition
-*
-**********************************************************************
-*/
-
 typedef struct {
   int Width;
   I16 Align;
   WM_HMEM hDrawObj;
   char acText[1];
 } HEADER_COLUMN;
-
 typedef struct {
   WIDGET Widget;
   GUI_COLOR BkColor;
@@ -51,7 +31,6 @@ typedef struct {
   const GUI_FONT GUI_UNI_PTR * pFont;
   #if (GUI_DEBUG_LEVEL > 1)
     int DebugId;
-  #endif  
+  #endif
 } HEADER_Obj;
-
 void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW_HANDLE hDrawObj);

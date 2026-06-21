@@ -1,20 +1,9 @@
 #pragma once
-
 #include "SCROLLBAR.h"
 #include "WIDGET.h"
 #include "GUIDebug.h"
-
-/*********************************************************************
-*
-*       Macros for internal use
-*
-**********************************************************************
-*/
-
 #define SCROLLBAR_ID 0x4544   /* Magic numer, should be unique if possible */
-
 #define SCROLLBAR_H2P(h) (SCROLLBAR_Obj*) GUI_ALLOC_h2p(h)
-
 #if GUI_DEBUG_LEVEL > 1
   #define SCROLLBAR_ASSERT_IS_VALID_PTR(p) DEBUG_ERROROUT_IF(p->DebugId != SCROLLBAR_ID, "xxx.c: Wrong handle type or Object not init'ed")
   #define SCROLLBAR_INIT_ID(p)   p->DebugId = SCROLLBAR_ID
@@ -24,24 +13,9 @@
   #define SCROLLBAR_INIT_ID(p)
   #define SCROLLBAR_DEINIT_ID(p)
 #endif
-
-/*********************************************************************
-*
-*       Module internal data
-*
-**********************************************************************
-*/
 extern GUI_COLOR  SCROLLBAR__aDefaultBkColor[2];
 extern GUI_COLOR  SCROLLBAR__aDefaultColor[2];
 extern I16        SCROLLBAR__DefaultWidth;
-
-/*********************************************************************
-*
-*       Object definition
-*
-**********************************************************************
-*/
-
 typedef struct {
   WIDGET Widget;
   GUI_COLOR aBkColor[2];
@@ -49,9 +23,8 @@ typedef struct {
   int NumItems, v, PageSize;
   #if GUI_DEBUG_LEVEL >1
     int DebugId;
-  #endif  
+  #endif
 } SCROLLBAR_Obj;
-
 typedef struct {
   int x0_LeftArrow;
   int x1_LeftArrow;
@@ -63,5 +36,4 @@ typedef struct {
   int xSizeMoveable;
   int ThumbSize;
 } SCROLLBAR_POSITIONS;
-
 void SCROLLBAR__InvalidatePartner(SCROLLBAR_Handle hObj);

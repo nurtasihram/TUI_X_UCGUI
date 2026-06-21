@@ -1,33 +1,6 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : FRAMEWIN_SetResizeable.c
-Purpose     : 
----------------------------END-OF-HEADER------------------------------
-*/
 
 #include <stdlib.h>
 #include "FRAMEWIN_Private.h"
-
-#if GUI_WINSUPPORT
-
-/*********************************************************************
-*
-*        Defines
-*
-**********************************************************************
-*/
 
 #ifndef   FRAMEWIN_REACT_BORDER
   #define FRAMEWIN_REACT_BORDER 3
@@ -38,56 +11,28 @@ Purpose     :
 #ifndef   FRAMEWIN_MINSIZE_Y
   #define FRAMEWIN_MINSIZE_Y    20
 #endif
-
 #define FRAMEWIN_RESIZE_X     (1<<0)
 #define FRAMEWIN_RESIZE_Y     (1<<1)
 #define FRAMEWIN_REPOS_X      (1<<2)
 #define FRAMEWIN_REPOS_Y      (1<<3)
 #define FRAMEWIN_MOUSEOVER    (1<<4)
 #define FRAMEWIN_RESIZE       (FRAMEWIN_RESIZE_X | FRAMEWIN_RESIZE_Y | FRAMEWIN_REPOS_X | FRAMEWIN_REPOS_Y)
-
-/*********************************************************************
-*
-*        Static data
-*
-**********************************************************************
-*/
-
 static GUI_HOOK _HOOK_Resizeable;
 static int      _CaptureX;
 static int      _CaptureY;
 static int      _CaptureFlags;
-
 #if GUI_SUPPORT_CURSOR
   static const GUI_CURSOR GUI_UNI_PTR * _pOldCursor;
 #endif
-
-/*********************************************************************
-*
-*        Static data, cursors
-*
-**********************************************************************
-*/
 #if GUI_SUPPORT_CURSOR
-
-/*********************************************************************
-*
-*        Cursor colors
-*/
 static GUI_CONST_STORAGE GUI_COLOR _ColorsCursor[] = {
      0x0000FF,0x000000,0xFFFFFF
 };
-
 static GUI_CONST_STORAGE GUI_LOGPALETTE _PalCursor = {
   3,	/* number of entries */
   1, 	/* Has transparency */
   &_ColorsCursor[0]
 };
-
-/*********************************************************************
-*
-*        Cursor data, CursorH
-*/
 static GUI_CONST_STORAGE unsigned char _acResizeCursorH[] = {
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00,
@@ -107,7 +52,6 @@ static GUI_CONST_STORAGE unsigned char _acResizeCursorH[] = {
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00
 };
-
 static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorH = {
  17,  /* XSize */
  17,  /* YSize */
@@ -116,15 +60,9 @@ static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorH = {
  _acResizeCursorH,    /* Pointer to picture data (indices) */
  &_PalCursor          /* Pointer to palette */
 };
-
 static GUI_CONST_STORAGE GUI_CURSOR _ResizeCursorH = {
   &_bmResizeCursorH, 8, 8
 };
-
-/*********************************************************************
-*
-*        Cursor data, CursorV
-*/
 static GUI_CONST_STORAGE unsigned char _acResizeCursorV[] = {
   0x00, 0x00, 0x40, 0x00, 0x00,
   0x00, 0x01, 0x90, 0x00, 0x00,
@@ -144,7 +82,6 @@ static GUI_CONST_STORAGE unsigned char _acResizeCursorV[] = {
   0x00, 0x01, 0x90, 0x00, 0x00,
   0x00, 0x00, 0x40, 0x00, 0x00
 };
-
 static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorV = {
  17,  /* XSize */
  17,  /* YSize */
@@ -153,15 +90,9 @@ static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorV = {
  _acResizeCursorV,    /* Pointer to picture data (indices) */
  &_PalCursor          /* Pointer to palette */
 };
-
 static GUI_CONST_STORAGE GUI_CURSOR _ResizeCursorV = {
   &_bmResizeCursorV, 8, 8
 };
-
-/*********************************************************************
-*
-*        Cursor data, CursorDD
-*/
 static GUI_CONST_STORAGE unsigned char _acResizeCursorDD[] = {
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00,
@@ -181,7 +112,6 @@ static GUI_CONST_STORAGE unsigned char _acResizeCursorDD[] = {
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00
 };
-
 static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorDD = {
  17,  /* XSize */
  17,  /* YSize */
@@ -190,15 +120,9 @@ static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorDD = {
  _acResizeCursorDD,   /* Pointer to picture data (indices) */
  &_PalCursor          /* Pointer to palette */
 };
-
 static GUI_CONST_STORAGE GUI_CURSOR _ResizeCursorDD = {
   &_bmResizeCursorDD, 8, 8
 };
-
-/*********************************************************************
-*
-*        Cursor data, CursorDU
-*/
 static GUI_CONST_STORAGE unsigned char _acResizeCursorDU[] = {
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00,
@@ -218,7 +142,6 @@ static GUI_CONST_STORAGE unsigned char _acResizeCursorDU[] = {
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00
 };
-
 static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorDU = {
  17,  /* XSize */
  17,  /* YSize */
@@ -227,23 +150,10 @@ static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorDU = {
  _acResizeCursorDU,   /* Pointer to picture data (indices) */
  &_PalCursor          /* Pointer to palette */
 };
-
 static GUI_CONST_STORAGE GUI_CURSOR _ResizeCursorDU = {
   &_bmResizeCursorDU, 8, 8
 };
-
 #endif
-
-/*********************************************************************
-*
-*        Static code, helpers
-*
-**********************************************************************
-*/
-/*********************************************************************
-*
-*       _SetResizeCursor
-*/
 #if GUI_SUPPORT_CURSOR
 static void _SetResizeCursor(int Mode) {
   const GUI_CURSOR GUI_UNI_PTR * pNewCursor = NULL;
@@ -275,11 +185,6 @@ static void _SetResizeCursor(int Mode) {
   }
 }
 #endif
-
-/*********************************************************************
-*
-*       _SetCapture
-*/
 static void _SetCapture(FRAMEWIN_Handle hWin, int x, int y, int Mode) {
   if ((_CaptureFlags & FRAMEWIN_REPOS_X) == 0) {
     _CaptureX = x;
@@ -300,11 +205,6 @@ static void _SetCapture(FRAMEWIN_Handle hWin, int x, int y, int Mode) {
     _CaptureFlags = (Mode | FRAMEWIN_MOUSEOVER);
   }
 }
-
-/*********************************************************************
-*
-*       _ChangeWindowPosSize
-*/
 static void _ChangeWindowPosSize(FRAMEWIN_Handle hWin, int* px, int* py) {
   int dx = 0, dy = 0;
   GUI_RECT Rect;
@@ -335,11 +235,6 @@ static void _ChangeWindowPosSize(FRAMEWIN_Handle hWin, int* px, int* py) {
   /* Set new window size */
   WM_ResizeWindow(hWin, dx, dy);
 }
-
-/*********************************************************************
-*
-*       _CheckBorderX
-*/
 static int _CheckBorderX(int x, int x1, int Border) {
   int Mode = 0;
   if (x > (x1 - Border)) {
@@ -349,11 +244,6 @@ static int _CheckBorderX(int x, int x1, int Border) {
   }
   return Mode;
 }
-
-/*********************************************************************
-*
-*       _CheckBorderY
-*/
 static int _CheckBorderY(int y, int y1, int Border) {
   int Mode = 0;
   if (y > (y1 - Border)) {
@@ -363,11 +253,6 @@ static int _CheckBorderY(int y, int y1, int Border) {
   }
   return Mode;
 }
-
-/*********************************************************************
-*
-*       _CheckReactBorder
-*/
 static int _CheckReactBorder(FRAMEWIN_Handle hWin, int x, int y) {
   int Mode = 0;
   GUI_RECT r;
@@ -385,11 +270,6 @@ static int _CheckReactBorder(FRAMEWIN_Handle hWin, int x, int y) {
   }
   return Mode;
 }
-
-/*********************************************************************
-*
-*       _OnTouch
-*/
 static int _OnTouch(FRAMEWIN_Handle hWin, WM_MESSAGE* pMsg) {
   const GUI_PID_STATE* pState = (const GUI_PID_STATE*)pMsg->Data.p;
   if (pState) {  /* Something happened in our area (pressed or released) */
@@ -427,11 +307,6 @@ static int _OnTouch(FRAMEWIN_Handle hWin, WM_MESSAGE* pMsg) {
   }
   return 0;
 }
-
-/*******************************************************************
-*
-*       _ForwardMouseOverMsg
-*/
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 static int _ForwardMouseOverMsg(FRAMEWIN_Handle hWin, WM_MESSAGE* pMsg) {
   GUI_PID_STATE* pState = (GUI_PID_STATE *)pMsg->Data.p;
@@ -448,11 +323,6 @@ static int _ForwardMouseOverMsg(FRAMEWIN_Handle hWin, WM_MESSAGE* pMsg) {
   return 0;
 }
 #endif
-
-/*********************************************************************
-*
-*       _OnMouseOver
-*/
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 static int _OnMouseOver(FRAMEWIN_Handle hWin, WM_MESSAGE* pMsg) {
   const GUI_PID_STATE* pState = (const GUI_PID_STATE *)pMsg->Data.p;
@@ -477,17 +347,6 @@ static int _OnMouseOver(FRAMEWIN_Handle hWin, WM_MESSAGE* pMsg) {
   return 0;
 }
 #endif
-
-/*********************************************************************
-*
-*       static code, hook function
-*
-**********************************************************************
-*/
-/*********************************************************************
-*
-*       _HOOKFUNC_Resizeable
-*/
 static int _HOOKFUNC_Resizeable(WM_MESSAGE* pMsg) {
   WM_HWIN hWin = pMsg->hWin;
   if (WM_HasCaptured(hWin) && (_CaptureFlags == 0)) {
@@ -512,21 +371,10 @@ static int _HOOKFUNC_Resizeable(WM_MESSAGE* pMsg) {
   }
   return 0;
 }
-
-/*********************************************************************
-*
-*        Public code
-*
-**********************************************************************
-*/
-/*********************************************************************
-*
-*       FRAMEWIN_SetResizeable
-*/
 void FRAMEWIN_SetResizeable(FRAMEWIN_Handle hObj, int State) {
   if (hObj) {
     FRAMEWIN_Obj* pObj;
-    
+
     pObj = FRAMEWIN_H2P(hObj);
     if (pObj) {
       if (State) {
@@ -535,12 +383,10 @@ void FRAMEWIN_SetResizeable(FRAMEWIN_Handle hObj, int State) {
         GUI_HOOK_Remove(&pObj->pFirstHook, &_HOOK_Resizeable);
       }
     }
-    
+
   }
 }
-
 #else
   void FRAMEWIN_SetResizeable_c(void) {} /* avoid empty object files */
 #endif /* GUI_WINSUPPORT */
-
 /*************************** End of file ****************************/

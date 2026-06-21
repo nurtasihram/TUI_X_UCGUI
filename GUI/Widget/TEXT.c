@@ -1,75 +1,25 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : TEXT.c
-Purpose     : Implementation of text widget
----------------------------END-OF-HEADER------------------------------
-*/
 
 #include <stdlib.h>
 #include <string.h>
-#include "TEXT_Private.h"
-#include "WIDGET.h"
+
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
 
-#if GUI_WINSUPPORT
-
-/*********************************************************************
-*
-*       Private config defaults
-*
-**********************************************************************
-*/
+#include "TEXT.h"
+#include "TEXT_Private.h"
 
 /* Define default fonts */
 #ifndef TEXT_FONT_DEFAULT
   #define TEXT_FONT_DEFAULT &GUI_Font13_1
 #endif
-
 #ifndef TEXT_DEFAULT_TEXT_COLOR
   #define TEXT_DEFAULT_TEXT_COLOR GUI_BLACK
 #endif
-
-/*********************************************************************
-*
-*       Static data
-*
-**********************************************************************
-*/
-
 static const GUI_FONT GUI_UNI_PTR * _pDefaultFont = TEXT_FONT_DEFAULT;
 static GUI_COLOR        _DefaultTextColor = TEXT_DEFAULT_TEXT_COLOR;
-
-/*********************************************************************
-*
-*       Static routines
-*
-**********************************************************************
-*/
-/*********************************************************************
-*
-*       _FreeAttached
-*/
 static void _FreeAttached(TEXT_Obj* pObj) {
   GUI_ALLOC_FreePtr(&pObj->hpText);
 }
-
-/*********************************************************************
-*
-*       _Paint
-*/
 static void _Paint(TEXT_Handle hObj, TEXT_Obj* pObj) {
   const char * s;
   GUI_RECT Rect;
@@ -98,21 +48,11 @@ static void _Paint(TEXT_Handle hObj, TEXT_Obj* pObj) {
     GUI_DispStringInRect(s, &Rect, pObj->Align);
   }
 }
-
-/*********************************************************************
-*
-*       _Delete
-*/
 static void _Delete(TEXT_Obj* pObj) {
   /* Delete attached objects (if any) */
   GUI_DEBUG_LOG("TEXT: Delete() Deleting attached items");
   _FreeAttached(pObj);
 }
-
-/*********************************************************************
-*
-*       _TEXT_Callback
-*/
 static void _TEXT_Callback (WM_MESSAGE*pMsg) {
   TEXT_Handle hObj = pMsg->hWin;
   TEXT_Obj* pObj = TEXT_H2P(hObj);
@@ -132,21 +72,8 @@ static void _TEXT_Callback (WM_MESSAGE*pMsg) {
   }
   WM_DefaultProc(pMsg);
 }
-
-/*********************************************************************
-*
-*       Exported routines:  Create
-*
-**********************************************************************
-*/
-
 /* Note: the parameters to a create function may vary.
          Some widgets may have multiple create functions */
-
-/*********************************************************************
-*
-*       TEXT_CreateEx
-*/
 TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
                           int WinFlags, int ExFlags, int Id, const char* pText)
 {
@@ -160,7 +87,7 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
   if (hObj) {
     TEXT_Obj* pObj;
     WM_HMEM hMem = 0;
-    
+
     pObj = TEXT_H2P(hObj);
     /* init widget specific variables */
     WIDGET__Init(&pObj->Widget, Id, 0);
@@ -177,48 +104,105 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
     pObj->pFont  = _pDefaultFont;
     pObj->BkColor = GUI_INVALID_COLOR;
     pObj->TextColor = _DefaultTextColor;
-    
+
   } else {
     GUI_DEBUG_ERROROUT_IF(hObj==0, "TEXT_Create failed")
   }
   return hObj;
 }
-
-/*********************************************************************
-*
-*       Exported routines:  Various methods
-*
-**********************************************************************
-*/
-/*********************************************************************
-*
-*       TEXT_SetDefaultFont
-*/
 void TEXT_SetDefaultFont(const GUI_FONT GUI_UNI_PTR * pFont) {
   _pDefaultFont = pFont;
 }
-
-/*********************************************************************
-*
-*       TEXT_SetDefaultTextColor
-*/
 void TEXT_SetDefaultTextColor(GUI_COLOR Color) {
   _DefaultTextColor = Color;
 }
-
-/*********************************************************************
-*
-*       TEXT_GetDefaultFont
-*/
 const GUI_FONT GUI_UNI_PTR * TEXT_GetDefaultFont(void) {
   return _pDefaultFont;
 }
 
-#else /* avoid empty object files */
+TEXT_Handle TEXT_Create(int x0, int y0, int xsize, int ysize, int Id, int Flags, const char *s, int Align) {
+	return TEXT_CreateEx(x0, y0, xsize, ysize, WM_HMEM_NULL, Flags, Align, Id, s);
+}
+TEXT_Handle TEXT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, const char *s, int Align) {
+	return TEXT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, Align, Id, s);
+}
 
-void TEXT_C(void);
-void TEXT_C(void){}
+TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	TEXT_Handle  hThis;
+	GUI_USE_PARA(cb);
+	hThis = TEXT_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+						  hWinParent, WM_CF_SHOW, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->pName);
+	return hThis;
+}
 
-#endif  /* #if GUI_WINSUPPORT */
+void TEXT_SetBkColor(TEXT_Handle hObj, GUI_COLOR Color) {
+	if (hObj) {
+		TEXT_Obj *pObj;
+
+		pObj = TEXT_H2P(hObj);
+		pObj->BkColor = Color;
+#if TEXT_SUPPORT_TRANSPARENCY
+		if (Color <= 0xFFFFFF) {
+			WM_ClrHasTrans(hObj);
+		}
+		else {
+			WM_SetHasTrans(hObj);
+		}
+#endif
+		WM_Invalidate(hObj);
+
+	}
+}
+
+void TEXT_SetFont(TEXT_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
+	if (hObj) {
+		TEXT_Obj *pObj;
+		pObj = TEXT_H2P(hObj);
+		pObj->pFont = pFont;
+		/*
+		GUI_ALLOC_FreePtr(&pObj->hpText);
+		if (s) {
+		  hMem = GUI_ALLOC_AllocZero(strlen(s)+1);
+		  if (hMem) {
+			strcpy((char *) GUI_ALLOC_h2p(hMem), s);
+		  }
+		  pObj->hpText = hMem;
+		}
+		*/
+		WM_Invalidate(hObj);
+	}
+}
 
 
+void TEXT_SetText(TEXT_Handle hObj, const char *s) {
+	if (hObj) {
+		TEXT_Obj *pObj;
+
+		pObj = TEXT_H2P(hObj);
+		if (GUI__SetText(&pObj->hpText, s)) {
+			WM_Invalidate(hObj);
+		}
+
+	}
+}
+
+void TEXT_SetTextAlign(TEXT_Handle hObj, int Align) {
+	if (hObj) {
+		TEXT_Obj *pObj;
+
+		pObj = TEXT_H2P(hObj);
+		pObj->Align = Align;
+		WM_Invalidate(hObj);
+
+	}
+}
+void TEXT_SetTextColor(TEXT_Handle hObj, GUI_COLOR Color) {
+	if (hObj) {
+		TEXT_Obj *pObj;
+
+		pObj = TEXT_H2P(hObj);
+		pObj->TextColor = Color;
+		WM_Invalidate(hObj);
+
+	}
+}

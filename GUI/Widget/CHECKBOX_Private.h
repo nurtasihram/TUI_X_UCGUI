@@ -1,78 +1,38 @@
 #pragma once
-
 #include "WM.h"
 #include "WIDGET.h"
 #include "CHECKBOX.h"
-
-/*********************************************************************
-*
-*       Defines
-*
-**********************************************************************
-*/
 #ifndef CHECKBOX_BKCOLOR0_DEFAULT
-  #define CHECKBOX_BKCOLOR0_DEFAULT 0x808080           /* Inactive color */
+#define CHECKBOX_BKCOLOR0_DEFAULT 0x808080           /* Inactive color */
 #endif
-
 #ifndef CHECKBOX_BKCOLOR1_DEFAULT
-  #define CHECKBOX_BKCOLOR1_DEFAULT GUI_WHITE          /* Active color */
+#define CHECKBOX_BKCOLOR1_DEFAULT GUI_WHITE          /* Active color */
 #endif
-
 #ifndef CHECKBOX_FGCOLOR0_DEFAULT
-  #define CHECKBOX_FGCOLOR0_DEFAULT 0x101010
+#define CHECKBOX_FGCOLOR0_DEFAULT 0x101010
 #endif
-
 #ifndef CHECKBOX_FGCOLOR1_DEFAULT
-  #define CHECKBOX_FGCOLOR1_DEFAULT GUI_BLACK
+#define CHECKBOX_FGCOLOR1_DEFAULT GUI_BLACK
 #endif
-
-/*********************************************************************
-*
-*       Object definition
-*
-**********************************************************************
-*/
 typedef struct {
-  const GUI_FONT GUI_UNI_PTR * pFont;
-  GUI_COLOR aBkColorBox[2]; /* Colors used to draw the box background */
-  GUI_COLOR BkColor;        /* Widget background color */
-  GUI_COLOR TextColor;
-  I16 Align;
-  U8  Spacing;
-  const GUI_BITMAP * apBm[4];
+	const GUI_FONT GUI_UNI_PTR *pFont;
+	GUI_COLOR aBkColorBox[2]; /* Colors used to draw the box background */
+	GUI_COLOR BkColor;        /* Widget background color */
+	GUI_COLOR TextColor;
+	I16 Align;
+	U8  Spacing;
+	const GUI_BITMAP *apBm[4];
 } CHECKBOX_PROPS;
-
 typedef struct {
-  WIDGET Widget;
-  CHECKBOX_PROPS Props;
-  U8 NumStates;
-  U8 CurrentState;
-  WM_HMEM hpText;
-  #if GUI_DEBUG_LEVEL > 1
-    int DebugId;
-  #endif  
+	WIDGET Widget;
+	CHECKBOX_PROPS Props;
+	U8 NumStates;
+	U8 CurrentState;
+	WM_HMEM hpText;
+#if GUI_DEBUG_LEVEL > 1
+	int DebugId;
+#endif
 } CHECKBOX_Obj;
-
-/*********************************************************************
-*
-*       Macros for internal use
-*
-**********************************************************************
-*/
 #define CHECKBOX_H2P(h) (CHECKBOX_Obj*) GUI_ALLOC_h2p(h)
-
-/*********************************************************************
-*
-*       Public data (internal defaults)
-*
-**********************************************************************
-*/
 extern CHECKBOX_PROPS CHECKBOX__DefaultProps;
-
-/*********************************************************************
-*
-*       Extern data
-*
-**********************************************************************
-*/
 extern const GUI_BITMAP   CHECKBOX__abmCheck[2];

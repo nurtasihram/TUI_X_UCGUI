@@ -1,62 +1,29 @@
-#pragma once
-
+﻿#pragma once
 #include "WM.h"
 #include "DIALOG.h"      /* Req. for Create indirect data structure */
-
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
-
 #define MULTIEDIT_CF_READONLY        (1 << 0)
 #define MULTIEDIT_CF_INSERT          (1 << 2)
 #define MULTIEDIT_CF_AUTOSCROLLBAR_V (1 << 3)
 #define MULTIEDIT_CF_AUTOSCROLLBAR_H (1 << 4)
 #define MULTIEDIT_CF_PASSWORD        (1 << 5)
-
 #define MULTIEDIT_SF_READONLY        MULTIEDIT_CF_READONLY
 #define MULTIEDIT_SF_INSERT          MULTIEDIT_CF_INSERT
 #define MULTIEDIT_SF_AUTOSCROLLBAR_V MULTIEDIT_CF_AUTOSCROLLBAR_V
 #define MULTIEDIT_SF_AUTOSCROLLBAR_H MULTIEDIT_CF_AUTOSCROLLBAR_H
 #define MULTIEDIT_SF_PASSWORD        MULTIEDIT_CF_PASSWORD
-
-/*********************************************************************
-*
-*       Color indices
-*/
 #define MULTIEDIT_CI_EDIT     0
 #define MULTIEDIT_CI_READONLY 1
-
-/*********************************************************************
-*
-*                         Public Types
-*
-**********************************************************************
-*/
-
 typedef WM_HMEM MULTIEDIT_HANDLE;
-
-/*********************************************************************
-*
-*                 Create functions
-*
-**********************************************************************
-*/
-
 MULTIEDIT_HANDLE MULTIEDIT_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int WinFlags, int ExFlags,
                                           int Id, int BufferSize, const char* pText);
 MULTIEDIT_HANDLE MULTIEDIT_Create        (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
-                                          int Id, int Flags, int ExFlags, const char* pText, 
+                                          int Id, int Flags, int ExFlags, const char* pText,
                                           int BufferSize);
-MULTIEDIT_HANDLE MULTIEDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, 
+MULTIEDIT_HANDLE MULTIEDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo,
                                           WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
-
-/*********************************************************************
-*
-*                 Member functions
-*
-**********************************************************************
-*/
-
 int  MULTIEDIT_AddKey           (MULTIEDIT_HANDLE hObj, U16 Key);
 void MULTIEDIT_GetPrompt        (MULTIEDIT_HANDLE hObj, char* sDest, int MaxNumChars);
 int  MULTIEDIT_GetTextSize      (MULTIEDIT_HANDLE hObj);
@@ -80,17 +47,8 @@ void MULTIEDIT_SetTextColor     (MULTIEDIT_HANDLE hObj, unsigned Index, GUI_COLO
 void MULTIEDIT_SetWrapNone      (MULTIEDIT_HANDLE hObj);
 void MULTIEDIT_SetWrapChar      (MULTIEDIT_HANDLE hObj);
 void MULTIEDIT_SetWrapWord      (MULTIEDIT_HANDLE hObj);
-
-/*********************************************************************
-*
-*       Macros for compatibility with older versions
-*
-**********************************************************************
-*/
-
 #define MULTIEDIT_SetMaxLen(hObj, MaxLen) MULTIEDIT_SetBufferSize(hObj, MaxLen)
 #define MULTIEDIT_GetStringSize           MULTIEDIT_GetTextSize
-
 #if defined(__cplusplus)
   }
 #endif

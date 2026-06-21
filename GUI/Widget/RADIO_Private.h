@@ -1,18 +1,8 @@
-#pragma once
-
+﻿#pragma once
 #include "WM.h"
-
 #include "RADIO.h"
 #include "WIDGET.h"
 #include "GUI_ARRAY.h"
-
-/*********************************************************************
-*
-*       Object definition
-*
-**********************************************************************
-*/
-
 typedef struct {
   WIDGET Widget;
   const GUI_BITMAP* apBmRadio[2];
@@ -28,34 +18,10 @@ typedef struct {
   const GUI_FONT GUI_UNI_PTR* pFont;
   #if GUI_DEBUG_LEVEL >1
     int DebugId;
-  #endif  
+  #endif
 } RADIO_Obj;
-
-/*********************************************************************
-*
-*       Macros for internal use
-*
-**********************************************************************
-*/
-
 #define RADIO_H2P(h) (RADIO_Obj*) GUI_ALLOC_h2p(h)
-
-/*********************************************************************
-*
-*       Types
-*
-**********************************************************************
-*/
-
 typedef void tRADIO_SetValue(RADIO_Handle hObj, RADIO_Obj* pObj, int v);
-
-/*********************************************************************
-*
-*       Extern data
-*
-**********************************************************************
-*/
-
 extern const GUI_BITMAP             RADIO__abmRadio[2];
 extern const GUI_BITMAP             RADIO__bmCheck;
 extern const GUI_BITMAP*            RADIO__apDefaultImage[2];
@@ -63,12 +29,5 @@ extern const GUI_BITMAP*            RADIO__pDefaultImageCheck;
 extern const GUI_FONT GUI_UNI_PTR*  RADIO__pDefaultFont;
 extern       GUI_COLOR              RADIO__DefaultTextColor;
 extern       tRADIO_SetValue*       RADIO__pfHandleSetValue;
-
-/*********************************************************************
-*
-*       public functions (internal)
-*
-**********************************************************************
-*/
-
 void RADIO__SetValue(RADIO_Handle hObj, RADIO_Obj* pObj, int v);
+

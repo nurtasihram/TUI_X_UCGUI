@@ -1,63 +1,24 @@
-#pragma once
-
+﻿#pragma once
 #include "WM.h"
 #include "DIALOG.h"      /* Req. for Create indirect data structure */
 #include "HEADER.h"
-
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
-
-/*********************************************************************
-*
-*       Color indices
-*/
 #define LISTVIEW_CI_UNSEL    0
 #define LISTVIEW_CI_SEL      1
 #define LISTVIEW_CI_SELFOCUS 2
-
-/*********************************************************************
-*
-*       Public Types
-*
-**********************************************************************
-*/
-
 typedef WM_HMEM LISTVIEW_Handle;
-
-/*********************************************************************
-*
-*       Create functions
-*
-**********************************************************************
-*/
-
 LISTVIEW_Handle LISTVIEW_Create        (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, int SpecialFlags);
 LISTVIEW_Handle LISTVIEW_CreateAttached(WM_HWIN hParent, int Id, int SpecialFlags);
 LISTVIEW_Handle LISTVIEW_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
 LISTVIEW_Handle LISTVIEW_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
                                         int WinFlags, int ExFlags, int Id);
-
-/*********************************************************************
-*
-*       Standard member functions
-*
-**********************************************************************
-*/
-
 #define LISTVIEW_Delete(hObj)        WM_DeleteWindow    (hObj)
 #define LISTVIEW_DisableMemdev(hObj) WM_DisableMemdev   (hObj)
 #define LISTVIEW_EnableMemdev(hObj)  WM_EnableMemdev    (hObj)
 #define LISTVIEW_Invalidate(hObj)    WM_InvalidateWindow(hObj)
 #define LISTVIEW_Paint(hObj)         WM_Paint           (hObj)
-
-/*********************************************************************
-*
-*       Member functions
-*
-**********************************************************************
-*/
-
 void             LISTVIEW_AddColumn     (LISTVIEW_Handle hObj, int Width, const char * s, int Align);
 void             LISTVIEW_AddRow        (LISTVIEW_Handle hObj, const GUI_ConstString * ppText);
 void             LISTVIEW_DecSel        (LISTVIEW_Handle hObj);
@@ -84,19 +45,10 @@ unsigned         LISTVIEW_SetRowHeight  (LISTVIEW_Handle hObj, unsigned RowHeigh
 void             LISTVIEW_SetSel        (LISTVIEW_Handle hObj, int Sel);
 void             LISTVIEW_SetTextAlign  (LISTVIEW_Handle hObj, unsigned int Index, int Align);
 void             LISTVIEW_SetTextColor  (LISTVIEW_Handle hObj, unsigned int Index, GUI_COLOR Color);
-
-/*********************************************************************
-*
-*       Global functions
-*
-**********************************************************************
-*/
-
 GUI_COLOR        LISTVIEW_SetDefaultBkColor  (unsigned Index, GUI_COLOR Color);
 const GUI_FONT GUI_UNI_PTR * LISTVIEW_SetDefaultFont     (const GUI_FONT GUI_UNI_PTR * pFont);
 GUI_COLOR        LISTVIEW_SetDefaultGridColor(GUI_COLOR Color);
 GUI_COLOR        LISTVIEW_SetDefaultTextColor(unsigned Index, GUI_COLOR Color);
-
 #if defined(__cplusplus)
   }
 #endif

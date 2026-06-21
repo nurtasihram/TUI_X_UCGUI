@@ -1,38 +1,8 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : FRAMEWIN_SetTitleVis.c
-Purpose     : 
----------------------------END-OF-HEADER------------------------------
-*/
 
 #include <stdlib.h>
 #include <string.h>
 #include "FRAMEWIN_Private.h"
 
-#if GUI_WINSUPPORT
-
-/*********************************************************************
-*
-*           Static routines
-*
-**********************************************************************
-*/
-/*********************************************************************
-*
-*       _ShowHideButtons
-*/
 static void _ShowHideButtons(FRAMEWIN_Obj* pObj) {
   WM_HWIN hChild;
   WM_Obj* pChild;
@@ -49,23 +19,11 @@ static void _ShowHideButtons(FRAMEWIN_Obj* pObj) {
     }
   }
 }
-
-/*********************************************************************
-*
-*        Exported routines
-*
-**********************************************************************
-*/
-
-/*********************************************************************
-*
-*       FRAMEWIN_SetTitleVis
-*/
 void FRAMEWIN_SetTitleVis(FRAMEWIN_Handle hObj, int Show) {
   if (hObj) {
     FRAMEWIN_Obj* pObj;
     int State;
-    
+
     pObj = FRAMEWIN_H2P(hObj);
     State = pObj->Widget.State;
     if (Show) {
@@ -86,10 +44,9 @@ void FRAMEWIN_SetTitleVis(FRAMEWIN_Handle hObj, int Show) {
       }
       FRAMEWIN_Invalidate(hObj);
     }
-    
+
   }
 }
-
 #else
   void FRAMEWIN_SetTitleVis_c(void) {} /* avoid empty object files */
 #endif /* GUI_WINSUPPORT */

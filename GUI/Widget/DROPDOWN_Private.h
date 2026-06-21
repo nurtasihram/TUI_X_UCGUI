@@ -1,41 +1,31 @@
 #pragma once
-
 #include "DROPDOWN.h"
 #include "WIDGET.h"
 #include "GUI_ARRAY.h"
-
-/************************************************************
-*
-*       Create / Status flags
-*/
 #define DROPDOWN_SF_AUTOSCROLLBAR DROPDOWN_CF_AUTOSCROLLBAR
-
 #define DROPDOWN_H2P(h) (DROPDOWN_Obj*) GUI_ALLOC_h2p(h)
-
 typedef struct {
-  const GUI_FONT GUI_UNI_PTR * pFont;
-  GUI_COLOR aBackColor[3];
-  GUI_COLOR aTextColor[3];
-  I16       TextBorderSize;
-  I16       Align;
+	const GUI_FONT GUI_UNI_PTR *pFont;
+	GUI_COLOR aBackColor[3];
+	GUI_COLOR aTextColor[3];
+	I16       TextBorderSize;
+	I16       Align;
 } DROPDOWN_PROPS;
-
 typedef struct {
-  WIDGET  Widget;
-  I16     Sel;                        /* current selection */
-  I16     ySizeEx;                    /* Drop down size */
-  I16     TextHeight;
-  GUI_ARRAY Handles;
-  WM_SCROLL_STATE ScrollState;
-  DROPDOWN_PROPS Props;
-  WM_HWIN hListWin;
-  U8      Flags;
-  U16     ItemSpacing;
-  U8      ScrollbarWidth;
-  char  IsPressed;
-  #if GUI_DEBUG_LEVEL >1
-    int DebugId;
-  #endif  
+	WIDGET  Widget;
+	I16     Sel;                        /* current selection */
+	I16     ySizeEx;                    /* Drop down size */
+	I16     TextHeight;
+	GUI_ARRAY Handles;
+	WM_SCROLL_STATE ScrollState;
+	DROPDOWN_PROPS Props;
+	WM_HWIN hListWin;
+	U8      Flags;
+	U16     ItemSpacing;
+	U8      ScrollbarWidth;
+	char  IsPressed;
+#if GUI_DEBUG_LEVEL >1
+	int DebugId;
+#endif
 } DROPDOWN_Obj;
-
-void DROPDOWN__AdjustHeight(DROPDOWN_Handle hObj, DROPDOWN_Obj* pObj);
+void DROPDOWN__AdjustHeight(DROPDOWN_Handle hObj, DROPDOWN_Obj *pObj);

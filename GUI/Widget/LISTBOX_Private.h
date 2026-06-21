@@ -1,19 +1,9 @@
-#pragma once
-
+﻿#pragma once
 #include "LISTBOX.h"
 #include "WM.h"
 #include "GUI_ARRAY.h"
 #include "WIDGET.h"
-
-/*********************************************************************
-*
-*       Macros for internal use
-*
-**********************************************************************
-*/
-
 #define LISTBOX_H2P(h) (LISTBOX_Obj*) GUI_ALLOC_h2p(h)
-
 #if GUI_DEBUG_LEVEL >1
   #define OBJECT_ID 0x4C69   /* Magic numer, should be unique if possible */
   #define ASSERT_IS_VALID_PTR(p) GUI_DEBUG_ERROROUT_IF(p->DebugId != OBJECT_ID, "EDIT.C: Wrong handle type or Object not init'ed")
@@ -24,30 +14,19 @@
   #define INIT_ID(p)
   #define DEINIT_ID(p)
 #endif
-
 #define LISTBOX_ITEM_SELECTED (1 << 0)
 #define LISTBOX_ITEM_DISABLED (1 << 1)
-
-/*********************************************************************
-*
-*       Object definition
-*
-**********************************************************************
-*/
-
 typedef struct {
   U16  xSize, ySize;
   U8   Status;
   char acText[1];
 } LISTBOX_ITEM;
-
 typedef struct {
   const GUI_FONT GUI_UNI_PTR* pFont;
   U16                         ScrollStepH;
   GUI_COLOR aBackColor[4];
   GUI_COLOR aTextColor[4];
 } LISTBOX_PROPS;
-
 typedef struct {
   WIDGET Widget;
   GUI_ARRAY ItemArray;
@@ -58,28 +37,13 @@ typedef struct {
   WM_HWIN hOwner;
   #if GUI_DEBUG_LEVEL >1
     int DebugId;
-  #endif  
+  #endif
   I16 Sel;                        /* current selection */
   U8 Flags;
   U8  ScrollbarWidth;
   U16 ItemSpacing;
 } LISTBOX_Obj;
-
-/*********************************************************************
-*
-*       Private (module internal) data
-*
-**********************************************************************
-*/
-
 extern LISTBOX_PROPS LISTBOX_DefaultProps;
-
-/*********************************************************************
-*
-*       Private (module internal) functions
-*
-**********************************************************************
-*/
 unsigned    LISTBOX__GetNumItems           (const LISTBOX_Obj* pObj);
 const char* LISTBOX__GetpString            (const LISTBOX_Obj* pObj, int Index);
 void        LISTBOX__InvalidateInsideArea  (LISTBOX_Handle hObj);

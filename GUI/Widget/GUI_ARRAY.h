@@ -1,13 +1,10 @@
-#pragma once
-
+﻿#pragma once
 #include "WM_Intern.h"
-
 typedef enum {
   GUI_ARRAY_STATE_NOT_CREATED,
   GUI_ARRAY_STATE_CREATED,
   GUI_ARRAY_STATE_DELETED
 } GUI_ARRAY_STATE;
-
 typedef struct {
   U16 NumItems;
   WM_HMEM haHandle;   /* Handle to buffer holding handles */
@@ -15,7 +12,6 @@ typedef struct {
     GUI_ARRAY_STATE InitState;
   #endif
 } GUI_ARRAY;
-
 int      GUI_ARRAY_AddItem        (GUI_ARRAY* pThis, const void *pNew, int Len);
 void     GUI_ARRAY_Delete         (GUI_ARRAY* pThis);
 WM_HMEM  GUI_ARRAY_GethItem       (const GUI_ARRAY* pThis, unsigned int Index);
@@ -28,7 +24,6 @@ void     GUI_ARRAY_DeleteItem     (GUI_ARRAY* pThis, unsigned int Index);
 char     GUI_ARRAY_InsertBlankItem(GUI_ARRAY* pThis, unsigned int Index);
 WM_HMEM  GUI_ARRAY_InsertItem     (GUI_ARRAY* pThis, unsigned int Index, int Len);
 void*    GUI_ARRAY_ResizeItem     (GUI_ARRAY* pThis, unsigned int Index, int Len);
-
 #if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
   void GUI_ARRAY_Create (      GUI_ARRAY * pThis);
   void GUI_ARRAY_Check  (const GUI_ARRAY * pThis);
