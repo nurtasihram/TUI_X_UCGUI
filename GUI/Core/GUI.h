@@ -460,21 +460,13 @@ void GUI_UC_DispString(const uint16_t GUI_UNI_PTR *s);
 void GUI_UC2DB (uint16_t Code, uint8_t* pOut);
 uint16_t  GUI_DB2UC (uint8_t Byte0, uint8_t Byte1);
 
-#if !defined(GUI_ALLOC_ALLOC)
-  /* diagnostics */
-  GUI_ALLOC_DATATYPE  GUI_ALLOC_GetUsed        (void);
-  GUI_ALLOC_DATATYPE  GUI_ALLOC_GetNumFreeBytes(void);
-#endif
-
 GUI_HMEM           GUI_ALLOC_AllocInit  (const void *pInitData, GUI_ALLOC_DATATYPE Size);
 GUI_HMEM           GUI_ALLOC_AllocNoInit(GUI_ALLOC_DATATYPE size);
 GUI_HMEM           GUI_ALLOC_AllocZero  (GUI_ALLOC_DATATYPE size);
 void               GUI_ALLOC_Free       (GUI_HMEM  hMem);
 void               GUI_ALLOC_FreePtr    (GUI_HMEM *phMem);
-GUI_ALLOC_DATATYPE GUI_ALLOC_GetSize    (GUI_HMEM  hMem);
 GUI_ALLOC_DATATYPE GUI_ALLOC_GetMaxSize (void);
 void*              GUI_ALLOC_h2p        (GUI_HMEM  hMem);
-void               GUI_ALLOC_Init       (void);
 GUI_HMEM           GUI_ALLOC_Realloc    (GUI_HMEM hOld, int NewSize);
 
 #define GUI_MEMDEV_HASTRANS       0

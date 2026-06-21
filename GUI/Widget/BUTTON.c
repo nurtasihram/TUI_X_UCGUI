@@ -63,7 +63,6 @@ static void _Paint(BUTTON_Obj *pObj, BUTTON_Handle hObj) {
 	PressedState = (State & BUTTON_STATE_PRESSED) ? 1 : 0;
 	ColorIndex = (WM__IsEnabled(hObj)) ? PressedState : 2;
 	GUI_SetFont(pObj->Props.pFont);
-	GUI_DEBUG_LOG("BUTTON: Paint(..)\n");
 	if (pObj->hpText) {
 		s = (const char *)GUI_ALLOC_h2p(pObj->hpText);
 	}
@@ -205,7 +204,6 @@ void BUTTON_Callback(WM_MESSAGE *pMsg) {
 			_OnTouch(hObj, pObj, pMsg);
 			return;      /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
 		case WM_PAINT:
-			GUI_DEBUG_LOG("BUTTON: _BUTTON_Callback(WM_PAINT)\n");
 			_Paint(pObj, hObj);
 			return;
 		case WM_DELETE:

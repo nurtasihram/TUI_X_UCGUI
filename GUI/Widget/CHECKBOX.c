@@ -182,7 +182,6 @@ static void _CHECKBOX_Callback(WM_MESSAGE *pMsg) {
 			_OnKey(hObj, pObj, pMsg);
 			break;
 		case WM_PAINT:
-			GUI_DEBUG_LOG("CHECKBOX: _Callback(WM_PAINT)\n");
 			_Paint(pObj, hObj);
 			return;
 		case WM_TOUCH:

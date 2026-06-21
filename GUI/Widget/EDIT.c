@@ -70,7 +70,6 @@ void ShowCurrsor(GUI_TIMER_MESSAGE *TimeMsg) {
 	EDIT_Handle hObj = (EDIT_Handle)TimeMsg->Context;
 	EDIT_Obj *pObj = (EDIT_Obj *)GUI_ALLOC_h2p(hObj);
 	WM_Obj *pWin = WM_H2P(hObj);
-	GUI_DEBUG_LOG("EDIT: _Callback(WM_PAINT)\n");
 	WM_SelectWindow(hObj);
 	_Paint(pObj, hObj);
 	pObj->CurrsorShow++;
@@ -395,7 +394,6 @@ static void EDIT__Callback(WM_MESSAGE *pMsg) {
 			_OnTouch(hObj, pObj, pMsg);
 			break;
 		case WM_PAINT:
-			GUI_DEBUG_LOG("EDIT: _Callback(WM_PAINT)\n");
 			_Paint(pObj, hObj);
 			return;
 		case WM_DELETE:

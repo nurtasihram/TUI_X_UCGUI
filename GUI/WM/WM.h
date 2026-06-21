@@ -185,7 +185,7 @@ typedef struct {
   WM_HWIN hWinSrc;      /* Source window  */
   union {
     const void* p;            /* Some messages need more info ... Pointer is declared "const" because some systems (M16C) have 4 byte const, byte 2 byte default ptrs */
-    int v;
+    intptr_t v;
     RGB_COLOR Color;
   } Data;
 } WM_MESSAGE;

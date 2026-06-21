@@ -265,12 +265,6 @@
     <ClCompile Include="GUI\Core\GUI_AddKeyMsgHook.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_ALLOC_AllocInit.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_ALLOC_AllocZero.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_ClearRectEx.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -439,7 +433,7 @@
     <ClCompile Include="GUI\Core\GUI_UC_EncodeUTF8.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUIAlloc.c">
+    <ClCompile Include="GUI\Core\GUI_X_MEM.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUIChar.c">
@@ -461,9 +455,6 @@
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUIEncJS.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUIRealloc.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUITime.c">
@@ -742,8 +733,5 @@
     <ResourceCompile Include="GUI_X\SimDisp.rc">
       <Filter>GUI_X</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="test_cert.pfx" />
   </ItemGroup>
 </Project>

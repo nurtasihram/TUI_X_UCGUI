@@ -398,7 +398,7 @@ static void _Callback(WM_MESSAGE *pMsg) {
 			}
 			break;
 		case WM_GET_CLIENT_WINDOW:
-			pMsg->Data.v = (int)pObj->hClient;
+			pMsg->Data.p = pObj->hClient;
 			break;
 		case WM_GET_INSIDE_RECT:
 			_CalcClientRect(pObj, (GUI_RECT *)(pMsg->Data.p));
@@ -435,7 +435,7 @@ static void _ClientCallback(WM_MESSAGE *pMsg) {
 			WM_BringToTop(hParent);
 			break;
 		case WM_GET_CLIENT_WINDOW:
-			pMsg->Data.v = (int)hObj;
+			pMsg->Data.p = hObj;
 			break;
 		case WM_GET_INSIDE_RECT:
 			WM_DefaultProc(pMsg);

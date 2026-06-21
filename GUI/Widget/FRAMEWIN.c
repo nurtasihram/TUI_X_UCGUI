@@ -203,7 +203,7 @@ static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
 			*pRect = Pos.rClient;
 			return;                       /* Return here ... Message handled */
 		case WM_GET_CLIENT_WINDOW:      /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
-			pMsg->Data.v = (int)pObj->hClient;
+			pMsg->Data.p = pObj->hClient;
 			return;                       /* Return here ... Message handled */
 		case WM_NOTIFY_PARENT:
 			if (pMsg->Data.v == WM_NOTIFICATION_RELEASED) {

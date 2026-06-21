@@ -1,7 +1,6 @@
 
 
 #include "GUI_Protected.h"
-#include <stddef.h>
 
 void GUI_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO * pFontInfo) {
 

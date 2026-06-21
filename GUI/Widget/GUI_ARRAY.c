@@ -157,9 +157,9 @@ WM_HMEM  GUI_ARRAY_SetItem(GUI_ARRAY *pThis, unsigned int Index, const void *pDa
 			 * new item has a different size.
 			 */
 			if (hItem) {
-				if (GUI_ALLOC_GetSize(hItem) != Len) {
+//				if (GUI_ ALLOC_GetSize(hItem) != Len) {
 					hItem = 0;
-				}
+//				}
 			}
 			/*
 			 * Allocate a new buffer and free the old one (if needed).

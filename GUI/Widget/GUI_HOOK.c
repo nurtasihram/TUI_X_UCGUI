@@ -1,5 +1,4 @@
 
-#include <stddef.h>
 #include "GUI_HOOK.h"
 
 void GUI_HOOK_Add(GUI_HOOK** ppFirstHook, GUI_HOOK* pNewHook, GUI_HOOK_FUNC* pHookFunc) {

@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI\Core\GUI2DLib.c" />
-    <ClCompile Include="GUI\Core\GUIAlloc.c" />
+    <ClCompile Include="GUI\Core\GUI_X_MEM.c" />
     <ClCompile Include="GUI\Core\GUIChar.c" />
     <ClCompile Include="GUI\Core\GUICharLine.c" />
     <ClCompile Include="GUI\Core\GUICharM.c" />
@@ -28,13 +28,10 @@
     <ClCompile Include="GUI\Core\GUICore.c" />
     <ClCompile Include="GUI\Core\GUICurs.c" />
     <ClCompile Include="GUI\Core\GUIEncJS.c" />
-    <ClCompile Include="GUI\Core\GUIRealloc.c" />
     <ClCompile Include="GUI\Core\GUITime.c" />
     <ClCompile Include="GUI\Core\GUITimer.c" />
     <ClCompile Include="GUI\Core\GUIUC0.c" />
     <ClCompile Include="GUI\Core\GUI_AddKeyMsgHook.c" />
-    <ClCompile Include="GUI\Core\GUI_ALLOC_AllocInit.c" />
-    <ClCompile Include="GUI\Core\GUI_ALLOC_AllocZero.c" />
     <ClCompile Include="GUI\Core\GUI_ClearRectEx.c" />
     <ClCompile Include="GUI\Core\GUI_CursorPal.c" />
     <ClCompile Include="GUI\Core\GUI_CursorPalI.c" />
@@ -261,9 +258,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GUI_X\SimDisp.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="test_cert.pfx" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

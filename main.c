@@ -11,21 +11,6 @@
 //	return 1;
 //}
 
-/*********************************************************************
-*                SEGGER MICROCONTROLLER SYSTEME GmbH                 *
-*        Solutions for real time microcontroller applications        *
-*                                                                    *
-*                    emWin GSC sample code                           *
-*                                                                    *
-**********************************************************************
-
-----------------------------------------------------------------------
-File        : WIDGET_ListBoxOwnerDraw.c
-Purpose     : Demonstrates a owner drawn list box
-----------------------------------------------------------------------
-*/
-
-#include <stddef.h>
 #include "GUI.h"
 #include "DIALOG.h"
 #include "DROPDOWN.h"
@@ -429,9 +414,9 @@ void main(void) {
 	for (;;) {
 		_MultiSel = 0;
 		_OwnerDrawn = 1;
-		auto hDialog = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
+		WM_HWIN hDialog = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
 		_CreateMenu(hDialog);
-		auto hDrp = DROPDOWN_Create(WM_GetClientWindow(hDialog), 10, 110, 100, 80, WM_CF_SHOW);
+		WM_HWIN hDrp = DROPDOWN_Create(WM_GetClientWindow(hDialog), 10, 110, 100, 80, WM_CF_SHOW);
 		DROPDOWN_AddString(hDrp, "12");
 		DROPDOWN_AddString(hDrp, "123");
 		DROPDOWN_AddString(hDrp, "124");
@@ -480,7 +465,7 @@ const char *pRows[][5] = {
 void main(void) {
 	GUI_Init();
 	GUI_CURSOR_Show();
-	auto hListView = LISTVIEW_Create(10, 110, 50, 70, 0, 0, WM_CF_SHOW, 0);
+	WM_HWIN hListView = LISTVIEW_Create(10, 110, 50, 70, 0, 0, WM_CF_SHOW, 0);
 	LISTVIEW_AddColumn(hListView, 0, "Col 1    ", GUI_TA_LEFT);
 	LISTVIEW_AddColumn(hListView, 0, "Col 2    ", GUI_TA_LEFT);
 	LISTVIEW_AddColumn(hListView, 0, "Col 3     ", GUI_TA_LEFT);
@@ -496,4 +481,3 @@ void main(void) {
 	}
 }
 #endif
-

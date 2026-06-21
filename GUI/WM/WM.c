@@ -1,5 +1,4 @@
-﻿#include <stddef.h>
-#include <string.h>
+﻿#include <string.h>
 #define WM_C
 #include "WM_Intern.h"
 #include "WM_Intern_ConfDep.h"
@@ -1409,7 +1408,7 @@ void WM_DefaultProc(WM_MESSAGE *pMsg) {
 			WM__GetClientRectWin(pWin, (GUI_RECT *)p);
 			break;
 		case WM_GET_CLIENT_WINDOW:      /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
-			pMsg->Data.v = (int)hWin;
+			pMsg->Data.p = hWin;
 			return;                       /* Message handled */
 		case WM_KEY:
 			WM_SendToParent(hWin, pMsg);
@@ -3385,56 +3384,10 @@ int WM_GetStayOnTop(WM_HWIN hWin) {
 static int Min(int v0, int v1) {
 	return (v0 < v1) ? v0 : v1;
 }
-
-static int _CalcNumBytes(WM_HWIN hWin, int NumBytes) {
-	return Min(GUI_ALLOC_GetSize(hWin) - sizeof(WM_Obj), NumBytes);
-}
-/*********************************************************************
-*
-*       WM_GetUserData
-*
-*  Purpose
-*    Get the User data (extra bytes) associated with a window
-*    These bytes have typically been set using WM_SetUserData first.
-*    (If not, they are 0)
-*  Return value:
-*    Number of bytes fetched. (<= SizeofBuffer)
-*/
-int WM_GetUserData(WM_HWIN hWin, void *pDest, int NumBytes) {
-	if (hWin) {
-		WM_Obj *pWin;
-		NumBytes = _CalcNumBytes(hWin, NumBytes);
-
-		pWin = WM_H2P(hWin);
-		memcpy(pDest, pWin + 1, NumBytes);
-
-	}
-	return NumBytes;
+static int Max(int v0, int v1) {
+	return (v0 > v1) ? v0 : v1;
 }
 
-/*********************************************************************
-*
-*       WM_SetUserData
-*
-*  Purpose
-*    Set the User data (extra bytes) associated with a window
-*  Return value:
-*    Number of bytes fetched. (<= SizeofBuffer)
-*/
-int WM_SetUserData(WM_HWIN hWin, const void *pSrc, int NumBytes) {
-	if (hWin) {
-		WM_Obj *pWin;
-		NumBytes = _CalcNumBytes(hWin, NumBytes);
-
-		pWin = WM_H2P(hWin);
-		memcpy(pWin + 1, pSrc, NumBytes);
-
-	}
-	return NumBytes;
-}
-
-#define Min(v0,v1) ((v0>v1) ? v1 : v0)
-#define Max(v0,v1) ((v0>v1) ? v0 : v1)
 /*********************************************************************
 *
 *       WM__SubRect
