@@ -10,4 +10,4 @@ char GUI_IsInFont(const GUI_FONT GUI_UNI_PTR *pFont, uint16_t c) {
   return pFont->pfIsInFont(pFont, c);
 }
 
-/*************************** End of file ****************************/
+

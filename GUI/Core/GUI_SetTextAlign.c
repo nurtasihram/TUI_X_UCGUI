@@ -11,4 +11,4 @@ int GUI_SetTextAlign(int Align) {
   return r;
 }
 
-/*************************** End of file ****************************/
+

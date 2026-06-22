@@ -11,4 +11,4 @@ void GUI_GetClientRect(GUI_RECT* pRect) {
   WM_GetClientRect(pRect);
 }
 
-/*************************** End of file ****************************/
+

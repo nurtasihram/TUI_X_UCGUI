@@ -41,7 +41,7 @@ void                         BUTTON_SetDefaultTextColor(RGB_COLOR Color, unsigne
 #define BUTTON_DisableMemdev(hObj) WM_DisableMemdev   (hObj)
 #define BUTTON_Delete(hObj)        WM_DeleteWindow    (hObj)
 #define BUTTON_Paint(hObj)         WM_Paint           (hObj)
-#define BUTTON_Invalidate(hObj)    WM_InvalidateWindow(hObj)
+#define BUTTON_Invalidate(hObj)    WM_Invalidate(hObj)
 /*********************************************************************
 *
 *       The callback ...

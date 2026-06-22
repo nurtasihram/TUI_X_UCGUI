@@ -334,4 +334,4 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
 
 #endif   /* GUI_SUPPORT_CURSOR */
 
-/*************************** End of file ****************************/
+

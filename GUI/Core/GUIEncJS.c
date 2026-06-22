@@ -72,4 +72,4 @@ const tGUI_ENC_APIList GUI_ENC_APIList_SJIS = {
   _DispLine_SJIS
 };
 
-/*************************** End of file ****************************/
+

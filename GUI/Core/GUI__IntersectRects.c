@@ -35,4 +35,4 @@ int GUI__IntersectRects(GUI_RECT* pDest, const GUI_RECT* pr0, const GUI_RECT* pr
   return 1;
 }
 
-/*************************** End of file ****************************/
+

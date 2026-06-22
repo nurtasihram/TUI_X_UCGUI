@@ -10,4 +10,4 @@ int GUI_GetTextMode(void) {
   return r;
 }
 
-/*************************** End of file ****************************/
+

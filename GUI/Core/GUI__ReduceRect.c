@@ -9,4 +9,4 @@ void GUI__ReduceRect(GUI_RECT* pDest, const GUI_RECT *pRect, int Dist) {
   pDest->y1 = pRect->y1 - Dist;
 }
 
-/*************************** End of file ****************************/
+

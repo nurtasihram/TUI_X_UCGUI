@@ -12,4 +12,4 @@ const GUI_FONT GUI_UNI_PTR* GUI_SetFont(const GUI_FONT GUI_UNI_PTR * pNewFont) {
   return pOldFont;
 }
 
-/*************************** End of file ****************************/
+

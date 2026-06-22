@@ -198,7 +198,7 @@ void RADIO__SetValue(RADIO_Handle hObj, RADIO_Obj* pObj, int v) {
   }
   if (v != pObj->Sel) {
     pObj->Sel = v;
-    WM_InvalidateWindow(hObj);
+    WM_Invalidate(hObj);
     WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
   }
 }
@@ -337,7 +337,7 @@ void RADIO_SetBkColor(RADIO_Handle hObj, RGB_COLOR Color) {
 				WM_SetTransState(hObj, WM_CF_HASTRANS);
 			}
 #endif
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -363,7 +363,7 @@ void RADIO_SetFont(RADIO_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
 		if (pFont != pObj->pFont) {
 			pObj->pFont = pFont;
 			if (GUI_ARRAY_GetNumItems(&pObj->TextArray)) {
-				WM_InvalidateWindow(hObj);
+				WM_Invalidate(hObj);
 			}
 		}
 
@@ -491,7 +491,7 @@ void RADIO_SetImage(RADIO_Handle hObj, const GUI_BITMAP *pBitmap, unsigned int I
 				pObj->pBmCheck = pBitmap;
 				break;
 		}
-		WM_InvalidateWindow(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -503,7 +503,7 @@ void RADIO_SetText(RADIO_Handle hObj, const char *pText, unsigned Index) {
 		pObj = (hObj);
 		if (Index < (unsigned)pObj->NumItems) {
 			GUI_ARRAY_SetItem(&pObj->TextArray, Index, pText, pText ? (GUI__strlen(pText) + 1) : 0);
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -517,7 +517,7 @@ void RADIO_SetTextColor(RADIO_Handle hObj, RGB_COLOR Color) {
 		if (Color != pObj->TextColor) {
 			pObj->TextColor = Color;
 			if (GUI_ARRAY_GetNumItems(&pObj->TextArray)) {
-				WM_InvalidateWindow(hObj);
+				WM_Invalidate(hObj);
 			}
 		}
 

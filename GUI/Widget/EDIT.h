@@ -68,7 +68,7 @@ EDIT_Handle EDIT_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hP
 #define EDIT_DisableMemdev(hObj) WM_DisableMemdev(hObj)
 #define EDIT_Delete(hObj)        WM_DeleteWindow(hObj)
 #define EDIT_Paint(hObj)         WM_Paint(hObj)
-#define EDIT_Invalidate(hObj)    WM_InvalidateWindow(hObj)
+#define EDIT_Invalidate(hObj)    WM_Invalidate(hObj)
 
 /*
       *************************************************************

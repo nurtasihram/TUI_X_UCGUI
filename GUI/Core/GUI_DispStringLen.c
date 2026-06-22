@@ -15,4 +15,4 @@ void GUI_DispStringLen(const char GUI_UNI_PTR *s, int MaxNumChars) {
 
 }
 
-/*************************** End of file ****************************/
+

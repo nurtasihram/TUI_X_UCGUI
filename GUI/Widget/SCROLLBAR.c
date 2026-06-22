@@ -279,11 +279,11 @@ static void _OnSetScrollState(SCROLLBAR_Handle hObj, SCROLLBAR_Obj *pObj, const 
 		pObj->NumItems = pState->NumItems;
 		pObj->PageSize = pState->PageSize;
 		pObj->v = pState->v;
-		WM_InvalidateWindow(hObj);
+		WM_Invalidate(hObj);
 	}
 }
 void SCROLLBAR__InvalidatePartner(SCROLLBAR_Handle hObj) {     /* Invalidate the partner, since it is also affected */
-	WM_InvalidateWindow(WM_GetScrollPartner(hObj));
+	WM_Invalidate(WM_GetScrollPartner(hObj));
 	WM_SendMessageNoPara(WM_GetParent(hObj), WM_NOTIFY_CLIENTCHANGE);   /* Client area may have changed */
 }
 static void _SCROLLBAR_Callback(WM_MESSAGE *pMsg) {
@@ -409,7 +409,7 @@ void SCROLLBAR_SetValue(SCROLLBAR_Handle hObj, int v) {
 		}
 		if (pObj->v != v) {
 			pObj->v = v;
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 
@@ -422,7 +422,7 @@ void SCROLLBAR_SetNumItems(SCROLLBAR_Handle hObj, int NumItems) {
 		pObj = (hObj);
 		if (pObj->NumItems != NumItems) {
 			pObj->NumItems = NumItems;
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -434,7 +434,7 @@ void SCROLLBAR_SetPageSize(SCROLLBAR_Handle hObj, int PageSize) {
 		pObj = (hObj);
 		if (pObj->PageSize != PageSize) {
 			pObj->PageSize = PageSize;
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}

@@ -26,4 +26,4 @@ int GUI__HandleEOLine(const char GUI_UNI_PTR **ps) {
   return 0;
 }
 
-/*************************** End of file ****************************/
+

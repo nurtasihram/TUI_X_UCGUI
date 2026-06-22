@@ -21,4 +21,4 @@ int32_t GUI__DivideRound32(int32_t a, int32_t b) {
   return 0;
 }
 
-/*************************** End of file ****************************/
+

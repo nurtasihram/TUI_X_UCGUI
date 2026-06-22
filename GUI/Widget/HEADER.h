@@ -15,7 +15,7 @@ HEADER_Handle HEADER_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWI
 #define HEADER_DisableMemdev(hObj) WM_DisableMemdev   (hObj)
 #define HEADER_Delete(hObj)        WM_DeleteWindow    (hObj)
 #define HEADER_Paint(hObj)         WM_Paint           (hObj)
-#define HEADER_Invalidate(hObj)    WM_InvalidateWindow(hObj)
+#define HEADER_Invalidate(hObj)    WM_Invalidate(hObj)
 /* Set defaults */
 RGB_COLOR          HEADER_SetDefaultBkColor  (RGB_COLOR Color);
 const GUI_CURSOR GUI_UNI_PTR * HEADER_SetDefaultCursor   (const GUI_CURSOR * pCursor);

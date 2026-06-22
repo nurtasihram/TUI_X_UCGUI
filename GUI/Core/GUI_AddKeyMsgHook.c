@@ -10,4 +10,4 @@ GUI_KEY_MSG_HOOK* GUI_SetKeyMsgHook(GUI_KEY_MSG_HOOK* pHook) {
   return r;
 }
 
-/*************************** End of file ****************************/
+

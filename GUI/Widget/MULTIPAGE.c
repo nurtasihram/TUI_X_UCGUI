@@ -233,7 +233,7 @@ static void _UpdatePositions(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj) {
 	_CalcClientRect(pObj, &rBorder);
 	WM_MoveChildTo(pObj->hClient, rBorder.x0, rBorder.y0);
 	WM_SetSize(pObj->hClient, rBorder.x1 - rBorder.x0 + 1, rBorder.y1 - rBorder.y0 + 1);
-	WM_InvalidateWindow(hObj);
+	WM_Invalidate(hObj);
 }
 static void _DrawTextItem(MULTIPAGE_Obj *pObj, const char *pText, unsigned Index,
 						  const GUI_RECT *pRect, int x0, int w, int ColorIndex) {
@@ -378,7 +378,7 @@ static void _Callback(WM_MESSAGE *pMsg) {
 			if (pMsg->Data.v == WM_NOTIFICATION_VALUE_CHANGED) {
 				if (WM_GetId(pMsg->hWinSrc) == GUI_ID_HSCROLL) {
 					pObj->ScrollState = SCROLLBAR_GetValue(pMsg->hWinSrc);
-					WM_InvalidateWindow(hObj);
+					WM_Invalidate(hObj);
 				}
 			}
 			break;
@@ -578,7 +578,7 @@ void MULTIPAGE_DisablePage(MULTIPAGE_Handle hObj, unsigned Index) {
 		pObj = (hObj);
 		if (pObj) {
 			_SetEnable(pObj, Index, 0);
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -590,7 +590,7 @@ void MULTIPAGE_EnablePage(MULTIPAGE_Handle hObj, unsigned Index) {
 		pObj = (hObj);
 		if (pObj) {
 			_SetEnable(pObj, Index, 1);
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -624,7 +624,7 @@ void MULTIPAGE_SetBkColor(MULTIPAGE_Handle hObj, RGB_COLOR Color, unsigned Index
 		pObj = (hObj);
 		if (pObj) {
 			pObj->aBkColor[Index] = Color;
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -636,7 +636,7 @@ void MULTIPAGE_SetTextColor(MULTIPAGE_Handle hObj, RGB_COLOR Color, unsigned Ind
 		pObj = (hObj);
 		if (pObj) {
 			pObj->aTextColor[Index] = Color;
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}

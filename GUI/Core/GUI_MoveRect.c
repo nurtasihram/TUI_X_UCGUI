@@ -11,4 +11,4 @@ void GUI_MoveRect(GUI_RECT *pRect, int dx, int dy) {
   }
 }
 
-/*************************** End of file ****************************/
+

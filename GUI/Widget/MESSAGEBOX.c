@@ -131,4 +131,4 @@ int GUI_MessageBox(const char *sMessage, const char *sCaption, int Flags) {
 	/* Exec dialog */
 	return GUI_ExecCreatedDialog(hWin);
 }
-/* GUI_WINSUPPORT */
+

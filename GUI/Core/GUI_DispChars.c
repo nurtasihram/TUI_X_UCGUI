@@ -8,4 +8,4 @@ void GUI_DispChars(uint16_t c, int NumChars) {
   }
 }
 
-/*************************** End of file ****************************/
+

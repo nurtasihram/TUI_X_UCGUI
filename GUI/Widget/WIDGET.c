@@ -189,7 +189,7 @@ int WIDGET_HandleActive(WM_HWIN hObj, WM_MESSAGE *pMsg) {
 			pWidget->pEffect = (const WIDGET_EFFECT *)pMsg->Data.p;
 			Diff -= pWidget->pEffect->EffectSize;
 			_UpdateChildPostions(hObj, Diff);
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 			return 0;                        /* Message handled -> Return */
 		case WM_GET_ID:
 			pMsg->Data.v = pWidget->Id;

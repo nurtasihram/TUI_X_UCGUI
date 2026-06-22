@@ -31,4 +31,4 @@ RGB_COLOR LCD_MixColors256(RGB_COLOR Color, RGB_COLOR BkColor, unsigned Intens) 
   return R + G + B;
 }
 
-/*************************** End of file ****************************/
+

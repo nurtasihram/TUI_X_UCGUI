@@ -8,4 +8,4 @@ void LCD_UpdateColorIndices(void) {
   LCD_SetBkColorIndex(GUI_Context.BkColor);
 }
 
-/*************************** End of file ****************************/
+

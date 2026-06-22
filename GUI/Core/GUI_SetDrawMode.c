@@ -13,4 +13,4 @@ GUI_DRAWMODE GUI_SetDrawMode(GUI_DRAWMODE dm) {
   return OldMode;
 }
 
-/*************************** End of file ****************************/
+

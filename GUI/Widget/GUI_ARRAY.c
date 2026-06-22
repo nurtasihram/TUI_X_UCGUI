@@ -267,7 +267,7 @@ void GUI_ARRAY_Check(const GUI_ARRAY *pThis) {
 	}
 }
 #endif /* GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL */
-/* GUI_WINSUPPORT */
+
 
 /*********************************************************************
 *

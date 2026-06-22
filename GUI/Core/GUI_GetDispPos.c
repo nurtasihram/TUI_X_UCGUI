@@ -32,4 +32,4 @@ int GUI_GetDispPosY(void) {
   return r;
 }
 
-/*************************** End of file ****************************/
+

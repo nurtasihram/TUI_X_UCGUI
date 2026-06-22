@@ -10,4 +10,4 @@ int GUI_GetTextAlign(void) {
   return r;
 }
 
-/*************************** End of file ****************************/
+

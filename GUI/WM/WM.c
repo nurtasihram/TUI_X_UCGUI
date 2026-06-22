@@ -593,11 +593,11 @@ void WM_InvalidateRect(WM_HWIN hWin, const GUI_RECT *pRect) {
 
 /*********************************************************************
 *
-*        WM_InvalidateWindow
+*        WM_Invalidate
 *
   Invalidates an entire window.
 */
-void WM_InvalidateWindow(WM_HWIN hWin) {
+void WM_Invalidate(WM_HWIN hWin) {
 	WM_InvalidateRect(hWin, NULL);
 }
 
@@ -687,7 +687,7 @@ WM_HWIN WM_CreateWindowAsChild(int x0, int y0, int width, int height
 		}
 		if (Style & WM_CF_SHOW) {
 			pWin->Status |= WM_SF_ISVIS;  /* Set Visibility flag */
-			WM_InvalidateWindow(hWin);    /* Mark content as invalid */
+			WM_Invalidate(hWin);    /* Mark content as invalid */
 		}
 		WM__SendMsgNoData(hWin, WM_CREATE);
 	}
@@ -1417,7 +1417,7 @@ void WM_DefaultProc(WM_MESSAGE *pMsg) {
 			pMsg->Data.Color = GUI_INVALID_COLOR;
 			return;                       /* Message handled */
 		case WM_NOTIFY_ENABLE:
-			WM_InvalidateWindow(hWin);
+			WM_Invalidate(hWin);
 			return;                       /* Message handled */
 	}
 	/* Message not handled. If it queries something, we return 0 to be on the safe side. */
@@ -1435,7 +1435,7 @@ void WM_Init(void) {
 		*/
 		WM__ahDesktopWin = WM_CreateWindow(0, 0, GUI_XMAX, GUI_YMAX, WM_CF_SHOW, cbBackWin, 0);
 		WM__aBkColor = GUI_INVALID_COLOR;
-		WM_InvalidateWindow(WM__ahDesktopWin); /* Required because a desktop window has no parent. */
+		WM_Invalidate(WM__ahDesktopWin); /* Required because a desktop window has no parent. */
 		/* Register the critical handles ... Note: This could be moved into the module setting the Window handle */
 		WM__AddCriticalHandle(&WM__CHWinModal);
 		WM__AddCriticalHandle(&WM__CHWinLast);
@@ -1781,11 +1781,11 @@ typedef struct {
 
 static void _cbInvalidateOne(WM_HWIN hWin, void *p) {
 	GUI_USE_PARA(p);
-	WM_InvalidateWindow(hWin);
+	WM_Invalidate(hWin);
 }
 
 static void _InvalidateWindowAndDescs(WM_HWIN hWin) {
-	WM_InvalidateWindow(hWin);
+	WM_Invalidate(hWin);
 	WM_ForEachDesc(hWin, _cbInvalidateOne, 0);
 }
 
@@ -2679,7 +2679,7 @@ void WM_Paint(WM_HWIN hWin) {
 		pWin = (hWin);
 		WM_SelectWindow(hWin);
 		WM_SetDefault();
-		WM_InvalidateWindow(hWin);  /* Important ... Window procedure is informed about invalid rect and may optimize */
+		WM_Invalidate(hWin);  /* Important ... Window procedure is informed about invalid rect and may optimize */
 		/* Paint the window and its overlaying transparent windows */
 		PaintInfo.hWin = hWin;
 		PaintInfo.pWin = pWin;
@@ -2832,7 +2832,7 @@ WM_CALLBACK *WM_SetCallback(WM_HWIN hWin, WM_CALLBACK *cb) {
 		pWin = (hWin);
 		r = pWin->cb;
 		pWin->cb = cb;
-		WM_InvalidateWindow(hWin);
+		WM_Invalidate(hWin);
 
 	}
 	return r;
@@ -2903,7 +2903,7 @@ RGB_COLOR WM_SetDesktopColor(RGB_COLOR Color) {
 	RGB_COLOR r;
 	r = WM__aBkColor;
 	WM__aBkColor = Color;
-	WM_InvalidateWindow(WM__ahDesktopWin);
+	WM_Invalidate(WM__ahDesktopWin);
 	return r;
 }
 
@@ -3198,7 +3198,7 @@ void WM_SetHasTrans(WM_HWIN hWin) {
 		if ((pWin->Status & WM_SF_HASTRANS) == 0) {
 			pWin->Status |= WM_SF_HASTRANS; /* Set Transparency flag */
 			WM__TransWindowCnt++;          /* Increment counter for transparency windows */
-			WM_InvalidateWindow(hWin);      /* Mark content as invalid */
+			WM_Invalidate(hWin);      /* Mark content as invalid */
 		}
 	}
 
@@ -3213,7 +3213,7 @@ void WM_ClrHasTrans(WM_HWIN hWin) {
 		if (pWin->Status & WM_SF_HASTRANS) {
 			pWin->Status &= ~WM_SF_HASTRANS;
 			WM__TransWindowCnt--;            /* Decrement counter for transparency windows */
-			WM_InvalidateWindow(hWin);        /* Mark content as invalid */
+			WM_Invalidate(hWin);        /* Mark content as invalid */
 		}
 	}
 
@@ -3249,13 +3249,13 @@ void WM_SetTransState(WM_HWIN hWin, unsigned State) {
 		if (State & WM_CF_CONST_OUTLINE) {
 			if (!(pWin->Status & WM_CF_CONST_OUTLINE)) {
 				pWin->Status |= WM_CF_CONST_OUTLINE;
-				WM_InvalidateWindow(hWin);
+				WM_Invalidate(hWin);
 			}
 		}
 		else {
 			if (pWin->Status & WM_CF_CONST_OUTLINE) {
 				pWin->Status &= ~WM_CF_CONST_OUTLINE;
-				WM_InvalidateWindow(hWin);
+				WM_Invalidate(hWin);
 			}
 		}
 	}
@@ -3311,17 +3311,17 @@ int WM_SetYSize(WM_HWIN hWin, int YSize) {
 #define WM_DEBUG_LEVEL 1
 /*********************************************************************
 *
-*       WM_InvalidateWindowDescs
+*       WM_InvalidateDescs
 
   Invalidate window and all descendents (children and grandchildren and ...
 */
-void WM_InvalidateWindowDescs(WM_HWIN hWin) {
+void WM_InvalidateDescs(WM_HWIN hWin) {
 	WM_HWIN hChild;
 	if (hWin) {
-		WM_InvalidateWindow(hWin);    /* Invalidate window itself */
+		WM_Invalidate(hWin);    /* Invalidate window itself */
 		for (hChild = WM_GetFirstChild(hWin); hChild;) {
 			WM_Obj *pChild = (hChild);
-			WM_InvalidateWindowDescs(hChild);
+			WM_InvalidateDescs(hChild);
 			hChild = pChild->hNext;
 		}
 	}
@@ -3334,7 +3334,7 @@ void WM_ShowWindow(WM_HWIN hWin) {
 		pWin = (hWin);
 		if ((pWin->Status & WM_SF_ISVIS) == 0) {  /* First check if this is necessary at all */
 			pWin->Status |= WM_SF_ISVIS;  /* Set Visibility flag */
-			WM_InvalidateWindowDescs(hWin);    /* Mark content as invalid */
+			WM_InvalidateDescs(hWin);    /* Mark content as invalid */
 #if WM_SUPPORT_NOTIFY_VIS_CHANGED
 			WM__NotifyVisChanged(hWin, &pWin->Rect);
 #endif

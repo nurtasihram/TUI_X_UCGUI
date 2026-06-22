@@ -16,4 +16,4 @@ void LCD_SelectLCD(void) {
   LCD_SetClipRectMax();
 }
 
-/*************************** End of file ****************************/
+

@@ -27,4 +27,4 @@ int GUI_DRAW__GetYSize(GUI_DRAW_HANDLE hDrawObj) {
   return 0;
 }
 
-/*************************** End of file ****************************/
+

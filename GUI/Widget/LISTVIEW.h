@@ -17,7 +17,7 @@ LISTVIEW_Handle LISTVIEW_CreateEx      (int x0, int y0, int xsize, int ysize, WM
 #define LISTVIEW_Delete(hObj)        WM_DeleteWindow    (hObj)
 #define LISTVIEW_DisableMemdev(hObj) WM_DisableMemdev   (hObj)
 #define LISTVIEW_EnableMemdev(hObj)  WM_EnableMemdev    (hObj)
-#define LISTVIEW_Invalidate(hObj)    WM_InvalidateWindow(hObj)
+#define LISTVIEW_Invalidate(hObj)    WM_Invalidate(hObj)
 #define LISTVIEW_Paint(hObj)         WM_Paint           (hObj)
 void             LISTVIEW_AddColumn     (LISTVIEW_Handle hObj, int Width, const char * s, int Align);
 void             LISTVIEW_AddRow        (LISTVIEW_Handle hObj, const GUI_ConstString * ppText);

@@ -75,4 +75,4 @@ char GUIPROP_IsInFont(const GUI_FONT GUI_UNI_PTR * pFont, uint16_t c) {
   return (pProp==NULL) ? 0 : 1;
 }
 
-/*************************** End of file ****************************/
+

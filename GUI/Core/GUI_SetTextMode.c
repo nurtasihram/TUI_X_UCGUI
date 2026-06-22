@@ -11,4 +11,4 @@ int GUI_SetTextMode(int Mode) {
   return r;
 }
 
-/*************************** End of file ****************************/
+

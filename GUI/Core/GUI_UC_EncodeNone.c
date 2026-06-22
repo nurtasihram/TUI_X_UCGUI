@@ -62,4 +62,4 @@ void GUI_UC_SetEncodeNone(void) {
 
 }
 
-/*************************** End of file ****************************/
+

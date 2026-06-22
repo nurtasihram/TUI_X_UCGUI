@@ -27,4 +27,4 @@ int GUI_RectsIntersect(const GUI_RECT* pr0, const GUI_RECT* pr1) {
   return 0;
 }
 
-/*************************** End of file ****************************/
+

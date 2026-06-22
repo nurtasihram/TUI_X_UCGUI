@@ -20,4 +20,4 @@ int GUI__strlen(const char GUI_UNI_PTR * s) {
   return r;
 }
 
-/*************************** End of file ****************************/
+

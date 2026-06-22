@@ -34,4 +34,4 @@ void GUI_GetTextExtend(GUI_RECT* pRect, const char GUI_UNI_PTR * s, int MaxNumCh
   pRect->y1 = pRect->y0 + GUI__GetFontSizeY() * NumLines - 1;
 }
 
-/*************************** End of file ****************************/
+

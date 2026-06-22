@@ -81,4 +81,4 @@ void GUI__DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT* p
   }
 }
 
-/*************************** End of file ****************************/
+

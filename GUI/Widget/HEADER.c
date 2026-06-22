@@ -312,7 +312,7 @@ void HEADER_SetFont(HEADER_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
 
 		pObj = (hObj);
 		pObj->pFont = pFont;
-		WM_InvalidateWindow(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -321,7 +321,7 @@ void HEADER_SetHeight(HEADER_Handle hObj, int Height) {
 		GUI_RECT Rect;
 		WM_GetClientRectEx(hObj, &Rect);
 		WM_SetSize(hObj, Rect.x1 - Rect.x0 + 1, Height);
-		WM_InvalidateWindow(WM_GetParent(hObj));
+		WM_Invalidate(WM_GetParent(hObj));
 	}
 }
 void HEADER_SetTextColor(HEADER_Handle hObj, RGB_COLOR Color) {
@@ -330,7 +330,7 @@ void HEADER_SetTextColor(HEADER_Handle hObj, RGB_COLOR Color) {
 
 		pObj = (hObj);
 		pObj->TextColor = Color;
-		WM_InvalidateWindow(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -340,7 +340,7 @@ void HEADER_SetBkColor(HEADER_Handle hObj, RGB_COLOR Color) {
 
 		pObj = (hObj);
 		pObj->BkColor = Color;
-		WM_InvalidateWindow(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -353,7 +353,7 @@ void HEADER_SetTextAlign(HEADER_Handle hObj, unsigned int Index, int Align) {
 			HEADER_COLUMN *pColumn;
 			pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
 			pColumn->Align = Align;
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -366,7 +366,7 @@ void HEADER_SetScrollPos(HEADER_Handle hObj, int ScrollPos) {
 		if (ScrollPos != pObj->ScrollPos) {
 			pObj->ScrollPos = ScrollPos;
 			WM_Invalidate(hObj);
-			WM_InvalidateWindow(WM_GetParent(hObj));
+			WM_Invalidate(WM_GetParent(hObj));
 		}
 
 	}
@@ -392,8 +392,8 @@ void HEADER_AddItem(HEADER_Handle hObj, int Width, const char *s, int Align) {
 			pObj = (hObj);
 			pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
 			strcpy(pColumn->acText, s);
-			WM_InvalidateWindow(hObj);
-			WM_InvalidateWindow(WM_GetParent(hObj));
+			WM_Invalidate(hObj);
+			WM_Invalidate(WM_GetParent(hObj));
 		}
 
 	}
@@ -405,8 +405,8 @@ void HEADER_DeleteItem(HEADER_Handle hObj, unsigned Index) {
 		pObj = (hObj);
 		if (Index < GUI_ARRAY_GetNumItems(&pObj->Columns)) {
 			GUI_ARRAY_DeleteItem(&pObj->Columns, Index);
-			WM_InvalidateWindow(hObj);
-			WM_InvalidateWindow(WM_GetParent(hObj));
+			WM_Invalidate(hObj);
+			WM_Invalidate(WM_GetParent(hObj));
 		}
 
 	}
@@ -436,9 +436,9 @@ void HEADER_SetItemWidth(HEADER_Handle hObj, unsigned int Index, int Width) {
 			pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
 			if (pColumn) {
 				pColumn->Width = Width;
-				WM_InvalidateWindow(hObj);
+				WM_Invalidate(hObj);
 				WM__SendMsgNoData(WM_GetParent(hObj), WM_NOTIFY_CLIENTCHANGE);
-				WM_InvalidateWindow(WM_GetParent(hObj));
+				WM_Invalidate(WM_GetParent(hObj));
 			}
 		}
 
@@ -483,7 +483,7 @@ int  HEADER_GetNumItems(HEADER_Handle hObj) {
 
 void HEADER_SetBitmapEx(HEADER_Handle hObj, unsigned Index, const GUI_BITMAP *pBitmap, int x, int y) {
 	HEADER__SetDrawObj(hObj, Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
-	WM_InvalidateWindow(hObj);
+	WM_Invalidate(hObj);
 }
 void HEADER_SetBitmap(HEADER_Handle hObj, unsigned Index, const GUI_BITMAP *pBitmap) {
 	HEADER_SetBitmapEx(hObj, Index, pBitmap, 0, 0);

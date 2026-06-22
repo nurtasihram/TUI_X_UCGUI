@@ -45,4 +45,4 @@ void GUI__CalcTextRect(const char GUI_UNI_PTR* pText, const GUI_RECT* pTextRectI
   }
 }
 
-/*************************** End of file ****************************/
+

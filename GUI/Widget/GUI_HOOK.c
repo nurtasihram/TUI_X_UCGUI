@@ -11,4 +11,4 @@ void GUI_HOOK_Remove(GUI_HOOK** ppFirstHook, GUI_HOOK* pHook) {
   *ppFirstHook = NULL;
 }
 
-/*************************** End of file ****************************/
+

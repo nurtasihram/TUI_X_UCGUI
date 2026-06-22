@@ -26,4 +26,4 @@ void GUI_MergeRect(GUI_RECT* pDest, const GUI_RECT* pr0, const GUI_RECT* pr1) {
   }
 }
 
-/*************************** End of file ****************************/
+

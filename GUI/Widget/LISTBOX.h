@@ -28,7 +28,7 @@ typedef WM_HMEM LISTBOX_Handle;
 #define LISTBOX_DisableMemdev(hObj) WM_DisableMemdev(hObj)
 #define LISTBOX_Delete(hObj)        WM_DeleteWindow(hObj)
 #define LISTBOX_Paint(hObj)         WM_Paint(hObj)
-#define LISTBOX_Invalidate(hObj)    WM_InvalidateWindow(hObj)
+#define LISTBOX_Invalidate(hObj)    WM_Invalidate(hObj)
 LISTBOX_Handle LISTBOX_Create        (const GUI_ConstString* ppText, int x0, int y0, int xsize, int ysize, int Flags);
 LISTBOX_Handle LISTBOX_CreateAsChild (const GUI_ConstString* ppText, WM_HWIN hWinParent, int x0, int y0, int xsize, int ysize, int Flags);
 LISTBOX_Handle LISTBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);

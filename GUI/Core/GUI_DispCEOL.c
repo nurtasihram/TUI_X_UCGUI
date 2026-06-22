@@ -10,4 +10,4 @@ void GUI_DispCEOL(void) {
                 y + GUI_Context.pAFont->YDist - 1);
 }
 
-/*************************** End of file ****************************/
+

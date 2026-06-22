@@ -1075,13 +1075,13 @@ static void _MULTIEDIT_Callback(WM_MESSAGE *pMsg) {
 					if (pMsg->hWinSrc == WM_GetScrollbarV(hObj)) {
 						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
 						pObj->ScrollStateV.v = ScrollState.v;
-						WM_InvalidateWindow(hObj);
+						WM_Invalidate(hObj);
 						WM_NotifyParent(hObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
 					else if (pMsg->hWinSrc == WM_GetScrollbarH(hObj)) {
 						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
 						pObj->ScrollStateH.v = ScrollState.v;
-						WM_InvalidateWindow(hObj);
+						WM_Invalidate(hObj);
 						WM_NotifyParent(hObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
 					break;

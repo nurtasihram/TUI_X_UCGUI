@@ -80,5 +80,5 @@ const WIDGET_EFFECT WIDGET_Effect_3D = {
   _WIDGET_EFFECT_3D_GetRect,
   2
 };
- /* GUI_WINSUPPORT */
-/*************************** End of file ****************************/
+
+

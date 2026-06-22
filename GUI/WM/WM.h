@@ -18,17 +18,8 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
   generate any code !
 */
 
-#ifndef WM_SUPPORT_TOUCH
-#define WM_SUPPORT_TOUCH        GUI_SUPPORT_TOUCH
-#endif
-
 #ifndef WM_SUPPORT_OBSTRUCT
 #define WM_SUPPORT_OBSTRUCT 1
-#endif
-
-/* Allow older API calls */
-#ifndef WM_COMPATIBLE_MODE
-#define WM_COMPATIBLE_MODE 1
 #endif
 
 /* Send a message if visibility of a window has changed */
@@ -230,8 +221,8 @@ WM_HWIN WM_GetFocussedWindow         (void);
 void    WM_HideWindow                (WM_HWIN hWin);
 void    WM_InvalidateArea            (const GUI_RECT* pRect);
 void    WM_InvalidateRect            (WM_HWIN hWin, const GUI_RECT*pRect);
-void    WM_InvalidateWindow          (WM_HWIN hWin);
-void    WM_InvalidateWindowDescs     (WM_HWIN hWin);    /* not to be documented (may change in future version) */
+void    WM_Invalidate          (WM_HWIN hWin);
+void    WM_InvalidateDescs     (WM_HWIN hWin);    /* not to be documented (may change in future version) */
 int     WM_IsEnabled                 (WM_HWIN hObj);
 int     WM_IsFocussable              (WM_HWIN hWin);
 int     WM_IsVisible                 (WM_HWIN hWin);
@@ -358,46 +349,6 @@ WM_HWIN   WM_Screen2hWinEx (WM_HWIN hStop, int x, int y);
 void      WM_ForEachDesc   (WM_HWIN hWin, WM_tfForEach * pcb, void * pData);
 
 void WM_DIAG_EnableInvalidationColoring(int OnOff);
-
-/*
-      *************************************************
-      *                                               *
-      *  Macros for compatibility with older versions *
-      *                                               *
-      *************************************************
-*/
-
-#if WM_COMPATIBLE_MODE
-#define HBWIN             WM_HWIN
-#define HBWIN_NULL        WM_HWIN_NULL
-
-#define WM_HideWin        WM_HideWindow
-#define WM_ShowWin        WM_ShowWindow
-#define WM_GetKey         GUI_GetKey
-#define WM_WaitKey        GUI_WaitKey
-
-#define WM_ExecIdle       WM_Exec
-#define WM_ExecIdle1      WM_Exec1
-
-#define WM_Invalidate     WM_InvalidateWindow
-#define WM_GetWinRect     WM_GetWindowRect
-#define WM_GetWinOrgX     WM_GetWindowOrgX
-#define WM_GetWinOrgY     WM_GetWindowOrgY
-#define WM_GetWinSizeX    WM_GetWindowSizeX
-#define WM_GetWinSizeY    WM_GetWindowSizeY
-#define WM_GetXSize       WM_GetWindowSizeX
-#define WM_GetYSize       WM_GetWindowSizeY
-#define WM_SelWin         WM_SelectWindow
-#define WM_GetBackgroundWindow  WM_GetDesktopWindow
-#define WM_GetForegroundWindow    0
-#define WM_SetForegroundWindow    WM_BringToTop
-#define WM_SetUserClipArea WM_SetUserClipRect
-
-#define WM_Start()
-#define WM_Stop()
-#define WM_SetBkWindowColor(Color)  WM_SetDesktopColor(Color)
-
-#endif
 
 #if defined(__cplusplus)
 }

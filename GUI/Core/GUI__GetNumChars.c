@@ -14,4 +14,4 @@ int GUI__GetNumChars(const char GUI_UNI_PTR *s) {
   return NumChars;
 }
 
-/*************************** End of file ****************************/
+

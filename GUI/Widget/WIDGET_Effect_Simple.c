@@ -46,5 +46,5 @@ const WIDGET_EFFECT WIDGET_Effect_Simple = {
   _WIDGET_EFFECT_Simple_GetRect,
   1
 };
- /* GUI_WINSUPPORT */
-/*************************** End of file ****************************/
+
+

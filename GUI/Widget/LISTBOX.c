@@ -467,7 +467,7 @@ static void _OnPaint(LISTBOX_Handle hObj, LISTBOX_Obj *pObj, WM_MESSAGE *pMsg) {
 		/* Make sure that we draw only when row is in drawing area */
 		if (RectItem.y1 >= ClipRect.y0) {
 			/* Set user clip rect */
-			WM_SetUserClipArea(&RectItem);
+			WM_SetUserClipRect(&RectItem);
 			/* Fill item info structure */
 			ItemInfo.ItemIndex = i;
 			/* Draw item */
@@ -480,7 +480,7 @@ static void _OnPaint(LISTBOX_Handle hObj, LISTBOX_Obj *pObj, WM_MESSAGE *pMsg) {
 		}
 		ItemInfo.y0 += ItemDistY;
 	}
-	WM_SetUserClipArea(NULL);
+	WM_SetUserClipRect(NULL);
 	/* Calculate & clear 'data free' area */
 	RectItem.y0 = ItemInfo.y0;
 	RectItem.y1 = RectInside.y1;
@@ -625,7 +625,7 @@ static void _LISTBOX_Callback(WM_MESSAGE *pMsg) {
 			break;
 		case WM_SIZE:
 			LISTBOX_UpdateScrollers(hObj);
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 			break;
 	}
 	WM_DefaultProc(pMsg);

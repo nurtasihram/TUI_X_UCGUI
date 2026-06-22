@@ -741,7 +741,7 @@ unsigned MENU__GetNumItems(MENU_Obj *pObj) {
 void MENU__InvalidateItem(MENU_Handle hObj, const MENU_Obj *pObj, unsigned Index) {
 	GUI_USE_PARA(pObj);
 	GUI_USE_PARA(Index);
-	WM_InvalidateWindow(hObj);  /* Can be optimized, no need to invalidate all items */
+	WM_Invalidate(hObj);  /* Can be optimized, no need to invalidate all items */
 }
 void MENU__RecalcTextWidthOfItems(MENU_Obj *pObj) {
 	const GUI_FONT GUI_UNI_PTR *pOldFont;
@@ -760,7 +760,7 @@ void MENU__ResizeMenu(MENU_Handle hObj, MENU_Obj *pObj) {
 	xSize = _CalcWindowSizeX(hObj, pObj);
 	ySize = _CalcWindowSizeY(hObj, pObj);
 	WM_SetSize(hObj, xSize, ySize);
-	WM_InvalidateWindow(hObj);
+	WM_Invalidate(hObj);
 }
 char MENU__SetItem(MENU_Handle hObj, MENU_Obj *pObj, unsigned Index, const MENU_ITEM_DATA *pItemData) {
 	MENU_ITEM Item = { 0 };
@@ -1056,7 +1056,7 @@ void MENU_SetBkColor(MENU_Handle hObj, unsigned ColorIndex, RGB_COLOR Color) {
 			if (ColorIndex < GUI_COUNTOF(pObj->Props.aBkColor)) {
 				if (Color != pObj->Props.aBkColor[ColorIndex]) {
 					pObj->Props.aBkColor[ColorIndex] = Color;
-					WM_InvalidateWindow(hObj);
+					WM_Invalidate(hObj);
 				}
 			}
 		}
@@ -1122,7 +1122,7 @@ void MENU_SetTextColor(MENU_Handle hObj, unsigned ColorIndex, RGB_COLOR Color) {
 			if (ColorIndex < GUI_COUNTOF(pObj->Props.aTextColor)) {
 				if (Color != pObj->Props.aTextColor[ColorIndex]) {
 					pObj->Props.aTextColor[ColorIndex] = Color;
-					WM_InvalidateWindow(hObj);
+					WM_Invalidate(hObj);
 				}
 			}
 		}

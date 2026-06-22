@@ -219,7 +219,7 @@ void SLIDER_Dec(SLIDER_Handle hObj) {
 		pObj = (hObj);
 		if (pObj->v > pObj->Min) {
 			pObj->v--;
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 
@@ -232,7 +232,7 @@ void SLIDER_Inc(SLIDER_Handle hObj) {
 		pObj = (hObj);
 		if (pObj->v < pObj->Max) {
 			pObj->v++;
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 
@@ -245,7 +245,7 @@ void SLIDER_SetWidth(SLIDER_Handle hObj, int Width) {
 		pObj = (hObj);
 		if (pObj->Width != Width) {
 			pObj->Width = Width;
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -264,7 +264,7 @@ void SLIDER_SetValue(SLIDER_Handle hObj, int v) {
 		}
 		if (pObj->v != v) {
 			pObj->v = v;
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 
@@ -286,7 +286,7 @@ void SLIDER_SetRange(SLIDER_Handle hObj, int Min, int Max) {
 		if (pObj->v > Max) {
 			pObj->v = Max;
 		}
-		WM_InvalidateWindow(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -296,7 +296,7 @@ void SLIDER_SetNumTicks(SLIDER_Handle hObj, int NumTicks) {
 
 		pObj = (hObj);
 		pObj->NumTicks = NumTicks;
-		WM_InvalidateWindow(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -314,7 +314,7 @@ void SLIDER_SetBkColor(SLIDER_Handle hObj, RGB_COLOR Color) {
 			WM_SetHasTrans(hObj);
 		}
 #endif
-		WM_InvalidateWindow(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }

@@ -279,7 +279,7 @@ void CHECKBOX_SetBkColor(CHECKBOX_Handle hObj, RGB_COLOR Color) {
 				WM_SetTransState(hObj, WM_CF_HASTRANS);
 			}
 #endif
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 		}
 	}
 }

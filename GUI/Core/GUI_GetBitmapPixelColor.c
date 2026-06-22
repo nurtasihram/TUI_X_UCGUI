@@ -10,4 +10,4 @@ RGB_COLOR GUI_GetBitmapPixelColor(const GUI_BITMAP GUI_UNI_PTR * pBMP, unsigned 
   return pBMP->pPal->pPalEntries[Index];
 }
 
-/*************************** End of file ****************************/
+

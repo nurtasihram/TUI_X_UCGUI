@@ -7,4 +7,4 @@ void GUI_DispStringAtCEOL(const char GUI_UNI_PTR *s, int x, int y) {
   GUI_DispCEOL();
 }
 
-/*************************** End of file ****************************/
+

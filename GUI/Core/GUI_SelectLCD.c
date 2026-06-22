@@ -13,4 +13,4 @@ void GUI_SelectLCD(void) {
   WM_Activate();
 }
 
-/*************************** End of file ****************************/
+

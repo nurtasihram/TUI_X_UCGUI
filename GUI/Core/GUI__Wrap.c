@@ -104,5 +104,5 @@ int GUI__WrapGetNumBytesToNextLine(const char GUI_UNI_PTR * pText, int xSize, GU
   return NumBytes;
 }
 
-/*************************** End of file ****************************/
+
 

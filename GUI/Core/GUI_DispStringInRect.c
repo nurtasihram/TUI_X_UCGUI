@@ -112,4 +112,4 @@ void GUI_DispStringInRect(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAl
   GUI_DispStringInRectMax(s, pRect, TextAlign, 0x7fff);
 }
 
-/*************************** End of file ****************************/
+

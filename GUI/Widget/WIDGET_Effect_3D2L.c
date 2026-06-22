@@ -77,5 +77,5 @@ const WIDGET_EFFECT WIDGET_Effect_3D2L = {
   _WIDGET_EFFECT_3D2L_GetRect,
   2
 };
- /* GUI_WINSUPPORT */
-/*************************** End of file ****************************/
+
+

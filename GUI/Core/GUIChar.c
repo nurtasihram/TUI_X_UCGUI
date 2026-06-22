@@ -72,4 +72,4 @@ int GUI_GetCharDistX(uint16_t c) {
   return r;
 }
 
-/*************************** End of file ****************************/
+

@@ -618,7 +618,7 @@ void EDIT_SetValue(EDIT_Handle hObj, int32_t Value) {
 			if (pObj->pfUpdateBuffer) {
 				pObj->pfUpdateBuffer(hObj);
 			}
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 

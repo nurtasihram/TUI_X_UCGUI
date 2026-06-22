@@ -58,4 +58,4 @@ int GUI_UC__NumBytes2NumChars(const char GUI_UNI_PTR * s, int NumBytes) {
   return Chars;
 }
 
-/*************************** End of file ****************************/
+

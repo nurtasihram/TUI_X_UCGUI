@@ -118,9 +118,7 @@
     <ClCompile Include="GUI\Resources\F8x8.c" />
     <ClCompile Include="GUI\LCDDriver\LCD9325.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV.c" />
-    <ClCompile Include="GUI\MemDev\GUIDEV_1.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_16.c" />
-    <ClCompile Include="GUI\MemDev\GUIDEV_8.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_Auto.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_Banding.c" />
     <ClCompile Include="GUI\MemDev\GUIDEV_Clear.c" />

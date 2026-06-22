@@ -477,7 +477,7 @@ void DROPDOWN_DeleteItem(DROPDOWN_Handle hObj, unsigned int Index) {
 
 			pObj = (hObj);
 			GUI_ARRAY_DeleteItem(&pObj->Handles, Index);
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 			if (pObj->hListWin) {
 				LISTBOX_DeleteItem(pObj->hListWin, Index);
 			}
@@ -500,7 +500,7 @@ void DROPDOWN_InsertString(DROPDOWN_Handle hObj, const char *s, unsigned int Ind
 				char *pBuffer = (char *)(hItem);
 				strcpy(pBuffer, s);
 			}
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 			if (pObj->hListWin) {
 				LISTBOX_InsertString(pObj->hListWin, s, Index);
 			}

@@ -54,4 +54,4 @@ void GUI_DrawBitmap(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0) {
 
 }
 
-/*************************** End of file ****************************/
+

@@ -14,7 +14,7 @@ typedef WM_HMEM DROPDOWN_Handle;
 #define DROPDOWN_DisableMemdev(hObj) WM_DisableMemdev(hObj)
 #define DROPDOWN_Delete(hObj)        WM_DeleteWindow(hObj)
 #define DROPDOWN_Paint(hObj)         WM_Paint(hObj)
-#define DROPDOWN_Invalidate(hObj)    WM_InvalidateWindow(hObj)
+#define DROPDOWN_Invalidate(hObj)    WM_Invalidate(hObj)
 DROPDOWN_Handle DROPDOWN_Create        (WM_HWIN hWinParent, int x0, int y0, int xsize, int ysize, int Flags);
 DROPDOWN_Handle DROPDOWN_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
 DROPDOWN_Handle DROPDOWN_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,

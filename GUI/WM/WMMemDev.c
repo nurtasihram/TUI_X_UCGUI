@@ -33,4 +33,4 @@ void WM_DisableMemdev(WM_HWIN hWin) {
 #endif
 }
 
-/*************************** End of file ****************************/
+

@@ -47,7 +47,7 @@ MENU_Handle MENU_CreateEx      (int x0, int y0, int xSize, int ySize, WM_HWIN hP
 #define MENU_DisableMemdev(hObj)  WM_DisableMemdev(hObj)
 #define MENU_Delete(hObj)         WM_DeleteWindow(hObj)
 #define MENU_Paint(hObj)          WM_Paint(hObj)
-#define MENU_Invalidate(hObj)     WM_InvalidateWindow(hObj)
+#define MENU_Invalidate(hObj)     WM_Invalidate(hObj)
 void      MENU_Attach           (MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int ySize, int Flags);
 void      MENU_Popup            (MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int ySize, int Flags);
 void      MENU_SetOwner         (MENU_Handle hObj, WM_HWIN hOwner);
@@ -77,4 +77,4 @@ void                        MENU_SetDefaultFont       (const GUI_FONT GUI_UNI_PT
 #if defined(__cplusplus)
   }
 #endif
-/*************************** End of file ****************************/
+

@@ -31,5 +31,5 @@ const WIDGET_EFFECT WIDGET_Effect_None = {
   _WIDGET_EFFECT_None_GetRect,
   0
 };
- /* GUI_WINSUPPORT */
-/*************************** End of file ****************************/
+
+

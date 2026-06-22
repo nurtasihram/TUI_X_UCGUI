@@ -10,4 +10,4 @@ int GUI_GetYDistOfFont(const GUI_FONT GUI_UNI_PTR * pFont) {
   return pFont->YDist * pFont->YMag;
 }
 
-/*************************** End of file ****************************/
+

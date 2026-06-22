@@ -11,4 +11,4 @@ void GUI_RestoreContext(const GUI_CONTEXT* pContext) {
   GUI_Context = *pContext;
 }
 
-/*************************** End of file ****************************/
+

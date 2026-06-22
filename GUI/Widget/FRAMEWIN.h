@@ -26,7 +26,7 @@ FRAMEWIN_Handle FRAMEWIN_CreateEx      (int x0, int y0, int xsize, int ysize, WM
 #define FRAMEWIN_DisableMemdev(hObj) WM_DisableMemdev(hObj)
 #define FRAMEWIN_Delete(hObj)        WM_DeleteWindow(hObj)
 #define FRAMEWIN_Paint(hObj)         WM_Paint(hObj)
-#define FRAMEWIN_Invalidate(hObj)    WM_InvalidateWindow(hObj)
+#define FRAMEWIN_Invalidate(hObj)    WM_Invalidate(hObj)
 WM_HWIN FRAMEWIN_AddButton     (FRAMEWIN_Handle hObj, int Flags, int Off, int Id);
 WM_HWIN FRAMEWIN_AddCloseButton(FRAMEWIN_Handle hObj, int Flags, int Off);
 WM_HWIN FRAMEWIN_AddMaxButton  (FRAMEWIN_Handle hObj, int Flags, int Off);

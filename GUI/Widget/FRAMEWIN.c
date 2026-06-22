@@ -618,7 +618,7 @@ static void _InvalidateButton(FRAMEWIN_Obj *pObj, int Id) {
 	for (hChild = pObj->Widget.Win.hFirstChild; hChild; hChild = pChild->hNext) {
 		pChild = (hChild);
 		if (WM_GetId(hChild) == Id) {
-			WM_InvalidateWindow(hChild);
+			WM_Invalidate(hChild);
 		}
 	}
 }

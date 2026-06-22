@@ -48,12 +48,6 @@
     <ClCompile Include="GUI\MemDev\GUIDEV.c">
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_1.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_8.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\MemDev\GUIDEV_16.c">
       <Filter>GUI\MemDev</Filter>
     </ClCompile>

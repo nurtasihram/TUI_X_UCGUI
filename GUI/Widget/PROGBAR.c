@@ -24,7 +24,7 @@ typedef struct {
 	int Min, Max;
 	/*  int16_t Options; */
 } PROGBAR_Obj;
-#define Invalidate(h) WM_InvalidateWindow(h)
+#define Invalidate(h) WM_Invalidate(h)
 static void _FreeText(PROGBAR_Handle hObj) {
 	PROGBAR_Obj *pObj = (hObj);
 	GUI_ALLOC_FreePtr(&pObj->hpText);
@@ -114,14 +114,14 @@ static void _Paint(PROGBAR_Handle hObj) {
 	/* Draw left bar */
 	r = rInside;
 	r.x1 = xPos - 1;
-	WM_SetUserClipArea(&r);
+	WM_SetUserClipRect(&r);
 	_DrawPart(pObj, 0, rText.x0, rText.y0, pText);
 	/* Draw right bar */
 	r = rInside;
 	r.x0 = xPos;
-	WM_SetUserClipArea(&r);
+	WM_SetUserClipRect(&r);
 	_DrawPart(pObj, 1, rText.x0, rText.y0, pText);
-	WM_SetUserClipArea(NULL);
+	WM_SetUserClipRect(NULL);
 	GUI_SetTextMode(tm);
 	WIDGET__EFFECT_DrawDownRect(&pObj->Widget, &rClient);
 }
@@ -221,7 +221,7 @@ void PROGBAR_SetFont(PROGBAR_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
 
 		pObj = (hObj);
 		pObj->pFont = pfont;
-		WM_InvalidateWindow(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -232,7 +232,7 @@ void PROGBAR_SetBarColor(PROGBAR_Handle hObj, unsigned int Index, RGB_COLOR colo
 		pObj = (hObj);
 		if (Index < GUI_COUNTOF(pObj->BarColor)) {
 			pObj->BarColor[Index] = color;
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -244,7 +244,7 @@ void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int Index, RGB_COLOR col
 		pObj = (hObj);
 		if (Index < GUI_COUNTOF(pObj->TextColor)) {
 			pObj->TextColor[Index] = color;
-			WM_InvalidateWindow(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -275,7 +275,7 @@ void PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align) {
 
 		pObj = (hObj);
 		pObj->TextAlign = Align;
-		WM_InvalidateWindow(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -286,7 +286,7 @@ void PROGBAR_SetTextPos(PROGBAR_Handle hObj, int XOff, int YOff) {
 		pObj = (hObj);
 		pObj->XOff = XOff;
 		pObj->YOff = YOff;
-		WM_InvalidateWindow(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -299,7 +299,7 @@ void PROGBAR_SetMinMax(PROGBAR_Handle hObj, int Min, int Max) {
 			if ((Max != pObj->Max) || (Min != pObj->Min)) {
 				pObj->Min = Min;
 				pObj->Max = Max;
-				WM_InvalidateWindow(hObj);
+				WM_Invalidate(hObj);
 			}
 		}
 

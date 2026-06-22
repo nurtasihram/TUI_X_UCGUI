@@ -23,7 +23,7 @@ typedef WM_HMEM TEXT_Handle;
 #define TEXT_DisableMemdev(hObj) WM_DisableMemdev(hObj)
 #define TEXT_Delete(hObj)        WM_DeleteWindow(hObj)
 #define TEXT_Paint(hObj)         WM_Paint(hObj)
-#define TEXT_Invalidate(hObj)    WM_InvalidateWindow(hObj)
+#define TEXT_Invalidate(hObj)    WM_Invalidate(hObj)
 TEXT_Handle TEXT_Create        (int x0, int y0, int xsize, int ysize, int Id, int Flags, const char * s, int Align);
 TEXT_Handle TEXT_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, const char * s, int Align);
 TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);

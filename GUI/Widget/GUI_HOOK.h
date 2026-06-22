@@ -13,4 +13,4 @@ void GUI_HOOK_Remove(GUI_HOOK** ppFirstHook, GUI_HOOK* pHook);
 #if defined(__cplusplus)
   }
 #endif
-/*************************** End of file ****************************/
+

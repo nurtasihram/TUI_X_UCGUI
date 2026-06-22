@@ -11,4 +11,4 @@ void GUI_DispStringHCenterAt(const char GUI_UNI_PTR *s, int x, int y) {
   GUI_SetTextAlign(Align);
 }
 
-/*************************** End of file ****************************/
+

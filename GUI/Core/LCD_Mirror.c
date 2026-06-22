@@ -38,4 +38,4 @@ const uint8_t LCD_aMirror[256] = {
   ______XXXXXXXXXX, XX____XXXXXXXXXX, __XX__XXXXXXXXXX, XXXX__XXXXXXXXXX, ____XXXXXXXXXXXX, XX__XXXXXXXXXXXX, __XXXXXXXXXXXXXX, XXXXXXXXXXXXXXXX
 };
 
-/*************************** End of file ****************************/
+

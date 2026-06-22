@@ -18,5 +18,5 @@ void GUI_MOUSE_StoreState(const GUI_PID_STATE *pState) {
   }
 }
 
-/*************************** End of file ****************************/
+
 

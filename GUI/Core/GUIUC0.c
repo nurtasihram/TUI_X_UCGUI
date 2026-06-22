@@ -49,4 +49,4 @@ uint16_t GUI_DB2UC(uint8_t Byte0, uint8_t Byte1) {
   return Byte1 | (((uint16_t)Byte0)<<8);
 }
 
-/*************************** End of file ****************************/
+

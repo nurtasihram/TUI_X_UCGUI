@@ -33,4 +33,4 @@ void GUI__IntersectRect(GUI_RECT* pDest, const GUI_RECT* pr0) {
   }
 }
 
-/*************************** End of file ****************************/
+
