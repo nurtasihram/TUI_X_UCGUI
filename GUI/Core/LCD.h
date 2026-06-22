@@ -28,7 +28,7 @@ typedef struct {
 /* This is used for the simulation only ! */
 typedef struct {
   int x,y;
-  unsigned char KeyStat;
+  uint8_t KeyStat;
 } LCD_tMouseState;
 
 /*********************************************************************

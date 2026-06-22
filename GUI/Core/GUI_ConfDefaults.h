@@ -17,14 +17,6 @@
    However, on some systems (AVR - IAR compiler) it can be necessary ( -> __flash const),
    since otherwise constants are copied into RAM
 */
-#ifndef GUI_ALLOC_SIZE
-#define GUI_ALLOC_SIZE      1000
-#endif
-
-#ifndef GUI_CONST_STORAGE
-#define GUI_CONST_STORAGE const
-#endif
-
 #ifndef GUI_SUPPORT_TOUCH
 #define GUI_SUPPORT_TOUCH   0
 #endif
@@ -42,20 +34,12 @@
 #endif
 
 #ifndef GUI_SUPPORT_DEVICES
-#ifdef __C51__               /* Keil C51 limitation ... Indirect function calls are limited */
-#define GUI_SUPPORT_DEVICES 0
-#else
 #define GUI_SUPPORT_DEVICES (GUI_SUPPORT_MEMDEV)
-#endif
 #endif
 
 /* In order to avoid warnings for undefined parameters */
 #ifndef GUI_USE_PARA
-#if defined (__BORLANDC__) || defined(NC30) || defined(NC308)
-#define GUI_USE_PARA(para)
-#else
-#define GUI_USE_PARA(para) para=para;
-#endif
+#define GUI_USE_PARA(para) (void)para;
 #endif
 
 /* Default for types */

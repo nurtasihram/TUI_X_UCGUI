@@ -1,26 +1,29 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_CursorArrowM.C
-Purpose     : Defines the arrow cursor, medium
----------------------------END-OF-HEADER------------------------------
-*/
-
-#include <stdlib.h>
 #include "GUI_Protected.h"
 
-GUI_CONST_STORAGE GUI_BITMAP GUI_BitmapArrowM = {
+const uint8_t GUI_Pixels_ArrowM[60] = {
+XX______,________,________
+XXXX____,________,________
+XXooXX__,________,________
+XXooooXX,________,________
+XXoooooo,XX______,________
+XXoooooo,ooXX____,________
+XXoooooo,ooooXX__,________
+XXoooooo,ooooooXX,________
+XXoooooo,oooooooo,XX______
+XXoooooo,oooooooo,ooXX____
+XXoooooo,oooooooo,ooooXX__
+XXoooooo,ooooooXX,XXXXXXXX
+XXooooXX,ooooooXX,________
+XXooXX__,XXoooooo,XX______
+XXXX____,XXoooooo,XX______
+XX______,__XXoooo,ooXX____
+________,__XXoooo,ooXX____
+________,____XXoo,ooooXX__
+________,____XXoo,ooooXX__
+________,______XX,XXXX____
+};
+
+const GUI_BITMAP GUI_BitmapArrowM = {
  12,                  /* XSize */
  20,                  /* YSize */
  3,                   /* BytesPerLine */
@@ -29,8 +32,19 @@ GUI_CONST_STORAGE GUI_BITMAP GUI_BitmapArrowM = {
  &GUI_CursorPal       /* Pointer to palette */
 };
 
-GUI_CONST_STORAGE GUI_CURSOR GUI_CursorArrowM = {
+const GUI_CURSOR GUI_CursorArrowM = {
   &GUI_BitmapArrowM, 0, 0
 };
 
-/*************************** End of file ****************************/
+const GUI_BITMAP GUI_BitmapArrowMI = {
+ 12,                  /* XSize */
+ 20,                  /* YSize */
+ 3,                   /* BytesPerLine */
+ 2,                   /* BitsPerPixel */
+ GUI_Pixels_ArrowM,   /* Pointer to picture data (indices) */
+ &GUI_CursorPalI      /* Pointer to palette */
+};
+
+const GUI_CURSOR GUI_CursorArrowMI = {
+  &GUI_BitmapArrowMI, 0, 0
+};

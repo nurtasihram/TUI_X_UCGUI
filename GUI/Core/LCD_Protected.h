@@ -7,7 +7,7 @@ typedef struct {
   const RGB_COLOR* pPalEntries;
 } LCD_PHYSPALETTE;
 
-extern GUI_CONST_STORAGE uint8_t LCD_aMirror[256];
+extern const uint8_t LCD_aMirror[256];
 
 void LCD_SelectLCD(void);
 
