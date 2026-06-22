@@ -516,9 +516,6 @@
     <ClInclude Include="Config\GUIConf.h">
       <Filter>Config</Filter>
     </ClInclude>
-    <ClInclude Include="Config\LCDConf.h">
-      <Filter>Config</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\WM\WM.h">
       <Filter>GUI\WM</Filter>
     </ClInclude>
@@ -667,9 +664,6 @@
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\LCD.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Core\LCD_ConfDefaults.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\LCD_Private.h">

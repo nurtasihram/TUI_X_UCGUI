@@ -71,9 +71,6 @@ public:
 		}
 	}
 };
-namespace SimDisp {
-extern Ayxandar Ayx;
-}
 #elif defined(AYXANDAR)
 class Ayxandar {
 	uint16_t xMax = 0, yMax = 0;
@@ -113,7 +110,4 @@ public:
 		}
 	}
 };
-namespace SimDisp {
-extern Ayxandar Ayx;
-}
 #endif

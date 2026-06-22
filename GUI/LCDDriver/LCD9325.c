@@ -1,6 +1,4 @@
-#include "LCD_Private.h"      /* private modul definitions & config */
 #include "GUI_Private.h"
-#include "GUIDebug.h"
 
 static void  _DrawBitLine1BPP(int x, int y, uint8_t const GUI_UNI_PTR *p, int Diff, int xsize, const RGB_COLOR *pTrans) {
 	RGB_COLOR Index0 = *(pTrans + 0);
@@ -235,42 +233,6 @@ static void  DrawBitLine16BPP(int x, int y, uint16_t const GUI_UNI_PTR *p, int x
 				}
 			}
 		}
-	}
-}
-
-void LCD_L0_XorPixel(int x, int y) {
-	LCD_L0_SetPixelIndex(x, y, ~LCD_L0_GetPixelIndex(x, y));
-}
-
-void LCD_L0_DrawHLine(int x0, int y, int x1) {
-	if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
-		for (; x0 <= x1; x0++) {
-			LCD_L0_XorPixel(x0, y);
-		}
-	}
-	else {
-		for (; x0 <= x1; x0++) {
-			LCD_L0_SetPixelIndex(x0, y, LCD_COLORINDEX);
-		}
-	}
-}
-
-void LCD_L0_DrawVLine(int x, int y0, int y1) {
-	if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
-		for (; y0 <= y1; y0++) {
-			LCD_L0_XorPixel(x, y0);
-		}
-	}
-	else {
-		for (; y0 <= y1; y0++) {
-			LCD_L0_SetPixelIndex(x, y0, LCD_COLORINDEX);
-		}
-	}
-}
-
-void LCD_L0_FillRect(int x0, int y0, int x1, int y1) {
-	for (; y0 <= y1; y0++) {
-		LCD_L0_DrawHLine(x0, y0, x1);
 	}
 }
 

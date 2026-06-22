@@ -2,28 +2,63 @@
 #define AYXANDAR
 #include "SimDisp.h"
 #include "GUI.h"
+#include "GUI_Private.h"
 
-namespace SimDisp {
-	Ayxandar Ayx;
-}
+#define LCD_XSIZE 320
+#define LCD_YSIZE 240
 
-extern "C" {
-void LCD_L0_SetPixelIndex(int x, int y, int PixelIndex);
-unsigned int LCD_L0_GetPixelIndex(int x, int y);
-int LCD_L0_Init(void);
-}
+Ayxandar Ayx;
+
+int LCD_GetXSize(void) { return LCD_XSIZE; }
+int LCD_GetYSize(void) { return LCD_YSIZE; }
 
 extern void LCD_L0_SetPixelIndex(int x, int y, int PixelIndex) {
-	SimDisp::Ayx.Dot({x, y}, PixelIndex);
+	Ayx.Dot({x, y}, PixelIndex);
 }
 extern unsigned int LCD_L0_GetPixelIndex(int x, int y) {
-	return SimDisp::Ayx.Dot({x, y});
+	return Ayx.Dot({x, y});
 }
+void LCD_L0_XorPixel(int x, int y) {
+	LCD_L0_SetPixelIndex(x, y, ~LCD_L0_GetPixelIndex(x, y));
+}
+
+void LCD_L0_DrawHLine(int x0, int y, int x1) {
+	if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
+		for (; x0 <= x1; x0++) {
+			LCD_L0_XorPixel(x0, y);
+		}
+	}
+	else {
+		for (; x0 <= x1; x0++) {
+			LCD_L0_SetPixelIndex(x0, y, LCD_COLORINDEX);
+		}
+	}
+}
+
+void LCD_L0_DrawVLine(int x, int y0, int y1) {
+	if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
+		for (; y0 <= y1; y0++) {
+			LCD_L0_XorPixel(x, y0);
+		}
+	}
+	else {
+		for (; y0 <= y1; y0++) {
+			LCD_L0_SetPixelIndex(x, y0, LCD_COLORINDEX);
+		}
+	}
+}
+
+void LCD_L0_FillRect(int x0, int y0, int x1, int y1) {
+	for (; y0 <= y1; y0++) {
+		LCD_L0_DrawHLine(x0, y0, x1);
+	}
+}
+
 
 extern int  LCD_L0_Init(void) {
 	SimDisp::LoadDll(_T("SimClient.dll"));
 	//SimDisp::LoadDll(_T("SimDisp.dll"));
-	assert(SimDisp::Open(L"TUI By Nurtas Ihram", 320, 240));
+	assert(SimDisp::Open(L"TUI By Nurtas Ihram", LCD_XSIZE, LCD_YSIZE));
 	SimDisp::SetOnMouse([](int16_t xPos, int16_t yPos, int16_t zPos,
 						   tSimDisp_MouseKey mk) {
 		if (xPos < 0 || yPos < 0)
@@ -47,6 +82,6 @@ extern int  LCD_L0_Init(void) {
 	SimDisp::HideCursor(true);
 	SimDisp::AutoFlush(true);
 	SimDisp::Show(true);
-	SimDisp::Ayx.Init();
+	Ayx.Init();
 	return 0;
 }

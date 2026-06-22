@@ -183,7 +183,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h" />
-    <ClInclude Include="Config\LCDConf.h" />
     <ClInclude Include="GUI\Core\GUI.h" />
     <ClInclude Include="GUI\Core\GUIDebug.h" />
     <ClInclude Include="GUI\Core\GUIType.h" />
@@ -193,7 +192,6 @@
     <ClInclude Include="GUI\Core\GUI_Protected.h" />
     <ClInclude Include="GUI\Core\GUI_X.h" />
     <ClInclude Include="GUI\Core\LCD.h" />
-    <ClInclude Include="GUI\Core\LCD_ConfDefaults.h" />
     <ClInclude Include="GUI\Core\LCD_Private.h" />
     <ClInclude Include="GUI\Core\LCD_Protected.h" />
     <ClInclude Include="GUI\Widget\BUTTON.h" />

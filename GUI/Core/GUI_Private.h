@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GUI_Protected.h"
-#include "LCD_Private.h"   /* Required because of RGB_COLOR, which depends on LCDConf */
+#include "LCD_Private.h"
 
 #if GUI_SUPPORT_DEVICES
 #define LCDDEV_L0_DrawBitmap          GUI_Context.pDeviceAPI->pfDrawBitmap
@@ -25,7 +25,7 @@
 #define LCDDEV_L0_GetPixelIndex       LCD_L0_GetPixelIndex
 #define LCDDEV_L0_SetPixelIndex       LCD_L0_SetPixelIndex
 #define LCDDEV_L0_XorPixel            LCD_L0_XorPixel
-#endif
+#endif  
 
 void LCD_L0_DrawBitmap    (int x0, int y0, int xsize, int ysize,
                            int BitsPerPixel, int BytesPerLine,

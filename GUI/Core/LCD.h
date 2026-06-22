@@ -74,16 +74,8 @@ struct tLCDDEV_APIList_struct {
     unsigned                  BitsPerPixel;
 #endif
 };
-extern const struct tLCDDEV_APIList_struct GUI_MEMDEV__APIList1;
-extern const struct tLCDDEV_APIList_struct GUI_MEMDEV__APIList8;
+
 extern const struct tLCDDEV_APIList_struct GUI_MEMDEV__APIList16;
-
-#define GUI_MEMDEV_APILIST_1  &GUI_MEMDEV__APIList1
-#define GUI_MEMDEV_APILIST_8  &GUI_MEMDEV__APIList8
-#define GUI_MEMDEV_APILIST_16 &GUI_MEMDEV__APIList16
-
-int LCD_GetXSize(void);
-int LCD_GetYSize(void);
 
 void LCD_DrawHLine(int x0, int y0,  int x1);
 void LCD_DrawPixel(int x0, int y0);

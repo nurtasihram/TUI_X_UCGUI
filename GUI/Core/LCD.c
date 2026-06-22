@@ -9,17 +9,14 @@ void LCD_SetClipRectMax(void) {
 void LCD_L0_GetRect(GUI_RECT *pRect) {
 	pRect->x0 = 0;
 	pRect->y0 = 0;
-	pRect->x1 = LCD_XSIZE - 1;
-	pRect->y1 = LCD_YSIZE - 1;
+	pRect->x1 = LCD_GetXSize() - 1;
+	pRect->y1 = LCD_GetYSize() - 1;
 }
 void LCD_SetClipRectEx(const GUI_RECT *pRect) {
 	GUI_RECT r;
 	LCDDEV_L0_GetRect(&r);
 	GUI__IntersectRects(&GUI_Context.ClipRect, pRect, &r);
 }
-
-int LCD_GetXSize(void) { return LCD_XSIZE; }
-int LCD_GetYSize(void) { return LCD_YSIZE; }
 
 int LCD_Init(void) {
 	LCD_SetClipRectMax();

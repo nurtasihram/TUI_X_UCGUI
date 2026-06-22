@@ -1,6 +1,5 @@
 #pragma once
 
-#include "LCD_ConfDefaults.h"            /* Configuration header file */
 #include "LCD_Protected.h"
 #include "GUI.h"
 
