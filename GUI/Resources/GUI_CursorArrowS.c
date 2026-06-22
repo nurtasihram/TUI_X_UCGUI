@@ -1,6 +1,7 @@
 #include "GUI_Protected.h"
 
 const uint8_t GUI_Pixels_ArrowS[45] = {
+<<<<<<< HEAD
 XX______,________,________,
 XXXX____,________,________,
 XXooXX__,________,________,
@@ -16,6 +17,23 @@ XX____XX,ooooXX__,________,
 ________,XXooooXX,________,
 ________,XXooooXX,________,
 ________,__XXXX__,________,
+=======
+XX______;________,________
+XXXX____;________,________
+XXooXX__;________,________
+XXooooXX;________,________
+XXoooooo;XX______,________
+XXoooooo;ooXX____,________
+XXoooooo;ooooXX__,________
+XXoooooo;ooooooXX,________
+XXoooooo;ooXXXXXX,XX______
+XXooXXoo;ooXX____,________
+XXXX__XX;ooooXX__,________
+XX____XX;ooooXX__,________
+________;XXooooXX,________
+________;XXooooXX,________
+________;__XXXX__,________
+>>>>>>> a84c55a2dc1a03afeceb3824bb7d011f7c529967
 };
 
 const GUI_BITMAP GUI_BitmapArrowS = {
