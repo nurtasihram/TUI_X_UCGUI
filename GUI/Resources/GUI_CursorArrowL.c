@@ -1,26 +1,39 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              µC/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : GUI_CursorArrowL.C
-Purpose     : Defines the arrow cursor, large
----------------------------END-OF-HEADER------------------------------
-*/
-
-#include <stdlib.h>
 #include "GUI_Protected.h"
 
-GUI_CONST_STORAGE GUI_BITMAP GUI_BitmapArrowL = {
+const uint8_t GUI_Pixels_ArrowL[150] = {
+XX______,________,________,________,________,
+XXXX____,________,________,________,________,
+XXooXX__,________,________,________,________,
+XXooooXX,________,________,________,________,
+XXoooooo,XX______,________,________,________,
+XXoooooo,ooXX____,________,________,________,
+XXoooooo,ooooXX__,________,________,________,
+XXoooooo,ooooooXX,________,________,________,
+XXoooooo,oooooooo,XX______,________,________,
+XXoooooo,oooooooo,ooXX____,________,________,
+XXoooooo,oooooooo,ooooXX__,________,________,
+XXoooooo,oooooooo,ooooooXX,________,________,
+XXoooooo,oooooooo,oooooooo,XX______,________,
+XXoooooo,oooooooo,oooooooo,ooXX____,________,
+XXoooooo,oooooooo,oooooooo,ooooXX__,________,
+XXoooooo,oooooooo,oooooooo,ooooooXX,________,
+XXoooooo,oooooooo,oooooooo,oooooooo,XX______,
+XXoooooo,oooooooo,ooXXXXXX,XXXXXXXX,XXXX____,
+XXoooooo,ooXXoooo,ooXX____,________,________,
+XXoooooo,XX__XXoo,ooooXX__,________,________,
+XXooooXX,____XXoo,ooooXX__,________,________,
+XXooXX__,______XX,ooooooXX,________,________,
+XXXX____,______XX,ooooooXX,________,________,
+XX______,________,XXoooooo,XX______,________,
+________,________,XXoooooo,XX______,________,
+________,________,__XXoooo,ooXX____,________,
+________,________,__XXoooo,ooXX____,________,
+________,________,____XXoo,ooooXX__,________,
+________,________,____XXoo,ooooXX__,________,
+________,________,______XX,XXXX____,________,
+};
+
+const GUI_BITMAP GUI_BitmapArrowL = {
  18,                  /* XSize */
  30,                  /* YSize */
  5,                   /* BytesPerLine */
@@ -29,8 +42,20 @@ GUI_CONST_STORAGE GUI_BITMAP GUI_BitmapArrowL = {
  &GUI_CursorPal       /* Pointer to palette */
 };
 
-GUI_CONST_STORAGE GUI_CURSOR GUI_CursorArrowL = {
+const GUI_CURSOR GUI_CursorArrowL = {
   &GUI_BitmapArrowL, 0, 0
 };
 
-/*************************** End of file ****************************/
+
+const GUI_BITMAP GUI_BitmapArrowLI = {
+ 18,                  /* XSize */
+ 30,                  /* YSize */
+ 5,                   /* BytesPerLine */
+ 2,                   /* BitsPerPixel */
+ GUI_Pixels_ArrowL,   /* Pointer to picture data (indices) */
+ &GUI_CursorPalI      /* Pointer to palette */
+};
+
+const GUI_CURSOR GUI_CursorArrowLI = {
+  &GUI_BitmapArrowLI, 0, 0
+};

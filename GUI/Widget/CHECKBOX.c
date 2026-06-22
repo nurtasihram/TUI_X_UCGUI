@@ -329,18 +329,18 @@ void CHECKBOX_SetNumStates(CHECKBOX_Handle hObj, unsigned NumStates) {
 	};
 
 	/* Pixel data */
-	static const unsigned char _acCheck[] = {
-	  XXXXXXXX, XXX_____,
-	  XXXXXXXX, XXX_____,
-	  XXXXXXXX, _XX_____,
-	  XXXXXXX_, XXX_____,
-	  XX_XXX_X, _XX_____,
-	  XXX_X_X_, XXX_____,
-	  XX_X_X_X, XXX_____,
-	  XXX_X_XX, XXX_____,
-	  XXXX_XXX, XXX_____,
-	  XXXXXXXX, XXX_____,
-	  XXXXXXXX, XXX_____
+	static const uint8_t _acCheck[] = {
+	XXXXXXXXXXXXXXXX,XXXXXX__________,
+	XXXXXXXXXXXXXXXX,XXXXXX__________,
+	XXXXXXXXXXXXXXXX,__XXXX__________,
+	XXXXXXXXXXXXXX__,XXXXXX__________,
+	XXXX__XXXXXX__XX,__XXXX__________,
+	XXXXXX__XX__XX__,XXXXXX__________,
+	XXXX__XX__XX__XX,XXXXXX__________,
+	XXXXXX__XX__XXXX,XXXXXX__________,
+	XXXXXXXX__XXXXXX,XXXXXX__________,
+	XXXXXXXXXXXXXXXX,XXXXXX__________,
+	XXXXXXXXXXXXXXXX,XXXXXX__________
 	};
 
 	/* Bitmaps */
@@ -434,18 +434,18 @@ static const GUI_LOGPALETTE _PalCheckEnabled = {
   _aColorEnabled
 };
 /* Pixel data */
-static const unsigned char _acCheck[] = {
-  XXXXXXXX, XXX_____,
-  XXXXXXXX, XXX_____,
-  XXXXXXXX, _XX_____,
-  XXXXXXX_, _XX_____,
-  XX_XXX__, _XX_____,
-  XX__X___, XXX_____,
-  XX_____X, XXX_____,
-  XXX___XX, XXX_____,
-  XXXX_XXX, XXX_____,
-  XXXXXXXX, XXX_____,
-  XXXXXXXX, XXX_____
+static const uint8_t _acCheck[] = {
+XXXXXXXXXXXXXXXX,XXXXXX__________,
+XXXXXXXXXXXXXXXX,XXXXXX__________,
+XXXXXXXXXXXXXXXX,__XXXX__________,
+XXXXXXXXXXXXXX__,__XXXX__________,
+XXXX__XXXXXX____,__XXXX__________,
+XXXX____XX______,XXXXXX__________,
+XXXX__________XX,XXXXXX__________,
+XXXXXX______XXXX,XXXXXX__________,
+XXXXXXXX__XXXXXX,XXXXXX__________,
+XXXXXXXXXXXXXXXX,XXXXXX__________,
+XXXXXXXXXXXXXXXX,XXXXXX__________
 };
 
 /* Bitmaps */

@@ -151,16 +151,16 @@ typedef char GUI_CURSOR_tfTempHide  (const GUI_RECT* pRect);
 typedef void GUI_CURSOR_tfTempUnhide(void);
 typedef int  WM_tfHandlePID(void);
 
-extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_ArrowS[45];
-extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_ArrowM[60];
-extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_ArrowL[150];
-extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_CrossS[33];
-extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_CrossM[126];
-extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_CrossL[248];
-extern GUI_CONST_STORAGE unsigned char  GUI_PixelsHeaderM[5 * 17];
+extern const uint8_t  GUI_Pixels_ArrowS[45];
+extern const uint8_t  GUI_Pixels_ArrowM[60];
+extern const uint8_t  GUI_Pixels_ArrowL[150];
+extern const uint8_t  GUI_Pixels_CrossS[33];
+extern const uint8_t  GUI_Pixels_CrossM[126];
+extern const uint8_t  GUI_Pixels_CrossL[248];
+extern const uint8_t  GUI_PixelsHeaderM[5 * 17];
 
-extern GUI_CONST_STORAGE GUI_LOGPALETTE GUI_CursorPal;
-extern GUI_CONST_STORAGE GUI_LOGPALETTE GUI_CursorPalI;
+extern const GUI_LOGPALETTE GUI_CursorPal;
+extern const GUI_LOGPALETTE GUI_CursorPalI;
 
 extern GUI_RECT  GUI_RectDispString; /* Used by LCD_Rotate...() and GUI_DispStringInRect() */
 

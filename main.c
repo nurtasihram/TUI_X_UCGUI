@@ -98,13 +98,9 @@ static const GUI_ConstString _ListBox[] = {
   "English", "Deutsch", NULL
 };
 
-/*********************************************************************
-*
-*       Dialog resource
-*
-* This table conatins the info required to create the dialog.
-* It has been created manually, but could also be created by a GUI-builder.
-*/
+#define GUI_ID_MULTIEDIT0  GUI_ID_USER + 0x00
+#define GUI_ID_CHECK0      GUI_ID_USER + 0x01
+#define GUI_ID_CHECK1      GUI_ID_USER + 0x02
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 	{ FRAMEWIN_CreateIndirect,  "Owner drawn list box",    0,                  50,  50, 220, 165, FRAMEWIN_CF_MOVEABLE },
 	{ LISTBOX_CreateIndirect,   0,                         GUI_ID_MULTIEDIT0,  10,  10, 100, 100, 0, 100 },

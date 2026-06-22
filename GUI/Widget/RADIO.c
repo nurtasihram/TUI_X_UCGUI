@@ -550,25 +550,25 @@ static const GUI_LOGPALETTE _PalCheck = {
 };
 
 /* Pixel data */
-static const unsigned char _acRadio[] = {
-  0x00, 0x55, 0x00,
-  0x05, 0xAA, 0x50,
-  0x1A, 0xFF, 0xAC,
-  0x1B, 0xFF, 0xCC,
-  0x6F, 0xFF, 0xF3,
-  0x6F, 0xFF, 0xF3,
-  0x6F, 0xFF, 0xF3,
-  0x6F, 0xFF, 0xF3,
-  0x1B, 0xFF, 0xCC,
-  0x10, 0xFF, 0x0C,
-  0x0F, 0x00, 0xF0,
-  0x00, 0xFF, 0x00
+static const uint8_t _acRadio[] = {
+________,XXXXXXXX,________,
+____XXXX,oooooooo,XXXX____,
+__XXoooo,dddddddd,oooodd__,
+__XXoodd,dddddddd,dd__dd__,
+XXoodddd,dddddddd,dddd__dd,
+XXoodddd,dddddddd,dddd__dd,
+XXoodddd,dddddddd,dddd__dd,
+XXoodddd,dddddddd,dddd__dd,
+__XXoodd,dddddddd,dd__dd__,
+__XX____,dddddddd,____dd__,
+____dddd,________,dddd____,
+________,dddddddd,________,
 };
-static const unsigned char _acCheck[] = {
-  _XX_____,
-  XXXX____,
-  XXXX____,
-  _XX_____
+static const uint8_t _acCheck[] = {
+  __XXXX__________,
+  XXXXXXXX________,
+  XXXXXXXX________,
+  __XXXX__________
 };
 /* Bitmaps */
 const GUI_BITMAP RADIO__abmRadio[] = {

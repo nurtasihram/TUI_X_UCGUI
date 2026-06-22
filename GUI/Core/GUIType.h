@@ -23,7 +23,7 @@ typedef struct {
 
 typedef struct {
 	int x, y;
-	unsigned char Pressed;
+	uint8_t Pressed;
 } GUI_PID_STATE;
 
 /*
@@ -52,7 +52,7 @@ typedef struct {
 	uint8_t XSize;
 	uint8_t XDist;
 	uint8_t BytesPerLine;
-	const unsigned char GUI_UNI_PTR *pData;
+	const uint8_t GUI_UNI_PTR *pData;
 } GUI_CHARINFO;
 
 typedef struct GUI_FONT_PROP {
@@ -63,7 +63,7 @@ typedef struct GUI_FONT_PROP {
 } GUI_FONT_PROP;
 
 typedef struct {
-	const unsigned char GUI_UNI_PTR *pData;
+	const uint8_t GUI_UNI_PTR *pData;
 	const uint8_t GUI_UNI_PTR *pTransData;
 	const GUI_FONT_TRANSINFO GUI_UNI_PTR *pTrans;
 	uint16_t FirstChar;

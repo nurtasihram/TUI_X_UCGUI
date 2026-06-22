@@ -808,15 +808,15 @@ static int      _CaptureFlags;
 static const GUI_CURSOR GUI_UNI_PTR *_pOldCursor;
 #endif
 #if GUI_SUPPORT_CURSOR
-static GUI_CONST_STORAGE RGB_COLOR _ColorsCursor[] = {
+static const RGB_COLOR _ColorsCursor[] = {
 	 0x0000FF,0x000000,0xFFFFFF
 };
-static GUI_CONST_STORAGE GUI_LOGPALETTE _PalCursor = {
+static const GUI_LOGPALETTE _PalCursor = {
   3,	/* number of entries */
   1, 	/* Has transparency */
   &_ColorsCursor[0]
 };
-static GUI_CONST_STORAGE unsigned char _acResizeCursorH[] = {
+static const uint8_t _acResizeCursorH[] = {
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00,
@@ -835,7 +835,7 @@ static GUI_CONST_STORAGE unsigned char _acResizeCursorH[] = {
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00
 };
-static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorH = {
+static const GUI_BITMAP _bmResizeCursorH = {
  17,  /* XSize */
  17,  /* YSize */
  5,   /* BytesPerLine */
@@ -843,10 +843,10 @@ static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorH = {
  _acResizeCursorH,    /* Pointer to picture data (indices) */
  &_PalCursor          /* Pointer to palette */
 };
-static GUI_CONST_STORAGE GUI_CURSOR _ResizeCursorH = {
+static const GUI_CURSOR _ResizeCursorH = {
   &_bmResizeCursorH, 8, 8
 };
-static GUI_CONST_STORAGE unsigned char _acResizeCursorV[] = {
+static const uint8_t _acResizeCursorV[] = {
   0x00, 0x00, 0x40, 0x00, 0x00,
   0x00, 0x01, 0x90, 0x00, 0x00,
   0x00, 0x06, 0xA4, 0x00, 0x00,
@@ -865,7 +865,7 @@ static GUI_CONST_STORAGE unsigned char _acResizeCursorV[] = {
   0x00, 0x01, 0x90, 0x00, 0x00,
   0x00, 0x00, 0x40, 0x00, 0x00
 };
-static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorV = {
+static const GUI_BITMAP _bmResizeCursorV = {
  17,  /* XSize */
  17,  /* YSize */
  5,   /* BytesPerLine */
@@ -873,10 +873,10 @@ static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorV = {
  _acResizeCursorV,    /* Pointer to picture data (indices) */
  &_PalCursor          /* Pointer to palette */
 };
-static GUI_CONST_STORAGE GUI_CURSOR _ResizeCursorV = {
+static const GUI_CURSOR _ResizeCursorV = {
   &_bmResizeCursorV, 8, 8
 };
-static GUI_CONST_STORAGE unsigned char _acResizeCursorDD[] = {
+static const uint8_t _acResizeCursorDD[] = {
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x05, 0x55, 0x00, 0x00, 0x00,
@@ -895,7 +895,7 @@ static GUI_CONST_STORAGE unsigned char _acResizeCursorDD[] = {
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00
 };
-static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorDD = {
+static const GUI_BITMAP _bmResizeCursorDD = {
  17,  /* XSize */
  17,  /* YSize */
  5,   /* BytesPerLine */
@@ -903,10 +903,10 @@ static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorDD = {
  _acResizeCursorDD,   /* Pointer to picture data (indices) */
  &_PalCursor          /* Pointer to palette */
 };
-static GUI_CONST_STORAGE GUI_CURSOR _ResizeCursorDD = {
+static const GUI_CURSOR _ResizeCursorDD = {
   &_bmResizeCursorDD, 8, 8
 };
-static GUI_CONST_STORAGE unsigned char _acResizeCursorDU[] = {
+static const uint8_t _acResizeCursorDU[] = {
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x15, 0x54, 0x00,
@@ -925,7 +925,7 @@ static GUI_CONST_STORAGE unsigned char _acResizeCursorDU[] = {
   0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00
 };
-static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorDU = {
+static const GUI_BITMAP _bmResizeCursorDU = {
  17,  /* XSize */
  17,  /* YSize */
  5,   /* BytesPerLine */
@@ -933,7 +933,7 @@ static GUI_CONST_STORAGE GUI_BITMAP _bmResizeCursorDU = {
  _acResizeCursorDU,   /* Pointer to picture data (indices) */
  &_PalCursor          /* Pointer to palette */
 };
-static GUI_CONST_STORAGE GUI_CURSOR _ResizeCursorDU = {
+static const GUI_CURSOR _ResizeCursorDU = {
   &_bmResizeCursorDU, 8, 8
 };
 #endif

@@ -14,7 +14,7 @@
 */
 void GUIMONO_DispChar(uint16_t c) {
   int c0, c1;
-  const unsigned char GUI_UNI_PTR * pd;
+  const uint8_t GUI_UNI_PTR * pd;
   int x = GUI_Context.DispPosX;
   int y = GUI_Context.DispPosY;
   /* do some checking if drawing is actually necessary ... */
