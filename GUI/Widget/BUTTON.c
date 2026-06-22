@@ -21,22 +21,22 @@
 #endif
 /* Define colors */
 #ifndef   BUTTON_BKCOLOR0_DEFAULT
-#define BUTTON_BKCOLOR0_DEFAULT   0xAAAAAA
+#define BUTTON_BKCOLOR0_DEFAULT   RGB_GRAYL(0xAA)
 #endif
 #ifndef   BUTTON_BKCOLOR1_DEFAULT
-#define BUTTON_BKCOLOR1_DEFAULT   GUI_WHITE
+#define BUTTON_BKCOLOR1_DEFAULT   RGB_WHITE
 #endif
 #ifndef   BUTTON_BKCOLOR2_DEFAULT
-#define BUTTON_BKCOLOR2_DEFAULT   GUI_LIGHTGRAY
+#define BUTTON_BKCOLOR2_DEFAULT   RGB_LIGHTGRAY
 #endif
 #ifndef   BUTTON_TEXTCOLOR0_DEFAULT
-#define BUTTON_TEXTCOLOR0_DEFAULT GUI_BLACK
+#define BUTTON_TEXTCOLOR0_DEFAULT RGB_BLACK
 #endif
 #ifndef   BUTTON_TEXTCOLOR1_DEFAULT
-#define BUTTON_TEXTCOLOR1_DEFAULT GUI_BLACK
+#define BUTTON_TEXTCOLOR1_DEFAULT RGB_BLACK
 #endif
 #ifndef   BUTTON_TEXTCOLOR2_DEFAULT
-#define BUTTON_TEXTCOLOR2_DEFAULT GUI_DARKGRAY
+#define BUTTON_TEXTCOLOR2_DEFAULT RGB_DARKGRAY
 #endif
 #ifndef   BUTTON_REACT_ON_LEVEL
 #define BUTTON_REACT_ON_LEVEL 0
@@ -78,7 +78,7 @@ static void _Paint(BUTTON_Obj *pObj, BUTTON_Handle hObj) {
 			EffectSize = pObj->Widget.pEffect->EffectSize;
 		}
 		else {
-			LCD_SetColor(0x000000);
+			LCD_SetColor(RGB_BLACK);
 			GUI_DrawRect(rClient.y0, rClient.x0, rClient.x1, rClient.y1);
 			EffectSize = 1;
 		}
@@ -115,7 +115,7 @@ static void _Paint(BUTTON_Obj *pObj, BUTTON_Handle hObj) {
 	}
 	/* Draw focus */
 	if (State & BUTTON_STATE_FOCUS) {
-		LCD_SetColor(GUI_BLACK);
+		LCD_SetColor(RGB_BLACK);
 		GUI_DrawFocusRect(&rClient, 2);
 	}
 	WM_SetUserClipRect(NULL);

@@ -10,7 +10,7 @@
 
 /* Define default fonts */
 #define TEXT_FONT_DEFAULT &GUI_Font13_1
-#define TEXT_DEFAULT_TEXT_COLOR GUI_BLACK
+#define TEXT_DEFAULT_TEXT_COLOR RGB_BLACK
 static const GUI_FONT GUI_UNI_PTR * _pDefaultFont = TEXT_FONT_DEFAULT;
 static RGB_COLOR        _DefaultTextColor = TEXT_DEFAULT_TEXT_COLOR;
 static void _FreeAttached(TEXT_Obj* pObj) {
@@ -133,7 +133,7 @@ void TEXT_SetBkColor(TEXT_Handle hObj, RGB_COLOR Color) {
 		pObj = (hObj);
 		pObj->BkColor = Color;
 #if TEXT_SUPPORT_TRANSPARENCY
-		if (Color <= 0xFFFFFF) {
+		if (Color <= RGB_WHITE) {
 			WM_ClrHasTrans(hObj);
 		}
 		else {

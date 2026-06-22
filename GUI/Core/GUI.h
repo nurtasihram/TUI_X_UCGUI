@@ -76,33 +76,37 @@ Note that we have chosen the values to be close to existing
         *********************************
 */
 
-#define GUI_BLUE          0xFF0000
-#define GUI_GREEN         0x00FF00
-#define GUI_RED           0x0000FF
-#define GUI_CYAN          0xFFFF00
-#define GUI_MAGENTA       0xFF00FF
-#define GUI_YELLOW        0x00FFFF
-#define GUI_LIGHTBLUE     0xFF8080
-#define GUI_LIGHTGREEN    0x80FF80
-#define GUI_LIGHTRED      0x8080FF
-#define GUI_LIGHTCYAN     0xFFFF80
-#define GUI_LIGHTMAGENTA  0xFF80FF
-#define GUI_LIGHTYELLOW   0x80FFFF
-#define GUI_DARKBLUE      0x800000
-#define GUI_DARKGREEN     0x008000
-#define GUI_DARKRED       0x000080
-#define GUI_DARKCYAN      0x808000
-#define GUI_DARKMAGENTA   0x800080
-#define GUI_DARKYELLOW    0x008080
-#define GUI_WHITE         0xFFFFFF
-#define GUI_LIGHTGRAY     0xD3D3D3
-#define GUI_GRAY          0x808080
-#define GUI_DARKGRAY      0x404040
-#define GUI_BLACK         0x000000
+#define COLOR_RGB(r,g,b)  ((b) | ((g) << 8) | ((r) << 16))
+#define RGB_GRAYL(a)      COLOR_RGB(a,a,a)
+#define RGB_BLUEL(a)      COLOR_RGB(0,0,a)
+#define RGB_GREENL(a)     COLOR_RGB(0,a,0)
+#define RGB_REDL(a)       COLOR_RGB(a,0,0)
+#define RGB_BLACK         RGB_GRAYL(0x00)
+#define RGB_DARKGRAY      RGB_GRAYL(0x40)
+#define RGB_GRAY          RGB_GRAYL(0x80)
+#define RGB_LIGHTGRAY     RGB_GRAYL(0xD3)
+#define RGB_WHITE         RGB_GRAYL(0xFF)
+#define RGB_BLUE          COLOR_RGB(0x00,0x00,0xFF)
+#define RGB_GREEN         COLOR_RGB(0x00,0xFF,0x00)
+#define RGB_RED           COLOR_RGB(0xFF,0x00,0x00)
+#define RGB_CYAN          COLOR_RGB(0x00,0xFF,0xFF)
+#define RGB_MAGENTA       COLOR_RGB(0xFF,0x00,0xFF)
+#define RGB_YELLOW        COLOR_RGB(0xFF,0xFF,0x00)
+#define RGB_LIGHTBLUE     COLOR_RGB(0xFF,0x80,0x80)
+#define RGB_LIGHTGREEN    COLOR_RGB(0x80,0xFF,0x80)
+#define RGB_LIGHTRED      COLOR_RGB(0x80,0x80,0xFF)
+#define RGB_LIGHTCYAN     COLOR_RGB(0xFF,0xFF,0x80)
+#define RGB_LIGHTMAGENTA  COLOR_RGB(0xFF,0x80,0xFF)
+#define RGB_LIGHTYELLOW   COLOR_RGB(0x80,0xFF,0xFF)
+#define RGB_DARKBLUE      COLOR_RGB(0x80,0x00,0x00)
+#define RGB_DARKGREEN     COLOR_RGB(0x00,0x80,0x80)
+#define RGB_DARKRED       COLOR_RGB(0x80,0x00,0x00)
+#define RGB_DARKCYAN      COLOR_RGB(0x80,0x80,0x00)
+#define RGB_DARKMAGENTA   COLOR_RGB(0x80,0x00,0x80)
+#define RGB_DARKYELLOW    COLOR_RGB(0x00,0x80,0x80)
+#define RGB_BROWN         COLOR_RGB(0x2A,0x2A,0xA5)
 
-#define GUI_BROWN         0x2A2AA5
-
-#define GUI_INVALID_COLOR 0xFFFFFFF      /* Invalid color - more than 24 bits */
+#define GUI_INVALID_COLOR ~0      /* Invalid color - more than 24 bits */
 
 /*      *********************************
         *

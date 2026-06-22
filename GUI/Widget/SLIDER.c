@@ -9,10 +9,10 @@
 /* Support for 3D effects */
 #define SLIDER_USE_3D 1
 /* Define colors */
-#define SLIDER_BKCOLOR0_DEFAULT 0xc0c0c0
-#define SLIDER_BKCOLOR1_DEFAULT GUI_WHITE
-#define SLIDER_COLOR0_DEFAULT 0xc0c0c0
-#define SLIDER_COLOR1_DEFAULT GUI_BLACK
+#define SLIDER_BKCOLOR0_DEFAULT RGB_GRAYL(0xc0)
+#define SLIDER_BKCOLOR1_DEFAULT RGB_WHITE
+#define SLIDER_COLOR0_DEFAULT RGB_GRAYL(0xc0)
+#define SLIDER_COLOR1_DEFAULT RGB_BLACK
 typedef struct {
 	WIDGET Widget;
 	RGB_COLOR aBkColor[2];
@@ -69,7 +69,7 @@ static void _Paint(SLIDER_Obj *pObj, WM_HWIN hObj) {
 		}
 	}
 	if (NumTicks > 1) {
-		LCD_SetColor(GUI_BLACK);
+		LCD_SetColor(RGB_BLACK);
 		for (i = 0; i < NumTicks; i++) {
 			int x = x0 + xsize * i / (NumTicks - 1);
 			WIDGET__DrawVLine(&pObj->Widget, x, 1, 3);
@@ -78,11 +78,11 @@ static void _Paint(SLIDER_Obj *pObj, WM_HWIN hObj) {
 	/* Draw the slider itself */
 	LCD_SetColor(pObj->aColor[0]);
 	WIDGET__FillRectEx(&pObj->Widget, &rSlider);
-	LCD_SetColor(GUI_BLACK);
+	LCD_SetColor(RGB_BLACK);
 	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &rSlider);
 	/* Draw focus */
 	if (pObj->Widget.State & WIDGET_STATE_FOCUS) {
-		LCD_SetColor(GUI_BLACK);
+		LCD_SetColor(RGB_BLACK);
 		WIDGET__DrawFocusRect(&pObj->Widget, &rFocus, 0);
 	}
 }
@@ -307,7 +307,7 @@ void SLIDER_SetBkColor(SLIDER_Handle hObj, RGB_COLOR Color) {
 		pObj = (hObj);
 		pObj->aBkColor[0] = Color;
 #if SLIDER_SUPPORT_TRANSPARENCY
-		if (Color <= 0xFFFFFF) {
+		if (Color <= RGB_WHITE) {
 			WM_ClrHasTrans(hObj);
 		}
 		else {

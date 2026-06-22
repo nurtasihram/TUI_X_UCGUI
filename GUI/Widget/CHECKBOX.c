@@ -15,9 +15,9 @@
 #define CHECKBOX_IMAGE0_DEFAULT &CHECKBOX__abmCheck[0]
 #define CHECKBOX_IMAGE1_DEFAULT &CHECKBOX__abmCheck[1]
 /* Define widget background color */
-#define CHECKBOX_BKCOLOR_DEFAULT 0xC0C0C0           /* Text background color */
+#define CHECKBOX_BKCOLOR_DEFAULT RGB_GRAYL(0xC0)           /* Text background color */
 #define CHECKBOX_SPACING_DEFAULT 4
-#define CHECKBOX_TEXTCOLOR_DEFAULT GUI_BLACK
+#define CHECKBOX_TEXTCOLOR_DEFAULT RGB_BLACK
 #define CHECKBOX_TEXTALIGN_DEFAULT (GUI_TA_LEFT | GUI_TA_VCENTER)
 CHECKBOX_PROPS CHECKBOX__DefaultProps = {
   CHECKBOX_FONT_DEFAULT,
@@ -98,7 +98,7 @@ static void _Paint(CHECKBOX_Obj *pObj, CHECKBOX_Handle hObj) {
 			}
 			RectFocus.x1 = RectFocus.x0 + xSizeText;
 			RectFocus.y1 = RectFocus.y0 + ySizeText;
-			LCD_SetColor(GUI_BLACK);
+			LCD_SetColor(RGB_BLACK);
 			WIDGET__DrawFocusRect(&pObj->Widget, &RectFocus, 0);
 		}
 	}
@@ -272,7 +272,7 @@ void CHECKBOX_SetBkColor(CHECKBOX_Handle hObj, RGB_COLOR Color) {
 		if (Color != pObj->Props.BkColor) {
 			pObj->Props.BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
-			if (Color <= 0xFFFFFF) {
+			if (Color <= RGB_WHITE) {
 				WM_SetTransState(hObj, 0);
 			}
 			else {

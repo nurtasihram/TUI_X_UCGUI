@@ -12,7 +12,7 @@
 #include "FRAMEWIN_Private.h"
 
 /* Support for 3D effects */
-#define FRAMEWIN_CLIENTCOLOR_DEFAULT 0xc0c0c0
+#define FRAMEWIN_CLIENTCOLOR_DEFAULT RGB_GRAYL(0xc0)
 /* Default for top frame size */
 #define FRAMEWIN_TITLEHEIGHT_DEFAULT 0
 /* Default for left/right/top/bottom frame size */
@@ -22,15 +22,15 @@
 /* Default font */
 #define FRAMEWIN_DEFAULT_FONT &GUI_Font8_1
 /* Default barcolor when framewin is active */
-#define FRAMEWIN_BARCOLOR_ACTIVE_DEFAULT 0xFF0000
+#define FRAMEWIN_BARCOLOR_ACTIVE_DEFAULT RGB_BLUE
 /* Default barcolor when framewin is inactive */
-#define FRAMEWIN_BARCOLOR_INACTIVE_DEFAULT 0x404040
+#define FRAMEWIN_BARCOLOR_INACTIVE_DEFAULT RGB_GRAYL(0x40)
 /* Default framecolor */
-#define FRAMEWIN_FRAMECOLOR_DEFAULT 0xAAAAAA
+#define FRAMEWIN_FRAMECOLOR_DEFAULT RGB_GRAYL(0xAA)
 /* Default textcolor when framewin is active */
-#define FRAMEWIN_TEXTCOLOR0_DEFAULT GUI_WHITE
+#define FRAMEWIN_TEXTCOLOR0_DEFAULT RGB_WHITE
 /* Default textcolor when framewin is inactive */
-#define FRAMEWIN_TEXTCOLOR1_DEFAULT GUI_WHITE
+#define FRAMEWIN_TEXTCOLOR1_DEFAULT RGB_WHITE
 FRAMEWIN_PROPS FRAMEWIN__DefaultProps = {
   FRAMEWIN_DEFAULT_FONT,
   FRAMEWIN_BARCOLOR_INACTIVE_DEFAULT,
@@ -809,7 +809,7 @@ static const GUI_CURSOR GUI_UNI_PTR *_pOldCursor;
 #endif
 #if GUI_SUPPORT_CURSOR
 static const RGB_COLOR _ColorsCursor[] = {
-	 0x0000FF,0x000000,0xFFFFFF
+	RGB_RED,RGB_BLACK,RGB_WHITE
 };
 static const GUI_LOGPALETTE _PalCursor = {
   3,	/* number of entries */
@@ -817,23 +817,23 @@ static const GUI_LOGPALETTE _PalCursor = {
   &_ColorsCursor[0]
 };
 static const uint8_t _acResizeCursorH[] = {
-  0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x40, 0x00, 0x40, 0x00,
-  0x01, 0x40, 0x00, 0x50, 0x00,
-  0x06, 0x40, 0x00, 0x64, 0x00,
-  0x1A, 0x55, 0x55, 0x69, 0x00,
-  0x6A, 0xAA, 0xAA, 0xAA, 0x40,
-  0x1A, 0x55, 0x55, 0x69, 0x00,
-  0x06, 0x40, 0x00, 0x64, 0x00,
-  0x01, 0x40, 0x00, 0x50, 0x00,
-  0x00, 0x40, 0x00, 0x40, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00
+________,________,________,________,________,
+________,________,________,________,________,
+________,________,________,________,________,
+________,________,________,________,________,
+________,XX______,________,XX______,________,
+______XX,XX______,________,XXXX____,________,
+____XXoo,XX______,________,XXooXX__,________,
+__XXoooo,XXXXXXXX,XXXXXXXX,XXooooXX,________,
+XXoooooo,oooooooo,oooooooo,oooooooo,XX______,
+__XXoooo,XXXXXXXX,XXXXXXXX,XXooooXX,________,
+____XXoo,XX______,________,XXooXX__,________,
+______XX,XX______,________,XXXX____,________,
+________,XX______,________,XX______,________,
+________,________,________,________,________,
+________,________,________,________,________,
+________,________,________,________,________,
+________,________,________,________,________,
 };
 static const GUI_BITMAP _bmResizeCursorH = {
  17,  /* XSize */
@@ -847,23 +847,23 @@ static const GUI_CURSOR _ResizeCursorH = {
   &_bmResizeCursorH, 8, 8
 };
 static const uint8_t _acResizeCursorV[] = {
-  0x00, 0x00, 0x40, 0x00, 0x00,
-  0x00, 0x01, 0x90, 0x00, 0x00,
-  0x00, 0x06, 0xA4, 0x00, 0x00,
-  0x00, 0x1A, 0xA9, 0x00, 0x00,
-  0x00, 0x55, 0x95, 0x40, 0x00,
-  0x00, 0x01, 0x90, 0x00, 0x00,
-  0x00, 0x01, 0x90, 0x00, 0x00,
-  0x00, 0x01, 0x90, 0x00, 0x00,
-  0x00, 0x01, 0x90, 0x00, 0x00,
-  0x00, 0x01, 0x90, 0x00, 0x00,
-  0x00, 0x01, 0x90, 0x00, 0x00,
-  0x00, 0x01, 0x90, 0x00, 0x00,
-  0x00, 0x55, 0x95, 0x40, 0x00,
-  0x00, 0x1A, 0xA9, 0x00, 0x00,
-  0x00, 0x06, 0xA4, 0x00, 0x00,
-  0x00, 0x01, 0x90, 0x00, 0x00,
-  0x00, 0x00, 0x40, 0x00, 0x00
+________,________,XX______,________,________,
+________,______XX,ooXX____,________,________,
+________,____XXoo,ooooXX__,________,________,
+________,__XXoooo,ooooooXX,________,________,
+________,XXXXXXXX,ooXXXXXX,XX______,________,
+________,______XX,ooXX____,________,________,
+________,______XX,ooXX____,________,________,
+________,______XX,ooXX____,________,________,
+________,______XX,ooXX____,________,________,
+________,______XX,ooXX____,________,________,
+________,______XX,ooXX____,________,________,
+________,______XX,ooXX____,________,________,
+________,XXXXXXXX,ooXXXXXX,XX______,________,
+________,__XXoooo,ooooooXX,________,________,
+________,____XXoo,ooooXX__,________,________,
+________,______XX,ooXX____,________,________,
+________,________,XX______,________,________,
 };
 static const GUI_BITMAP _bmResizeCursorV = {
  17,  /* XSize */
@@ -877,23 +877,23 @@ static const GUI_CURSOR _ResizeCursorV = {
   &_bmResizeCursorV, 8, 8
 };
 static const uint8_t _acResizeCursorDD[] = {
-  0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00,
-  0x05, 0x55, 0x00, 0x00, 0x00,
-  0x06, 0xA4, 0x00, 0x00, 0x00,
-  0x06, 0x90, 0x00, 0x00, 0x00,
-  0x06, 0x64, 0x00, 0x00, 0x00,
-  0x05, 0x19, 0x00, 0x00, 0x00,
-  0x04, 0x06, 0x40, 0x00, 0x00,
-  0x00, 0x01, 0x90, 0x00, 0x00,
-  0x00, 0x00, 0x64, 0x04, 0x00,
-  0x00, 0x00, 0x19, 0x14, 0x00,
-  0x00, 0x00, 0x06, 0x64, 0x00,
-  0x00, 0x00, 0x01, 0xA4, 0x00,
-  0x00, 0x00, 0x06, 0xA4, 0x00,
-  0x00, 0x00, 0x15, 0x54, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00
+________,________,________,________,________,
+________,________,________,________,________,
+____XXXX,XXXXXXXX,________,________,________,
+____XXoo,ooooXX__,________,________,________,
+____XXoo,ooXX____,________,________,________,
+____XXoo,XXooXX__,________,________,________,
+____XXXX,__XXooXX,________,________,________,
+____XX__,____XXoo,XX______,________,________,
+________,______XX,ooXX____,________,________,
+________,________,XXooXX__,____XX__,________,
+________,________,__XXooXX,__XXXX__,________,
+________,________,____XXoo,XXooXX__,________,
+________,________,______XX,ooooXX__,________,
+________,________,____XXoo,ooooXX__,________,
+________,________,__XXXXXX,XXXXXX__,________,
+________,________,________,________,________,
+________,________,________,________,________,
 };
 static const GUI_BITMAP _bmResizeCursorDD = {
  17,  /* XSize */
@@ -907,23 +907,23 @@ static const GUI_CURSOR _ResizeCursorDD = {
   &_bmResizeCursorDD, 8, 8
 };
 static const uint8_t _acResizeCursorDU[] = {
-  0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x15, 0x54, 0x00,
-  0x00, 0x00, 0x06, 0xA4, 0x00,
-  0x00, 0x00, 0x01, 0xA4, 0x00,
-  0x00, 0x00, 0x06, 0x64, 0x00,
-  0x00, 0x00, 0x19, 0x14, 0x00,
-  0x00, 0x00, 0x64, 0x04, 0x00,
-  0x00, 0x01, 0x90, 0x00, 0x00,
-  0x04, 0x06, 0x40, 0x00, 0x00,
-  0x05, 0x19, 0x00, 0x00, 0x00,
-  0x06, 0x64, 0x00, 0x00, 0x00,
-  0x06, 0x90, 0x00, 0x00, 0x00,
-  0x06, 0xA4, 0x00, 0x00, 0x00,
-  0x05, 0x55, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00
+________,________,________,________,________,
+________,________,________,________,________,
+________,________,__XXXXXX,XXXXXX__,________,
+________,________,____XXoo,ooooXX__,________,
+________,________,______XX,ooooXX__,________,
+________,________,____XXoo,XXooXX__,________,
+________,________,__XXooXX,__XXXX__,________,
+________,________,XXooXX__,____XX__,________,
+________,______XX,ooXX____,________,________,
+____XX__,____XXoo,XX______,________,________,
+____XXXX,__XXooXX,________,________,________,
+____XXoo,XXooXX__,________,________,________,
+____XXoo,ooXX____,________,________,________,
+____XXoo,ooooXX__,________,________,________,
+____XXXX,XXXXXXXX,________,________,________,
+________,________,________,________,________,
+________,________,________,________,________,
 };
 static const GUI_BITMAP _bmResizeCursorDU = {
  17,  /* XSize */

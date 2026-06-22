@@ -13,8 +13,8 @@
 /* Define default fonts */
 #define HEADER_FONT_DEFAULT &GUI_Font13_1
 /* Define colors */
-#define HEADER_BKCOLOR_DEFAULT 0xAAAAAA
-#define HEADER_TEXTCOLOR_DEFAULT GUI_BLACK
+#define HEADER_BKCOLOR_DEFAULT RGB_GRAYL(0xAA)
+#define HEADER_TEXTCOLOR_DEFAULT RGB_BLACK
 /* Define cursors */
 #define HEADER_CURSOR_DEFAULT &GUI_CursorHeaderM
 /* Remember the old cursor */

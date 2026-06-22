@@ -271,9 +271,6 @@
     <ClCompile Include="GUI\Core\GUI_CursorPal.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_CursorPalI.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_DispCEOL.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>

@@ -5,7 +5,7 @@
 #include "WM_Intern.h"
 
 /* Define colors */
-#define DIALOG_BKCOLOR0_DEFAULT 0xc0c0c0
+#define DIALOG_BKCOLOR0_DEFAULT RGB_GRAYL(0xc0)
 static RGB_COLOR _BkColor = DIALOG_BKCOLOR0_DEFAULT;
 RGB_COLOR DIALOG_GetBkColor(void) {
 	return _BkColor;

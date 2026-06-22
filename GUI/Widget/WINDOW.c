@@ -4,7 +4,7 @@
 
 #include "DIALOG.h"
 
-#define WINDOW_BKCOLOR_DEFAULT 0xC0C0C0
+#define WINDOW_BKCOLOR_DEFAULT RGB_GRAYL(0xC0)
 
 typedef struct {
 	WIDGET Widget;

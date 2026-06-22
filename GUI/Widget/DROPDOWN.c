@@ -19,12 +19,12 @@
 /* Define default fonts */
 #define DROPDOWN_FONT_DEFAULT &GUI_Font13_1
 /* Define colors */
-#define DROPDOWN_BKCOLOR0_DEFAULT GUI_WHITE     /* Not selected */
-#define DROPDOWN_BKCOLOR1_DEFAULT GUI_GRAY      /* Selected, no focus */
-#define DROPDOWN_BKCOLOR2_DEFAULT GUI_BLUE      /* Selected, focus */
-#define DROPDOWN_TEXTCOLOR0_DEFAULT GUI_BLACK   /* Not selected */
-#define DROPDOWN_TEXTCOLOR1_DEFAULT GUI_WHITE   /* Selected, no focus */
-#define DROPDOWN_TEXTCOLOR2_DEFAULT GUI_WHITE   /* Selected, focus */
+#define DROPDOWN_BKCOLOR0_DEFAULT RGB_WHITE     /* Not selected */
+#define DROPDOWN_BKCOLOR1_DEFAULT RGB_GRAY      /* Selected, no focus */
+#define DROPDOWN_BKCOLOR2_DEFAULT RGB_BLUE      /* Selected, focus */
+#define DROPDOWN_TEXTCOLOR0_DEFAULT RGB_BLACK   /* Not selected */
+#define DROPDOWN_TEXTCOLOR1_DEFAULT RGB_WHITE   /* Selected, no focus */
+#define DROPDOWN_TEXTCOLOR2_DEFAULT RGB_WHITE   /* Selected, focus */
 #define DROPDOWN_BORDER_DEFAULT 2
 #define DROPDOWN_ALIGN_DEFAULT GUI_TA_LEFT      /* Default text alignment */
 DROPDOWN_PROPS DROPDOWN__DefaultProps = {
@@ -132,9 +132,9 @@ static void _Paint(DROPDOWN_Handle hObj) {
 	WM_GetClientRect(&r);
 	GUI__ReduceRect(&r, &r, Border);
 	r.x0 = r.x1 + 1 - InnerSize;
-	LCD_SetColor(0xc0c0c0);
+	LCD_SetColor(RGB_GRAYL(0xc0));
 	GUI_FillRectEx(&r);
-	LCD_SetColor(GUI_BLACK);
+	LCD_SetColor(RGB_BLACK);
 	_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.y1 - r.y0 - 8) / 2);
 	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &r);
 }

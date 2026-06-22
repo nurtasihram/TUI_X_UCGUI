@@ -83,39 +83,6 @@ static void _GetRect(GUI_RECT* pRect) {
   pRect->x1 = pRect->y1 =  4095;
 }
 
-static void _CalcPolyRect(GUI_RECT *pr, const GUI_POINT* paPoint, int NumPoints) {
-  int i;
-  int xMin, xMax, yMin, yMax;
-  xMin = GUI_XMAX;
-  yMin = GUI_YMAX;
-  xMax = GUI_XMIN;
-  yMax = GUI_YMIN;
-  for (i = 0; i  <NumPoints; i++) {
-    int x = paPoint->x;
-    int y = paPoint->y;
-    if (xMin > x)
-      xMin = x;
-    if (xMax < x)
-      xMax = x;
-    if (yMin > y)
-      yMin = y;
-    if (yMax < y)
-      yMax = y;
-    paPoint++;
-  }
-  pr->x0 = xMin;
-  pr->x1 = xMax;
-  pr->y0 = yMin;
-  pr->y1 = yMax;
-}
-
-static void _FillPolygon(const GUI_POINT* paPoint, int NumPoints, int x0, int y0) {
-  GUI_RECT r;
-  _CalcPolyRect(&r, paPoint, NumPoints);
-  GUI_MoveRect(&r, x0, y0);
-  _MarkRect(r.x0, r.y0, r.x1, r.y1);
-}
-
 static const tLCDDEV_APIList _APIList = {
   (tLCDDEV_DrawBitmap*)_DrawBitmap,
   _DrawHLine,
@@ -126,7 +93,6 @@ static const tLCDDEV_APIList _APIList = {
   _SetPixelIndex,
   _XorPixel,
   NULL,
-  _FillPolygon,
 };
 
 void GUI_MEASDEV_Delete(GUI_MEASDEV_Handle hMemDev) {

@@ -41,11 +41,11 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
 
 #ifndef GUI_DEFAULT_BKCOLOR
-#define GUI_DEFAULT_BKCOLOR GUI_BLACK
+#define GUI_DEFAULT_BKCOLOR RGB_BLACK
 #endif
 
 #ifndef GUI_DEFAULT_COLOR
-#define GUI_DEFAULT_COLOR   GUI_WHITE
+#define GUI_DEFAULT_COLOR   RGB_WHITE
 #endif
 
 typedef enum { GUI_WRAPMODE_NONE, GUI_WRAPMODE_WORD, GUI_WRAPMODE_CHAR } GUI_WRAPMODE;

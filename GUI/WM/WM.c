@@ -1923,8 +1923,8 @@ static void _ShowInvalid(WM_HWIN hWin) {
 	rClient = pWin->InvalidRect;
 	GUI_MoveRect(&rClient, -pWin->Rect.x0, -pWin->Rect.y0);
 	WM_SelectWindow(hWin);
-	GUI_SetColor(GUI_GREEN);
-	GUI_SetBkColor(GUI_GREEN);
+	GUI_SetColor(RGB_GREEN);
+	GUI_SetBkColor(RGB_GREEN);
 	GUI_FillRect(rClient.x0, rClient.y0, rClient.x1, rClient.y1);
 	GUI_Context = Context;
 }

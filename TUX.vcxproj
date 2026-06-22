@@ -34,7 +34,6 @@
     <ClCompile Include="GUI\Core\GUI_AddKeyMsgHook.c" />
     <ClCompile Include="GUI\Core\GUI_ClearRectEx.c" />
     <ClCompile Include="GUI\Core\GUI_CursorPal.c" />
-    <ClCompile Include="GUI\Core\GUI_CursorPalI.c" />
     <ClCompile Include="GUI\Core\GUI_DispCEOL.c" />
     <ClCompile Include="GUI\Core\GUI_DispChar.c" />
     <ClCompile Include="GUI\Core\GUI_DispChars.c" />

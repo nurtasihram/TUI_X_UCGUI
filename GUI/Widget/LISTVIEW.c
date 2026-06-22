@@ -17,13 +17,13 @@
 /* Define default fonts */
 #define LISTVIEW_FONT_DEFAULT &GUI_Font13_1
 /* Define colors */
-#define LISTVIEW_BKCOLOR0_DEFAULT GUI_WHITE     /* Not selected */
-#define LISTVIEW_BKCOLOR1_DEFAULT GUI_GRAY      /* Selected, no focus */
-#define LISTVIEW_BKCOLOR2_DEFAULT GUI_BLUE      /* Selected, focus */
-#define LISTVIEW_TEXTCOLOR0_DEFAULT GUI_BLACK   /* Not selected */
-#define LISTVIEW_TEXTCOLOR1_DEFAULT GUI_WHITE   /* Selected, no focus */
-#define LISTVIEW_TEXTCOLOR2_DEFAULT GUI_WHITE   /* Selected, focus */
-#define LISTVIEW_GRIDCOLOR_DEFAULT GUI_LIGHTGRAY
+#define LISTVIEW_BKCOLOR0_DEFAULT RGB_WHITE     /* Not selected */
+#define LISTVIEW_BKCOLOR1_DEFAULT RGB_GRAY      /* Selected, no focus */
+#define LISTVIEW_BKCOLOR2_DEFAULT RGB_BLUE      /* Selected, focus */
+#define LISTVIEW_TEXTCOLOR0_DEFAULT RGB_BLACK   /* Not selected */
+#define LISTVIEW_TEXTCOLOR1_DEFAULT RGB_WHITE   /* Selected, no focus */
+#define LISTVIEW_TEXTCOLOR2_DEFAULT RGB_WHITE   /* Selected, focus */
+#define LISTVIEW_GRIDCOLOR_DEFAULT RGB_LIGHTGRAY
 /* Define default alignment */
 #define LISTVIEW_ALIGN_DEFAULT (GUI_TA_VCENTER | GUI_TA_HCENTER)
 LISTVIEW_PROPS LISTVIEW_DefaultProps = {

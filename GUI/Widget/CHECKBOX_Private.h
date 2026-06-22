@@ -2,10 +2,10 @@
 #include "WM.h"
 #include "WIDGET.h"
 #include "CHECKBOX.h"
-#define CHECKBOX_BKCOLOR0_DEFAULT 0x808080           /* Inactive color */
-#define CHECKBOX_BKCOLOR1_DEFAULT GUI_WHITE          /* Active color */
-#define CHECKBOX_FGCOLOR0_DEFAULT 0x101010
-#define CHECKBOX_FGCOLOR1_DEFAULT GUI_BLACK
+#define CHECKBOX_BKCOLOR0_DEFAULT RGB_GRAYL(0x80)           /* Inactive color */
+#define CHECKBOX_BKCOLOR1_DEFAULT RGB_WHITE          /* Active color */
+#define CHECKBOX_FGCOLOR0_DEFAULT RGB_GRAYL(0x10)
+#define CHECKBOX_FGCOLOR1_DEFAULT RGB_BLACK
 typedef struct {
 	const GUI_FONT GUI_UNI_PTR *pFont;
 	RGB_COLOR aBkColorBox[2]; /* Colors used to draw the box background */

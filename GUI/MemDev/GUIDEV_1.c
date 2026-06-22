@@ -505,13 +505,10 @@ const tLCDDEV_APIList API_LIST = {
   GUI_MEMDEV__GetRect,
   _SetPixelIndex,
   _XorPixel,
-  NULL,               /* pfFillPolygon   */
   NULL,               /* MemDevAPI       */
   BITSPERPIXEL        /* BitsPerPixel    */
 };
 
 #else
 
-
 #endif /* GUI_SUPPORT_MEMDEV */
-

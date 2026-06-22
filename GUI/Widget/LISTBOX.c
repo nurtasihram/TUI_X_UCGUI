@@ -19,14 +19,14 @@
 /* Define default fonts */
 #define LISTBOX_FONT_DEFAULT &GUI_Font13_1
 /* Define colors */
-#define LISTBOX_BKCOLOR0_DEFAULT GUI_WHITE     /* Not selected */
-#define LISTBOX_BKCOLOR1_DEFAULT GUI_GRAY      /* Selected, no focus */
-#define LISTBOX_BKCOLOR2_DEFAULT GUI_BLUE      /* Selected, focus */
-#define LISTBOX_BKCOLOR3_DEFAULT 0xC0C0C0      /* Disabled */
-#define LISTBOX_TEXTCOLOR0_DEFAULT GUI_BLACK   /* Not selected */
-#define LISTBOX_TEXTCOLOR1_DEFAULT GUI_WHITE   /* Selected, no focus */
-#define LISTBOX_TEXTCOLOR2_DEFAULT GUI_WHITE   /* Selected, focus */
-#define LISTBOX_TEXTCOLOR3_DEFAULT GUI_GRAY    /* Disabled */
+#define LISTBOX_BKCOLOR0_DEFAULT RGB_WHITE     /* Not selected */
+#define LISTBOX_BKCOLOR1_DEFAULT RGB_GRAY      /* Selected, no focus */
+#define LISTBOX_BKCOLOR2_DEFAULT RGB_BLUE      /* Selected, focus */
+#define LISTBOX_BKCOLOR3_DEFAULT RGB_GRAYL(0xC0)      /* Disabled */
+#define LISTBOX_TEXTCOLOR0_DEFAULT RGB_BLACK   /* Not selected */
+#define LISTBOX_TEXTCOLOR1_DEFAULT RGB_WHITE   /* Selected, no focus */
+#define LISTBOX_TEXTCOLOR2_DEFAULT RGB_WHITE   /* Selected, focus */
+#define LISTBOX_TEXTCOLOR3_DEFAULT RGB_GRAY    /* Disabled */
 #define LISTBOX_SCROLLSTEP_H_DEFAULT 10
 LISTBOX_PROPS LISTBOX_DefaultProps = {
   LISTBOX_FONT_DEFAULT,
@@ -279,7 +279,7 @@ int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 				rFocus.y0 = pDrawItemInfo->y0;
 				rFocus.x1 = r.x1;
 				rFocus.y1 = pDrawItemInfo->y0 + FontDistY - 1;
-				LCD_SetColor(GUI_WHITE - pObj->Props.aBackColor[ColorIndex]);
+				LCD_SetColor(RGB_WHITE - pObj->Props.aBackColor[ColorIndex]);
 				GUI_DrawFocusRect(&rFocus, 0);
 			}
 			return 0;

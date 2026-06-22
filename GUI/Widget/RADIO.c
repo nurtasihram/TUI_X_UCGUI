@@ -16,9 +16,9 @@
 /* Define default font */
 #define RADIO_FONT_DEFAULT          &GUI_Font13_1
 /* Define default text color */
-#define RADIO_DEFAULT_TEXT_COLOR    GUI_BLACK
+#define RADIO_DEFAULT_TEXT_COLOR    RGB_BLACK
 /* Define default background color */
-#define RADIO_DEFAULT_BKCOLOR       0xC0C0C0
+#define RADIO_DEFAULT_BKCOLOR       RGB_GRAYL(0xC0)
 #define RADIO_BORDER                  2
 tRADIO_SetValue* RADIO__pfHandleSetValue;
 RGB_COLOR         RADIO__DefaultTextColor       = RADIO_DEFAULT_TEXT_COLOR;
@@ -113,7 +113,7 @@ static void _OnPaint(RADIO_Handle hObj, RADIO_Obj* pObj) {
   }
   /* Draw the focus rect */
   if (HasFocus) {
-    LCD_SetColor(GUI_BLACK);
+    LCD_SetColor(RGB_BLACK);
     WIDGET__DrawFocusRect(&pObj->Widget, &rFocus, 0);
   }
 }
@@ -330,7 +330,7 @@ void RADIO_SetBkColor(RADIO_Handle hObj, RGB_COLOR Color) {
 		if (Color != pObj->BkColor) {
 			pObj->BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
-			if (Color <= 0xFFFFFF) {
+			if (Color <= RGB_WHITE) {
 				WM_SetTransState(hObj, 0);
 			}
 			else {
@@ -524,14 +524,14 @@ void RADIO_SetTextColor(RADIO_Handle hObj, RGB_COLOR Color) {
 	}
 }
 
-#define RADIO_BKCOLOR0_DEFAULT 0xc0c0c0           /* Inactive color */
-#define RADIO_BKCOLOR1_DEFAULT GUI_WHITE          /* Active color */
+#define RADIO_BKCOLOR0_DEFAULT RGB_GRAYL(0xc0)           /* Inactive color */
+#define RADIO_BKCOLOR1_DEFAULT RGB_WHITE          /* Active color */
 
 
 /* Colors */
-static const RGB_COLOR _aColorDisabled[] = { 0xC0C0C0, 0x808080, 0x000000, RADIO_BKCOLOR0_DEFAULT };
-static const RGB_COLOR _aColorEnabled[] = { 0xC0C0C0, 0x808080, 0x000000, RADIO_BKCOLOR1_DEFAULT };
-static const RGB_COLOR _ColorsCheck[] = { 0xFFFFFF, 0x000000 };
+static const RGB_COLOR _aColorDisabled[] = { RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
+static const RGB_COLOR _aColorEnabled[] = { RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
+static const RGB_COLOR _ColorsCheck[] = { RGB_WHITE, RGB_BLACK };
 /* Palettes */
 static const GUI_LOGPALETTE _PalRadioDisabled = {
   4,	/* number of entries */

@@ -51,7 +51,6 @@ typedef void         tLCDDEV_FillRect     (int x0, int y0, int x1, int y1);
 typedef unsigned int tLCDDEV_GetPixelIndex(int x, int y);
 typedef void         tLCDDEV_SetPixelIndex(int x, int y, int ColorIndex);
 typedef void         tLCDDEV_XorPixel     (int x, int y);
-typedef void         tLCDDEV_FillPolygon  (const GUI_POINT* pPoints, int NumPoints, int x0, int y0);
 typedef void         tLCDDEV_GetRect      (GUI_RECT*pRect);
 
 typedef struct tLCDDEV_APIList_struct tLCDDEV_APIList;
@@ -71,7 +70,6 @@ struct tLCDDEV_APIList_struct {
   tLCDDEV_SetPixelIndex*      pfSetPixelIndex;
   tLCDDEV_XorPixel*           pfXorPixel;
 #if GUI_SUPPORT_MEMDEV
-    tLCDDEV_FillPolygon*      pfFillPolygon;
     const tLCDDEV_APIList*    pMemDevAPI;
     unsigned                  BitsPerPixel;
 #endif

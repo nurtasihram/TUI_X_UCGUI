@@ -170,8 +170,8 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 			char acBuffer[100];
 			const GUI_BITMAP *pBm;
 			const GUI_FONT *pOldFont = 0;
-			RGB_COLOR aColor[4] = { GUI_BLACK, GUI_WHITE, GUI_WHITE, GUI_GRAY };
-			RGB_COLOR aBkColor[4] = { GUI_WHITE, GUI_GRAY, GUI_BLUE, 0xC0C0C0 };
+			RGB_COLOR aColor[4] = { RGB_BLACK, RGB_WHITE, RGB_WHITE, RGB_GRAY };
+			RGB_COLOR aBkColor[4] = { RGB_WHITE, RGB_GRAY, RGB_BLUE, RGB_GRAYL(0xC0) };
 			IsDisabled = LISTBOX_GetItemDisabled(pDrawItemInfo->hWin, pDrawItemInfo->ItemIndex);
 			IsSelected = LISTBOX_GetItemSel(hWin, Index);
 			MultiSel = LISTBOX_GetMulti(hWin);
@@ -219,7 +219,7 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 				rFocus.y0 = pDrawItemInfo->y0;
 				rFocus.x1 = rInside.x1;
 				rFocus.y1 = pDrawItemInfo->y0 + YSize - 1;
-				GUI_SetColor(GUI_WHITE - aBkColor[ColorIndex]);
+				GUI_SetColor(RGB_WHITE - aBkColor[ColorIndex]);
 				GUI_DrawFocusRect(&rFocus, 0);
 			}
 		}
@@ -405,7 +405,7 @@ static WM_HWIN _CreateMenu(WM_HWIN hParent) {
 
 void main(void) {
 	GUI_Init();
-	WM_SetDesktopColor(GUI_GRAY);
+	WM_SetDesktopColor(RGB_GRAY);
 	GUI_CURSOR_Show();
 	for (;;) {
 		_MultiSel = 0;

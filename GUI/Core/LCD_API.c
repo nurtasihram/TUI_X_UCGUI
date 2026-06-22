@@ -14,7 +14,6 @@ const tLCDDEV_APIList LCD_L0_APIList = {
   LCD_L0_SetPixelIndex,
   LCD_L0_XorPixel,
 #if GUI_SUPPORT_MEMDEV
-  NULL,                       /* pfFillPolygon */
   &GUI_MEMDEV__APIList16
 #endif
 };

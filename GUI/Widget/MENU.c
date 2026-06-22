@@ -12,20 +12,20 @@
 /* Define default effect */
 #define MENU_EFFECT_DEFAULT       &WIDGET_Effect_3D1L
 /* Define colors, index 0, enabled, not selected */
-#define MENU_TEXTCOLOR0_DEFAULT   GUI_BLACK
-#define MENU_BKCOLOR0_DEFAULT     GUI_LIGHTGRAY
+#define MENU_TEXTCOLOR0_DEFAULT   RGB_BLACK
+#define MENU_BKCOLOR0_DEFAULT     RGB_LIGHTGRAY
 /* Define colors, index 1, enabled, selected */
-#define MENU_TEXTCOLOR1_DEFAULT   GUI_WHITE
-#define MENU_BKCOLOR1_DEFAULT     0x980000
+#define MENU_TEXTCOLOR1_DEFAULT   RGB_WHITE
+#define MENU_BKCOLOR1_DEFAULT     RGB_BLUEL(0x98)
 /* Define colors, index 2, disabled, not selected */
-#define MENU_TEXTCOLOR2_DEFAULT   0x7C7C7C
-#define MENU_BKCOLOR2_DEFAULT     GUI_LIGHTGRAY
+#define MENU_TEXTCOLOR2_DEFAULT   RGB_GRAYL(0x7C)
+#define MENU_BKCOLOR2_DEFAULT     RGB_LIGHTGRAY
 /* Define colors, index 3, disabled, selected */
-#define MENU_TEXTCOLOR3_DEFAULT   GUI_LIGHTGRAY
-#define MENU_BKCOLOR3_DEFAULT     0x980000
+#define MENU_TEXTCOLOR3_DEFAULT   RGB_LIGHTGRAY
+#define MENU_BKCOLOR3_DEFAULT     RGB_BLUEL(0x98)
 /* Define colors, index 4, active submenu */
-#define MENU_TEXTCOLOR4_DEFAULT   GUI_WHITE
-#define MENU_BKCOLOR4_DEFAULT     0x7C7C7C
+#define MENU_TEXTCOLOR4_DEFAULT   RGB_WHITE
+#define MENU_BKCOLOR4_DEFAULT     RGB_GRAYL(0x7C)
 /* Define borders */
 #define MENU_BORDER_LEFT_DEFAULT    4
 #define MENU_BORDER_RIGHT_DEFAULT   4
@@ -614,7 +614,7 @@ static void _OnPaint(MENU_Handle hObj, MENU_Obj *pObj) {
 			FillRect.y1 = FillRect.y0 + ItemHeight - 1;
 			if (pItem->Flags & MENU_IF_SEPARATOR) {
 				GUI_ClearRectEx(&FillRect);
-				GUI_SetColor(0x7C7C7C);
+				GUI_SetColor(RGB_GRAYL(0x7C));
 				GUI_DrawHLine(FillRect.y0 + BorderTop + 1, FillRect.x0 + 2, FillRect.x1 - 2);
 			}
 			else {
@@ -640,7 +640,7 @@ static void _OnPaint(MENU_Handle hObj, MENU_Obj *pObj) {
 			FillRect.x1 = FillRect.x0 + ItemWidth - 1;
 			if (pItem->Flags & MENU_IF_SEPARATOR) {
 				GUI_ClearRectEx(&FillRect);
-				GUI_SetColor(0x7C7C7C);
+				GUI_SetColor(RGB_GRAYL(0x7C));
 				GUI_DrawVLine(FillRect.x0 + BorderLeft + 1, FillRect.y0 + 2, FillRect.y1 - 2);
 			}
 			else {

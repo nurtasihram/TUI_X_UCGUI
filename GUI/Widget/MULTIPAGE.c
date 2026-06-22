@@ -15,10 +15,10 @@
 #define MULTIPAGE_ALIGN_DEFAULT       (MULTIPAGE_ALIGN_LEFT | MULTIPAGE_ALIGN_TOP)
 /* Define colors */
 #define MULTIPAGE_NUMCOLORS 2
-#define MULTIPAGE_BKCOLOR0_DEFAULT    0xD0D0D0 /* disabled page */
-#define MULTIPAGE_BKCOLOR1_DEFAULT    0xC0C0C0 /* enabled page */
-#define MULTIPAGE_TEXTCOLOR0_DEFAULT  0x808080 /* disabled page */
-#define MULTIPAGE_TEXTCOLOR1_DEFAULT  0x000000 /* enabled page */
+#define MULTIPAGE_BKCOLOR0_DEFAULT    RGB_GRAYL(0xD0) /* disabled page */
+#define MULTIPAGE_BKCOLOR1_DEFAULT    RGB_GRAYL(0xC0) /* enabled page */
+#define MULTIPAGE_TEXTCOLOR0_DEFAULT  RGB_GRAYL(0x80) /* disabled page */
+#define MULTIPAGE_TEXTCOLOR1_DEFAULT  RGB_BLACK /* enabled page */
 typedef struct {
 	WM_HWIN hWin;
 	uint8_t      Status;
@@ -247,18 +247,18 @@ static void _DrawTextItem(MULTIPAGE_Obj *pObj, const char *pText, unsigned Index
 		if (pObj->Align & MULTIPAGE_ALIGN_BOTTOM) {
 			r.y0 -= pObj->Widget.pEffect->EffectSize + 1;
 			if (pObj->Widget.pEffect->EffectSize > 1) {
-				LCD_SetColor(GUI_WHITE);
+				LCD_SetColor(RGB_WHITE);
 				GUI_DrawVLine(r.x0 - 1, r.y0, r.y0 + 1);
-				LCD_SetColor(0x555555);
+				LCD_SetColor(RGB_GRAYL(0x55));
 				GUI_DrawVLine(r.x1 + 1, r.y0, r.y0 + 1);
 			}
 		}
 		else {
 			r.y1 += pObj->Widget.pEffect->EffectSize + 1;
 			if (pObj->Widget.pEffect->EffectSize > 1) {
-				LCD_SetColor(GUI_WHITE);
+				LCD_SetColor(RGB_WHITE);
 				GUI_DrawVLine(r.x0 - 1, r.y1 - 2, r.y1 - 1);
-				LCD_SetColor(0x555555);
+				LCD_SetColor(RGB_GRAYL(0x55));
 				GUI_DrawVLine(r.x1 + 1, r.y1 - 2, r.y1 - 1);
 			}
 		}
