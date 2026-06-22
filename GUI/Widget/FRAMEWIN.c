@@ -785,15 +785,9 @@ void FRAMEWIN_SetFont(FRAMEWIN_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
 	}
 }
 
-#ifndef   FRAMEWIN_REACT_BORDER
 #define FRAMEWIN_REACT_BORDER 3
-#endif
-#ifndef   FRAMEWIN_MINSIZE_X
 #define FRAMEWIN_MINSIZE_X    20
-#endif
-#ifndef   FRAMEWIN_MINSIZE_Y
 #define FRAMEWIN_MINSIZE_Y    20
-#endif
 #define FRAMEWIN_RESIZE_X     (1<<0)
 #define FRAMEWIN_RESIZE_Y     (1<<1)
 #define FRAMEWIN_REPOS_X      (1<<2)
