@@ -45,7 +45,6 @@
     <ClCompile Include="GUI\Core\GUI_DispStringInRectMax.c" />
     <ClCompile Include="GUI\Core\GUI_DispStringLen.c" />
     <ClCompile Include="GUI\Core\GUI_DrawBitmap.c" />
-    <ClCompile Include="GUI\Core\GUI_DrawBitmapEx.c" />
     <ClCompile Include="GUI\Core\GUI_DrawFocusRect.c" />
     <ClCompile Include="GUI\Core\GUI_DrawGraph.c" />
     <ClCompile Include="GUI\Core\GUI_DrawHLine.c" />

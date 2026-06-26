@@ -2041,8 +2041,6 @@ const GUI_FONT GUI_Font8x8 = {
   GUI_FONTTYPE_MONO
   ,8
   ,8
-  ,1
-  ,1
   ,{&GUI_F8x8_Mono}
   , 7, 5, 7
 };
@@ -2051,7 +2049,5 @@ const GUI_FONT GUI_Font8x9 = {
   GUI_FONTTYPE_MONO
   ,8
   ,9
-  ,1
-  ,1
   ,{&GUI_F8x8_Mono}
   , 7, 5, 7 };

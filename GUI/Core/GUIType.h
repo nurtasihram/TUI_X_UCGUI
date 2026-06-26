@@ -193,8 +193,6 @@ struct GUI_FONT {
 	const tGUI_ENC_APIList *pafEncode;
 	uint8_t YSize;
 	uint8_t YDist;
-	char XMag;
-	char YMag;
 	union {
 		const void          GUI_UNI_PTR *pFontData;
 		const GUI_FONT_MONO GUI_UNI_PTR *pMono;

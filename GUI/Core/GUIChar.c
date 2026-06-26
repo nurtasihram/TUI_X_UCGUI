@@ -58,7 +58,7 @@ int GUI_GetFontDistY(void) {
   int r;
 
 //  r = GUI_Context.pAFont->YDist;
-  r = GUI_Context.pAFont->YDist * GUI_Context.pAFont->YMag;
+  r = GUI_Context.pAFont->YDist;
 
 
   return r;

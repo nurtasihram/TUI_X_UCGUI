@@ -2223,5 +2223,5 @@ const GUI_FONT_MONO GUI_F6x8_Mono = {
  32, 126, 6, 6, 1
 };
 
-const GUI_FONT GUI_Font6x8 = { GUI_FONTTYPE_MONO, 8,8,1,1, {&GUI_F6x8_Mono}, 7, 5, 7 };
-const GUI_FONT GUI_Font6x9 = { GUI_FONTTYPE_MONO, 8,9,1,1, {&GUI_F6x8_Mono}, 7, 5, 7 };
+const GUI_FONT GUI_Font6x8 = { GUI_FONTTYPE_MONO, 8,8, {&GUI_F6x8_Mono}, 7, 5, 7 };
+const GUI_FONT GUI_Font6x9 = { GUI_FONTTYPE_MONO, 8,9, {&GUI_F6x8_Mono}, 7, 5, 7 };

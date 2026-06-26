@@ -1173,10 +1173,6 @@ const GUI_FONT GUI_Font8_ASCII = {
    GUI_FONTTYPE_PROP     /* type of font    */
   ,8                     /* height of font  */
   ,8                     /* space of font y */
-  ,1                     /* magnification x */
-  ,1                     /* magnification y */
   ,{&GUI_Font8ASCII_Prop}
   , 7, 5, 7
 };
-
-

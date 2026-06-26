@@ -27,7 +27,6 @@ void GL_DrawBitmap(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0) {
     }
     LCD_DrawBitmap( x0,y0
                     ,pBitmap->XSize ,pBitmap->YSize
-                    ,1,1
                     ,pBitmap->BitsPerPixel
                     ,pBitmap->BytesPerLine
                     ,pBitmap->pData

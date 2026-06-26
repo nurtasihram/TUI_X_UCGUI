@@ -153,12 +153,12 @@ void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem,int x, int y) {
         while ((GUI_USAGE_GetNextDirty(pUsage, &xOff, yi + 1)) == XSize) {
           yi++;
         }
-		    LCD_DrawBitmap(x, y + y0, pDev->XSize, yi - y0 + 1, 1, 1, BitsPerPixel, BytesPerLine, pData, NULL);
+		    LCD_DrawBitmap(x, y + y0, pDev->XSize, yi - y0 + 1, BitsPerPixel, BytesPerLine, pData, NULL);
         pData += (yi - y0 + 1) * BytesPerLine;
       } else {
         /* Draw the partial line which needs to be drawn */
         for (; XSize; ) {
-          LCD_DrawBitmap(x + xOff, y + yi, XSize, 1, 1, 1, BitsPerPixel, BytesPerLine, pData + xOff * BytesPerPixel, NULL);
+          LCD_DrawBitmap(x + xOff, y + yi, XSize, 1, BitsPerPixel, BytesPerLine, pData + xOff * BytesPerPixel, NULL);
           xOff += XSize;
           XSize = GUI_USAGE_GetNextDirty(pUsage, &xOff, yi);
         }
@@ -166,7 +166,7 @@ void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem,int x, int y) {
       }
     }
   } else {
-		LCD_DrawBitmap(x, y, pDev->XSize, YSize, 1, 1, BitsPerPixel, BytesPerLine, pData, NULL);
+		LCD_DrawBitmap(x, y, pDev->XSize, YSize, BitsPerPixel, BytesPerLine, pData, NULL);
   }
 }
 

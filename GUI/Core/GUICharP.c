@@ -4,12 +4,12 @@
 #include "GUI_Private.h"
 
 
-static const GUI_FONT_PROP GUI_UNI_PTR * GUIPROP_FindChar(const GUI_FONT_PROP GUI_UNI_PTR* pProp, uint16_t c) {
-  for (; pProp; pProp = pProp->pNext) {
-    if ((c>=pProp->First) && (c<=pProp->Last))
-      break;
-  }
-  return pProp;
+static const GUI_FONT_PROP GUI_UNI_PTR *GUIPROP_FindChar(const GUI_FONT_PROP GUI_UNI_PTR *pProp, uint16_t c) {
+	for (; pProp; pProp = pProp->pNext) {
+		if ((c >= pProp->First) && (c <= pProp->Last))
+			break;
+	}
+	return pProp;
 }
 
 /*********************************************************************
@@ -21,58 +21,54 @@ static const GUI_FONT_PROP GUI_UNI_PTR * GUIPROP_FindChar(const GUI_FONT_PROP GU
 *   other routines which display characters as a subroutine.
 */
 void GUIPROP_DispChar(uint16_t c) {
-  int BytesPerLine;
+	int BytesPerLine;
 
-  GUI_DRAWMODE DrawMode = GUI_Context.TextMode;
-  const GUI_FONT_PROP GUI_UNI_PTR * pProp = GUIPROP_FindChar(GUI_Context.pAFont->p.pProp, c);
-  if (pProp) {
-    GUI_DRAWMODE OldDrawMode;
-    const GUI_CHARINFO GUI_UNI_PTR * pCharInfo = pProp->paCharInfo+(c-pProp->First);
-    BytesPerLine = pCharInfo->BytesPerLine;
-    OldDrawMode  = LCD_SetDrawMode(DrawMode);
-    LCD_DrawBitmap( GUI_Context.DispPosX, GUI_Context.DispPosY,
-                       pCharInfo->XSize,
-											 GUI_Context.pAFont->YSize,
-                       GUI_Context.pAFont->XMag,
-											 GUI_Context.pAFont->YMag,
-                       1,     /* Bits per Pixel */
-                       BytesPerLine,
-                       pCharInfo->pData,
-                       &LCD_BKCOLORINDEX
-                       );
-    /* Fill empty pixel lines */
-    if (GUI_Context.pAFont->YDist > GUI_Context.pAFont->YSize) {
-      int YMag = GUI_Context.pAFont->YMag;
-      int YDist = GUI_Context.pAFont->YDist * YMag;
-      int YSize = GUI_Context.pAFont->YSize * YMag;
-      if (DrawMode != LCD_DRAWMODE_TRANS) {
-        RGB_COLOR OldColor = GUI_GetColor();
-        GUI_SetColor(GUI_GetBkColor());
-        LCD_FillRect(GUI_Context.DispPosX,
-                     GUI_Context.DispPosY + YSize,
-                     GUI_Context.DispPosX + pCharInfo->XSize,
-                     GUI_Context.DispPosY + YDist);
-        GUI_SetColor(OldColor);
-      }
-    }
-    LCD_SetDrawMode(OldDrawMode); /* Restore draw mode */
-    GUI_Context.DispPosX += pCharInfo->XDist * GUI_Context.pAFont->XMag;
-  }
+	GUI_DRAWMODE DrawMode = GUI_Context.TextMode;
+	const GUI_FONT_PROP GUI_UNI_PTR *pProp = GUIPROP_FindChar(GUI_Context.pAFont->p.pProp, c);
+	if (pProp) {
+		GUI_DRAWMODE OldDrawMode;
+		const GUI_CHARINFO GUI_UNI_PTR *pCharInfo = pProp->paCharInfo + (c - pProp->First);
+		BytesPerLine = pCharInfo->BytesPerLine;
+		OldDrawMode = LCD_SetDrawMode(DrawMode);
+		LCD_DrawBitmap(GUI_Context.DispPosX, GUI_Context.DispPosY,
+					   pCharInfo->XSize, GUI_Context.pAFont->YSize,
+					   1,     /* Bits per Pixel */
+					   BytesPerLine,
+					   pCharInfo->pData,
+					   &LCD_BKCOLORINDEX
+		);
+		/* Fill empty pixel lines */
+		if (GUI_Context.pAFont->YDist > GUI_Context.pAFont->YSize) {
+			int YDist = GUI_Context.pAFont->YDist;
+			int YSize = GUI_Context.pAFont->YSize;
+			if (DrawMode != LCD_DRAWMODE_TRANS) {
+				RGB_COLOR OldColor = GUI_GetColor();
+				GUI_SetColor(GUI_GetBkColor());
+				LCD_FillRect(GUI_Context.DispPosX,
+							 GUI_Context.DispPosY + YSize,
+							 GUI_Context.DispPosX + pCharInfo->XSize,
+							 GUI_Context.DispPosY + YDist);
+				GUI_SetColor(OldColor);
+			}
+		}
+		LCD_SetDrawMode(OldDrawMode); /* Restore draw mode */
+		GUI_Context.DispPosX += pCharInfo->XDist;
+	}
 }
 
 int GUIPROP_GetCharDistX(uint16_t c) {
-  const GUI_FONT_PROP GUI_UNI_PTR * pProp = GUIPROP_FindChar(GUI_Context.pAFont->p.pProp, c);
-  return (pProp) ? (pProp->paCharInfo+(c-pProp->First))->XSize * GUI_Context.pAFont->XMag : 0;
+	const GUI_FONT_PROP GUI_UNI_PTR *pProp = GUIPROP_FindChar(GUI_Context.pAFont->p.pProp, c);
+	return (pProp) ? (pProp->paCharInfo + (c - pProp->First))->XSize : 0;
 }
 
-void GUIPROP_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO* pfi) {
-  GUI_USE_PARA(pFont);
-  pfi->Flags = GUI_FONTINFO_FLAG_PROP;
+void GUIPROP_GetFontInfo(const GUI_FONT GUI_UNI_PTR *pFont, GUI_FONTINFO *pfi) {
+	GUI_USE_PARA(pFont);
+	pfi->Flags = GUI_FONTINFO_FLAG_PROP;
 }
 
-char GUIPROP_IsInFont(const GUI_FONT GUI_UNI_PTR * pFont, uint16_t c) {
-  const GUI_FONT_PROP GUI_UNI_PTR * pProp = GUIPROP_FindChar(pFont->p.pProp, c);
-  return (pProp==NULL) ? 0 : 1;
+char GUIPROP_IsInFont(const GUI_FONT GUI_UNI_PTR *pFont, uint16_t c) {
+	const GUI_FONT_PROP GUI_UNI_PTR *pProp = GUIPROP_FindChar(pFont->p.pProp, c);
+	return (pProp == NULL) ? 0 : 1;
 }
 
 

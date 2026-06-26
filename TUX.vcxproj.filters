@@ -298,9 +298,6 @@
     <ClCompile Include="GUI\Core\GUI_DrawBitmap.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_DrawBitmapEx.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_DrawFocusRect.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>

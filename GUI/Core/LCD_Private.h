@@ -16,9 +16,7 @@ extern const struct tLCDDEV_APIList_struct * /* const */ LCD_aAPI[1];
 
 void LCD_DrawBitmap   (int x0, int y0,
                        int xsize, int ysize,
-                       int xMul, int yMul,
-                       int BitsPerPixel,
-                       int BytesPerLine,
+                       int BitsPerPixel, int BytesPerLine,
                        const uint8_t GUI_UNI_PTR * pPixel,
                        const RGB_COLOR* pTrans);
 void LCD_UpdateColorIndices(void);

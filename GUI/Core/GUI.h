@@ -270,7 +270,6 @@ void GUI_Clear            (void);
 void GUI_ClearRect        (int x0, int y0, int x1, int y1);
 void GUI_ClearRectEx      (const GUI_RECT* pRect);
 void GUI_DrawBitmap       (const GUI_BITMAP GUI_UNI_PTR * pBM, int x0, int y0);
-void GUI_DrawBitmapEx     (const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0, int xCenter, int yCenter, int xMag, int yMag);
 void GUI_DrawHLine        (int y0, int x0, int x1);
 void GUI_DrawPixel        (int x, int y);
 void GUI_DrawPoint        (int x, int y);

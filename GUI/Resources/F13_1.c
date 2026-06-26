@@ -1573,8 +1573,6 @@ const GUI_FONT GUI_Font13_1 = {
    GUI_FONTTYPE_PROP /* type of font    */
   ,13                /* height of font  */
   ,13                /* space of font y */
-  ,1                /* magnification x */
-  ,1                /* magnification y */
   ,{&GUI_Font13_1_Prop1}
   , 11, 6, 8
 };

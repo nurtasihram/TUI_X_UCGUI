@@ -998,20 +998,6 @@ const GUI_FONT GUI_Font8_1 = {
    GUI_FONTTYPE_PROP              /* type of font    */
   ,8                              /* height of font  */
   ,8                              /* space of font y */
-  ,1                              /* magnification x */
-  ,1                              /* magnification y */
   ,{&GUI_Font8_1_Prop}
   , 7, 5, 7
 };
-GUI_FONT GUI_Font8_2 = {
-   GUI_FONTTYPE_PROP              /* type of font    */
-  ,8                              /* height of font  */
-  ,8*2                              /* space of font y */
-  ,2                              /* magnification x */
-  ,2                              /* magnification y */
-  ,{&GUI_Font8_1_Prop}
-  , 7, 5, 7
-};
-
-
-
