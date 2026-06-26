@@ -57,10 +57,10 @@ static void _WriteAlphaToActiveAt(GUI_MEMDEV_Handle hMem, int Intens, int x, int
             Color   = Index;
             xPos    = xOff + x;
             yPos    = yi +y;
-            BkColor = LCD_GetPixelColor(xPos, yPos);
+            BkColor = LCD_GetPixel(xPos, yPos);
             Color   = LCD_MixColors256(Color, BkColor, Intens);
             Index   = Color;
-            LCD_SetPixelIndex(xPos, yPos, Index);
+            LCD_SetPixel(xPos, yPos, Index);
             xOff++;
           } while (--XSize);
           XSize = GUI_USAGE_GetNextDirty(pUsage, &xOff, yi);

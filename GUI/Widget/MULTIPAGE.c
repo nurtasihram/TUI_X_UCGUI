@@ -247,26 +247,26 @@ static void _DrawTextItem(MULTIPAGE_Obj *pObj, const char *pText, unsigned Index
 		if (pObj->Align & MULTIPAGE_ALIGN_BOTTOM) {
 			r.y0 -= pObj->Widget.pEffect->EffectSize + 1;
 			if (pObj->Widget.pEffect->EffectSize > 1) {
-				LCD_SetColor(RGB_WHITE);
+				GUI_SetColor(RGB_WHITE);
 				GUI_DrawVLine(r.x0 - 1, r.y0, r.y0 + 1);
-				LCD_SetColor(RGB_GRAYL(0x55));
+				GUI_SetColor(RGB_GRAYL(0x55));
 				GUI_DrawVLine(r.x1 + 1, r.y0, r.y0 + 1);
 			}
 		}
 		else {
 			r.y1 += pObj->Widget.pEffect->EffectSize + 1;
 			if (pObj->Widget.pEffect->EffectSize > 1) {
-				LCD_SetColor(RGB_WHITE);
+				GUI_SetColor(RGB_WHITE);
 				GUI_DrawVLine(r.x0 - 1, r.y1 - 2, r.y1 - 1);
-				LCD_SetColor(RGB_GRAYL(0x55));
+				GUI_SetColor(RGB_GRAYL(0x55));
 				GUI_DrawVLine(r.x1 + 1, r.y1 - 2, r.y1 - 1);
 			}
 		}
 	}
-	LCD_SetColor(pObj->aBkColor[ColorIndex]);
+	GUI_SetColor(pObj->aBkColor[ColorIndex]);
 	WIDGET__FillRectEx(&pObj->Widget, &r);
-	LCD_SetBkColor(pObj->aBkColor[ColorIndex]);
-	LCD_SetColor(pObj->aTextColor[ColorIndex]);
+	GUI_SetBkColor(pObj->aBkColor[ColorIndex]);
+	GUI_SetColor(pObj->aTextColor[ColorIndex]);
 	GUI_DispStringAt(pText, r.x0 + 4, pRect->y0 + 3);
 }
 static void _Paint(MULTIPAGE_Obj *pObj) {
@@ -412,7 +412,7 @@ static void _ClientCallback(WM_MESSAGE *pMsg) {
 	pParent = (hParent);
 	switch (pMsg->MsgId) {
 		case WM_PAINT:
-			LCD_SetBkColor(pParent->aBkColor[1]);
+			GUI_SetBkColor(pParent->aBkColor[1]);
 			GUI_Clear();
 			break;
 		case WM_TOUCH:

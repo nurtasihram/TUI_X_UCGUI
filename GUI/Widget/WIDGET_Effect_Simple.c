@@ -10,7 +10,7 @@
 static void _WIDGET_EFFECT_Simple_DrawUpRect(const GUI_RECT* pRect) {
   GUI_CONTEXT Context;
   GUI_SaveContext(&Context);
-  LCD_SetColor(RGB_BLACK);
+  GUI_SetColor(RGB_BLACK);
   GUI_DrawRect(pRect->x0, pRect->y0, pRect->x1, pRect->y1);          /* Draw rectangle around it */
   GUI_RestoreContext(&Context);
 }
@@ -22,7 +22,7 @@ static void _WIDGET_EFFECT_Simple_DrawUp(void) {
 static void _WIDGET_EFFECT_Simple_DrawDownRect(const GUI_RECT* pRect) {
   GUI_CONTEXT Context;
   GUI_SaveContext(&Context);
-  LCD_SetColor(RGB_BLACK);
+  GUI_SetColor(RGB_BLACK);
   GUI_DrawRect(pRect->x0, pRect->y0, pRect->x1, pRect->y1);          /* Draw rectangle around it */
   GUI_RestoreContext(&Context);
 }

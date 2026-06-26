@@ -141,18 +141,18 @@ static void _Paint(SCROLLBAR_Obj *pObj) {
 	/*
 	  Draw left Arrow
 	*/
-	LCD_SetColor(pObj->aColor[0]);
+	GUI_SetColor(pObj->aColor[0]);
 	r = rClient;
 	r.x0 = Pos.x0_LeftArrow;
 	r.x1 = Pos.x1_LeftArrow;
 	WIDGET__FillRectEx(&pObj->Widget, &r);
-	LCD_SetColor(pObj->aBkColor[1]);
+	GUI_SetColor(pObj->aBkColor[1]);
 	_DrawTriangle(&pObj->Widget, r.x0 + ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, -1);
 	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &r);
 	/*
 	  Draw the thumb area which is not covered by the thumb
 	*/
-	LCD_SetColor(pObj->aBkColor[0]);
+	GUI_SetColor(pObj->aBkColor[0]);
 	r.x0 = Pos.x1_LeftArrow + 1;
 	r.x1 = Pos.x0_Thumb - 1;
 	WIDGET__FillRectEx(&pObj->Widget, &r);
@@ -166,17 +166,17 @@ static void _Paint(SCROLLBAR_Obj *pObj) {
 	r = rClient;
 	r.x0 = Pos.x0_Thumb;
 	r.x1 = Pos.x1_Thumb;
-	LCD_SetColor(pObj->aColor[0]);
+	GUI_SetColor(pObj->aColor[0]);
 	WIDGET__FillRectEx(&pObj->Widget, &r);
 	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &r);
 	/*
 	  Draw right Arrow
 	*/
-	LCD_SetColor(pObj->aColor[0]);
+	GUI_SetColor(pObj->aColor[0]);
 	r.x0 = Pos.x0_RightArrow;
 	r.x1 = Pos.x1_RightArrow;
 	WIDGET__FillRectEx(&pObj->Widget, &r);
-	LCD_SetColor(pObj->aBkColor[1]);
+	GUI_SetColor(pObj->aBkColor[1]);
 	_DrawTriangle(&pObj->Widget, r.x1 - ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, 1);
 	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &r);
 	/*
@@ -185,7 +185,7 @@ static void _Paint(SCROLLBAR_Obj *pObj) {
 	if (Pos.x1_RightArrow != Pos.x1) {
 		r.x0 = Pos.x1_RightArrow + 1;
 		r.x1 = Pos.x1;
-		LCD_SetColor(pObj->aColor[0]);
+		GUI_SetColor(pObj->aColor[0]);
 		WIDGET__FillRectEx(&pObj->Widget, &r);
 	}
 }

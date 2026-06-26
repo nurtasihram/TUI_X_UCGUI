@@ -31,11 +31,12 @@ static int _GetColorIndex(int i)  /* i is 0 or 1 */ {
 	return  (GUI_Context.DrawMode & LCD_DRAWMODE_REV) ? i - 1 : i;
 }
 
-void LCD_SetColorIndex(int Index) {
-	LCD_ACOLORINDEX[_GetColorIndex(1)] = Index;
+void GUI_SetBkColor(RGB_COLOR color) {
+	LCD_ACOLORINDEX[_GetColorIndex(0)] = color;
 }
-void LCD_SetBkColorIndex(int Index) {
-	LCD_ACOLORINDEX[_GetColorIndex(0)] = Index;
+
+void GUI_SetColor(RGB_COLOR color) {
+	LCD_ACOLORINDEX[_GetColorIndex(1)] = color;
 }
 
 RGB_COLOR GUI_GetBkColor(void) {
@@ -43,27 +44,6 @@ RGB_COLOR GUI_GetBkColor(void) {
 }
 RGB_COLOR GUI_GetColor(void) {
 	return LCD_COLORINDEX;
-}
-
-void GUI_SetBkColor(RGB_COLOR color) {
-	LCD_SetBkColor(color);
-}
-void GUI_SetColor(RGB_COLOR color) {
-	LCD_SetColor(color);
-}
-
-void LCD_SetBkColor(RGB_COLOR color) {
-	if (GUI_Context.BkColor != color) {
-		GUI_Context.BkColor = color;
-		LCD_SetBkColorIndex(color);
-	}
-}
-
-void LCD_SetColor(RGB_COLOR color) {
-	if (GUI_Context.Color != color) {
-		GUI_Context.Color = color;
-		LCD_SetColorIndex(color);
-	}
 }
 
 GUI_DRAWMODE LCD_SetDrawMode(GUI_DRAWMODE dm) {
@@ -96,13 +76,13 @@ GUI_DRAWMODE LCD_SetDrawMode(GUI_DRAWMODE dm) {
   if (x < GUI_Context.ClipRect.x0) return;             \
   if (x > GUI_Context.ClipRect.x1) return;
 
-void LCD_SetPixelIndex(int x, int y, int ColorIndex) {
+void LCD_SetPixel(int x, int y, int ColorIndex) {
 	RETURN_IF_X_OUT();
 	RETURN_IF_Y_OUT();
 	LCDDEV_L0_SetPixelIndex(x, y, ColorIndex);
 }
 
-RGB_COLOR LCD_GetPixelColor(int x, int y) {
+RGB_COLOR LCD_GetPixel(int x, int y) {
 	GUI_RECT r;
 	LCDDEV_L0_GetRect(&r);
 	if (x < r.x0) {
@@ -131,6 +111,16 @@ void LCD_DrawPixel(int x, int y) {
 	}
 }
 
+void LCD_DrawVLine(int x, int y0, int y1) {
+	/* Perform clipping and check if there is something to do */
+	RETURN_IF_X_OUT();
+	CLIP_Y();
+	if (y1 < y0) {
+		return;
+	}
+	/* Call driver to draw */
+	LCDDEV_L0_DrawVLine(x, y0, y1);
+}
 void LCD_DrawHLine(int x0, int y, int x1) {
 	/* Perform clipping and check if there is something to do */
 	RETURN_IF_Y_OUT();

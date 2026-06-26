@@ -103,11 +103,11 @@ static void _Paint(FRAMEWIN_Obj *pObj) {
 	/* Perform drawing operations */
 	WM_ITERATE_START(NULL) {
 		/* Draw Title */
-		LCD_SetBkColor(pObj->Props.aBarColor[Index]);
-		LCD_SetColor(pObj->Props.aTextColor[Index]);
+		GUI_SetBkColor(pObj->Props.aBarColor[Index]);
+		GUI_SetColor(pObj->Props.aTextColor[Index]);
 		WIDGET__FillStringInRect(pText, &r, &Pos.rTitleText, &rText);
 		/* Draw Frame */
-		LCD_SetColor(FRAMEWIN_FRAMECOLOR_DEFAULT);
+		GUI_SetColor(FRAMEWIN_FRAMECOLOR_DEFAULT);
 		GUI_FillRect(0, 0, xsize - 1, BorderSize - 1);
 		GUI_FillRect(0, 0, Pos.rClient.x0 - 1, ysize - 1);
 		GUI_FillRect(Pos.rClient.x1 + 1, 0, xsize - 1, ysize - 1);
@@ -247,7 +247,7 @@ static void FRAMEWIN__cbClient(WM_MESSAGE *pMsg) {
 	switch (pMsg->MsgId) {
 		case WM_PAINT:
 			if (pObj->Props.ClientColor != GUI_INVALID_COLOR) {
-				LCD_SetBkColor(pObj->Props.ClientColor);
+				GUI_SetBkColor(pObj->Props.ClientColor);
 				GUI_Clear();
 			}
 			/* Give the user callback  a chance to draw.

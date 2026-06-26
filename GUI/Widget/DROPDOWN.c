@@ -120,21 +120,21 @@ static void _Paint(DROPDOWN_Handle hObj) {
 	WIDGET__EFFECT_DrawDown(&pObj->Widget);
 	/* Draw the outer text frames */
 	r.x1 -= InnerSize;     /* Spare square area to the right */
-	LCD_SetColor(pObj->Props.aBackColor[ColorIndex]);
+	GUI_SetColor(pObj->Props.aBackColor[ColorIndex]);
 	/* Draw the text */
-	LCD_SetBkColor(pObj->Props.aBackColor[ColorIndex]);
+	GUI_SetBkColor(pObj->Props.aBackColor[ColorIndex]);
 	GUI_FillRectEx(&r);
 	r.x0 += TextBorderSize;
 	r.x1 -= TextBorderSize;
-	LCD_SetColor(pObj->Props.aTextColor[ColorIndex]);
+	GUI_SetColor(pObj->Props.aTextColor[ColorIndex]);
 	GUI_DispStringInRect(s, &r, pObj->Props.Align);/**/
 	/* Draw arrow */
 	WM_GetClientRect(&r);
 	GUI__ReduceRect(&r, &r, Border);
 	r.x0 = r.x1 + 1 - InnerSize;
-	LCD_SetColor(RGB_GRAYL(0xc0));
+	GUI_SetColor(RGB_GRAYL(0xc0));
 	GUI_FillRectEx(&r);
-	LCD_SetColor(RGB_BLACK);
+	GUI_SetColor(RGB_BLACK);
 	_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.y1 - r.y0 - 8) / 2);
 	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &r);
 }

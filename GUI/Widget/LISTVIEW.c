@@ -96,7 +96,7 @@ static void _Paint(LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	GUI__IntersectRect(&ClipRect, &Rect);
 	/* Set drawing color, font and text mode */
-	LCD_SetColor(pObj->Props.aTextColor[0]);
+	GUI_SetColor(pObj->Props.aTextColor[0]);
 	GUI_SetFont(pObj->Props.pFont);
 	GUI_SetTextMode(GUI_TM_TRANS);
 	/* Do the drawing */
@@ -119,7 +119,7 @@ static void _Paint(LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 				else {
 					ColorIndex = 0;
 				}
-				LCD_SetBkColor(pObj->Props.aBkColor[ColorIndex]);
+				GUI_SetBkColor(pObj->Props.aBkColor[ColorIndex]);
 				/* Iterate over all columns */
 				if (pObj->ShowGrid) {
 					Rect.y1--;
@@ -140,11 +140,11 @@ static void _Paint(LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 						if (pItem->hItemInfo) {
 							LISTVIEW_ITEM_INFO *pItemInfo;
 							pItemInfo = (LISTVIEW_ITEM_INFO *)(pItem->hItemInfo);
-							LCD_SetBkColor(pItemInfo->aBkColor[ColorIndex]);
-							LCD_SetColor(pItemInfo->aTextColor[ColorIndex]);
+							GUI_SetBkColor(pItemInfo->aBkColor[ColorIndex]);
+							GUI_SetColor(pItemInfo->aTextColor[ColorIndex]);
 						}
 						else {
-							LCD_SetColor(pObj->Props.aTextColor[ColorIndex]);
+							GUI_SetColor(pObj->Props.aTextColor[ColorIndex]);
 						}
 						/* Clear background */
 						GUI_ClearRect(Rect.x0, Rect.y0, Rect.x1, Rect.y1);
@@ -154,7 +154,7 @@ static void _Paint(LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 						Align = *((int *)GUI_ARRAY_GetpItem(&pObj->AlignArray, j));
 						GUI_DispStringInRect(pItem->acText, &Rect, Align);
 						if (pItem->hItemInfo) {
-							LCD_SetBkColor(pObj->Props.aBkColor[ColorIndex]);
+							GUI_SetBkColor(pObj->Props.aBkColor[ColorIndex]);
 						}
 					}
 					xPos += Width;
@@ -169,12 +169,12 @@ static void _Paint(LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 	}
 	/* Clear unused area below items */
 	if (yPos <= ClipRect.y1) {
-		LCD_SetBkColor(pObj->Props.aBkColor[0]);
+		GUI_SetBkColor(pObj->Props.aBkColor[0]);
 		GUI_ClearRect(ClipRect.x0, yPos, ClipRect.x1, ClipRect.y1);
 	}
 	/* Draw grid */
 	if (pObj->ShowGrid) {
-		LCD_SetColor(pObj->Props.GridColor);
+		GUI_SetColor(pObj->Props.GridColor);
 		yPos = HEADER_GetHeight(pObj->hHeader) + EffectSize - 1;
 		for (i = 0; i < NumVisRows; i++) {
 			yPos += RowDistY;

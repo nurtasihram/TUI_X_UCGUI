@@ -63,7 +63,7 @@ void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV_Handle hMem) {
       if (pUsage)
         GUI_USAGE_AddHLine(pUsage, x, y, r.x1 - r.x0 + 1);
       for (; x <= XMax; x++) {
-        *pData++ = LCD_L0_GetPixelIndex(x, y);
+        *pData++ = LCD_L0_GetPixel(x, y);
       }
     }
     GUI_MEMDEV_Select(hMemOld);

@@ -38,15 +38,15 @@ static void _Paint(SLIDER_Obj *pObj, WM_HWIN hObj) {
 	/* Fill with parents background color */
 #if !SLIDER_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent*/
 	if (pObj->aBkColor[0] == GUI_INVALID_COLOR) {
-		LCD_SetBkColor(WIDGET__GetBkColor(hObj));
+		GUI_SetBkColor(WIDGET__GetBkColor(hObj));
 	}
 	else {
-		LCD_SetBkColor(pObj->aBkColor[0]);
+		GUI_SetBkColor(pObj->aBkColor[0]);
 	}
 	GUI_Clear();
 #else
 	if (!WM_GetHasTrans(hObj)) {
-		LCD_SetBkColor(pObj->aBkColor[0]);
+		GUI_SetBkColor(pObj->aBkColor[0]);
 		GUI_Clear();
 	}
 #endif
@@ -69,20 +69,20 @@ static void _Paint(SLIDER_Obj *pObj, WM_HWIN hObj) {
 		}
 	}
 	if (NumTicks > 1) {
-		LCD_SetColor(RGB_BLACK);
+		GUI_SetColor(RGB_BLACK);
 		for (i = 0; i < NumTicks; i++) {
 			int x = x0 + xsize * i / (NumTicks - 1);
 			WIDGET__DrawVLine(&pObj->Widget, x, 1, 3);
 		}
 	}
 	/* Draw the slider itself */
-	LCD_SetColor(pObj->aColor[0]);
+	GUI_SetColor(pObj->aColor[0]);
 	WIDGET__FillRectEx(&pObj->Widget, &rSlider);
-	LCD_SetColor(RGB_BLACK);
+	GUI_SetColor(RGB_BLACK);
 	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &rSlider);
 	/* Draw focus */
 	if (pObj->Widget.State & WIDGET_STATE_FOCUS) {
-		LCD_SetColor(RGB_BLACK);
+		GUI_SetColor(RGB_BLACK);
 		WIDGET__DrawFocusRect(&pObj->Widget, &rFocus, 0);
 	}
 }

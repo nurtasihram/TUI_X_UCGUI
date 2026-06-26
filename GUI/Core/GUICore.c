@@ -33,8 +33,8 @@ static void _InitContext(GUI_CONTEXT* pContext) {
   pContext->hAWin    = WM_GetDesktopWindow();
   pContext->Color   = GUI_INVALID_COLOR;
   pContext->BkColor = GUI_INVALID_COLOR;
-  LCD_SetBkColor(GUI_DEFAULT_BKCOLOR);
-  LCD_SetColor(GUI_DEFAULT_COLOR);
+  GUI_SetBkColor(GUI_DEFAULT_BKCOLOR);
+  GUI_SetColor(GUI_DEFAULT_COLOR);
   pContext->pUC_API = &GUI__API_TableNone;
 }
 

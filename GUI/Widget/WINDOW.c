@@ -69,7 +69,7 @@ static void _cb(WM_MESSAGE *pMsg) {
 			}
 			break;
 		case WM_PAINT:
-			LCD_SetBkColor(WINDOW__DefaultBkColor);
+			GUI_SetBkColor(WINDOW__DefaultBkColor);
 			GUI_Clear();
 			break;
 		case WM_GET_BKCOLOR:

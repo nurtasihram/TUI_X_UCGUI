@@ -93,7 +93,7 @@ static void _DrawBitmapLineEx(int x0, int y0, int xOff, int yOff, int xSize, int
             if (xStart < xMin) {
               xStart = xMin;
             }
-            LCD_SetColorIndex(IndexPrev);
+            GUI_SetColor(IndexPrev);
             if (Alpha == 256 || !GUI_Context.hDevData) {
               LCDDEV_L0_DrawHLine(x0 + xStart, y0, x0 + x - 1);
             } else {
@@ -119,7 +119,7 @@ static void _DrawBitmapLineEx(int x0, int y0, int xOff, int yOff, int xSize, int
     if (xStart < xMin) {
       xStart = xMin;
     }
-    LCD_SetColorIndex(Index);
+    GUI_SetColor(Index);
     if (Alpha == 256 || !GUI_Context.hDevData) {
       LCDDEV_L0_DrawHLine(x0 + xStart, y0, x0 + x - 1);
     } else {

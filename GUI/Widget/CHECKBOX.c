@@ -42,10 +42,10 @@ static void _Paint(CHECKBOX_Obj *pObj, CHECKBOX_Handle hObj) {
 #endif
 	{
 		if (pObj->Props.BkColor == GUI_INVALID_COLOR) {
-			LCD_SetBkColor(WIDGET__GetBkColor(hObj));
+			GUI_SetBkColor(WIDGET__GetBkColor(hObj));
 		}
 		else {
-			LCD_SetBkColor(pObj->Props.BkColor);
+			GUI_SetBkColor(pObj->Props.BkColor);
 		}
 		GUI_Clear();
 	}
@@ -54,7 +54,7 @@ static void _Paint(CHECKBOX_Obj *pObj, CHECKBOX_Handle hObj) {
 	RectBox.y1 = pObj->Props.apBm[0]->YSize - 1 + 2 * EffectSize;
 	WM_SetUserClipRect(&RectBox);
 	/* Clear inside  ... Just in case */
-	LCD_SetBkColor(pObj->Props.aBkColorBox[ColorIndex]);
+	GUI_SetBkColor(pObj->Props.aBkColorBox[ColorIndex]);
 	GUI_Clear();
 	if (pObj->CurrentState) {
 		int Index = (pObj->CurrentState - 1) * 2 + ColorIndex;
@@ -72,7 +72,7 @@ static void _Paint(CHECKBOX_Obj *pObj, CHECKBOX_Handle hObj) {
 		WM_GetClientRect(&RectText);
 		RectText.x0 += RectBox.x1 + 1 + pObj->Props.Spacing;
 		GUI_SetTextMode(GUI_TM_TRANS);
-		LCD_SetColor(pObj->Props.TextColor);
+		GUI_SetColor(pObj->Props.TextColor);
 		GUI_SetFont(pObj->Props.pFont);
 		GUI_DispStringInRect(s, &RectText, pObj->Props.Align);
 		/* Draw focus rectangle */
@@ -98,7 +98,7 @@ static void _Paint(CHECKBOX_Obj *pObj, CHECKBOX_Handle hObj) {
 			}
 			RectFocus.x1 = RectFocus.x0 + xSizeText;
 			RectFocus.y1 = RectFocus.y0 + ySizeText;
-			LCD_SetColor(RGB_BLACK);
+			GUI_SetColor(RGB_BLACK);
 			WIDGET__DrawFocusRect(&pObj->Widget, &RectFocus, 0);
 		}
 	}

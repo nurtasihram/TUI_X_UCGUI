@@ -266,8 +266,8 @@ int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 				}
 			}
 			/* Display item */
-			LCD_SetBkColor(pObj->Props.aBackColor[ColorIndex]);
-			LCD_SetColor(pObj->Props.aTextColor[ColorIndex]);
+			GUI_SetBkColor(pObj->Props.aBackColor[ColorIndex]);
+			GUI_SetColor(pObj->Props.aTextColor[ColorIndex]);
 			s = LISTBOX__GetpString(pObj, ItemIndex);
 			GUI_SetTextMode(GUI_TM_TRANS);
 			GUI_Clear();
@@ -279,7 +279,7 @@ int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 				rFocus.y0 = pDrawItemInfo->y0;
 				rFocus.x1 = r.x1;
 				rFocus.y1 = pDrawItemInfo->y0 + FontDistY - 1;
-				LCD_SetColor(RGB_WHITE - pObj->Props.aBackColor[ColorIndex]);
+				GUI_SetColor(RGB_WHITE - pObj->Props.aBackColor[ColorIndex]);
 				GUI_DrawFocusRect(&rFocus, 0);
 			}
 			return 0;
@@ -484,7 +484,7 @@ static void _OnPaint(LISTBOX_Obj *pObj, WM_MESSAGE *pMsg) {
 	/* Calculate & clear 'data free' area */
 	RectItem.y0 = ItemInfo.y0;
 	RectItem.y1 = RectInside.y1;
-	LCD_SetBkColor(pObj->Props.aBackColor[0]);
+	GUI_SetBkColor(pObj->Props.aBackColor[0]);
 	GUI_ClearRectEx(&RectItem);
 	/* Draw the 3D effect (if configured) */
 	WIDGET__EFFECT_DrawDown(&pObj->Widget);

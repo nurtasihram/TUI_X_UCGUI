@@ -45,7 +45,7 @@ static void _SetPixelIndex(int x, int y, int Index) {
 static int _GetPixelIndex(int x, int y) {
   if ((y >= _ClipRect.y0) && (y <= _ClipRect.y1)) {
     if ((x >= _ClipRect.x0) && (x <= _ClipRect.x1)) {
-      return LCD_L0_GetPixelIndex(x, y);
+      return LCD_L0_GetPixel(x, y);
     }
   }
   return 0;

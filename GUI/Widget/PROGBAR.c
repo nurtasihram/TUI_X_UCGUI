@@ -44,8 +44,8 @@ static int _Value2X(const PROGBAR_Obj *pObj, int v) {
 }
 static void _DrawPart(const PROGBAR_Obj *pObj, int Index,
 					  int xText, int yText, const char *pText) {
-	LCD_SetBkColor(pObj->BarColor[Index]);
-	LCD_SetColor(pObj->TextColor[Index]);
+	GUI_SetBkColor(pObj->BarColor[Index]);
+	GUI_SetColor(pObj->TextColor[Index]);
 	GUI_Clear();
 	GUI_GotoXY(xText, yText);
 	GUI_DispString(pText);

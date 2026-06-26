@@ -58,7 +58,7 @@ static void _OnPaint(RADIO_Obj* pObj) {
   rFocus.x1 = pBmRadio->XSize + RADIO_BORDER * 2 - 1;
   rFocus.y1 = pObj->Height + ((pObj->NumItems - 1) * pObj->Spacing) - 1;
   /* Select font and text color */
-  LCD_SetColor(pObj->TextColor);
+  GUI_SetColor(pObj->TextColor);
   GUI_SetFont(pObj->pFont);
   GUI_SetTextMode(GUI_TM_TRANS);
   /* Get font infos */
@@ -80,9 +80,9 @@ static void _OnPaint(RADIO_Obj* pObj) {
 #endif
   {
     if (pObj->BkColor != GUI_INVALID_COLOR) {
-      LCD_SetBkColor(pObj->BkColor);
+      GUI_SetBkColor(pObj->BkColor);
     } else {
-      LCD_SetBkColor(RADIO_DEFAULT_BKCOLOR);
+      GUI_SetBkColor(RADIO_DEFAULT_BKCOLOR);
     }
     GUI_Clear();
   }
@@ -113,7 +113,7 @@ static void _OnPaint(RADIO_Obj* pObj) {
   }
   /* Draw the focus rect */
   if (HasFocus) {
-    LCD_SetColor(RGB_BLACK);
+    GUI_SetColor(RGB_BLACK);
     WIDGET__DrawFocusRect(&pObj->Widget, &rFocus, 0);
   }
 }

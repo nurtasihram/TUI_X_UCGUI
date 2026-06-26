@@ -103,12 +103,8 @@
     <ClCompile Include="GUI\Core\GUI__Wrap.c" />
     <ClCompile Include="GUI\Core\LCD.c" />
     <ClCompile Include="GUI\Core\LCD_API.c" />
-    <ClCompile Include="GUI\Core\LCD_DrawVLine.c" />
-    <ClCompile Include="GUI\Core\LCD_L0_Generic.c" />
     <ClCompile Include="GUI\Core\LCD_Mirror.c" />
     <ClCompile Include="GUI\Core\LCD_MixColors256.c" />
-    <ClCompile Include="GUI\Core\LCD_SelectLCD.c" />
-    <ClCompile Include="GUI\Core\LCD_UpdateColorIndices.c" />
     <ClCompile Include="GUI\Resources\F08_1.c" />
     <ClCompile Include="GUI\Resources\F08_ASCII.c" />
     <ClCompile Include="GUI\Resources\F13_1.c" />

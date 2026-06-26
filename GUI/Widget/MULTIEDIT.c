@@ -871,8 +871,8 @@ static void _MULTIEDIT_Paint(MULTIEDIT_OBJ *pObj) {
 	yOff = EffectSize - ScrollPosY * FontSizeY;
 	ColorIndex = ((pObj->Flags & MULTIEDIT_SF_READONLY) ? 1 : 0);
 	/* Set colors and draw the background */
-	LCD_SetBkColor(pObj->aBkColor[ColorIndex]);
-	LCD_SetColor(pObj->aColor[ColorIndex]);
+	GUI_SetBkColor(pObj->aBkColor[ColorIndex]);
+	GUI_SetColor(pObj->aColor[ColorIndex]);
 	GUI_Clear();
 	/* Draw the text if necessary */
 	rClip.x0 = EffectSize + HBorder;

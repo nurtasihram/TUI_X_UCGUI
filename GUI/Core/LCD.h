@@ -27,7 +27,7 @@ typedef struct {
 
 /* This is used for the simulation only ! */
 typedef struct {
-  int x,y;
+  int16_t x, y;
   uint8_t KeyStat;
 } LCD_tMouseState;
 
@@ -87,17 +87,13 @@ void LCD_SetClipRectMax(void);
 /* Initialize LCD using config-paramters */
 int LCD_Init(void);
 
-void LCD_SetBkColor   (RGB_COLOR Color); /* Set background color */
-void LCD_SetColor     (RGB_COLOR Color); /* Set foreground color */
-void LCD_SetPixelIndex(int x, int y, int ColorIndex);
+void LCD_SetPixel(int x, int y, int Color);
+RGB_COLOR    LCD_GetPixel(int x, int y);
 
 GUI_DRAWMODE LCD_SetDrawMode  (GUI_DRAWMODE dm);
-void LCD_SetColorIndex(int Index);
-void LCD_SetBkColorIndex(int Index);
 void LCD_FillRect(int x0, int y0, int x1, int y1);
 
-RGB_COLOR    LCD_MixColors256(RGB_COLOR Color, RGB_COLOR BkColor, unsigned Intens);
-RGB_COLOR    LCD_GetPixelColor(int x, int y);     /* Get RGB color of pixel */
+RGB_COLOR LCD_MixColors256(RGB_COLOR Color, RGB_COLOR BkColor, unsigned Intens);
 
 void LCD_X_Init(void);
 

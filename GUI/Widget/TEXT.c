@@ -19,20 +19,20 @@ static void _Paint(TEXT_Obj *pObj) {
 	const char *s;
 	GUI_RECT Rect;
 	GUI_USE_PARA(pObj);
-	LCD_SetColor(pObj->TextColor);
+	GUI_SetColor(pObj->TextColor);
 	GUI_SetFont(pObj->pFont);
 	/* Fill with parents background color */
 #if !TEXT_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent*/
 	if (pObj->BkColor == GUI_INVALID_COLOR) {
-		LCD_SetBkColor(WIDGET__GetBkColor(hObj));
+		GUI_SetBkColor(WIDGET__GetBkColor(hObj));
 	}
 	else {
-		LCD_SetBkColor(pObj->BkColor);
+		GUI_SetBkColor(pObj->BkColor);
 	}
 	GUI_Clear();
 #else
 	if (!WM_GetHasTrans(pObj)) {
-		LCD_SetBkColor(pObj->BkColor);
+		GUI_SetBkColor(pObj->BkColor);
 		GUI_Clear();
 	}
 #endif

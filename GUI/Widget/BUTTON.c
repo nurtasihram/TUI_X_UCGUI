@@ -53,7 +53,7 @@ static void _Paint(BUTTON_Obj *pObj, BUTTON_Handle hObj) {
 			EffectSize = pObj->Widget.pEffect->EffectSize;
 		}
 		else {
-			LCD_SetColor(RGB_BLACK);
+			GUI_SetColor(RGB_BLACK);
 			GUI_DrawRect(rClient.y0, rClient.x0, rClient.x1, rClient.y1);
 			EffectSize = 1;
 		}
@@ -61,8 +61,8 @@ static void _Paint(BUTTON_Obj *pObj, BUTTON_Handle hObj) {
 	}
 #endif
 	/* Draw background */
-	LCD_SetBkColor(pObj->Props.aBkColor[ColorIndex]);
-	LCD_SetColor(pObj->Props.aTextColor[ColorIndex]);
+	GUI_SetBkColor(pObj->Props.aBkColor[ColorIndex]);
+	GUI_SetColor(pObj->Props.aTextColor[ColorIndex]);
 	WM_SetUserClipRect(&rInside);
 	GUI_Clear();
 	/* Draw bitmap.
@@ -90,7 +90,7 @@ static void _Paint(BUTTON_Obj *pObj, BUTTON_Handle hObj) {
 	}
 	/* Draw focus */
 	if (State & BUTTON_STATE_FOCUS) {
-		LCD_SetColor(RGB_BLACK);
+		GUI_SetColor(RGB_BLACK);
 		GUI_DrawFocusRect(&rClient, 2);
 	}
 	WM_SetUserClipRect(NULL);

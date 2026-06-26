@@ -31,7 +31,7 @@ static void _Paint(HEADER_Obj *pObj) {
 	int i, xPos = -pObj->ScrollPos;
 	int NumItems = GUI_ARRAY_GetNumItems(&pObj->Columns);
 	int EffectSize = pObj->Widget.pEffect->EffectSize;
-	LCD_SetBkColor(pObj->BkColor);
+	GUI_SetBkColor(pObj->BkColor);
 	GUI_SetFont(pObj->pFont);
 	GUI_Clear();
 	for (i = 0; i < NumItems; i++) {
@@ -67,7 +67,7 @@ static void _Paint(HEADER_Obj *pObj) {
 		Rect.x1 -= EffectSize + _DefaultBorderH;
 		Rect.y0 += EffectSize + _DefaultBorderV;
 		Rect.y1 -= EffectSize + _DefaultBorderV;
-		LCD_SetColor(pObj->TextColor);
+		GUI_SetColor(pObj->TextColor);
 		GUI_DispStringInRect(pColumn->acText, &Rect, pColumn->Align);
 	}
 	GUI_GetClientRect(&Rect);

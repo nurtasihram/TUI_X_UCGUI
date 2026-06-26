@@ -22,8 +22,8 @@
 #define LCDDEV_L0_FillRect            LCD_L0_FillRect
 #define LCDDEV_L0_GetPixel            LCD_L0_GetPixel
 #define LCDDEV_L0_GetRect             LCD_L0_GetRect
-#define LCDDEV_L0_GetPixelIndex       LCD_L0_GetPixelIndex
-#define LCDDEV_L0_SetPixelIndex       LCD_L0_SetPixelIndex
+#define LCDDEV_L0_GetPixelIndex       LCD_L0_GetPixel
+#define LCDDEV_L0_SetPixelIndex       LCD_L0_SetPixel
 #define LCDDEV_L0_XorPixel            LCD_L0_XorPixel
 #endif
 

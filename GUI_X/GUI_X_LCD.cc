@@ -12,14 +12,14 @@ Ayxandar Ayx;
 int LCD_GetXSize(void) { return LCD_XSIZE; }
 int LCD_GetYSize(void) { return LCD_YSIZE; }
 
-extern void LCD_L0_SetPixelIndex(int x, int y, int PixelIndex) {
+extern void LCD_L0_SetPixel(int x, int y, RGB_COLOR PixelIndex) {
 	Ayx.Dot({x, y}, PixelIndex);
 }
-extern unsigned int LCD_L0_GetPixelIndex(int x, int y) {
+extern RGB_COLOR LCD_L0_GetPixel(int x, int y) {
 	return Ayx.Dot({x, y});
 }
 void LCD_L0_XorPixel(int x, int y) {
-	LCD_L0_SetPixelIndex(x, y, ~LCD_L0_GetPixelIndex(x, y));
+	LCD_L0_SetPixel(x, y, ~LCD_L0_GetPixel(x, y));
 }
 
 void LCD_L0_DrawHLine(int x0, int y, int x1) {
@@ -30,7 +30,7 @@ void LCD_L0_DrawHLine(int x0, int y, int x1) {
 	}
 	else {
 		for (; x0 <= x1; x0++) {
-			LCD_L0_SetPixelIndex(x0, y, LCD_COLORINDEX);
+			LCD_L0_SetPixel(x0, y, LCD_COLORINDEX);
 		}
 	}
 }
@@ -43,7 +43,7 @@ void LCD_L0_DrawVLine(int x, int y0, int y1) {
 	}
 	else {
 		for (; y0 <= y1; y0++) {
-			LCD_L0_SetPixelIndex(x, y0, LCD_COLORINDEX);
+			LCD_L0_SetPixel(x, y0, LCD_COLORINDEX);
 		}
 	}
 }

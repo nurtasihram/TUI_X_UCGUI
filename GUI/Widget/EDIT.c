@@ -46,8 +46,8 @@ static void _Paint(EDIT_Obj *pObj, EDIT_Handle hObj) {
 	int IsEnabled, CursorWidth;
 	IsEnabled = WM__IsEnabled(hObj);
 	/* Set colors and font */
-	LCD_SetBkColor(pObj->Props.aBkColor[IsEnabled]);
-	LCD_SetColor(pObj->Props.aTextColor[0]);
+	GUI_SetBkColor(pObj->Props.aBkColor[IsEnabled]);
+	GUI_SetColor(pObj->Props.aTextColor[0]);
 	GUI_SetFont(pObj->Props.pFont);
 	/* Calculate size */
 	WM__GetClientRectWin(&pObj->Widget.Win, &r);
