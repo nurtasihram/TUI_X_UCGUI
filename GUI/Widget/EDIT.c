@@ -249,7 +249,7 @@ static int _IsCharsAvailable(EDIT_Obj *pObj, int CharsNeeded) {
 * Deletes a character at the current cursor position and moves
 * all bytes after the cursor position.
 */
-static void _DeleteChar(EDIT_Handle hObj, EDIT_Obj *pObj) {
+static void _DeleteChar(EDIT_Obj *pObj) {
 	if (pObj->hpText) {
 		unsigned CursorOffset;
 		char *pText;
@@ -260,7 +260,7 @@ static void _DeleteChar(EDIT_Handle hObj, EDIT_Obj *pObj) {
 			pText += CursorOffset;
 			NumBytes = GUI_UC_GetCharSize(pText);
 			strcpy(pText, pText + NumBytes);
-			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
+			WM_NotifyParent(pObj, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
 }
@@ -270,7 +270,7 @@ static void _DeleteChar(EDIT_Handle hObj, EDIT_Obj *pObj) {
 *
 * Create space at the current cursor position and inserts a character.
 */
-static int _InsertChar(EDIT_Handle hObj, EDIT_Obj *pObj, uint16_t Char) {
+static int _InsertChar(EDIT_Obj *pObj, uint16_t Char) {
 	if (_IsCharsAvailable(pObj, 1)) {
 		int BytesNeeded;
 		BytesNeeded = GUI_UC__CalcSizeOfChar(Char);
@@ -282,7 +282,7 @@ static int _InsertChar(EDIT_Handle hObj, EDIT_Obj *pObj, uint16_t Char) {
 			pText += CursorOffset;
 			memmove(pText + BytesNeeded, pText, strlen(pText) + 1);
 			GUI_UC_Encode(pText, Char);
-			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
+			WM_NotifyParent(pObj, WM_NOTIFICATION_VALUE_CHANGED);
 			return 1;
 		}
 	}
@@ -326,14 +326,14 @@ void EDIT__SetCursorPos(EDIT_Obj *pObj, int CursorPos) {
 		pObj->SelSize = 0;
 	}
 }
-static void _OnTouch(EDIT_Handle hObj, EDIT_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnTouch(EDIT_Obj *pObj, WM_MESSAGE *pMsg) {
 	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
 	GUI_USE_PARA(pObj);
 	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
 		static int StartPress = 0;	//houhh 20061023...
 		if (pState->Pressed) {
 			GUI_DEBUG_LOG("EDIT__Callback(WM_TOUCH, Pressed, Handle %d)\n", 1);
-			EDIT_SetCursorAtPixel(hObj, pState->x);
+			EDIT_SetCursorAtPixel(pObj, pState->x);
 			StartPress = pObj->CursorPos;	//houhh 20061023...
 		}
 		else {
@@ -355,7 +355,7 @@ static void EDIT__Callback(WM_MESSAGE *pMsg) {
 	}
 	switch (pMsg->MsgId) {
 		case WM_TOUCH:
-			_OnTouch(hObj, pObj, pMsg);
+			_OnTouch(pObj, pMsg);
 			break;
 		case WM_PAINT:
 			_Paint(pObj, hObj);
@@ -455,10 +455,10 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 						break;
 					case GUI_KEY_BACKSPACE:
 						EDIT__SetCursorPos(pObj, pObj->CursorPos - 1);
-						_DeleteChar(hObj, pObj);
+						_DeleteChar(pObj);
 						break;
 					case GUI_KEY_DELETE:
-						_DeleteChar(hObj, pObj);
+						_DeleteChar(pObj);
 						break;
 					case GUI_KEY_INSERT:
 						if (pObj->EditMode == GUI_EDIT_MODE_OVERWRITE) {
@@ -475,9 +475,9 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 					default:
 						if (Key >= 0x20) {
 							if (pObj->EditMode != GUI_EDIT_MODE_INSERT) {
-								_DeleteChar(hObj, pObj);
+								_DeleteChar(pObj);
 							}
-							if (_InsertChar(hObj, pObj, Key)) {
+							if (_InsertChar(pObj, Key)) {
 								EDIT__SetCursorPos(pObj, pObj->CursorPos + 1);
 							}
 						}

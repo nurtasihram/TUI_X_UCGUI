@@ -103,16 +103,16 @@ static void _Paint(CHECKBOX_Obj *pObj, CHECKBOX_Handle hObj) {
 		}
 	}
 }
-static void _OnTouch(CHECKBOX_Handle hObj, CHECKBOX_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnTouch(CHECKBOX_Obj *pObj, WM_MESSAGE *pMsg) {
 	int Notification = 0;
 	int Hit = 0;
 	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
 	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
-		if (!WM_HasCaptured(hObj)) {
+		if (!WM_HasCaptured(pObj)) {
 			if (pState->Pressed) {
-				WM_SetCapture(hObj, 1);
+				WM_SetCapture(pObj, 1);
 				pObj->CurrentState = (pObj->CurrentState + 1) % pObj->NumStates;
-				WM_Invalidate(hObj);
+				WM_Invalidate(pObj);
 				Notification = WM_NOTIFICATION_CLICKED;
 			}
 			else {
@@ -124,21 +124,21 @@ static void _OnTouch(CHECKBOX_Handle hObj, CHECKBOX_Obj *pObj, WM_MESSAGE *pMsg)
 	else {
 		Notification = WM_NOTIFICATION_MOVED_OUT;
 	}
-	WM_NotifyParent(hObj, Notification);
+	WM_NotifyParent(pObj, Notification);
 	if (Hit == 1) {
 		GUI_DEBUG_LOG("CHECKBOX: Hit\n");
 		GUI_StoreKey(pObj->Widget.Id);
 	}
 }
-static void  _OnKey(CHECKBOX_Handle hObj, CHECKBOX_Obj *pObj, WM_MESSAGE *pMsg) {
+static void  _OnKey(CHECKBOX_Obj *pObj, WM_MESSAGE *pMsg) {
 	WM_KEY_INFO *pKeyInfo;
-	if (WM__IsEnabled(hObj)) {
+	if (WM__IsEnabled(pObj)) {
 		pKeyInfo = (WM_KEY_INFO *)(pMsg->Data.p);
 		if (pKeyInfo->PressedCnt > 0) {
 			switch (pKeyInfo->Key) {
 				case GUI_KEY_SPACE:
 					pObj->CurrentState = (pObj->CurrentState + 1) % pObj->NumStates;
-					WM_Invalidate(hObj);
+					WM_Invalidate(pObj);
 					break;                    /* Send to parent by not doing anything */
 			}
 		}
@@ -155,13 +155,13 @@ static void _CHECKBOX_Callback(WM_MESSAGE *pMsg) {
 	}
 	switch (pMsg->MsgId) {
 		case WM_KEY:
-			_OnKey(hObj, pObj, pMsg);
+			_OnKey(pObj, pMsg);
 			break;
 		case WM_PAINT:
 			_Paint(pObj, hObj);
 			return;
 		case WM_TOUCH:
-			_OnTouch(hObj, pObj, pMsg);
+			_OnTouch(pObj, pMsg);
 			break;
 	}
 	WM_DefaultProc(pMsg);

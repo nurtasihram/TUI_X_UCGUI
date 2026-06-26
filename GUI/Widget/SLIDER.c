@@ -86,19 +86,19 @@ static void _Paint(SLIDER_Obj *pObj, WM_HWIN hObj) {
 		WIDGET__DrawFocusRect(&pObj->Widget, &rFocus, 0);
 	}
 }
-static void _SliderPressed(SLIDER_Handle hObj, SLIDER_Obj *pObj) {
-	WIDGET_OrState(hObj, SLIDER_STATE_PRESSED);
+static void _SliderPressed(SLIDER_Obj *pObj) {
+	WIDGET_OrState(pObj, SLIDER_STATE_PRESSED);
 	if (pObj->Widget.Win.Status & WM_SF_ISVIS) {
-		WM_NotifyParent(hObj, WM_NOTIFICATION_CLICKED);
+		WM_NotifyParent(pObj, WM_NOTIFICATION_CLICKED);
 	}
 }
-static void _SliderReleased(SLIDER_Handle hObj, SLIDER_Obj *pObj) {
-	WIDGET_AndState(hObj, SLIDER_STATE_PRESSED);
+static void _SliderReleased(SLIDER_Obj *pObj) {
+	WIDGET_AndState(pObj, SLIDER_STATE_PRESSED);
 	if (pObj->Widget.Win.Status & WM_SF_ISVIS) {
-		WM_NotifyParent(hObj, WM_NOTIFICATION_RELEASED);
+		WM_NotifyParent(pObj, WM_NOTIFICATION_RELEASED);
 	}
 }
-static void _OnTouch(SLIDER_Handle hObj, SLIDER_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnTouch(SLIDER_Obj *pObj, WM_MESSAGE *pMsg) {
 	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
 	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
@@ -107,7 +107,7 @@ static void _OnTouch(SLIDER_Handle hObj, SLIDER_Obj *pObj, WM_MESSAGE *pMsg) {
 			x0 = 1 + pObj->Width / 2;  /* 1 pixel focus rectangle + width of actual slider */
 			x = (pObj->Widget.State & WIDGET_STATE_VERTICAL) ? pState->y : pState->x;
 			x -= x0;
-			xsize = WIDGET__GetWindowSizeX(hObj) - 2 * x0;
+			xsize = WIDGET__GetWindowSizeX(pObj) - 2 * x0;
 			if (x <= 0) {
 				Sel = pObj->Min;
 			}
@@ -119,19 +119,19 @@ static void _OnTouch(SLIDER_Handle hObj, SLIDER_Obj *pObj, WM_MESSAGE *pMsg) {
 				Div = xsize ? xsize : 1;     /* Make sure we do not divide by 0, even though xsize should never be 0 in this case anyhow */
 				Sel = pObj->Min + ((uint32_t)Range * (uint32_t)x + Div / 2) / Div;
 			}
-			if (WM_IsFocussable(hObj)) {
-				WM_SetFocus(hObj);
+			if (WM_IsFocussable(pObj)) {
+				WM_SetFocus(pObj);
 			}
-			WM_SetCapture(hObj, 1);
-			SLIDER_SetValue(hObj, Sel);
+			WM_SetCapture(pObj, 1);
+			SLIDER_SetValue(pObj, Sel);
 			if ((pObj->Widget.State & SLIDER_STATE_PRESSED) == 0) {
-				_SliderPressed(hObj, pObj);
+				_SliderPressed(pObj);
 			}
 		}
 		else {
 			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
 			if (pObj->Widget.State & SLIDER_STATE_PRESSED) {
-				_SliderReleased(hObj, pObj);
+				_SliderReleased(pObj);
 			}
 		}
 	}
@@ -168,7 +168,7 @@ static void _SLIDER_Callback(WM_MESSAGE *pMsg) {
 			_Paint(pObj, hObj);
 			return;
 		case WM_TOUCH:
-			_OnTouch(hObj, pObj, pMsg);
+			_OnTouch(pObj, pMsg);
 			break;
 		case WM_KEY:
 			_OnKey(hObj, pMsg);

@@ -26,7 +26,7 @@ static RGB_COLOR          _DefaultTextColor = HEADER_TEXTCOLOR_DEFAULT;
 static int                _DefaultBorderH = HEADER_BORDER_H_DEFAULT;
 static int                _DefaultBorderV = HEADER_BORDER_V_DEFAULT;
 static const GUI_FONT GUI_UNI_PTR *_pDefaultFont = HEADER_FONT_DEFAULT;
-static void _Paint(/*HEADER_Handle hObj, */HEADER_Obj *pObj) {
+static void _Paint(HEADER_Obj *pObj) {
 	GUI_RECT Rect;
 	int i, xPos = -pObj->ScrollPos;
 	int NumItems = GUI_ARRAY_GetNumItems(&pObj->Columns);
@@ -103,10 +103,10 @@ static void _FreeAttached(HEADER_Obj *pObj) {
 	_RestoreOldCursor();
 }
 #if (HEADER_SUPPORT_DRAG)
-static int _GetItemIndex(HEADER_Handle hObj, HEADER_Obj *pObj, int x, int y) {
+static int _GetItemIndex(HEADER_Obj *pObj, int x, int y) {
 	int Item = -1;
-	if ((y >= 0) && (y < WM_GetWindowSizeY(hObj))) {
-		if (hObj) {
+	if ((y >= 0) && (y < WM_GetWindowSizeY(pObj))) {
+		if (pObj) {
 			int Index, xPos = 0, NumColumns;
 			NumColumns = GUI_ARRAY_GetNumItems(&pObj->Columns);
 			for (Index = 0; Index < NumColumns; Index++) {
@@ -129,8 +129,8 @@ static int _GetItemIndex(HEADER_Handle hObj, HEADER_Obj *pObj, int x, int y) {
 }
 #endif
 #if (HEADER_SUPPORT_DRAG)
-static void _HandlePID(HEADER_Handle hObj, HEADER_Obj *pObj, int x, int y, int Pressed) {
-	int Hit = _GetItemIndex(hObj, pObj, x, y);
+static void _HandlePID(HEADER_Obj *pObj, int x, int y, int Pressed) {
+	int Hit = _GetItemIndex(pObj, x, y);
 	/* set capture position () */
 	if ((Pressed == 1) && (Hit >= 0) && (pObj->CapturePosX == -1)) {
 		pObj->CapturePosX = x;
@@ -138,7 +138,7 @@ static void _HandlePID(HEADER_Handle hObj, HEADER_Obj *pObj, int x, int y, int P
 	}
 	/* set mouse cursor and capture () */
 	if (Hit >= 0) {
-		WM_SetCapture(hObj, 1);
+		WM_SetCapture(pObj, 1);
 #if GUI_SUPPORT_CURSOR
 		if (!_pOldCursor) {
 			_pOldCursor = GUI_CURSOR_Select(_pDefaultCursor);
@@ -147,9 +147,9 @@ static void _HandlePID(HEADER_Handle hObj, HEADER_Obj *pObj, int x, int y, int P
 	}
 	/* modify header */
 	if ((pObj->CapturePosX >= 0) && (x != pObj->CapturePosX) && (Pressed == 1)) {
-		int NewSize = HEADER_GetItemWidth(hObj, pObj->CaptureItem) + x - pObj->CapturePosX;
+		int NewSize = HEADER_GetItemWidth(pObj, pObj->CaptureItem) + x - pObj->CapturePosX;
 		if (NewSize >= 0) {
-			HEADER_SetItemWidth(hObj, pObj->CaptureItem, NewSize);
+			HEADER_SetItemWidth(pObj, pObj->CaptureItem, NewSize);
 			pObj->CapturePosX = x;
 		}
 	}
@@ -167,19 +167,19 @@ static void _HandlePID(HEADER_Handle hObj, HEADER_Obj *pObj, int x, int y, int P
 }
 #endif
 #if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
-static void _OnMouseOver(HEADER_Handle hObj, HEADER_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnMouseOver(HEADER_Obj *pObj, WM_MESSAGE *pMsg) {
 	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
 	if (pState) {
-		_HandlePID(hObj, pObj, pState->x + pObj->ScrollPos, pState->y, -1);
+		_HandlePID(pObj, pState->x + pObj->ScrollPos, pState->y, -1);
 	}
 }
 #endif
 #if (HEADER_SUPPORT_DRAG)
-static void _OnTouch(HEADER_Handle hObj, HEADER_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnTouch(HEADER_Obj *pObj, WM_MESSAGE *pMsg) {
 	int Notification;
 	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
 	if (pState) {
-		_HandlePID(hObj, pObj, pState->x + pObj->ScrollPos, pState->y, pState->Pressed);
+		_HandlePID(pObj, pState->x + pObj->ScrollPos, pState->y, pState->Pressed);
 	}
 	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
@@ -192,7 +192,7 @@ static void _OnTouch(HEADER_Handle hObj, HEADER_Obj *pObj, WM_MESSAGE *pMsg) {
 	else {
 		Notification = WM_NOTIFICATION_MOVED_OUT;
 	}
-	WM_NotifyParent(hObj, Notification);
+	WM_NotifyParent(pObj, Notification);
 }
 #endif
 static void _HEADER_Callback(WM_MESSAGE *pMsg) {
@@ -207,16 +207,16 @@ static void _HEADER_Callback(WM_MESSAGE *pMsg) {
 	pObj = (hObj);
 	switch (pMsg->MsgId) {
 		case WM_PAINT:
-			_Paint(/*hObj, */pObj);
+			_Paint(pObj);
 			break;
 #if (HEADER_SUPPORT_DRAG)
 		case WM_TOUCH:
-			_OnTouch(hObj, pObj, pMsg);
+			_OnTouch(pObj, pMsg);
 			break;
 #endif
 #if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
 		case WM_MOUSEOVER:
-			_OnMouseOver(hObj, pObj, pMsg);
+			_OnMouseOver(pObj, pMsg);
 			break;
 #endif
 		case WM_DELETE:
@@ -518,4 +518,3 @@ void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW_HANDLE hDra
 
 	}
 }
-

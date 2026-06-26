@@ -35,10 +35,10 @@ typedef struct {
 extern MENU_PROPS           MENU__DefaultProps;
 extern const WIDGET_EFFECT *MENU__pDefaultEffect;
 void      MENU__RecalcTextWidthOfItems(MENU_Obj *pObj);
-void      MENU__ResizeMenu(MENU_Handle hObj, MENU_Obj *pObj);
+void      MENU__ResizeMenu(MENU_Obj *pObj);
 unsigned  MENU__GetNumItems(MENU_Obj *pObj);
-char      MENU__SetItem(MENU_Handle hObj, MENU_Obj *pObj, unsigned Index, const MENU_ITEM_DATA *pItemData);
+char      MENU__SetItem(MENU_Obj *pObj, unsigned Index, const MENU_ITEM_DATA *pItemData);
 void      MENU__SetItemFlags(MENU_Obj *pObj, unsigned Index, uint16_t Mask, uint16_t Flags);
-void      MENU__InvalidateItem(MENU_Handle hObj, const MENU_Obj *pObj, unsigned Index);
+void      MENU__InvalidateItem(const MENU_Obj *pObj, unsigned Index);
 int       MENU__FindItem(MENU_Handle hObj, uint16_t ItemId, MENU_Handle *phMenu);
 int       MENU__SendMenuMessage(MENU_Handle hObj, WM_HWIN hDestWin, uint16_t MsgType, uint16_t ItemId);

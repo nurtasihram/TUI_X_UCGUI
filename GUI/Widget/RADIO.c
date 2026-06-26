@@ -42,7 +42,7 @@ static void _ResizeRect(GUI_RECT* pDest, const GUI_RECT* pSrc, int Diff) {
 *   The focus rectangle will be drawn on top of the text if any text is set,
 *   otherwise around the entire buttons.
 */
-static void _OnPaint(RADIO_Handle hObj, RADIO_Obj* pObj) {
+static void _OnPaint(RADIO_Obj* pObj) {
   const GUI_BITMAP* pBmRadio;
   const GUI_BITMAP* pBmCheck;
   const char* pText;
@@ -53,7 +53,7 @@ static void _OnPaint(RADIO_Handle hObj, RADIO_Obj* pObj) {
   /* Init some data */
   WIDGET__GetClientRect(&pObj->Widget, &rFocus);
   HasFocus  = (pObj->Widget.State & WIDGET_STATE_FOCUS) ? 1 : 0;
-  pBmRadio  = pObj->apBmRadio[WM__IsEnabled(hObj)];
+  pBmRadio  = pObj->apBmRadio[WM__IsEnabled(pObj)];
   pBmCheck  = pObj->pBmCheck;
   rFocus.x1 = pBmRadio->XSize + RADIO_BORDER * 2 - 1;
   rFocus.y1 = pObj->Height + ((pObj->NumItems - 1) * pObj->Spacing) - 1;
@@ -76,7 +76,7 @@ static void _OnPaint(RADIO_Handle hObj, RADIO_Obj* pObj) {
   /* Clear inside ... Just in case      */
   /* Fill with parents background color */
 #if WM_SUPPORT_TRANSPARENCY
-  if (!WM_GetHasTrans(hObj))
+  if (!WM_GetHasTrans(pObj))
 #endif
   {
     if (pObj->BkColor != GUI_INVALID_COLOR) {
@@ -117,7 +117,7 @@ static void _OnPaint(RADIO_Handle hObj, RADIO_Obj* pObj) {
     WIDGET__DrawFocusRect(&pObj->Widget, &rFocus, 0);
   }
 }
-static void _OnTouch(RADIO_Handle hObj, RADIO_Obj* pObj, WM_MESSAGE*pMsg) {
+static void _OnTouch(RADIO_Obj* pObj, WM_MESSAGE*pMsg) {
   int Notification;
   int Hit = 0;
   GUI_PID_STATE* pState = (GUI_PID_STATE*)pMsg->Data.p;
@@ -128,10 +128,10 @@ static void _OnTouch(RADIO_Handle hObj, RADIO_Obj* pObj, WM_MESSAGE*pMsg) {
       Sel = y   / pObj->Spacing;
       y  -= Sel * pObj->Spacing;
       if (y <= pObj->Height) {
-        RADIO_SetValue(hObj, Sel);
+        RADIO_SetValue(pObj, Sel);
       }
-      if (WM_IsFocussable(hObj)) {
-        WM_SetFocus(hObj);
+      if (WM_IsFocussable(pObj)) {
+        WM_SetFocus(pObj);
       }
       Notification = WM_NOTIFICATION_CLICKED;
     } else {
@@ -141,7 +141,7 @@ static void _OnTouch(RADIO_Handle hObj, RADIO_Obj* pObj, WM_MESSAGE*pMsg) {
   } else {
     Notification = WM_NOTIFICATION_MOVED_OUT;
   }
-  WM_NotifyParent(hObj, Notification);
+  WM_NotifyParent(pObj, Notification);
   if (Hit == 1) {
     GUI_StoreKey(pObj->Widget.Id);
   }
@@ -175,13 +175,13 @@ static void _RADIO_Callback (WM_MESSAGE* pMsg) {
   }
   switch (pMsg->MsgId) {
   case WM_PAINT:
-    _OnPaint(hObj, pObj);
+    _OnPaint(pObj);
     return;
   case WM_GET_RADIOGROUP:
     pMsg->Data.v = pObj->GroupId;
     return;
   case WM_TOUCH:
-    _OnTouch(hObj, pObj, pMsg);
+    _OnTouch(pObj, pMsg);
     break;
   case WM_KEY:
     _OnKey(hObj, pMsg);
@@ -192,14 +192,14 @@ static void _RADIO_Callback (WM_MESSAGE* pMsg) {
   }
   WM_DefaultProc(pMsg);
 }
-void RADIO__SetValue(RADIO_Handle hObj, RADIO_Obj* pObj, int v) {
+void RADIO__SetValue(RADIO_Obj* pObj, int v) {
   if (v >= pObj->NumItems) {
     v = (int)pObj->NumItems - 1;
   }
   if (v != pObj->Sel) {
     pObj->Sel = v;
-    WM_Invalidate(hObj);
-    WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
+    WM_Invalidate(pObj);
+    WM_NotifyParent(pObj, WM_NOTIFICATION_VALUE_CHANGED);
   }
 }
 /* Note: the parameters to a create function may vary.
@@ -272,12 +272,12 @@ void RADIO_SetValue(RADIO_Handle hObj, int v) {
 
     pObj = (hObj);
     if (pObj->GroupId && RADIO__pfHandleSetValue) {
-      (*RADIO__pfHandleSetValue)(hObj, pObj, v);
+      (*RADIO__pfHandleSetValue)(pObj, v);
     } else {
       if (v < 0) {
         v = 0;
       }
-      RADIO__SetValue(hObj, pObj, v);
+      RADIO__SetValue(pObj, v);
     }
 
   }
@@ -373,7 +373,7 @@ void RADIO_SetFont(RADIO_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
 static void _SetValue(RADIO_Handle hObj, int v) {
 	RADIO_Obj *pObj;
 	pObj = (hObj);
-	RADIO__SetValue(hObj, pObj, v);
+	RADIO__SetValue(pObj, v);
 }
 static int _IsInGroup(WM_HWIN hWin, uint8_t GroupId) {
 	if (GroupId) {
@@ -407,18 +407,18 @@ static void _ClearSelection(RADIO_Handle hObj, uint8_t GroupId) {
 		pWin = (hWin);
 		if (hWin != hObj) {
 			if (_IsInGroup(hWin, GroupId)) {
-				RADIO__SetValue(hWin, (RADIO_Obj *)pWin, -1);
+				RADIO__SetValue((RADIO_Obj *)pWin, -1);
 			}
 		}
 	}
 }
-static void _HandleSetValue(RADIO_Handle hObj, RADIO_Obj *pObj, int v) {
+static void _HandleSetValue(RADIO_Obj *pObj, int v) {
 	if (v < 0) {
-		WM_HWIN hWin = _GetPrevInGroup(hObj, pObj->GroupId);
+		WM_HWIN hWin = _GetPrevInGroup(pObj, pObj->GroupId);
 		if (hWin) {
 			WM_SetFocus(hWin);
 			_SetValue(hWin, 0x7FFF);
-			RADIO__SetValue(hObj, pObj, -1);
+			RADIO__SetValue(pObj, -1);
 		}
 	}
 	else if (v >= pObj->NumItems) {
@@ -426,13 +426,13 @@ static void _HandleSetValue(RADIO_Handle hObj, RADIO_Obj *pObj, int v) {
 		if (hWin) {
 			WM_SetFocus(hWin);
 			_SetValue(hWin, 0);
-			RADIO__SetValue(hObj, pObj, -1);
+			RADIO__SetValue(pObj, -1);
 		}
 	}
 	else {
 		if (pObj->Sel != v) {
-			_ClearSelection(hObj, pObj->GroupId);
-			RADIO__SetValue(hObj, pObj, v);
+			_ClearSelection(pObj, pObj->GroupId);
+			RADIO__SetValue(pObj, v);
 		}
 	}
 }
@@ -464,11 +464,11 @@ void RADIO_SetGroupId(RADIO_Handle hObj, uint8_t NewGroupId) {
 			/* Make sure we have a valid selection according to our new group */
 			if (_GetNextInGroup(hFirst, NewGroupId) != 0) {
 				/* Join an existing group with an already valid selection, so clear our own one */
-				RADIO__SetValue(hObj, pObj, -1);
+				RADIO__SetValue(pObj, -1);
 			}
 			else if (pObj->Sel < 0) {
 				/* We are the first window in group, so we must have a valid selection at our own. */
-				RADIO__SetValue(hObj, pObj, 0);
+				RADIO__SetValue(pObj, 0);
 			}
 			/* Change the group */
 			pObj->GroupId = NewGroupId;

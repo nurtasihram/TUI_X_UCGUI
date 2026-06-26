@@ -39,10 +39,10 @@ const GUI_FONT GUI_UNI_PTR *MULTIPAGE__pDefaultFont = MULTIPAGE_FONT_DEFAULT;
 unsigned                     MULTIPAGE__DefaultAlign = MULTIPAGE_ALIGN_DEFAULT;
 RGB_COLOR                    MULTIPAGE__DefaultBkColor[2] = { MULTIPAGE_BKCOLOR0_DEFAULT, MULTIPAGE_BKCOLOR1_DEFAULT };
 RGB_COLOR                    MULTIPAGE__DefaultTextColor[2] = { MULTIPAGE_TEXTCOLOR0_DEFAULT, MULTIPAGE_TEXTCOLOR1_DEFAULT };
-static void _AddScrollbar(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj, int x, int y, int w, int h) {
+static void _AddScrollbar(MULTIPAGE_Obj *pObj, int x, int y, int w, int h) {
 	SCROLLBAR_Handle hScroll;
-	if ((hScroll = WM_GetScrollbarH(hObj)) == 0) {
-		hScroll = SCROLLBAR_Create(x, y, w, h, hObj, GUI_ID_HSCROLL, WM_CF_SHOW, 0);
+	if ((hScroll = WM_GetScrollbarH(pObj)) == 0) {
+		hScroll = SCROLLBAR_Create(x, y, w, h, pObj, GUI_ID_HSCROLL, WM_CF_SHOW, 0);
 		WIDGET_SetEffect(hScroll, pObj->Widget.pEffect);
 	}
 	else {
@@ -51,9 +51,9 @@ static void _AddScrollbar(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj, int x, int
 	}
 	pObj->Widget.State |= MULTIPAGE_STATE_SCROLLMODE;
 }
-static void _SetScrollbar(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj, int NumItems) {
+static void _SetScrollbar(MULTIPAGE_Obj *pObj, int NumItems) {
 	SCROLLBAR_Handle hScroll;
-	hScroll = WM_GetScrollbarH(hObj);
+	hScroll = WM_GetScrollbarH(pObj);
 	SCROLLBAR_SetNumItems(hScroll, NumItems);
 	SCROLLBAR_SetPageSize(hScroll, 1);
 	if (pObj->ScrollState >= NumItems) {
@@ -61,8 +61,8 @@ static void _SetScrollbar(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj, int NumIte
 	}
 	SCROLLBAR_SetValue(hScroll, pObj->ScrollState);
 }
-static void _DeleteScrollbar(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj) {
-	WM_DeleteWindow(WM_GetScrollbarH(hObj));
+static void _DeleteScrollbar(MULTIPAGE_Obj *pObj) {
+	WM_DeleteWindow(WM_GetScrollbarH(pObj));
 	pObj->Widget.State &= ~MULTIPAGE_STATE_SCROLLMODE;
 }
 static void _ShowPage(MULTIPAGE_Obj *pObj, unsigned Index) {
@@ -205,7 +205,7 @@ static void _GetTextRect(MULTIPAGE_Obj *pObj, GUI_RECT *pRect) {
 		pRect->x1 = Width;
 	}
 }
-static void _UpdatePositions(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj) {
+static void _UpdatePositions(MULTIPAGE_Obj *pObj) {
 	GUI_RECT rBorder;
 	int Width;
 	Width = _GetTextWidth(pObj);
@@ -218,22 +218,22 @@ static void _UpdatePositions(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj) {
 		x0 = (pObj->Align & MULTIPAGE_ALIGN_RIGHT) ? (rBorder.x0) : (rBorder.x1 - 2 * Size + 1);
 		y0 = (pObj->Align & MULTIPAGE_ALIGN_BOTTOM) ? (rBorder.y1) : (rBorder.y0 - Size + 1);
 		/* A scrollbar is required so we add one to the multipage */
-		_AddScrollbar(hObj, pObj, x0, y0, 2 * Size, Size);
+		_AddScrollbar(pObj, x0, y0, 2 * Size, Size);
 		_GetTextRect(pObj, &rText);
 		while (Width >= MAX((rText.x1 - rText.x0 + 1), 1)) {
 			Width -= _GetPageSizeX(pObj, NumItems++);
 		}
-		_SetScrollbar(hObj, pObj, NumItems + 1);
+		_SetScrollbar(pObj, NumItems + 1);
 	}
 	else {
 		/* Scrollbar is no longer required. We delete it if there was one */
-		_DeleteScrollbar(hObj, pObj);
+		_DeleteScrollbar(pObj);
 	}
 	/* Move and resize the client area to the updated positions */
 	_CalcClientRect(pObj, &rBorder);
 	WM_MoveChildTo(pObj->hClient, rBorder.x0, rBorder.y0);
 	WM_SetSize(pObj->hClient, rBorder.x1 - rBorder.x0 + 1, rBorder.y1 - rBorder.y0 + 1);
-	WM_Invalidate(hObj);
+	WM_Invalidate(pObj);
 }
 static void _DrawTextItem(MULTIPAGE_Obj *pObj, const char *pText, unsigned Index,
 						  const GUI_RECT *pRect, int x0, int w, int ColorIndex) {
@@ -302,7 +302,7 @@ static void _Paint(MULTIPAGE_Obj *pObj) {
 		WM_SetUserClipRect(NULL);
 	}
 }
-static int _ClickedOnMultipage(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj, int x, int y) {
+static int _ClickedOnMultipage(MULTIPAGE_Obj *pObj, int x, int y) {
 	GUI_RECT rText;
 	_GetTextRect(pObj, &rText);
 	if ((y >= rText.y0) && (y <= rText.y1)) {
@@ -316,8 +316,8 @@ static int _ClickedOnMultipage(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj, int x
 				x0 += w;
 				w = _GetPageSizeX(pObj, i);
 				if (x >= x0 && x <= (x0 + w - 1)) {
-					MULTIPAGE_SelectPage(hObj, i);
-					WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
+					MULTIPAGE_SelectPage(pObj, i);
+					WM_NotifyParent(pObj, WM_NOTIFICATION_VALUE_CHANGED);
 					return 1;
 				}
 			}
@@ -326,7 +326,7 @@ static int _ClickedOnMultipage(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj, int x
 	}
 	return 1;
 }
-static void _OnTouch(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnTouch(MULTIPAGE_Obj *pObj, WM_MESSAGE *pMsg) {
 	GUI_PID_STATE *pState;
 	int Notification;
 	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
@@ -334,11 +334,11 @@ static void _OnTouch(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj, WM_MESSAGE *pMs
 		if (pState->Pressed) {
 			int x = pState->x;
 			int y = pState->y;
-			if (!_ClickedOnMultipage(hObj, pObj, x, y)) {
+			if (!_ClickedOnMultipage(pObj, x, y)) {
 				WM_HWIN hBelow;
-				x += WM_GetWindowOrgX(hObj);
-				y += WM_GetWindowOrgY(hObj);
-				hBelow = WM_Screen2hWinEx(hObj, x, y);
+				x += WM_GetWindowOrgX(pObj);
+				y += WM_GetWindowOrgY(pObj);
+				hBelow = WM_Screen2hWinEx(pObj, x, y);
 				if (hBelow) {
 					pState->x = x - WM_GetWindowOrgX(hBelow);
 					pState->y = y - WM_GetWindowOrgY(hBelow);
@@ -347,7 +347,7 @@ static void _OnTouch(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj, WM_MESSAGE *pMs
 				}
 			}
 			else {
-				WM_BringToTop(hObj);
+				WM_BringToTop(pObj);
 			}
 			Notification = WM_NOTIFICATION_CLICKED;
 		}
@@ -358,7 +358,7 @@ static void _OnTouch(MULTIPAGE_Handle hObj, MULTIPAGE_Obj *pObj, WM_MESSAGE *pMs
 	else {
 		Notification = WM_NOTIFICATION_MOVED_OUT;
 	}
-	WM_NotifyParent(hObj, Notification);
+	WM_NotifyParent(pObj, Notification);
 }
 static void _Callback(WM_MESSAGE *pMsg) {
 	MULTIPAGE_Handle hObj = pMsg->hWin;
@@ -372,7 +372,7 @@ static void _Callback(WM_MESSAGE *pMsg) {
 			_Paint(pObj);
 			break;
 		case WM_TOUCH:
-			_OnTouch(hObj, pObj, pMsg);
+			_OnTouch(pObj, pMsg);
 			break;
 		case WM_NOTIFY_PARENT:
 			if (pMsg->Data.v == WM_NOTIFICATION_VALUE_CHANGED) {
@@ -391,7 +391,7 @@ static void _Callback(WM_MESSAGE *pMsg) {
 		case WM_WIDGET_SET_EFFECT:
 			WIDGET_SetEffect(WM_GetScrollbarH(hObj), (WIDGET_EFFECT const *)pMsg->Data.p);
 		case WM_SIZE:
-			_UpdatePositions(hObj, pObj);
+			_UpdatePositions(pObj);
 			break;
 		case WM_DELETE:
 			GUI_ARRAY_Delete(&pObj->Handles);
@@ -462,7 +462,7 @@ MULTIPAGE_Handle MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 											   rClient.x1 - rClient.x0 + 1,
 											   rClient.y1 - rClient.y0 + 1,
 											   hObj, Flags, &_ClientCallback, 0);
-		_UpdatePositions(hObj, pObj);
+		_UpdatePositions(pObj);
 
 	}
 	else {
@@ -512,7 +512,7 @@ void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_HWIN hWin, const char *pText) {
 				pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, pObj->Handles.NumItems - 1);
 				memcpy(&pPage->acText, pText, strlen(pText) + 1);
 			}
-			MULTIPAGE_SelectPage(hObj, pObj->Handles.NumItems - 1);
+			MULTIPAGE_SelectPage(pObj, pObj->Handles.NumItems - 1);
 		}
 
 	}
@@ -520,7 +520,6 @@ void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_HWIN hWin, const char *pText) {
 void MULTIPAGE_DeletePage(MULTIPAGE_Handle hObj, unsigned Index, int Delete) {
 	if (hObj) {
 		MULTIPAGE_Obj *pObj;
-
 		pObj = (hObj);
 		if (pObj) {
 			if ((int)Index < pObj->Handles.NumItems) {
@@ -544,7 +543,7 @@ void MULTIPAGE_DeletePage(MULTIPAGE_Handle hObj, unsigned Index, int Delete) {
 					}
 				}
 				GUI_ARRAY_DeleteItem(&pObj->Handles, Index);
-				_UpdatePositions(hObj, pObj);
+				_UpdatePositions(pObj);
 				/* Delete the window of the page */
 				if (Delete) {
 					WM_DeleteWindow(hWin);
@@ -564,7 +563,7 @@ void MULTIPAGE_SelectPage(MULTIPAGE_Handle hObj, unsigned Index) {
 				if (Index != pObj->Selection && _GetEnable(pObj, Index)) {
 					_ShowPage(pObj, Index);
 					pObj->Selection = Index;
-					_UpdatePositions(hObj, pObj);
+					_UpdatePositions(pObj);
 				}
 			}
 		}
@@ -610,7 +609,7 @@ void MULTIPAGE_SetText(MULTIPAGE_Handle hObj, const char *pText, unsigned Index)
 				if (GUI_ARRAY_SetItem(&pObj->Handles, Index, &Page, sizeof(MULTIPAGE_PAGE) + strlen(pText))) {
 					pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
 					memcpy(&pPage->acText, pText, strlen(pText) + 1);
-					_UpdatePositions(hObj, pObj);
+					_UpdatePositions(pObj);
 				}
 			}
 		}
@@ -648,7 +647,7 @@ void MULTIPAGE_SetFont(MULTIPAGE_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont)
 		pObj = (hObj);
 		if (pObj) {
 			pObj->Font = pFont;
-			_UpdatePositions(hObj, pObj);
+			_UpdatePositions(pObj);
 		}
 
 	}
@@ -664,7 +663,7 @@ void MULTIPAGE_SetAlign(MULTIPAGE_Handle hObj, unsigned Align) {
 			_CalcClientRect(pObj, &rClient);
 			WM_MoveTo(pObj->hClient, rClient.x0 + pObj->Widget.Win.Rect.x0,
 					  rClient.y0 + pObj->Widget.Win.Rect.y0);
-			_UpdatePositions(hObj, pObj);
+			_UpdatePositions(pObj);
 		}
 
 	}

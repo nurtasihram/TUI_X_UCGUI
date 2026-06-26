@@ -13,13 +13,13 @@ typedef struct {
 	WM_DIALOG_STATUS *pDialogStatus;
 } WINDOW_OBJ;
 RGB_COLOR WINDOW__DefaultBkColor = WINDOW_BKCOLOR_DEFAULT;
-static void _OnChildHasFocus(WM_HWIN hWin, WINDOW_OBJ *pObj, const WM_MESSAGE *pMsg) {
+static void _OnChildHasFocus(WINDOW_OBJ *pObj, const WM_MESSAGE *pMsg) {
 	if (pMsg->Data.p) {
 		const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo = (const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *)pMsg->Data.p;
-		int IsDesc = WM__IsAncestorOrSelf(pInfo->hNew, hWin);
+		int IsDesc = WM__IsAncestorOrSelf(pInfo->hNew, pObj);
 		if (!IsDesc) {  /* A child has received the focus, Framewindow needs to be activated */
 			/* Remember the child which had the focus so we can reactive this child */
-			if (WM__IsAncestor(pInfo->hOld, hWin)) {
+			if (WM__IsAncestor(pInfo->hOld, pObj)) {
 				pObj->hFocussedChild = pInfo->hOld;
 			}
 		}
@@ -34,10 +34,10 @@ static void _cb(WM_MESSAGE *pMsg) {
 	cb = pObj->cb;
 	switch (pMsg->MsgId) {
 		case WM_HANDLE_DIALOG_STATUS:
-			if (pMsg->Data.p) {                           /* set pointer to Dialog status */
+			if (pMsg->Data.p) { /* set pointer to Dialog status */
 				pObj->pDialogStatus = (WM_DIALOG_STATUS *)pMsg->Data.p;
 			}
-			else {                                      /* return pointer to Dialog status */
+			else { /* return pointer to Dialog status */
 				pMsg->Data.p = pObj->pDialogStatus;
 			}
 			return;
@@ -56,7 +56,7 @@ static void _cb(WM_MESSAGE *pMsg) {
 			WIDGET_HandleActive(hObj, pMsg);
 			return;
 		case WM_NOTIFY_CHILD_HAS_FOCUS:
-			_OnChildHasFocus(hObj, pObj, pMsg);
+			_OnChildHasFocus(pObj, pMsg);
 			return;
 		case WM_KEY:
 			if (((const WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt > 0) {

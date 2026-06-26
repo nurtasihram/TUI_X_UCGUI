@@ -22,7 +22,7 @@ typedef struct {
 } GUI_BITMAP;
 
 typedef struct {
-	int x, y;
+	int16_t x, y;
 	uint8_t Pressed;
 } GUI_PID_STATE;
 

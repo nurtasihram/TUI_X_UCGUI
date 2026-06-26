@@ -89,9 +89,9 @@ static int _GetNumChars(MULTIEDIT_OBJ *pObj) {
 *
 * Returns the x size for displaying text.
 */
-static int _GetXSize(MULTIEDIT_HANDLE hObj, const MULTIEDIT_OBJ *pObj) {
+static int _GetXSize(const MULTIEDIT_OBJ *pObj) {
 	GUI_RECT Rect;
-	WM_GetInsideRectExScrollbar(hObj, &Rect);
+	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	return Rect.x1 - Rect.x0 - (pObj->HBorder * 2) - 1;
 }
 static int _GetNumCharsInPrompt(const MULTIEDIT_OBJ *pObj, const char GUI_UNI_PTR *pText) {
@@ -113,9 +113,9 @@ static int _NumChars2XSize(const char GUI_UNI_PTR *pText, int NumChars) {
 	}
 	return xSize;
 }
-static int _WrapGetNumCharsDisp(MULTIEDIT_HANDLE hObj, const MULTIEDIT_OBJ *pObj, const char GUI_UNI_PTR *pText) {
+static int _WrapGetNumCharsDisp(const MULTIEDIT_OBJ *pObj, const char GUI_UNI_PTR *pText) {
 	int xSize, r;
-	xSize = _GetXSize(hObj, pObj);
+	xSize = _GetXSize(pObj);
 	if (pObj->Flags & MULTIEDIT_SF_PASSWORD) {
 		int NumCharsPrompt;
 		NumCharsPrompt = _GetNumCharsInPrompt(pObj, pText);
@@ -146,13 +146,13 @@ static int _WrapGetNumCharsDisp(MULTIEDIT_HANDLE hObj, const MULTIEDIT_OBJ *pObj
 	}
 	return r;
 }
-static int _WrapGetNumBytesToNextLine(MULTIEDIT_HANDLE hObj, const MULTIEDIT_OBJ *pObj, const char *pText) {
+static int _WrapGetNumBytesToNextLine(const MULTIEDIT_OBJ *pObj, const char *pText) {
 	int xSize, r;
-	xSize = _GetXSize(hObj, pObj);
+	xSize = _GetXSize(pObj);
 	if (pObj->Flags & MULTIEDIT_SF_PASSWORD) {
 		int NumChars, NumCharsPrompt;
 		NumCharsPrompt = _GetNumCharsInPrompt(pObj, pText);
-		NumChars = _WrapGetNumCharsDisp(hObj, pObj, pText);
+		NumChars = _WrapGetNumCharsDisp(pObj, pText);
 		r = GUI_UC__NumChars2NumBytes(pText, NumChars);
 		if (NumChars < NumCharsPrompt) {
 			if (*(pText + r) == '\n') {
@@ -177,9 +177,9 @@ static int _GetCharDistX(const MULTIEDIT_OBJ *pObj, const char *pText) {
 	}
 	return r;
 }
-static void _DispString(MULTIEDIT_HANDLE hObj, const MULTIEDIT_OBJ *pObj, const char *pText, GUI_RECT *pRect) {
+static void _DispString(const MULTIEDIT_OBJ *pObj, const char *pText, GUI_RECT *pRect) {
 	int NumCharsDisp;
-	NumCharsDisp = _WrapGetNumCharsDisp(hObj, pObj, pText);
+	NumCharsDisp = _WrapGetNumCharsDisp(pObj, pText);
 	if (pObj->Flags & MULTIEDIT_SF_PASSWORD) {
 		int x, NumCharsPrompt, NumCharsLeft = 0;
 		NumCharsPrompt = _GetNumCharsInPrompt(pObj, pText);
@@ -207,7 +207,7 @@ static void _DispString(MULTIEDIT_HANDLE hObj, const MULTIEDIT_OBJ *pObj, const 
 * Returns a pointer to the beginning of the line with the
 * given line number.
 */
-static char *_GetpLine(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, unsigned LineNumber) {
+static char *_GetpLine(MULTIEDIT_OBJ *pObj, unsigned LineNumber) {
 	char *pText, *pLine;
 	pText = (char *)(pObj->hText);
 	if ((unsigned)pObj->CacheLineNumber != LineNumber) {
@@ -224,7 +224,7 @@ static char *_GetpLine(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, unsigned Line
 			pObj->CacheLineNumber = LineNumber;
 		}
 		while (LineNumber--) {
-			pLine += _WrapGetNumBytesToNextLine(hObj, pObj, pLine);
+			pLine += _WrapGetNumBytesToNextLine(pObj, pLine);
 		}
 		pObj->CacheLinePosByte = pLine - pText;
 	}
@@ -249,7 +249,7 @@ static void _ClearCache(MULTIEDIT_OBJ *pObj) {
 *
 * Returns the line number of the cursor position.
 */
-static int _GetCursorLine(MULTIEDIT_HANDLE hObj, const MULTIEDIT_OBJ *pObj, const char *pText, int CursorPosChar) {
+static int _GetCursorLine(const MULTIEDIT_OBJ *pObj, const char *pText, int CursorPosChar) {
 	const char *pCursor;
 	const char *pEndLine;
 	int NumChars, ByteOffsetNewCursor, LineNumber = 0;
@@ -261,9 +261,9 @@ static int _GetCursorLine(MULTIEDIT_HANDLE hObj, const MULTIEDIT_OBJ *pObj, cons
 		LineNumber += pObj->CacheLineNumber;
 	}
 	while (*pText && (pCursor > pText)) {
-		NumChars = _WrapGetNumCharsDisp(hObj, pObj, pText);
+		NumChars = _WrapGetNumCharsDisp(pObj, pText);
 		pEndLine = pText + GUI_UC__NumChars2NumBytes(pText, NumChars);
-		pText += _WrapGetNumBytesToNextLine(hObj, pObj, pText);
+		pText += _WrapGetNumBytesToNextLine(pObj, pText);
 		if (pCursor <= pEndLine) {
 			if ((pCursor == pEndLine) && (pEndLine == pText) && *pText) {
 				LineNumber++;
@@ -274,7 +274,7 @@ static int _GetCursorLine(MULTIEDIT_HANDLE hObj, const MULTIEDIT_OBJ *pObj, cons
 	}
 	return LineNumber;
 }
-static void _GetCursorXY(MULTIEDIT_HANDLE hObj, /*const*/ MULTIEDIT_OBJ *pObj, int *px, int *py) {
+static void _GetCursorXY(MULTIEDIT_OBJ *pObj, int *px, int *py) {
 	if (pObj->InvalidFlags & INVALID_CURSORXY) {
 		int CursorLine = 0, x = 0;
 		GUI_SetFont(pObj->pFont);
@@ -284,7 +284,7 @@ static void _GetCursorXY(MULTIEDIT_HANDLE hObj, /*const*/ MULTIEDIT_OBJ *pObj, i
 			pLine = (const char *)(pObj->hText);
 			pCursor = pLine + pObj->CursorPosByte;
 			CursorLine = pObj->CursorLine;
-			pLine = _GetpLine(hObj, pObj, CursorLine);
+			pLine = _GetpLine(pObj, CursorLine);
 			while (pLine < pCursor) {
 				x += _GetCharDistX(pObj, pLine);
 				pLine += GUI_UC_GetCharSize(pLine);
@@ -314,13 +314,13 @@ static void _SetScrollState(WM_HWIN hObj) {
 *   Needs to be called every time the cursor is move, wrap, font or
 *   window size are changed.
 */
-static void _CalcScrollPos(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
+static void _CalcScrollPos(MULTIEDIT_OBJ *pObj) {
 	int xCursor, yCursor;
-	_GetCursorXY(hObj, pObj, &xCursor, &yCursor);
+	_GetCursorXY(pObj, &xCursor, &yCursor);
 	yCursor /= GUI_GetYDistOfFont(pObj->pFont);
 	WM_CheckScrollPos(&pObj->ScrollStateV, yCursor, 0, 0);       /* Vertical */
 	WM_CheckScrollPos(&pObj->ScrollStateH, xCursor, 30, 30);     /* Horizontal */
-	_SetScrollState(hObj);
+	_SetScrollState(pObj);
 }
 /*********************************************************************
 *
@@ -328,7 +328,7 @@ static void _CalcScrollPos(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 *
 * Returns the width of the displayed text.
 */
-static int _GetTextSizeX(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
+static int _GetTextSizeX(MULTIEDIT_OBJ *pObj) {
 	if (pObj->InvalidFlags & INVALID_TEXTSIZE) {
 		pObj->TextSizeX = 0;
 		if (pObj->hText) {
@@ -337,7 +337,7 @@ static int _GetTextSizeX(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 			GUI_SetFont(pObj->pFont);
 			pText = (char *)(pObj->hText);
 			do {
-				NumChars = _WrapGetNumCharsDisp(hObj, pObj, pText);
+				NumChars = _WrapGetNumCharsDisp(pObj, pText);
 				xSizeLine = 0;
 				pLine = pText;
 				while (NumChars--) {
@@ -347,16 +347,16 @@ static int _GetTextSizeX(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 				if (xSizeLine > pObj->TextSizeX) {
 					pObj->TextSizeX = xSizeLine;
 				}
-				pText += _WrapGetNumBytesToNextLine(hObj, pObj, pText);
+				pText += _WrapGetNumBytesToNextLine(pObj, pText);
 			} while (*pText);
 		}
 		pObj->InvalidFlags &= ~INVALID_TEXTSIZE;
 	}
 	return pObj->TextSizeX;
 }
-static int _GetNumVisLines(MULTIEDIT_HANDLE hObj, const MULTIEDIT_OBJ *pObj) {
+static int _GetNumVisLines(const MULTIEDIT_OBJ *pObj) {
 	GUI_RECT Rect;
-	WM_GetInsideRectExScrollbar(hObj, &Rect);
+	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	return (Rect.y1 - Rect.y0 + 1) / GUI_GetYDistOfFont(pObj->pFont);
 }
 /*********************************************************************
@@ -365,7 +365,7 @@ static int _GetNumVisLines(MULTIEDIT_HANDLE hObj, const MULTIEDIT_OBJ *pObj) {
 *
 * Calculates (if needed) and returns the number of lines
 */
-static int _GetNumLines(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
+static int _GetNumLines(MULTIEDIT_OBJ *pObj) {
 	if (pObj->InvalidFlags & INVALID_NUMLINES) {
 		int NumLines = 0;
 		if (pObj->hText) {
@@ -375,13 +375,13 @@ static int _GetNumLines(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 			pText = (char *)(pObj->hText);
 			GUI_SetFont(pObj->pFont);
 			do {
-				NumChars = _WrapGetNumCharsDisp(hObj, pObj, pText);
+				NumChars = _WrapGetNumCharsDisp(pObj, pText);
 				NumBytes = GUI_UC__NumChars2NumBytes(pText, NumChars);
 				Char = GUI_UC_GetCharCode(pText + NumBytes);
 				if (Char) {
 					NumLines++;
 				}
-				pText += _WrapGetNumBytesToNextLine(hObj, pObj, pText);
+				pText += _WrapGetNumBytesToNextLine(pObj, pText);
 			} while (Char);
 		}
 		pObj->NumLines = NumLines + 1;
@@ -417,17 +417,17 @@ static void _InvalidateTextSizeX(MULTIEDIT_OBJ *pObj) {
 static void _CalcScrollParas(MULTIEDIT_HANDLE hObj) {
 	MULTIEDIT_OBJ *pObj = (hObj);
 	/* Calc vertical scroll parameters */
-	pObj->ScrollStateV.NumItems = _GetNumLines(hObj, pObj);
-	pObj->ScrollStateV.PageSize = _GetNumVisLines(hObj, pObj);
+	pObj->ScrollStateV.NumItems = _GetNumLines(pObj);
+	pObj->ScrollStateV.PageSize = _GetNumVisLines(pObj);
 	/* Calc horizontal scroll parameters */
-	pObj->ScrollStateH.NumItems = _GetTextSizeX(hObj, pObj);
-	pObj->ScrollStateH.PageSize = _GetXSize(hObj, pObj);
-	_CalcScrollPos(hObj, pObj);
+	pObj->ScrollStateH.NumItems = _GetTextSizeX(pObj);
+	pObj->ScrollStateH.PageSize = _GetXSize(pObj);
+	_CalcScrollPos(pObj);
 }
-static void _ManageAutoScrollV(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
+static void _ManageAutoScrollV(MULTIEDIT_OBJ *pObj) {
 	if (pObj->Flags & MULTIEDIT_SF_AUTOSCROLLBAR_V) {
-		char IsRequired = _GetNumVisLines(hObj, pObj) < _GetNumLines(hObj, pObj);
-		if (WM_SetScrollbarV(hObj, IsRequired) != IsRequired) {
+		char IsRequired = _GetNumVisLines(pObj) < _GetNumLines(pObj);
+		if (WM_SetScrollbarV(pObj, IsRequired) != IsRequired) {
 			_InvalidateNumLines(pObj);
 			_InvalidateTextSizeX(pObj);
 			_InvalidateCursorXY(pObj);
@@ -449,14 +449,14 @@ static void _ManageScrollers(MULTIEDIT_HANDLE hObj) {
 	MULTIEDIT_OBJ *pObj;
 	pObj = (hObj);
 	/* 1. Step: Check if vertical scrollbar is required */
-	_ManageAutoScrollV(hObj, pObj);
+	_ManageAutoScrollV(pObj);
 	/* 2. Step: Check if horizontal scrollbar is required */
 	if (pObj->Flags & MULTIEDIT_SF_AUTOSCROLLBAR_H) {
 		char IsRequired;
-		IsRequired = (_GetXSize(hObj, pObj) < _GetTextSizeX(hObj, pObj));
+		IsRequired = (_GetXSize(pObj) < _GetTextSizeX(pObj));
 		if (WM_SetScrollbarH(hObj, IsRequired) != IsRequired) {
 			/* 3. Step: Check vertical scrollbar again if horizontal has changed */
-			_ManageAutoScrollV(hObj, pObj);
+			_ManageAutoScrollV(pObj);
 		}
 	}
 	_CalcScrollParas(hObj);
@@ -512,12 +512,12 @@ static void _SetFlag(MULTIEDIT_HANDLE hObj, int OnOff, uint8_t Flag) {
 *   Calculates the next valid cursor position of the desired position.
 *
 * Parameters:
-*   hObj, pObj    : Obvious
+*   pObj          : Obvious
 *   CursorPosChar : New character position of the cursor
 *   pCursorPosByte: Pointer to save the cursorposition in bytes. Used to abolish further calculations. Could be 0.
 *   pCursorLine   : Pointer to save the line number of the cursor. Used to abolish further calculations. Could be 0.
 */
-static int _CalcNextValidCursorPos(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, int CursorPosChar, int *pCursorPosByte, int *pCursorLine) {
+static int _CalcNextValidCursorPos(MULTIEDIT_OBJ *pObj, int CursorPosChar, int *pCursorPosByte, int *pCursorLine) {
 	if (pObj->hText) {
 		char *pNextLine, *pCursor, *pText;
 		int CursorLine, NumChars, CursorPosByte;
@@ -531,9 +531,9 @@ static int _CalcNextValidCursorPos(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, i
 			CursorPosChar = NumChars;
 		}
 		CursorPosByte = GUI_UC__NumChars2NumBytes(pText, CursorPosChar);
-		CursorLine = _GetCursorLine(hObj, pObj, pText, CursorPosChar);
+		CursorLine = _GetCursorLine(pObj, pText, CursorPosChar);
 		pCursor = pText + CursorPosByte;
-		pNextLine = _GetpLine(hObj, pObj, CursorLine);
+		pNextLine = _GetpLine(pObj, CursorLine);
 		if (pNextLine > pCursor) {
 			if (pObj->CursorPosChar < CursorPosChar) {
 				pCursor = pNextLine;
@@ -541,14 +541,14 @@ static int _CalcNextValidCursorPos(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, i
 			else {
 				char *pPrevLine;
 				int NumChars;
-				pPrevLine = _GetpLine(hObj, pObj, CursorLine - 1);
-				NumChars = _WrapGetNumCharsDisp(hObj, pObj, pPrevLine);
+				pPrevLine = _GetpLine(pObj, CursorLine - 1);
+				NumChars = _WrapGetNumCharsDisp(pObj, pPrevLine);
 				pPrevLine += GUI_UC__NumChars2NumBytes(pPrevLine, NumChars);
 				pCursor = pPrevLine;
 			}
 			CursorPosChar = GUI_UC__NumBytes2NumChars(pText, pCursor - pText);
 			CursorPosByte = GUI_UC__NumChars2NumBytes(pText, CursorPosChar);
-			CursorLine = _GetCursorLine(hObj, pObj, pText, CursorPosChar);
+			CursorLine = _GetCursorLine(pObj, pText, CursorPosChar);
 		}
 		if (pCursorPosByte) {
 			*pCursorPosByte = CursorPosByte;
@@ -566,9 +566,9 @@ static int _CalcNextValidCursorPos(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, i
 *
 * Sets a new cursor position.
 */
-static void _SetCursorPos(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, int CursorPosChar) {
+static void _SetCursorPos(MULTIEDIT_OBJ *pObj, int CursorPosChar) {
 	int CursorPosByte, CursorLine;
-	CursorPosChar = _CalcNextValidCursorPos(hObj, pObj, CursorPosChar, &CursorPosByte, &CursorLine);
+	CursorPosChar = _CalcNextValidCursorPos(pObj, CursorPosChar, &CursorPosByte, &CursorLine);
 	/* Assign value and recalc whatever necessary */
 	if (pObj->CursorPosChar != CursorPosChar) {
 		/* Save values */
@@ -576,7 +576,7 @@ static void _SetCursorPos(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, int Cursor
 		pObj->CursorPosChar = CursorPosChar;
 		pObj->CursorLine = CursorLine;
 		_InvalidateCursorXY(pObj); /* Invalidate X/Y position */
-		_CalcScrollPos(hObj, pObj);
+		_CalcScrollPos(pObj);
 	}
 }
 static int _SetWrapMode(MULTIEDIT_HANDLE hObj, GUI_WRAPMODE WrapMode) {
@@ -595,7 +595,7 @@ static int _SetWrapMode(MULTIEDIT_HANDLE hObj, GUI_WRAPMODE WrapMode) {
 			_InvalidateTextSizeX(pObj);
 			_InvalidateTextArea(hObj);
 			Position = _InvalidateCursorPos(pObj);
-			_SetCursorPos(hObj, pObj, Position);
+			_SetCursorPos(pObj, Position);
 		}
 
 	}
@@ -607,7 +607,7 @@ static int _SetWrapMode(MULTIEDIT_HANDLE hObj, GUI_WRAPMODE WrapMode) {
 *
 * Sets the cursor position from window coordinates.
 */
-static void _SetCursorXY(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, int x, int y) {
+static void _SetCursorXY(MULTIEDIT_OBJ *pObj, int x, int y) {
 	int CursorPosChar = 0;
 	if ((x < 0) || (y < 0)) {
 		return;
@@ -619,9 +619,9 @@ static void _SetCursorXY(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, int x, int 
 		uint16_t Char;
 		GUI_SetFont(pObj->pFont);
 		CursorLine = y / GUI_GetFontDistY();
-		pLine = _GetpLine(hObj, pObj, CursorLine);
+		pLine = _GetpLine(pObj, CursorLine);
 		pText = (char *)(pObj->hText);
-		WrapChars = _WrapGetNumCharsDisp(hObj, pObj, pLine);
+		WrapChars = _WrapGetNumCharsDisp(pObj, pLine);
 		Char = GUI_UC__GetCharCode(pLine + GUI_UC__NumChars2NumBytes(pLine, WrapChars));
 		if (pObj->Flags & MULTIEDIT_SF_PASSWORD) {
 			if (!Char) {
@@ -643,37 +643,37 @@ static void _SetCursorXY(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, int x, int 
 		}
 		CursorPosChar = GUI_UC__NumBytes2NumChars(pText, pLine - pText);
 	}
-	_SetCursorPos(hObj, pObj, CursorPosChar);
+	_SetCursorPos(pObj, CursorPosChar);
 }
-static void _MoveCursorUp(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
+static void _MoveCursorUp(MULTIEDIT_OBJ *pObj) {
 	int xPos, yPos;
-	_GetCursorXY(hObj, pObj, &xPos, &yPos);
+	_GetCursorXY(pObj, &xPos, &yPos);
 	yPos -= GUI_GetYDistOfFont(pObj->pFont);
-	_SetCursorXY(hObj, pObj, xPos, yPos);
+	_SetCursorXY(pObj, xPos, yPos);
 }
-static void _MoveCursorDown(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
+static void _MoveCursorDown(MULTIEDIT_OBJ *pObj) {
 	int xPos, yPos;
-	_GetCursorXY(hObj, pObj, &xPos, &yPos);
+	_GetCursorXY(pObj, &xPos, &yPos);
 	yPos += GUI_GetYDistOfFont(pObj->pFont);
-	_SetCursorXY(hObj, pObj, xPos, yPos);
+	_SetCursorXY(pObj, xPos, yPos);
 }
-static void _MoveCursor2NextLine(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
+static void _MoveCursor2NextLine(MULTIEDIT_OBJ *pObj) {
 	int xPos, yPos;
-	_GetCursorXY(hObj, pObj, &xPos, &yPos);
+	_GetCursorXY(pObj, &xPos, &yPos);
 	yPos += GUI_GetYDistOfFont(pObj->pFont);
-	_SetCursorXY(hObj, pObj, 0, yPos);
+	_SetCursorXY(pObj, 0, yPos);
 }
-static void _MoveCursor2LineEnd(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
+static void _MoveCursor2LineEnd(MULTIEDIT_OBJ *pObj) {
 	int xPos, yPos;
-	_GetCursorXY(hObj, pObj, &xPos, &yPos);
-	_SetCursorXY(hObj, pObj, 0x7FFF, yPos);
+	_GetCursorXY(pObj, &xPos, &yPos);
+	_SetCursorXY(pObj, 0x7FFF, yPos);
 }
-static void _MoveCursor2LinePos1(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
+static void _MoveCursor2LinePos1(MULTIEDIT_OBJ *pObj) {
 	int xPos, yPos;
-	_GetCursorXY(hObj, pObj, &xPos, &yPos);
-	_SetCursorXY(hObj, pObj, 0, yPos);
+	_GetCursorXY(pObj, &xPos, &yPos);
+	_SetCursorXY(pObj, 0, yPos);
 }
-static int _IsOverwriteAtThisChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
+static int _IsOverwriteAtThisChar(MULTIEDIT_OBJ *pObj) {
 	int r = 0;
 	if (pObj->hText && !(pObj->Flags & MULTIEDIT_CF_INSERT)) {
 		const char *pText;
@@ -681,8 +681,8 @@ static int _IsOverwriteAtThisChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 		uint16_t Char;
 		pText = (const char *)(pObj->hText);
 		Line1 = pObj->CursorLine;
-		CurPos = _CalcNextValidCursorPos(hObj, pObj, pObj->CursorPosChar + 1, 0, 0);
-		Line2 = _GetCursorLine(hObj, pObj, pText, CurPos);
+		CurPos = _CalcNextValidCursorPos(pObj, pObj->CursorPosChar + 1, 0, 0);
+		Line2 = _GetCursorLine(pObj, pText, CurPos);
 		pText += pObj->CursorPosByte;
 		Char = GUI_UC_GetCharCode(pText);
 		if (Char) {
@@ -707,8 +707,8 @@ static int _IsOverwriteAtThisChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 * Returns the width of the cursor to be draw according to the
 * insert mode flag and the cursor position.
 */
-static int _GetCursorSizeX(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
-	if (_IsOverwriteAtThisChar(hObj, pObj)) {
+static int _GetCursorSizeX(MULTIEDIT_OBJ *pObj) {
+	if (_IsOverwriteAtThisChar(pObj)) {
 		const char *pText;
 		pText = (const char *)(pObj->hText);
 		pText += pObj->CursorPosByte;
@@ -794,7 +794,7 @@ static int _IsCharsAvailable(MULTIEDIT_OBJ *pObj, int CharsNeeded) {
 * Deletes a character at the current cursor position and moves
 * all bytes after the cursor position.
 */
-static void _DeleteChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
+static void _DeleteChar(MULTIEDIT_OBJ *pObj) {
 	if (pObj->hText) {
 		unsigned CursorOffset;
 		char *s;
@@ -805,10 +805,10 @@ static void _DeleteChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 			int CursorLine, NumChars, NumBytes;
 			pCursor = s + CursorOffset;
 			CursorLine = pObj->CursorLine;
-			pLine = _GetpLine(hObj, pObj, CursorLine);
-			NumChars = _WrapGetNumCharsDisp(hObj, pObj, pLine);
+			pLine = _GetpLine(pObj, CursorLine);
+			NumChars = _WrapGetNumCharsDisp(pObj, pLine);
 			pEndLine = pLine + GUI_UC__NumChars2NumBytes(pLine, NumChars);
-			pLine = pLine + _WrapGetNumBytesToNextLine(hObj, pObj, pLine);
+			pLine = pLine + _WrapGetNumBytesToNextLine(pObj, pLine);
 			if (pCursor == pEndLine) {
 				NumBytes = pLine - pEndLine;
 			}
@@ -817,13 +817,13 @@ static void _DeleteChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 			}
 			NumChars = GUI_UC__NumBytes2NumChars(pCursor, NumBytes);
 			strcpy(pCursor, pCursor + NumBytes);
-			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
+			WM_NotifyParent(pObj, WM_NOTIFICATION_VALUE_CHANGED);
 			pObj->NumChars -= NumChars;
 			_InvalidateNumLines(pObj);
 			_InvalidateTextSizeX(pObj);
 			_InvalidateCursorXY(pObj); /* Invalidate X/Y position */
 			_ClearCache(pObj);
-			pObj->CursorLine = _GetCursorLine(hObj, pObj, s, pObj->CursorPosChar);
+			pObj->CursorLine = _GetCursorLine(pObj, s, pObj->CursorPosChar);
 		}
 	}
 }
@@ -833,7 +833,7 @@ static void _DeleteChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 *
 * Create space at the current cursor position and inserts a character.
 */
-static int _InsertChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, uint16_t Char) {
+static int _InsertChar(MULTIEDIT_OBJ *pObj, uint16_t Char) {
 	if (_IsCharsAvailable(pObj, 1)) {
 		int BytesNeeded;
 		BytesNeeded = GUI_UC__CalcSizeOfChar(Char);
@@ -845,7 +845,7 @@ static int _InsertChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, uint16_t Char
 			pText += CursorOffset;
 			memmove(pText + BytesNeeded, pText, strlen(pText) + 1);
 			GUI_UC_Encode(pText, Char);
-			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
+			WM_NotifyParent(pObj, WM_NOTIFICATION_VALUE_CHANGED);
 			pObj->NumChars += 1;
 			_InvalidateNumLines(pObj);
 			_InvalidateTextSizeX(pObj);
@@ -855,7 +855,7 @@ static int _InsertChar(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, uint16_t Char
 	}
 	return 0;
 }
-static void _MULTIEDIT_Paint(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
+static void _MULTIEDIT_Paint(MULTIEDIT_OBJ *pObj) {
 	int ScrollPosX, ScrollPosY, EffectSize, HBorder;
 	int x, y, xOff, yOff, ColorIndex, FontSizeY;
 	GUI_RECT r, rClip;
@@ -877,14 +877,14 @@ static void _MULTIEDIT_Paint(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 	/* Draw the text if necessary */
 	rClip.x0 = EffectSize + HBorder;
 	rClip.y0 = EffectSize;
-	rClip.x1 = WM_GetWindowSizeX(hObj) - EffectSize - HBorder - 1;
-	rClip.y1 = WM_GetWindowSizeY(hObj) - EffectSize - 1;
+	rClip.x1 = WM_GetWindowSizeX(pObj) - EffectSize - HBorder - 1;
+	rClip.y1 = WM_GetWindowSizeY(pObj) - EffectSize - 1;
 	prOldClip = WM_SetUserClipRect(&rClip);
 	if (pObj->hText) {
 		const char *pText;
 		int Line = 0;
-		int xSize = _GetXSize(hObj, pObj);
-		int NumVisLines = _GetNumVisLines(hObj, pObj);
+		int xSize = _GetXSize(pObj);
+		int NumVisLines = _GetNumVisLines(pObj);
 		/* Get the text */
 		pText = (const char *)(pObj->hText);
 		/* Set the rectangle for drawing */
@@ -910,19 +910,19 @@ static void _MULTIEDIT_Paint(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 			}
 			/* Draw it */
 			if ((Line >= ScrollPosY) && ((Line - ScrollPosY) <= NumVisLines)) {
-				_DispString(hObj, pObj, pText, &r);
+				_DispString(pObj, pText, &r);
 				r.y0 += FontSizeY;  /* Next line */
 			}
-			pText += _WrapGetNumBytesToNextLine(hObj, pObj, pText);
+			pText += _WrapGetNumBytesToNextLine(pObj, pText);
 			Line++;
 		} while (GUI_UC_GetCharCode(pText) && ((Line - ScrollPosY) <= NumVisLines));
 	}
 	/* Draw cursor if necessary */
-	if (WM_HasFocus(hObj)) {
-		_GetCursorXY(hObj, pObj, &x, &y);
+	if (WM_HasFocus(pObj)) {
+		_GetCursorXY(pObj, &x, &y);
 		r.x0 = x + xOff;
 		r.y0 = y + yOff;
-		r.x1 = r.x0 + _GetCursorSizeX(hObj, pObj) - 1;
+		r.x1 = r.x0 + _GetCursorSizeX(pObj) - 1;
 		r.y1 = r.y0 + FontSizeY - 1;
 		GUI_InvertRect(r.x0, r.y0, r.x1, r.y1);
 	}
@@ -930,7 +930,7 @@ static void _MULTIEDIT_Paint(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj) {
 	/* Draw the 3D effect (if configured) */
 	WIDGET__EFFECT_DrawDown(&pObj->Widget);
 }
-static void _OnTouch(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, WM_MESSAGE *pMsg) {
+static void _OnTouch(MULTIEDIT_OBJ *pObj, WM_MESSAGE *pMsg) {
 	int Notification;
 	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
 	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
@@ -939,8 +939,8 @@ static void _OnTouch(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, WM_MESSAGE *pMs
 			Effect = pObj->Widget.pEffect->EffectSize;
 			xPos = pState->x + pObj->ScrollStateH.v - Effect - pObj->HBorder;
 			yPos = pState->y + pObj->ScrollStateV.v * GUI_GetYDistOfFont(pObj->pFont) - Effect;
-			_SetCursorXY(hObj, pObj, xPos, yPos);
-			_Invalidate(hObj);
+			_SetCursorXY(pObj, xPos, yPos);
+			_Invalidate(pObj);
 			Notification = WM_NOTIFICATION_CLICKED;
 		}
 		else {
@@ -950,7 +950,7 @@ static void _OnTouch(MULTIEDIT_HANDLE hObj, MULTIEDIT_OBJ *pObj, WM_MESSAGE *pMs
 	else {
 		Notification = WM_NOTIFICATION_MOVED_OUT;
 	}
-	WM_NotifyParent(hObj, Notification);
+	WM_NotifyParent(pObj, Notification);
 }
 /*********************************************************************
 *
@@ -965,41 +965,41 @@ static int _AddKey(MULTIEDIT_HANDLE hObj, uint16_t Key) {
 	pObj = (hObj);
 	switch (Key) {
 		case GUI_KEY_UP:
-			_MoveCursorUp(hObj, pObj);
+			_MoveCursorUp(pObj);
 			r = 1;               /* Key has been consumed */
 			break;
 		case GUI_KEY_DOWN:
-			_MoveCursorDown(hObj, pObj);
+			_MoveCursorDown(pObj);
 			r = 1;               /* Key has been consumed */
 			break;
 		case GUI_KEY_RIGHT:
-			_SetCursorPos(hObj, pObj, pObj->CursorPosChar + 1);
+			_SetCursorPos(pObj, pObj->CursorPosChar + 1);
 			r = 1;               /* Key has been consumed */
 			break;
 		case GUI_KEY_LEFT:
-			_SetCursorPos(hObj, pObj, pObj->CursorPosChar - 1);
+			_SetCursorPos(pObj, pObj->CursorPosChar - 1);
 			r = 1;               /* Key has been consumed */
 			break;
 		case GUI_KEY_END:
-			_MoveCursor2LineEnd(hObj, pObj);
+			_MoveCursor2LineEnd(pObj);
 			r = 1;               /* Key has been consumed */
 			break;
 		case GUI_KEY_HOME:
-			_MoveCursor2LinePos1(hObj, pObj);
+			_MoveCursor2LinePos1(pObj);
 			r = 1;               /* Key has been consumed */
 			break;
 		case GUI_KEY_BACKSPACE:
 			if (!(pObj->Flags & MULTIEDIT_SF_READONLY)) {
 				if (pObj->CursorPosChar > pObj->NumCharsPrompt) {
-					_SetCursorPos(hObj, pObj, pObj->CursorPosChar - 1);
-					_DeleteChar(hObj, pObj);
+					_SetCursorPos(pObj, pObj->CursorPosChar - 1);
+					_DeleteChar(pObj);
 				}
 				r = 1;               /* Key has been consumed */
 			}
 			break;
 		case GUI_KEY_DELETE:
 			if (!(pObj->Flags & MULTIEDIT_SF_READONLY)) {
-				_DeleteChar(hObj, pObj);
+				_DeleteChar(pObj);
 				r = 1;               /* Key has been consumed */
 			}
 			break;
@@ -1014,15 +1014,15 @@ static int _AddKey(MULTIEDIT_HANDLE hObj, uint16_t Key) {
 			break;
 		case GUI_KEY_ENTER:
 			if (pObj->Flags & MULTIEDIT_SF_READONLY) {
-				_MoveCursor2NextLine(hObj, pObj);
+				_MoveCursor2NextLine(pObj);
 			}
 			else {
-				if (_InsertChar(hObj, pObj, (uint8_t)('\n'))) {
+				if (_InsertChar(pObj, (uint8_t)('\n'))) {
 					if (pObj->Flags & MULTIEDIT_SF_PASSWORD) {
-						_SetCursorPos(hObj, pObj, pObj->CursorPosChar + 1);
+						_SetCursorPos(pObj, pObj->CursorPosChar + 1);
 					}
 					else {
-						_MoveCursor2NextLine(hObj, pObj);
+						_MoveCursor2NextLine(pObj);
 					}
 				}
 			}
@@ -1032,11 +1032,11 @@ static int _AddKey(MULTIEDIT_HANDLE hObj, uint16_t Key) {
 			break;
 		default:
 			if (!(pObj->Flags & MULTIEDIT_SF_READONLY) && (Key >= 0x20)) {
-				if (_IsOverwriteAtThisChar(hObj, pObj)) {
-					_DeleteChar(hObj, pObj);
+				if (_IsOverwriteAtThisChar(pObj)) {
+					_DeleteChar(pObj);
 				}
-				if (_InsertChar(hObj, pObj, Key)) {
-					_SetCursorPos(hObj, pObj, pObj->CursorPosChar + 1);
+				if (_InsertChar(pObj, Key)) {
+					_SetCursorPos(pObj, pObj->CursorPosChar + 1);
 				}
 				r = 1;               /* Key has been consumed */
 			}
@@ -1091,10 +1091,10 @@ static void _MULTIEDIT_Callback(WM_MESSAGE *pMsg) {
 			}
 			break;
 		case WM_PAINT:
-			_MULTIEDIT_Paint(hObj, pObj);
+			_MULTIEDIT_Paint(pObj);
 			return;
 		case WM_TOUCH:
-			_OnTouch(hObj, pObj, pMsg);
+			_OnTouch(pObj, pMsg);
 			break;
 		case WM_DELETE:
 			GUI_ALLOC_FreePtr(&pObj->hText);
@@ -1212,7 +1212,7 @@ void MULTIEDIT_SetText(MULTIEDIT_HANDLE hObj, const char *pNew) {
 				else {
 					*pText = 0;
 				}
-				_SetCursorPos(hObj, pObj, pObj->NumCharsPrompt);
+				_SetCursorPos(pObj, pObj->NumCharsPrompt);
 				_InvalidateTextArea(hObj);
 				_InvalidateNumChars(pObj);
 				_InvalidateNumLines(pObj);
@@ -1334,7 +1334,7 @@ void MULTIEDIT_SetCursorOffset(MULTIEDIT_HANDLE hObj, int Offset) {
 		MULTIEDIT_OBJ *pObj;
 
 		pObj = (hObj);
-		_SetCursorPos(hObj, pObj, Offset);
+		_SetCursorPos(pObj, Offset);
 		WM_Invalidate(hObj);
 
 	}
@@ -1374,7 +1374,7 @@ void MULTIEDIT_SetPrompt(MULTIEDIT_HANDLE hObj, const char *pPrompt) {
 					memcpy(pText, pPrompt, NumBytesNew);
 				}
 				pObj->NumCharsPrompt = NumCharsNew;
-				_SetCursorPos(hObj, pObj, NumCharsNew);
+				_SetCursorPos(pObj, NumCharsNew);
 				_InvalidateTextArea(hObj);
 				_InvalidateNumChars(pObj);
 				_InvalidateNumLines(pObj);
@@ -1397,7 +1397,7 @@ void MULTIEDIT_SetBufferSize(MULTIEDIT_HANDLE hObj, int BufferSize) {
 			pObj->hText = hText;
 			pObj->BufferSize = BufferSize;
 			pObj->NumCharsPrompt = 0;
-			_SetCursorPos(hObj, pObj, 0);
+			_SetCursorPos(pObj, 0);
 			_InvalidateNumChars(pObj);
 			_InvalidateCursorXY(pObj);
 			_InvalidateNumLines(pObj);
@@ -1424,7 +1424,7 @@ void MULTIEDIT_SetMaxNumChars(MULTIEDIT_HANDLE hObj, unsigned MaxNumChars) {
 			if (Offset < pObj->BufferSize) {
 				pText += Offset;
 				*pText = 0;
-				_SetCursorPos(hObj, pObj, Offset);
+				_SetCursorPos(pObj, Offset);
 				_InvalidateTextArea(hObj);
 				_InvalidateNumChars(pObj);
 			}

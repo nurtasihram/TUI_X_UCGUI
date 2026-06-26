@@ -189,19 +189,19 @@ static void _Paint(SCROLLBAR_Obj *pObj) {
 		WIDGET__FillRectEx(&pObj->Widget, &r);
 	}
 }
-static void _ScrollbarPressed(SCROLLBAR_Handle hObj, SCROLLBAR_Obj *pObj) {
-	WIDGET_OrState(hObj, SCROLLBAR_STATE_PRESSED);
+static void _ScrollbarPressed(SCROLLBAR_Obj *pObj) {
+	WIDGET_OrState(pObj, SCROLLBAR_STATE_PRESSED);
 	if (pObj->Widget.Win.Status & WM_SF_ISVIS) {
-		WM_NotifyParent(hObj, WM_NOTIFICATION_CLICKED);
+		WM_NotifyParent(pObj, WM_NOTIFICATION_CLICKED);
 	}
 }
-static void _ScrollbarReleased(SCROLLBAR_Handle hObj, SCROLLBAR_Obj *pObj) {
-	WIDGET_AndState(hObj, SCROLLBAR_STATE_PRESSED);
+static void _ScrollbarReleased(SCROLLBAR_Obj *pObj) {
+	WIDGET_AndState(pObj, SCROLLBAR_STATE_PRESSED);
 	if (pObj->Widget.Win.Status & WM_SF_ISVIS) {
-		WM_NotifyParent(hObj, WM_NOTIFICATION_RELEASED);
+		WM_NotifyParent(pObj, WM_NOTIFICATION_RELEASED);
 	}
 }
-static void _OnTouch(SCROLLBAR_Handle hObj, SCROLLBAR_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnTouch(SCROLLBAR_Obj *pObj, WM_MESSAGE *pMsg) {
 	SCROLLBAR_POSITIONS Pos;
 	GUI_PID_STATE *pState = (GUI_PID_STATE *)pMsg->Data.p;
 	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
@@ -238,16 +238,16 @@ static void _OnTouch(SCROLLBAR_Handle hObj, SCROLLBAR_Obj *pObj, WM_MESSAGE *pMs
 				Sel++;
 			}
 			/* WM_SetFocus(hObj); */
-			WM_SetCapture(hObj, 1);
-			SCROLLBAR_SetValue(hObj, Sel);
+			WM_SetCapture(pObj, 1);
+			SCROLLBAR_SetValue(pObj, Sel);
 			if ((pObj->Widget.State & SCROLLBAR_STATE_PRESSED) == 0) {
-				_ScrollbarPressed(hObj, pObj);
+				_ScrollbarPressed(pObj);
 			}
 		}
 		else {
 			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
 			if (pObj->Widget.State & SCROLLBAR_STATE_PRESSED) {
-				_ScrollbarReleased(hObj, pObj);
+				_ScrollbarReleased(pObj);
 			}
 		}
 	}
@@ -272,14 +272,14 @@ static void  _OnKey(SCROLLBAR_Handle hObj, WM_MESSAGE *pMsg) {
 		}
 	}
 }
-static void _OnSetScrollState(SCROLLBAR_Handle hObj, SCROLLBAR_Obj *pObj, const WM_SCROLL_STATE *pState) {
+static void _OnSetScrollState(SCROLLBAR_Obj *pObj, const WM_SCROLL_STATE *pState) {
 	if ((pState->NumItems != pObj->NumItems)
 		|| (pObj->PageSize != pState->PageSize)
 		|| (pObj->v != pState->v)) {
 		pObj->NumItems = pState->NumItems;
 		pObj->PageSize = pState->PageSize;
 		pObj->v = pState->v;
-		WM_Invalidate(hObj);
+		WM_Invalidate(pObj);
 	}
 }
 void SCROLLBAR__InvalidatePartner(SCROLLBAR_Handle hObj) {     /* Invalidate the partner, since it is also affected */
@@ -303,13 +303,13 @@ static void _SCROLLBAR_Callback(WM_MESSAGE *pMsg) {
 			_Paint(pObj);
 			return;
 		case WM_TOUCH:
-			_OnTouch(hObj, pObj, pMsg);
+			_OnTouch(pObj, pMsg);
 			break;
 		case WM_KEY:
 			_OnKey(hObj, pMsg);
 			break;
 		case WM_SET_SCROLL_STATE:
-			_OnSetScrollState(hObj, pObj, (const WM_SCROLL_STATE *)pMsg->Data.p);
+			_OnSetScrollState(pObj, (const WM_SCROLL_STATE *)pMsg->Data.p);
 			break;
 		case WM_GET_SCROLL_STATE:
 			((WM_SCROLL_STATE *)pMsg->Data.p)->NumItems = pObj->NumItems;
@@ -387,7 +387,7 @@ void SCROLLBAR_AddValue(SCROLLBAR_Handle hObj, int Add) {
 	if (hObj) {
 
 		pObj = (hObj);
-		SCROLLBAR_SetValue(hObj, pObj->v + Add);
+		SCROLLBAR_SetValue(pObj, pObj->v + Add);
 
 	}
 }

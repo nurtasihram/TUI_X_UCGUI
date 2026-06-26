@@ -153,14 +153,14 @@ static int _OnTouch(DROPDOWN_Handle hObj, WM_MESSAGE *pMsg) {
 	}
 	return 0; /* Message handled */
 }
-void DROPDOWN__AdjustHeight(DROPDOWN_Handle hObj, DROPDOWN_Obj *pObj) {
+void DROPDOWN__AdjustHeight(DROPDOWN_Obj *pObj) {
 	int Height;
 	Height = pObj->TextHeight;
 	if (!Height) {
 		Height = GUI_GetYDistOfFont(pObj->Props.pFont);
 	}
 	Height += pObj->Widget.pEffect->EffectSize + 2 * pObj->Props.TextBorderSize;
-	WM_SetSize(hObj, WM__GetWindowSizeX(&pObj->Widget.Win), Height);
+	WM_SetSize(pObj, WM__GetWindowSizeX(&pObj->Widget.Win), Height);
 }
 static void _DROPDOWN_Callback(WM_MESSAGE *pMsg) {
 	DROPDOWN_Handle hObj = pMsg->hWin;
@@ -237,7 +237,7 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 		pObj->Props = DROPDOWN__DefaultProps;
 		pObj->ScrollbarWidth = 0;
 		pObj->ySizeEx = ysize;
-		DROPDOWN__AdjustHeight(hObj, pObj);
+		DROPDOWN__AdjustHeight(pObj);
 
 	}
 	return hObj;
@@ -351,7 +351,7 @@ void DROPDOWN_SetFont(DROPDOWN_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
 		pObj = (hObj);
 		OldHeight = GUI_GetYDistOfFont(pObj->Props.pFont);
 		pObj->Props.pFont = pfont;
-		DROPDOWN__AdjustHeight(hObj, pObj);
+		DROPDOWN__AdjustHeight(pObj);
 		DROPDOWN_Invalidate(hObj);
 		if (pObj->hListWin) {
 			if (OldHeight != GUI_GetYDistOfFont(pObj->Props.pFont)) {
@@ -576,7 +576,7 @@ void DROPDOWN_SetTextHeight(DROPDOWN_Handle hObj, unsigned TextHeight) {
 
 		pObj = (hObj);
 		pObj->TextHeight = TextHeight;
-		DROPDOWN__AdjustHeight(hObj, pObj);
+		DROPDOWN__AdjustHeight(pObj);
 		WM_Invalidate(hObj);
 
 	}

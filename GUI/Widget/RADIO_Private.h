@@ -17,7 +17,7 @@ typedef struct {
   RGB_COLOR TextColor;
   const GUI_FONT GUI_UNI_PTR* pFont;
 } RADIO_Obj;
-typedef void tRADIO_SetValue(RADIO_Handle hObj, RADIO_Obj* pObj, int v);
+typedef void tRADIO_SetValue(RADIO_Obj* pObj, int v);
 extern const GUI_BITMAP             RADIO__abmRadio[2];
 extern const GUI_BITMAP             RADIO__bmCheck;
 extern const GUI_BITMAP*            RADIO__apDefaultImage[2];
@@ -25,5 +25,5 @@ extern const GUI_BITMAP*            RADIO__pDefaultImageCheck;
 extern const GUI_FONT GUI_UNI_PTR*  RADIO__pDefaultFont;
 extern       RGB_COLOR              RADIO__DefaultTextColor;
 extern       tRADIO_SetValue*       RADIO__pfHandleSetValue;
-void RADIO__SetValue(RADIO_Handle hObj, RADIO_Obj* pObj, int v);
+void RADIO__SetValue(RADIO_Obj* pObj, int v);
 

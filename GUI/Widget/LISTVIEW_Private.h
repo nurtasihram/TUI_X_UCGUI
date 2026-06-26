@@ -34,8 +34,8 @@ typedef struct {
 	WM_HWIN         hOwner;
 } LISTVIEW_Obj;
 extern LISTVIEW_PROPS LISTVIEW_DefaultProps;
-int      LISTVIEW__UpdateScrollParas(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj);
-void     LISTVIEW__InvalidateInsideArea(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj);
+int      LISTVIEW__UpdateScrollParas(LISTVIEW_Obj *pObj);
+void     LISTVIEW__InvalidateInsideArea(LISTVIEW_Obj *pObj);
 unsigned LISTVIEW__GetRowDistY(const LISTVIEW_Obj *pObj);
-void     LISTVIEW__InvalidateRow(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj, int Sel);
-int      LISTVIEW__UpdateScrollPos(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj);
+void     LISTVIEW__InvalidateRow(LISTVIEW_Obj *pObj, int Sel);
+int      LISTVIEW__UpdateScrollPos(LISTVIEW_Obj *pObj);

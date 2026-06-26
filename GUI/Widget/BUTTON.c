@@ -106,58 +106,58 @@ static void _Delete(BUTTON_Obj *pObj) {
 	GUI_ALLOC_FreePtr(&pObj->ahDrawObj[0]);
 	GUI_ALLOC_FreePtr(&pObj->ahDrawObj[1]);
 }
-static void _ButtonPressed(BUTTON_Handle hObj, BUTTON_Obj *pObj) {
-	WIDGET_OrState(hObj, BUTTON_STATE_PRESSED);
+static void _ButtonPressed(BUTTON_Obj *pObj) {
+	WIDGET_OrState(pObj, BUTTON_STATE_PRESSED);
 	if (pObj->Widget.Win.Status & WM_SF_ISVIS) {
-		WM_NotifyParent(hObj, WM_NOTIFICATION_CLICKED);
+		WM_NotifyParent(pObj, WM_NOTIFICATION_CLICKED);
 	}
 }
-static void _ButtonReleased(BUTTON_Handle hObj, BUTTON_Obj *pObj, int Notification) {
-	WIDGET_AndState(hObj, BUTTON_STATE_PRESSED);
+static void _ButtonReleased(BUTTON_Obj *pObj, int Notification) {
+	WIDGET_AndState(pObj, BUTTON_STATE_PRESSED);
 	if (pObj->Widget.Win.Status & WM_SF_ISVIS) {
-		WM_NotifyParent(hObj, Notification);
+		WM_NotifyParent(pObj, Notification);
 	}
 	if (Notification == WM_NOTIFICATION_RELEASED) {
 		GUI_DEBUG_LOG("BUTTON: Hit\n");
 		GUI_StoreKey(pObj->Widget.Id);
 	}
 }
-static void _OnTouch(BUTTON_Handle hObj, BUTTON_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnTouch(BUTTON_Obj *pObj, WM_MESSAGE *pMsg) {
 	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
 #if BUTTON_REACT_ON_LEVEL
 	if (!pMsg->Data.p) {  /* Mouse moved out */
-		_ButtonReleased(hObj, pObj, WM_NOTIFICATION_MOVED_OUT);
+		_ButtonReleased(pObj, WM_NOTIFICATION_MOVED_OUT);
 	}
 #else
 	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			if ((pObj->Widget.State & BUTTON_STATE_PRESSED) == 0) {
-				_ButtonPressed(hObj, pObj);
+				_ButtonPressed(pObj);
 			}
 		}
 		else {
 			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
 			if (pObj->Widget.State & BUTTON_STATE_PRESSED) {
-				_ButtonReleased(hObj, pObj, WM_NOTIFICATION_RELEASED);
+				_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
 			}
 		}
 	}
 	else {
-		_ButtonReleased(hObj, pObj, WM_NOTIFICATION_MOVED_OUT);
+		_ButtonReleased(pObj, WM_NOTIFICATION_MOVED_OUT);
 	}
 #endif
 }
 #if BUTTON_REACT_ON_LEVEL
-static void _OnPidStateChange(BUTTON_Handle hObj, BUTTON_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnPidStateChange(BUTTON_Obj *pObj, WM_MESSAGE *pMsg) {
 	const WM_PID_STATE_CHANGED_INFO *pState = (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data.p;
 	if ((pState->StatePrev == 0) && (pState->State == 1)) {
 		if ((pObj->Widget.State & BUTTON_STATE_PRESSED) == 0) {
-			_ButtonPressed(hObj, pObj);
+			_ButtonPressed(pObj);
 		}
 	}
 	else if ((pState->StatePrev == 1) && (pState->State == 0)) {
 		if (pObj->Widget.State & BUTTON_STATE_PRESSED) {
-			_ButtonReleased(hObj, pObj, WM_NOTIFICATION_RELEASED);
+			_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
 		}
 	}
 }
@@ -172,11 +172,11 @@ void BUTTON_Callback(WM_MESSAGE *pMsg) {
 	switch (pMsg->MsgId) {
 #if BUTTON_REACT_ON_LEVEL
 		case WM_PID_STATE_CHANGED:
-			_OnPidStateChange(hObj, pObj, pMsg);
+			_OnPidStateChange(pObj, pMsg);
 			return;      /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
 #endif
 		case WM_TOUCH:
-			_OnTouch(hObj, pObj, pMsg);
+			_OnTouch(pObj, pMsg);
 			return;      /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
 		case WM_PAINT:
 			_Paint(pObj, hObj);
@@ -193,14 +193,14 @@ void BUTTON_Callback(WM_MESSAGE *pMsg) {
 			if (PressedCnt > 0) {   /* Key pressed? */
 				switch (Key) {
 					case ' ':
-						_ButtonPressed(hObj, pObj);
+						_ButtonPressed(pObj);
 						return;
 				}
 			}
 			else {
 				switch (Key) {
 					case ' ':
-						_ButtonReleased(hObj, pObj, WM_NOTIFICATION_RELEASED);
+						_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
 						return;
 				}
 			}

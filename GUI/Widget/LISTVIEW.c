@@ -61,10 +61,10 @@ unsigned LISTVIEW__GetRowDistY(const LISTVIEW_Obj *pObj) {
 *   Number of visible rows. If no entire row can be displayed, this
 *   function will return one.
 */
-static unsigned _GetNumVisibleRows(LISTVIEW_Handle hObj, const LISTVIEW_Obj *pObj) {
+static unsigned _GetNumVisibleRows(const LISTVIEW_Obj *pObj) {
 	unsigned RowDistY, ySize, r = 1;
 	GUI_RECT Rect;
-	WM_GetInsideRectExScrollbar(hObj, &Rect);
+	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	ySize = Rect.y1 - Rect.y0 + 1 - HEADER_GetHeight(pObj->hHeader);
 	RowDistY = LISTVIEW__GetRowDistY(pObj);
 	if (RowDistY) {
@@ -73,7 +73,7 @@ static unsigned _GetNumVisibleRows(LISTVIEW_Handle hObj, const LISTVIEW_Obj *pOb
 	}
 	return r;
 }
-static void _Paint(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _Paint(LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 	const GUI_ARRAY *pRow;
 	GUI_RECT ClipRect, Rect;
 	int NumRows, NumVisRows, NumColumns;
@@ -83,7 +83,7 @@ static void _Paint(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 	/* Init some values */
 	NumColumns = HEADER_GetNumItems(pObj->hHeader);
 	NumRows = GUI_ARRAY_GetNumItems(&pObj->RowArray);
-	NumVisRows = _GetNumVisibleRows(hObj, pObj);
+	NumVisRows = _GetNumVisibleRows(pObj);
 	RowDistY = LISTVIEW__GetRowDistY(pObj);
 	LBorder = pObj->LBorder;
 	RBorder = pObj->RBorder;
@@ -93,7 +93,7 @@ static void _Paint(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 	/* Calculate clipping rectangle */
 	ClipRect = *(const GUI_RECT *)pMsg->Data.p;
 	GUI_MoveRect(&ClipRect, -pObj->Widget.Win.Rect.x0, -pObj->Widget.Win.Rect.y0);
-	WM_GetInsideRectExScrollbar(hObj, &Rect);
+	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	GUI__IntersectRect(&ClipRect, &Rect);
 	/* Set drawing color, font and text mode */
 	LCD_SetColor(pObj->Props.aTextColor[0]);
@@ -203,31 +203,31 @@ static void _Paint(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 	/* Draw the effect */
 	WIDGET__EFFECT_DrawDown(&pObj->Widget);
 }
-void LISTVIEW__InvalidateInsideArea(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj) {
+void LISTVIEW__InvalidateInsideArea(LISTVIEW_Obj *pObj) {
 	GUI_RECT Rect;
 	int HeaderHeight;
 	HeaderHeight = HEADER_GetHeight(pObj->hHeader);
-	WM_GetInsideRectExScrollbar(hObj, &Rect);
+	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	Rect.y0 += HeaderHeight;
-	WM_InvalidateRect(hObj, &Rect);
+	WM_InvalidateRect(pObj, &Rect);
 }
-void LISTVIEW__InvalidateRow(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj, int Sel) {
+void LISTVIEW__InvalidateRow(LISTVIEW_Obj *pObj, int Sel) {
 	if (Sel >= 0) {
 		GUI_RECT Rect;
 		int HeaderHeight, RowDistY;
 		HeaderHeight = HEADER_GetHeight(pObj->hHeader);
 		RowDistY = LISTVIEW__GetRowDistY(pObj);
-		WM_GetInsideRectExScrollbar(hObj, &Rect);
+		WM_GetInsideRectExScrollbar(pObj, &Rect);
 		Rect.y0 += HeaderHeight + (Sel - pObj->ScrollStateV.v) * RowDistY;
 		Rect.y1 = Rect.y0 + RowDistY - 1;
-		WM_InvalidateRect(hObj, &Rect);
+		WM_InvalidateRect(pObj, &Rect);
 	}
 }
-static void _SetSelFromPos(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj, const GUI_PID_STATE *pState) {
+static void _SetSelFromPos(LISTVIEW_Obj *pObj, const GUI_PID_STATE *pState) {
 	GUI_RECT Rect;
 	int x, y, HeaderHeight;
 	HeaderHeight = HEADER_GetHeight(pObj->hHeader);
-	WM_GetInsideRectExScrollbar(hObj, &Rect);
+	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	x = pState->x - Rect.x0;
 	y = pState->y - Rect.y0 - HeaderHeight;
 	Rect.x1 -= Rect.x0;
@@ -236,7 +236,7 @@ static void _SetSelFromPos(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj, const GUI_P
 		unsigned Sel;
 		Sel = (y / LISTVIEW__GetRowDistY(pObj)) + pObj->ScrollStateV.v;
 		if (Sel < GUI_ARRAY_GetNumItems(&pObj->RowArray)) {
-			LISTVIEW_SetSel(hObj, Sel);
+			LISTVIEW_SetSel(pObj, Sel);
 		}
 	}
 }
@@ -258,15 +258,15 @@ static void _NotifyOwner(WM_HWIN hObj, int Notification) {
 	Msg.hWin = hObj;
 	WM_SendMessage(hOwner, &Msg);
 }
-static void _OnTouch(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnTouch(LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 	int Notification;
 	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
 	GUI_USE_PARA(pObj);
 	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
-			_SetSelFromPos(hObj, pObj, pState);
+			_SetSelFromPos(pObj, pState);
 			Notification = WM_NOTIFICATION_CLICKED;
-			WM_SetFocus(hObj);
+			WM_SetFocus(pObj);
 		}
 		else {
 			Notification = WM_NOTIFICATION_RELEASED;
@@ -275,7 +275,7 @@ static void _OnTouch(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg)
 	else {
 		Notification = WM_NOTIFICATION_MOVED_OUT;
 	}
-	_NotifyOwner(hObj, Notification);
+	_NotifyOwner(pObj, Notification);
 }
 /*********************************************************************
 *
@@ -325,7 +325,7 @@ static int _GetHeaderWidth(LISTVIEW_Obj *pObj, HEADER_Handle hHeader) {
 * Return value:
 *   Difference between old and new vertical scroll pos.
 */
-int LISTVIEW__UpdateScrollPos(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj) {
+int LISTVIEW__UpdateScrollPos(LISTVIEW_Obj *pObj) {
 	int PrevScrollStateV;
 	PrevScrollStateV = pObj->ScrollStateV.v;
 	if (pObj->Sel >= 0) {
@@ -335,7 +335,7 @@ int LISTVIEW__UpdateScrollPos(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj) {
 		WM_CheckScrollBounds(&pObj->ScrollStateV);
 	}
 	WM_CheckScrollBounds(&pObj->ScrollStateH);
-	WIDGET__SetScrollState(hObj, &pObj->ScrollStateV, &pObj->ScrollStateH);
+	WIDGET__SetScrollState(pObj, &pObj->ScrollStateV, &pObj->ScrollStateH);
 	return pObj->ScrollStateV.v - PrevScrollStateV;
 }
 /*********************************************************************
@@ -347,16 +347,16 @@ int LISTVIEW__UpdateScrollPos(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj) {
 *   and horizontal scrollbar. After this LISTVIEW__UpdateScrollPos will
 *   be called to ensure scroll positions are in valid ranges.
 */
-int LISTVIEW__UpdateScrollParas(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj) {
+int LISTVIEW__UpdateScrollParas(LISTVIEW_Obj *pObj) {
 	int NumRows;
 	NumRows = GUI_ARRAY_GetNumItems(&pObj->RowArray);
 	/* update vertical scrollbar */
-	pObj->ScrollStateV.PageSize = _GetNumVisibleRows(hObj, pObj);
+	pObj->ScrollStateV.PageSize = _GetNumVisibleRows(pObj);
 	pObj->ScrollStateV.NumItems = (NumRows) ? NumRows : 1;
 	/* update horizontal scrollbar */
-	pObj->ScrollStateH.PageSize = _GetXSize(hObj);
+	pObj->ScrollStateH.PageSize = _GetXSize(pObj);
 	pObj->ScrollStateH.NumItems = _GetHeaderWidth(pObj, pObj->hHeader);
-	return LISTVIEW__UpdateScrollPos(hObj, pObj);
+	return LISTVIEW__UpdateScrollPos(pObj);
 }
 /*********************************************************************
 *
@@ -417,7 +417,7 @@ static void _LISTVIEW_Callback(WM_MESSAGE *pMsg) {
 	switch (pMsg->MsgId) {
 		case WM_NOTIFY_CLIENTCHANGE:
 		case WM_SIZE:
-			LISTVIEW__UpdateScrollParas(hObj, pObj);
+			LISTVIEW__UpdateScrollParas(pObj);
 			return;
 		case WM_NOTIFY_PARENT:
 			switch (pMsg->Data.v) {
@@ -431,27 +431,27 @@ static void _LISTVIEW_Callback(WM_MESSAGE *pMsg) {
 					if (pMsg->hWinSrc == WM_GetScrollbarV(hObj)) {
 						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
 						pObj->ScrollStateV.v = ScrollState.v;
-						LISTVIEW__InvalidateInsideArea(hObj, pObj);
+						LISTVIEW__InvalidateInsideArea(pObj);
 						_NotifyOwner(hObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
 					else if (pMsg->hWinSrc == WM_GetScrollbarH(hObj)) {
 						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
 						pObj->ScrollStateH.v = ScrollState.v;
-						LISTVIEW__UpdateScrollParas(hObj, pObj);
+						LISTVIEW__UpdateScrollParas(pObj);
 						HEADER_SetScrollPos(pObj->hHeader, pObj->ScrollStateH.v);
 						_NotifyOwner(hObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
 					break;
 				case WM_NOTIFICATION_SCROLLBAR_ADDED:
-					LISTVIEW__UpdateScrollParas(hObj, pObj);
+					LISTVIEW__UpdateScrollParas(pObj);
 					break;
 			}
 			return;
 		case WM_PAINT:
-			_Paint(hObj, pObj, pMsg);
+			_Paint(pObj, pMsg);
 			return;
 		case WM_TOUCH:
-			_OnTouch(hObj, pObj, pMsg);
+			_OnTouch(pObj, pMsg);
 			return;        /* Important: message handled ! */
 		case WM_KEY:
 			if (((const WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt > 0) {
@@ -500,7 +500,7 @@ LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 		pObj->LBorder = 1;
 		pObj->RBorder = 1;
 		pObj->hHeader = HEADER_CreateEx(0, 0, 0, 0, hObj, WM_CF_SHOW, 0, 0);
-		LISTVIEW__UpdateScrollParas(hObj, pObj);
+		LISTVIEW__UpdateScrollParas(pObj);
 
 	}
 	else {
@@ -534,8 +534,8 @@ void LISTVIEW_AddColumn(LISTVIEW_Handle hObj, int Width, const char *s, int Alig
 				GUI_ARRAY_AddItem(pRow, NULL, sizeof(LISTVIEW_ITEM) + 1);
 			}
 		}
-		LISTVIEW__UpdateScrollParas(hObj, pObj);
-		LISTVIEW__InvalidateInsideArea(hObj, pObj);
+		LISTVIEW__UpdateScrollParas(pObj);
+		LISTVIEW__InvalidateInsideArea(pObj);
 
 	}
 }
@@ -568,8 +568,8 @@ void LISTVIEW_AddRow(LISTVIEW_Handle hObj, const GUI_ConstString *ppText) {
 					strcpy(pItem->acText, s);
 				}
 			}
-			LISTVIEW__UpdateScrollParas(hObj, pObj);
-			LISTVIEW__InvalidateRow(hObj, pObj, NumRows);
+			LISTVIEW__UpdateScrollParas(pObj);
+			LISTVIEW__InvalidateRow(pObj, NumRows);
 		}
 
 	}
@@ -639,22 +639,22 @@ void LISTVIEW_DeleteColumn(LISTVIEW_Handle hObj, unsigned Index) {
 				/* Delete cell */
 				GUI_ARRAY_DeleteItem(pRow, Index);
 			}
-			LISTVIEW__UpdateScrollParas(hObj, pObj);
-			LISTVIEW__InvalidateInsideArea(hObj, pObj);
+			LISTVIEW__UpdateScrollParas(pObj);
+			LISTVIEW__InvalidateInsideArea(pObj);
 		}
 	}
 }
 
 
-static void _InvalidateRowAndBelow(LISTVIEW_Handle hObj, LISTVIEW_Obj *pObj, int Sel) {
+static void _InvalidateRowAndBelow(LISTVIEW_Obj *pObj, int Sel) {
 	if (Sel >= 0) {
 		GUI_RECT Rect;
 		int HeaderHeight, RowDistY;
 		HeaderHeight = HEADER_GetHeight(pObj->hHeader);
 		RowDistY = LISTVIEW__GetRowDistY(pObj);
-		WM_GetInsideRectExScrollbar(hObj, &Rect);
+		WM_GetInsideRectExScrollbar(pObj, &Rect);
 		Rect.y0 += HeaderHeight + (Sel - pObj->ScrollStateV.v) * RowDistY;
-		WM_InvalidateRect(hObj, &Rect);
+		WM_InvalidateRect(pObj, &Rect);
 	}
 }
 
@@ -687,11 +687,11 @@ void LISTVIEW_DeleteRow(LISTVIEW_Handle hObj, unsigned Index) {
 			if (pObj->Sel > (signed int)Index) {
 				pObj->Sel--;
 			}
-			if (LISTVIEW__UpdateScrollParas(hObj, pObj)) {
-				LISTVIEW__InvalidateInsideArea(hObj, pObj);
+			if (LISTVIEW__UpdateScrollParas(pObj)) {
+				LISTVIEW__InvalidateInsideArea(pObj);
 			}
 			else {
-				_InvalidateRowAndBelow(hObj, pObj, Index);
+				_InvalidateRowAndBelow(pObj, Index);
 			}
 		}
 	}
@@ -794,7 +794,7 @@ void LISTVIEW_SetBkColor(LISTVIEW_Handle hObj, unsigned int Index, RGB_COLOR Col
 			pObj = (hObj);
 			if (Color != pObj->Props.aBkColor[Index]) {
 				pObj->Props.aBkColor[Index] = Color;
-				LISTVIEW__InvalidateInsideArea(hObj, pObj);
+				LISTVIEW__InvalidateInsideArea(pObj);
 			}
 
 		}
@@ -818,8 +818,8 @@ void LISTVIEW_SetFont(LISTVIEW_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
 		pObj = (hObj);
 		if (pFont != pObj->Props.pFont) {
 			pObj->Props.pFont = pFont;
-			LISTVIEW__UpdateScrollParas(hObj, pObj);
-			LISTVIEW__InvalidateInsideArea(hObj, pObj);
+			LISTVIEW__UpdateScrollParas(pObj);
+			LISTVIEW__InvalidateInsideArea(pObj);
 		}
 
 	}
@@ -834,8 +834,8 @@ int LISTVIEW_SetGridVis(LISTVIEW_Handle hObj, int Show) {
 		ShowGrid = pObj->ShowGrid;
 		if (Show != ShowGrid) {
 			pObj->ShowGrid = Show;
-			LISTVIEW__UpdateScrollParas(hObj, pObj);
-			LISTVIEW__InvalidateInsideArea(hObj, pObj);
+			LISTVIEW__UpdateScrollParas(pObj);
+			LISTVIEW__InvalidateInsideArea(pObj);
 		}
 
 	}
@@ -898,7 +898,7 @@ void LISTVIEW_SetItemText(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, c
 			if (NumBytes > 1) {
 				strcpy(pItem->acText, s);
 			}
-			LISTVIEW__InvalidateRow(hObj, pObj, Row);
+			LISTVIEW__InvalidateRow(pObj, Row);
 
 		}
 	}
@@ -911,7 +911,7 @@ void LISTVIEW_SetLBorder(LISTVIEW_Handle hObj, unsigned BorderSize) {
 		pObj = (hObj);
 		if (pObj->LBorder != BorderSize) {
 			pObj->LBorder = BorderSize;
-			LISTVIEW__InvalidateInsideArea(hObj, pObj);
+			LISTVIEW__InvalidateInsideArea(pObj);
 		}
 
 	}
@@ -924,7 +924,7 @@ void LISTVIEW_SetRBorder(LISTVIEW_Handle hObj, unsigned BorderSize) {
 		pObj = (hObj);
 		if (pObj->RBorder != BorderSize) {
 			pObj->RBorder = BorderSize;
-			LISTVIEW__InvalidateInsideArea(hObj, pObj);
+			LISTVIEW__InvalidateInsideArea(pObj);
 		}
 
 	}
@@ -939,8 +939,8 @@ unsigned LISTVIEW_SetRowHeight(LISTVIEW_Handle hObj, unsigned RowHeight) {
 		r = pObj->RowDistY;
 		if (RowHeight != r) {
 			pObj->RowDistY = RowHeight;
-			LISTVIEW__UpdateScrollParas(hObj, pObj);
-			LISTVIEW__InvalidateInsideArea(hObj, pObj);
+			LISTVIEW__UpdateScrollParas(pObj);
+			LISTVIEW__InvalidateInsideArea(pObj);
 		}
 
 	}
@@ -964,12 +964,12 @@ void LISTVIEW_SetSel(LISTVIEW_Handle hObj, int NewSel) {
 			int OldSel;
 			OldSel = pObj->Sel;
 			pObj->Sel = NewSel;
-			if (LISTVIEW__UpdateScrollPos(hObj, pObj)) {
-				LISTVIEW__InvalidateInsideArea(hObj, pObj);
+			if (LISTVIEW__UpdateScrollPos(pObj)) {
+				LISTVIEW__InvalidateInsideArea(pObj);
 			}
 			else {
-				LISTVIEW__InvalidateRow(hObj, pObj, OldSel);
-				LISTVIEW__InvalidateRow(hObj, pObj, NewSel);
+				LISTVIEW__InvalidateRow(pObj, OldSel);
+				LISTVIEW__InvalidateRow(pObj, NewSel);
 			}
 			WM_NotifyParent(hObj, WM_NOTIFICATION_SEL_CHANGED);
 		}
@@ -987,7 +987,7 @@ void LISTVIEW_SetTextAlign(LISTVIEW_Handle hObj, unsigned int Index, int Align) 
 			pAlign = (int *)GUI_ARRAY_GetpItem(&pObj->AlignArray, Index);
 			if (Align != *pAlign) {
 				*pAlign = Align;
-				LISTVIEW__InvalidateInsideArea(hObj, pObj);
+				LISTVIEW__InvalidateInsideArea(pObj);
 			}
 		}
 
@@ -1002,7 +1002,7 @@ void LISTVIEW_SetTextColor(LISTVIEW_Handle hObj, unsigned int Index, RGB_COLOR C
 			pObj = (hObj);
 			if (Color != pObj->Props.aTextColor[Index]) {
 				pObj->Props.aTextColor[Index] = Color;
-				LISTVIEW__InvalidateInsideArea(hObj, pObj);
+				LISTVIEW__InvalidateInsideArea(pObj);
 			}
 
 		}

@@ -20,8 +20,8 @@ typedef struct { int16_t x, y; } GUI_POINT;
 typedef struct { int16_t x0, y0, x1, y1; } GUI_RECT;
 
 typedef struct {
-  int              NumEntries;
-  char             HasTrans;
+  int  NumEntries;
+  char HasTrans;
   const RGB_COLOR GUI_UNI_PTR * pPalEntries;
 } GUI_LOGPALETTE;
 
