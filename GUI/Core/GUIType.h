@@ -8,7 +8,7 @@
 typedef const char *GUI_ConstString;
 
 typedef struct {
-	void      (*pfDraw)(int x0, int y0, int xsize, int ysize, const uint8_t GUI_UNI_PTR *pPixel, const GUI_LOGPALETTE GUI_UNI_PTR *pLogPal, int xMag, int yMag);
+	void      (*pfDraw)(int x0, int y0, int xsize, int ysize, const uint8_t  *pPixel, const GUI_LOGPALETTE  *pLogPal, int xMag, int yMag);
 } GUI_BITMAP_METHODS;
 
 typedef struct {
@@ -16,8 +16,8 @@ typedef struct {
 	uint16_t YSize;
 	uint16_t BytesPerLine;
 	uint16_t BitsPerPixel;
-	const uint8_t GUI_UNI_PTR *pData;
-	const GUI_LOGPALETTE GUI_UNI_PTR *pPal;
+	const uint8_t  *pData;
+	const GUI_LOGPALETTE  *pPal;
 	const GUI_BITMAP_METHODS *pMethods;
 } GUI_BITMAP;
 
@@ -45,27 +45,27 @@ typedef struct {
 typedef struct {
 	uint16_t FirstChar;
 	uint16_t LastChar;
-	const GUI_FONT_TRANSLIST GUI_UNI_PTR *pList;
+	const GUI_FONT_TRANSLIST  *pList;
 } GUI_FONT_TRANSINFO;
 
 typedef struct {
 	uint8_t XSize;
 	uint8_t XDist;
 	uint8_t BytesPerLine;
-	const uint8_t GUI_UNI_PTR *pData;
+	const uint8_t  *pData;
 } GUI_CHARINFO;
 
 typedef struct GUI_FONT_PROP {
 	uint16_t First;                                /* first character               */
 	uint16_t Last;                                 /* last character                */
-	const GUI_CHARINFO GUI_UNI_PTR *paCharInfo;            /* address of first character    */
-	const struct GUI_FONT_PROP GUI_UNI_PTR *pNext;        /* pointer to next */
+	const GUI_CHARINFO  *paCharInfo;            /* address of first character    */
+	const struct GUI_FONT_PROP  *pNext;        /* pointer to next */
 } GUI_FONT_PROP;
 
 typedef struct {
-	const uint8_t GUI_UNI_PTR *pData;
-	const uint8_t GUI_UNI_PTR *pTransData;
-	const GUI_FONT_TRANSINFO GUI_UNI_PTR *pTrans;
+	const uint8_t  *pData;
+	const uint8_t  *pTransData;
+	const GUI_FONT_TRANSINFO  *pTrans;
 	uint16_t FirstChar;
 	uint16_t LastChar;
 	uint8_t XSize;
@@ -100,8 +100,8 @@ typedef struct {
 #define GUI_FONTINFO_FLAG_PROP (1<<0)    /* Is proportional */
 #define GUI_FONTINFO_FLAG_MONO (1<<1)    /* Is monospaced */
 
-typedef uint16_t  tGUI_GetCharCode(const char GUI_UNI_PTR *s);
-typedef int  tGUI_GetCharSize(const char GUI_UNI_PTR *s);
+typedef uint16_t  tGUI_GetCharCode(const char  *s);
+typedef int  tGUI_GetCharSize(const char  *s);
 typedef int  tGUI_CalcSizeOfChar(uint16_t Char);
 typedef int  tGUI_Encode(char *s, uint16_t Char);
 
@@ -112,9 +112,9 @@ typedef struct {
 	tGUI_Encode *pfEncode;
 } GUI_UC_ENC_APILIST;
 
-typedef int  tGUI_GetLineDistX(const char GUI_UNI_PTR *s, int Len);
-typedef int  tGUI_GetLineLen(const char GUI_UNI_PTR *s, int MaxLen);
-typedef void tGL_DispLine(const char GUI_UNI_PTR *s, int Len);
+typedef int  tGUI_GetLineDistX(const char  *s, int Len);
+typedef int  tGUI_GetLineLen(const char  *s, int MaxLen);
+typedef void tGL_DispLine(const char  *s, int Len);
 
 typedef struct {
 	tGUI_GetLineDistX *pfGetLineDistX;
@@ -141,14 +141,14 @@ typedef struct GUI_FONT GUI_FONT;
 
 typedef void GUI_DISPCHAR(uint16_t c);
 typedef int  GUI_GETCHARDISTX(uint16_t c);
-typedef void GUI_GETFONTINFO(const GUI_FONT GUI_UNI_PTR *pFont, GUI_FONTINFO *pfi);
-typedef char GUI_ISINFONT(const GUI_FONT GUI_UNI_PTR *pFont, uint16_t c);
+typedef void GUI_GETFONTINFO(const GUI_FONT  *pFont, GUI_FONTINFO *pfi);
+typedef char GUI_ISINFONT(const GUI_FONT  *pFont, uint16_t c);
 
 #define DECLARE_FONT(Type)                                     \
 void GUI##Type##_DispChar    (uint16_t c);                         \
 int  GUI##Type##_GetCharDistX(uint16_t c);                         \
-void GUI##Type##_GetFontInfo (const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO * pfi); \
-char GUI##Type##_IsInFont    (const GUI_FONT GUI_UNI_PTR * pFont, uint16_t c)
+void GUI##Type##_GetFontInfo (const GUI_FONT  * pFont, GUI_FONTINFO * pfi); \
+char GUI##Type##_IsInFont    (const GUI_FONT  * pFont, uint16_t c)
 
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
@@ -194,9 +194,9 @@ struct GUI_FONT {
 	uint8_t YSize;
 	uint8_t YDist;
 	union {
-		const void          GUI_UNI_PTR *pFontData;
-		const GUI_FONT_MONO GUI_UNI_PTR *pMono;
-		const GUI_FONT_PROP GUI_UNI_PTR *pProp;
+		const void           *pFontData;
+		const GUI_FONT_MONO  *pMono;
+		const GUI_FONT_PROP  *pProp;
 	} p;
 	uint8_t Baseline;
 	uint8_t LHeight;     /* height of a small lower case character (a,x) */

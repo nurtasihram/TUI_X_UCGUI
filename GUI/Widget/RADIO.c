@@ -22,7 +22,7 @@
 #define RADIO_BORDER                  2
 tRADIO_SetValue* RADIO__pfHandleSetValue;
 RGB_COLOR         RADIO__DefaultTextColor       = RADIO_DEFAULT_TEXT_COLOR;
-const GUI_FONT GUI_UNI_PTR* RADIO__pDefaultFont = RADIO_FONT_DEFAULT;
+const GUI_FONT * RADIO__pDefaultFont = RADIO_FONT_DEFAULT;
 const GUI_BITMAP* RADIO__apDefaultImage[]       = {RADIO_IMAGE0_DEFAULT, RADIO_IMAGE1_DEFAULT};
 const GUI_BITMAP* RADIO__pDefaultImageCheck     = RADIO_IMAGE_CHECK_DEFAULT;
 
@@ -308,13 +308,13 @@ RADIO_Handle RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_
 	return hThis;
 }
 
-const GUI_FONT GUI_UNI_PTR *RADIO_GetDefaultFont(void) {
+const GUI_FONT  *RADIO_GetDefaultFont(void) {
 	return RADIO__pDefaultFont;
 }
 RGB_COLOR RADIO_GetDefaultTextColor(void) {
 	return RADIO__DefaultTextColor;
 }
-void RADIO_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
+void RADIO_SetDefaultFont(const GUI_FONT  *pFont) {
 	RADIO__pDefaultFont = pFont;
 }
 void RADIO_SetDefaultTextColor(RGB_COLOR TextColor) {
@@ -355,7 +355,7 @@ void RADIO_SetDefaultImage(const GUI_BITMAP *pBitmap, unsigned int Index) {
 	}
 }
 
-void RADIO_SetFont(RADIO_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
+void RADIO_SetFont(RADIO_Handle hObj, const GUI_FONT  *pFont) {
 	if (hObj) {
 		RADIO_Obj *pObj;
 

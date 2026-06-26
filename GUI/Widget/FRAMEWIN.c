@@ -509,10 +509,10 @@ FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInf
 							 hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->pName, cb);
 	return hObj;
 }
-void FRAMEWIN_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
+void FRAMEWIN_SetDefaultFont(const GUI_FONT  *pFont) {
 	FRAMEWIN__DefaultProps.pFont = pFont;
 }
-const GUI_FONT GUI_UNI_PTR *FRAMEWIN_GetDefaultFont(void) {
+const GUI_FONT  *FRAMEWIN_GetDefaultFont(void) {
 	return FRAMEWIN__DefaultProps.pFont;
 }
 void FRAMEWIN_SetDefaultBarColor(unsigned Index, RGB_COLOR Color) {
@@ -558,8 +558,8 @@ RGB_COLOR FRAMEWIN_GetDefaultTextColor(unsigned Index) {
 	return Color;
 }
 
-const GUI_FONT GUI_UNI_PTR *FRAMEWIN_GetFont(FRAMEWIN_Handle hObj) {
-	const GUI_FONT GUI_UNI_PTR *r = NULL;
+const GUI_FONT  *FRAMEWIN_GetFont(FRAMEWIN_Handle hObj) {
+	const GUI_FONT  *r = NULL;
 	if (hObj) {
 		FRAMEWIN_Obj *pObj = (hObj);
 		r = pObj->Props.pFont;
@@ -774,7 +774,7 @@ void FRAMEWIN_SetClientColor(FRAMEWIN_Handle hObj, RGB_COLOR Color) {
 	}
 }
 
-void FRAMEWIN_SetFont(FRAMEWIN_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
+void FRAMEWIN_SetFont(FRAMEWIN_Handle hObj, const GUI_FONT  *pFont) {
 	if (hObj) {
 		FRAMEWIN_Obj *pObj = (hObj);
 		int OldHeight = FRAMEWIN__CalcTitleHeight(pObj);
@@ -799,7 +799,7 @@ static int      _CaptureX;
 static int      _CaptureY;
 static int      _CaptureFlags;
 #if GUI_SUPPORT_CURSOR
-static const GUI_CURSOR GUI_UNI_PTR *_pOldCursor;
+static const GUI_CURSOR  *_pOldCursor;
 #endif
 #if GUI_SUPPORT_CURSOR
 static const RGB_COLOR _ColorsCursor[] = {
@@ -933,7 +933,7 @@ static const GUI_CURSOR _ResizeCursorDU = {
 #endif
 #if GUI_SUPPORT_CURSOR
 static void _SetResizeCursor(int Mode) {
-	const GUI_CURSOR GUI_UNI_PTR *pNewCursor = NULL;
+	const GUI_CURSOR  *pNewCursor = NULL;
 	if (Mode) {
 		int Direction;
 		Direction = Mode & (FRAMEWIN_RESIZE_X | FRAMEWIN_RESIZE_Y);
@@ -954,7 +954,7 @@ static void _SetResizeCursor(int Mode) {
 		}
 	}
 	if (pNewCursor) {
-		const GUI_CURSOR GUI_UNI_PTR *pOldCursor;
+		const GUI_CURSOR  *pOldCursor;
 		pOldCursor = GUI_CURSOR_Select(pNewCursor);
 		if (_pOldCursor == NULL) {
 			_pOldCursor = pOldCursor;

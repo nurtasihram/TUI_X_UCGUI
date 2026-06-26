@@ -211,7 +211,7 @@ typedef struct {
 /* Variables in GL module */
   GUI_RECT* pClipRect_HL; /* High level clip rectangle ... Speed optimization so drawing routines can optimize */
 /* Variables in GUICHAR module */
-  const GUI_FONT           GUI_UNI_PTR * pAFont;
+  const GUI_FONT            * pAFont;
   const GUI_UC_ENC_APILIST * pUC_API; /* Unicode encoding API */
   int16_t LBorder;
   int16_t DispPosX, DispPosY;
@@ -269,7 +269,7 @@ int  GUI_BMP_GetYSize     (const void * pFileData);
 void GUI_Clear            (void);
 void GUI_ClearRect        (int x0, int y0, int x1, int y1);
 void GUI_ClearRectEx      (const GUI_RECT* pRect);
-void GUI_DrawBitmap       (const GUI_BITMAP GUI_UNI_PTR * pBM, int x0, int y0);
+void GUI_DrawBitmap       (const GUI_BITMAP  * pBM, int x0, int y0);
 void GUI_DrawHLine        (int y0, int x0, int x1);
 void GUI_DrawPixel        (int x, int y);
 void GUI_DrawPoint        (int x, int y);
@@ -283,7 +283,7 @@ void GUI_GetClientRect    (GUI_RECT* pRect);
 void GUI_InvertRect       (int x0, int y0, int x1, int y1);
 
 typedef struct {
-  const GUI_UNI_PTR GUI_BITMAP * pBitmap;
+  const  GUI_BITMAP * pBitmap;
   int xHot, yHot;
 } GUI_CURSOR;
 
@@ -293,7 +293,7 @@ typedef struct {
   void               GUI_CURSOR_Hide       (void);
   void               GUI_CURSOR_SetXor     (const GUI_BITMAP * pBM, int x, int y);
   void               GUI_CURSOR_SetPosition(int x, int y);
-  const GUI_CURSOR GUI_UNI_PTR * GUI_CURSOR_Select     (const GUI_CURSOR GUI_UNI_PTR * pCursor);
+  const GUI_CURSOR  * GUI_CURSOR_Select     (const GUI_CURSOR  * pCursor);
   void               GUI_CURSOR_Show       (void);
 #else
 #define GUI_CURSOR_Show()
@@ -319,34 +319,34 @@ void  GUI_DispCEOL (void);
 void  GUI_DispChar  (uint16_t c);
 void  GUI_DispChars (uint16_t c, int Cnt);
 void  GUI_DispCharAt(uint16_t c, int16_t x, int16_t y);
-void  GUI_DispString         (const char GUI_UNI_PTR *s);
-void  GUI_DispStringAt       (const char GUI_UNI_PTR *s, int x, int y);
-void  GUI_DispStringAtCEOL   (const char GUI_UNI_PTR *s, int x, int y);
-void  GUI_DispStringHCenterAt(const char GUI_UNI_PTR *s, int x, int y);
-void  GUI__DispStringInRect  (const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAlign, int MaxNumChars);
-void  GUI_DispStringInRect   (const char GUI_UNI_PTR *s, GUI_RECT* pRect, int Flags);
-void  GUI_DispStringInRectMax(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAlign, int MaxLen); /* Not to be doc. */
-void  GUI_DispStringLen      (const char GUI_UNI_PTR *s, int Len);
-void  GUI_GetTextExtend(GUI_RECT* pRect, const char GUI_UNI_PTR * s, int Len);
+void  GUI_DispString         (const char  *s);
+void  GUI_DispStringAt       (const char  *s, int x, int y);
+void  GUI_DispStringAtCEOL   (const char  *s, int x, int y);
+void  GUI_DispStringHCenterAt(const char  *s, int x, int y);
+void  GUI__DispStringInRect  (const char  *s, GUI_RECT* pRect, int TextAlign, int MaxNumChars);
+void  GUI_DispStringInRect   (const char  *s, GUI_RECT* pRect, int Flags);
+void  GUI_DispStringInRectMax(const char  *s, GUI_RECT* pRect, int TextAlign, int MaxLen); /* Not to be doc. */
+void  GUI_DispStringLen      (const char  *s, int Len);
+void  GUI_GetTextExtend(GUI_RECT* pRect, const char  * s, int Len);
 int   GUI_GetYAdjust(void);
 int   GUI_GetDispPosX(void);
 int   GUI_GetDispPosY(void);
-const GUI_FONT GUI_UNI_PTR * GUI_GetFont(void);
+const GUI_FONT  * GUI_GetFont(void);
 int   GUI_GetCharDistX(uint16_t c);
-int   GUI_GetStringDistX(const char GUI_UNI_PTR *s);
+int   GUI_GetStringDistX(const char  *s);
 int   GUI_GetFontDistY(void);
 int   GUI_GetFontSizeY(void);
-void  GUI_GetFontInfo   (const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO* pfi);
-int   GUI_GetYSizeOfFont(const GUI_FONT GUI_UNI_PTR * pFont);
-int   GUI_GetYDistOfFont(const GUI_FONT GUI_UNI_PTR * pFont);
+void  GUI_GetFontInfo   (const GUI_FONT  * pFont, GUI_FONTINFO* pfi);
+int   GUI_GetYSizeOfFont(const GUI_FONT  * pFont);
+int   GUI_GetYDistOfFont(const GUI_FONT  * pFont);
 int   GUI_GetTextAlign(void);
 int   GUI_GetTextMode(void);
-char  GUI_IsInFont(const GUI_FONT GUI_UNI_PTR * pFont, uint16_t c);
+char  GUI_IsInFont(const GUI_FONT  * pFont, uint16_t c);
 int   GUI_SetTextAlign(int Align);
 int   GUI_SetTextMode(int Mode);
 char  GUI_SetTextStyle(char Style);
 int   GUI_SetLBorder(int x);
-const GUI_FONT GUI_UNI_PTR * GUI_SetFont(const GUI_FONT GUI_UNI_PTR * pNewFont);
+const GUI_FONT  * GUI_SetFont(const GUI_FONT  * pNewFont);
 char  GUI_GotoXY(int x, int y);
 char  GUI_GotoX(int x);
 char  GUI_GotoY(int y);
@@ -356,12 +356,12 @@ void GUI_SIF_CreateFont(void * pFontData, GUI_FONT * pFont, const GUI_SIF_TYPE *
 void GUI_SIF_DeleteFont(GUI_FONT * pFont);
 
 int   GUI_UC_Encode           (char* s, uint16_t Char);
-int   GUI_UC_GetCharSize      (const char GUI_UNI_PTR * s);
-uint16_t   GUI_UC_GetCharCode      (const char GUI_UNI_PTR * s);
+int   GUI_UC_GetCharSize      (const char  * s);
+uint16_t   GUI_UC_GetCharCode      (const char  * s);
 void  GUI_UC_SetEncodeNone    (void);
 void  GUI_UC_SetEncodeUTF8    (void);
 
-void GUI_UC_DispString(const uint16_t GUI_UNI_PTR *s);
+void GUI_UC_DispString(const uint16_t  *s);
 void GUI_UC2DB (uint16_t Code, uint8_t* pOut);
 uint16_t  GUI_DB2UC (uint8_t Byte0, uint8_t Byte1);
 

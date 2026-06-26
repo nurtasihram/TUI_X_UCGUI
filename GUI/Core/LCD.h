@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#include "GUI_ConfDefaults.h" /* Used for GUI_UNI_PTR */
+#include "GUI_ConfDefaults.h" /* Used for  */
 
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
@@ -22,7 +22,7 @@ typedef struct { int16_t x0, y0, x1, y1; } GUI_RECT;
 typedef struct {
   int  NumEntries;
   char HasTrans;
-  const RGB_COLOR GUI_UNI_PTR * pPalEntries;
+  const RGB_COLOR  * pPalEntries;
 } GUI_LOGPALETTE;
 
 /* This is used for the simulation only ! */
@@ -57,7 +57,7 @@ typedef struct tLCDDEV_APIList_struct tLCDDEV_APIList;
 
 typedef void tLCDDEV_DrawBitmap   (int x0, int y0, int xsize, int ysize,
                        int BitsPerPixel, int BytesPerLine,
-                       const uint8_t GUI_UNI_PTR * pData, int Diff,
+                       const uint8_t  * pData, int Diff,
                        const void* pTrans);   /* Really RGB_COLOR, but is void to avoid compiler warnings*/
 
 struct tLCDDEV_APIList_struct {

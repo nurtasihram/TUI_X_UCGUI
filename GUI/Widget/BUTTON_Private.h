@@ -5,7 +5,7 @@
 typedef struct {
 	RGB_COLOR aBkColor[3];
 	RGB_COLOR aTextColor[3];
-	const GUI_FONT GUI_UNI_PTR *pFont;
+	const GUI_FONT  *pFont;
 	int16_t Align;
 } BUTTON_PROPS;
 typedef struct {

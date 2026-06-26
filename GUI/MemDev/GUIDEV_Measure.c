@@ -40,7 +40,7 @@ static void _MarkRect(int x0, int y0, int x1, int y1) {
 
 static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
                        int BitsPerPixel, int BytesPerLine,
-                       const uint8_t GUI_UNI_PTR * pData, int Diff,
+                       const uint8_t  * pData, int Diff,
                        const RGB_COLOR* pTrans)
 {
   GUI_USE_PARA(BitsPerPixel);

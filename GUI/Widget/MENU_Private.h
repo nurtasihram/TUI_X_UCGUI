@@ -19,7 +19,7 @@ typedef struct {
 	RGB_COLOR                   aTextColor[5];
 	RGB_COLOR                   aBkColor[5];
 	uint8_t                          aBorder[4];
-	const GUI_FONT GUI_UNI_PTR *pFont;
+	const GUI_FONT  *pFont;
 } MENU_PROPS;
 typedef struct {
 	WIDGET      Widget;

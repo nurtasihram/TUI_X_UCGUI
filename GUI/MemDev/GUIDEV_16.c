@@ -25,7 +25,7 @@ static PIXELINDEX *_XY2PTR(int x, int y) {
 	return ((PIXELINDEX *)pData) + x - pDev->x0;
 }
 
-static void _DrawBitLine1BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t GUI_UNI_PTR *p, int Diff, unsigned int xsize,
+static void _DrawBitLine1BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p, int Diff, unsigned int xsize,
 							 const RGB_COLOR *pTrans, GUI_MEMDEV *pDev, PIXELINDEX *pDest) {
 	PIXELINDEX Index1;
 	unsigned pixels;
@@ -127,7 +127,7 @@ static void _DrawBitLine1BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t GUI_
 			} while (1);
 	}
 }
-static void _DrawBitLine2BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t GUI_UNI_PTR *p, int Diff, int xsize,
+static void _DrawBitLine2BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p, int Diff, int xsize,
 							 const RGB_COLOR *pTrans, PIXELINDEX *pDest) {
 	uint8_t pixels;
 	uint8_t  PixelCnt;
@@ -191,7 +191,7 @@ static void _DrawBitLine2BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t GUI_
 			break;
 	}
 }
-static void _DrawBitLine4BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t GUI_UNI_PTR *p, int Diff, int xsize,
+static void _DrawBitLine4BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p, int Diff, int xsize,
 							 const RGB_COLOR *pTrans, PIXELINDEX *pDest) {
 	uint8_t pixels;
 	uint8_t PixelCnt;
@@ -293,7 +293,7 @@ static void _DrawBitLine4BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t GUI_
 			break;
 	}
 }
-static void _DrawBitLine8BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t GUI_UNI_PTR *pSrc, int xsize,
+static void _DrawBitLine8BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *pSrc, int xsize,
 							 const RGB_COLOR *pTrans, PIXELINDEX *pDest) {
 	switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
 		case 0:    /* Write mode */
@@ -318,7 +318,7 @@ static void _DrawBitLine8BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t GUI_
 			break;
 	}
 }
-static void _DrawBitLine8BPP_DDB(GUI_USAGE *pUsage, int x, int y, const uint8_t GUI_UNI_PTR *pSrc, int xsize, PIXELINDEX *pDest) {
+static void _DrawBitLine8BPP_DDB(GUI_USAGE *pUsage, int x, int y, const uint8_t  *pSrc, int xsize, PIXELINDEX *pDest) {
 	switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
 		case 0:    /* Write mode */
 			memcpy(pDest, pSrc, xsize);
@@ -361,7 +361,7 @@ static void _DrawBitLine16BPP_DDB(GUI_USAGE *pUsage, int x, int y, const uint16_
 
 static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 						int BitsPerPixel, int BytesPerLine,
-						const uint8_t GUI_UNI_PTR *pData, int Diff, const RGB_COLOR *pTrans) {
+						const uint8_t  *pData, int Diff, const RGB_COLOR *pTrans) {
 	int i;
 	GUI_MEMDEV *pDev = (GUI_Context.hDevData);
 	GUI_USAGE *pUsage = (pDev->hUsage) ? (pDev->hUsage) : 0;

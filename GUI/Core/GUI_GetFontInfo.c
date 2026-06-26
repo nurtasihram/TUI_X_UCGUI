@@ -2,7 +2,7 @@
 
 #include "GUI_Protected.h"
 
-void GUI_GetFontInfo(const GUI_FONT GUI_UNI_PTR * pFont, GUI_FONTINFO * pFontInfo) {
+void GUI_GetFontInfo(const GUI_FONT  * pFont, GUI_FONTINFO * pFontInfo) {
 
   if (pFont == NULL) {
     pFont = GUI_Context.pAFont;

@@ -31,17 +31,17 @@ TEXT_Handle TEXT_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hP
                                 int WinFlags, int ExFlags, int Id, const char* pText);
 /* Methods changing properties */
 void TEXT_SetBkColor  (TEXT_Handle pObj, RGB_COLOR Color); /* Obsolete. Left in GUI for compatibility to older versions */
-void TEXT_SetFont     (TEXT_Handle pObj, const GUI_FONT GUI_UNI_PTR * pFont);
+void TEXT_SetFont     (TEXT_Handle pObj, const GUI_FONT  * pFont);
 void TEXT_SetText     (TEXT_Handle pObj, const char* s);
 void TEXT_SetTextAlign(TEXT_Handle pObj, int Align);
 void TEXT_SetTextColor(TEXT_Handle pObj, RGB_COLOR Color);
-void            TEXT_SetDefaultFont(const GUI_FONT GUI_UNI_PTR * pFont);
-const GUI_FONT GUI_UNI_PTR * TEXT_GetDefaultFont(void);
+void            TEXT_SetDefaultFont(const GUI_FONT  * pFont);
+const GUI_FONT  * TEXT_GetDefaultFont(void);
 void            TEXT_SetDefaultTextColor(RGB_COLOR Color);
 typedef struct {
   WIDGET Widget;
   WM_HMEM hpText;
-  const GUI_FONT GUI_UNI_PTR * pFont;
+  const GUI_FONT  * pFont;
   int16_t Align;
   RGB_COLOR TextColor;
   RGB_COLOR BkColor;

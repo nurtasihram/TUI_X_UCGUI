@@ -9,7 +9,7 @@ static int _IsLineEnd(uint16_t Char) {
   return 0;
 }
 
-static int _GetWordWrap(const char GUI_UNI_PTR * s, int xSize) {
+static int _GetWordWrap(const char  * s, int xSize) {
   int xDist = 0, NumChars = 0, WordWrap = 0;
   uint16_t Char, PrevChar = 0;
   while (1) {
@@ -37,7 +37,7 @@ static int _GetWordWrap(const char GUI_UNI_PTR * s, int xSize) {
   return WordWrap;
 }
 
-static int _GetCharWrap(const char GUI_UNI_PTR * s, int xSize) {
+static int _GetCharWrap(const char  * s, int xSize) {
   int xDist = 0, NumChars = 0;
   uint16_t Char;
   while ((Char = GUI_UC__GetCharCodeInc(&s)) != 0) {
@@ -50,7 +50,7 @@ static int _GetCharWrap(const char GUI_UNI_PTR * s, int xSize) {
   return NumChars;
 }
 
-static int _GetNoWrap(const char GUI_UNI_PTR * s) {
+static int _GetNoWrap(const char  * s) {
   return GUI__GetLineNumChars(s, 0x7FFF);
 }
 
@@ -63,7 +63,7 @@ static int _GetNoWrap(const char GUI_UNI_PTR * s) {
 *  Trailing spaces and line end character are
 *  not counted
 */
-int GUI__WrapGetNumCharsDisp(const char GUI_UNI_PTR * pText, int xSize, GUI_WRAPMODE WrapMode) {
+int GUI__WrapGetNumCharsDisp(const char  * pText, int xSize, GUI_WRAPMODE WrapMode) {
   int r;
   switch (WrapMode) {
   case GUI_WRAPMODE_WORD:
@@ -78,7 +78,7 @@ int GUI__WrapGetNumCharsDisp(const char GUI_UNI_PTR * pText, int xSize, GUI_WRAP
   return r;
 }
 
-int GUI__WrapGetNumCharsToNextLine(const char GUI_UNI_PTR * pText, int xSize, GUI_WRAPMODE WrapMode) {
+int GUI__WrapGetNumCharsToNextLine(const char  * pText, int xSize, GUI_WRAPMODE WrapMode) {
   int NumChars;
   uint16_t Char;
   NumChars = GUI__WrapGetNumCharsDisp(pText, xSize, WrapMode);
@@ -97,7 +97,7 @@ int GUI__WrapGetNumCharsToNextLine(const char GUI_UNI_PTR * pText, int xSize, GU
   return NumChars;
 }
 
-int GUI__WrapGetNumBytesToNextLine(const char GUI_UNI_PTR * pText, int xSize, GUI_WRAPMODE WrapMode) {
+int GUI__WrapGetNumBytesToNextLine(const char  * pText, int xSize, GUI_WRAPMODE WrapMode) {
   int NumChars, NumBytes;
   NumChars = GUI__WrapGetNumCharsToNextLine(pText, xSize, WrapMode);
   NumBytes = GUI_UC__NumChars2NumBytes(pText, NumChars);

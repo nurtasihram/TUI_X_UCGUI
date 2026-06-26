@@ -10,7 +10,7 @@
 /* Define default fonts */
 #define TEXT_FONT_DEFAULT &GUI_Font13_1
 #define TEXT_DEFAULT_TEXT_COLOR RGB_BLACK
-static const GUI_FONT GUI_UNI_PTR *_pDefaultFont = TEXT_FONT_DEFAULT;
+static const GUI_FONT  *_pDefaultFont = TEXT_FONT_DEFAULT;
 static RGB_COLOR        _DefaultTextColor = TEXT_DEFAULT_TEXT_COLOR;
 static void _FreeAttached(TEXT_Obj *pObj) {
 	GUI_ALLOC_FreePtr(&pObj->hpText);
@@ -101,13 +101,13 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 	}
 	return hObj;
 }
-void TEXT_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
+void TEXT_SetDefaultFont(const GUI_FONT  *pFont) {
 	_pDefaultFont = pFont;
 }
 void TEXT_SetDefaultTextColor(RGB_COLOR Color) {
 	_DefaultTextColor = Color;
 }
-const GUI_FONT GUI_UNI_PTR *TEXT_GetDefaultFont(void) {
+const GUI_FONT  *TEXT_GetDefaultFont(void) {
 	return _pDefaultFont;
 }
 
@@ -144,7 +144,7 @@ void TEXT_SetBkColor(TEXT_Handle hObj, RGB_COLOR Color) {
 	}
 }
 
-void TEXT_SetFont(TEXT_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
+void TEXT_SetFont(TEXT_Handle hObj, const GUI_FONT  *pFont) {
 	if (hObj) {
 		TEXT_Obj *pObj;
 		pObj = (hObj);

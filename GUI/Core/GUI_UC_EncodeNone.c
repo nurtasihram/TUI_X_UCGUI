@@ -9,8 +9,8 @@
 * Purpose:
 *   Return the UNICODE character code of the current character.
 */
-static uint16_t _GetCharCode(const char GUI_UNI_PTR * s) {
-  return *(const uint8_t GUI_UNI_PTR *)s;
+static uint16_t _GetCharCode(const char  * s) {
+  return *(const uint8_t  *)s;
 }
 
 /*********************************************************************
@@ -20,7 +20,7 @@ static uint16_t _GetCharCode(const char GUI_UNI_PTR * s) {
 * Purpose:
 *   Return the number of bytes of the current character.
 */
-static int _GetCharSize(const char GUI_UNI_PTR * s) {
+static int _GetCharSize(const char  * s) {
   GUI_USE_PARA(s);
   return 1;
 }

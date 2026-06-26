@@ -63,17 +63,17 @@ void      MENU_EnableItem       (MENU_Handle hObj, uint16_t ItemId);
 void      MENU_SetTextColor     (MENU_Handle hObj, unsigned ColorIndex, RGB_COLOR Color);
 void      MENU_SetBkColor       (MENU_Handle hObj, unsigned ColorIndex, RGB_COLOR Color);
 void      MENU_SetBorderSize    (MENU_Handle hObj, unsigned BorderIndex, uint8_t BorderSize);
-void      MENU_SetFont          (MENU_Handle hObj, const GUI_FONT GUI_UNI_PTR* pFont);
+void      MENU_SetFont          (MENU_Handle hObj, const GUI_FONT * pFont);
 RGB_COLOR                   MENU_GetDefaultTextColor  (unsigned ColorIndex);
 RGB_COLOR                   MENU_GetDefaultBkColor    (unsigned ColorIndex);
 uint8_t                          MENU_GetDefaultBorderSize (unsigned BorderIndex);
 const WIDGET_EFFECT*        MENU_GetDefaultEffect     (void);
-const GUI_FONT GUI_UNI_PTR* MENU_GetDefaultFont       (void);
+const GUI_FONT * MENU_GetDefaultFont       (void);
 void                        MENU_SetDefaultTextColor  (unsigned ColorIndex, RGB_COLOR Color);
 void                        MENU_SetDefaultBkColor    (unsigned ColorIndex, RGB_COLOR Color);
 void                        MENU_SetDefaultBorderSize (unsigned BorderIndex, uint8_t BorderSize);
 void                        MENU_SetDefaultEffect     (const WIDGET_EFFECT* pEffect);
-void                        MENU_SetDefaultFont       (const GUI_FONT GUI_UNI_PTR* pFont);
+void                        MENU_SetDefaultFont       (const GUI_FONT * pFont);
 #if defined(__cplusplus)
   }
 #endif

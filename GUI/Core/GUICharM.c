@@ -14,11 +14,11 @@
 */
 void GUIMONO_DispChar(uint16_t c) {
 	int c0, c1;
-	const uint8_t GUI_UNI_PTR *pd;
+	const uint8_t  *pd;
 	int x = GUI_Context.DispPosX;
 	int y = GUI_Context.DispPosY;
 	/* do some checking if drawing is actually necessary ... */
-	const GUI_FONT_MONO GUI_UNI_PTR *pMono = GUI_Context.pAFont->p.pMono;
+	const GUI_FONT_MONO  *pMono = GUI_Context.pAFont->p.pMono;
 	unsigned int FirstChar = pMono->FirstChar;
 	/* translate character into 2 characters to display : c0,c1 */
 	/* Check if regular character first. */
@@ -29,12 +29,12 @@ void GUIMONO_DispChar(uint16_t c) {
 	}
 	else {
 		/* Check if character is in translation table */
-		GUI_FONT_TRANSINFO const GUI_UNI_PTR *pti = pMono->pTrans;
+		GUI_FONT_TRANSINFO const  *pti = pMono->pTrans;
 		pd = pMono->pTransData;
 		if (pti) {
 			FirstChar = pti->FirstChar;
 			if ((c >= (uint16_t)FirstChar) && (c <= (uint16_t)pti->LastChar)) {
-				GUI_FONT_TRANSLIST const GUI_UNI_PTR *ptl;
+				GUI_FONT_TRANSLIST const  *ptl;
 				c -= pti->FirstChar;
 				ptl = pti->pList;
 				ptl += c;
@@ -97,7 +97,7 @@ void GUIMONO_DispChar(uint16_t c) {
 }
 
 int GUIMONO_GetCharDistX(uint16_t c) {
-	const GUI_FONT_MONO GUI_UNI_PTR *pMono = GUI_Context.pAFont->p.pMono;
+	const GUI_FONT_MONO  *pMono = GUI_Context.pAFont->p.pMono;
 	GUI_USE_PARA(c);
 	//  return pMono->XDist;
 	//houhh 20061119...
@@ -105,13 +105,13 @@ int GUIMONO_GetCharDistX(uint16_t c) {
 
 }
 
-void GUIMONO_GetFontInfo(const GUI_FONT GUI_UNI_PTR *pFont, GUI_FONTINFO *pfi) {
+void GUIMONO_GetFontInfo(const GUI_FONT  *pFont, GUI_FONTINFO *pfi) {
 	GUI_USE_PARA(pFont);
 	pfi->Flags = GUI_FONTINFO_FLAG_MONO;
 }
 
-char GUIMONO_IsInFont(const GUI_FONT GUI_UNI_PTR *pFont, uint16_t c) {
-	const GUI_FONT_MONO GUI_UNI_PTR *pMono = pFont->p.pMono;
+char GUIMONO_IsInFont(const GUI_FONT  *pFont, uint16_t c) {
+	const GUI_FONT_MONO  *pMono = pFont->p.pMono;
 	unsigned int FirstChar = pMono->FirstChar;
 	/* Check if regular character first. */
 	if ((c >= (uint16_t)FirstChar) && (c <= (uint16_t)pMono->LastChar)) {
@@ -119,7 +119,7 @@ char GUIMONO_IsInFont(const GUI_FONT GUI_UNI_PTR *pFont, uint16_t c) {
 	}
 	else {
 		/* Check if character is in translation table */
-		GUI_FONT_TRANSINFO const GUI_UNI_PTR *pti;
+		GUI_FONT_TRANSINFO const  *pti;
 		pti = pMono->pTrans;
 		if (pti) {
 			if ((c >= pti->FirstChar) && (c <= pti->LastChar)) {

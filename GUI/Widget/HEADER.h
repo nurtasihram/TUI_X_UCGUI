@@ -18,15 +18,15 @@ HEADER_Handle HEADER_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWI
 #define HEADER_Invalidate(hObj)    WM_Invalidate(hObj)
 /* Set defaults */
 RGB_COLOR          HEADER_SetDefaultBkColor  (RGB_COLOR Color);
-const GUI_CURSOR GUI_UNI_PTR * HEADER_SetDefaultCursor   (const GUI_CURSOR * pCursor);
-const GUI_FONT GUI_UNI_PTR *   HEADER_SetDefaultFont     (const GUI_FONT GUI_UNI_PTR * pFont);
+const GUI_CURSOR  * HEADER_SetDefaultCursor   (const GUI_CURSOR * pCursor);
+const GUI_FONT  *   HEADER_SetDefaultFont     (const GUI_FONT  * pFont);
 int                HEADER_SetDefaultBorderH (int Spacing);
 int                HEADER_SetDefaultBorderV (int Spacing);
 RGB_COLOR          HEADER_SetDefaultTextColor(RGB_COLOR Color);
 /* Get defaults */
 RGB_COLOR          HEADER_GetDefaultBkColor  (void);
-const GUI_CURSOR GUI_UNI_PTR * HEADER_GetDefaultCursor   (void);
-const GUI_FONT GUI_UNI_PTR *   HEADER_GetDefaultFont     (void);
+const GUI_CURSOR  * HEADER_GetDefaultCursor   (void);
+const GUI_FONT  *   HEADER_GetDefaultFont     (void);
 int                HEADER_GetDefaultBorderH  (void);
 int                HEADER_GetDefaultBorderV  (void);
 RGB_COLOR          HEADER_GetDefaultTextColor(void);
@@ -40,7 +40,7 @@ void HEADER_SetBitmapEx        (HEADER_Handle hObj, unsigned int Index, const GU
 void HEADER_SetBkColor         (HEADER_Handle hObj, RGB_COLOR Color);
 void HEADER_SetBMP             (HEADER_Handle hObj, unsigned int Index, const void * pBitmap);
 void HEADER_SetBMPEx           (HEADER_Handle hObj, unsigned int Index, const void * pBitmap, int x, int y);
-void HEADER_SetFont            (HEADER_Handle hObj, const GUI_FONT GUI_UNI_PTR * pFont);
+void HEADER_SetFont            (HEADER_Handle hObj, const GUI_FONT  * pFont);
 void HEADER_SetHeight          (HEADER_Handle hObj, int Height);
 void HEADER_SetTextAlign       (HEADER_Handle hObj, unsigned int Index, int Align);
 void HEADER_SetItemText        (HEADER_Handle hObj, unsigned int Index, const char * s);

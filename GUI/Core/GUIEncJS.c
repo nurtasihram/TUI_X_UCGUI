@@ -7,7 +7,7 @@ static uint16_t DB2SJIS(uint8_t Byte0, uint8_t Byte1) {
   return Byte1 | (((uint16_t)Byte0)<<8);
 }
 
-static int _GetLineDistX_SJIS(const char GUI_UNI_PTR *s, int Len) {
+static int _GetLineDistX_SJIS(const char  *s, int Len) {
   int Dist =0;
   if (s) {
     uint8_t c0;
@@ -35,7 +35,7 @@ static int _GetLineDistX_SJIS(const char GUI_UNI_PTR *s, int Len) {
 *   The return value can be used as offset into the
 *   string, which means that double characters count double
 */
-static int _GetLineLen_SJIS(const char GUI_UNI_PTR *s, int MaxLen) {
+static int _GetLineLen_SJIS(const char  *s, int MaxLen) {
   int Len =0;
   uint8_t c0;
   while (((c0=*(const uint8_t*)s) !=0) && Len < MaxLen) {
@@ -52,7 +52,7 @@ static int _GetLineLen_SJIS(const char GUI_UNI_PTR *s, int MaxLen) {
   return Len;
 }
 
-static void _DispLine_SJIS(const char GUI_UNI_PTR *s, int Len) {
+static void _DispLine_SJIS(const char  *s, int Len) {
   uint8_t c0;
   while (--Len >=0) {
     c0=*(const uint8_t*)s++;

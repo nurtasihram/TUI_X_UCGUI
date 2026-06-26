@@ -3,7 +3,7 @@
 #include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
 
-static int _GetLineDistX(const uint16_t GUI_UNI_PTR *s, int MaxNumChars) {
+static int _GetLineDistX(const uint16_t  *s, int MaxNumChars) {
   int Dist =0;
   if (s) {
     uint16_t Char;
@@ -16,7 +16,7 @@ static int _GetLineDistX(const uint16_t GUI_UNI_PTR *s, int MaxNumChars) {
   return Dist;
 }
 
-static int _GetLineLen(const uint16_t GUI_UNI_PTR *s, int MaxLen) {
+static int _GetLineLen(const uint16_t  *s, int MaxLen) {
   int Len =0;
   if (!s)
     return 0;
@@ -28,7 +28,7 @@ static int _GetLineLen(const uint16_t GUI_UNI_PTR *s, int MaxLen) {
   return Len;
 }
 
-static void _DispLine_UC(const uint16_t GUI_UNI_PTR *s, int Len, const GUI_RECT *pRect) {
+static void _DispLine_UC(const uint16_t  *s, int Len, const GUI_RECT *pRect) {
   if (GUI_Context.pClipRect_HL) {
     if (GUI_RectsIntersect(GUI_Context.pClipRect_HL, pRect) == 0)
       return;
@@ -42,7 +42,7 @@ static void _DispLine_UC(const uint16_t GUI_UNI_PTR *s, int Len, const GUI_RECT 
   }
 }
 
-static void _DispLine(const uint16_t GUI_UNI_PTR *s, int Len, const GUI_RECT* pr) {
+static void _DispLine(const uint16_t  *s, int Len, const GUI_RECT* pr) {
   GUI_RECT r;
   r = *pr;
 #if GUI_WINSUPPORT
@@ -59,7 +59,7 @@ static void _DispLine(const uint16_t GUI_UNI_PTR *s, int Len, const GUI_RECT* pr
 #endif
 }
 
-void GUI_UC_DispString(const uint16_t GUI_UNI_PTR *s) {
+void GUI_UC_DispString(const uint16_t  *s) {
   int xAdjust, yAdjust, xOrg;
   int FontSizeY;
   if (!s)

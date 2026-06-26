@@ -8,11 +8,11 @@
 #endif
 
 
-void GUI__DispStringInRect(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAlign, int MaxNumChars) {
+void GUI__DispStringInRect(const char  *s, GUI_RECT* pRect, int TextAlign, int MaxNumChars) {
   GUI_RECT r;
   GUI_RECT rLine;
   int y = 0;
-  const char GUI_UNI_PTR *sOrg =s;
+  const char  *sOrg =s;
   int FontYSize;
   int xLine = 0;
   int LineLen;
@@ -74,7 +74,7 @@ void GUI__DispStringInRect(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextA
 }
 
 #if (GUI_WINSUPPORT)
-void GUI_DispStringInRectMax(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAlign, int MaxLen) {
+void GUI_DispStringInRectMax(const char  *s, GUI_RECT* pRect, int TextAlign, int MaxLen) {
   if (s) {
     const GUI_RECT *pOldClipRect = NULL;
     GUI_RECT r;
@@ -94,7 +94,7 @@ void GUI_DispStringInRectMax(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int Tex
 
 #else
 
-void GUI_DispStringInRectMax(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAlign, int MaxLen) {
+void GUI_DispStringInRectMax(const char  *s, GUI_RECT* pRect, int TextAlign, int MaxLen) {
   GUI_RECT Rect_Old, r;
   if (s && pRect) {
 
@@ -108,7 +108,7 @@ void GUI_DispStringInRectMax(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int Tex
 }
 #endif
 
-void GUI_DispStringInRect(const char GUI_UNI_PTR *s, GUI_RECT* pRect, int TextAlign) {
+void GUI_DispStringInRect(const char  *s, GUI_RECT* pRect, int TextAlign) {
   GUI_DispStringInRectMax(s, pRect, TextAlign, 0x7fff);
 }
 

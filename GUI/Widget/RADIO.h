@@ -22,16 +22,16 @@ RADIO_Handle RADIO_Create        (int x0, int y0, int xsize, int ysize, WM_HWIN 
 RADIO_Handle RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
 RADIO_Handle RADIO_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
                                   int WinFlags, int ExFlags, int Id, int NumItems, int Spacing);
-void RADIO_SetDefaultFont       (const GUI_FONT GUI_UNI_PTR* pFont);
+void RADIO_SetDefaultFont       (const GUI_FONT * pFont);
 void RADIO_SetDefaultImage      (const GUI_BITMAP * pBitmap, unsigned int Index);
 void RADIO_SetDefaultTextColor  (RGB_COLOR TextColor);
-const GUI_FONT GUI_UNI_PTR* RADIO_GetDefaultFont      (void);
+const GUI_FONT * RADIO_GetDefaultFont      (void);
 RGB_COLOR                   RADIO_GetDefaultTextColor (void);
 void RADIO_AddValue     (RADIO_Handle hObj, int Add);
 void RADIO_Dec          (RADIO_Handle hObj);
 void RADIO_Inc          (RADIO_Handle hObj);
 void RADIO_SetBkColor   (RADIO_Handle hObj, RGB_COLOR Color);
-void RADIO_SetFont      (RADIO_Handle hObj, const GUI_FONT GUI_UNI_PTR* pFont);
+void RADIO_SetFont      (RADIO_Handle hObj, const GUI_FONT * pFont);
 void RADIO_SetGroupId   (RADIO_Handle hObj, uint8_t GroupId);
 void RADIO_SetImage     (RADIO_Handle hObj, const GUI_BITMAP * pBitmap, unsigned int Index);
 void RADIO_SetText      (RADIO_Handle hObj, const char* pText, unsigned Index);

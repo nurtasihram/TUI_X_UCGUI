@@ -13,7 +13,7 @@ typedef struct {
   char acText[1];
 } LISTBOX_ITEM;
 typedef struct {
-  const GUI_FONT GUI_UNI_PTR* pFont;
+  const GUI_FONT * pFont;
   uint16_t                         ScrollStepH;
   RGB_COLOR aBackColor[4];
   RGB_COLOR aTextColor[4];

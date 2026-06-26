@@ -18,14 +18,14 @@
 /* Define cursors */
 #define HEADER_CURSOR_DEFAULT &GUI_CursorHeaderM
 /* Remember the old cursor */
-static const GUI_CURSOR GUI_UNI_PTR *_pOldCursor;
+static const GUI_CURSOR  *_pOldCursor;
 /* Default values */
-static const GUI_CURSOR GUI_UNI_PTR *_pDefaultCursor = HEADER_CURSOR_DEFAULT;
+static const GUI_CURSOR  *_pDefaultCursor = HEADER_CURSOR_DEFAULT;
 static RGB_COLOR          _DefaultBkColor = HEADER_BKCOLOR_DEFAULT;
 static RGB_COLOR          _DefaultTextColor = HEADER_TEXTCOLOR_DEFAULT;
 static int                _DefaultBorderH = HEADER_BORDER_H_DEFAULT;
 static int                _DefaultBorderV = HEADER_BORDER_V_DEFAULT;
-static const GUI_FONT GUI_UNI_PTR *_pDefaultFont = HEADER_FONT_DEFAULT;
+static const GUI_FONT  *_pDefaultFont = HEADER_FONT_DEFAULT;
 static void _Paint(HEADER_Obj *pObj) {
 	GUI_RECT Rect;
 	int i, xPos = -pObj->ScrollPos;
@@ -270,8 +270,8 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 
 	return hObj;
 }
-const GUI_CURSOR GUI_UNI_PTR *HEADER_SetDefaultCursor(const GUI_CURSOR *pCursor) {
-	const GUI_CURSOR GUI_UNI_PTR *pOldCursor = _pDefaultCursor;
+const GUI_CURSOR  *HEADER_SetDefaultCursor(const GUI_CURSOR *pCursor) {
+	const GUI_CURSOR  *pOldCursor = _pDefaultCursor;
 	_pDefaultCursor = pCursor;
 	return pOldCursor;
 }
@@ -295,18 +295,18 @@ int HEADER_SetDefaultBorderV(int Spacing) {
 	_DefaultBorderV = Spacing;
 	return OldSpacing;
 }
-const GUI_FONT GUI_UNI_PTR *HEADER_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
-	const GUI_FONT GUI_UNI_PTR *pOldFont = _pDefaultFont;
+const GUI_FONT  *HEADER_SetDefaultFont(const GUI_FONT  *pFont) {
+	const GUI_FONT  *pOldFont = _pDefaultFont;
 	_pDefaultFont = pFont;
 	return pOldFont;
 }
-const GUI_CURSOR GUI_UNI_PTR *HEADER_GetDefaultCursor(void) { return _pDefaultCursor; }
+const GUI_CURSOR  *HEADER_GetDefaultCursor(void) { return _pDefaultCursor; }
 RGB_COLOR          HEADER_GetDefaultBkColor(void) { return _DefaultBkColor; }
 RGB_COLOR          HEADER_GetDefaultTextColor(void) { return _DefaultTextColor; }
 int                HEADER_GetDefaultBorderH(void) { return _DefaultBorderH; }
 int                HEADER_GetDefaultBorderV(void) { return _DefaultBorderV; }
-const GUI_FONT GUI_UNI_PTR *HEADER_GetDefaultFont(void) { return _pDefaultFont; }
-void HEADER_SetFont(HEADER_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
+const GUI_FONT  *HEADER_GetDefaultFont(void) { return _pDefaultFont; }
+void HEADER_SetFont(HEADER_Handle hObj, const GUI_FONT  *pFont) {
 	if (hObj) {
 		HEADER_Obj *pObj;
 
@@ -379,7 +379,7 @@ void HEADER_AddItem(HEADER_Handle hObj, int Width, const char *s, int Align) {
 
 		pObj = (hObj);
 		if (!Width) {
-			const GUI_FONT GUI_UNI_PTR *pFont = GUI_SetFont(pObj->pFont);
+			const GUI_FONT  *pFont = GUI_SetFont(pObj->pFont);
 			Width = GUI_GetStringDistX(s) + 2 * (pObj->Widget.pEffect->EffectSize + _DefaultBorderH);
 			GUI_SetFont(pFont);
 		}

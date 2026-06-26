@@ -2,7 +2,7 @@
 
 #include "GUI_Protected.h"
 
-void GUI_GetTextExtend(GUI_RECT* pRect, const char GUI_UNI_PTR * s, int MaxNumChars) {
+void GUI_GetTextExtend(GUI_RECT* pRect, const char  * s, int MaxNumChars) {
   int xMax      = 0;
   int NumLines  = 0;
   int LineSizeX = 0;

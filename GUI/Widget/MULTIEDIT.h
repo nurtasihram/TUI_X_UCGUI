@@ -35,7 +35,7 @@ void MULTIEDIT_SetCursorCharPos (MULTIEDIT_HANDLE hObj, int x, int y);       /* 
 void MULTIEDIT_SetCursorPixelPos(MULTIEDIT_HANDLE hObj, int x, int y);       /* Not yet implemented */
 void MULTIEDIT_SetCursorOffset  (MULTIEDIT_HANDLE hObj, int Offset);
 void MULTIEDIT_SetHBorder       (MULTIEDIT_HANDLE hObj, unsigned HBorder);
-void MULTIEDIT_SetFont          (MULTIEDIT_HANDLE hObj, const GUI_FONT GUI_UNI_PTR * pFont);
+void MULTIEDIT_SetFont          (MULTIEDIT_HANDLE hObj, const GUI_FONT  * pFont);
 void MULTIEDIT_SetInsertMode    (MULTIEDIT_HANDLE hObj, int OnOff);
 void MULTIEDIT_SetBufferSize    (MULTIEDIT_HANDLE hObj, int BufferSize);
 void MULTIEDIT_SetMaxNumChars   (MULTIEDIT_HANDLE hObj, unsigned MaxNumChars);

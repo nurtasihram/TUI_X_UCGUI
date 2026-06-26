@@ -4,7 +4,7 @@
 #include "GUI_ARRAY.h"
 #define DROPDOWN_SF_AUTOSCROLLBAR DROPDOWN_CF_AUTOSCROLLBAR
 typedef struct {
-	const GUI_FONT GUI_UNI_PTR *pFont;
+	const GUI_FONT  *pFont;
 	RGB_COLOR aBackColor[3];
 	RGB_COLOR aTextColor[3];
 	int16_t       TextBorderSize;

@@ -145,7 +145,7 @@ void LCD_FillRect(int x0, int y0, int x1, int y1) {
 
 void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize,
 					int BitsPerPixel, int BytesPerLine,
-					const uint8_t GUI_UNI_PTR *pPixel, const RGB_COLOR *pTrans) {
+					const uint8_t  *pPixel, const RGB_COLOR *pTrans) {
 	uint8_t  Data = 0;
 	int x1, y1, Diff;
 	/* Handle rotation if necessary */

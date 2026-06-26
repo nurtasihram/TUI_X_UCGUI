@@ -241,7 +241,7 @@ void BUTTON_SetText(BUTTON_Handle hObj, const char *s) {
 
 	}
 }
-void BUTTON_SetFont(BUTTON_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
+void BUTTON_SetFont(BUTTON_Handle hObj, const GUI_FONT  *pfont) {
 	if (hObj) {
 		BUTTON_Obj *pObj;
 
@@ -314,7 +314,7 @@ BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, W
 	BUTTON_SetText(hThis, pCreateInfo->pName);
 	return hThis;
 }
-void BUTTON_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
+void BUTTON_SetDefaultFont(const GUI_FONT  *pFont) {
 	BUTTON__DefaultProps.pFont = pFont;
 }
 void BUTTON_SetDefaultTextColor(RGB_COLOR Color, unsigned Index) {
@@ -330,7 +330,7 @@ void BUTTON_SetDefaultBkColor(RGB_COLOR Color, unsigned Index) {
 void BUTTON_SetDefaultTextAlign(int Align) {
 	BUTTON__DefaultProps.Align = Align;
 }
-const GUI_FONT GUI_UNI_PTR *BUTTON_GetDefaultFont(void) {
+const GUI_FONT  *BUTTON_GetDefaultFont(void) {
 	return BUTTON__DefaultProps.pFont;
 }
 RGB_COLOR BUTTON_GetDefaultTextColor(unsigned Index) {
@@ -361,8 +361,8 @@ RGB_COLOR BUTTON_GetBkColor(BUTTON_Handle hObj, unsigned int Index) {
 	}
 	return Color;
 }
-const GUI_FONT GUI_UNI_PTR *BUTTON_GetFont(BUTTON_Handle hObj) {
-	const GUI_FONT GUI_UNI_PTR *pFont = 0;
+const GUI_FONT  *BUTTON_GetFont(BUTTON_Handle hObj) {
+	const GUI_FONT  *pFont = 0;
 	if (hObj) {
 		BUTTON_Obj *pObj;
 

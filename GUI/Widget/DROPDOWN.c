@@ -343,7 +343,7 @@ int DROPDOWN_GetNumItems(DROPDOWN_Handle hObj) {
 	}
 	return r;
 }
-void DROPDOWN_SetFont(DROPDOWN_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
+void DROPDOWN_SetFont(DROPDOWN_Handle hObj, const GUI_FONT  *pfont) {
 	int OldHeight;
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
@@ -450,7 +450,7 @@ void DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width) {
 void DROPDOWN_SetDefaultFont(const GUI_FONT *pFont) {
 	DROPDOWN__DefaultProps.pFont = pFont;
 }
-const GUI_FONT GUI_UNI_PTR *DROPDOWN_GetDefaultFont(void) {
+const GUI_FONT  *DROPDOWN_GetDefaultFont(void) {
 	return DROPDOWN__DefaultProps.pFont;
 }
 

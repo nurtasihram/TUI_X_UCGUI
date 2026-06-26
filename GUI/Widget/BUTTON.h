@@ -30,11 +30,11 @@ BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, W
 BUTTON_Handle BUTTON_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
                                     int WinFlags, int ExFlags, int Id);
 RGB_COLOR                    BUTTON_GetDefaultBkColor  (unsigned Index);
-const GUI_FONT GUI_UNI_PTR * BUTTON_GetDefaultFont     (void);
+const GUI_FONT  * BUTTON_GetDefaultFont     (void);
 int                          BUTTON_GetDefaultTextAlign(void);
 RGB_COLOR                    BUTTON_GetDefaultTextColor(unsigned Index);
 void                         BUTTON_SetDefaultBkColor  (RGB_COLOR Color, unsigned Index);
-void                         BUTTON_SetDefaultFont     (const GUI_FONT GUI_UNI_PTR * pFont);
+void                         BUTTON_SetDefaultFont     (const GUI_FONT  * pFont);
 void                         BUTTON_SetDefaultTextAlign(int Align);
 void                         BUTTON_SetDefaultTextColor(RGB_COLOR Color, unsigned Index);
 #define BUTTON_EnableMemdev(hObj)  WM_EnableMemdev    (hObj)
@@ -51,7 +51,7 @@ void                         BUTTON_SetDefaultTextColor(RGB_COLOR Color, unsigne
 */
 void BUTTON_Callback(WM_MESSAGE *pMsg);
 RGB_COLOR        BUTTON_GetBkColor         (BUTTON_Handle hObj, unsigned int Index);
-const GUI_FONT GUI_UNI_PTR * BUTTON_GetFont(BUTTON_Handle hObj);
+const GUI_FONT  * BUTTON_GetFont(BUTTON_Handle hObj);
 void             BUTTON_GetText            (BUTTON_Handle hObj, char * pBuffer, int MaxLen);
 RGB_COLOR        BUTTON_GetTextColor       (BUTTON_Handle hObj, unsigned int Index);
 unsigned         BUTTON_IsPressed          (BUTTON_Handle hObj);
@@ -60,7 +60,7 @@ void             BUTTON_SetBitmapEx        (BUTTON_Handle hObj, unsigned int Ind
 void             BUTTON_SetBkColor         (BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color);
 void             BUTTON_SetBMP             (BUTTON_Handle hObj, unsigned int Index, const void * pBitmap);
 void             BUTTON_SetBMPEx           (BUTTON_Handle hObj, unsigned int Index, const void * pBitmap, int x, int y);
-void             BUTTON_SetFont            (BUTTON_Handle hObj, const GUI_FONT GUI_UNI_PTR * pfont);
+void             BUTTON_SetFont            (BUTTON_Handle hObj, const GUI_FONT  * pfont);
 void             BUTTON_SetState           (BUTTON_Handle hObj, int State);                                    /* Not to be doc. */
 void             BUTTON_SetPressed         (BUTTON_Handle hObj, int State);
 void             BUTTON_SetFocussable      (BUTTON_Handle hObj, int State);

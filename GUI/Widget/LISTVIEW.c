@@ -591,8 +591,8 @@ LISTVIEW_Handle LISTVIEW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInf
 	return hThis;
 }
 
-const GUI_FONT GUI_UNI_PTR *LISTVIEW_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
-	const GUI_FONT GUI_UNI_PTR *pOldFont = LISTVIEW_DefaultProps.pFont;
+const GUI_FONT  *LISTVIEW_SetDefaultFont(const GUI_FONT  *pFont) {
+	const GUI_FONT  *pOldFont = LISTVIEW_DefaultProps.pFont;
 	LISTVIEW_DefaultProps.pFont = pFont;
 	return pOldFont;
 }
@@ -712,8 +712,8 @@ RGB_COLOR LISTVIEW_GetBkColor(LISTVIEW_Handle hObj, unsigned Index) {
 	return Color;
 }
 
-const GUI_FONT GUI_UNI_PTR *LISTVIEW_GetFont(LISTVIEW_Handle hObj) {
-	const GUI_FONT GUI_UNI_PTR *pFont = NULL;
+const GUI_FONT  *LISTVIEW_GetFont(LISTVIEW_Handle hObj) {
+	const GUI_FONT  *pFont = NULL;
 	if (hObj) {
 		LISTVIEW_Obj *pObj;
 
@@ -811,7 +811,7 @@ void LISTVIEW_SetColumnWidth(LISTVIEW_Handle hObj, unsigned int Index, int Width
 	}
 }
 
-void LISTVIEW_SetFont(LISTVIEW_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
+void LISTVIEW_SetFont(LISTVIEW_Handle hObj, const GUI_FONT  *pFont) {
 	if (hObj) {
 		LISTVIEW_Obj *pObj;
 

@@ -5,7 +5,7 @@ typedef struct EDIT_Obj_struct EDIT_Obj;
 typedef struct {
 	int                          Align;
 	int                          Border;
-	const GUI_FONT GUI_UNI_PTR *pFont;
+	const GUI_FONT  *pFont;
 	RGB_COLOR                    aTextColor[2];
 	RGB_COLOR                    aBkColor[2];
 } EDIT_PROPS;

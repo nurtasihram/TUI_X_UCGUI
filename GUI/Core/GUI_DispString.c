@@ -5,7 +5,7 @@
 #include "GUI_Protected.h"
 
 
-void GUI_DispString(const char GUI_UNI_PTR *s) {
+void GUI_DispString(const char  *s) {
   int xAdjust, yAdjust, xOrg;
   int FontSizeY;
   if (!s)

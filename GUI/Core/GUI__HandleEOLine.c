@@ -14,8 +14,8 @@
 * a) Swall the line feed character (if it is there)
 * b) Return 1 if end of string, otherwise 0
 */
-int GUI__HandleEOLine(const char GUI_UNI_PTR **ps) {
-  const char GUI_UNI_PTR *s = *ps;
+int GUI__HandleEOLine(const char  **ps) {
+  const char  *s = *ps;
   char c = *s++;
   if (c == 0) {
     return 1;

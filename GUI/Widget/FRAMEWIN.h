@@ -39,7 +39,7 @@ void FRAMEWIN_SetActive      (FRAMEWIN_Handle hObj, int State);
 void FRAMEWIN_SetBarColor    (FRAMEWIN_Handle hObj, unsigned Index, RGB_COLOR Color);
 void FRAMEWIN_SetBorderSize  (FRAMEWIN_Handle hObj, unsigned Size);
 void FRAMEWIN_SetClientColor (FRAMEWIN_Handle hObj, RGB_COLOR Color);
-void FRAMEWIN_SetFont        (FRAMEWIN_Handle hObj, const GUI_FONT GUI_UNI_PTR * pFont);
+void FRAMEWIN_SetFont        (FRAMEWIN_Handle hObj, const GUI_FONT  * pFont);
 void FRAMEWIN_SetMoveable    (FRAMEWIN_Handle hObj, int State);
 void FRAMEWIN_SetResizeable  (FRAMEWIN_Handle hObj, int State);
 void FRAMEWIN_SetText        (FRAMEWIN_Handle hObj, const char* s);
@@ -56,13 +56,13 @@ RGB_COLOR       FRAMEWIN_GetDefaultBarColor   (unsigned Index);
 int             FRAMEWIN_GetDefaultBorderSize (void);
 int             FRAMEWIN_GetDefaultTitleHeight(void);
 RGB_COLOR       FRAMEWIN_GetDefaultClientColor(void);
-const GUI_FONT GUI_UNI_PTR * FRAMEWIN_GetDefaultFont       (void);
+const GUI_FONT  * FRAMEWIN_GetDefaultFont       (void);
 RGB_COLOR       FRAMEWIN_GetDefaultTextColor  (unsigned Index);
 void            FRAMEWIN_SetDefaultBarColor   (unsigned Index, RGB_COLOR Color);
 void            FRAMEWIN_SetDefaultBorderSize (int DefaultBorderSize);
 void            FRAMEWIN_SetDefaultTitleHeight(int DefaultTitleHeight);
 void            FRAMEWIN_SetDefaultClientColor(RGB_COLOR Color);
-void            FRAMEWIN_SetDefaultFont       (const GUI_FONT GUI_UNI_PTR * pFont);
+void            FRAMEWIN_SetDefaultFont       (const GUI_FONT  * pFont);
 void            FRAMEWIN_SetDefaultTextColor  (unsigned Index, RGB_COLOR Color);
 #define         FRAMEWIN_SetDefaultCaptionSize(Height)       FRAMEWIN_SetDefaultTitleHeight(Height)
 #define         FRAMEWIN_GetDefaultCaptionSize()             FRAMEWIN_GetDefaultTitleHeight()

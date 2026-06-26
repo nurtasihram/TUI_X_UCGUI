@@ -9,7 +9,7 @@ static GUI_HMEM          _hBuffer;
 static GUI_RECT          _Rect;
 static char              _CursorIsVis;        /* Currently visible ? */
 static char              _CursorOn;
-static const GUI_CURSOR GUI_UNI_PTR * _pCursor;
+static const GUI_CURSOR  * _pCursor;
 static uint8_t                _CursorDeActCnt;
 static int               _AllocSize;
 static int               _x, _y;              /* Position of hot spot */
@@ -89,7 +89,7 @@ static int _Log2Phys(int Index) {
 static void _Draw(void) {
   int x, y, xSize, ySize;
   RGB_COLOR* pData;
-  const GUI_BITMAP GUI_UNI_PTR * pBM;
+  const GUI_BITMAP  * pBM;
 
   if (_hBuffer) {
     /* Save bitmap data */
@@ -186,10 +186,10 @@ void GUI_CURSOR_Deactivate(void) {
 
 }
 
-const GUI_CURSOR GUI_UNI_PTR * GUI_CURSOR_Select(const GUI_CURSOR GUI_UNI_PTR * pCursor) {
+const GUI_CURSOR  * GUI_CURSOR_Select(const GUI_CURSOR  * pCursor) {
   int AllocSize;
-  const GUI_BITMAP GUI_UNI_PTR * pBM;
-  const GUI_CURSOR GUI_UNI_PTR * pOldCursor;
+  const GUI_BITMAP  * pBM;
+  const GUI_CURSOR  * pOldCursor;
 
   pOldCursor = _pCursor;
   if (pCursor != _pCursor) {
@@ -251,7 +251,7 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
   if (_hBuffer) {
     if ((_x != xNewPos) | (_y != yNewPos)) {
       if (_CursorOn) {
-        const GUI_BITMAP GUI_UNI_PTR * pBM = _pCursor->pBitmap;
+        const GUI_BITMAP  * pBM = _pCursor->pBitmap;
         /* Save & set clip rect */
         /* Compute helper variables */
         pData = (RGB_COLOR*)_hBuffer;

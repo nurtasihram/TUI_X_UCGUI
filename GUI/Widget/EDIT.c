@@ -42,7 +42,7 @@ void ShowCurrsor(GUI_TIMER_MESSAGE *TimeMsg) {
 ///////
 static void _Paint(EDIT_Obj *pObj, EDIT_Handle hObj) {
 	GUI_RECT rFillRect, rInside, r, rText, rInvert;
-	const char GUI_UNI_PTR *pText = NULL;
+	const char  *pText = NULL;
 	int IsEnabled, CursorWidth;
 	IsEnabled = WM__IsEnabled(hObj);
 	/* Set colors and font */
@@ -61,7 +61,7 @@ static void _Paint(EDIT_Obj *pObj, EDIT_Handle hObj) {
 	GUI__CalcTextRect(pText, &rInside, &rText, pObj->Props.Align);
 	/* Calculate position and size of cursor */
 	if (pObj->Widget.State & WIDGET_STATE_FOCUS) {
-		const char GUI_UNI_PTR *p = pText;
+		const char  *p = pText;
 		CursorWidth = ((pObj->XSizeCursor > 0) ? (pObj->XSizeCursor) : (1));
 		if (pText) {
 			uint16_t Char;
@@ -131,9 +131,9 @@ void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
 
 		pObj = (hObj);
 		if (pObj->hpText) {
-			const GUI_FONT GUI_UNI_PTR *pOldFont;
+			const GUI_FONT  *pOldFont;
 			int xSize, TextWidth, NumChars;
-			const char GUI_UNI_PTR *pText;
+			const char  *pText;
 			pText = (char *)(pObj->hpText);
 			pOldFont = GUI_SetFont(pObj->Props.pFont);
 			xSize = WM_GetWindowSizeX(hObj);
@@ -488,7 +488,7 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 
 	}
 }
-void EDIT_SetFont(EDIT_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
+void EDIT_SetFont(EDIT_Handle hObj, const GUI_FONT  *pfont) {
 	EDIT_Obj *pObj;
 	if (hObj == 0)
 		return;
@@ -684,7 +684,7 @@ EDIT_Handle EDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HW
 void EDIT_SetDefaultFont(const GUI_FONT *pFont) {
 	EDIT__DefaultProps.pFont = pFont;
 }
-const GUI_FONT GUI_UNI_PTR *EDIT_GetDefaultFont(void) {
+const GUI_FONT  *EDIT_GetDefaultFont(void) {
 	return EDIT__DefaultProps.pFont;
 }
 void EDIT_SetDefaultTextAlign(int Align) {

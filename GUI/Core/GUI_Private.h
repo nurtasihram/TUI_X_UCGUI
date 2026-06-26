@@ -29,7 +29,7 @@
 
 void LCD_L0_DrawBitmap    (int x0, int y0, int xsize, int ysize,
                            int BitsPerPixel, int BytesPerLine,
-                           const uint8_t GUI_UNI_PTR * pData, int Diff, const RGB_COLOR* pTrans);
+                           const uint8_t  * pData, int Diff, const RGB_COLOR* pTrans);
 
 #define GUI_POS_AUTO -4095   /* Position value for auto-pos */
 

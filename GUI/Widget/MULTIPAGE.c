@@ -31,11 +31,11 @@ typedef struct {
 	unsigned        Selection;
 	int             ScrollState;
 	unsigned        Align;
-	const GUI_FONT GUI_UNI_PTR *Font;
+	const GUI_FONT  *Font;
 	RGB_COLOR       aBkColor[MULTIPAGE_NUMCOLORS];
 	RGB_COLOR       aTextColor[MULTIPAGE_NUMCOLORS];
 } MULTIPAGE_Obj;
-const GUI_FONT GUI_UNI_PTR *MULTIPAGE__pDefaultFont = MULTIPAGE_FONT_DEFAULT;
+const GUI_FONT  *MULTIPAGE__pDefaultFont = MULTIPAGE_FONT_DEFAULT;
 unsigned                     MULTIPAGE__DefaultAlign = MULTIPAGE_ALIGN_DEFAULT;
 RGB_COLOR                    MULTIPAGE__DefaultBkColor[2] = { MULTIPAGE_BKCOLOR0_DEFAULT, MULTIPAGE_BKCOLOR1_DEFAULT };
 RGB_COLOR                    MULTIPAGE__DefaultTextColor[2] = { MULTIPAGE_TEXTCOLOR0_DEFAULT, MULTIPAGE_TEXTCOLOR1_DEFAULT };
@@ -640,7 +640,7 @@ void MULTIPAGE_SetTextColor(MULTIPAGE_Handle hObj, RGB_COLOR Color, unsigned Ind
 
 	}
 }
-void MULTIPAGE_SetFont(MULTIPAGE_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
+void MULTIPAGE_SetFont(MULTIPAGE_Handle hObj, const GUI_FONT  *pFont) {
 	MULTIPAGE_Obj *pObj;
 	if (hObj && pFont) {
 
@@ -735,7 +735,7 @@ RGB_COLOR MULTIPAGE_GetDefaultBkColor(unsigned Index) {
 	}
 	return Color;
 }
-const GUI_FONT GUI_UNI_PTR *MULTIPAGE_GetDefaultFont(void) {
+const GUI_FONT  *MULTIPAGE_GetDefaultFont(void) {
 	return MULTIPAGE__pDefaultFont;
 }
 RGB_COLOR MULTIPAGE_GetDefaultTextColor(unsigned Index) {
@@ -753,7 +753,7 @@ void MULTIPAGE_SetDefaultBkColor(RGB_COLOR Color, unsigned Index) {
 		MULTIPAGE__DefaultBkColor[Index] = Color;
 	}
 }
-void MULTIPAGE_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
+void MULTIPAGE_SetDefaultFont(const GUI_FONT  *pFont) {
 	MULTIPAGE__pDefaultFont = pFont;
 }
 void MULTIPAGE_SetDefaultTextColor(RGB_COLOR Color, unsigned Index) {

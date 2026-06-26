@@ -2,7 +2,7 @@
 
 #include "GUI_Protected.h"
 
-int GUI_UC_GetCharSize(const char GUI_UNI_PTR * s) {
+int GUI_UC_GetCharSize(const char  * s) {
   int r;
 
   r =  GUI_Context.pUC_API->pfGetCharSize(s);
@@ -10,7 +10,7 @@ int GUI_UC_GetCharSize(const char GUI_UNI_PTR * s) {
   return r;
 }
 
-uint16_t GUI_UC_GetCharCode(const char GUI_UNI_PTR * s) {
+uint16_t GUI_UC_GetCharCode(const char  * s) {
   uint16_t r;
 
   r =  GUI_Context.pUC_API->pfGetCharCode(s);
@@ -28,8 +28,8 @@ int GUI_UC__CalcSizeOfChar(uint16_t Char) {
   return GUI_Context.pUC_API->pfCalcSizeOfChar(Char);
 }
 
-uint16_t GUI_UC__GetCharCodeInc(const char GUI_UNI_PTR ** ps) {
-  const char GUI_UNI_PTR * s;
+uint16_t GUI_UC__GetCharCodeInc(const char  ** ps) {
+  const char  * s;
   uint16_t r;
   s   = *ps;
   r   = GUI_UC__GetCharCode(s);
@@ -38,7 +38,7 @@ uint16_t GUI_UC__GetCharCodeInc(const char GUI_UNI_PTR ** ps) {
   return r;
 }
 
-int GUI_UC__NumChars2NumBytes(const char GUI_UNI_PTR * s, int NumChars) {
+int GUI_UC__NumChars2NumBytes(const char  * s, int NumChars) {
   int CharSize, NumBytes = 0;
   while (NumChars--) {
     CharSize = GUI_UC__GetCharSize(s);
@@ -48,7 +48,7 @@ int GUI_UC__NumChars2NumBytes(const char GUI_UNI_PTR * s, int NumChars) {
   return NumBytes;
 }
 
-int GUI_UC__NumBytes2NumChars(const char GUI_UNI_PTR * s, int NumBytes) {
+int GUI_UC__NumBytes2NumChars(const char  * s, int NumBytes) {
   int CharSize, Chars = 0, Bytes = 0;
   while (NumBytes > Bytes) {
     CharSize = GUI_UC__GetCharSize(s + Bytes);

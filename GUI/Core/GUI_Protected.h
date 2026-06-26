@@ -115,29 +115,29 @@ struct GUI_Usage {
 #define GUI_UC__GetCharCode(sText)  GUI_Context.pUC_API->pfGetCharCode(sText)
 
 int   GUI_UC__CalcSizeOfChar   (uint16_t Char);
-uint16_t   GUI_UC__GetCharCodeInc   (const char GUI_UNI_PTR ** ps);
-int   GUI_UC__NumChars2NumBytes(const char GUI_UNI_PTR * s, int NumChars);
-int   GUI_UC__NumBytes2NumChars(const char GUI_UNI_PTR * s, int NumBytes);
+uint16_t   GUI_UC__GetCharCodeInc   (const char  ** ps);
+int   GUI_UC__NumChars2NumBytes(const char  * s, int NumChars);
+int   GUI_UC__NumBytes2NumChars(const char  * s, int NumBytes);
 
-int  GUI__GetLineNumChars  (const char GUI_UNI_PTR *s, int MaxNumChars);
-int  GUI__GetNumChars      (const char GUI_UNI_PTR *s);
-int  GUI__GetLineDistX     (const char GUI_UNI_PTR *s, int Len);
+int  GUI__GetLineNumChars  (const char  *s, int MaxNumChars);
+int  GUI__GetNumChars      (const char  *s);
+int  GUI__GetLineDistX     (const char  *s, int Len);
 int  GUI__GetFontSizeY     (void);
-int  GUI__HandleEOLine     (const char GUI_UNI_PTR **ps);
-void GUI__DispLine         (const char GUI_UNI_PTR *s, int Len, const GUI_RECT* pr);
+int  GUI__HandleEOLine     (const char  **ps);
+void GUI__DispLine         (const char  *s, int Len, const GUI_RECT* pr);
 void GUI__AddSpaceHex      (uint32_t v, uint8_t Len, char**ps);
-void GUI__CalcTextRect     (const char GUI_UNI_PTR* pText, const GUI_RECT* pTextRectIn, GUI_RECT* pTextRectOut, int TextAlign);
+void GUI__CalcTextRect     (const char * pText, const GUI_RECT* pTextRectIn, GUI_RECT* pTextRectOut, int TextAlign);
 
-int  GUI__WrapGetNumCharsDisp       (const char GUI_UNI_PTR * pText, int xSize, GUI_WRAPMODE WrapMode);
-int  GUI__WrapGetNumCharsToNextLine (const char GUI_UNI_PTR * pText, int xSize, GUI_WRAPMODE WrapMode);
-int  GUI__WrapGetNumBytesToNextLine (const char GUI_UNI_PTR * pText, int xSize, GUI_WRAPMODE WrapMode);
+int  GUI__WrapGetNumCharsDisp       (const char  * pText, int xSize, GUI_WRAPMODE WrapMode);
+int  GUI__WrapGetNumCharsToNextLine (const char  * pText, int xSize, GUI_WRAPMODE WrapMode);
+int  GUI__WrapGetNumBytesToNextLine (const char  * pText, int xSize, GUI_WRAPMODE WrapMode);
 void GUI__memset    (uint8_t * p, uint8_t Fill, int NumBytes);
 void GUI__memset16  (uint16_t* p, uint16_t Fill, int NumWords);
-int  GUI__strlen    (const char GUI_UNI_PTR * s);
-int  GUI__strcmp    (const char GUI_UNI_PTR * s0, const char GUI_UNI_PTR * s1);
+int  GUI__strlen    (const char  * s);
+int  GUI__strcmp    (const char  * s0, const char  * s1);
 
 void GL_DispChar         (uint16_t c);
-void GL_DrawBitmap       (const GUI_BITMAP GUI_UNI_PTR * pBM, int x0, int y0);
+void GL_DrawBitmap       (const GUI_BITMAP  * pBM, int x0, int y0);
 
 /************************************************************
 *
@@ -164,8 +164,8 @@ extern const GUI_LOGPALETTE GUI_CursorPalI;
 
 extern GUI_RECT  GUI_RectDispString; /* Used by LCD_Rotate...() and GUI_DispStringInRect() */
 
-int       GUI_GetBitmapPixelIndex(const GUI_BITMAP GUI_UNI_PTR * pBMP, unsigned x, unsigned y);
-RGB_COLOR GUI_GetBitmapPixelColor(const GUI_BITMAP GUI_UNI_PTR * pBMP, unsigned x, unsigned y);
+int       GUI_GetBitmapPixelIndex(const GUI_BITMAP  * pBMP, unsigned x, unsigned y);
+RGB_COLOR GUI_GetBitmapPixelColor(const GUI_BITMAP  * pBMP, unsigned x, unsigned y);
 
 #if defined(__cplusplus)
 }

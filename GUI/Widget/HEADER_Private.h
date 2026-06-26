@@ -19,6 +19,6 @@ typedef struct {
   int CapturePosX;
   int CaptureItem;
   int ScrollPos;
-  const GUI_FONT GUI_UNI_PTR * pFont;
+  const GUI_FONT  * pFont;
 } HEADER_Obj;
 void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW_HANDLE hDrawObj);

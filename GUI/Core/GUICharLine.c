@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "GUI_Protected.h"
 
-static void _DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT *pRect) {
+static void _DispLine(const char  *s, int MaxNumChars, const GUI_RECT *pRect) {
   /* Check if we have anything to do at all ... */
   if (GUI_Context.pClipRect_HL) {
     if (GUI_RectsIntersect(GUI_Context.pClipRect_HL, pRect) == 0)
@@ -24,7 +24,7 @@ static void _DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT
   }
 }
 
-int GUI__GetLineNumChars(const char GUI_UNI_PTR *s, int MaxNumChars) {
+int GUI__GetLineNumChars(const char  *s, int MaxNumChars) {
   int NumChars = 0;
   if (s) {
       if (GUI_Context.pAFont->pafEncode) {
@@ -46,7 +46,7 @@ int GUI__GetLineNumChars(const char GUI_UNI_PTR *s, int MaxNumChars) {
 *
 *  This routine is used to calculate the length of a line in pixels.
 */
-int GUI__GetLineDistX(const char GUI_UNI_PTR *s, int MaxNumChars) {
+int GUI__GetLineDistX(const char  *s, int MaxNumChars) {
   int Dist = 0;
   if (s) {
     uint16_t Char;
@@ -61,7 +61,7 @@ int GUI__GetLineDistX(const char GUI_UNI_PTR *s, int MaxNumChars) {
   return Dist;
 }
 
-void GUI__DispLine(const char GUI_UNI_PTR *s, int MaxNumChars, const GUI_RECT* pr) {
+void GUI__DispLine(const char  *s, int MaxNumChars, const GUI_RECT* pr) {
   GUI_RECT r;
   {
     r = *pr;

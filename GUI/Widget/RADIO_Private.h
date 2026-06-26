@@ -15,14 +15,14 @@ typedef struct {
   uint8_t  GroupId;
   RGB_COLOR BkColor;
   RGB_COLOR TextColor;
-  const GUI_FONT GUI_UNI_PTR* pFont;
+  const GUI_FONT * pFont;
 } RADIO_Obj;
 typedef void tRADIO_SetValue(RADIO_Obj* pObj, int v);
 extern const GUI_BITMAP             RADIO__abmRadio[2];
 extern const GUI_BITMAP             RADIO__bmCheck;
 extern const GUI_BITMAP*            RADIO__apDefaultImage[2];
 extern const GUI_BITMAP*            RADIO__pDefaultImageCheck;
-extern const GUI_FONT GUI_UNI_PTR*  RADIO__pDefaultFont;
+extern const GUI_FONT *  RADIO__pDefaultFont;
 extern       RGB_COLOR              RADIO__DefaultTextColor;
 extern       tRADIO_SetValue*       RADIO__pfHandleSetValue;
 void RADIO__SetValue(RADIO_Obj* pObj, int v);

@@ -71,10 +71,10 @@ static int _GetEffectSize(MENU_Obj *pObj) {
 	}
 	return r;
 }
-static int _CalcTextWidth(MENU_Obj *pObj, const char GUI_UNI_PTR *sText) {
+static int _CalcTextWidth(MENU_Obj *pObj, const char  *sText) {
 	int TextWidth = 0;
 	if (sText) {
-		const GUI_FONT GUI_UNI_PTR *pOldFont;
+		const GUI_FONT  *pOldFont;
 		pOldFont = GUI_SetFont(pObj->Props.pFont);
 		TextWidth = GUI_GetStringDistX(sText);
 		GUI_SetFont(pOldFont);
@@ -744,7 +744,7 @@ void MENU__InvalidateItem(const MENU_Obj *pObj, unsigned Index) {
 	WM_Invalidate(pObj);  /* Can be optimized, no need to invalidate all items */
 }
 void MENU__RecalcTextWidthOfItems(MENU_Obj *pObj) {
-	const GUI_FONT GUI_UNI_PTR *pOldFont;
+	const GUI_FONT  *pOldFont;
 	MENU_ITEM *pItem;
 	unsigned i, NumItems;
 	NumItems = MENU__GetNumItems(pObj);
@@ -880,7 +880,7 @@ void MENU_SetDefaultBorderSize(unsigned BorderIndex, uint8_t BorderSize) {
 void MENU_SetDefaultEffect(const WIDGET_EFFECT *pEffect) {
 	MENU__pDefaultEffect = pEffect;
 }
-void MENU_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
+void MENU_SetDefaultFont(const GUI_FONT  *pFont) {
 	MENU__DefaultProps.pFont = pFont;
 }
 RGB_COLOR MENU_GetDefaultTextColor(unsigned ColorIndex) {
@@ -907,7 +907,7 @@ uint8_t MENU_GetDefaultBorderSize(unsigned BorderIndex) {
 const WIDGET_EFFECT *MENU_GetDefaultEffect(void) {
 	return MENU__pDefaultEffect;
 }
-const GUI_FONT GUI_UNI_PTR *MENU_GetDefaultFont(void) {
+const GUI_FONT  *MENU_GetDefaultFont(void) {
 	return MENU__DefaultProps.pFont;
 }
 
@@ -1081,7 +1081,7 @@ void MENU_SetBorderSize(MENU_Handle hObj, unsigned BorderIndex, uint8_t BorderSi
 	}
 }
 
-void MENU_SetFont(MENU_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
+void MENU_SetFont(MENU_Handle hObj, const GUI_FONT  *pFont) {
 	if (hObj) {
 		MENU_Obj *pObj;
 

@@ -15,7 +15,7 @@ PROGBAR_Handle PROGBAR_CreateEx      (int x0, int y0, int xsize, int ysize, WM_H
 #define PROGBAR_Delete(hObj)        WM_DeleteWindow(hObj)
 #define PROGBAR_Paint(hObj)         WM_Paint(hObj)
 void            PROGBAR_SetBarColor (PROGBAR_Handle hObj, unsigned int index, RGB_COLOR color);
-void            PROGBAR_SetFont     (PROGBAR_Handle hObj, const GUI_FONT GUI_UNI_PTR * pfont);
+void            PROGBAR_SetFont     (PROGBAR_Handle hObj, const GUI_FONT  * pfont);
 void            PROGBAR_SetMinMax   (PROGBAR_Handle hObj, int Min, int Max);
 void            PROGBAR_SetText     (PROGBAR_Handle hObj, const char* s);
 void            PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align);

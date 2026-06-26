@@ -7,7 +7,7 @@
 #define CHECKBOX_FGCOLOR0_DEFAULT RGB_GRAYL(0x10)
 #define CHECKBOX_FGCOLOR1_DEFAULT RGB_BLACK
 typedef struct {
-	const GUI_FONT GUI_UNI_PTR *pFont;
+	const GUI_FONT  *pFont;
 	RGB_COLOR aBkColorBox[2]; /* Colors used to draw the box background */
 	RGB_COLOR BkColor;        /* Widget background color */
 	RGB_COLOR TextColor;

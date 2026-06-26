@@ -61,7 +61,7 @@ WM_HWIN MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags)
 	int ySizeCaption;                                                             /* YSize of caption */
 	int ySizeMessage;                                                             /* YSize of message */
 	GUI_RECT Rect;
-	const GUI_FONT GUI_UNI_PTR *pOldFont;
+	const GUI_FONT  *pOldFont;
 	/* Zeroinit variables */
 	memset(_aDialogCreate, 0, sizeof(_aDialogCreate));
 	/* Get dimension of message */

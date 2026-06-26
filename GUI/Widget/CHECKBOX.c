@@ -228,7 +228,7 @@ void CHECKBOX_SetDefaultTextColor(RGB_COLOR Color) {
 void CHECKBOX_SetDefaultBkColor(RGB_COLOR Color) {
 	CHECKBOX__DefaultProps.BkColor = Color;
 }
-void CHECKBOX_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
+void CHECKBOX_SetDefaultFont(const GUI_FONT  *pFont) {
 	CHECKBOX__DefaultProps.pFont = pFont;
 }
 void CHECKBOX_SetDefaultAlign(int Align) {
@@ -243,7 +243,7 @@ RGB_COLOR CHECKBOX_GetDefaultTextColor(void) {
 RGB_COLOR CHECKBOX_GetDefaultBkColor(void) {
 	return CHECKBOX__DefaultProps.BkColor;
 }
-const GUI_FONT GUI_UNI_PTR *CHECKBOX_GetDefaultFont(void) {
+const GUI_FONT  *CHECKBOX_GetDefaultFont(void) {
 	return CHECKBOX__DefaultProps.pFont;
 }
 int CHECKBOX_GetDefaultAlign(void) {
@@ -290,7 +290,7 @@ void CHECKBOX_SetDefaultImage(const GUI_BITMAP *pBitmap, unsigned int Index) {
 	}
 }
 
-void CHECKBOX_SetFont(CHECKBOX_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
+void CHECKBOX_SetFont(CHECKBOX_Handle hObj, const GUI_FONT  *pFont) {
 	CHECKBOX_Obj *pObj;
 	if (hObj) {
 		pObj = (hObj);

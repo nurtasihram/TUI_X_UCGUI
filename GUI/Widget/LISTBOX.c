@@ -92,7 +92,7 @@ static int _GetItemSizeX(const LISTBOX_Obj *pObj, unsigned Index) {
 		xSize = pItem->xSize;
 	}
 	if (xSize == 0) {
-		const GUI_FONT GUI_UNI_PTR *pOldFont;
+		const GUI_FONT  *pOldFont;
 		pOldFont = GUI_SetFont(pObj->Props.pFont);
 		xSize = _CallOwnerDraw(pObj, WIDGET_ITEM_GET_XSIZE, Index);
 		GUI_SetFont(pOldFont);
@@ -110,7 +110,7 @@ static int _GetItemSizeY(const LISTBOX_Obj *pObj, unsigned Index) {
 		ySize = pItem->ySize;
 	}
 	if (ySize == 0) {
-		const GUI_FONT GUI_UNI_PTR *pOldFont;
+		const GUI_FONT  *pOldFont;
 		pOldFont = GUI_SetFont(pObj->Props.pFont);
 		ySize = _CallOwnerDraw(pObj, WIDGET_ITEM_GET_YSIZE, Index);
 		GUI_SetFont(pOldFont);
@@ -210,7 +210,7 @@ int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 	switch (pDrawItemInfo->Cmd) {
 		case WIDGET_ITEM_GET_XSIZE: {
 			LISTBOX_Obj *pObj;
-			const GUI_FONT GUI_UNI_PTR *pOldFont;
+			const GUI_FONT  *pOldFont;
 			const char *s;
 			int DistX;
 			pObj = (pDrawItemInfo->hWin);
@@ -878,10 +878,10 @@ LISTBOX_Handle LISTBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo,
 	return hObj;
 }
 
-void LISTBOX_SetDefaultFont(const GUI_FONT GUI_UNI_PTR *pFont) {
+void LISTBOX_SetDefaultFont(const GUI_FONT  *pFont) {
 	LISTBOX_DefaultProps.pFont = pFont;
 }
-const GUI_FONT GUI_UNI_PTR *LISTBOX_GetDefaultFont(void) {
+const GUI_FONT  *LISTBOX_GetDefaultFont(void) {
 	return LISTBOX_DefaultProps.pFont;
 }
 void LISTBOX_SetDefaultScrollStepH(int Value) {
@@ -945,7 +945,7 @@ void LISTBOX_DeleteItem(LISTBOX_Handle hObj, unsigned int Index) {
 }
 
 
-void LISTBOX_SetFont(LISTBOX_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
+void LISTBOX_SetFont(LISTBOX_Handle hObj, const GUI_FONT  *pFont) {
 	LISTBOX_Obj *pObj;
 	if (hObj) {
 
@@ -955,8 +955,8 @@ void LISTBOX_SetFont(LISTBOX_Handle hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
 
 	}
 }
-const GUI_FONT GUI_UNI_PTR *LISTBOX_GetFont(LISTBOX_Handle hObj) {
-	const GUI_FONT GUI_UNI_PTR *pFont = NULL;
+const GUI_FONT  *LISTBOX_GetFont(LISTBOX_Handle hObj) {
+	const GUI_FONT  *pFont = NULL;
 	LISTBOX_Obj *pObj;
 	if (hObj) {
 

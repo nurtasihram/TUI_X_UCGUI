@@ -4,7 +4,7 @@
 #include "GUI_Protected.h"
 #include "GUI.h"
 
-void GUI__CalcTextRect(const char GUI_UNI_PTR* pText, const GUI_RECT* pTextRectIn, GUI_RECT* pTextRectOut, int TextAlign) {
+void GUI__CalcTextRect(const char * pText, const GUI_RECT* pTextRectIn, GUI_RECT* pTextRectOut, int TextAlign) {
   if (pText) {
     int xPos, yPos, TextWidth, TextHeight;
 

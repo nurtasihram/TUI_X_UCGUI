@@ -87,7 +87,7 @@ void EDIT_SetDefaultTextColor(unsigned int Index, RGB_COLOR Color);
 
 /* Query preferences */
 RGB_COLOR                    EDIT_GetDefaultBkColor(unsigned int Index);
-const GUI_FONT GUI_UNI_PTR * EDIT_GetDefaultFont(void);
+const GUI_FONT  * EDIT_GetDefaultFont(void);
 int                          EDIT_GetDefaultTextAlign(void);
 RGB_COLOR                    EDIT_GetDefaultTextColor(unsigned int Index);
 
@@ -97,7 +97,7 @@ void EDIT_ClearCursor      (EDIT_Handle hObj);
 void EDIT_SetBkColor       (EDIT_Handle hObj, unsigned int Index, RGB_COLOR color);
 void EDIT_SetCursorAtChar  (EDIT_Handle hObj, int Pos);
 void EDIT_SetCursorAtPixel (EDIT_Handle hObj, int xPos);
-void EDIT_SetFont          (EDIT_Handle hObj, const GUI_FONT GUI_UNI_PTR * pfont);
+void EDIT_SetFont          (EDIT_Handle hObj, const GUI_FONT  * pfont);
 int  EDIT_SetInsertMode    (EDIT_Handle hObj, int OnOff);
 void EDIT_SetMaxLen        (EDIT_Handle hObj, int MaxLen);
 void EDIT_SetpfAddKeyEx    (EDIT_Handle hObj, tEDIT_AddKeyEx * pfAddKeyEx);

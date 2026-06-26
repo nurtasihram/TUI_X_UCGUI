@@ -16,7 +16,7 @@ typedef struct {
 	RGB_COLOR                    aBkColor[3];
 	RGB_COLOR                    aTextColor[3];
 	RGB_COLOR                    GridColor;
-	const GUI_FONT GUI_UNI_PTR *pFont;
+	const GUI_FONT  *pFont;
 } LISTVIEW_PROPS;
 typedef struct {
 	WIDGET          Widget;

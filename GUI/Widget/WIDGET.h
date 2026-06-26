@@ -96,7 +96,7 @@ void      WIDGET__GetInsideRect(WIDGET* pWidget, GUI_RECT* pRect);
 void      WIDGET__Init(WIDGET* pWidget, int Id, uint16_t State);
 void      WIDGET__RotateRect90(WIDGET* pWidget, GUI_RECT* pDest, const GUI_RECT* pRect);
 void      WIDGET__SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE* pVState, const WM_SCROLL_STATE* pState);
-void      WIDGET__FillStringInRect(const char GUI_UNI_PTR * pText, const GUI_RECT * pFillRect, const GUI_RECT * pTextRectMax, const GUI_RECT * pTextRectAct);
+void      WIDGET__FillStringInRect(const char  * pText, const GUI_RECT * pFillRect, const GUI_RECT * pTextRectMax, const GUI_RECT * pTextRectAct);
 void  WIDGET_SetState     (WM_HWIN hObj, int State);
 void  WIDGET_AndState     (WM_HWIN hObj, int State);
 void  WIDGET_OrState      (WM_HWIN hObj, int State);

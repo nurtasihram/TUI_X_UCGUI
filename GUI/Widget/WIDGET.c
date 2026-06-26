@@ -366,7 +366,7 @@ int WIDGET_SetWidth(WM_HWIN hObj, int Width) {
 *
 * Notes
 */
-void WIDGET__FillStringInRect(const char GUI_UNI_PTR *pText, const GUI_RECT *pFillRect, const GUI_RECT *pTextRectMax, const GUI_RECT *pTextRectAct) {
+void WIDGET__FillStringInRect(const char  *pText, const GUI_RECT *pFillRect, const GUI_RECT *pTextRectMax, const GUI_RECT *pTextRectAct) {
 	/* Check if we have anything to do at all ... */
 	if (GUI_Context.pClipRect_HL) {
 		GUI_RECT r;

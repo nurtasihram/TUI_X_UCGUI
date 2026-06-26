@@ -42,7 +42,7 @@ typedef struct {
 	uint16_t CacheFirstVisibleByte;
 	WM_SCROLL_STATE ScrollStateV;
 	WM_SCROLL_STATE ScrollStateH;
-	const GUI_FONT GUI_UNI_PTR *pFont;
+	const GUI_FONT  *pFont;
 	uint8_t Flags;
 	uint8_t InvalidFlags;         /* Flags to save validation status */
 	uint8_t EditMode;
@@ -57,7 +57,7 @@ static RGB_COLOR _aDefaultColor[2] = {
   MULTIEDIT_TEXTCOLOR0_DEFAULT,
   MULTIEDIT_TEXTCOLOR1_DEFAULT,
 };
-static const GUI_FONT GUI_UNI_PTR *_pDefaultFont = MULTIEDIT_FONT_DEFAULT;
+static const GUI_FONT  *_pDefaultFont = MULTIEDIT_FONT_DEFAULT;
 #define MULTIEDIT_REALLOC_SIZE  16
 /*********************************************************************
 *
@@ -94,7 +94,7 @@ static int _GetXSize(const MULTIEDIT_OBJ *pObj) {
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	return Rect.x1 - Rect.x0 - (pObj->HBorder * 2) - 1;
 }
-static int _GetNumCharsInPrompt(const MULTIEDIT_OBJ *pObj, const char GUI_UNI_PTR *pText) {
+static int _GetNumCharsInPrompt(const MULTIEDIT_OBJ *pObj, const char  *pText) {
 	char *pString, *pEndPrompt;
 	int r = 0;
 	pString = (char *)(pObj->hText);
@@ -104,7 +104,7 @@ static int _GetNumCharsInPrompt(const MULTIEDIT_OBJ *pObj, const char GUI_UNI_PT
 	}
 	return r;
 }
-static int _NumChars2XSize(const char GUI_UNI_PTR *pText, int NumChars) {
+static int _NumChars2XSize(const char  *pText, int NumChars) {
 	int xSize = 0;
 	uint16_t Char;
 	while (NumChars--) {
@@ -113,7 +113,7 @@ static int _NumChars2XSize(const char GUI_UNI_PTR *pText, int NumChars) {
 	}
 	return xSize;
 }
-static int _WrapGetNumCharsDisp(const MULTIEDIT_OBJ *pObj, const char GUI_UNI_PTR *pText) {
+static int _WrapGetNumCharsDisp(const MULTIEDIT_OBJ *pObj, const char  *pText) {
 	int xSize, r;
 	xSize = _GetXSize(pObj);
 	if (pObj->Flags & MULTIEDIT_SF_PASSWORD) {
@@ -1304,7 +1304,7 @@ void MULTIEDIT_SetHBorder(MULTIEDIT_HANDLE hObj, unsigned HBorder) {
 
 	}
 }
-void MULTIEDIT_SetFont(MULTIEDIT_HANDLE hObj, const GUI_FONT GUI_UNI_PTR *pFont) {
+void MULTIEDIT_SetFont(MULTIEDIT_HANDLE hObj, const GUI_FONT  *pFont) {
 	if (hObj) {
 		MULTIEDIT_OBJ *pObj;
 

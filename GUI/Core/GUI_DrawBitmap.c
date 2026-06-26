@@ -12,9 +12,9 @@
 *  format is easier to create and more flexible for routines
 *  that draw text-bitmaps.
 */
-void GL_DrawBitmap(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0) {
+void GL_DrawBitmap(const GUI_BITMAP  * pBitmap, int x0, int y0) {
   GUI_DRAWMODE PrevDraw;
-  const GUI_LOGPALETTE GUI_UNI_PTR * pPal;
+  const GUI_LOGPALETTE  * pPal;
   pPal = pBitmap->pPal;
   PrevDraw = GUI_SetDrawMode(0);  /* No Get... at this point */
   GUI_SetDrawMode((pPal && pPal->HasTrans) ? (PrevDraw|GUI_DRAWMODE_TRANS) : PrevDraw &(~GUI_DRAWMODE_TRANS));
@@ -35,7 +35,7 @@ void GL_DrawBitmap(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0) {
   GUI_SetDrawMode(PrevDraw);
 }
 
-void GUI_DrawBitmap(const GUI_BITMAP GUI_UNI_PTR * pBitmap, int x0, int y0) {
+void GUI_DrawBitmap(const GUI_BITMAP  * pBitmap, int x0, int y0) {
 #if (GUI_WINSUPPORT)
     GUI_RECT r;
 #endif

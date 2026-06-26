@@ -13,7 +13,7 @@
 *   0 if identical
 *   1 else
 */
-int GUI__strcmp(const char GUI_UNI_PTR * s0, const char GUI_UNI_PTR * s1) {
+int GUI__strcmp(const char  * s0, const char  * s1) {
   if (s0 == NULL) {
     s0 = "";
   }

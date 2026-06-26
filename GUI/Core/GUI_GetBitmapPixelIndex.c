@@ -2,7 +2,7 @@
 
 #include "GUI_Private.h"
 
-int GUI_GetBitmapPixelIndex(const GUI_BITMAP GUI_UNI_PTR * pBMP, unsigned x, unsigned y) {
+int GUI_GetBitmapPixelIndex(const GUI_BITMAP  * pBMP, unsigned x, unsigned y) {
   unsigned Off, Value;
   switch (pBMP->BitsPerPixel) {
   case 1:

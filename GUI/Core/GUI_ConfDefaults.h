@@ -2,10 +2,6 @@
 
 #include "GUIConf.h"
 
-#ifndef GUI_UNI_PTR
-#define GUI_UNI_PTR
-#endif
-
 /* Define const storage. Normally, this is not needed (define will expand to const)
    However, on some systems (AVR - IAR compiler) it can be necessary ( -> __flash const),
    since otherwise constants are copied into RAM

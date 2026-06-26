@@ -15,7 +15,7 @@
 typedef struct {
 	WIDGET Widget;
 	int v;
-	const GUI_FONT GUI_UNI_PTR *pFont;
+	const GUI_FONT  *pFont;
 	RGB_COLOR BarColor[2];
 	RGB_COLOR TextColor[2];
 	WM_HMEM hpText;
@@ -196,7 +196,7 @@ void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
 			r.y0 = 0;
 			r.y1 = 4095;
 			if (pObj->hpText == 0) {
-				const GUI_FONT GUI_UNI_PTR *pOldFont;
+				const GUI_FONT  *pOldFont;
 				char acBuffer[5];
 				GUI_RECT rText;
 				pOldFont = GUI_SetFont(pObj->pFont);
@@ -215,7 +215,7 @@ void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
 
 	}
 }
-void PROGBAR_SetFont(PROGBAR_Handle hObj, const GUI_FONT GUI_UNI_PTR *pfont) {
+void PROGBAR_SetFont(PROGBAR_Handle hObj, const GUI_FONT  *pfont) {
 	PROGBAR_Obj *pObj;
 	if (hObj) {
 
@@ -252,7 +252,7 @@ void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int Index, RGB_COLOR col
 void PROGBAR_SetText(PROGBAR_Handle hObj, const char *s) {
 	if (hObj) {
 		PROGBAR_Obj *pObj;
-		const GUI_FONT GUI_UNI_PTR *pOldFont;
+		const GUI_FONT  *pOldFont;
 		GUI_RECT r1;
 		char acBuffer[5];
 
