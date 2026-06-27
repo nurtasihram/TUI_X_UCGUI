@@ -186,17 +186,17 @@ int WIDGET_HandleActive(WM_HWIN hObj, WM_MESSAGE *pMsg) {
 	switch (pMsg->MsgId) {
 		case WM_WIDGET_SET_EFFECT:
 			Diff = pWidget->pEffect->EffectSize;
-			pWidget->pEffect = (const WIDGET_EFFECT *)pMsg->Data.p;
+			pWidget->pEffect = (const WIDGET_EFFECT *)pMsg->Data;
 			Diff -= pWidget->pEffect->EffectSize;
 			_UpdateChildPostions(hObj, Diff);
 			WM_Invalidate(hObj);
 			return 0;                        /* Message handled -> Return */
 		case WM_GET_ID:
-			pMsg->Data.v = pWidget->Id;
+			pMsg->Data = pWidget->Id;
 			return 0;                        /* Message handled -> Return */
 		case WM_PID_STATE_CHANGED:
 			if (pWidget->State & WIDGET_STATE_FOCUSSABLE) {
-				const WM_PID_STATE_CHANGED_INFO *pInfo = (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data.p;
+				const WM_PID_STATE_CHANGED_INFO *pInfo = (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data;
 				if (pInfo->State) {
 					WM_SetFocus(hObj);
 				}
@@ -209,8 +209,8 @@ int WIDGET_HandleActive(WM_HWIN hObj, WM_MESSAGE *pMsg) {
 		{
 			const WM_MESSAGE *pMsgOrg;
 			const GUI_PID_STATE *pState;
-			pMsgOrg = (const WM_MESSAGE *)pMsg->Data.p;      /* The original touch message */
-			pState = (const GUI_PID_STATE *)pMsgOrg->Data.p;
+			pMsgOrg = (const WM_MESSAGE *)pMsg->Data;      /* The original touch message */
+			pState = (const GUI_PID_STATE *)pMsgOrg->Data;
 			if (pState) {          /* Message may not have a valid pointer (moved out) ! */
 				if (pState->Pressed) {
 					WM_BringToTop(hObj);
@@ -220,10 +220,10 @@ int WIDGET_HandleActive(WM_HWIN hObj, WM_MESSAGE *pMsg) {
 		}
 		break;
 		case WM_SET_ID:
-			pWidget->Id = pMsg->Data.v;
+			pWidget->Id = pMsg->Data;
 			return 0;                        /* Message handled -> Return */
 		case WM_SET_FOCUS:
-			if (pMsg->Data.v == 1) {
+			if (pMsg->Data == 1) {
 				WIDGET_SetState(hObj, pWidget->State | WIDGET_STATE_FOCUS);
 				Notification = WM_NOTIFICATION_GOT_FOCUS;
 			}
@@ -232,13 +232,13 @@ int WIDGET_HandleActive(WM_HWIN hObj, WM_MESSAGE *pMsg) {
 				Notification = WM_NOTIFICATION_LOST_FOCUS;
 			}
 			WM_NotifyParent(hObj, Notification);
-			pMsg->Data.v = 0;   /* Focus change accepted */
+			pMsg->Data = 0;   /* Focus change accepted */
 			return 0;
 		case WM_GET_ACCEPT_FOCUS:
-			pMsg->Data.v = (pWidget->State & WIDGET_STATE_FOCUSSABLE) ? 1 : 0;               /* Can handle focus */
+			pMsg->Data = (pWidget->State & WIDGET_STATE_FOCUSSABLE) ? 1 : 0;               /* Can handle focus */
 			return 0;                         /* Message handled */
 		case WM_GET_INSIDE_RECT:
-			WIDGET__GetInsideRect(pWidget, (GUI_RECT *)pMsg->Data.p);
+			WIDGET__GetInsideRect(pWidget, (GUI_RECT *)pMsg->Data);
 			return 0;                         /* Message handled */
 	}
 	return 1;                           /* Message NOT handled */
@@ -323,7 +323,7 @@ void WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT *pEffect) {
 	WM_MESSAGE Msg;
 	Msg.hWinSrc = 0;
 	Msg.MsgId = WM_WIDGET_SET_EFFECT;
-	Msg.Data.p = (const void *)pEffect;
+	Msg.Data = (WM_PARAM)pEffect;
 	WM_SendMessage(hObj, &Msg);
 }
 

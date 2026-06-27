@@ -254,7 +254,7 @@ static void _cbCallback(WM_MESSAGE *pMsg) {
 			CHECKBOX_Check(hItem);
 			break;
 		case WM_KEY:
-			switch (((WM_KEY_INFO *)(pMsg->Data.p))->Key) {
+			switch (((WM_KEY_INFO *)(pMsg->Data))->Key) {
 				case GUI_KEY_ESCAPE:
 					GUI_EndDialog(hDlg, 1);
 					break;
@@ -268,7 +268,7 @@ static void _cbCallback(WM_MESSAGE *pMsg) {
 			break;
 		case WM_NOTIFY_PARENT:
 			Id = WM_GetId(pMsg->hWinSrc);      /* Id of widget */
-			NCode = pMsg->Data.v;                 /* Notification code */
+			NCode = (int)pMsg->Data;                 /* Notification code */
 			hItem = WM_GetDialogItem(hDlg, Id);
 			switch (NCode) {
 				case WM_NOTIFICATION_SEL_CHANGED:

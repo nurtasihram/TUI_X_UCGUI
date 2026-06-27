@@ -19,14 +19,14 @@ RGB_COLOR DIALOG_SetBkColor(RGB_COLOR BkColor) {
 void GUI_SetDialogStatusPtr(WM_HWIN hDialog, WM_DIALOG_STATUS *pDialogStatus) {
 	WM_MESSAGE Msg = { 0 };
 	Msg.MsgId = WM_HANDLE_DIALOG_STATUS;
-	Msg.Data.p = pDialogStatus;
+	Msg.Data = (WM_PARAM)pDialogStatus;
 	WM_SendMessage(hDialog, &Msg);
 }
 WM_DIALOG_STATUS *GUI_GetDialogStatusPtr(WM_HWIN hDialog) {
 	WM_MESSAGE Msg = { 0 };
 	Msg.MsgId = WM_HANDLE_DIALOG_STATUS;
 	WM_SendMessage(hDialog, &Msg);
-	return (WM_DIALOG_STATUS *)Msg.Data.p;
+	return (WM_DIALOG_STATUS *)Msg.Data;
 }
 WM_HWIN GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidgets, WM_CALLBACK *cb, WM_HWIN hParent,
 							int x0, int y0) {

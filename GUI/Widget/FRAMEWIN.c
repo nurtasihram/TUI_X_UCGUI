@@ -57,8 +57,8 @@ static void _SetActive(FRAMEWIN_Handle hObj, int State) {
 }
 static void _OnTouch(FRAMEWIN_Handle hWin, FRAMEWIN_Obj *pObj, WM_MESSAGE *pMsg) {
 	const GUI_PID_STATE *pState;
-	pState = (const GUI_PID_STATE *)pMsg->Data.p;
-	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
+	pState = (const GUI_PID_STATE *)pMsg->Data;
+	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			if (!(pObj->Flags & FRAMEWIN_SF_ACTIVE)) {
 				WM_SetFocus(hWin);
@@ -134,8 +134,8 @@ static void _Paint(FRAMEWIN_Obj *pObj) {
 *
 */
 static void _OnChildHasFocus(FRAMEWIN_Handle hWin, FRAMEWIN_Obj *pObj, WM_MESSAGE *pMsg) {
-	if (pMsg->Data.p) {
-		const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo = (const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *)pMsg->Data.p;
+	if (pMsg->Data) {
+		const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo = (const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *)pMsg->Data;
 		int IsDesc = WM__IsAncestorOrSelf(pInfo->hNew, hWin);
 		if (IsDesc) {                         /* A child has received the focus, Framewindow needs to be activated */
 			_SetActive(hWin, 1);
@@ -152,7 +152,7 @@ static void _OnChildHasFocus(FRAMEWIN_Handle hWin, FRAMEWIN_Obj *pObj, WM_MESSAG
 static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
 	FRAMEWIN_Handle hWin = (FRAMEWIN_Handle)(pMsg->hWin);
 	FRAMEWIN_Obj *pObj = (hWin);
-	GUI_RECT *pRect = (GUI_RECT *)(pMsg->Data.p);
+	GUI_RECT *pRect = (GUI_RECT *)(pMsg->Data);
 	POSITIONS Pos;
 	GUI_HOOK *pHook;
 	/* Call hook functions */
@@ -165,11 +165,11 @@ static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
 	}
 	switch (pMsg->MsgId) {
 		case WM_HANDLE_DIALOG_STATUS:
-			if (pMsg->Data.p) {                           /* set pointer to Dialog status */
-				pObj->pDialogStatus = (WM_DIALOG_STATUS *)pMsg->Data.p;
+			if (pMsg->Data) {                           /* set pointer to Dialog status */
+				pObj->pDialogStatus = (WM_DIALOG_STATUS *)pMsg->Data;
 			}
 			else {                                      /* return pointer to Dialog status */
-				pMsg->Data.p = pObj->pDialogStatus;
+				pMsg->Data = pObj->pDialogStatus;
 			}
 			return;
 		case WM_PAINT:
@@ -183,10 +183,10 @@ static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
 			*pRect = Pos.rClient;
 			return;                       /* Return here ... Message handled */
 		case WM_GET_CLIENT_WINDOW:      /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
-			pMsg->Data.p = pObj->hClient;
+			pMsg->Data = pObj->hClient;
 			return;                       /* Return here ... Message handled */
 		case WM_NOTIFY_PARENT:
-			if (pMsg->Data.v == WM_NOTIFICATION_RELEASED) {
+			if ((int)pMsg->Data == WM_NOTIFICATION_RELEASED) {
 				WM_MESSAGE Msg;
 				Msg.hWinSrc = hWin;
 				Msg.Data = pMsg->Data;
@@ -195,7 +195,7 @@ static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
 			}
 			return;
 		case WM_SET_FOCUS:                 /* We have received or lost focus */
-			if (pMsg->Data.v == 1) {
+			if (pMsg->Data == 1) {
 				if (WM_IsWindow(pObj->hFocussedChild)) {
 					WM_SetFocus(pObj->hFocussedChild);
 				}
@@ -203,7 +203,7 @@ static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
 					pObj->hFocussedChild = WM_SetFocusOnNextChild(pObj->hClient);
 				}
 				FRAMEWIN_SetActive(hWin, 1);
-				pMsg->Data.v = 0;              /* Focus could be accepted */
+				pMsg->Data = (WM_PARAM)0;              /* Focus could be accepted */
 			}
 			else {
 				FRAMEWIN_SetActive(hWin, 0);
@@ -216,8 +216,8 @@ static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
 			if (!(pObj->Flags & FRAMEWIN_SF_ACTIVE)) {
 				const WM_MESSAGE *pMsgOrg;
 				const GUI_PID_STATE *pState;
-				pMsgOrg = (const WM_MESSAGE *)pMsg->Data.p;      /* The original touch message */
-				pState = (const GUI_PID_STATE *)pMsgOrg->Data.p;
+				pMsgOrg = (const WM_MESSAGE *)pMsg->Data;      /* The original touch message */
+				pState = (const GUI_PID_STATE *)pMsgOrg->Data;
 				if (pState) {          /* Message may not have a valid pointer (moved out) ! */
 					if (pState->Pressed) {
 						WM_SetFocus(hWin);
@@ -261,22 +261,22 @@ static void FRAMEWIN__cbClient(WM_MESSAGE *pMsg) {
 			}
 			return;
 		case WM_SET_FOCUS:
-			if (pMsg->Data.v) {     /* Focus received */
+			if (pMsg->Data) {     /* Focus received */
 				if (pObj->hFocussedChild && (pObj->hFocussedChild != hWin)) {
 					WM_SetFocus(pObj->hFocussedChild);
 				}
 				else {
 					pObj->hFocussedChild = WM_SetFocusOnNextChild(hWin);
 				}
-				pMsg->Data.v = 0;     /* Focus change accepted */
+				pMsg->Data = 0;     /* Focus change accepted */
 			}
 			return;
 		case WM_GET_ACCEPT_FOCUS:
 			WIDGET_HandleActive(hParent, pMsg);
 			return;
 		case WM_KEY:
-			if (((const WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt > 0) {
-				int Key = ((const WM_KEY_INFO *)(pMsg->Data.p))->Key;
+			if (((const WM_KEY_INFO *)(pMsg->Data))->PressedCnt > 0) {
+				int Key = ((const WM_KEY_INFO *)(pMsg->Data))->Key;
 				switch (Key) {
 					case GUI_KEY_TAB:
 						pObj->hFocussedChild = WM_SetFocusOnNextChild(hWin);
@@ -285,7 +285,7 @@ static void FRAMEWIN__cbClient(WM_MESSAGE *pMsg) {
 			}
 			break;	                       /* Send to parent by not doing anything */
 		case WM_GET_BKCOLOR:
-			pMsg->Data.Color = pObj->Props.ClientColor;
+			pMsg->Data = (WM_PARAM)(uintptr_t)pObj->Props.ClientColor;
 			return;                       /* Message handled */
 		case WM_GET_INSIDE_RECT:        /* This should not be passed to parent ... (We do not want parents coordinates)*/
 		case WM_GET_ID:                 /* This should not be passed to parent ... (Possible recursion problem)*/
@@ -1055,7 +1055,7 @@ static int _CheckReactBorder(FRAMEWIN_Handle hWin, int x, int y) {
 	return Mode;
 }
 static int _OnTouchResize(FRAMEWIN_Handle hWin, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
+	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
 	if (pState) {  /* Something happened in our area (pressed or released) */
 		int x, y, Mode;
 		x = pState->x;
@@ -1095,7 +1095,7 @@ static int _OnTouchResize(FRAMEWIN_Handle hWin, WM_MESSAGE *pMsg) {
 }
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 static int _ForwardMouseOverMsg(FRAMEWIN_Handle hWin, WM_MESSAGE *pMsg) {
-	GUI_PID_STATE *pState = (GUI_PID_STATE *)pMsg->Data.p;
+	GUI_PID_STATE *pState = (GUI_PID_STATE *)pMsg->Data;
 	WM_HWIN hBelow;
 	pState->x += WM_GetWindowOrgX(hWin);
 	pState->y += WM_GetWindowOrgY(hWin);
@@ -1111,7 +1111,7 @@ static int _ForwardMouseOverMsg(FRAMEWIN_Handle hWin, WM_MESSAGE *pMsg) {
 #endif
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 static int _OnMouseOver(FRAMEWIN_Handle hWin, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
+	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
 	if (pState) {
 		int x, y, Mode;
 		x = pState->x;

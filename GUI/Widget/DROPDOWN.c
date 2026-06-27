@@ -139,8 +139,8 @@ static void _Paint(DROPDOWN_Handle hObj) {
 	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &r);
 }
 static int _OnTouch(DROPDOWN_Handle hObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
-	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
+	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
+	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			WM_NotifyParent(hObj, WM_NOTIFICATION_CLICKED);
 		}
@@ -173,7 +173,7 @@ static void _DROPDOWN_Callback(WM_MESSAGE *pMsg) {
 	}
 	switch (pMsg->MsgId) {
 		case WM_NOTIFY_PARENT:
-			switch (pMsg->Data.v) {
+			switch (pMsg->Data) {
 				case WM_NOTIFICATION_SCROLL_CHANGED:
 					WM_NotifyParent(hObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					break;
@@ -188,7 +188,7 @@ static void _DROPDOWN_Callback(WM_MESSAGE *pMsg) {
 			break;
 		case WM_PID_STATE_CHANGED:
 			if (IsExpandedBeforeMsg == 0) {    /* Make sure we do not react a second time */
-				const WM_PID_STATE_CHANGED_INFO *pInfo = (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data.p;
+				const WM_PID_STATE_CHANGED_INFO *pInfo = (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data;
 				if (pInfo->State) {
 					DROPDOWN_Expand(hObj);
 				}
@@ -206,8 +206,8 @@ static void _DROPDOWN_Callback(WM_MESSAGE *pMsg) {
 			_FreeAttached(pObj);
 			break;       /* No return here ... WM_DefaultProc needs to be called */
 		case WM_KEY:
-			if (((const WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt > 0) {
-				int Key = ((const WM_KEY_INFO *)(pMsg->Data.p))->Key;
+			if (((const WM_KEY_INFO *)(pMsg->Data))->PressedCnt > 0) {
+				int Key = ((const WM_KEY_INFO *)(pMsg->Data))->Key;
 				switch (Key) {
 					case GUI_KEY_TAB:
 						break;                    /* Send to parent by not doing anything */

@@ -168,7 +168,7 @@ static void _HandlePID(HEADER_Obj *pObj, int x, int y, int Pressed) {
 #endif
 #if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
 static void _OnMouseOver(HEADER_Obj *pObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
+	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
 	if (pState) {
 		_HandlePID(pObj, pState->x + pObj->ScrollPos, pState->y, -1);
 	}
@@ -177,11 +177,11 @@ static void _OnMouseOver(HEADER_Obj *pObj, WM_MESSAGE *pMsg) {
 #if (HEADER_SUPPORT_DRAG)
 static void _OnTouch(HEADER_Obj *pObj, WM_MESSAGE *pMsg) {
 	int Notification;
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
+	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
 	if (pState) {
 		_HandlePID(pObj, pState->x + pObj->ScrollPos, pState->y, pState->Pressed);
 	}
-	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
+	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			Notification = WM_NOTIFICATION_CLICKED;
 		}

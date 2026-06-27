@@ -91,7 +91,7 @@ static void _Paint(LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 	yPos = HEADER_GetHeight(pObj->hHeader) + EffectSize;
 	EndRow = pObj->ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
 	/* Calculate clipping rectangle */
-	ClipRect = *(const GUI_RECT *)pMsg->Data.p;
+	ClipRect = *(const GUI_RECT *)pMsg->Data;
 	GUI_MoveRect(&ClipRect, -pObj->Widget.Win.Rect.x0, -pObj->Widget.Win.Rect.y0);
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	GUI__IntersectRect(&ClipRect, &Rect);
@@ -254,15 +254,15 @@ static void _NotifyOwner(WM_HWIN hObj, int Notification) {
 	LISTVIEW_Obj *pObj = (hObj);
 	hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
 	Msg.MsgId = WM_NOTIFY_PARENT;
-	Msg.Data.v = Notification;
+	Msg.Data = (WM_PARAM)(uintptr_t)Notification;
 	Msg.hWin = hObj;
 	WM_SendMessage(hOwner, &Msg);
 }
 static void _OnTouch(LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 	int Notification;
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
+	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
 	GUI_USE_PARA(pObj);
-	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
+	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			_SetSelFromPos(pObj, pState);
 			Notification = WM_NOTIFICATION_CLICKED;
@@ -420,7 +420,7 @@ static void _LISTVIEW_Callback(WM_MESSAGE *pMsg) {
 			LISTVIEW__UpdateScrollParas(pObj);
 			return;
 		case WM_NOTIFY_PARENT:
-			switch (pMsg->Data.v) {
+			switch (pMsg->Data) {
 				case WM_NOTIFICATION_CHILD_DELETED:
 					/* make sure we do not send any messages to the header child once it has been deleted */
 					if (pMsg->hWinSrc == pObj->hHeader) {
@@ -454,9 +454,9 @@ static void _LISTVIEW_Callback(WM_MESSAGE *pMsg) {
 			_OnTouch(pObj, pMsg);
 			return;        /* Important: message handled ! */
 		case WM_KEY:
-			if (((const WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt > 0) {
+			if (((const WM_KEY_INFO *)(pMsg->Data))->PressedCnt > 0) {
 				int Key;
-				Key = ((const WM_KEY_INFO *)(pMsg->Data.p))->Key;
+				Key = ((const WM_KEY_INFO *)(pMsg->Data))->Key;
 				if (_AddKey(hObj, Key)) {
 					return;
 				}

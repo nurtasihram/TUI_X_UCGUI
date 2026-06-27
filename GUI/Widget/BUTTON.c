@@ -123,13 +123,13 @@ static void _ButtonReleased(BUTTON_Obj *pObj, int Notification) {
 	}
 }
 static void _OnTouch(BUTTON_Obj *pObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
+	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
 #if BUTTON_REACT_ON_LEVEL
-	if (!pMsg->Data.p) {  /* Mouse moved out */
+	if (!pMsg->Data) {  /* Mouse moved out */
 		_ButtonReleased(pObj, WM_NOTIFICATION_MOVED_OUT);
 	}
 #else
-	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
+	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			if ((pObj->Widget.State & BUTTON_STATE_PRESSED) == 0) {
 				_ButtonPressed(pObj);
@@ -149,7 +149,7 @@ static void _OnTouch(BUTTON_Obj *pObj, WM_MESSAGE *pMsg) {
 }
 #if BUTTON_REACT_ON_LEVEL
 static void _OnPidStateChange(BUTTON_Obj *pObj, WM_MESSAGE *pMsg) {
-	const WM_PID_STATE_CHANGED_INFO *pState = (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data.p;
+	const WM_PID_STATE_CHANGED_INFO *pState = (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data;
 	if ((pState->StatePrev == 0) && (pState->State == 1)) {
 		if ((pObj->Widget.State & BUTTON_STATE_PRESSED) == 0) {
 			_ButtonPressed(pObj);
@@ -188,8 +188,8 @@ void BUTTON_Callback(WM_MESSAGE *pMsg) {
 #if 0     /* TBD: Button should react to space & Enter */
 		case WM_KEY:
 		{
-			int PressedCnt = ((WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt;
-			int Key = ((WM_KEY_INFO *)(pMsg->Data.p))->Key;
+			int PressedCnt = ((WM_KEY_INFO *)(pMsg->Data))->PressedCnt;
+			int Key = ((WM_KEY_INFO *)(pMsg->Data))->Key;
 			if (PressedCnt > 0) {   /* Key pressed? */
 				switch (Key) {
 					case ' ':

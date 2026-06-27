@@ -120,8 +120,8 @@ static void _OnPaint(RADIO_Obj* pObj) {
 static void _OnTouch(RADIO_Obj* pObj, WM_MESSAGE*pMsg) {
   int Notification;
   int Hit = 0;
-  GUI_PID_STATE* pState = (GUI_PID_STATE*)pMsg->Data.p;
-  if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
+  GUI_PID_STATE* pState = (GUI_PID_STATE*)pMsg->Data;
+  if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
     if (pState->Pressed) {
       int y, Sel;
       y   = pState->y;
@@ -148,7 +148,7 @@ static void _OnTouch(RADIO_Obj* pObj, WM_MESSAGE*pMsg) {
 }
 static void  _OnKey(RADIO_Handle hObj, WM_MESSAGE* pMsg) {
   WM_KEY_INFO* pKeyInfo;
-  pKeyInfo = (WM_KEY_INFO*)(pMsg->Data.p);
+  pKeyInfo = (WM_KEY_INFO*)(pMsg->Data);
   if (pKeyInfo->PressedCnt > 0) {
     switch (pKeyInfo->Key) {
     case GUI_KEY_RIGHT:
@@ -178,7 +178,7 @@ static void _RADIO_Callback (WM_MESSAGE* pMsg) {
     _OnPaint(pObj);
     return;
   case WM_GET_RADIOGROUP:
-    pMsg->Data.v = pObj->GroupId;
+    pMsg->Data = (WM_PARAM)(uintptr_t)pObj->GroupId;
     return;
   case WM_TOUCH:
     _OnTouch(pObj, pMsg);
@@ -380,7 +380,7 @@ static int _IsInGroup(WM_HWIN hWin, uint8_t GroupId) {
 		WM_MESSAGE Msg;
 		Msg.MsgId = WM_GET_RADIOGROUP;
 		WM_SendMessage(hWin, &Msg);
-		return (Msg.Data.v == GroupId);
+		return ((int)Msg.Data == GroupId);
 	}
 	return 0;
 }

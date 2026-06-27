@@ -106,8 +106,8 @@ static void _Paint(CHECKBOX_Obj *pObj, CHECKBOX_Handle hObj) {
 static void _OnTouch(CHECKBOX_Obj *pObj, WM_MESSAGE *pMsg) {
 	int Notification = 0;
 	int Hit = 0;
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
-	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
+	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
+	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
 		if (!WM_HasCaptured(pObj)) {
 			if (pState->Pressed) {
 				WM_SetCapture(pObj, 1);
@@ -133,7 +133,7 @@ static void _OnTouch(CHECKBOX_Obj *pObj, WM_MESSAGE *pMsg) {
 static void  _OnKey(CHECKBOX_Obj *pObj, WM_MESSAGE *pMsg) {
 	WM_KEY_INFO *pKeyInfo;
 	if (WM__IsEnabled(pObj)) {
-		pKeyInfo = (WM_KEY_INFO *)(pMsg->Data.p);
+		pKeyInfo = (WM_KEY_INFO *)(pMsg->Data);
 		if (pKeyInfo->PressedCnt > 0) {
 			switch (pKeyInfo->Key) {
 				case GUI_KEY_SPACE:

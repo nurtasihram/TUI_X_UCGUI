@@ -14,8 +14,8 @@ typedef struct {
 } WINDOW_OBJ;
 RGB_COLOR WINDOW__DefaultBkColor = WINDOW_BKCOLOR_DEFAULT;
 static void _OnChildHasFocus(WINDOW_OBJ *pObj, const WM_MESSAGE *pMsg) {
-	if (pMsg->Data.p) {
-		const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo = (const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *)pMsg->Data.p;
+	if (pMsg->Data) {
+		const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo = (const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *)pMsg->Data;
 		int IsDesc = WM__IsAncestorOrSelf(pInfo->hNew, pObj);
 		if (!IsDesc) {  /* A child has received the focus, Framewindow needs to be activated */
 			/* Remember the child which had the focus so we can reactive this child */
@@ -34,22 +34,22 @@ static void _cb(WM_MESSAGE *pMsg) {
 	cb = pObj->cb;
 	switch (pMsg->MsgId) {
 		case WM_HANDLE_DIALOG_STATUS:
-			if (pMsg->Data.p) { /* set pointer to Dialog status */
-				pObj->pDialogStatus = (WM_DIALOG_STATUS *)pMsg->Data.p;
+			if (pMsg->Data) { /* set pointer to Dialog status */
+				pObj->pDialogStatus = (WM_DIALOG_STATUS *)pMsg->Data;
 			}
 			else { /* return pointer to Dialog status */
-				pMsg->Data.p = pObj->pDialogStatus;
+				pMsg->Data = pObj->pDialogStatus;
 			}
 			return;
 		case WM_SET_FOCUS:
-			if (pMsg->Data.v) {   /* Focus received */
+			if ((int)pMsg->Data) {   /* Focus received */
 				if (pObj->hFocussedChild && (pObj->hFocussedChild != hObj)) {
 					WM_SetFocus(pObj->hFocussedChild);
 				}
 				else {
 					pObj->hFocussedChild = WM_SetFocusOnNextChild(hObj);
 				}
-				pMsg->Data.v = 0;   /* Focus change accepted */
+				pMsg->Data = (WM_PARAM)0;   /* Focus change accepted */
 			}
 			return;
 		case WM_GET_ACCEPT_FOCUS:
@@ -59,8 +59,8 @@ static void _cb(WM_MESSAGE *pMsg) {
 			_OnChildHasFocus(pObj, pMsg);
 			return;
 		case WM_KEY:
-			if (((const WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt > 0) {
-				int Key = ((const WM_KEY_INFO *)(pMsg->Data.p))->Key;
+			if (((const WM_KEY_INFO *)(pMsg->Data))->PressedCnt > 0) {
+				int Key = ((const WM_KEY_INFO *)(pMsg->Data))->Key;
 				switch (Key) {
 					case GUI_KEY_TAB:
 						pObj->hFocussedChild = WM_SetFocusOnNextChild(hObj);
@@ -73,7 +73,7 @@ static void _cb(WM_MESSAGE *pMsg) {
 			GUI_Clear();
 			break;
 		case WM_GET_BKCOLOR:
-			pMsg->Data.Color = WINDOW__DefaultBkColor;
+			pMsg->Data = (WM_PARAM)(uintptr_t)WINDOW__DefaultBkColor;
 			return;                       /* Message handled */
 	}
 	if (cb) {

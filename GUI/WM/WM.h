@@ -170,18 +170,16 @@ The following is the list of windows messages.
 #define WM_CF_RESERVED3        (1<<14)
 #define WM_CF_RESERVED4        (1<<15)
 
+typedef uintptr_t WM_PARAM;
+
 typedef struct {
-  int MsgId;            /* type of message */
-  WM_HWIN hWin;         /* Destination window */
-  WM_HWIN hWinSrc;      /* Source window  */
-  union {
-    const void* p;            /* Some messages need more info ... Pointer is declared "const" because some systems (M16C) have 4 byte const, byte 2 byte default ptrs */
-    intptr_t v;
-    RGB_COLOR Color;
-  } Data;
+  int MsgId;
+  WM_HWIN hWin;
+  WM_HWIN hWinSrc;
+  WM_PARAM Data;
 } WM_MESSAGE;
 
-typedef void WM_CALLBACK( WM_MESSAGE* pMsg);
+typedef void WM_CALLBACK(WM_MESSAGE* pMsg);
 
 typedef struct {
   GUI_RECT Rect;        /* outer dimensions of window */

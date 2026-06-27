@@ -203,8 +203,8 @@ static void _ScrollbarReleased(SCROLLBAR_Obj *pObj) {
 }
 static void _OnTouch(SCROLLBAR_Obj *pObj, WM_MESSAGE *pMsg) {
 	SCROLLBAR_POSITIONS Pos;
-	GUI_PID_STATE *pState = (GUI_PID_STATE *)pMsg->Data.p;
-	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
+	GUI_PID_STATE *pState = (GUI_PID_STATE *)pMsg->Data;
+	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			int Sel;
 			int Range;
@@ -255,7 +255,7 @@ static void _OnTouch(SCROLLBAR_Obj *pObj, WM_MESSAGE *pMsg) {
 static void  _OnKey(SCROLLBAR_Handle hObj, WM_MESSAGE *pMsg) {
 	const WM_KEY_INFO *pKeyInfo;
 	int Key;
-	pKeyInfo = (const WM_KEY_INFO *)(pMsg->Data.p);
+	pKeyInfo = (const WM_KEY_INFO *)(pMsg->Data);
 	Key = pKeyInfo->Key;
 	if (pKeyInfo->PressedCnt > 0) {
 		switch (Key) {
@@ -309,12 +309,12 @@ static void _SCROLLBAR_Callback(WM_MESSAGE *pMsg) {
 			_OnKey(hObj, pMsg);
 			break;
 		case WM_SET_SCROLL_STATE:
-			_OnSetScrollState(pObj, (const WM_SCROLL_STATE *)pMsg->Data.p);
+			_OnSetScrollState(pObj, (const WM_SCROLL_STATE *)pMsg->Data);
 			break;
 		case WM_GET_SCROLL_STATE:
-			((WM_SCROLL_STATE *)pMsg->Data.p)->NumItems = pObj->NumItems;
-			((WM_SCROLL_STATE *)pMsg->Data.p)->PageSize = pObj->PageSize;
-			((WM_SCROLL_STATE *)pMsg->Data.p)->v = pObj->v;
+			((WM_SCROLL_STATE *)pMsg->Data)->NumItems = pObj->NumItems;
+			((WM_SCROLL_STATE *)pMsg->Data)->PageSize = pObj->PageSize;
+			((WM_SCROLL_STATE *)pMsg->Data)->v = pObj->v;
 			break;
 	}
 	WM_DefaultProc(pMsg);

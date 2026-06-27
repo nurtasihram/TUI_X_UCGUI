@@ -327,9 +327,9 @@ void EDIT__SetCursorPos(EDIT_Obj *pObj, int CursorPos) {
 	}
 }
 static void _OnTouch(EDIT_Obj *pObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
+	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
 	GUI_USE_PARA(pObj);
-	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
+	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
 		static int StartPress = 0;	//houhh 20061023...
 		if (pState->Pressed) {
 			GUI_DEBUG_LOG("EDIT__Callback(WM_TOUCH, Pressed, Handle %d)\n", 1);
@@ -366,8 +366,8 @@ static void EDIT__Callback(WM_MESSAGE *pMsg) {
 			break;       /* No return here ... WM_DefaultProc needs to be called */
 		case WM_KEY:
 			if (IsEnabled) {
-				if (((const WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt > 0) {
-					int Key = ((const WM_KEY_INFO *)(pMsg->Data.p))->Key;
+				if (((const WM_KEY_INFO *)(pMsg->Data))->PressedCnt > 0) {
+					int Key = ((const WM_KEY_INFO *)(pMsg->Data))->Key;
 					switch (Key) {
 						case GUI_KEY_TAB:
 							break;                    /* Send to parent by not doing anything */

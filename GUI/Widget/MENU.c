@@ -401,7 +401,7 @@ static int _ForwardMouseOverMsg(MENU_Obj *pObj, int x, int y) {
 				State.Pressed = 0;
 				State.x = x;
 				State.y = y;
-				Msg.Data.p = &State;
+				Msg.Data = (WM_PARAM)&State;
 				Msg.MsgId = WM_MOUSEOVER;
 				WM__SendMessage(hBelow, &Msg);
 				return 1;
@@ -503,9 +503,9 @@ static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
 		WM_HWIN hOwner;
 		hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
 		if (hOwner) {
-			if (pMsg->Data.p) {
+			if (pMsg->Data) {
 				GUI_PID_STATE *pState;
-				pState = (GUI_PID_STATE *)pMsg->Data.p;
+				pState = (GUI_PID_STATE *)pMsg->Data;
 				pState->x += WM_GetWindowOrgX(pObj) - WM_GetWindowOrgX(hOwner);
 				pState->y += WM_GetWindowOrgY(pObj) - WM_GetWindowOrgY(hOwner);
 			}
@@ -514,7 +514,7 @@ static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
 	}
 }
 static void _OnMenu(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
-	const MENU_MSG_DATA *pData = (const MENU_MSG_DATA *)pMsg->Data.p;
+	const MENU_MSG_DATA *pData = (const MENU_MSG_DATA *)pMsg->Data;
 	if (pData) {
 		switch (pData->MsgType) {
 			case MENU_ON_ITEMSELECT:
@@ -545,13 +545,13 @@ static void _OnMenu(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
 				_CloseSubmenu(pObj);
 				break;
 			case MENU_IS_MENU:
-				pMsg->Data.v = 1;
+				pMsg->Data = 1;
 				break;
 		}
 	}
 }
 static char _OnTouch(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
+	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
 	if (pState) {  /* Something happened in our area (pressed or released) */
 		return _HandlePID(pObj, pState->x, pState->y, pState->Pressed);
 	}
@@ -559,7 +559,7 @@ static char _OnTouch(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
 }
 #if (GUI_SUPPORT_MOUSE)
 static char _OnMouseOver(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
+	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
 	if (pState) {
 		return _HandlePID(pObj, pState->x, pState->y, -1);
 	}
@@ -795,14 +795,14 @@ int MENU__SendMenuMessage(MENU_Handle hObj, WM_HWIN hDestWin, uint16_t MsgType, 
 	MsgData.MsgType = MsgType;
 	MsgData.ItemId = ItemId;
 	Msg.MsgId = WM_MENU;
-	Msg.Data.p = &MsgData;
+	Msg.Data = (WM_PARAM)&MsgData;
 	Msg.hWinSrc = hObj;
 	if (!hDestWin) {
 		hDestWin = WM_GetParent(hObj);
 	}
 	if (hDestWin) {
 		WM__SendMessage(hDestWin, &Msg);
-		return Msg.Data.v;
+		return (int)Msg.Data;
 	}
 	return 0;
 }

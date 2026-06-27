@@ -99,8 +99,8 @@ static void _SliderReleased(SLIDER_Obj *pObj) {
 	}
 }
 static void _OnTouch(SLIDER_Obj *pObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
-	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
+	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)(uintptr_t)pMsg->Data;
+	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			int x0, xsize, x, Sel, Range;
 			Range = (pObj->Max - pObj->Min);
@@ -139,7 +139,7 @@ static void _OnTouch(SLIDER_Obj *pObj, WM_MESSAGE *pMsg) {
 static void  _OnKey(SLIDER_Handle hObj, WM_MESSAGE *pMsg) {
 	const WM_KEY_INFO *pKeyInfo;
 	int Key;
-	pKeyInfo = (const WM_KEY_INFO *)(pMsg->Data.p);
+	pKeyInfo = (const WM_KEY_INFO *)(uintptr_t)pMsg->Data;
 	Key = pKeyInfo->Key;
 	if (pKeyInfo->PressedCnt > 0) {
 		switch (Key) {

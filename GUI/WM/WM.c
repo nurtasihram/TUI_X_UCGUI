@@ -1067,7 +1067,7 @@ static void _Paint1(WM_HWIN hWin, WM_Obj *pWin) {
 		if (Status & WM_SF_LATE_CLIP) {
 			Msg.hWin = hWin;
 			Msg.MsgId = WM_PAINT;
-			Msg.Data.p = (GUI_RECT *)&pWin->InvalidRect;
+			Msg.Data = (WM_PARAM)&pWin->InvalidRect;
 			WM_SetDefault();
 			WM_SendMessage(hWin, &Msg);
 		}
@@ -1075,7 +1075,7 @@ static void _Paint1(WM_HWIN hWin, WM_Obj *pWin) {
 			WM_ITERATE_START(&pWin->InvalidRect) {
 				Msg.hWin = hWin;
 				Msg.MsgId = WM_PAINT;
-				Msg.Data.p = (GUI_RECT *)&pWin->InvalidRect;
+				Msg.Data = (WM_PARAM)&pWin->InvalidRect;
 				WM_SetDefault();
 				WM_SendMessage(hWin, &Msg);
 			} WM_ITERATE_END();
@@ -1360,7 +1360,7 @@ static void cbBackWin(WM_MESSAGE *pMsg) {
 	const WM_KEY_INFO *pKeyInfo;
 	switch (pMsg->MsgId) {
 		case WM_KEY:
-			pKeyInfo = (const WM_KEY_INFO *)pMsg->Data.p;
+			pKeyInfo = (const WM_KEY_INFO *)pMsg->Data;
 			if (pKeyInfo->PressedCnt == 1) {
 				GUI_StoreKey(pKeyInfo->Key);
 			}
@@ -1400,7 +1400,7 @@ void WM_Deactivate(void) {
 */
 void WM_DefaultProc(WM_MESSAGE *pMsg) {
 	WM_HWIN hWin = pMsg->hWin;
-	const void *p = pMsg->Data.p;
+	const void *p = (const void *)pMsg->Data;
 	WM_Obj *pWin = (hWin);
 	/* Exec message */
 	switch (pMsg->MsgId) {
@@ -1408,21 +1408,20 @@ void WM_DefaultProc(WM_MESSAGE *pMsg) {
 			WM__GetClientRectWin(pWin, (GUI_RECT *)p);
 			break;
 		case WM_GET_CLIENT_WINDOW:      /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
-			pMsg->Data.p = hWin;
+			pMsg->Data = (WM_PARAM)hWin;
 			return;                       /* Message handled */
 		case WM_KEY:
 			WM_SendToParent(hWin, pMsg);
 			return;                       /* Message handled */
 		case WM_GET_BKCOLOR:
-			pMsg->Data.Color = GUI_INVALID_COLOR;
+			pMsg->Data = (WM_PARAM)GUI_INVALID_COLOR;
 			return;                       /* Message handled */
 		case WM_NOTIFY_ENABLE:
 			WM_Invalidate(hWin);
 			return;                       /* Message handled */
 	}
 	/* Message not handled. If it queries something, we return 0 to be on the safe side. */
-	pMsg->Data.v = 0;
-	pMsg->Data.p = 0;
+	pMsg->Data = 0;
 }
 
 void WM_Init(void) {
@@ -1954,7 +1953,7 @@ void WM_SetEnableState(WM_HWIN hWin, int State) {
 		WM_MESSAGE Msg;
 		pWin->Status = Status;
 		Msg.MsgId = WM_NOTIFY_ENABLE;
-		Msg.Data.v = State;
+		Msg.Data = (WM_PARAM)State;
 		WM_SendMessage(hWin, &Msg);
 	}
 
@@ -1988,7 +1987,7 @@ RGB_COLOR WM_GetBkColor(WM_HWIN hObj) {
 		WM_MESSAGE Msg;
 		Msg.MsgId = WM_GET_BKCOLOR;
 		WM_SendMessage(hObj, &Msg);
-		return Msg.Data.Color;
+		return (RGB_COLOR)Msg.Data;
 	}
 	return GUI_INVALID_COLOR;
 }
@@ -2030,10 +2029,10 @@ void WM_GetClientRect(GUI_RECT *pRect) {
 
 WM_HWIN WM_GetClientWindow(WM_HWIN hObj) {
 	WM_MESSAGE Msg;
-	Msg.Data.v = 0;
+	Msg.Data = 0;
 	Msg.MsgId = WM_GET_CLIENT_WINDOW;
 	WM_SendMessage(hObj, &Msg);
-	return (WM_HWIN)Msg.Data.v;
+	return (WM_HWIN)Msg.Data;
 
 }
 
@@ -2116,7 +2115,7 @@ int WM_GetId(WM_HWIN hObj) {
 	WM_MESSAGE Msg;
 	Msg.MsgId = WM_GET_ID;
 	WM_SendMessage(hObj, &Msg);
-	return Msg.Data.v;
+	return (int)Msg.Data;
 }
 
 /*********************************************************************
@@ -2131,7 +2130,7 @@ int WM_GetId(WM_HWIN hObj) {
 */
 void WM_GetInsideRectEx(WM_HWIN hWin, GUI_RECT *pRect) {
 	WM_MESSAGE Msg;
-	Msg.Data.p = pRect;
+	Msg.Data = (WM_PARAM)pRect;
 	Msg.MsgId = WM_GET_INSIDE_RECT;
 	WM_SendMessage(hWin, &Msg);
 }
@@ -2284,7 +2283,7 @@ WM_HWIN WM_GetScrollPartner(WM_HWIN hScroll) {
 void WM_GetScrollState(WM_HWIN hObj, WM_SCROLL_STATE *pScrollState) {
 	WM_MESSAGE Msg;
 	Msg.MsgId = WM_GET_SCROLL_STATE;
-	Msg.Data.p = pScrollState;
+	Msg.Data = (WM_PARAM)pScrollState;
 	WM_SendMessage(hObj, &Msg);
 }
 
@@ -2522,10 +2521,10 @@ int WM_IsFocussable(WM_HWIN hWin) {
 	int r = 0;
 	if (hWin) {
 		WM_MESSAGE Msg;
-		Msg.Data.v = 0;
+		Msg.Data = (WM_PARAM)0;
 		Msg.MsgId = WM_GET_ACCEPT_FOCUS;
 		WM_SendMessage(hWin, &Msg);
-		r = Msg.Data.v;
+		r = (int)Msg.Data;
 	}
 	return r;
 }
@@ -2663,7 +2662,7 @@ void WM_MoveChildTo(WM_HWIN hWin, int x, int y) {
 void WM_NotifyParent(WM_HWIN hWin, int Notification) {
 	WM_MESSAGE Msg;
 	Msg.MsgId = WM_NOTIFY_PARENT;
-	Msg.Data.v = Notification;
+	Msg.Data = (WM_PARAM)(uintptr_t)Notification;
 	WM_SendToParent(hWin, &Msg);
 }
 
@@ -2934,18 +2933,18 @@ int WM_SetFocus(WM_HWIN hWin) {
 		Info.hNew = hWin;
 		Msg.MsgId = WM_SET_FOCUS;
 		/* Send a "no more focus" message to window losing focus */
-		Msg.Data.v = 0;
+		Msg.Data = (WM_PARAM)0;
 		if (WM__hWinFocus) {
 			WM_SendMessage(WM__hWinFocus, &Msg);
 		}
 		/* Send "You have the focus now" message to the window */
-		Msg.Data.v = 1;
+		Msg.Data = (WM_PARAM)1;
 		WM_SendMessage(WM__hWinFocus = hWin, &Msg);
-		if ((r = Msg.Data.v) == 0) { /* On success only */
+		if ((r = (int)Msg.Data) == 0) { /* On success only */
 			/* Set message to ancestors of window getting the focus */
 			while ((hWin = WM_GetParent(hWin)) != 0) {
 				Msg.MsgId = WM_NOTIFY_CHILD_HAS_FOCUS;
-				Msg.Data.p = &Info;
+				Msg.Data = (WM_PARAM)&Info;
 				WM_SendMessage(hWin, &Msg);
 			}
 			/* Set message to ancestors of window loosing the focus */
@@ -2953,7 +2952,7 @@ int WM_SetFocus(WM_HWIN hWin) {
 			if (WM_IsWindow(hWin)) {    /* Make sure window has not been deleted in the mean time. Can be optimized: _DeleteWindow could clear the handle to avoid this check (RS) */
 				while ((hWin = WM_GetParent(hWin)) != 0) {
 					Msg.MsgId = WM_NOTIFY_CHILD_HAS_FOCUS;
-					Msg.Data.p = &Info;
+					Msg.Data = (WM_PARAM)&Info;
 					WM_SendMessage(hWin, &Msg);
 				}
 			}
@@ -3106,7 +3105,7 @@ WM_HWIN WM_SetFocusOnPrevChild(WM_HWIN hParent) {
 void WM_SetId(WM_HWIN hObj, int Id) {
 	WM_MESSAGE Msg;
 	Msg.MsgId = WM_SET_ID;
-	Msg.Data.v = Id;
+	Msg.Data = (WM_PARAM)(uintptr_t)Id;
 	WM_SendMessage(hObj, &Msg);
 }
 
@@ -3167,7 +3166,7 @@ void WM_SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE *pState) {
 	if (hWin && pState) {
 		WM_MESSAGE Msg;
 		Msg.MsgId = WM_SET_SCROLL_STATE;
-		Msg.Data.p = (const void *)pState;
+		Msg.Data = (WM_PARAM)pState;
 		WM_SendMessage(hWin, &Msg);
 	}
 }
@@ -3466,7 +3465,7 @@ int WM_OnKey(int Key, int Pressed) {
 		Info.Key = Key;
 		Info.PressedCnt = Pressed;
 		Msg.MsgId = WM_KEY;
-		Msg.Data.p = &Info;
+		Msg.Data = (WM_PARAM)&Info;
 		WM__SendMessage(WM__hWinFocus, &Msg);
 		r = 1;
 	}

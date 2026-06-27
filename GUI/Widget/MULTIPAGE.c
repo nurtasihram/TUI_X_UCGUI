@@ -329,8 +329,8 @@ static int _ClickedOnMultipage(MULTIPAGE_Obj *pObj, int x, int y) {
 static void _OnTouch(MULTIPAGE_Obj *pObj, WM_MESSAGE *pMsg) {
 	GUI_PID_STATE *pState;
 	int Notification;
-	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
-		pState = (GUI_PID_STATE *)pMsg->Data.p;
+	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
+		pState = (GUI_PID_STATE *)pMsg->Data;
 		if (pState->Pressed) {
 			int x = pState->x;
 			int y = pState->y;
@@ -375,7 +375,7 @@ static void _Callback(WM_MESSAGE *pMsg) {
 			_OnTouch(pObj, pMsg);
 			break;
 		case WM_NOTIFY_PARENT:
-			if (pMsg->Data.v == WM_NOTIFICATION_VALUE_CHANGED) {
+			if ((int)pMsg->Data == WM_NOTIFICATION_VALUE_CHANGED) {
 				if (WM_GetId(pMsg->hWinSrc) == GUI_ID_HSCROLL) {
 					pObj->ScrollState = SCROLLBAR_GetValue(pMsg->hWinSrc);
 					WM_Invalidate(hObj);
@@ -383,13 +383,13 @@ static void _Callback(WM_MESSAGE *pMsg) {
 			}
 			break;
 		case WM_GET_CLIENT_WINDOW:
-			pMsg->Data.p = pObj->hClient;
+			pMsg->Data = (WM_PARAM)pObj->hClient;
 			break;
 		case WM_GET_INSIDE_RECT:
-			_CalcClientRect(pObj, (GUI_RECT *)(pMsg->Data.p));
+			_CalcClientRect(pObj, (GUI_RECT *)(pMsg->Data));
 			break;
 		case WM_WIDGET_SET_EFFECT:
-			WIDGET_SetEffect(WM_GetScrollbarH(hObj), (WIDGET_EFFECT const *)pMsg->Data.p);
+			WIDGET_SetEffect(WM_GetScrollbarH(hObj), (WIDGET_EFFECT const *)pMsg->Data);
 		case WM_SIZE:
 			_UpdatePositions(pObj);
 			break;
@@ -420,7 +420,7 @@ static void _ClientCallback(WM_MESSAGE *pMsg) {
 			WM_BringToTop(hParent);
 			break;
 		case WM_GET_CLIENT_WINDOW:
-			pMsg->Data.p = hObj;
+			pMsg->Data = (WM_PARAM)hObj;
 			break;
 		case WM_GET_INSIDE_RECT:
 			WM_DefaultProc(pMsg);

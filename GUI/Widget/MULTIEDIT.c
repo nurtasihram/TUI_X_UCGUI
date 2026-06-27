@@ -932,8 +932,8 @@ static void _MULTIEDIT_Paint(MULTIEDIT_OBJ *pObj) {
 }
 static void _OnTouch(MULTIEDIT_OBJ *pObj, WM_MESSAGE *pMsg) {
 	int Notification;
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data.p;
-	if (pMsg->Data.p) {  /* Something happened in our area (pressed or released) */
+	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
+	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			int Effect, xPos, yPos;
 			Effect = pObj->Widget.pEffect->EffectSize;
@@ -1070,7 +1070,7 @@ static void _MULTIEDIT_Callback(WM_MESSAGE *pMsg) {
 			_Invalidate(hObj);
 			break;
 		case WM_NOTIFY_PARENT:
-			switch (pMsg->Data.v) {
+			switch (pMsg->Data) {
 				case WM_NOTIFICATION_VALUE_CHANGED:
 					if (pMsg->hWinSrc == WM_GetScrollbarV(hObj)) {
 						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
@@ -1100,8 +1100,8 @@ static void _MULTIEDIT_Callback(WM_MESSAGE *pMsg) {
 			GUI_ALLOC_FreePtr(&pObj->hText);
 			break;
 		case WM_KEY:
-			if (((const WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt > 0) {
-				int Key = ((const WM_KEY_INFO *)(pMsg->Data.p))->Key;
+			if (((const WM_KEY_INFO *)(pMsg->Data))->PressedCnt > 0) {
+				int Key = ((const WM_KEY_INFO *)(pMsg->Data))->Key;
 				/* Leave code for test purpose
 				switch (Key) {
 				case '1': Key = GUI_KEY_LEFT;  break;

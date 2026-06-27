@@ -20,8 +20,8 @@ static void _MESSAGEBOX_cbCallback(WM_MESSAGE *pMsg) {
 			break;
 		case WM_KEY:
 		{
-			int Key = ((const WM_KEY_INFO *)(pMsg->Data.p))->Key;
-			if (((const WM_KEY_INFO *)(pMsg->Data.p))->PressedCnt) {
+			int Key = ((const WM_KEY_INFO *)(pMsg->Data))->Key;
+			if (((const WM_KEY_INFO *)(pMsg->Data))->PressedCnt) {
 				switch (Key) {
 					case GUI_KEY_ESCAPE:
 						GUI_EndDialog(hWin, 1);             /* End dialog with return value 1 if <ESC> is pressed */
@@ -35,7 +35,7 @@ static void _MESSAGEBOX_cbCallback(WM_MESSAGE *pMsg) {
 		break;
 		case WM_NOTIFY_PARENT:
 		{
-			int NCode = pMsg->Data.v;             /* Get notification code */
+			int NCode = (int)pMsg->Data;             /* Get notification code */
 			int Id = WM_GetId(pMsg->hWinSrc);  /* Get control ID */
 			switch (NCode) {
 				case WM_NOTIFICATION_RELEASED:      /* React only if released */
