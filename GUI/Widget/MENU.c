@@ -388,10 +388,10 @@ static int _ForwardMouseOverMsg(MENU_Obj *pObj, int x, int y) {
 	if ((pObj->IsSubmenuActive == 0) && !(pObj->Flags & MENU_SF_POPUP)) {
 		if (_IsTopLevelMenu(pObj)) {
 			WM_HWIN hBelow;
-			x += WM_GetWindowOrgX(hObj);
-			y += WM_GetWindowOrgY(hObj);
+			x += WM_GetWindowOrgX(pObj);
+			y += WM_GetWindowOrgY(pObj);
 			hBelow = WM_Screen2hWin(x, y);
-			if (hBelow && (hBelow != hObj)) {
+			if (hBelow && (hBelow != pObj)) {
 				WM_MESSAGE Msg;
 				GUI_PID_STATE State;
 				x -= WM_GetWindowOrgX(hBelow);

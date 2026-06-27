@@ -538,7 +538,7 @@ static int _OnMouseOver(LISTBOX_Obj *pObj, WM_MESSAGE *pMsg) {
 			Sel = _GetItemFromPos(pObj, pState->x, pState->y);
 			if (Sel >= 0) {
 				if (Sel < (int)(pObj->ScrollStateV.v + _GetNumVisItems(pObj))) {
-					LISTBOX_SetSel(hObj, Sel);
+					LISTBOX_SetSel(pObj, Sel);
 				}
 			}
 		}
