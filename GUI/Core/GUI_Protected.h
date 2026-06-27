@@ -97,7 +97,6 @@ int   GUI_UC__NumBytes2NumChars(const char  * s, int NumBytes);
 int  GUI__GetLineNumChars  (const char  *s, int MaxNumChars);
 int  GUI__GetNumChars      (const char  *s);
 int  GUI__GetLineDistX     (const char  *s, int Len);
-int  GUI__GetFontSizeY     (void);
 int  GUI__HandleEOLine     (const char  **ps);
 void GUI__DispLine         (const char  *s, int Len, const GUI_RECT* pr);
 void GUI__AddSpaceHex      (uint32_t v, uint8_t Len, char**ps);

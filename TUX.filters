@@ -165,7 +165,7 @@
     <ClCompile Include="GUI\Core\GUI__DivideRound32.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI__GetFontSizeY.c">
+    <ClCompile Include="GUI\Core\GUI_GetFontSizeY.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI__GetNumChars.c">

@@ -211,37 +211,16 @@
     <ClCompile Include="GUI\Widget\FRAMEWIN.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI__CalcTextRect.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI__DivideRound.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI__DivideRound32.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI__GetFontSizeY.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI__GetNumChars.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI__HandleEOLine.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI__IntersectRect.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI__IntersectRects.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI__memset.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI__memset16.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI__ReduceRect.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI__SetText.c">
@@ -253,13 +232,7 @@
     <ClCompile Include="GUI\Core\GUI_AddKeyMsgHook.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_ClearRectEx.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_CursorPal.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_DispCEOL.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_DispChar.c">
@@ -274,37 +247,13 @@
     <ClCompile Include="GUI\Core\GUI_DispStringAt.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_DispStringAtCEOL.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_DispStringHCenter.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_DispStringInRect.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_DispStringInRectMax.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_DispStringLen.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_DrawBitmap.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_DrawFocusRect.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_DrawRectEx.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_Exec.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_FillRect.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_FillRectEx.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_GetBitmapPixelIndex.c">
@@ -316,43 +265,10 @@
     <ClCompile Include="GUI\Core\GUI_GetDispPos.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetFont.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetFontInfo.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetFontSizeY.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetStringDistX.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetTextAlign.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetTextExtend.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetTextMode.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetYSizeOfFont.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_Goto.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_IsInFont.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_MergeRect.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_MOUSE.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_MoveRect.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_OnKey.c">
@@ -361,31 +277,7 @@
     <ClCompile Include="GUI\Core\GUI_PID.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_RectsIntersect.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SaveContext.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_SelectLCD.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetDrawMode.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetFont.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetLBorder.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetTextAlign.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetTextMode.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_SetTextStyle.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_UC.c">
@@ -409,12 +301,6 @@
     <ClCompile Include="GUI\Core\GUICharLine.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUICharM.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUICharP.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUICore.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -436,13 +322,7 @@
     <ClCompile Include="GUI\Core\LCD.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_API.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\LCD_Mirror.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_MixColors256.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Resources\GUI_CursorArrowL.c">
@@ -462,9 +342,6 @@
     </ClCompile>
     <ClCompile Include="GUI\Resources\GUI_CursorHeaderM.c">
       <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI2DLib.c">
-      <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Resources\GUI_CursorArrowM.c">
       <Filter>GUI\Resources</Filter>

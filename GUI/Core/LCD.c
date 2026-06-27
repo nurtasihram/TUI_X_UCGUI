@@ -27,25 +27,6 @@ int LCD_Init(void) {
 	return 0;
 }
 
-static int _GetColorIndex(int i)  /* i is 0 or 1 */ {
-	return  (GUI_Context.DrawMode & DRAWMODE_REV) ? i - 1 : i;
-}
-
-void GUI_SetBkColor(RGB_COLOR color) {
-	LCD_ACOLORINDEX[_GetColorIndex(0)] = color;
-}
-
-void GUI_SetColor(RGB_COLOR color) {
-	LCD_ACOLORINDEX[_GetColorIndex(1)] = color;
-}
-
-RGB_COLOR GUI_GetBkColor(void) {
-	return LCD_BKCOLORINDEX;
-}
-RGB_COLOR GUI_GetColor(void) {
-	return LCD_COLORINDEX;
-}
-
 GUI_DRAWMODE LCD_SetDrawMode(GUI_DRAWMODE dm) {
 	GUI_DRAWMODE OldDM = GUI_Context.DrawMode;
 	if ((GUI_Context.DrawMode ^ dm) & DRAWMODE_REV) {
@@ -198,3 +179,46 @@ void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize,
 	}
 	LCDDEV_L0_DrawBitmap(x0, y0, xsize, ysize, BitsPerPixel, BytesPerLine, pPixel, Diff, pTrans);
 }
+
+/*********************************************************************
+*
+*       LCD_MixColors256
+*
+* Purpose:
+*   Mix 2 colors.
+*
+* Parameters:
+*   Intens:    Intensity of first color in 257 steps, from 0 to 256, where 256 equals 100%
+*/
+RGB_COLOR LCD_MixColors256(RGB_COLOR Color, RGB_COLOR BkColor, unsigned Intens) {
+	/* Calc Color seperations for FgColor first */
+	uint32_t R = (Color & 0xff) * Intens;
+	uint32_t G = (Color & 0xff00) * Intens;
+	uint32_t B = (Color & 0xff0000) * Intens;
+	/* Add Color seperations for BkColor */
+	Intens = 256 - Intens;
+	R += (BkColor & 0xff) * Intens;
+	G += (BkColor & 0xff00) * Intens;
+	B += (BkColor & 0xff0000) * Intens;
+	R = (R >> 8);
+	G = (G >> 8) & 0xff00;
+	B = (B >> 8) & 0xff0000;
+	return R + G + B;
+}
+
+const tLCDDEV_APIList LCD_L0_APIList = {
+	(tLCDDEV_DrawBitmap *)LCD_L0_DrawBitmap,
+	LCD_L0_DrawHLine,
+	LCD_L0_DrawVLine,
+	LCD_L0_FillRect,
+	LCD_L0_GetPixel,
+	LCD_L0_GetRect,
+	LCD_L0_SetPixel,
+#if GUI_SUPPORT_MEMDEV
+	& GUI_MEMDEV__APIList16
+#endif
+};
+
+const tLCDDEV_APIList * /*const*/ LCD_aAPI[] = {
+	&LCD_L0_APIList
+};

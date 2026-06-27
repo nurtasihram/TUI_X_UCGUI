@@ -199,17 +199,6 @@ typedef struct {
 #endif
 } GUI_CONTEXT;
 
-/* Rename GUI_SaveContext in order to avoid crashes if wrong GUIConf is used */
-#if   ( GUI_WINSUPPORT &&  GUI_SUPPORT_DEVICES)
-#define GUI_SaveContext GUI_SaveContext_W_M
-#elif (!GUI_WINSUPPORT &&  GUI_SUPPORT_DEVICES)
-#define GUI_SaveContext GUI_SaveContext_M
-#elif ( GUI_WINSUPPORT && !GUI_SUPPORT_DEVICES)
-#define GUI_SaveContext GUI_SaveContext_W
-#else
-#define GUI_SaveContext GUI_SaveContext_
-#endif
-
 int          GUI_Init(void);
 void         GUI_SetDefault(void);
 GUI_DRAWMODE GUI_SetDrawMode(GUI_DRAWMODE dm);
@@ -256,15 +245,12 @@ typedef struct {
 } GUI_CURSOR;
 
 #if GUI_SUPPORT_CURSOR
-  void               GUI_CURSOR_Activate   (void);
-  void               GUI_CURSOR_Deactivate (void);
-  void               GUI_CURSOR_Hide       (void);
-  void               GUI_CURSOR_SetPosition(int x, int y);
-  const GUI_CURSOR  * GUI_CURSOR_Select     (const GUI_CURSOR  * pCursor);
-  void               GUI_CURSOR_Show       (void);
-#else
-#define GUI_CURSOR_Show()
-#define GUI_CURSOR_Clear();
+void               GUI_CURSOR_Activate   (void);
+void               GUI_CURSOR_Deactivate (void);
+void               GUI_CURSOR_Hide       (void);
+void               GUI_CURSOR_SetPosition(int x, int y);
+const GUI_CURSOR  *GUI_CURSOR_Select     (const GUI_CURSOR  * pCursor);
+void               GUI_CURSOR_Show       (void);
 #endif
 
 extern const GUI_CURSOR GUI_CursorArrowS,  GUI_CursorArrowSI;
@@ -282,18 +268,14 @@ extern const GUI_BITMAP GUI_BitmapCrossS, GUI_BitmapCrossSI;
 extern const GUI_BITMAP GUI_BitmapCrossM, GUI_BitmapCrossMI;
 extern const GUI_BITMAP GUI_BitmapCrossL, GUI_BitmapCrossLI;
 
-void  GUI_DispCEOL (void);
 void  GUI_DispChar  (uint16_t c);
 void  GUI_DispChars (uint16_t c, int Cnt);
 void  GUI_DispCharAt(uint16_t c, int16_t x, int16_t y);
 void  GUI_DispString         (const char  *s);
 void  GUI_DispStringAt       (const char  *s, int x, int y);
-void  GUI_DispStringAtCEOL   (const char  *s, int x, int y);
-void  GUI_DispStringHCenterAt(const char  *s, int x, int y);
 void  GUI__DispStringInRect  (const char  *s, GUI_RECT* pRect, int TextAlign, int MaxNumChars);
 void  GUI_DispStringInRect   (const char  *s, GUI_RECT* pRect, int Flags);
 void  GUI_DispStringInRectMax(const char  *s, GUI_RECT* pRect, int TextAlign, int MaxLen); /* Not to be doc. */
-void  GUI_DispStringLen      (const char  *s, int Len);
 void  GUI_GetTextExtend(GUI_RECT* pRect, const char  * s, int Len);
 int   GUI_GetYAdjust(void);
 int   GUI_GetDispPosX(void);
@@ -311,16 +293,12 @@ int   GUI_GetTextMode(void);
 char  GUI_IsInFont(const GUI_FONT  * pFont, uint16_t c);
 int   GUI_SetTextAlign(int Align);
 int   GUI_SetTextMode(int Mode);
-char  GUI_SetTextStyle(char Style);
 int   GUI_SetLBorder(int x);
 const GUI_FONT  * GUI_SetFont(const GUI_FONT  * pNewFont);
 char  GUI_GotoXY(int x, int y);
 char  GUI_GotoX(int x);
 char  GUI_GotoY(int y);
 void  GUI_DispNextLine(void);
-
-void GUI_SIF_CreateFont(void * pFontData, GUI_FONT * pFont, const GUI_SIF_TYPE * pFontType);
-void GUI_SIF_DeleteFont(GUI_FONT * pFont);
 
 int   GUI_UC_Encode           (char* s, uint16_t Char);
 int   GUI_UC_GetCharSize      (const char  * s);

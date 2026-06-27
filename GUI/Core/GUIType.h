@@ -172,15 +172,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 	GUIPROP_IsInFont,             \
   (tGUI_ENC_APIList*)0
 
-	/* PROP: Proportional fonts SJIS */
-	DECLARE_FONT(PROP);
-#define GUI_FONTTYPE_PROP_SJIS  \
-  GUIPROP_DispChar,             \
-	GUIPROP_GetCharDistX,         \
-	GUIPROP_GetFontInfo,          \
-	GUIPROP_IsInFont,             \
-  &GUI_ENC_APIList_SJIS
-
 #if defined(__cplusplus)
 }
 #endif
@@ -202,41 +193,6 @@ struct GUI_FONT {
 	uint8_t LHeight;     /* height of a small lower case character (a,x) */
 	uint8_t CHeight;     /* height of a small upper case character (A,X) */
 };
-
-typedef struct {
-	uint32_t ID;           /* Font file ID */
-	uint16_t YSize;        /* Height of font */
-	uint16_t YDist;        /* Space of font Y */
-	uint16_t Baseline;     /* Index of baseline */
-	uint16_t LHeight;      /* Height of a small lower case character (a) */
-	uint16_t CHeight;      /* Height of a upper case character (A) */
-	uint16_t NumAreas;     /* Number of character areas */
-} GUI_SI_FONT;
-
-typedef struct {
-	uint16_t First;        /* Index of first character */
-	uint16_t Last;         /* Index of last character */
-} GUI_SIF_CHAR_AREA;
-
-typedef struct {
-	uint16_t XSize;        /* Size of bitmap data in X */
-	uint16_t XDist;        /* Number of pixels for increment cursor in X */
-	uint16_t BytesPerLine; /* Number of bytes per line */
-	uint16_t Dummy;
-	uint32_t OffData;      /* Offset of pixel data */
-} GUI_SIF_CHARINFO;
-
-typedef struct tGUI_SIF_APIList_struct {
-	GUI_DISPCHAR *pDispChar;
-	GUI_GETCHARDISTX *pGetCharDistX;
-	GUI_GETFONTINFO *pGetFontInfo;
-	GUI_ISINFONT *pIsInFont;
-} tGUI_SIF_APIList;
-
-#define GUI_SIF_TYPE      tGUI_SIF_APIList
-#define GUI_SIF_TYPE_PROP &GUI_SIF_APIList_Prop
-
-extern const tGUI_SIF_APIList GUI_SIF_APIList_Prop;
 
 /*
 	  *********************************
