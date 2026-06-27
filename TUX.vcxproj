@@ -46,14 +46,10 @@
     <ClCompile Include="GUI\Core\GUI_DispStringLen.c" />
     <ClCompile Include="GUI\Core\GUI_DrawBitmap.c" />
     <ClCompile Include="GUI\Core\GUI_DrawFocusRect.c" />
-    <ClCompile Include="GUI\Core\GUI_DrawGraph.c" />
-    <ClCompile Include="GUI\Core\GUI_DrawHLine.c" />
     <ClCompile Include="GUI\Core\GUI_DrawRectEx.c" />
-    <ClCompile Include="GUI\Core\GUI_DrawVLine.c" />
     <ClCompile Include="GUI\Core\GUI_Exec.c" />
     <ClCompile Include="GUI\Core\GUI_FillRect.c" />
     <ClCompile Include="GUI\Core\GUI_FillRectEx.c" />
-    <ClCompile Include="GUI\Core\GUI_GetBitmapPixelColor.c" />
     <ClCompile Include="GUI\Core\GUI_GetBitmapPixelIndex.c" />
     <ClCompile Include="GUI\Core\GUI_GetClientRect.c" />
     <ClCompile Include="GUI\Core\GUI_GetDispPos.c" />
@@ -66,7 +62,6 @@
     <ClCompile Include="GUI\Core\GUI_GetTextMode.c" />
     <ClCompile Include="GUI\Core\GUI_GetYSizeOfFont.c" />
     <ClCompile Include="GUI\Core\GUI_Goto.c" />
-    <ClCompile Include="GUI\Core\GUI_InvertRect.c" />
     <ClCompile Include="GUI\Core\GUI_IsInFont.c" />
     <ClCompile Include="GUI\Core\GUI_MergeRect.c" />
     <ClCompile Include="GUI\Core\GUI_MOUSE.c" />
@@ -98,8 +93,6 @@
     <ClCompile Include="GUI\Core\GUI__memset16.c" />
     <ClCompile Include="GUI\Core\GUI__ReduceRect.c" />
     <ClCompile Include="GUI\Core\GUI__SetText.c" />
-    <ClCompile Include="GUI\Core\GUI__strcmp.c" />
-    <ClCompile Include="GUI\Core\GUI__strlen.c" />
     <ClCompile Include="GUI\Core\GUI__Wrap.c" />
     <ClCompile Include="GUI\Core\LCD.c" />
     <ClCompile Include="GUI\Core\LCD_API.c" />

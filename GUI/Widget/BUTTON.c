@@ -85,7 +85,7 @@ static void _Paint(BUTTON_Obj *pObj, BUTTON_Handle hObj) {
 			GUI_MoveRect(&r, BUTTON_3D_MOVE_X, BUTTON_3D_MOVE_Y);
 		}
 #endif
-		GUI_SetTextMode(GUI_TM_TRANS);
+		GUI_SetTextMode(DRAWMODE_TRANS);
 		GUI_DispStringInRect(s, &r, pObj->Props.Align);
 	}
 	/* Draw focus */

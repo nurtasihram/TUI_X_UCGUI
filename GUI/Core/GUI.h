@@ -135,37 +135,6 @@ extern const GUI_FONT GUI_Font13_ASCII, GUI_Font13_1;
 extern const GUI_FONT GUI_Font8x8, GUI_Font8x9;
 extern const GUI_FONT GUI_Font6x8, GUI_Font6x9;
 
-/*
-      *********************************
-      *                               *
-      * Text and drawing mode defines *
-      *                               *
-      *********************************
-
-These defines come in two flavors: the long version (.._DRAWMODE_..)
-and the short ones (.._DM_..). They are identical, feel free to use
-which ever one you like best.
-
-*/
-
-#define GUI_DRAWMODE_NORMAL  LCD_DRAWMODE_NORMAL
-#define GUI_DRAWMODE_XOR     LCD_DRAWMODE_XOR
-#define GUI_DRAWMODE_TRANS   LCD_DRAWMODE_TRANS
-#define GUI_DRAWMODE_REV     LCD_DRAWMODE_REV
-#define GUI_DM_NORMAL        LCD_DRAWMODE_NORMAL
-#define GUI_DM_XOR           LCD_DRAWMODE_XOR
-#define GUI_DM_TRANS         LCD_DRAWMODE_TRANS
-#define GUI_DM_REV           LCD_DRAWMODE_REV
-
-#define GUI_TEXTMODE_NORMAL  LCD_DRAWMODE_NORMAL
-#define GUI_TEXTMODE_XOR     LCD_DRAWMODE_XOR
-#define GUI_TEXTMODE_TRANS   LCD_DRAWMODE_TRANS
-#define GUI_TEXTMODE_REV     LCD_DRAWMODE_REV
-#define GUI_TM_NORMAL        LCD_DRAWMODE_NORMAL
-#define GUI_TM_XOR           LCD_DRAWMODE_XOR
-#define GUI_TM_TRANS         LCD_DRAWMODE_TRANS
-#define GUI_TM_REV           LCD_DRAWMODE_REV
-
 /* Text alignment flags, horizontal */
 #define GUI_TA_HORIZONTAL  (3<<0)
 #define GUI_TA_LEFT        (0<<0)
@@ -204,7 +173,7 @@ which ever one you like best.
 
 typedef struct {
   /* Variables in LCD module */
-  uint32_t aColorIndex[2];
+  uint32_t aColor[2];
   GUI_RECT       ClipRect;
   uint8_t             DrawMode;
   uint8_t             TextStyle;
@@ -280,7 +249,6 @@ void GUI_DrawVLine        (int x0, int y0, int y1);
 void GUI_FillRect         (int x0, int y0, int x1, int y1);
 void GUI_FillRectEx       (const GUI_RECT* pRect);
 void GUI_GetClientRect    (GUI_RECT* pRect);
-void GUI_InvertRect       (int x0, int y0, int x1, int y1);
 
 typedef struct {
   const  GUI_BITMAP * pBitmap;
@@ -291,7 +259,6 @@ typedef struct {
   void               GUI_CURSOR_Activate   (void);
   void               GUI_CURSOR_Deactivate (void);
   void               GUI_CURSOR_Hide       (void);
-  void               GUI_CURSOR_SetXor     (const GUI_BITMAP * pBM, int x, int y);
   void               GUI_CURSOR_SetPosition(int x, int y);
   const GUI_CURSOR  * GUI_CURSOR_Select     (const GUI_CURSOR  * pCursor);
   void               GUI_CURSOR_Show       (void);

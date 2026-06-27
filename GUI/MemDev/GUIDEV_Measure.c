@@ -64,10 +64,6 @@ static void _SetPixelIndex(int x, int y, int Index) {
   _MarkPixel(x, y);
 }
 
-static void _XorPixel(int x, int y) {
-  _MarkPixel(x, y);
-}
-
 static unsigned int _GetPixelIndex(int x, int y) {
   GUI_USE_PARA(x);
   GUI_USE_PARA(y);
@@ -91,7 +87,6 @@ static const tLCDDEV_APIList _APIList = {
   _GetPixelIndex,
   _GetRect,
   _SetPixelIndex,
-  _XorPixel,
   NULL,
 };
 

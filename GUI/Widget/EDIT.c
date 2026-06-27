@@ -112,10 +112,10 @@ static void _Paint(EDIT_Obj *pObj, EDIT_Handle hObj) {
 				GUI_TIMER_SetPeriod(Timer1, 500);
 			}
 			if (Timer1) GUI_TIMER_Context(Timer1, hObj);
-			if (pObj->CurrsorShow % 2) //houhh 20061022...
-				GUI_InvertRect(rInvert.x0, rInvert.y0, rInvert.x0 + CursorWidth - 1, rInvert.y1);
+		//	if (pObj->CurrsorShow % 2) //houhh 20061022...
+		//		GUI_InvertRect(rInvert.x0, rInvert.y0, rInvert.x0 + CursorWidth - 1, rInvert.y1);
 			/////////////
-			GUI_InvertRect(rInvert.x0, rInvert.y0, rInvert.x0 + CursorWidth - 1, rInvert.y1);
+		//	GUI_InvertRect(rInvert.x0, rInvert.y0, rInvert.x0 + CursorWidth - 1, rInvert.y1);
 		}
 		WM_SetUserClipRect(NULL);
 		/* Draw the 3D effect (if configured) */

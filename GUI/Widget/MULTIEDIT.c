@@ -924,7 +924,7 @@ static void _MULTIEDIT_Paint(MULTIEDIT_OBJ *pObj) {
 		r.y0 = y + yOff;
 		r.x1 = r.x0 + _GetCursorSizeX(pObj) - 1;
 		r.y1 = r.y0 + FontSizeY - 1;
-		GUI_InvertRect(r.x0, r.y0, r.x1, r.y1);
+		GUI_DrawRect(r.x0, r.y0, r.x1, r.y1);
 	}
 	WM_SetUserClipRect(prOldClip);
 	/* Draw the 3D effect (if configured) */

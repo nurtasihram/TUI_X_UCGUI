@@ -269,7 +269,7 @@ int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 			GUI_SetBkColor(pObj->Props.aBackColor[ColorIndex]);
 			GUI_SetColor(pObj->Props.aTextColor[ColorIndex]);
 			s = LISTBOX__GetpString(pObj, ItemIndex);
-			GUI_SetTextMode(GUI_TM_TRANS);
+			GUI_SetTextMode(DRAWMODE_TRANS);
 			GUI_Clear();
 			GUI_DispStringAt(s, pDrawItemInfo->x0 + 1, pDrawItemInfo->y0);
 			/* Display focus rectangle */

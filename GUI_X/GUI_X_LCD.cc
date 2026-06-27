@@ -13,45 +13,22 @@ int LCD_GetXSize(void) { return LCD_XSIZE; }
 int LCD_GetYSize(void) { return LCD_YSIZE; }
 
 extern void LCD_L0_SetPixel(int x, int y, RGB_COLOR PixelIndex) {
-	Ayx.Dot({x, y}, PixelIndex);
+	Ayx.Dot({ x, y }, PixelIndex);
 }
 extern RGB_COLOR LCD_L0_GetPixel(int x, int y) {
-	return Ayx.Dot({x, y});
-}
-void LCD_L0_XorPixel(int x, int y) {
-	LCD_L0_SetPixel(x, y, ~LCD_L0_GetPixel(x, y));
+	return Ayx.Dot({ x, y });
 }
 
 void LCD_L0_DrawHLine(int x0, int y, int x1) {
-	if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
-		for (; x0 <= x1; x0++) {
-			LCD_L0_XorPixel(x0, y);
-		}
-	}
-	else {
-		for (; x0 <= x1; x0++) {
-			LCD_L0_SetPixel(x0, y, LCD_COLORINDEX);
-		}
-	}
+	Ayx.Fill(LCD_COLORINDEX, { x0, y, x1, y });
 }
 
 void LCD_L0_DrawVLine(int x, int y0, int y1) {
-	if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
-		for (; y0 <= y1; y0++) {
-			LCD_L0_XorPixel(x, y0);
-		}
-	}
-	else {
-		for (; y0 <= y1; y0++) {
-			LCD_L0_SetPixel(x, y0, LCD_COLORINDEX);
-		}
-	}
+	Ayx.Fill(LCD_COLORINDEX, { x, y0, x, y1 });
 }
 
 void LCD_L0_FillRect(int x0, int y0, int x1, int y1) {
-	for (; y0 <= y1; y0++) {
-		LCD_L0_DrawHLine(x0, y0, x1);
-	}
+	Ayx.Fill(LCD_COLORINDEX, { x0, y0, x1, y1 });
 }
 
 

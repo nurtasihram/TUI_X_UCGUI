@@ -10,28 +10,6 @@
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
 
-/**********************************************************************
-*
-*                        Defaults for config switches
-*
-***********************************************************************
-
-  The config switches below do not affect the interface in GUI.h and
-  are therefor not required to be in GUI.h.
-*/
-
-/* Short address area.
-   For  most compilers, this is "near" or "__near"
-   We do not use this except for some CPUs which we know to always have some
-   near memory, because the GUI_Context ans some other data will be declared
-   to be in this short address (near) memory area as it has a major effect
-   on performance.
-   Please define in GUIConf.h (if you want to use it)
-*/
-#ifndef GUI_SADDR
-#define GUI_SADDR
-#endif
-
 #ifndef GUI_DEFAULT_FONT
 #define GUI_DEFAULT_FONT    &GUI_Font6x8
 #endif
@@ -106,9 +84,6 @@ struct GUI_Usage {
 
 #endif
 
-#define LCD_HL_DrawHLine LCD_DrawHLine
-#define LCD_HL_DrawPixel LCD_DrawPixel
-
 #define GUI_ZEROINIT(Obj) GUI_MEMSET(Obj, 0, sizeof(Obj))
 
 #define GUI_UC__GetCharSize(sText)  GUI_Context.pUC_API->pfGetCharSize(sText)
@@ -164,8 +139,7 @@ extern const GUI_LOGPALETTE GUI_CursorPalI;
 
 extern GUI_RECT  GUI_RectDispString; /* Used by LCD_Rotate...() and GUI_DispStringInRect() */
 
-int       GUI_GetBitmapPixelIndex(const GUI_BITMAP  * pBMP, unsigned x, unsigned y);
-RGB_COLOR GUI_GetBitmapPixelColor(const GUI_BITMAP  * pBMP, unsigned x, unsigned y);
+int GUI_GetBitmapPixel(const GUI_BITMAP  * pBMP, unsigned x, unsigned y);
 
 #if defined(__cplusplus)
 }
@@ -181,10 +155,10 @@ RGB_COLOR GUI_GetBitmapPixelColor(const GUI_BITMAP  * pBMP, unsigned x, unsigned
 #endif
 #endif
 
-GUI_EXTERN GUI_SADDR GUI_CONTEXT        GUI_Context;        /* Thread wide globals */
-GUI_EXTERN           GUI_tfTimer*       GUI_pfTimerExec;
-GUI_EXTERN           WM_tfHandlePID*    WM_pfHandlePID;
-GUI_EXTERN      void (*GUI_pfDispCharStyle)(uint16_t Char);
+GUI_EXTERN GUI_CONTEXT        GUI_Context;        /* Thread wide globals */
+GUI_EXTERN GUI_tfTimer*       GUI_pfTimerExec;
+GUI_EXTERN WM_tfHandlePID*    WM_pfHandlePID;
+GUI_EXTERN void(*GUI_pfDispCharStyle)(uint16_t Char);
 
 #if GUI_SUPPORT_CURSOR
   GUI_EXTERN GUI_CURSOR_tfTempHide*   GUI_CURSOR_pfTempHide;

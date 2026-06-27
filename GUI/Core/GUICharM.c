@@ -68,7 +68,7 @@ void GUIMONO_DispChar(uint16_t c) {
 						   &LCD_BKCOLORINDEX
 			);
 			if (c1 != -1) {
-				LCD_SetDrawMode(DrawMode | LCD_DRAWMODE_TRANS);
+				LCD_SetDrawMode(DrawMode | DRAWMODE_TRANS);
 				LCD_DrawBitmap(x, y,
 							   XSize, YSize,
 							   1,     /* Bits per Pixel */
@@ -79,8 +79,8 @@ void GUIMONO_DispChar(uint16_t c) {
 			}
 			/* Fill empty pixel lines */
 			if (GUI_Context.pAFont->YDist > GUI_Context.pAFont->YSize) {
-				if (DrawMode != LCD_DRAWMODE_TRANS) {
-					LCD_SetDrawMode(DrawMode ^ LCD_DRAWMODE_REV);  /* Reverse so we can fill with BkColor */
+				if (DrawMode != DRAWMODE_TRANS) {
+					LCD_SetDrawMode(DrawMode ^ DRAWMODE_REV);  /* Reverse so we can fill with BkColor */
 					LCD_FillRect(x,
 								 y + GUI_Context.pAFont->YSize * GUI_Context.pAFont->YDist,
 								 x + XSize,

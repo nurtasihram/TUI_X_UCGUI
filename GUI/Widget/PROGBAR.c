@@ -110,7 +110,7 @@ static void _Paint(PROGBAR_Handle hObj) {
 	pText = _GetText(pObj, ac);
 	GUI_SetFont(pObj->pFont);
 	_GetTextRect(pObj, &rText, pText);
-	tm = GUI_SetTextMode(GUI_TM_TRANS);
+	tm = GUI_SetTextMode(DRAWMODE_TRANS);
 	/* Draw left bar */
 	r = rInside;
 	r.x1 = xPos - 1;

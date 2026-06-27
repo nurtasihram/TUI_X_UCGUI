@@ -39,7 +39,7 @@ static void _Paint(TEXT_Obj *pObj) {
 	/* Show the text */
 	if (pObj->hpText) {
 		s = (const char *)(pObj->hpText);
-		GUI_SetTextMode(GUI_TM_TRANS);
+		GUI_SetTextMode(DRAWMODE_TRANS);
 		WM_GetClientRect(&Rect);
 		GUI_DispStringInRect(s, &Rect, pObj->Align);
 	}

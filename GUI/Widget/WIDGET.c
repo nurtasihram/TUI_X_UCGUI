@@ -396,9 +396,9 @@ void WIDGET__FillStringInRect(const char  *pText, const GUI_RECT *pFillRect, con
 			pOldClipRect = WM_SetUserClipRect(pTextRectMax);
 			/* Display text */
 #if WIDGET_FILL_TEXT_USES_TRANS
-			GUI_SetTextMode(GUI_TM_TRANS);
+			GUI_SetTextMode(DRAWMODE_TRANS);
 #else
-			GUI_SetTextMode(GUI_TM_NORMAL);
+			GUI_SetTextMode(DRAWMODE_NORMAL);
 #endif
 			GUI_DispStringAt(pText, pTextRectAct->x0, pTextRectAct->y0);
 			/* Restore clipping rectangle */

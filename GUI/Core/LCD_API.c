@@ -12,7 +12,6 @@ const tLCDDEV_APIList LCD_L0_APIList = {
   LCD_L0_GetPixel,
   LCD_L0_GetRect,
   LCD_L0_SetPixel,
-  LCD_L0_XorPixel,
 #if GUI_SUPPORT_MEMDEV
   &GUI_MEMDEV__APIList16
 #endif

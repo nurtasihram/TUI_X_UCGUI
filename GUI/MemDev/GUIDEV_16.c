@@ -8,8 +8,7 @@
 /* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
 
-#define PIXELINDEX                      uint16_t
-#define BITSPERPIXEL                     16
+#define PIXELINDEX    uint16_t
 #define API_LIST      GUI_MEMDEV__APIList16
 
 static const RGB_COLOR aID[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
@@ -33,7 +32,7 @@ static void _DrawBitLine1BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p,
 	PixelCnt = 8 - Diff;
 	pixels = LCD_aMirror[*p] >> Diff;
 
-	switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
+	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
 		case 0:    /* Write mode */
 			do {
 				/* Prepare loop */
@@ -53,7 +52,7 @@ static void _DrawBitLine1BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p,
 				PixelCnt = 8;
 				pixels = LCD_aMirror[*++p];
 			} while (1);
-		case LCD_DRAWMODE_TRANS:
+		case DRAWMODE_TRANS:
 			Index1 = *(pTrans + 1);
 			do {
 				/* Prepare loop */
@@ -103,28 +102,6 @@ static void _DrawBitLine1BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p,
 				PixelCnt = 8;
 				pixels = LCD_aMirror[*(++p)];
 			} while (1);
-		case LCD_DRAWMODE_XOR:
-			do {
-				/* Prepare loop */
-				if (PixelCnt > xsize) {
-					PixelCnt = xsize;
-				}
-				xsize -= PixelCnt;
-				/* Write as many pixels as we are allowed to and have loaded in this inner loop */
-				do {
-					if ((pixels & 1)) {
-						*pDest ^= ~0;
-					}
-					*pDest++;
-					pixels >>= 1;
-				} while (--PixelCnt);
-				/* Check if an other Source byte needs to be loaded */
-				if (xsize == 0) {
-					return;
-				}
-				PixelCnt = 8;
-				pixels = LCD_aMirror[*(++p)];
-			} while (1);
 	}
 }
 static void _DrawBitLine2BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p, int Diff, int xsize,
@@ -133,7 +110,7 @@ static void _DrawBitLine2BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p,
 	uint8_t  PixelCnt;
 	PixelCnt = 4 - Diff;
 	pixels = (*p) << (Diff << 1);
-	switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
+	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
 		case 0:    /* Write mode */
 		PixelLoopWrite:
 			if (PixelCnt > xsize) {
@@ -150,7 +127,7 @@ static void _DrawBitLine2BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p,
 				goto PixelLoopWrite;
 			}
 			break;
-		case LCD_DRAWMODE_TRANS:
+		case DRAWMODE_TRANS:
 		PixelLoopTrans:
 			if (PixelCnt > xsize)
 				PixelCnt = xsize;
@@ -172,23 +149,6 @@ static void _DrawBitLine2BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p,
 				goto PixelLoopTrans;
 			}
 			break;
-		case LCD_DRAWMODE_XOR:;
-		PixelLoopXor:
-			if (PixelCnt > xsize)
-				PixelCnt = xsize;
-			xsize -= PixelCnt;
-			do {
-				if ((pixels & 0xc0))
-					*pDest ^= 255;
-				pDest++;
-				pixels <<= 2;
-			} while (--PixelCnt);
-			if (xsize) {
-				PixelCnt = 4;
-				pixels = *(++p);
-				goto PixelLoopXor;
-			}
-			break;
 	}
 }
 static void _DrawBitLine4BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p, int Diff, int xsize,
@@ -197,7 +157,7 @@ static void _DrawBitLine4BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p,
 	uint8_t PixelCnt;
 	PixelCnt = 2 - Diff;
 	pixels = (*p) << (Diff << 2);
-	switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
+	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
 		/*
 				  * Write mode *
 		*/
@@ -228,7 +188,7 @@ static void _DrawBitLine4BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p,
 			/*
 					  * Transparent draw mode *
 			*/
-		case LCD_DRAWMODE_TRANS:
+		case DRAWMODE_TRANS:
 			/* Draw incomplete bytes to the left of center area */
 			if (Diff) {
 				if (pixels & 0xF0) {
@@ -273,29 +233,11 @@ static void _DrawBitLine4BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *p,
 				}
 			}
 			break;
-		case LCD_DRAWMODE_XOR:;
-		PixelLoopXor:
-			if (PixelCnt > xsize)
-				PixelCnt = xsize;
-			xsize -= PixelCnt;
-			do {
-				if ((pixels & 0xc0)) {
-					*pDest ^= 255;
-				}
-				pDest++;
-				pixels <<= 4;
-			} while (--PixelCnt);
-			if (xsize) {
-				PixelCnt = 2;
-				pixels = *(++p);
-				goto PixelLoopXor;
-			}
-			break;
 	}
 }
 static void _DrawBitLine8BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *pSrc, int xsize,
 							 const RGB_COLOR *pTrans, PIXELINDEX *pDest) {
-	switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
+	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
 		case 0:    /* Write mode */
 			do {
 				*pDest = *(pTrans + *pSrc);
@@ -303,7 +245,7 @@ static void _DrawBitLine8BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *pS
 				pSrc++;
 			} while (--xsize);
 			break;
-		case LCD_DRAWMODE_TRANS:
+		case DRAWMODE_TRANS:
 			do {
 				if (*pSrc) {
 					*pDest = *(pTrans + *pSrc);
@@ -319,11 +261,11 @@ static void _DrawBitLine8BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *pS
 	}
 }
 static void _DrawBitLine8BPP_DDB(GUI_USAGE *pUsage, int x, int y, const uint8_t  *pSrc, int xsize, PIXELINDEX *pDest) {
-	switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
+	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
 		case 0:    /* Write mode */
 			memcpy(pDest, pSrc, xsize);
 			break;
-		case LCD_DRAWMODE_TRANS:
+		case DRAWMODE_TRANS:
 			do {
 				if (*pSrc) {
 					*pDest = *pSrc;
@@ -339,11 +281,11 @@ static void _DrawBitLine8BPP_DDB(GUI_USAGE *pUsage, int x, int y, const uint8_t 
 	}
 }
 static void _DrawBitLine16BPP_DDB(GUI_USAGE *pUsage, int x, int y, const uint16_t *pSrc, int xsize, PIXELINDEX *pDest) {
-	switch (GUI_Context.DrawMode & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
+	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
 		case 0:    /* Write mode */
 			memcpy(pDest, pSrc, xsize * 2);
 			break;
-		case LCD_DRAWMODE_TRANS:
+		case DRAWMODE_TRANS:
 			do {
 				if (*pSrc) {
 					*pDest = *pSrc;
@@ -371,12 +313,11 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 	x0 += Diff;
 	/* Mark all affected pixels dirty unless transparency is set */
 	if (pUsage) {
-		if ((GUI_Context.DrawMode & LCD_DRAWMODE_TRANS) == 0) {
+		if ((GUI_Context.DrawMode & DRAWMODE_TRANS) == 0) {
 			GUI_USAGE_AddRect(pUsage, x0, y0, xsize, ysize);
 		}
 	}
 	pDest = _XY2PTR(x0, y0);
-#if BITSPERPIXEL == 16
 	/* handle 16 bpp bitmaps in high color modes, but only without palette */
 	if (BitsPerPixel == 16) {
 		for (i = 0; i < ysize; i++) {
@@ -386,7 +327,6 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 		}
 		return;
 	}
-#endif
 	/* Handle 8 bpp bitmaps seperately as we have different routine bitmaps with or without palette */
 	if (BitsPerPixel == 8) {
 		for (i = 0; i < ysize; i++) {
@@ -435,25 +375,7 @@ static void _FillRect(int x0, int y0, int x1, int y1) {
 	}
 	/* Do the drawing */
 	for (; y0 <= y1; y0++) {
-		if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
-			int RemPixels;
-			PIXELINDEX *pDest;
-			RemPixels = Len;
-			pDest = pData;
-			do {
-				*pDest = *pDest ^ ~0;
-				pDest++;
-			} while (--RemPixels);
-		}
-		else {  /* Fill */
-#if BITSPERPIXEL == 8
-			GUI_MEMSET(pData, LCD_COLORINDEX, Len);
-#elif BITSPERPIXEL == 16
-			GUI__memset16(pData, LCD_COLORINDEX, Len);
-#else
-#error Unsupported
-#endif
-		}
+		GUI__memset16(pData, LCD_COLORINDEX, Len);
 		pData = (PIXELINDEX *)((uint8_t *)pData + BytesPerLine);
 	}
 }
@@ -468,32 +390,20 @@ static void _DrawVLine(int x, int y0, int y1) {
 	GUI_USAGE *pUsage = hUsage ? (hUsage) : NULL;
 	PIXELINDEX *pData = _XY2PTR(x, y0);
 	unsigned BytesPerLine = pDev->BytesPerLine;
-
-	if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
+	if (hUsage) {
 		do {
-			if (hUsage) {
-				GUI_USAGE_AddPixel(pUsage, x, y0);
-			}
-			*pData = *pData ^ ~0;
-			pData = (PIXELINDEX *)((uint8_t *)pData + pDev->BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
+			GUI_USAGE_AddPixel(pUsage, x, y0);
+			*pData = LCD_COLORINDEX;
+			pData = (PIXELINDEX *)((uint8_t *)pData + BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
 		} while (++y0 <= y1);
 	}
 	else {
-		if (hUsage) {
-			do {
-				GUI_USAGE_AddPixel(pUsage, x, y0);
-				*pData = LCD_COLORINDEX;
-				pData = (PIXELINDEX *)((uint8_t *)pData + BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
-			} while (++y0 <= y1);
-		}
-		else {
-			unsigned NumPixels;
-			NumPixels = y1 - y0 + 1;
-			do {
-				*pData = LCD_COLORINDEX;
-				pData = (PIXELINDEX *)((uint8_t *)pData + BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
-			} while (--NumPixels);
-		}
+		unsigned NumPixels;
+		NumPixels = y1 - y0 + 1;
+		do {
+			*pData = LCD_COLORINDEX;
+			pData = (PIXELINDEX *)((uint8_t *)pData + BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
+		} while (--NumPixels);
 	}
 }
 
@@ -502,16 +412,6 @@ static void _SetPixelIndex(int x, int y, int Index) {
 	GUI_USAGE_h hUsage = pDev->hUsage;
 	PIXELINDEX *pData = _XY2PTR(x, y);
 	*pData = Index;
-	if (hUsage) {
-		GUI_USAGE_AddPixel(((GUI_USAGE *)hUsage), x, y);
-	}
-}
-
-static void _XorPixel(int x, int y) {
-	GUI_MEMDEV *pDev = (GUI_Context.hDevData);
-	GUI_USAGE_h hUsage = pDev->hUsage;
-	PIXELINDEX *pData = _XY2PTR(x, y);
-	*pData = *pData ^ ~0;
 	if (hUsage) {
 		GUI_USAGE_AddPixel(((GUI_USAGE *)hUsage), x, y);
 	}
@@ -530,11 +430,8 @@ const tLCDDEV_APIList API_LIST = {
   _GetPixelIndex,
   GUI_MEMDEV__GetRect,
   _SetPixelIndex,
-  _XorPixel,
-  NULL,               /* MemDevAPI       */
-  BITSPERPIXEL        /* BitsPerPixel    */
+  NULL, /* MemDevAPI       */
+  16    /* BitsPerPixel    */
 };
-
-#else
 
 #endif /* GUI_SUPPORT_MEMDEV */

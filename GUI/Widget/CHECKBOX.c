@@ -71,7 +71,7 @@ static void _Paint(CHECKBOX_Obj *pObj, CHECKBOX_Handle hObj) {
 		s = (const char *)(pObj->hpText);
 		WM_GetClientRect(&RectText);
 		RectText.x0 += RectBox.x1 + 1 + pObj->Props.Spacing;
-		GUI_SetTextMode(GUI_TM_TRANS);
+		GUI_SetTextMode(DRAWMODE_TRANS);
 		GUI_SetColor(pObj->Props.TextColor);
 		GUI_SetFont(pObj->Props.pFont);
 		GUI_DispStringInRect(s, &RectText, pObj->Props.Align);

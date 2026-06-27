@@ -21,14 +21,14 @@ void LCD_SetClipRectEx(const GUI_RECT *pRect) {
 int LCD_Init(void) {
 	LCD_SetClipRectMax();
 	LCD_L0_Init();
-	LCD_SetDrawMode(GUI_DRAWMODE_REV);
+	LCD_SetDrawMode(DRAWMODE_REV);
 	LCD_FillRect(0, 0, GUI_XMAX, GUI_YMAX);
 	LCD_SetDrawMode(0);
 	return 0;
 }
 
 static int _GetColorIndex(int i)  /* i is 0 or 1 */ {
-	return  (GUI_Context.DrawMode & LCD_DRAWMODE_REV) ? i - 1 : i;
+	return  (GUI_Context.DrawMode & DRAWMODE_REV) ? i - 1 : i;
 }
 
 void GUI_SetBkColor(RGB_COLOR color) {
@@ -48,7 +48,7 @@ RGB_COLOR GUI_GetColor(void) {
 
 GUI_DRAWMODE LCD_SetDrawMode(GUI_DRAWMODE dm) {
 	GUI_DRAWMODE OldDM = GUI_Context.DrawMode;
-	if ((GUI_Context.DrawMode ^ dm) & LCD_DRAWMODE_REV) {
+	if ((GUI_Context.DrawMode ^ dm) & DRAWMODE_REV) {
 		RGB_COLOR temp = LCD_BKCOLORINDEX;
 		LCD_BKCOLORINDEX = LCD_COLORINDEX;
 		LCD_COLORINDEX = temp;
@@ -79,7 +79,7 @@ GUI_DRAWMODE LCD_SetDrawMode(GUI_DRAWMODE dm) {
 void LCD_SetPixel(int x, int y, int ColorIndex) {
 	RETURN_IF_X_OUT();
 	RETURN_IF_Y_OUT();
-	LCDDEV_L0_SetPixelIndex(x, y, ColorIndex);
+	LCDDEV_L0_SetPixel(x, y, ColorIndex);
 }
 
 RGB_COLOR LCD_GetPixel(int x, int y) {
@@ -97,18 +97,13 @@ RGB_COLOR LCD_GetPixel(int x, int y) {
 	if (y > r.y1) {
 		return 0;
 	}
-	return LCDDEV_L0_GetPixelIndex(x, y);
+	return LCDDEV_L0_GetPixel(x, y);
 }
 
 void LCD_DrawPixel(int x, int y) {
 	RETURN_IF_Y_OUT();
 	RETURN_IF_X_OUT();
-	if (GUI_Context.DrawMode & LCD_DRAWMODE_XOR) {
-		LCDDEV_L0_XorPixel(x, y);
-	}
-	else {
-		LCDDEV_L0_SetPixelIndex(x, y, LCD_COLORINDEX);
-	}
+	LCDDEV_L0_SetPixel(x, y, LCD_COLORINDEX);
 }
 
 void LCD_DrawVLine(int x, int y0, int y1) {
@@ -121,7 +116,7 @@ void LCD_DrawVLine(int x, int y0, int y1) {
 	/* Call driver to draw */
 	LCDDEV_L0_DrawVLine(x, y0, y1);
 }
-void LCD_DrawHLine(int x0, int y, int x1) {
+void LCD_DrawHLine(int x0,int y, int x1) {
 	/* Perform clipping and check if there is something to do */
 	RETURN_IF_Y_OUT();
 	CLIP_X();

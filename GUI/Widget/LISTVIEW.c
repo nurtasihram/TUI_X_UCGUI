@@ -98,7 +98,7 @@ static void _Paint(LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 	/* Set drawing color, font and text mode */
 	GUI_SetColor(pObj->Props.aTextColor[0]);
 	GUI_SetFont(pObj->Props.pFont);
-	GUI_SetTextMode(GUI_TM_TRANS);
+	GUI_SetTextMode(DRAWMODE_TRANS);
 	/* Do the drawing */
 	for (i = pObj->ScrollStateV.v; i < EndRow; i++) {
 		pRow = (const GUI_ARRAY *)GUI_ARRAY_GetpItem(&pObj->RowArray, i);

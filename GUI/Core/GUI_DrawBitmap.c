@@ -17,7 +17,7 @@ void GL_DrawBitmap(const GUI_BITMAP  * pBitmap, int x0, int y0) {
   const GUI_LOGPALETTE  * pPal;
   pPal = pBitmap->pPal;
   PrevDraw = GUI_SetDrawMode(0);  /* No Get... at this point */
-  GUI_SetDrawMode((pPal && pPal->HasTrans) ? (PrevDraw|GUI_DRAWMODE_TRANS) : PrevDraw &(~GUI_DRAWMODE_TRANS));
+  GUI_SetDrawMode((pPal && pPal->HasTrans) ? (PrevDraw|DRAWMODE_TRANS) : PrevDraw &(~DRAWMODE_TRANS));
   if (pBitmap->pMethods) {
     pBitmap->pMethods->pfDraw(x0, y0, pBitmap->XSize ,pBitmap->YSize, (uint8_t const *)pBitmap->pData, pBitmap->pPal, 1, 1);
   } else {

@@ -18,7 +18,7 @@ static RGB_COLOR    _ColorIndex[4];      /* Color-Cache */
 
 /*********************************************************************
 *
-*       _SetPixelIndex
+*       _SetPixel
 *
 * Purpose
 *   Sets the pixel index for the Cursor.
@@ -27,22 +27,22 @@ static RGB_COLOR    _ColorIndex[4];      /* Color-Cache */
 *   - We do NOT call the driver directly, but thru its API table.
 *     This allows others (e.g. the VNC server) to be in the loop-
 */
-static void _SetPixelIndex(int x, int y, int Index) {
+static void _SetPixel(int x, int y, int Index) {
   if ((y >= _ClipRect.y0) && (y <= _ClipRect.y1)) {
     if ((x >= _ClipRect.x0) && (x <= _ClipRect.x1)) {
-      LCD_aAPI[0]->pfSetPixelIndex(x, y, Index);
+      LCD_aAPI[0]->pfSetPixel(x, y, Index);
     }
   }
 }
 
 /*********************************************************************
 *
-*       _GetPixelIndex
+*       _GetPixel
 *
 * Purpose
 *   Gets a pixel index for the Cursor.
 */
-static int _GetPixelIndex(int x, int y) {
+static int _GetPixel(int x, int y) {
   if ((y >= _ClipRect.y0) && (y <= _ClipRect.y1)) {
     if ((x >= _ClipRect.x0) && (x <= _ClipRect.x1)) {
       return LCD_L0_GetPixel(x, y);
@@ -69,7 +69,7 @@ static void _Undraw(void) {
     ySize = _Rect.y1 - _Rect.y0 + 1;
     for (y = 0; y < ySize; y++) {
       for (x = 0; x < xSize; x++) {
-        _SetPixelIndex(x + _Rect.x0, y + _Rect.y0, *(pData + x));
+        _SetPixel(x + _Rect.x0, y + _Rect.y0, *(pData + x));
       }
       pData += _pCursor->pBitmap->XSize;
     }
@@ -100,10 +100,10 @@ static void _Draw(void) {
     for (y = 0; y < ySize; y++) {
       for (x = 0; x < xSize; x++) {
         int BitmapPixel;
-        *(pData + x) = _GetPixelIndex(_Rect.x0 + x, _Rect.y0 + y);
-        BitmapPixel = GUI_GetBitmapPixelIndex(pBM, x, y);
+        *(pData + x) = _GetPixel(_Rect.x0 + x, _Rect.y0 + y);
+        BitmapPixel = GUI_GetBitmapPixel(pBM, x, y);
         if (BitmapPixel) {
-          _SetPixelIndex(_Rect.x0 + x, _Rect.y0 + y, _Log2Phys(BitmapPixel));
+          _SetPixel(_Rect.x0 + x, _Rect.y0 + y, _Log2Phys(BitmapPixel));
         }
       }
       pData += pBM->XSize;
@@ -297,26 +297,26 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
             RGB_COLOR Pixel;
             RGB_COLOR* pSave = pData + x + y * xSize;
             int xNew = x + xOff;
-            BitmapPixel = GUI_GetBitmapPixelIndex(pBM, x, y);
+            BitmapPixel = GUI_GetBitmapPixel(pBM, x, y);
             xyOverlaps    = (x    >= xOverlapMin) && (x    <= xOverlapMax) && yOverlaps;
             xyNewOverlaps = (xNew >= xOverlapMin) && (xNew <= xOverlapMax) && yNewOverlaps;
             /* Restore old pixel if it was not transparent */
             if (BitmapPixel) {
-              if (!xyOverlaps || (GUI_GetBitmapPixelIndex(pBM, x - xOff, y - yOff) == 0)) {
-                _SetPixelIndex(x + _Rect.x0, y + _Rect.y0, *(pSave));
+              if (!xyOverlaps || (GUI_GetBitmapPixel(pBM, x - xOff, y - yOff) == 0)) {
+                _SetPixel(x + _Rect.x0, y + _Rect.y0, *(pSave));
               }
             }
             /* Save */
             if (xyNewOverlaps) {
               Pixel = *(pData + xNew + yNew * xSize);
             } else {
-              Pixel = _GetPixelIndex(_Rect.x0 + xNew, _Rect.y0 + yNew);
+              Pixel = _GetPixel(_Rect.x0 + xNew, _Rect.y0 + yNew);
             }
             *pSave = Pixel;
             /* Write new  ... We could write pixel by pixel here */
             if (BitmapPixel) {
               RGB_COLOR NewPixel = _Log2Phys(BitmapPixel);
-              _SetPixelIndex(_Rect.x0 + xNew, _Rect.y0 + yNew, NewPixel);
+              _SetPixel(_Rect.x0 + xNew, _Rect.y0 + yNew, NewPixel);
             }
           }
         }

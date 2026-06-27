@@ -60,7 +60,7 @@ static void _OnPaint(RADIO_Obj* pObj) {
   /* Select font and text color */
   GUI_SetColor(pObj->TextColor);
   GUI_SetFont(pObj->pFont);
-  GUI_SetTextMode(GUI_TM_TRANS);
+  GUI_SetTextMode(DRAWMODE_TRANS);
   /* Get font infos */
   GUI_GetFontInfo(pObj->pFont, &FontInfo);
   FontDistY   = GUI_GetFontDistY();

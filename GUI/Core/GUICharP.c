@@ -41,7 +41,7 @@ void GUIPROP_DispChar(uint16_t c) {
 		if (GUI_Context.pAFont->YDist > GUI_Context.pAFont->YSize) {
 			int YDist = GUI_Context.pAFont->YDist;
 			int YSize = GUI_Context.pAFont->YSize;
-			if (DrawMode != LCD_DRAWMODE_TRANS) {
+			if (DrawMode != DRAWMODE_TRANS) {
 				RGB_COLOR OldColor = GUI_GetColor();
 				GUI_SetColor(GUI_GetBkColor());
 				LCD_FillRect(GUI_Context.DispPosX,

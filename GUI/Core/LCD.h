@@ -8,10 +8,9 @@
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
 
-#define LCD_DRAWMODE_NORMAL (0)
-#define LCD_DRAWMODE_XOR    (1<<0)
-#define LCD_DRAWMODE_TRANS  (1<<1)
-#define LCD_DRAWMODE_REV    (1<<2)
+#define DRAWMODE_NORMAL (0)
+#define DRAWMODE_TRANS  (1<<1)
+#define DRAWMODE_REV    (1<<2)
 
 typedef int GUI_DRAWMODE;
 typedef uint32_t RGB_COLOR;
@@ -45,13 +44,12 @@ typedef struct {
   be identical for all drivers and is therefor contained in the
   level above (LCD).
 */
-typedef void         tLCDDEV_DrawHLine    (int x0, int y0,  int x1);
-typedef void         tLCDDEV_DrawVLine    (int x , int y0,  int y1);
-typedef void         tLCDDEV_FillRect     (int x0, int y0, int x1, int y1);
-typedef unsigned int tLCDDEV_GetPixelIndex(int x, int y);
-typedef void         tLCDDEV_SetPixelIndex(int x, int y, int ColorIndex);
-typedef void         tLCDDEV_XorPixel     (int x, int y);
-typedef void         tLCDDEV_GetRect      (GUI_RECT*pRect);
+typedef void         tLCDDEV_DrawHLine(int x0, int y0,  int x1);
+typedef void         tLCDDEV_DrawVLine(int x , int y0,  int y1);
+typedef void         tLCDDEV_FillRect(int x0, int y0, int x1, int y1);
+typedef unsigned int tLCDDEV_GetPixel(int x, int y);
+typedef void         tLCDDEV_SetPixel(int x, int y, int ColorIndex);
+typedef void         tLCDDEV_GetRect(GUI_RECT *pRect);
 
 typedef struct tLCDDEV_APIList_struct tLCDDEV_APIList;
 
@@ -61,14 +59,13 @@ typedef void tLCDDEV_DrawBitmap   (int x0, int y0, int xsize, int ysize,
                        const void* pTrans);   /* Really RGB_COLOR, but is void to avoid compiler warnings*/
 
 struct tLCDDEV_APIList_struct {
-  tLCDDEV_DrawBitmap*         pfDrawBitmap;
-  tLCDDEV_DrawHLine*          pfDrawHLine;
-  tLCDDEV_DrawVLine*          pfDrawVLine;
-  tLCDDEV_FillRect*           pfFillRect;
-  tLCDDEV_GetPixelIndex*      pfGetPixelIndex;
-  tLCDDEV_GetRect*            pfGetRect;
-  tLCDDEV_SetPixelIndex*      pfSetPixelIndex;
-  tLCDDEV_XorPixel*           pfXorPixel;
+  tLCDDEV_DrawBitmap *pfDrawBitmap;
+  tLCDDEV_DrawHLine  *pfDrawHLine;
+  tLCDDEV_DrawVLine  *pfDrawVLine;
+  tLCDDEV_FillRect   *pfFillRect;
+  tLCDDEV_GetPixel   *pfGetPixel;
+  tLCDDEV_GetRect    *pfGetRect;
+  tLCDDEV_SetPixel   *pfSetPixel;
 #if GUI_SUPPORT_MEMDEV
     const tLCDDEV_APIList*    pMemDevAPI;
     unsigned                  BitsPerPixel;
@@ -79,7 +76,7 @@ extern const struct tLCDDEV_APIList_struct GUI_MEMDEV__APIList16;
 
 void LCD_DrawHLine(int x0, int y0,  int x1);
 void LCD_DrawPixel(int x0, int y0);
-void LCD_DrawVLine  (int x, int y0,  int y1);
+void LCD_DrawVLine(int x, int y0,  int y1);
 
 void LCD_SetClipRectEx(const GUI_RECT* pRect);
 void LCD_SetClipRectMax(void);
@@ -88,9 +85,9 @@ void LCD_SetClipRectMax(void);
 int LCD_Init(void);
 
 void LCD_SetPixel(int x, int y, int Color);
-RGB_COLOR    LCD_GetPixel(int x, int y);
+RGB_COLOR LCD_GetPixel(int x, int y);
 
-GUI_DRAWMODE LCD_SetDrawMode  (GUI_DRAWMODE dm);
+GUI_DRAWMODE LCD_SetDrawMode(GUI_DRAWMODE dm);
 void LCD_FillRect(int x0, int y0, int x1, int y1);
 
 RGB_COLOR LCD_MixColors256(RGB_COLOR Color, RGB_COLOR BkColor, unsigned Intens);

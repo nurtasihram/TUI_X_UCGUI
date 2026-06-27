@@ -42,7 +42,7 @@ void GUI_ClearRect(int x0, int y0, int x1, int y1) {
   GUI_DRAWMODE PrevDraw;
     GUI_RECT r;
 
-  PrevDraw = LCD_SetDrawMode(GUI_DRAWMODE_REV);
+  PrevDraw = LCD_SetDrawMode(DRAWMODE_REV);
     WM_ADDORG(x0,y0);
     WM_ADDORG(x1,y1);
     r.x0 = x0;
