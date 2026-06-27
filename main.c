@@ -238,10 +238,10 @@ static void _cbCallback(WM_MESSAGE *pMsg) {
 	switch (pMsg->MsgId) {
 		case WM_INIT_DIALOG:
 			LISTBOX_SetText(hListBox, _ListBox);
-			LISTBOX_AddString(hListBox, "Fran鏰is");
+			LISTBOX_AddString(hListBox, "Francis");
 			LISTBOX_AddString(hListBox, "Japanese");
 			LISTBOX_AddString(hListBox, "Italiano");
-			LISTBOX_AddString(hListBox, "Espa駉l");
+			LISTBOX_AddString(hListBox, "Espanol");
 			LISTBOX_AddString(hListBox, "Greek");
 			LISTBOX_AddString(hListBox, "Hebrew");
 			LISTBOX_AddString(hListBox, "Dutch");
@@ -326,6 +326,7 @@ static void _cbCallback(WM_MESSAGE *pMsg) {
 #include "MENU.h"
 static void _AddMenuItem(MENU_Handle hMenu, MENU_Handle hSubmenu, const char *pText, uint16_t Id, uint16_t Flags) {
 	MENU_ITEM_DATA Item;
+	
 	Item.pText = pText;
 	Item.hSubmenu = hSubmenu;
 	Item.Flags = Flags;

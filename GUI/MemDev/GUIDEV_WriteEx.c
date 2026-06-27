@@ -20,7 +20,6 @@ Purpose     : Implementation of memory devices
 ---------------------------END-OF-HEADER------------------------------
 */
 
-#include <string.h>
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 

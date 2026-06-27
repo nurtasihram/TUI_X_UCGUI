@@ -35,8 +35,7 @@ typedef struct {
   uint16_t ItemId;
 } MENU_MSG_DATA;
 typedef struct {
- // const char* pText;
-  char* pText;
+  const char* pText;
   uint16_t         Id;
   uint16_t         Flags;
   MENU_Handle hSubmenu;

@@ -1,6 +1,4 @@
 
-#include <stdlib.h>
-#include <string.h>
 #include "MULTIEDIT.h"
 #include "WIDGET.h"
 #include "WM_Intern.h"
@@ -89,7 +87,7 @@ static int _GetNumChars(MULTIEDIT_OBJ *pObj) {
 *
 * Returns the x size for displaying text.
 */
-static int _GetXSize(const MULTIEDIT_OBJ *pObj) {
+static int _GetXSize(MULTIEDIT_OBJ *pObj) {
 	GUI_RECT Rect;
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	return Rect.x1 - Rect.x0 - (pObj->HBorder * 2) - 1;
@@ -100,7 +98,7 @@ static int _GetNumCharsInPrompt(const MULTIEDIT_OBJ *pObj, const char  *pText) {
 	pString = (char *)(pObj->hText);
 	pEndPrompt = pString + GUI_UC__NumChars2NumBytes(pString, pObj->NumCharsPrompt);
 	if (pText < pEndPrompt) {
-		r = GUI_UC__NumBytes2NumChars(pText, pEndPrompt - pText);
+		r = GUI_UC__NumBytes2NumChars(pText, (int)(pEndPrompt - pText));
 	}
 	return r;
 }
@@ -113,7 +111,7 @@ static int _NumChars2XSize(const char  *pText, int NumChars) {
 	}
 	return xSize;
 }
-static int _WrapGetNumCharsDisp(const MULTIEDIT_OBJ *pObj, const char  *pText) {
+static int _WrapGetNumCharsDisp(MULTIEDIT_OBJ *pObj, const char  *pText) {
 	int xSize, r;
 	xSize = _GetXSize(pObj);
 	if (pObj->Flags & MULTIEDIT_SF_PASSWORD) {
@@ -146,7 +144,7 @@ static int _WrapGetNumCharsDisp(const MULTIEDIT_OBJ *pObj, const char  *pText) {
 	}
 	return r;
 }
-static int _WrapGetNumBytesToNextLine(const MULTIEDIT_OBJ *pObj, const char *pText) {
+static int _WrapGetNumBytesToNextLine(MULTIEDIT_OBJ *pObj, const char *pText) {
 	int xSize, r;
 	xSize = _GetXSize(pObj);
 	if (pObj->Flags & MULTIEDIT_SF_PASSWORD) {
@@ -177,7 +175,7 @@ static int _GetCharDistX(const MULTIEDIT_OBJ *pObj, const char *pText) {
 	}
 	return r;
 }
-static void _DispString(const MULTIEDIT_OBJ *pObj, const char *pText, GUI_RECT *pRect) {
+static void _DispString(MULTIEDIT_OBJ *pObj, const char *pText, GUI_RECT *pRect) {
 	int NumCharsDisp;
 	NumCharsDisp = _WrapGetNumCharsDisp(pObj, pText);
 	if (pObj->Flags & MULTIEDIT_SF_PASSWORD) {
@@ -226,7 +224,7 @@ static char *_GetpLine(MULTIEDIT_OBJ *pObj, unsigned LineNumber) {
 		while (LineNumber--) {
 			pLine += _WrapGetNumBytesToNextLine(pObj, pLine);
 		}
-		pObj->CacheLinePosByte = pLine - pText;
+		pObj->CacheLinePosByte = (uint16_t)(pLine - pText);
 	}
 	return pText + pObj->CacheLinePosByte;
 }
@@ -249,7 +247,7 @@ static void _ClearCache(MULTIEDIT_OBJ *pObj) {
 *
 * Returns the line number of the cursor position.
 */
-static int _GetCursorLine(const MULTIEDIT_OBJ *pObj, const char *pText, int CursorPosChar) {
+static int _GetCursorLine(MULTIEDIT_OBJ *pObj, const char *pText, int CursorPosChar) {
 	const char *pCursor;
 	const char *pEndLine;
 	int NumChars, ByteOffsetNewCursor, LineNumber = 0;
@@ -354,7 +352,7 @@ static int _GetTextSizeX(MULTIEDIT_OBJ *pObj) {
 	}
 	return pObj->TextSizeX;
 }
-static int _GetNumVisLines(const MULTIEDIT_OBJ *pObj) {
+static int _GetNumVisLines(MULTIEDIT_OBJ *pObj) {
 	GUI_RECT Rect;
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	return (Rect.y1 - Rect.y0 + 1) / GUI_GetYDistOfFont(pObj->pFont);
@@ -546,7 +544,7 @@ static int _CalcNextValidCursorPos(MULTIEDIT_OBJ *pObj, int CursorPosChar, int *
 				pPrevLine += GUI_UC__NumChars2NumBytes(pPrevLine, NumChars);
 				pCursor = pPrevLine;
 			}
-			CursorPosChar = GUI_UC__NumBytes2NumChars(pText, pCursor - pText);
+			CursorPosChar = GUI_UC__NumBytes2NumChars(pText, (int)(pCursor - pText));
 			CursorPosByte = GUI_UC__NumChars2NumBytes(pText, CursorPosChar);
 			CursorLine = _GetCursorLine(pObj, pText, CursorPosChar);
 		}
@@ -641,7 +639,7 @@ static void _SetCursorXY(MULTIEDIT_OBJ *pObj, int x, int y) {
 			}
 			pLine += GUI_UC_GetCharSize(pLine);
 		}
-		CursorPosChar = GUI_UC__NumBytes2NumChars(pText, pLine - pText);
+		CursorPosChar = GUI_UC__NumBytes2NumChars(pText, (int)(pLine - pText));
 	}
 	_SetCursorPos(pObj, CursorPosChar);
 }
@@ -755,7 +753,7 @@ static int _IncrementBuffer(MULTIEDIT_OBJ *pObj, unsigned AddBytes) {
 static int _IsSpaceInBuffer(MULTIEDIT_OBJ *pObj, int BytesNeeded) {
 	int NumBytes = 0;
 	if (pObj->hText) {
-		NumBytes = strlen((char *)(pObj->hText));
+		NumBytes = GUI__strlen((char *)(pObj->hText));
 	}
 	BytesNeeded = (BytesNeeded + NumBytes + 1) - pObj->BufferSize;
 	if (BytesNeeded > 0) {
@@ -796,11 +794,11 @@ static int _IsCharsAvailable(MULTIEDIT_OBJ *pObj, int CharsNeeded) {
 */
 static void _DeleteChar(MULTIEDIT_OBJ *pObj) {
 	if (pObj->hText) {
-		unsigned CursorOffset;
+		int CursorOffset;
 		char *s;
 		s = (char *)(pObj->hText);
 		CursorOffset = pObj->CursorPosByte;
-		if (CursorOffset < strlen(s)) {
+		if (CursorOffset < GUI__strlen(s)) {
 			char *pCursor, *pLine, *pEndLine;
 			int CursorLine, NumChars, NumBytes;
 			pCursor = s + CursorOffset;
@@ -810,13 +808,13 @@ static void _DeleteChar(MULTIEDIT_OBJ *pObj) {
 			pEndLine = pLine + GUI_UC__NumChars2NumBytes(pLine, NumChars);
 			pLine = pLine + _WrapGetNumBytesToNextLine(pObj, pLine);
 			if (pCursor == pEndLine) {
-				NumBytes = pLine - pEndLine;
+				NumBytes = (int)(pLine - pEndLine);
 			}
 			else {
 				NumBytes = GUI_UC_GetCharSize(pCursor);
 			}
 			NumChars = GUI_UC__NumBytes2NumChars(pCursor, NumBytes);
-			strcpy(pCursor, pCursor + NumBytes);
+			GUI__strcpy(pCursor, pCursor + NumBytes);
 			WM_NotifyParent(pObj, WM_NOTIFICATION_VALUE_CHANGED);
 			pObj->NumChars -= NumChars;
 			_InvalidateNumLines(pObj);
@@ -843,7 +841,7 @@ static int _InsertChar(MULTIEDIT_OBJ *pObj, uint16_t Char) {
 			pText = (char *)(pObj->hText);
 			CursorOffset = pObj->CursorPosByte;
 			pText += CursorOffset;
-			memmove(pText + BytesNeeded, pText, strlen(pText) + 1);
+			GUI__memmove(pText + BytesNeeded, pText, GUI__strlen(pText) + 1);
 			GUI_UC_Encode(pText, Char);
 			WM_NotifyParent(pObj, WM_NOTIFICATION_VALUE_CHANGED);
 			pObj->NumChars += 1;
@@ -904,7 +902,7 @@ static void _MULTIEDIT_Paint(MULTIEDIT_OBJ *pObj) {
 			/* Cache the position of the first visible byte and the depending line number */
 			if (pObj->CacheFirstVisibleLine != ScrollPosY) {
 				if (Line == ScrollPosY) {
-					pObj->CacheFirstVisibleByte = pText - (const char *)(pObj->hText);
+					pObj->CacheFirstVisibleByte = (uint16_t)(pText - (const char *)(pObj->hText));
 					pObj->CacheFirstVisibleLine = ScrollPosY;
 				}
 			}
@@ -1207,7 +1205,7 @@ void MULTIEDIT_SetText(MULTIEDIT_HANDLE hObj, const char *pNew) {
 				pText = (char *)(pObj->hText);
 				pText += GUI_UC__NumChars2NumBytes(pText, pObj->NumCharsPrompt);
 				if (pNew) {
-					strcpy(pText, pNew);
+					GUI__strcpy(pText, pNew);
 				}
 				else {
 					*pText = 0;
@@ -1232,11 +1230,11 @@ void MULTIEDIT_GetText(MULTIEDIT_HANDLE hObj, char *sDest, int MaxLen) {
 			int Len;
 			pText = (char *)(pObj->hText);
 			pText += GUI_UC__NumChars2NumBytes(pText, pObj->NumCharsPrompt);
-			Len = strlen(pText);
+			Len = GUI__strlen(pText);
 			if (Len > (MaxLen - 1)) {
 				Len = MaxLen - 1;
 			}
-			memcpy(sDest, pText, Len);
+			GUI__memcpy(sDest, pText, Len);
 			*(sDest + Len) = 0;
 		}
 
@@ -1253,7 +1251,7 @@ void MULTIEDIT_GetPrompt(MULTIEDIT_HANDLE hObj, char *sDest, int MaxLen) {
 			if (Len > (MaxLen - 1)) {
 				Len = MaxLen - 1;
 			}
-			memcpy(sDest, sSource, Len);
+			GUI__memcpy(sDest, sSource, Len);
 			*(sDest + Len) = 0;
 		}
 
@@ -1369,9 +1367,9 @@ void MULTIEDIT_SetPrompt(MULTIEDIT_HANDLE hObj, const char *pPrompt) {
 		if (_IsCharsAvailable(pObj, NumCharsNew - NumCharsOld)) {
 			if (_IsSpaceInBuffer(pObj, NumBytesNew - NumBytesOld)) {
 				pText = (char *)(pObj->hText);
-				memmove(pText + NumBytesNew, pText + NumBytesOld, strlen(pText + NumBytesOld) + 1);
+				GUI__memmove(pText + NumBytesNew, pText + NumBytesOld, GUI__strlen(pText + NumBytesOld) + 1);
 				if (pPrompt) {
-					memcpy(pText, pPrompt, NumBytesNew);
+					GUI__memcpy(pText, pPrompt, NumBytesNew);
 				}
 				pObj->NumCharsPrompt = NumCharsNew;
 				_SetCursorPos(pObj, NumCharsNew);
@@ -1451,7 +1449,7 @@ int MULTIEDIT_GetTextSize(MULTIEDIT_HANDLE hObj) {
 			const char *s;
 			s = (const char *)pObj->hText;
 			s += GUI_UC__NumChars2NumBytes(s, pObj->NumCharsPrompt);
-			r = 1 + strlen(s);
+			r = 1 + GUI__strlen(s);
 		}
 
 	}

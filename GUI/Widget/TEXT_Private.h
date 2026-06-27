@@ -1,3 +1,0 @@
-#pragma once
-#include "TEXT.h"
-#define TEXT_SUPPORT_TRANSPARENCY WM_SUPPORT_TRANSPARENCY

@@ -1,6 +1,4 @@
 
-#include <stdlib.h>
-#include <string.h>
 
 #include "DIALOG.h"
 
@@ -38,7 +36,7 @@ static void _cb(WM_MESSAGE *pMsg) {
 				pObj->pDialogStatus = (WM_DIALOG_STATUS *)pMsg->Data;
 			}
 			else { /* return pointer to Dialog status */
-				pMsg->Data = pObj->pDialogStatus;
+				pMsg->Data = (WM_PARAM)pObj->pDialogStatus;
 			}
 			return;
 		case WM_SET_FOCUS:

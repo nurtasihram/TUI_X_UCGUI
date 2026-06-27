@@ -20,7 +20,6 @@ Purpose     : Implementation of memory devices, add. module
 ---------------------------END-OF-HEADER------------------------------
 */
 
-#include <string.h>
 #include "GUI_Protected.h"
 #include "GUIDebug.h"
 

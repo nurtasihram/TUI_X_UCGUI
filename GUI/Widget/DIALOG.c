@@ -1,5 +1,4 @@
 
-#include <stddef.h>           /* needed for definition of NULL */
 #include "DIALOG.h"
 #include "WIDGET.h"
 #include "WM_Intern.h"

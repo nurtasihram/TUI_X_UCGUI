@@ -3,7 +3,7 @@
 #include "LCD_Protected.h"
 #include "GUI.h"
 
-extern const struct tLCDDEV_APIList_struct * /* const */ LCD_aAPI[1];
+extern const struct tLCDDEV_APIList_struct *LCD_aAPI[1];
 
 #define LCD_BKCOLORINDEX GUI_Context.aColor[0]
 #define LCD_COLORINDEX   GUI_Context.aColor[1]

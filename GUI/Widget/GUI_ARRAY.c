@@ -1,4 +1,3 @@
-#include <string.h>
 
 #include "GUI_ARRAY.h"
 
@@ -128,7 +127,7 @@ int GUI_ARRAY_SethItem(GUI_ARRAY *pThis, unsigned int Index, WM_HMEM hItem) {
 *
 * Purpose:
 *   Sets an item, returning the handle.
-*   If a data pointer is given, the allocated memory is initialized from it thru memcpy.
+*   If a data pointer is given, the allocated memory is initialized from it thru GUI__memcpy.
 *
 * Returns:
 *   Handle of the allocated memory block
@@ -176,7 +175,7 @@ WM_HMEM  GUI_ARRAY_SetItem(GUI_ARRAY *pThis, unsigned int Index, const void *pDa
 			 */
 			if (pData && hItem) {
 				char *pItem = (char *)(hItem);
-				memcpy(pItem, pData, Len);
+				GUI__memcpy(pItem, pData, Len);
 			}
 		}
 	}
@@ -322,7 +321,7 @@ void *GUI_ARRAY_ResizeItem(GUI_ARRAY *pThis, unsigned int Index, int Len) {
 	if (hNew) {
 		void *pOld = GUI_ARRAY_GetpItem(pThis, Index);
 		void *pNew = (hNew);
-		memcpy(pNew, pOld, Len);
+		GUI__memcpy(pNew, pOld, Len);
 		if (GUI_ARRAY_SethItem(pThis, Index, hNew)) {
 			GUI_ALLOC_FreePtr(&hNew);    /* Free on error */
 		}
@@ -370,8 +369,8 @@ char GUI_ARRAY_InsertBlankItem(GUI_ARRAY *pThis, unsigned int Index) {
 			WM_HMEM *pNewBuffer;
 			pNewBuffer = (WM_HMEM *)(hNewBuffer);
 			pOldBuffer = (WM_HMEM *)(pThis->haHandle);
-			memcpy(pNewBuffer, pOldBuffer, Index * sizeof(WM_HMEM));
-			memcpy(pNewBuffer + (Index + 1), pOldBuffer + Index, (pThis->NumItems - Index) * sizeof(WM_HMEM));
+			GUI__memcpy(pNewBuffer, pOldBuffer, Index * sizeof(WM_HMEM));
+			GUI__memcpy(pNewBuffer + (Index + 1), pOldBuffer + Index, (pThis->NumItems - Index) * sizeof(WM_HMEM));
 			GUI_ALLOC_Free(pThis->haHandle);
 			pThis->haHandle = hNewBuffer;
 			pThis->NumItems++;

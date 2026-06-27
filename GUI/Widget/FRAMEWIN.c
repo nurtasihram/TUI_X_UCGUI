@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
 
 #include "GUI_Protected.h"
 #include "WM_Intern.h"
@@ -169,7 +167,7 @@ static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
 				pObj->pDialogStatus = (WM_DIALOG_STATUS *)pMsg->Data;
 			}
 			else {                                      /* return pointer to Dialog status */
-				pMsg->Data = pObj->pDialogStatus;
+				pMsg->Data = (WM_PARAM)pObj->pDialogStatus;
 			}
 			return;
 		case WM_PAINT:
@@ -183,7 +181,7 @@ static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
 			*pRect = Pos.rClient;
 			return;                       /* Return here ... Message handled */
 		case WM_GET_CLIENT_WINDOW:      /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
-			pMsg->Data = pObj->hClient;
+			pMsg->Data = (WM_PARAM)pObj->hClient;
 			return;                       /* Return here ... Message handled */
 		case WM_NOTIFY_PARENT:
 			if ((int)pMsg->Data == WM_NOTIFICATION_RELEASED) {

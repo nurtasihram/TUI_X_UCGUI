@@ -20,7 +20,6 @@ Purpose     : Implementation of memory devices
 ---------------------------END-OF-HEADER------------------------------
 */
 
-#include <string.h>
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 
@@ -30,16 +29,12 @@ Purpose     : Implementation of memory devices
 void GUI_MEMDEV_WriteAt(GUI_MEMDEV_Handle hMem, int x, int y) {
   if (hMem) {
     GUI_MEMDEV* pDevData;
-#if (GUI_WINSUPPORT)
       GUI_RECT r;
-#endif
-
     pDevData = (GUI_MEMDEV*) (hMem);  /* Convert to pointer */
     if (x == GUI_POS_AUTO) {
       x = pDevData->x0;
       y = pDevData->y0;
     }
-#if (GUI_WINSUPPORT)
       /* Calculate rectangle */
       r.x1 = (r.x0 = x) + pDevData->XSize-1;
       r.y1 = (r.y0 = y) + pDevData->YSize-1;;
@@ -47,10 +42,6 @@ void GUI_MEMDEV_WriteAt(GUI_MEMDEV_Handle hMem, int x, int y) {
       WM_ITERATE_START(&r) {
         GUI_MEMDEV__WriteToActiveAt(hMem,x,y);
       } WM_ITERATE_END();
-#else
-      GUI_MEMDEV__WriteToActiveAt(hMem,x,y);
-#endif
-
   }
 }
 
@@ -58,8 +49,4 @@ void GUI_MEMDEV_Write(GUI_MEMDEV_Handle hMem) {
   GUI_MEMDEV_WriteAt(hMem, GUI_POS_AUTO, GUI_POS_AUTO);
 }
 
-#else
-
-
 #endif /* GUI_SUPPORT_MEMDEV */
-

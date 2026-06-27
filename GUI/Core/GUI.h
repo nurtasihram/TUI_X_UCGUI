@@ -215,6 +215,7 @@ void GUI__ReduceRect    (GUI_RECT* pDest, const GUI_RECT *pRect, int Dist);
 int  GUI__DivideRound     (int a, int b);
 int32_t  GUI__DivideRound32   (int32_t a, int32_t b);
 int  GUI__SetText(GUI_HMEM* phText, const char* s);
+int GUI__strcmp(const char *s0, const char *s1);
 
 RGB_COLOR GUI_GetBkColor     (void);
 RGB_COLOR GUI_GetColor       (void);
@@ -295,21 +296,23 @@ const GUI_FONT  * GUI_SetFont(const GUI_FONT  * pNewFont);
 void  GUI_GotoXY(int x, int y);
 void  GUI_DispNextLine(void);
 
-int   GUI_UC_Encode           (char* s, uint16_t Char);
-int   GUI_UC_GetCharSize      (const char  * s);
-uint16_t   GUI_UC_GetCharCode      (const char  * s);
-void  GUI_UC_SetEncodeNone    (void);
-void  GUI_UC_SetEncodeUTF8    (void);
+int      GUI_UC_Encode           (char* s, uint16_t Char);
+int      GUI_UC_GetCharSize      (const char  * s);
+uint16_t GUI_UC_GetCharCode      (const char  * s);
+void     GUI_UC_SetEncodeNone    (void);
+void     GUI_UC_SetEncodeUTF8    (void);
 
 void GUI_UC_DispString(const uint16_t  *s);
 
-GUI_HMEM           GUI_ALLOC_AllocInit  (const void *pInitData, size_t Size);
-GUI_HMEM           GUI_ALLOC_AllocNoInit(size_t size);
-GUI_HMEM           GUI_ALLOC_AllocZero  (size_t size);
-void               GUI_ALLOC_Free       (GUI_HMEM  hMem);
-void               GUI_ALLOC_FreePtr    (GUI_HMEM *phMem);
-size_t GUI_ALLOC_GetMaxSize (void);
-GUI_HMEM           GUI_ALLOC_Realloc    (GUI_HMEM hOld, int NewSize);
+GUI_HMEM GUI_ALLOC_AllocInit  (const void *pInitData, size_t Size);
+GUI_HMEM GUI_ALLOC_AllocNoInit(size_t size);
+GUI_HMEM GUI_ALLOC_AllocZero  (size_t size);
+void     GUI_ALLOC_Free       (GUI_HMEM  hMem);
+void     GUI_ALLOC_FreePtr    (GUI_HMEM *phMem);
+GUI_HMEM GUI_ALLOC_Realloc    (GUI_HMEM hOld, int NewSize);
+size_t   GUI_ALLOC_GetMaxSize (void);
+void     GUI__memcpy(void *pDest, const void *pSrc, size_t NumBytes);
+void     GUI__memmove(void *pDest, const void *pSrc, size_t NumBytes); 
 
 #define GUI_MEMDEV_HASTRANS       0
 #define GUI_MEMDEV_NOTRANS    (1<<0)
@@ -388,7 +391,7 @@ int     GUI_MessageBox   (const char * sMessage, const char * sCaption, int Flag
 
 typedef struct {
   GUI_TIMER_TIME Time;
-  uint32_t            Context;
+  uintptr_t Context;
 } GUI_TIMER_MESSAGE;
 
 typedef GUI_HMEM GUI_TIMER_HANDLE;
@@ -404,7 +407,7 @@ void GUI_TIMER_SetDelay  (GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Delay);
 void GUI_TIMER_Restart   (GUI_TIMER_HANDLE hObj);
 int  GUI_TIMER_Exec(void);
 
-void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, uint32_t Context);	//houhh 20061020
+void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, uintptr_t Context);	//houhh 20061020
 
 /* Message layer */
 void GUI_StoreKeyMsg(int Key, int Pressed);

@@ -1,6 +1,4 @@
 
-#include <stdlib.h>
-#include <string.h>
 
 #include "GUI_Protected.h"
 #include "GUI_ARRAY.h"
@@ -507,10 +505,10 @@ void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_HWIN hWin, const char *pText) {
 			}
 			Page.hWin = hWin;
 			Page.Status = MULTIPAGE_STATE_ENABLED;
-			if (GUI_ARRAY_AddItem(&pObj->Handles, &Page, sizeof(MULTIPAGE_PAGE) + strlen(pText)) == 0) {
+			if (GUI_ARRAY_AddItem(&pObj->Handles, &Page, sizeof(MULTIPAGE_PAGE) + GUI__strlen(pText)) == 0) {
 				MULTIPAGE_PAGE *pPage;
 				pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, pObj->Handles.NumItems - 1);
-				memcpy(&pPage->acText, pText, strlen(pText) + 1);
+				GUI__memcpy(&pPage->acText, pText, GUI__strlen(pText) + 1);
 			}
 			MULTIPAGE_SelectPage(pObj, pObj->Handles.NumItems - 1);
 		}
@@ -606,9 +604,9 @@ void MULTIPAGE_SetText(MULTIPAGE_Handle hObj, const char *pText, unsigned Index)
 				pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
 				Page.hWin = pPage->hWin;
 				Page.Status = pPage->Status;
-				if (GUI_ARRAY_SetItem(&pObj->Handles, Index, &Page, sizeof(MULTIPAGE_PAGE) + strlen(pText))) {
+				if (GUI_ARRAY_SetItem(&pObj->Handles, Index, &Page, sizeof(MULTIPAGE_PAGE) + GUI__strlen(pText))) {
 					pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
-					memcpy(&pPage->acText, pText, strlen(pText) + 1);
+					GUI__memcpy(&pPage->acText, pText, GUI__strlen(pText) + 1);
 					_UpdatePositions(pObj);
 				}
 			}

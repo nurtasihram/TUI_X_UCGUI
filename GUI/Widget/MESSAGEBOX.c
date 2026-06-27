@@ -1,5 +1,4 @@
 
-#include <string.h>             /* for memset */
 #include "GUI.h"
 #include "BUTTON.h"
 #include "FRAMEWIN.h"

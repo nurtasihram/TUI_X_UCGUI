@@ -1,4 +1,5 @@
 #pragma once
+
 #include "WM.h"
 #include "BUTTON.h"
 
@@ -8,11 +9,14 @@ typedef struct {
 	const GUI_FONT  *pFont;
 	int16_t Align;
 } BUTTON_PROPS;
+
 typedef struct {
 	WIDGET Widget;
 	BUTTON_PROPS Props;
 	WM_HMEM hpText;
 	WM_HMEM ahDrawObj[3];
 } BUTTON_Obj;
+
 extern BUTTON_PROPS BUTTON__DefaultProps;
+
 void BUTTON__SetDrawObj(BUTTON_Handle hObj, int Index, GUI_DRAW_HANDLE hDrawObj);

@@ -1,11 +1,8 @@
-#include <stdlib.h>
-#include <string.h>
 
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
 
 #include "TEXT.h"
-#include "TEXT_Private.h"
 
 /* Define default fonts */
 #define TEXT_FONT_DEFAULT &GUI_Font13_1
@@ -22,7 +19,7 @@ static void _Paint(TEXT_Obj *pObj) {
 	GUI_SetColor(pObj->TextColor);
 	GUI_SetFont(pObj->pFont);
 	/* Fill with parents background color */
-#if !TEXT_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent*/
+#if !WM_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent*/
 	if (pObj->BkColor == GUI_INVALID_COLOR) {
 		GUI_SetBkColor(WIDGET__GetBkColor(hObj));
 	}
@@ -71,7 +68,7 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 						  int WinFlags, int ExFlags, int Id, const char *pText) {
 	TEXT_Handle hObj;
 	/* Create the window */
-#if TEXT_SUPPORT_TRANSPARENCY
+#if WM_SUPPORT_TRANSPARENCY
 	WinFlags |= WM_CF_HASTRANS;
 #endif
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _TEXT_Callback,
@@ -85,9 +82,9 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 		WIDGET__Init(&pObj->Widget, Id, 0);
 		/* init member variables */
 		if (pText) {
-			hMem = GUI_ALLOC_AllocZero(strlen(pText) + 1);
+			hMem = GUI_ALLOC_AllocZero(GUI__strlen(pText) + 1);
 			if (hMem) {
-				strcpy((char *)(hMem), pText);
+				GUI__strcpy((char *)(hMem), pText);
 			}
 		}
 		pObj->hpText = hMem;
@@ -132,7 +129,7 @@ void TEXT_SetBkColor(TEXT_Handle hObj, RGB_COLOR Color) {
 
 		pObj = (hObj);
 		pObj->BkColor = Color;
-#if TEXT_SUPPORT_TRANSPARENCY
+#if WM_SUPPORT_TRANSPARENCY
 		if (Color <= RGB_WHITE) {
 			WM_ClrHasTrans(hObj);
 		}
@@ -152,9 +149,9 @@ void TEXT_SetFont(TEXT_Handle hObj, const GUI_FONT  *pFont) {
 		/*
 		GUI_ALLOC_FreePtr(&pObj->hpText);
 		if (s) {
-		  hMem = GUI_ALLOC_AllocZero(strlen(s)+1);
+		  hMem = GUI_ALLOC_AllocZero(GUI__strlen(s)+1);
 		  if (hMem) {
-			strcpy((char *) (hMem), s);
+			GUI__strcpy((char *) (hMem), s);
 		  }
 		  pObj->hpText = hMem;
 		}

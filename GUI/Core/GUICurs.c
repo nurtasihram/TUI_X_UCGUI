@@ -1,4 +1,3 @@
-#include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Private.h"
 
 static const RGB_COLOR _aColor[] = { RGB_RED, RGB_BLACK, RGB_WHITE };

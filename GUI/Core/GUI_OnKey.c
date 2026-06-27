@@ -4,15 +4,11 @@
 
 #include "WM.h"
 
-#if GUI_WINSUPPORT
-
 static int _KeyMsgCnt;
 static struct {
   int Key;
   int PressedCnt;
 } _KeyMsg;
-
-#endif
 
 static int _Key;
 
@@ -65,13 +61,7 @@ int GUI_PollKeyMsg(void) {
 *   and wait for somebody to poll the buffer.
 */
 void GUI_SendKeyMsg(int Key, int PressedCnt) {
-#if GUI_WINSUPPORT    /* If 0, WM will not generate any code */
     if (!WM_OnKey(Key, PressedCnt)) {
       GUI_StoreKeyMsg(Key, PressedCnt);
     }
-#else
-    GUI_StoreKeyMsg(Key, PressedCnt);
-#endif
 }
-
-

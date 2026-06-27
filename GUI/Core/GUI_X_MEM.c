@@ -43,3 +43,11 @@ GUI_HMEM GUI_ALLOC_AllocZero(size_t Size) {
 		memset(pMem, 0, Size);
 	return pMem;
 }
+
+void GUI__memcpy(void *pDest, const void *pSrc, size_t NumBytes) {
+	memcpy(pDest, pSrc, NumBytes);
+}
+
+void GUI__memmove(void *pDest, const void *pSrc, size_t NumBytes) {
+	memmove(pDest, pSrc, NumBytes);
+}

@@ -390,9 +390,6 @@
     <ClInclude Include="GUI\Widget\TEXT.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Widget\TEXT_Private.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Widget\WIDGET.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>

@@ -1,6 +1,4 @@
 
-#include <stdlib.h>
-#include <string.h>
 #include "WIDGET.h"
 #include "GUIDebug.h"
 #include "GUI.h"
@@ -220,7 +218,7 @@ int WIDGET_HandleActive(WM_HWIN hObj, WM_MESSAGE *pMsg) {
 		}
 		break;
 		case WM_SET_ID:
-			pWidget->Id = pMsg->Data;
+			pWidget->Id = (int16_t)pMsg->Data;
 			return 0;                        /* Message handled -> Return */
 		case WM_SET_FOCUS:
 			if (pMsg->Data == 1) {

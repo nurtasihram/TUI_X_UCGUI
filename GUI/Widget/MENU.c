@@ -1,6 +1,4 @@
 
-#include <stdlib.h>
-#include <string.h>
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
 
@@ -50,7 +48,7 @@ MENU_PROPS MENU__DefaultProps = {
 };
 const WIDGET_EFFECT *MENU__pDefaultEffect = MENU_EFFECT_DEFAULT;
 
-static char _IsTopLevelMenu(const MENU_Obj *pObj) {
+static char _IsTopLevelMenu(MENU_Obj *pObj) {
 	if (MENU__SendMenuMessage(pObj, pObj->hOwner, MENU_IS_MENU, 0) == 0) {
 		return 1;
 	}
@@ -240,14 +238,14 @@ static void _GetItemPos(MENU_Obj *pObj, unsigned Index, int *px, int *py) {
 		*py = EffectSize;
 	}
 }
-static void _SetCapture(const MENU_Obj *pObj) {
+static void _SetCapture(MENU_Obj *pObj) {
 	if (pObj->IsSubmenuActive == 0) {
 		if (WM_HasCaptured(pObj) == 0) {
 			WM_SetCapture(pObj, 0);
 		}
 	}
 }
-static void _ReleaseCapture(const MENU_Obj *pObj) {
+static void _ReleaseCapture(MENU_Obj *pObj) {
 	if (WM_HasCaptured(pObj)) {
 		if (_IsTopLevelMenu(pObj) && !(pObj->Flags & MENU_SF_POPUP)) {
 			WM_ReleaseCapture();
@@ -738,7 +736,7 @@ MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParent,
 unsigned MENU__GetNumItems(MENU_Obj *pObj) {
 	return GUI_ARRAY_GetNumItems(&pObj->ItemArray);
 }
-void MENU__InvalidateItem(const MENU_Obj *pObj, unsigned Index) {
+void MENU__InvalidateItem(MENU_Obj *pObj, unsigned Index) {
 	GUI_USE_PARA(pObj);
 	GUI_USE_PARA(Index);
 	WM_Invalidate(pObj);  /* Can be optimized, no need to invalidate all items */
@@ -776,9 +774,9 @@ char MENU__SetItem(MENU_Obj *pObj, unsigned Index, const MENU_ITEM_DATA *pItemDa
 	if (Item.Flags & MENU_IF_SEPARATOR) {
 		Item.hSubmenu = 0;   /* Ensures that no separator is a submenu */
 	}
-	if (GUI_ARRAY_SetItem(&pObj->ItemArray, Index, &Item, sizeof(MENU_ITEM) + strlen(pText)) != 0) {
+	if (GUI_ARRAY_SetItem(&pObj->ItemArray, Index, &Item, sizeof(MENU_ITEM) + GUI__strlen(pText)) != 0) {
 		MENU_ITEM *pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
-		strcpy(pItem->acText, pText);
+		GUI__strcpy(pItem->acText, pText);
 		MENU_SetOwner(Item.hSubmenu, pObj);
 		return 1;
 	}

@@ -1,6 +1,4 @@
 
-#include <stdlib.h>
-#include <string.h>
 
 #include "SCROLLBAR.h"
 
@@ -387,11 +385,11 @@ void HEADER_AddItem(HEADER_Handle hObj, int Width, const char *s, int Align) {
 		Column.Align = Align;
 		Column.hDrawObj = 0;
 		Index = GUI_ARRAY_GetNumItems(&pObj->Columns);
-		if (GUI_ARRAY_AddItem(&pObj->Columns, &Column, sizeof(HEADER_COLUMN) + strlen(s) + 1) == 0) {
+		if (GUI_ARRAY_AddItem(&pObj->Columns, &Column, sizeof(HEADER_COLUMN) + GUI__strlen(s) + 1) == 0) {
 			HEADER_COLUMN *pColumn;
 			pObj = (hObj);
 			pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
-			strcpy(pColumn->acText, s);
+			GUI__strcpy(pColumn->acText, s);
 			WM_Invalidate(hObj);
 			WM_Invalidate(WM_GetParent(hObj));
 		}
@@ -418,9 +416,9 @@ void HEADER_SetItemText(HEADER_Handle hObj, unsigned int Index, const char *s) {
 		pObj = (hObj);
 		if (Index < GUI_ARRAY_GetNumItems(&pObj->Columns)) {
 			HEADER_COLUMN *pColumn;
-			pColumn = (HEADER_COLUMN *)GUI_ARRAY_ResizeItem(&pObj->Columns, Index, sizeof(HEADER_COLUMN) + strlen(s));
+			pColumn = (HEADER_COLUMN *)GUI_ARRAY_ResizeItem(&pObj->Columns, Index, sizeof(HEADER_COLUMN) + GUI__strlen(s));
 			if (pColumn) {
-				strcpy(pColumn->acText, s);
+				GUI__strcpy(pColumn->acText, s);
 			}
 		}
 

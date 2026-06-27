@@ -1,6 +1,4 @@
 
-#include <stdlib.h>
-#include <string.h>
 
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
@@ -327,7 +325,7 @@ void DROPDOWN_AddString(DROPDOWN_Handle hObj, const char *s) {
 	if (hObj && s) {
 
 		pObj = (hObj);
-		GUI_ARRAY_AddItem(&pObj->Handles, s, strlen(s) + 1);
+		GUI_ARRAY_AddItem(&pObj->Handles, s, GUI__strlen(s) + 1);
 		DROPDOWN_Invalidate(hObj);
 
 	}
@@ -495,10 +493,10 @@ void DROPDOWN_InsertString(DROPDOWN_Handle hObj, const char *s, unsigned int Ind
 		NumItems = DROPDOWN_GetNumItems(hObj);
 		if (Index < NumItems) {
 			WM_HMEM hItem;
-			hItem = GUI_ARRAY_InsertItem(&pObj->Handles, Index, strlen(s) + 1);
+			hItem = GUI_ARRAY_InsertItem(&pObj->Handles, Index, GUI__strlen(s) + 1);
 			if (hItem) {
 				char *pBuffer = (char *)(hItem);
-				strcpy(pBuffer, s);
+				GUI__strcpy(pBuffer, s);
 			}
 			WM_Invalidate(hObj);
 			if (pObj->hListWin) {

@@ -1,8 +1,11 @@
 #pragma once
+
 #include "DROPDOWN.h"
 #include "WIDGET.h"
 #include "GUI_ARRAY.h"
+
 #define DROPDOWN_SF_AUTOSCROLLBAR DROPDOWN_CF_AUTOSCROLLBAR
+
 typedef struct {
 	const GUI_FONT  *pFont;
 	RGB_COLOR aBackColor[3];
@@ -10,6 +13,7 @@ typedef struct {
 	int16_t       TextBorderSize;
 	int16_t       Align;
 } DROPDOWN_PROPS;
+
 typedef struct {
 	WIDGET  Widget;
 	int16_t     Sel;                        /* current selection */
@@ -24,4 +28,5 @@ typedef struct {
 	uint8_t      ScrollbarWidth;
 	char  IsPressed;
 } DROPDOWN_Obj;
+
 void DROPDOWN__AdjustHeight(DROPDOWN_Handle pObj);

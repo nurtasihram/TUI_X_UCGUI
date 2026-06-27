@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
 
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
@@ -36,7 +34,7 @@ LISTVIEW_PROPS LISTVIEW_DefaultProps = {
   LISTVIEW_GRIDCOLOR_DEFAULT,
   LISTVIEW_FONT_DEFAULT
 };
-unsigned LISTVIEW__GetRowDistY(const LISTVIEW_Obj *pObj) {
+unsigned LISTVIEW__GetRowDistY(LISTVIEW_Obj *pObj) {
 	unsigned RowDistY;
 	if (pObj->RowDistY) {
 		RowDistY = pObj->RowDistY;
@@ -61,7 +59,7 @@ unsigned LISTVIEW__GetRowDistY(const LISTVIEW_Obj *pObj) {
 *   Number of visible rows. If no entire row can be displayed, this
 *   function will return one.
 */
-static unsigned _GetNumVisibleRows(const LISTVIEW_Obj *pObj) {
+static unsigned _GetNumVisibleRows(LISTVIEW_Obj *pObj) {
 	unsigned RowDistY, ySize, r = 1;
 	GUI_RECT Rect;
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
@@ -565,7 +563,7 @@ void LISTVIEW_AddRow(LISTVIEW_Handle hObj, const GUI_ConstString *ppText) {
 				GUI_ARRAY_AddItem(pRow, NULL, sizeof(LISTVIEW_ITEM) + NumBytes);
 				pItem = (LISTVIEW_ITEM *)GUI_ARRAY_GetpItem(pRow, i);
 				if (NumBytes > 1) {
-					strcpy(pItem->acText, s);
+					GUI__strcpy(pItem->acText, s);
 				}
 			}
 			LISTVIEW__UpdateScrollParas(pObj);
@@ -896,7 +894,7 @@ void LISTVIEW_SetItemText(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, c
 			NumBytes = GUI__strlen(s) + 1;
 			pItem = (LISTVIEW_ITEM *)GUI_ARRAY_ResizeItem((GUI_ARRAY *)GUI_ARRAY_GetpItem(&pObj->RowArray, Row), Column, sizeof(LISTVIEW_ITEM) + NumBytes);
 			if (NumBytes > 1) {
-				strcpy(pItem->acText, s);
+				GUI__strcpy(pItem->acText, s);
 			}
 			LISTVIEW__InvalidateRow(pObj, Row);
 

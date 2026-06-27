@@ -1,6 +1,4 @@
 
-#include <stdlib.h>
-#include <string.h>
 #include "WIDGET.h"
 #include "GUIDebug.h"
 #include "GUI.h"

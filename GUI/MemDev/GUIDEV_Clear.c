@@ -22,7 +22,6 @@ Purpose     : Implementation of memory devices, add. module
 
 #include "GUI_Protected.h"
 #include "GUIDebug.h"
-#include <string.h>
 
 /* Memory device capabilities are compiled only if support for them is enabled. */
 #if GUI_SUPPORT_MEMDEV

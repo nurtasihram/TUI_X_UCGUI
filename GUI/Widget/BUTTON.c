@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
 
 #include "BUTTON.h"
 #include "BUTTON_Private.h"
@@ -378,10 +376,10 @@ void BUTTON_GetText(BUTTON_Handle hObj, char *pBuffer, int MaxLen) {
 		pObj = (hObj);
 		if (pObj->hpText) {
 			const char *pText = (const char *)(pObj->hpText);
-			int Len = strlen(pText);
+			int Len = GUI__strlen(pText);
 			if (Len > (MaxLen - 1))
 				Len = MaxLen - 1;
-			memcpy((void *)pBuffer, (const void *)pText, Len);
+			GUI__memcpy((void *)pBuffer, (const void *)pText, Len);
 			*(pBuffer + Len) = 0;
 		}
 		else {

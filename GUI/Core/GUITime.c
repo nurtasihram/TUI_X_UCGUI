@@ -1,6 +1,5 @@
 
 
-#include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
 
 int GUI_GetTime(void) {

@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
 
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
@@ -111,7 +109,7 @@ static void _Paint(EDIT_Obj *pObj, EDIT_Handle hObj) {
 				GUI_TIMER_SetTime(Timer1, 1000 * 2);
 				GUI_TIMER_SetPeriod(Timer1, 500);
 			}
-			if (Timer1) GUI_TIMER_Context(Timer1, hObj);
+			if (Timer1) GUI_TIMER_Context(Timer1, (uintptr_t)hObj);
 		//	if (pObj->CurrsorShow % 2) //houhh 20061022...
 		//		GUI_InvertRect(rInvert.x0, rInvert.y0, rInvert.x0 + CursorWidth - 1, rInvert.y1);
 			/////////////
@@ -210,7 +208,7 @@ static int _IncrementBuffer(EDIT_Obj *pObj, unsigned AddBytes) {
 static int _IsSpaceInBuffer(EDIT_Obj *pObj, int BytesNeeded) {
 	int NumBytes = 0;
 	if (pObj->hpText) {
-		NumBytes = strlen((char *)(pObj->hpText));
+		NumBytes = GUI__strlen((char *)(pObj->hpText));
 	}
 	BytesNeeded = (BytesNeeded + NumBytes + 1) - pObj->BufferSize;
 	if (BytesNeeded > 0) {
@@ -251,15 +249,15 @@ static int _IsCharsAvailable(EDIT_Obj *pObj, int CharsNeeded) {
 */
 static void _DeleteChar(EDIT_Obj *pObj) {
 	if (pObj->hpText) {
-		unsigned CursorOffset;
+		int CursorOffset;
 		char *pText;
 		pText = (char *)(pObj->hpText);
 		CursorOffset = GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
-		if (CursorOffset < strlen(pText)) {
+		if (CursorOffset < GUI__strlen(pText)) {
 			int NumBytes;
 			pText += CursorOffset;
 			NumBytes = GUI_UC_GetCharSize(pText);
-			strcpy(pText, pText + NumBytes);
+			GUI__strcpy(pText, pText + NumBytes);
 			WM_NotifyParent(pObj, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
@@ -280,7 +278,7 @@ static int _InsertChar(EDIT_Obj *pObj, uint16_t Char) {
 			pText = (char *)(pObj->hpText);
 			CursorOffset = GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
 			pText += CursorOffset;
-			memmove(pText + BytesNeeded, pText, strlen(pText) + 1);
+			GUI__memmove(pText + BytesNeeded, pText, GUI__strlen(pText) + 1);
 			GUI_UC_Encode(pText, Char);
 			WM_NotifyParent(pObj, WM_NOTIFICATION_VALUE_CHANGED);
 			return 1;
@@ -539,7 +537,7 @@ void EDIT_SetText(EDIT_Handle hObj, const char *s) {
 			if (pObj->hpText) {
 				char *pText;
 				pText = (char *)(pObj->hpText);
-				NumBytesOld = strlen(pText) + 1;
+				NumBytesOld = GUI__strlen(pText) + 1;
 			}
 			NumCharsNew = GUI__GetNumChars(s);
 			if (NumCharsNew > pObj->MaxLen) {
@@ -549,7 +547,7 @@ void EDIT_SetText(EDIT_Handle hObj, const char *s) {
 			if (_IsSpaceInBuffer(pObj, NumBytesNew - NumBytesOld)) {
 				char *pText;
 				pText = (char *)(pObj->hpText);
-				memcpy(pText, s, NumBytesNew);
+				GUI__memcpy(pText, s, NumBytesNew);
 				pObj->CursorPos = NumBytesNew - 1;
 				if (pObj->CursorPos == pObj->MaxLen) {
 					if (pObj->EditMode == GUI_EDIT_MODE_OVERWRITE) {
@@ -583,7 +581,7 @@ void EDIT_GetText(EDIT_Handle hObj, char *sDest, int MaxLen) {
 					NumChars = MaxLen;
 				}
 				NumBytes = GUI_UC__NumChars2NumBytes(pText, NumChars);
-				memcpy(sDest, pText, NumBytes);
+				GUI__memcpy(sDest, pText, NumBytes);
 				*(sDest + NumBytes) = 0;
 			}
 

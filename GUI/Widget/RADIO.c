@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
 
 #include "GUI.h"
 #include "GUI_Protected.h"
@@ -49,7 +47,7 @@ static void _OnPaint(RADIO_Obj* pObj) {
   GUI_FONTINFO FontInfo;
   GUI_RECT Rect, r, rFocus = {0};
   int i, y, HasFocus, FontDistY;
-  uint8_t SpaceAbove, CHeight, FocusBorder;
+  uint16_t SpaceAbove, CHeight, FocusBorder;
   /* Init some data */
   WIDGET__GetClientRect(&pObj->Widget, &rFocus);
   HasFocus  = (pObj->Widget.State & WIDGET_STATE_FOCUS) ? 1 : 0;

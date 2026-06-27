@@ -1,9 +1,7 @@
-#include <string.h>
 #include "GUI_Private.h"
 #include "GUIDebug.h"
-#if GUI_WINSUPPORT
+
 #include "WM.h"
-#endif
 
 /* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
@@ -263,7 +261,7 @@ static void _DrawBitLine8BPP(GUI_USAGE *pUsage, int x, int y, const uint8_t  *pS
 static void _DrawBitLine8BPP_DDB(GUI_USAGE *pUsage, int x, int y, const uint8_t  *pSrc, int xsize, PIXELINDEX *pDest) {
 	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
 		case 0:    /* Write mode */
-			memcpy(pDest, pSrc, xsize);
+			GUI__memcpy(pDest, pSrc, xsize);
 			break;
 		case DRAWMODE_TRANS:
 			do {
@@ -283,7 +281,7 @@ static void _DrawBitLine8BPP_DDB(GUI_USAGE *pUsage, int x, int y, const uint8_t 
 static void _DrawBitLine16BPP_DDB(GUI_USAGE *pUsage, int x, int y, const uint16_t *pSrc, int xsize, PIXELINDEX *pDest) {
 	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
 		case 0:    /* Write mode */
-			memcpy(pDest, pSrc, xsize * 2);
+			GUI__memcpy(pDest, pSrc, xsize * 2);
 			break;
 		case DRAWMODE_TRANS:
 			do {
@@ -409,7 +407,7 @@ static void _DrawVLine(int x, int y0, int y1) {
 	}
 }
 
-static void _SetPixelIndex(int x, int y, int Index) {
+static void _SetPixel(int x, int y, RGB_COLOR Index) {
 	GUI_MEMDEV *pDev = (GUI_Context.hDevData);
 	GUI_USAGE_h hUsage = pDev->hUsage;
 	PIXELINDEX *pData = _XY2PTR(x, y);
@@ -419,7 +417,7 @@ static void _SetPixelIndex(int x, int y, int Index) {
 	}
 }
 
-static unsigned int _GetPixelIndex(int x, int y) {
+static RGB_COLOR _GetPixel(int x, int y) {
 	PIXELINDEX *pData = _XY2PTR(x, y);
 	return *pData;
 }
@@ -429,9 +427,9 @@ const tLCDDEV_APIList API_LIST = {
   _DrawHLine,
   _DrawVLine,
   _FillRect,
-  _GetPixelIndex,
+  _GetPixel,
   GUI_MEMDEV__GetRect,
-  _SetPixelIndex,
+  _SetPixel,
   NULL, /* MemDevAPI       */
   16    /* BitsPerPixel    */
 };

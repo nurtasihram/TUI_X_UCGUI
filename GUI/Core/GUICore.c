@@ -1,4 +1,3 @@
-#include <stddef.h>           /* needed for definition of NULL */
 
 #define  GL_CORE_C
 
@@ -271,21 +270,13 @@ void GL_DrawBitmap(const GUI_BITMAP *pBitmap, int x0, int y0) {
 }
 
 void GUI_DrawBitmap(const GUI_BITMAP *pBitmap, int x0, int y0) {
-#if (GUI_WINSUPPORT)
 	GUI_RECT r;
-#endif
-
-#if (GUI_WINSUPPORT)
 	WM_ADDORG(x0, y0);
 	r.x1 = (r.x0 = x0) + pBitmap->XSize - 1;
 	r.y1 = (r.y0 = y0) + pBitmap->YSize - 1;
 	WM_ITERATE_START(&r) {
-#endif
 		GL_DrawBitmap(pBitmap, x0, y0);
-#if (GUI_WINSUPPORT)
 	} WM_ITERATE_END();
-#endif
-
 }
 #pragma endregion
 
@@ -654,22 +645,16 @@ static void _DispLine(const char *s, int MaxNumChars, const GUI_RECT *pRect) {
 }
 void GUI__DispLine(const char *s, int MaxNumChars, const GUI_RECT *pr) {
 	GUI_RECT r;
-	{
-		r = *pr;
-#if GUI_WINSUPPORT
-		WM_ADDORG(r.x0, r.y0);
-		WM_ADDORG(r.x1, r.y1);
-		WM_ITERATE_START(&r) {
-#endif
-			GUI_Context.DispPosX = r.x0;
-			GUI_Context.DispPosY = r.y0;
-			/* Do the actual drawing via routine call. */
-			_DispLine(s, MaxNumChars, &r);
-#if GUI_WINSUPPORT
-		} WM_ITERATE_END();
-		WM_SUBORG(GUI_Context.DispPosX, GUI_Context.DispPosY);
-#endif
-	}
+	r = *pr;
+	WM_ADDORG(r.x0, r.y0);
+	WM_ADDORG(r.x1, r.y1);
+	WM_ITERATE_START(&r) {
+		GUI_Context.DispPosX = r.x0;
+		GUI_Context.DispPosY = r.y0;
+		/* Do the actual drawing via routine call. */
+		_DispLine(s, MaxNumChars, &r);
+	} WM_ITERATE_END();
+	WM_SUBORG(GUI_Context.DispPosX, GUI_Context.DispPosY);
 }
 
 void GUI_DispString(const char *s) {
@@ -795,7 +780,6 @@ void GUI__DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign, int Ma
 	}
 }
 
-#if (GUI_WINSUPPORT)
 void GUI_DispStringInRectMax(const char *s, GUI_RECT *pRect, int TextAlign, int MaxLen) {
 	if (s) {
 		const GUI_RECT *pOldClipRect = NULL;
@@ -813,26 +797,14 @@ void GUI_DispStringInRectMax(const char *s, GUI_RECT *pRect, int TextAlign, int 
 
 	}
 }
-#else
-void GUI_DispStringInRectMax(const char *s, GUI_RECT *pRect, int TextAlign, int MaxLen) {
-	GUI_RECT Rect_Old, r;
-	if (s && pRect) {
-		Rect_Old = GUI_Context.ClipRect;
-		GUI__IntersectRects(&r, pRect, &Rect_Old);
-		LCD_SetClipRectEx(&r);
-		GUI__DispStringInRect(s, pRect, TextAlign, MaxLen);
-		LCD_SetClipRectEx(&Rect_Old);
-	}
-}
-#endif
+
 void GUI_DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign) {
 	GUI_DispStringInRectMax(s, pRect, TextAlign, 0x7fff);
 }
 #pragma endregion
 
 #pragma region Display Char
-#if (GUI_WINSUPPORT)
-static void CL_DispChar(uint16_t c) {
+void GUI_DispChar(uint16_t c) {
 	GUI_RECT r;
 	WM_ADDORG(GUI_Context.DispPosX, GUI_Context.DispPosY);
 	r.x1 = (r.x0 = GUI_Context.DispPosX) + GUI_GetCharDistX(c) - 1;
@@ -845,32 +817,15 @@ static void CL_DispChar(uint16_t c) {
 	}
 	WM_SUBORG(GUI_Context.DispPosX, GUI_Context.DispPosY);
 }
-#endif
 
-void GUI_DispChar(uint16_t c) {
-
-#if (GUI_WINSUPPORT)
-	CL_DispChar(c);
-#else
-	GL_DispChar(c);
-#endif
-
-}
 void GUI_DispCharAt(uint16_t c, int16_t x, int16_t y) {
-
 	GUI_Context.DispPosX = x;
 	GUI_Context.DispPosY = y;
-#if (GUI_WINSUPPORT)
-	CL_DispChar(c);
-#else
-	GL_DispChar(c);
-#endif
-
+	GUI_DispChar(c);
 }
 void GUI_DispChars(uint16_t c, int NumChars) {
-	while (--NumChars >= 0) {
+	while (--NumChars >= 0)
 		GUI_DispChar(c);
-	}
 }
 
 void GUI_DispNextLine(void) {
@@ -896,7 +851,7 @@ int GUI__SetText(GUI_HMEM *phText, const char *s) {
 		if (hMem) {
 			char *pMem;
 			pMem = (char *)(hMem);
-			strcpy(pMem, s);
+			GUI__strcpy(pMem, s);
 			GUI_ALLOC_FreePtr(phText);
 			*phText = hMem;
 			r = 1;
@@ -930,6 +885,11 @@ int GUI__strlen(const char *s) {
 		} while (*s++);
 	}
 	return r;
+}
+int GUI__strcpy(char *sDest, const char *sSrc) {
+	char *s = sDest;
+	while ((*s++ = *sSrc++) != 0) {}
+	return (int)(s - sDest - 1);
 }
 /*********************************************************************
 *

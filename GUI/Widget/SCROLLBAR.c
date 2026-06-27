@@ -1,6 +1,4 @@
 
-#include <stdlib.h>
-#include <string.h>
 #include "GUI_Protected.h"
 #include "SCROLLBAR_Private.h"
 #include "WIDGET.h"

@@ -1,10 +1,8 @@
-#include <string.h>
 
 #include "GUI_Private.h"
 #include "GUIDebug.h"
-#if GUI_WINSUPPORT
+
 #include "WM.h"
-#endif
 
 /* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
@@ -59,12 +57,11 @@ static void _DrawVLine(int x , int y0,  int y1) {
   _MarkRect(x, y0, x, y1);
 }
 
-static void _SetPixelIndex(int x, int y, int Index) {
-  GUI_USE_PARA(Index);
+static void _SetPixel(int x, int y, RGB_COLOR Color) {
   _MarkPixel(x, y);
 }
 
-static unsigned int _GetPixelIndex(int x, int y) {
+static RGB_COLOR _GetPixel(int x, int y) {
   GUI_USE_PARA(x);
   GUI_USE_PARA(y);
   return 0;
@@ -84,9 +81,9 @@ static const tLCDDEV_APIList _APIList = {
   _DrawHLine,
   _DrawVLine,
   _FillRect,
-  _GetPixelIndex,
+  _GetPixel,
   _GetRect,
-  _SetPixelIndex,
+  _SetPixel,
   NULL,
 };
 
@@ -131,9 +128,7 @@ void GUI_MEASDEV_Select(GUI_MEASDEV_Handle hMem) {
   if (hMem == 0) {
     GUI_SelectLCD();
   } else {
-#if GUI_WINSUPPORT
-      WM_Deactivate();
-#endif
+    WM_Deactivate();
     GUI_Context.hDevData     = hMem;
     GUI_Context.pDeviceAPI   = &_APIList;
     GUI_Context.pClipRect_HL = NULL;

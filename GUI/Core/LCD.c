@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "GUI_Private.h"
 #include "LCD_Private.h"
 #include "GUIDebug.h"

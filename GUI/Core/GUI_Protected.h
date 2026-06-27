@@ -100,11 +100,12 @@ void GUI__DispLine         (const char  *s, int Len, const GUI_RECT* pr);
 void GUI__AddSpaceHex      (uint32_t v, uint8_t Len, char**ps);
 void GUI__CalcTextRect     (const char * pText, const GUI_RECT* pTextRectIn, GUI_RECT* pTextRectOut, int TextAlign);
 
-int  GUI__WrapGetNumCharsDisp       (const char  * pText, int xSize, GUI_WRAPMODE WrapMode);
-int  GUI__WrapGetNumCharsToNextLine (const char  * pText, int xSize, GUI_WRAPMODE WrapMode);
-int  GUI__WrapGetNumBytesToNextLine (const char  * pText, int xSize, GUI_WRAPMODE WrapMode);
-int  GUI__strlen    (const char  * s);
-int  GUI__strcmp    (const char  * s0, const char  * s1);
+int GUI__WrapGetNumCharsDisp       (const char  * pText, int xSize, GUI_WRAPMODE WrapMode);
+int GUI__WrapGetNumCharsToNextLine (const char  * pText, int xSize, GUI_WRAPMODE WrapMode);
+int GUI__WrapGetNumBytesToNextLine (const char  * pText, int xSize, GUI_WRAPMODE WrapMode);
+int GUI__strlen    (const char  * s);
+int GUI__strcmp    (const char  * s0, const char  * s1);
+int GUI__strcpy(char *sDest, const char *sSrc);
 
 void GL_DispChar         (uint16_t c);
 void GL_DrawBitmap       (const GUI_BITMAP  * pBM, int x0, int y0);

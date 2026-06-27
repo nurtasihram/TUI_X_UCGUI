@@ -1,14 +1,13 @@
 
 
-#include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
 
 
 typedef struct {
-  GUI_TIMER_CALLBACK* cb;
-  GUI_TIMER_HANDLE hNext;
-  int Flags;
-	uint32_t Context;
+	GUI_TIMER_CALLBACK *cb;
+	GUI_TIMER_HANDLE hNext;
+	int Flags;
+	uintptr_t Context;
 	GUI_TIMER_TIME t0;
 	GUI_TIMER_TIME Period;
 } GUI_TIMER_Obj;
@@ -17,25 +16,25 @@ GUI_TIMER_HANDLE hFirstTimer;
 GUI_TIMER_HANDLE _hActiveTimer;
 
 static void _Unlink(GUI_TIMER_HANDLE hTimer) {
-  GUI_TIMER_Obj* pTimer = (hTimer);
-  GUI_TIMER_HANDLE hi;
-  GUI_TIMER_Obj*   pi;
-/* Check if it is the first element */
-  if (hFirstTimer == hTimer) {
-    hFirstTimer = pTimer->hNext;
-    return;
+	GUI_TIMER_Obj *pTimer = (hTimer);
+	GUI_TIMER_HANDLE hi;
+	GUI_TIMER_Obj *pi;
+	/* Check if it is the first element */
+	if (hFirstTimer == hTimer) {
+		hFirstTimer = pTimer->hNext;
+		return;
 	}
-  hi = hFirstTimer;
-/* Try to find it in the list ... */
-  while(hi) {
-    /* GUI_ASSERT(hi<1000,0); */
-    pi = (hi);
-    if (pi->hNext == hTimer) {
-      pi->hNext = pTimer->hNext;
-      break;
+	hi = hFirstTimer;
+	/* Try to find it in the list ... */
+	while (hi) {
+		/* GUI_ASSERT(hi<1000,0); */
+		pi = (hi);
+		if (pi->hNext == hTimer) {
+			pi->hNext = pTimer->hNext;
+			break;
 		}
-    hi = pi->hNext;
-  }
+		hi = pi->hNext;
+	}
 }
 
 /*********************************************************************
@@ -48,142 +47,145 @@ static void _Unlink(GUI_TIMER_HANDLE hTimer) {
 *	  The first element is the timer which expires first.
 */
 static void _Link(GUI_TIMER_HANDLE hNew) {
-  GUI_TIMER_Obj*   pNew        = (hNew);
-  GUI_TIMER_Obj*   pTimer;
-  GUI_TIMER_Obj*   pNext;
-  GUI_TIMER_HANDLE hNext;
-  if (hFirstTimer ==0) { /* List is empty, make it the only element */
-    hFirstTimer = hNew;
-	  pNew->hNext = 0;
-  } else {
-    GUI_TIMER_Obj* pFirstTimer      = (hFirstTimer);
-/* Check if we have to make it the first element */
-    if ((pNew->t0 - pFirstTimer->t0) <=0) {
-      pNew->hNext = hFirstTimer;
-      hFirstTimer = hNew;
+	GUI_TIMER_Obj *pNew = (hNew);
+	GUI_TIMER_Obj *pTimer;
+	GUI_TIMER_Obj *pNext;
+	GUI_TIMER_HANDLE hNext;
+	if (hFirstTimer == 0) { /* List is empty, make it the only element */
+		hFirstTimer = hNew;
+		pNew->hNext = 0;
+	}
+	else {
+		GUI_TIMER_Obj *pFirstTimer = (hFirstTimer);
+		/* Check if we have to make it the first element */
+		if ((pNew->t0 - pFirstTimer->t0) <= 0) {
+			pNew->hNext = hFirstTimer;
+			hFirstTimer = hNew;
 			return;
-		} else {
-      GUI_TIMER_HANDLE hTimer = hFirstTimer;
-/* Put it into the list */
-      do {
-        pTimer       = (hTimer);
-        hNext        = pTimer->hNext;
-        if (hNext ==0)
-					goto Append;
-        pNext      = (hNext);
-				if ((pNew->t0 - pNext->t0) <=0) {
-          pNew->hNext  = hNext;
-          pTimer->hNext= hNew;
-          return;
-				}
-			} while(1);
-/* Put it at the end of the list */
-Append:
-      pNew->hNext  = hNext;
-      pTimer->hNext= hNew;
-      return;
 		}
-  }
+		else {
+			GUI_TIMER_HANDLE hTimer = hFirstTimer;
+			/* Put it into the list */
+			do {
+				pTimer = (hTimer);
+				hNext = pTimer->hNext;
+				if (hNext == 0)
+					goto Append;
+				pNext = (hNext);
+				if ((pNew->t0 - pNext->t0) <= 0) {
+					pNew->hNext = hNext;
+					pTimer->hNext = hNew;
+					return;
+				}
+			} while (1);
+			/* Put it at the end of the list */
+		Append:
+			pNew->hNext = hNext;
+			pTimer->hNext = hNew;
+			return;
+		}
+	}
 }
 
 int GUI_TIMER_Exec(void) {
-  int r = 0;
-  GUI_TIMER_TIME t = GUI_GetTime();
-   {
-    while (hFirstTimer) {
-     	GUI_TIMER_Obj* pTimer = (hFirstTimer);
-      if ((pTimer->t0-t) <=0) {
-        GUI_TIMER_MESSAGE tm;
-        tm.Time = t;
+	int r = 0;
+	GUI_TIMER_TIME t = GUI_GetTime();
+	{
+		while (hFirstTimer) {
+			GUI_TIMER_Obj *pTimer = (hFirstTimer);
+			if ((pTimer->t0 - t) <= 0) {
+				GUI_TIMER_MESSAGE tm;
+				tm.Time = t;
 				tm.Context = pTimer->Context;
-        _hActiveTimer = hFirstTimer;
-        hFirstTimer = pTimer->hNext;
-        pTimer->cb(&tm);
-        r = 1;
-			} else
-			  break;
-    }
-    /*
-		GUI_TIMER_Obj* pObj = (hObj);
-    pObj->t0 = Time;
-    */
-  }
-  return r;
+				_hActiveTimer = hFirstTimer;
+				hFirstTimer = pTimer->hNext;
+				pTimer->cb(&tm);
+				r = 1;
+			}
+			else
+				break;
+		}
+		/*
+			GUI_TIMER_Obj* pObj = (hObj);
+		pObj->t0 = Time;
+		*/
+	}
+	return r;
 }
 
-GUI_TIMER_HANDLE GUI_TIMER_Create(GUI_TIMER_CALLBACK* cb, int Time, uint32_t Context, int Flags) {
-  GUI_TIMER_HANDLE hObj;
-  GUI_TIMER_Obj* pObj;
+GUI_TIMER_HANDLE GUI_TIMER_Create(GUI_TIMER_CALLBACK *cb, int Time, uint32_t Context, int Flags) {
+	GUI_TIMER_HANDLE hObj;
+	GUI_TIMER_Obj *pObj;
 
-  GUI_USE_PARA(Flags);
-  GUI_USE_PARA(Time);
-  GUI_pfTimerExec = GUI_TIMER_Exec;
+	GUI_USE_PARA(Flags);
+	GUI_USE_PARA(Time);
+	GUI_pfTimerExec = GUI_TIMER_Exec;
 	{
-    /* Alloc memory for obj */
-    hObj = GUI_ALLOC_AllocZero(sizeof(GUI_TIMER_Obj));
-    pObj = (hObj);
-    /* init member variables */
-    pObj->cb = cb;
+		/* Alloc memory for obj */
+		hObj = GUI_ALLOC_AllocZero(sizeof(GUI_TIMER_Obj));
+		pObj = (hObj);
+		/* init member variables */
+		pObj->cb = cb;
 		pObj->Context = Context;
 		pObj->t0 = Time;	//houhh 20061018...
-    /* Link it */
+		/* Link it */
 		_Link(hObj);
 	}
-  return hObj;
+	return hObj;
 }
 
 void GUI_TIMER_Delete(GUI_TIMER_HANDLE hObj) {
-/* Unlink Timer */
+	/* Unlink Timer */
 
-  _Unlink(hObj);
-  GUI_ALLOC_Free(hObj);
+	_Unlink(hObj);
+	GUI_ALLOC_Free(hObj);
 
 }
 
 void GUI_TIMER_SetPeriod(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Period) {
-   {
-    GUI_TIMER_Obj* pObj = (hObj);
-    pObj->Period = Period;
-  }
+	{
+		GUI_TIMER_Obj *pObj = (hObj);
+		pObj->Period = Period;
+	}
 }
 
 void GUI_TIMER_SetTime(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Time) {
-   {
-   	GUI_TIMER_Obj* pObj = (hObj);
-    pObj->t0 = Time;
-  }
+	{
+		GUI_TIMER_Obj *pObj = (hObj);
+		pObj->t0 = Time;
+	}
 }
 
 //////
-void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, uint32_t Context) {
-   {
-   	GUI_TIMER_Obj* pObj = (hObj);
-    pObj->Context = Context;
-  }
+void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, uintptr_t Context) {
+	{
+		GUI_TIMER_Obj *pObj = (hObj);
+		pObj->Context = Context;
+	}
 }
 //////
 
 void GUI_TIMER_SetDelay(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Delay) {
-   {
-   	GUI_TIMER_Obj* pObj = (hObj);
-    pObj->t0 = Delay;
+	{
+		GUI_TIMER_Obj *pObj = (hObj);
+		pObj->t0 = Delay;
 		_Unlink(hObj);
 		_Link(hObj);
-  }
+	}
 }
 
 void GUI_TIMER_Restart(GUI_TIMER_HANDLE hObj) {
-  GUI_TIMER_Obj* pObj;
+	GUI_TIMER_Obj *pObj;
 
-  {
-    if (hObj == 0) {
-      hObj = _hActiveTimer;
-    }
-   	pObj = (hObj);
-    pObj->t0 = GUI_GetTime() +pObj->Period;
+	{
+		if (hObj == 0) {
+			hObj = _hActiveTimer;
+		}
+		pObj = (hObj);
+		pObj->t0 = GUI_GetTime() + pObj->Period;
 		_Unlink(hObj);
 		_Link(hObj);
-  }
+	}
 }
 
 

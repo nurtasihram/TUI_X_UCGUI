@@ -1,4 +1,3 @@
-#include <stddef.h>           /* needed for definition of NULL */
 #include "WM_Intern.h"
 #include "GUIDebug.h"
 

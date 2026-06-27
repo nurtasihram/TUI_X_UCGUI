@@ -1,6 +1,5 @@
 
 
-#include <stddef.h>           /* needed for definition of NULL */
 #include "GUI_Protected.h"
 
 static int _GetLineDistX(const uint16_t  *s, int MaxNumChars) {
@@ -45,18 +44,14 @@ static void _DispLine_UC(const uint16_t  *s, int Len, const GUI_RECT *pRect) {
 static void _DispLine(const uint16_t  *s, int Len, const GUI_RECT* pr) {
   GUI_RECT r;
   r = *pr;
-#if GUI_WINSUPPORT
   WM_ADDORG(r.x0,r.y0);
   WM_ADDORG(r.x1,r.y1);
   WM_ITERATE_START(&r) {
-#endif
      GUI_Context.DispPosX = r.x0;
      GUI_Context.DispPosY = r.y0;
      _DispLine_UC(s, Len, &r);    /* Do the actual drawing via routine call. */
-#if GUI_WINSUPPORT
   } WM_ITERATE_END();
   WM_SUBORG(GUI_Context.DispPosX, GUI_Context.DispPosY);
-#endif
 }
 
 void GUI_UC_DispString(const uint16_t  *s) {

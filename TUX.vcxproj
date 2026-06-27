@@ -149,7 +149,6 @@
     <ClInclude Include="GUI\Widget\SCROLLBAR_Private.h" />
     <ClInclude Include="GUI\Widget\SLIDER.h" />
     <ClInclude Include="GUI\Widget\TEXT.h" />
-    <ClInclude Include="GUI\Widget\TEXT_Private.h" />
     <ClInclude Include="GUI\Widget\WIDGET.h" />
     <ClInclude Include="GUI\Widget\WINDOW_Private.h" />
     <ClInclude Include="GUI\WM\WM.h" />

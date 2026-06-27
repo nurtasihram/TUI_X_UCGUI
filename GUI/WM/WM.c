@@ -1,5 +1,4 @@
-﻿#include <string.h>
-#define WM_C
+﻿#define WM_C
 #include "WM_Intern.h"
 #include "WM_Intern_ConfDep.h"
 #include "GUI_Protected.h"

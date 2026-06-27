@@ -1,10 +1,8 @@
-#include <string.h>
 
 #include "GUI_Private.h"
 #include "GUIDebug.h"
-#if GUI_WINSUPPORT
+
 #include "WM.h"
-#endif
 
 /* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
@@ -36,7 +34,7 @@ void GUI_MEMDEV_Delete(GUI_MEMDEV_Handle hMemDev) {
 
 GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Flags
                                         ,const tLCDDEV_APIList * pMemDevAPI) {
-  int32_t MemSize;
+  size_t MemSize;
   GUI_USAGE_Handle hUsage = 0;
   unsigned int BitsPerPixel, BytesPerLine;
   GUI_MEMDEV_Handle hMemDev;
@@ -48,7 +46,7 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
     MemSize = (MemSize / 4) * 3;   /* We need to reserve some memory for usage object ... TBD: This can be optimized as we do not use memory perfectly. */
   }
   if (ysize<=0) {
-    int MaxLines = (MemSize - sizeof(GUI_MEMDEV)) / BytesPerLine;
+      int MaxLines = (int)((MemSize - sizeof(GUI_MEMDEV)) / BytesPerLine);
     ysize = (MaxLines > -ysize) ? -ysize : MaxLines;
   }
   if (!(Flags & GUI_MEMDEV_NOTRANS)) {
@@ -110,15 +108,12 @@ GUI_MEMDEV_Handle GUI_MEMDEV_Create(int x0, int y0, int xsize, int ysize) {
 
 GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem) {
   GUI_MEMDEV_Handle r;
-
   r = GUI_Context.hDevData;
   if (hMem == 0) {
     GUI_SelectLCD();
   } else {
     GUI_MEMDEV* pDev = (hMem);
-#if GUI_WINSUPPORT
-      WM_Deactivate();
-#endif
+    WM_Deactivate();
     /* If LCD was selected Save cliprect */
     if (GUI_Context.hDevData == 0) {
       GUI_Context.ClipRectPrev = GUI_Context.ClipRect;
@@ -174,10 +169,7 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
   if (hMem) {
     GUI_MEMDEV_Handle hMemPrev;
     GUI_MEMDEV* pDevData;
-#if (GUI_WINSUPPORT)
     GUI_RECT r;
-#endif
-
     hMemPrev = GUI_Context.hDevData;
     pDevData = (GUI_MEMDEV*) (hMem);  /* Convert to pointer */
     /* Make sure LCD is selected as device */
@@ -186,18 +178,14 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
       x = pDevData->x0;
       y = pDevData->y0;
     }
-#if (GUI_WINSUPPORT)
     /* Calculate rectangle */
     r.x1 = (r.x0 = x) + pDevData->XSize-1;
     r.y1 = (r.y0 = y) + pDevData->YSize-1;;
     /* Do the drawing. Window manager has to be on */
     WM_Activate();
     WM_ITERATE_START(&r) {
-#endif
     GUI_MEMDEV__WriteToActiveAt(hMem, x, y);
-#if (GUI_WINSUPPORT)
     } WM_ITERATE_END();
-#endif
     /* Reactivate previously used device */
     GUI_MEMDEV_Select(hMemPrev);
 
