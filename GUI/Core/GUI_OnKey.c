@@ -16,8 +16,6 @@ static struct {
 
 static int _Key;
 
-GUI_KEY_MSG_HOOK* GUI_pfKeyMsgHook;
-
 int GUI_GetKey(void) {
   int r = _Key;
   _Key = 0;

@@ -32,7 +32,3 @@
 #define GUI_TIMER_TIME int  /* default is to use 16 bits for 16 bit CPUs,
 	                           32 bits on 32 bit CPUs for timing */
 #endif
-
-#ifndef GUI_MEMSET
-#define GUI_MEMSET GUI__memset
-#endif

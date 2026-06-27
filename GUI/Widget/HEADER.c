@@ -36,7 +36,7 @@ static void _Paint(HEADER_Obj *pObj) {
 	GUI_Clear();
 	for (i = 0; i < NumItems; i++) {
 		HEADER_COLUMN *pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, i);
-		GUI_GetClientRect(&Rect);
+		WM_GetClientRect(&Rect);
 		Rect.x0 = xPos;
 		Rect.x1 = Rect.x0 + pColumn->Width;
 		if (pColumn->hDrawObj) {
@@ -70,7 +70,7 @@ static void _Paint(HEADER_Obj *pObj) {
 		GUI_SetColor(pObj->TextColor);
 		GUI_DispStringInRect(pColumn->acText, &Rect, pColumn->Align);
 	}
-	GUI_GetClientRect(&Rect);
+	WM_GetClientRect(&Rect);
 	Rect.x0 = xPos;
 	Rect.x1 = 0xfff;
 	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &Rect);

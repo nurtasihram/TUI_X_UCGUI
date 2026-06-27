@@ -122,8 +122,6 @@ typedef struct {
 	tGL_DispLine *pfDispLine;
 } tGUI_ENC_APIList;
 
-extern const tGUI_ENC_APIList GUI_ENC_APIList_SJIS;
-
 /*
 	  ****************************************
 	  *                                      *

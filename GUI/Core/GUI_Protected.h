@@ -84,8 +84,6 @@ struct GUI_Usage {
 
 #endif
 
-#define GUI_ZEROINIT(Obj) GUI_MEMSET(Obj, 0, sizeof(Obj))
-
 #define GUI_UC__GetCharSize(sText)  GUI_Context.pUC_API->pfGetCharSize(sText)
 #define GUI_UC__GetCharCode(sText)  GUI_Context.pUC_API->pfGetCharCode(sText)
 
@@ -105,8 +103,6 @@ void GUI__CalcTextRect     (const char * pText, const GUI_RECT* pTextRectIn, GUI
 int  GUI__WrapGetNumCharsDisp       (const char  * pText, int xSize, GUI_WRAPMODE WrapMode);
 int  GUI__WrapGetNumCharsToNextLine (const char  * pText, int xSize, GUI_WRAPMODE WrapMode);
 int  GUI__WrapGetNumBytesToNextLine (const char  * pText, int xSize, GUI_WRAPMODE WrapMode);
-void GUI__memset    (uint8_t * p, uint8_t Fill, int NumBytes);
-void GUI__memset16  (uint16_t* p, uint16_t Fill, int NumWords);
 int  GUI__strlen    (const char  * s);
 int  GUI__strcmp    (const char  * s0, const char  * s1);
 
@@ -157,7 +153,6 @@ int GUI_GetBitmapPixel(const GUI_BITMAP  * pBMP, unsigned x, unsigned y);
 GUI_EXTERN GUI_CONTEXT        GUI_Context;        /* Thread wide globals */
 GUI_EXTERN GUI_tfTimer*       GUI_pfTimerExec;
 GUI_EXTERN WM_tfHandlePID*    WM_pfHandlePID;
-GUI_EXTERN void(*GUI_pfDispCharStyle)(uint16_t Char);
 
 #if GUI_SUPPORT_CURSOR
   GUI_EXTERN GUI_CURSOR_tfTempHide*   GUI_CURSOR_pfTempHide;

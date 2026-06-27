@@ -41,7 +41,7 @@ static void _Paint(BUTTON_Obj *pObj, BUTTON_Handle hObj) {
 	if (pObj->hpText) {
 		s = (const char *)(pObj->hpText);
 	}
-	GUI_GetClientRect(&rClient);
+	WM_GetClientRect(&rClient);
 	/* Start drawing */
 	rInside = rClient;
 	/* Draw the 3D effect (if configured) */

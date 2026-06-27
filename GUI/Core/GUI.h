@@ -237,7 +237,6 @@ void GUI_DrawRectEx       (const GUI_RECT *pRect);
 void GUI_DrawVLine        (int x0, int y0, int y1);
 void GUI_FillRect         (int x0, int y0, int x1, int y1);
 void GUI_FillRectEx       (const GUI_RECT* pRect);
-void GUI_GetClientRect    (GUI_RECT* pRect);
 
 typedef struct {
   const  GUI_BITMAP * pBitmap;
@@ -278,8 +277,6 @@ void  GUI_DispStringInRect   (const char  *s, GUI_RECT* pRect, int Flags);
 void  GUI_DispStringInRectMax(const char  *s, GUI_RECT* pRect, int TextAlign, int MaxLen); /* Not to be doc. */
 void  GUI_GetTextExtend(GUI_RECT* pRect, const char  * s, int Len);
 int   GUI_GetYAdjust(void);
-int   GUI_GetDispPosX(void);
-int   GUI_GetDispPosY(void);
 const GUI_FONT  * GUI_GetFont(void);
 int   GUI_GetCharDistX(uint16_t c);
 int   GUI_GetStringDistX(const char  *s);
@@ -295,9 +292,7 @@ int   GUI_SetTextAlign(int Align);
 int   GUI_SetTextMode(int Mode);
 int   GUI_SetLBorder(int x);
 const GUI_FONT  * GUI_SetFont(const GUI_FONT  * pNewFont);
-char  GUI_GotoXY(int x, int y);
-char  GUI_GotoX(int x);
-char  GUI_GotoY(int y);
+void  GUI_GotoXY(int x, int y);
 void  GUI_DispNextLine(void);
 
 int   GUI_UC_Encode           (char* s, uint16_t Char);
@@ -307,8 +302,6 @@ void  GUI_UC_SetEncodeNone    (void);
 void  GUI_UC_SetEncodeUTF8    (void);
 
 void GUI_UC_DispString(const uint16_t  *s);
-void GUI_UC2DB (uint16_t Code, uint8_t* pOut);
-uint16_t  GUI_DB2UC (uint8_t Byte0, uint8_t Byte1);
 
 GUI_HMEM           GUI_ALLOC_AllocInit  (const void *pInitData, size_t Size);
 GUI_HMEM           GUI_ALLOC_AllocNoInit(size_t size);
@@ -417,11 +410,6 @@ void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, uint32_t Context);	//houhh 2006102
 void GUI_StoreKeyMsg(int Key, int Pressed);
 void GUI_SendKeyMsg (int Key, int Pressed);
 int  GUI_PollKeyMsg(void);
-
-/* Message hook */
-typedef int GUI_KEY_MSG_HOOK(int Key, int Pressed);
-extern  GUI_KEY_MSG_HOOK* GUI_pfKeyMsgHook;
-GUI_KEY_MSG_HOOK* GUI_SetKeyMsgHook(GUI_KEY_MSG_HOOK* pHook);
 
 /* Application layer */
 int  GUI_GetKey(void);

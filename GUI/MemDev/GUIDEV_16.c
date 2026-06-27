@@ -375,7 +375,9 @@ static void _FillRect(int x0, int y0, int x1, int y1) {
 	}
 	/* Do the drawing */
 	for (; y0 <= y1; y0++) {
-		GUI__memset16(pData, LCD_COLORINDEX, Len);
+		int i;
+		for (i = 0; i < Len; i++)
+			pData[i] = LCD_COLORINDEX;
 		pData = (PIXELINDEX *)((uint8_t *)pData + BytesPerLine);
 	}
 }
