@@ -1,4 +1,3 @@
-
 #include "GUI_Protected.h"
 #include "WM_Intern.h"
 
@@ -53,27 +52,36 @@ static void _SetActive(FRAMEWIN_Handle hObj, int State) {
 		FRAMEWIN_Invalidate(hObj);
 	}
 }
-static void _OnTouch(FRAMEWIN_Handle hWin, FRAMEWIN_Obj *pObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState;
-	pState = (const GUI_PID_STATE *)pMsg->Data;
-	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
+static void _OnTouch(FRAMEWIN_Obj *pObj, const GUI_PID_STATE *pState) {
+	if (pState) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			if (!(pObj->Flags & FRAMEWIN_SF_ACTIVE)) {
-				WM_SetFocus(hWin);
+				WM_SetFocus(pObj);
 			}
-			WM_BringToTop(hWin);
+			WM_BringToTop(pObj);
 			if (pObj->Flags & FRAMEWIN_SF_MOVEABLE) {
-				WM_SetCaptureMove(hWin, pState, FRAMEWIN__MinVisibility);
+				WM_SetCaptureMove(pObj, pState, FRAMEWIN__MinVisibility);
 			}
 		}
 	}
 }
+static int _OnKey(FRAMEWIN_Obj *pObj, const WM_KEY_INFO *pInfo) {
+	if (pInfo->PressedCnt > 0) { /* Key pressed? */
+		int Key = pInfo->Key;
+		switch (Key) {
+			case GUI_KEY_TAB:
+				pObj->hFocussedChild = WM_SetFocusOnNextChild((WM_HWIN)pObj);
+				return 1;
+		}
+	}
+	return 0;
+}
 /*********************************************************************
 *
-*       _Paint  (Frame)
+*       _OnPaint  (Frame)
 *
 */
-static void _Paint(FRAMEWIN_Obj *pObj) {
+static void _OnPaint(FRAMEWIN_Obj *pObj) {
 	WM_HWIN hWin = WM_GetActiveWindow();
 	const char *pText = NULL;
 	int xsize = WM_GetWindowSizeX(hWin);
@@ -148,10 +156,7 @@ static void _OnChildHasFocus(FRAMEWIN_Handle hWin, FRAMEWIN_Obj *pObj, WM_MESSAG
 	}
 }
 static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
-	FRAMEWIN_Handle hWin = (FRAMEWIN_Handle)(pMsg->hWin);
-	FRAMEWIN_Obj *pObj = (hWin);
-	GUI_RECT *pRect = (GUI_RECT *)(pMsg->Data);
-	POSITIONS Pos;
+	FRAMEWIN_Obj *pObj = pMsg->hWin;
 	GUI_HOOK *pHook;
 	/* Call hook functions */
 	for (pHook = pObj->pFirstHook; pHook; pHook = pHook->pNext) {
@@ -163,49 +168,50 @@ static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
 	}
 	switch (pMsg->MsgId) {
 		case WM_HANDLE_DIALOG_STATUS:
-			if (pMsg->Data) {                           /* set pointer to Dialog status */
+			if (pMsg->Data) /* set pointer to Dialog status */
 				pObj->pDialogStatus = (WM_DIALOG_STATUS *)pMsg->Data;
-			}
-			else {                                      /* return pointer to Dialog status */
+			else /* return pointer to Dialog status */
 				pMsg->Data = (WM_PARAM)pObj->pDialogStatus;
-			}
 			return;
 		case WM_PAINT:
-			_Paint(pObj);
+			_OnPaint(pObj);
 			break;
 		case WM_TOUCH:
-			_OnTouch(hWin, pObj, pMsg);
-			return;                       /* Return here ... Message handled */
-		case WM_GET_INSIDE_RECT:
+			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
+			return; /* Return here ... Message handled */
+		case WM_KEY:
+			if (_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data))
+				return; /* Return here ... Message handled */
+			break;
+		case WM_GET_INSIDE_RECT: {
+			POSITIONS Pos;
 			FRAMEWIN__CalcPositions(pObj, &Pos);
-			*pRect = Pos.rClient;
-			return;                       /* Return here ... Message handled */
-		case WM_GET_CLIENT_WINDOW:      /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
+			*(GUI_RECT *)pMsg->Data = Pos.rClient;
+			return; /* Return here ... Message handled */
+		}
+		case WM_GET_CLIENT_WINDOW: /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
 			pMsg->Data = (WM_PARAM)pObj->hClient;
-			return;                       /* Return here ... Message handled */
+			return; /* Return here ... Message handled */
 		case WM_NOTIFY_PARENT:
 			if ((int)pMsg->Data == WM_NOTIFICATION_RELEASED) {
 				WM_MESSAGE Msg;
-				Msg.hWinSrc = hWin;
+				Msg.hWinSrc = pObj;
 				Msg.Data = pMsg->Data;
 				Msg.MsgId = WM_NOTIFY_PARENT_REFLECTION;
 				WM_SendMessage(pMsg->hWinSrc, &Msg);
 			}
 			return;
-		case WM_SET_FOCUS:                 /* We have received or lost focus */
+		case WM_SET_FOCUS: /* We have received or lost focus */
 			if (pMsg->Data == 1) {
-				if (WM_IsWindow(pObj->hFocussedChild)) {
+				if (WM_IsWindow(pObj->hFocussedChild))
 					WM_SetFocus(pObj->hFocussedChild);
-				}
-				else {
+				else
 					pObj->hFocussedChild = WM_SetFocusOnNextChild(pObj->hClient);
-				}
-				FRAMEWIN_SetActive(hWin, 1);
+				FRAMEWIN_SetActive(pObj, 1);
 				pMsg->Data = (WM_PARAM)0;              /* Focus could be accepted */
 			}
-			else {
-				FRAMEWIN_SetActive(hWin, 0);
-			}
+			else
+				FRAMEWIN_SetActive(pObj, 0);
 			return;
 		case WM_TOUCH_CHILD:
 			/* If a child of this framewindow has been touched and the frame window was not active,
@@ -216,15 +222,13 @@ static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
 				const GUI_PID_STATE *pState;
 				pMsgOrg = (const WM_MESSAGE *)pMsg->Data;      /* The original touch message */
 				pState = (const GUI_PID_STATE *)pMsgOrg->Data;
-				if (pState) {          /* Message may not have a valid pointer (moved out) ! */
-					if (pState->Pressed) {
-						WM_SetFocus(hWin);
-					}
-				}
+				if (pState) /* Message may not have a valid pointer (moved out) ! */
+					if (pState->Pressed)
+						WM_SetFocus(pObj);
 			}
 			break;
 		case WM_NOTIFY_CHILD_HAS_FOCUS:
-			_OnChildHasFocus(hWin, pObj, pMsg);
+			_OnChildHasFocus(pObj, pObj, pMsg);
 			break;
 		case WM_DELETE:
 			GUI_DEBUG_LOG("FRAMEWIN: _FRAMEWIN_Callback(WM_DELETE)\n");
@@ -232,7 +236,7 @@ static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
 			break;
 	}
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(hWin, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
 	}
 	WM_DefaultProc(pMsg);
@@ -272,16 +276,6 @@ static void FRAMEWIN__cbClient(WM_MESSAGE *pMsg) {
 		case WM_GET_ACCEPT_FOCUS:
 			WIDGET_HandleActive(hParent, pMsg);
 			return;
-		case WM_KEY:
-			if (((const WM_KEY_INFO *)(pMsg->Data))->PressedCnt > 0) {
-				int Key = ((const WM_KEY_INFO *)(pMsg->Data))->Key;
-				switch (Key) {
-					case GUI_KEY_TAB:
-						pObj->hFocussedChild = WM_SetFocusOnNextChild(hWin);
-						return;
-				}
-			}
-			break;	                       /* Send to parent by not doing anything */
 		case WM_GET_BKCOLOR:
 			pMsg->Data = (WM_PARAM)(uintptr_t)pObj->Props.ClientColor;
 			return;                       /* Message handled */

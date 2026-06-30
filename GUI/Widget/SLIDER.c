@@ -1,4 +1,3 @@
-
 #include "GUI_Protected.h"
 
 #include "SLIDER.h"
@@ -21,7 +20,7 @@ typedef struct {
 	int16_t Width;
 } SLIDER_Obj;
 static RGB_COLOR _DefaultBkColor = SLIDER_BKCOLOR0_DEFAULT;
-static void _Paint(SLIDER_Obj *pObj, WM_HWIN hObj) {
+static void _OnPaint(SLIDER_Obj *pObj) {
 	GUI_RECT r, rFocus, rSlider, rSlot;
 	int x0, xsize, i, Range, NumTicks;
 	WIDGET__GetClientRect(&pObj->Widget, &rFocus);
@@ -36,14 +35,14 @@ static void _Paint(SLIDER_Obj *pObj, WM_HWIN hObj) {
 	/* Fill with parents background color */
 #if !SLIDER_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent*/
 	if (pObj->aBkColor[0] == GUI_INVALID_COLOR) {
-		GUI_SetBkColor(WIDGET__GetBkColor(hObj));
+		GUI_SetBkColor(WIDGET__GetBkColor(&pObj->Widget));
 	}
 	else {
 		GUI_SetBkColor(pObj->aBkColor[0]);
 	}
 	GUI_Clear();
 #else
-	if (!WM_GetHasTrans(hObj)) {
+	if (!WM_GetHasTrans(&pObj->Widget)) {
 		GUI_SetBkColor(pObj->aBkColor[0]);
 		GUI_Clear();
 	}
@@ -96,9 +95,8 @@ static void _SliderReleased(SLIDER_Obj *pObj) {
 		WM_NotifyParent(pObj, WM_NOTIFICATION_RELEASED);
 	}
 }
-static void _OnTouch(SLIDER_Obj *pObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)(uintptr_t)pMsg->Data;
-	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
+static void _OnTouch(SLIDER_Obj *pObj, const GUI_PID_STATE *pState) {
+	if (pState) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			int x0, xsize, x, Sel, Range;
 			Range = (pObj->Max - pObj->Min);
@@ -134,42 +132,34 @@ static void _OnTouch(SLIDER_Obj *pObj, WM_MESSAGE *pMsg) {
 		}
 	}
 }
-static void  _OnKey(SLIDER_Handle hObj, WM_MESSAGE *pMsg) {
-	const WM_KEY_INFO *pKeyInfo;
-	int Key;
-	pKeyInfo = (const WM_KEY_INFO *)(uintptr_t)pMsg->Data;
-	Key = pKeyInfo->Key;
-	if (pKeyInfo->PressedCnt > 0) {
+static void _OnKey(SLIDER_Obj *pObj, const WM_KEY_INFO *pInfo) {
+	int Key = pInfo->Key;
+	if (pInfo->PressedCnt > 0) {
 		switch (Key) {
 			case GUI_KEY_RIGHT:
-				SLIDER_Inc(hObj);
-				break;                    /* Send to parent by not doing anything */
+				SLIDER_Inc(pObj);
+				break; /* Send to parent by not doing anything */
 			case GUI_KEY_LEFT:
-				SLIDER_Dec(hObj);
-				break;                    /* Send to parent by not doing anything */
-			default:
-				return;
+				SLIDER_Dec(pObj);
+				break; /* Send to parent by not doing anything */
 		}
 	}
 }
 static void _SLIDER_Callback(WM_MESSAGE *pMsg) {
-	SLIDER_Handle hObj;
-	SLIDER_Obj *pObj;
-	hObj = pMsg->hWin;
-	pObj = (hObj);
+	SLIDER_Obj *pObj = pMsg->hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
 	}
 	switch (pMsg->MsgId) {
 		case WM_PAINT:
-			_Paint(pObj, hObj);
+			_OnPaint(pObj);
 			return;
 		case WM_TOUCH:
-			_OnTouch(pObj, pMsg);
+			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
 			break;
 		case WM_KEY:
-			_OnKey(hObj, pMsg);
+			_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data);
 			break;
 	}
 	WM_DefaultProc(pMsg);

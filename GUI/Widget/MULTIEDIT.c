@@ -1,7 +1,6 @@
+#include "WM_Intern.h"
 
 #include "MULTIEDIT.h"
-#include "WIDGET.h"
-#include "WM_Intern.h"
 
 /* Define default fonts */
 #define MULTIEDIT_FONT_DEFAULT &GUI_Font13_1
@@ -928,10 +927,9 @@ static void _MULTIEDIT_Paint(MULTIEDIT_OBJ *pObj) {
 	/* Draw the 3D effect (if configured) */
 	WIDGET__EFFECT_DrawDown(&pObj->Widget);
 }
-static void _OnTouch(MULTIEDIT_OBJ *pObj, WM_MESSAGE *pMsg) {
+static void _OnTouch(MULTIEDIT_OBJ *pObj, const GUI_PID_STATE *pState) {
 	int Notification;
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
-	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
+	if (pState) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			int Effect, xPos, yPos;
 			Effect = pObj->Widget.pEffect->EffectSize;
@@ -941,14 +939,22 @@ static void _OnTouch(MULTIEDIT_OBJ *pObj, WM_MESSAGE *pMsg) {
 			_Invalidate(pObj);
 			Notification = WM_NOTIFICATION_CLICKED;
 		}
-		else {
+		else 
 			Notification = WM_NOTIFICATION_RELEASED;
-		}
 	}
-	else {
+	else
 		Notification = WM_NOTIFICATION_MOVED_OUT;
-	}
 	WM_NotifyParent(pObj, Notification);
+}
+static int _OnKey(MULTIEDIT_OBJ *pObj, const WM_KEY_INFO *pInfo) {
+	if (pInfo->PressedCnt > 0) {
+		int Key = pInfo->Key;
+		if (_AddKey(pObj, Key))
+			return 1;
+	}
+	else if (!(pObj->Flags & MULTIEDIT_SF_READONLY))
+		return 1; /* Key release is consumed (not sent to parent) */
+	return 0; /* Key release is not consumed (sent to parent) */
 }
 /*********************************************************************
 *
@@ -1043,48 +1049,46 @@ static int _AddKey(MULTIEDIT_HANDLE hObj, uint16_t Key) {
 	return r;
 }
 static void _MULTIEDIT_Callback(WM_MESSAGE *pMsg) {
-	MULTIEDIT_HANDLE hObj;
-	MULTIEDIT_OBJ *pObj;
-	WM_SCROLL_STATE ScrollState;
-	hObj = pMsg->hWin;
+	MULTIEDIT_OBJ *pObj = pMsg->hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
 	}
-	pObj = (hObj);
 	switch (pMsg->MsgId) {
 		case WM_NOTIFY_CLIENTCHANGE:
 			_InvalidateCursorXY(pObj);
 			_InvalidateNumLines(pObj);
 			_InvalidateTextSizeX(pObj);
 			_ClearCache(pObj);
-			_CalcScrollParas(hObj);
+			_CalcScrollParas(pObj);
 			break;
 		case WM_SIZE:
 			_InvalidateCursorXY(pObj);
 			_InvalidateNumLines(pObj);
 			_InvalidateTextSizeX(pObj);
 			_ClearCache(pObj);
-			_Invalidate(hObj);
+			_Invalidate(pObj);
 			break;
 		case WM_NOTIFY_PARENT:
 			switch (pMsg->Data) {
-				case WM_NOTIFICATION_VALUE_CHANGED:
-					if (pMsg->hWinSrc == WM_GetScrollbarV(hObj)) {
+				case WM_NOTIFICATION_VALUE_CHANGED: {
+					WM_SCROLL_STATE ScrollState;
+					if (pMsg->hWinSrc == WM_GetScrollbarV(pObj)) {
 						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
 						pObj->ScrollStateV.v = ScrollState.v;
-						WM_Invalidate(hObj);
-						WM_NotifyParent(hObj, WM_NOTIFICATION_SCROLL_CHANGED);
+						WM_Invalidate(pObj);
+						WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
-					else if (pMsg->hWinSrc == WM_GetScrollbarH(hObj)) {
+					else if (pMsg->hWinSrc == WM_GetScrollbarH(pObj)) {
 						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
 						pObj->ScrollStateH.v = ScrollState.v;
-						WM_Invalidate(hObj);
-						WM_NotifyParent(hObj, WM_NOTIFICATION_SCROLL_CHANGED);
+						WM_Invalidate(pObj);
+						WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
 					break;
+				}
 				case WM_NOTIFICATION_SCROLLBAR_ADDED:
-					_SetScrollState(hObj);
+					_SetScrollState(pObj);
 					break;
 			}
 			break;
@@ -1092,31 +1096,15 @@ static void _MULTIEDIT_Callback(WM_MESSAGE *pMsg) {
 			_MULTIEDIT_Paint(pObj);
 			return;
 		case WM_TOUCH:
-			_OnTouch(pObj, pMsg);
+			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
 			break;
 		case WM_DELETE:
 			GUI_ALLOC_FreePtr(&pObj->hText);
 			break;
 		case WM_KEY:
-			if (((const WM_KEY_INFO *)(pMsg->Data))->PressedCnt > 0) {
-				int Key = ((const WM_KEY_INFO *)(pMsg->Data))->Key;
-				/* Leave code for test purpose
-				switch (Key) {
-				case '1': Key = GUI_KEY_LEFT;  break;
-				case '2': Key = GUI_KEY_UP;    break;
-				case '3': Key = GUI_KEY_RIGHT; break;
-				case '4': Key = GUI_KEY_DOWN;  break;
-				}
-				*/
-				if (_AddKey(hObj, Key)) {
-					return;
-				}
-			}
-			else {
-				if (!(pObj->Flags & MULTIEDIT_SF_READONLY)) {
-					return;                /* Key release is consumed (not sent to parent) */
-				}
-			}
+			if (_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data))
+				return;
+			break;
 	}
 	WM_DefaultProc(pMsg);
 }

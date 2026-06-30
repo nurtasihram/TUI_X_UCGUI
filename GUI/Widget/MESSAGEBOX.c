@@ -10,7 +10,20 @@
 #define MESSAGEBOX_XSIZEOK 50
 #define MESSAGEBOX_YSIZEOK 20
 #define MESSAGEBOX_BKCOLOR RGB_WHITE
-#define ID_FRAME 100
+
+static void _OnKey(WM_HWIN hWin, const WM_KEY_INFO *pInfo) {
+	int Key = pInfo->Key;
+	if (pInfo->PressedCnt) {
+		switch (Key) {
+			case GUI_KEY_ESCAPE:
+				GUI_EndDialog(hWin, 1); /* End dialog with return value 1 if <ESC> is pressed */
+				break;
+			case GUI_KEY_ENTER:
+				GUI_EndDialog(hWin, 0); /* End dialog with return value 0 if <ENTER> is pressed */
+				break;
+		}
+	}
+}
 static void _MESSAGEBOX_cbCallback(WM_MESSAGE *pMsg) {
 	WM_HWIN hWin = pMsg->hWin;
 	switch (pMsg->MsgId) {
@@ -18,22 +31,9 @@ static void _MESSAGEBOX_cbCallback(WM_MESSAGE *pMsg) {
 			FRAMEWIN_SetClientColor(hWin, MESSAGEBOX_BKCOLOR);
 			break;
 		case WM_KEY:
-		{
-			int Key = ((const WM_KEY_INFO *)(pMsg->Data))->Key;
-			if (((const WM_KEY_INFO *)(pMsg->Data))->PressedCnt) {
-				switch (Key) {
-					case GUI_KEY_ESCAPE:
-						GUI_EndDialog(hWin, 1);             /* End dialog with return value 1 if <ESC> is pressed */
-						break;
-					case GUI_KEY_ENTER:
-						GUI_EndDialog(hWin, 0);             /* End dialog with return value 0 if <ENTER> is pressed */
-						break;
-				}
-			}
-		}
-		break;
-		case WM_NOTIFY_PARENT:
-		{
+			_OnKey(hWin, (const WM_KEY_INFO *)pMsg->Data);
+			break;
+		case WM_NOTIFY_PARENT: {
 			int NCode = (int)pMsg->Data;             /* Get notification code */
 			int Id = WM_GetId(pMsg->hWinSrc);  /* Get control ID */
 			switch (NCode) {
@@ -43,8 +43,8 @@ static void _MESSAGEBOX_cbCallback(WM_MESSAGE *pMsg) {
 					}
 					break;
 			}
+			break;
 		}
-		break;
 		default:
 			WM_DefaultProc(pMsg);
 	}

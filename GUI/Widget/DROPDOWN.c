@@ -1,12 +1,9 @@
-
-
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
 #include "GUI_ARRAY.h"
 
 #include "WM_Intern.h"
 
-#include "WIDGET.h"
 #include "LISTBOX.h"
 
 #include "SCROLLBAR.h"
@@ -97,7 +94,7 @@ static void _FreeAttached(DROPDOWN_Obj *pObj) {
 	GUI_ARRAY_Delete(&pObj->Handles);
 	WM_DeleteWindow(pObj->hListWin);
 }
-static void _Paint(DROPDOWN_Handle hObj) {
+static void _OnPaint(DROPDOWN_Handle hObj) {
 	int Border;
 	GUI_RECT r;
 	const char *s;
@@ -136,20 +133,26 @@ static void _Paint(DROPDOWN_Handle hObj) {
 	_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.y1 - r.y0 - 8) / 2);
 	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &r);
 }
-static int _OnTouch(DROPDOWN_Handle hObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
-	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
-		if (pState->Pressed) {
-			WM_NotifyParent(hObj, WM_NOTIFICATION_CLICKED);
-		}
-		else {
-			WM_NotifyParent(hObj, WM_NOTIFICATION_RELEASED);
-		}
+static int _OnTouch(DROPDOWN_Obj *pObj, const GUI_PID_STATE *pState) {
+	if (pState) {  /* Something happened in our area (pressed or released) */
+		WM_NotifyParent(pObj, pState->Pressed ? WM_NOTIFICATION_CLICKED : WM_NOTIFICATION_RELEASED);
 	}
-	else {     /* Mouse moved out */
-		WM_NotifyParent(hObj, WM_NOTIFICATION_MOVED_OUT);
-	}
+	else /* Mouse moved out */
+		WM_NotifyParent(pObj, WM_NOTIFICATION_MOVED_OUT);
 	return 0; /* Message handled */
+}
+static int _OnKey(DROPDOWN_Obj *pObj, const WM_KEY_INFO *pInfo) {
+	if (pInfo->PressedCnt > 0) {
+		int Key = pInfo->Key;
+		switch (Key) {
+			case GUI_KEY_TAB:
+				break; /* Send to parent by not doing anything */
+			default:
+				DROPDOWN_AddKey(pObj, Key);
+				return 1; /* Message handled */
+		}
+	}
+	return 0;
 }
 void DROPDOWN__AdjustHeight(DROPDOWN_Obj *pObj) {
 	int Height;
@@ -161,59 +164,48 @@ void DROPDOWN__AdjustHeight(DROPDOWN_Obj *pObj) {
 	WM_SetSize(pObj, WM__GetWindowSizeX(&pObj->Widget.Win), Height);
 }
 static void _DROPDOWN_Callback(WM_MESSAGE *pMsg) {
-	DROPDOWN_Handle hObj = pMsg->hWin;
-	DROPDOWN_Obj *pObj = (hObj);
+	DROPDOWN_Obj *pObj = pMsg->hWin;
 	char IsExpandedBeforeMsg;
 	IsExpandedBeforeMsg = pObj->hListWin ? 1 : 0;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
 	}
 	switch (pMsg->MsgId) {
 		case WM_NOTIFY_PARENT:
 			switch (pMsg->Data) {
 				case WM_NOTIFICATION_SCROLL_CHANGED:
-					WM_NotifyParent(hObj, WM_NOTIFICATION_SCROLL_CHANGED);
+					WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					break;
 				case WM_NOTIFICATION_CLICKED:
-					DROPDOWN_SetSel(hObj, LISTBOX_GetSel(pObj->hListWin));
-					WM_SetFocus(hObj);
+					DROPDOWN_SetSel(pObj, LISTBOX_GetSel(pObj->hListWin));
+					WM_SetFocus(pObj);
 					break;
 				case LISTBOX_NOTIFICATION_LOST_FOCUS:
-					DROPDOWN_Collapse(hObj);
+					DROPDOWN_Collapse(pObj);
 					break;
 			}
 			break;
 		case WM_PID_STATE_CHANGED:
 			if (IsExpandedBeforeMsg == 0) {    /* Make sure we do not react a second time */
 				const WM_PID_STATE_CHANGED_INFO *pInfo = (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data;
-				if (pInfo->State) {
-					DROPDOWN_Expand(hObj);
-				}
+				if (pInfo->State)
+					DROPDOWN_Expand(pObj);
 			}
 			break;
 		case WM_TOUCH:
-			if (_OnTouch(hObj, pMsg) == 0) {
+			if (_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data) == 0)
 				return;
-			}
 			break;
 		case WM_PAINT:
-			_Paint(hObj);
+			_OnPaint(pObj);
 			break;
 		case WM_DELETE:
 			_FreeAttached(pObj);
 			break;       /* No return here ... WM_DefaultProc needs to be called */
 		case WM_KEY:
-			if (((const WM_KEY_INFO *)(pMsg->Data))->PressedCnt > 0) {
-				int Key = ((const WM_KEY_INFO *)(pMsg->Data))->Key;
-				switch (Key) {
-					case GUI_KEY_TAB:
-						break;                    /* Send to parent by not doing anything */
-					default:
-						DROPDOWN_AddKey(hObj, Key);
-						return;
-				}
-			}
+			if (_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data)) 
+				return;
 			break;
 	}
 	WM_DefaultProc(pMsg);

@@ -1,7 +1,7 @@
+#include "GUI_Protected.h"
 
 #include "BUTTON.h"
 #include "BUTTON_Private.h"
-#include "GUI_Protected.h"
 
 /* Define default fonts */
 #define BUTTON_FONT_DEFAULT &GUI_Font13_1
@@ -27,14 +27,14 @@ BUTTON_PROPS BUTTON__DefaultProps = {
   BUTTON_FONT_DEFAULT,
   BUTTON_ALIGN_DEFAULT
 };
-static void _Paint(BUTTON_Obj *pObj, BUTTON_Handle hObj) {
+static void _OnPaint(BUTTON_Obj *pObj) {
 	const char *s = NULL;
 	unsigned int Index;
 	int State, PressedState, ColorIndex;
 	GUI_RECT rClient, rInside;
 	State = pObj->Widget.State;
 	PressedState = (State & BUTTON_STATE_PRESSED) ? 1 : 0;
-	ColorIndex = (WM__IsEnabled(hObj)) ? PressedState : 2;
+	ColorIndex = (WM__IsEnabled(pObj)) ? PressedState : 2;
 	GUI_SetFont(pObj->Props.pFont);
 	if (pObj->hpText) {
 		s = (const char *)(pObj->hpText);
@@ -120,14 +120,13 @@ static void _ButtonReleased(BUTTON_Obj *pObj, int Notification) {
 		GUI_StoreKey(pObj->Widget.Id);
 	}
 }
-static void _OnTouch(BUTTON_Obj *pObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
+static void _OnTouch(BUTTON_Obj *pObj, const GUI_PID_STATE *pState) {
 #if BUTTON_REACT_ON_LEVEL
 	if (!pMsg->Data) {  /* Mouse moved out */
 		_ButtonReleased(pObj, WM_NOTIFICATION_MOVED_OUT);
 	}
 #else
-	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
+	if (pState) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			if ((pObj->Widget.State & BUTTON_STATE_PRESSED) == 0) {
 				_ButtonPressed(pObj);
@@ -145,6 +144,17 @@ static void _OnTouch(BUTTON_Obj *pObj, WM_MESSAGE *pMsg) {
 	}
 #endif
 }
+static int _OnKey(BUTTON_Obj *pObj, const WM_KEY_INFO *pInfo) {
+	switch (pInfo->Key) {
+		case ' ':
+			if (pInfo->PressedCnt > 0) /* Key pressed? */
+				_ButtonPressed(pObj);
+			else
+				_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
+			return 1;
+	}
+	return 0;
+}
 #if BUTTON_REACT_ON_LEVEL
 static void _OnPidStateChange(BUTTON_Obj *pObj, WM_MESSAGE *pMsg) {
 	const WM_PID_STATE_CHANGED_INFO *pState = (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data;
@@ -161,10 +171,9 @@ static void _OnPidStateChange(BUTTON_Obj *pObj, WM_MESSAGE *pMsg) {
 }
 #endif
 void BUTTON_Callback(WM_MESSAGE *pMsg) {
-	BUTTON_Handle hObj = pMsg->hWin;
-	BUTTON_Obj *pObj = (hObj);
+	BUTTON_Obj *pObj = pMsg->hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
 	}
 	switch (pMsg->MsgId) {
@@ -174,38 +183,20 @@ void BUTTON_Callback(WM_MESSAGE *pMsg) {
 			return;      /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
 #endif
 		case WM_TOUCH:
-			_OnTouch(pObj, pMsg);
+			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
 			return;      /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
 		case WM_PAINT:
-			_Paint(pObj, hObj);
+			_OnPaint(pObj);
 			return;
 		case WM_DELETE:
 			GUI_DEBUG_LOG("BUTTON: _BUTTON_Callback(WM_DELETE)\n");
 			_Delete(pObj);
 			break;       /* No return here ... WM_DefaultProc needs to be called */
-#if 0     /* TBD: Button should react to space & Enter */
 		case WM_KEY:
-		{
-			int PressedCnt = ((WM_KEY_INFO *)(pMsg->Data))->PressedCnt;
-			int Key = ((WM_KEY_INFO *)(pMsg->Data))->Key;
-			if (PressedCnt > 0) {   /* Key pressed? */
-				switch (Key) {
-					case ' ':
-						_ButtonPressed(pObj);
-						return;
-				}
-			}
-			else {
-				switch (Key) {
-					case ' ':
-						_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
-						return;
-				}
-			}
+			if (_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data))
+				return;
+			break;
 		}
-		break;
-#endif
-	}
 	WM_DefaultProc(pMsg);
 }
 BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int WinFlags, int ExFlags, int Id) {

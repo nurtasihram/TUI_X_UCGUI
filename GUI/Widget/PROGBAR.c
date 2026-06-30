@@ -1,5 +1,3 @@
-
-
 #include "GUI_Protected.h"
 
 #include "WIDGET.h"
@@ -23,8 +21,7 @@ typedef struct {
 	/*  int16_t Options; */
 } PROGBAR_Obj;
 #define Invalidate(h) WM_Invalidate(h)
-static void _FreeText(PROGBAR_Handle hObj) {
-	PROGBAR_Obj *pObj = (hObj);
+static void _FreeText(PROGBAR_Obj *pObj) {
 	GUI_ALLOC_FreePtr(&pObj->hpText);
 }
 static int _Value2X(const PROGBAR_Obj *pObj, int v) {
@@ -95,13 +92,11 @@ static void _GetTextRect(const PROGBAR_Obj *pObj, GUI_RECT *pRect, const char *p
 	pRect->x1 = pRect->x0 + TextWidth - 1;
 	pRect->y1 = pRect->y0 + TextHeight - 1;
 }
-static void _Paint(PROGBAR_Handle hObj) {
-	PROGBAR_Obj *pObj;
+static void _OnPaint(PROGBAR_Obj *pObj) {
 	GUI_RECT r, rInside, rClient, rText;
 	const char *pText;
 	char ac[5];
 	int tm, xPos;
-	pObj = (hObj);
 	WM_GetClientRect(&rClient);
 	GUI__ReduceRect(&rInside, &rClient, pObj->Widget.pEffect->EffectSize);
 	xPos = _Value2X(pObj, pObj->v);
@@ -123,21 +118,21 @@ static void _Paint(PROGBAR_Handle hObj) {
 	GUI_SetTextMode(tm);
 	WIDGET__EFFECT_DrawDownRect(&pObj->Widget, &rClient);
 }
-static void _Delete(PROGBAR_Handle hObj) {
-	_FreeText(hObj);
+static void _Delete(PROGBAR_Obj *pObj) {
+	_FreeText(pObj);
 }
 static void _PROGBAR_Callback(WM_MESSAGE *pMsg) {
-	PROGBAR_Handle hObj = (PROGBAR_Handle)pMsg->hWin;
+	PROGBAR_Obj *pObj = pMsg->hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
 	}
 	switch (pMsg->MsgId) {
 		case WM_PAINT:
-			_Paint(hObj);
+			_OnPaint(pObj);
 			return;
 		case WM_DELETE:
-			_Delete(hObj);
+			_Delete(pObj);
 			break;
 	}
 	WM_DefaultProc(pMsg);

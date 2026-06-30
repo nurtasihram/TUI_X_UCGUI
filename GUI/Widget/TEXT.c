@@ -1,4 +1,3 @@
-
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
 
@@ -12,7 +11,7 @@ static RGB_COLOR        _DefaultTextColor = TEXT_DEFAULT_TEXT_COLOR;
 static void _FreeAttached(TEXT_Obj *pObj) {
 	GUI_ALLOC_FreePtr(&pObj->hpText);
 }
-static void _Paint(TEXT_Obj *pObj) {
+static void _OnPaint(TEXT_Obj *pObj) {
 	const char *s;
 	GUI_RECT Rect;
 	GUI_USE_PARA(pObj);
@@ -46,19 +45,18 @@ static void _Delete(TEXT_Obj *pObj) {
 	_FreeAttached(pObj);
 }
 static void _TEXT_Callback(WM_MESSAGE *pMsg) {
-	TEXT_Handle hObj = pMsg->hWin;
-	TEXT_Obj *pObj = (hObj);
+	TEXT_Obj *pObj = pMsg->hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
 	}
 	switch (pMsg->MsgId) {
 		case WM_PAINT:
-			_Paint(pObj);
+			_OnPaint(pObj);
 			return;
 		case WM_DELETE:
 			_Delete(pObj);
-			break;       /* No return here ... WM_DefaultProc needs to be called */
+			break; /* No return here ... WM_DefaultProc needs to be called */
 	}
 	WM_DefaultProc(pMsg);
 }

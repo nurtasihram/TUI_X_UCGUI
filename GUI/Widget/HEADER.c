@@ -1,5 +1,3 @@
-
-
 #include "SCROLLBAR.h"
 
 #include "HEADER.h"
@@ -24,7 +22,7 @@ static RGB_COLOR          _DefaultTextColor = HEADER_TEXTCOLOR_DEFAULT;
 static int                _DefaultBorderH = HEADER_BORDER_H_DEFAULT;
 static int                _DefaultBorderV = HEADER_BORDER_V_DEFAULT;
 static const GUI_FONT  *_pDefaultFont = HEADER_FONT_DEFAULT;
-static void _Paint(HEADER_Obj *pObj) {
+static void _OnPaint(HEADER_Obj *pObj) {
 	GUI_RECT Rect;
 	int i, xPos = -pObj->ScrollPos;
 	int NumItems = GUI_ARRAY_GetNumItems(&pObj->Columns);
@@ -173,43 +171,31 @@ static void _OnMouseOver(HEADER_Obj *pObj, WM_MESSAGE *pMsg) {
 }
 #endif
 #if (HEADER_SUPPORT_DRAG)
-static void _OnTouch(HEADER_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnTouch(HEADER_Obj *pObj, const GUI_PID_STATE *pState) {
 	int Notification;
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
-	if (pState) {
+	if (pState) {  /* Something happened in our area (pressed or released) */
 		_HandlePID(pObj, pState->x + pObj->ScrollPos, pState->y, pState->Pressed);
+		Notification = pState->Pressed ?
+			WM_NOTIFICATION_CLICKED : WM_NOTIFICATION_RELEASED;
 	}
-	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
-		if (pState->Pressed) {
-			Notification = WM_NOTIFICATION_CLICKED;
-		}
-		else {
-			Notification = WM_NOTIFICATION_RELEASED;
-		}
-	}
-	else {
+	else
 		Notification = WM_NOTIFICATION_MOVED_OUT;
-	}
 	WM_NotifyParent(pObj, Notification);
 }
 #endif
 static void _HEADER_Callback(WM_MESSAGE *pMsg) {
-	HEADER_Handle hObj;
-	HEADER_Obj *pObj;
-	hObj = pMsg->hWin;
+	HEADER_Obj *pObj = pMsg->hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
 	}
-
-	pObj = (hObj);
 	switch (pMsg->MsgId) {
 		case WM_PAINT:
-			_Paint(pObj);
+			_OnPaint(pObj);
 			break;
 #if (HEADER_SUPPORT_DRAG)
 		case WM_TOUCH:
-			_OnTouch(pObj, pMsg);
+			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
 			break;
 #endif
 #if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)

@@ -127,7 +127,6 @@ void    WM__Screen2Client           (const WM_Obj* pWin, GUI_RECT *pRect);
 void    WM__SendMsgNoData           (WM_HWIN hWin, uint8_t MsgId);
 void    WM__SendMessage             (WM_HWIN hWin, WM_MESSAGE* pm);
 void    WM__SendMessageIfEnabled    (WM_HWIN hWin, WM_MESSAGE* pm);
-void    WM__SendMessageNoPara       (WM_HWIN hWin, int MsgId);
 void    WM__SendPIDMessage          (WM_HWIN hWin, WM_MESSAGE* pMsg);
 int     WM__SetScrollbarH           (WM_HWIN hWin, int OnOff);
 int     WM__SetScrollbarV           (WM_HWIN hWin, int OnOff);

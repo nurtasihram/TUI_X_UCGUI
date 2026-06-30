@@ -1,11 +1,9 @@
-
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
 #include "GUI_ARRAY.h"
 
 #include "WM_Intern.h"
 
-#include "WIDGET.h"
 #include "HEADER.h"
 #include "SCROLLBAR.h"
 
@@ -71,7 +69,7 @@ static unsigned _GetNumVisibleRows(LISTVIEW_Obj *pObj) {
 	}
 	return r;
 }
-static void _Paint(LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnPaint(LISTVIEW_Obj *pObj, const GUI_RECT *pClipRect) {
 	const GUI_ARRAY *pRow;
 	GUI_RECT ClipRect, Rect;
 	int NumRows, NumVisRows, NumColumns;
@@ -89,7 +87,7 @@ static void _Paint(LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
 	yPos = HEADER_GetHeight(pObj->hHeader) + EffectSize;
 	EndRow = pObj->ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
 	/* Calculate clipping rectangle */
-	ClipRect = *(const GUI_RECT *)pMsg->Data;
+	ClipRect = *pClipRect;
 	GUI_MoveRect(&ClipRect, -pObj->Widget.Win.Rect.x0, -pObj->Widget.Win.Rect.y0);
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	GUI__IntersectRect(&ClipRect, &Rect);
@@ -256,24 +254,29 @@ static void _NotifyOwner(WM_HWIN hObj, int Notification) {
 	Msg.hWin = hObj;
 	WM_SendMessage(hOwner, &Msg);
 }
-static void _OnTouch(LISTVIEW_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnTouch(LISTVIEW_Obj *pObj, const GUI_PID_STATE *pState) {
 	int Notification;
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
 	GUI_USE_PARA(pObj);
-	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
+	if (pState) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			_SetSelFromPos(pObj, pState);
 			Notification = WM_NOTIFICATION_CLICKED;
 			WM_SetFocus(pObj);
 		}
-		else {
+		else
 			Notification = WM_NOTIFICATION_RELEASED;
-		}
 	}
-	else {
+	else
 		Notification = WM_NOTIFICATION_MOVED_OUT;
-	}
 	_NotifyOwner(pObj, Notification);
+}
+static int _OnKey(LISTVIEW_Obj *pObj, const WM_KEY_INFO *pInfo) {
+	if (pInfo->PressedCnt > 0) {
+		int Key = pInfo->Key;
+		if (_AddKey(pObj, Key)) 
+			return 1; /* Key has been consumed */
+	}
+	return 0; /* Key has not been consumed */
 }
 /*********************************************************************
 *
@@ -403,15 +406,11 @@ static int _AddKey(LISTVIEW_Handle hObj, int Key) {
 	return 0;                 /* Key has NOT been consumed */
 }
 static void _LISTVIEW_Callback(WM_MESSAGE *pMsg) {
-	LISTVIEW_Handle hObj;
-	LISTVIEW_Obj *pObj;
-	WM_SCROLL_STATE ScrollState;
-	hObj = pMsg->hWin;
+	LISTVIEW_Obj *pObj = pMsg->hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
 	}
-	pObj = (hObj);
 	switch (pMsg->MsgId) {
 		case WM_NOTIFY_CLIENTCHANGE:
 		case WM_SIZE:
@@ -421,48 +420,44 @@ static void _LISTVIEW_Callback(WM_MESSAGE *pMsg) {
 			switch (pMsg->Data) {
 				case WM_NOTIFICATION_CHILD_DELETED:
 					/* make sure we do not send any messages to the header child once it has been deleted */
-					if (pMsg->hWinSrc == pObj->hHeader) {
-						pObj->hHeader = 0;
-					}
+					if (pMsg->hWinSrc == pObj->hHeader)
+						pObj->hHeader = NULL;
 					break;
-				case WM_NOTIFICATION_VALUE_CHANGED:
-					if (pMsg->hWinSrc == WM_GetScrollbarV(hObj)) {
+				case WM_NOTIFICATION_VALUE_CHANGED: {
+					WM_SCROLL_STATE ScrollState;
+					if (pMsg->hWinSrc == WM_GetScrollbarV(pObj)) {
 						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
 						pObj->ScrollStateV.v = ScrollState.v;
 						LISTVIEW__InvalidateInsideArea(pObj);
-						_NotifyOwner(hObj, WM_NOTIFICATION_SCROLL_CHANGED);
+						_NotifyOwner(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
-					else if (pMsg->hWinSrc == WM_GetScrollbarH(hObj)) {
+					else if (pMsg->hWinSrc == WM_GetScrollbarH(pObj)) {
 						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
 						pObj->ScrollStateH.v = ScrollState.v;
 						LISTVIEW__UpdateScrollParas(pObj);
 						HEADER_SetScrollPos(pObj->hHeader, pObj->ScrollStateH.v);
-						_NotifyOwner(hObj, WM_NOTIFICATION_SCROLL_CHANGED);
+						_NotifyOwner(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
 					break;
+				}
 				case WM_NOTIFICATION_SCROLLBAR_ADDED:
 					LISTVIEW__UpdateScrollParas(pObj);
 					break;
 			}
 			return;
 		case WM_PAINT:
-			_Paint(pObj, pMsg);
+			_OnPaint(pObj, (const GUI_RECT *)pMsg->Data);
 			return;
 		case WM_TOUCH:
-			_OnTouch(pObj, pMsg);
+			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
 			return;        /* Important: message handled ! */
 		case WM_KEY:
-			if (((const WM_KEY_INFO *)(pMsg->Data))->PressedCnt > 0) {
-				int Key;
-				Key = ((const WM_KEY_INFO *)(pMsg->Data))->Key;
-				if (_AddKey(hObj, Key)) {
-					return;
-				}
-			}
-			break;  /* No return here ... WM_DefaultProc needs to be called */
+			if (_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data))
+				return;
+			break; /* No return here ... WM_DefaultProc needs to be called */
 		case WM_DELETE:
 			_FreeAttached(pObj);
-			break;  /* No return here ... WM_DefaultProc needs to be called */
+			break; /* No return here ... WM_DefaultProc needs to be called */
 	}
 	WM_DefaultProc(pMsg);
 }

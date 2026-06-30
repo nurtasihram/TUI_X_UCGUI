@@ -1,5 +1,3 @@
-
-
 #include "GUI_Protected.h"
 #include "GUI_ARRAY.h"
 
@@ -267,7 +265,7 @@ static void _DrawTextItem(MULTIPAGE_Obj *pObj, const char *pText, unsigned Index
 	GUI_SetColor(pObj->aTextColor[ColorIndex]);
 	GUI_DispStringAt(pText, r.x0 + 4, pRect->y0 + 3);
 }
-static void _Paint(MULTIPAGE_Obj *pObj) {
+static void _OnPaint(MULTIPAGE_Obj *pObj) {
 	GUI_RECT rBorder;
 	/* Draw border of multipage */
 	_CalcBorderRect(pObj, &rBorder);
@@ -324,11 +322,9 @@ static int _ClickedOnMultipage(MULTIPAGE_Obj *pObj, int x, int y) {
 	}
 	return 1;
 }
-static void _OnTouch(MULTIPAGE_Obj *pObj, WM_MESSAGE *pMsg) {
-	GUI_PID_STATE *pState;
+static void _OnTouch(MULTIPAGE_Obj *pObj, const GUI_PID_STATE *pState) {
 	int Notification;
-	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
-		pState = (GUI_PID_STATE *)pMsg->Data;
+	if (pState) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
 			int x = pState->x;
 			int y = pState->y;
@@ -338,45 +334,43 @@ static void _OnTouch(MULTIPAGE_Obj *pObj, WM_MESSAGE *pMsg) {
 				y += WM_GetWindowOrgY(pObj);
 				hBelow = WM_Screen2hWinEx(pObj, x, y);
 				if (hBelow) {
-					pState->x = x - WM_GetWindowOrgX(hBelow);
-					pState->y = y - WM_GetWindowOrgY(hBelow);
-					pMsg->hWin = hBelow;
-					(*((WM_Obj *)hBelow)->cb)(pMsg);
+					GUI_PID_STATE State;
+					State.x = x - WM_GetWindowOrgX(hBelow);
+					State.y = y - WM_GetWindowOrgY(hBelow);
+					State.Pressed = pState->Pressed;
+					WM_MESSAGE Msg;
+					Msg.hWin = hBelow;
+					Msg.MsgId = WM_TOUCH;
+					Msg.Data = (WM_PARAM)&State;
+					(*((WM_Obj *)hBelow)->cb)(&Msg);
 				}
 			}
-			else {
+			else
 				WM_BringToTop(pObj);
-			}
 			Notification = WM_NOTIFICATION_CLICKED;
 		}
-		else {
+		else
 			Notification = WM_NOTIFICATION_RELEASED;
-		}
 	}
-	else {
+	else 
 		Notification = WM_NOTIFICATION_MOVED_OUT;
-	}
 	WM_NotifyParent(pObj, Notification);
 }
 static void _Callback(WM_MESSAGE *pMsg) {
-	MULTIPAGE_Handle hObj = pMsg->hWin;
-	MULTIPAGE_Obj *pObj;
-	int Handled;
-
-	pObj = (hObj);
-	Handled = WIDGET_HandleActive(hObj, pMsg);
+	MULTIPAGE_Obj *pObj = pMsg->hWin;
+	int Handled = WIDGET_HandleActive(pObj, pMsg);
 	switch (pMsg->MsgId) {
 		case WM_PAINT:
-			_Paint(pObj);
+			_OnPaint(pObj);
 			break;
 		case WM_TOUCH:
-			_OnTouch(pObj, pMsg);
+			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
 			break;
 		case WM_NOTIFY_PARENT:
 			if ((int)pMsg->Data == WM_NOTIFICATION_VALUE_CHANGED) {
 				if (WM_GetId(pMsg->hWinSrc) == GUI_ID_HSCROLL) {
 					pObj->ScrollState = SCROLLBAR_GetValue(pMsg->hWinSrc);
-					WM_Invalidate(hObj);
+					WM_Invalidate(pObj);
 				}
 			}
 			break;
@@ -387,7 +381,7 @@ static void _Callback(WM_MESSAGE *pMsg) {
 			_CalcClientRect(pObj, (GUI_RECT *)(pMsg->Data));
 			break;
 		case WM_WIDGET_SET_EFFECT:
-			WIDGET_SetEffect(WM_GetScrollbarH(hObj), (WIDGET_EFFECT const *)pMsg->Data);
+			WIDGET_SetEffect(WM_GetScrollbarH(pObj), (WIDGET_EFFECT const *)pMsg->Data);
 		case WM_SIZE:
 			_UpdatePositions(pObj);
 			break;
@@ -396,11 +390,9 @@ static void _Callback(WM_MESSAGE *pMsg) {
 			/* No break here ... WM_DefaultProc needs to be called */
 		default:
 			/* Let widget handle the standard messages */
-			if (Handled) {
+			if (Handled)
 				WM_DefaultProc(pMsg);
-			}
 	}
-
 }
 static void _ClientCallback(WM_MESSAGE *pMsg) {
 	WM_HWIN hObj = pMsg->hWin;

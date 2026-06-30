@@ -1,8 +1,4 @@
-
-
 #include "GUI_Protected.h"
-
-#include "WIDGET.h"
 
 #include "CHECKBOX.h"
 #include "CHECKBOX_Private.h"
@@ -28,19 +24,19 @@ CHECKBOX_PROPS CHECKBOX__DefaultProps = {
   CHECKBOX_IMAGE0_DEFAULT,
   CHECKBOX_IMAGE1_DEFAULT
 };
-static void _Paint(CHECKBOX_Obj *pObj, CHECKBOX_Handle hObj) {
+static void _OnPaint(CHECKBOX_Obj *pObj) {
 	GUI_RECT RectBox = { 0 };
 	int ColorIndex, EffectSize;
 	EffectSize = pObj->Widget.pEffect->EffectSize;
-	ColorIndex = WM__IsEnabled(hObj);
+	ColorIndex = WM__IsEnabled(pObj);
 	/* Clear inside ... Just in case      */
 	/* Fill with parents background color */
 #if WM_SUPPORT_TRANSPARENCY
-	if (!WM_GetHasTrans(hObj))
+	if (!WM_GetHasTrans(pObj))
 #endif
 	{
 		if (pObj->Props.BkColor == GUI_INVALID_COLOR) {
-			GUI_SetBkColor(WIDGET__GetBkColor(hObj));
+			GUI_SetBkColor(WIDGET__GetBkColor(pObj));
 		}
 		else {
 			GUI_SetBkColor(pObj->Props.BkColor);
@@ -101,11 +97,10 @@ static void _Paint(CHECKBOX_Obj *pObj, CHECKBOX_Handle hObj) {
 		}
 	}
 }
-static void _OnTouch(CHECKBOX_Obj *pObj, WM_MESSAGE *pMsg) {
+static void _OnTouch(CHECKBOX_Obj *pObj, const GUI_PID_STATE *pState) {
 	int Notification = 0;
 	int Hit = 0;
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
-	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
+	if (pState) {  /* Something happened in our area (pressed or released) */
 		if (!WM_HasCaptured(pObj)) {
 			if (pState->Pressed) {
 				WM_SetCapture(pObj, 1);
@@ -128,38 +123,33 @@ static void _OnTouch(CHECKBOX_Obj *pObj, WM_MESSAGE *pMsg) {
 		GUI_StoreKey(pObj->Widget.Id);
 	}
 }
-static void  _OnKey(CHECKBOX_Obj *pObj, WM_MESSAGE *pMsg) {
-	WM_KEY_INFO *pKeyInfo;
+static void  _OnKey(CHECKBOX_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	if (WM__IsEnabled(pObj)) {
-		pKeyInfo = (WM_KEY_INFO *)(pMsg->Data);
-		if (pKeyInfo->PressedCnt > 0) {
-			switch (pKeyInfo->Key) {
+		if (pInfo->PressedCnt > 0) {
+			switch (pInfo->Key) {
 				case GUI_KEY_SPACE:
 					pObj->CurrentState = (pObj->CurrentState + 1) % pObj->NumStates;
 					WM_Invalidate(pObj);
-					break;                    /* Send to parent by not doing anything */
+					break; /* Send to parent by not doing anything */
 			}
 		}
 	}
 }
 static void _CHECKBOX_Callback(WM_MESSAGE *pMsg) {
-	CHECKBOX_Handle hObj;
-	CHECKBOX_Obj *pObj;
-	hObj = pMsg->hWin;
-	pObj = (hObj);
+	CHECKBOX_Obj *pObj = pMsg->hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
 	}
 	switch (pMsg->MsgId) {
 		case WM_KEY:
-			_OnKey(pObj, pMsg);
+			_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data);
 			break;
 		case WM_PAINT:
-			_Paint(pObj, hObj);
+			_OnPaint(pObj);
 			return;
 		case WM_TOUCH:
-			_OnTouch(pObj, pMsg);
+			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
 			break;
 	}
 	WM_DefaultProc(pMsg);

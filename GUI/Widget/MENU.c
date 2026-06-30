@@ -1,4 +1,3 @@
-
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
 
@@ -548,11 +547,9 @@ static void _OnMenu(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
 		}
 	}
 }
-static char _OnTouch(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
-	if (pState) {  /* Something happened in our area (pressed or released) */
+static char _OnTouch(MENU_Obj *pObj, const GUI_PID_STATE *pState) {
+	if (pState) /* Something happened in our area (pressed or released) */
 		return _HandlePID(pObj, pState->x, pState->y, pState->Pressed);
-	}
 	return _HandlePID(pObj, -1, -1, -1); /* Moved out */
 }
 #if (GUI_SUPPORT_MOUSE)
@@ -664,22 +661,19 @@ static void _OnPaint(MENU_Obj *pObj) {
 	}
 }
 static void _MENU_Callback(WM_MESSAGE *pMsg) {
-	MENU_Handle hObj;
-	MENU_Obj *pObj;
-	hObj = pMsg->hWin;
+	MENU_Obj *pObj = pMsg->hWin;
 	if (pMsg->MsgId != WM_PID_STATE_CHANGED) {
 		/* Let widget handle the standard messages */
-		if (WIDGET_HandleActive(hObj, pMsg) == 0) {
+		if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 			return;
 		}
 	}
-	pObj = (MENU_Obj *)(hObj);
 	switch (pMsg->MsgId) {
 		case WM_MENU:
 			_OnMenu(pObj, pMsg);
 			return;     /* Message handled, do not call WM_DefaultProc() here. */
 		case WM_TOUCH:
-			if (_OnTouch(pObj, pMsg)) {
+			if (_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data)) {
 				_ForwardPIDMsgToOwner(pObj, pMsg);
 			}
 			break;

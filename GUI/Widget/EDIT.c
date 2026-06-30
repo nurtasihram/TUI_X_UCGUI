@@ -1,4 +1,3 @@
-
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
 
@@ -27,22 +26,22 @@ EDIT_PROPS EDIT__DefaultProps = {
 
 ///////////houhh 20061018...
 static GUI_TIMER_HANDLE Timer1 = 0;	//houhh 20061018...
-static void _Paint(EDIT_Obj *pObj, EDIT_Handle hObj);
+static void _OnPaint(EDIT_Obj *pObj);
 void ShowCurrsor(GUI_TIMER_MESSAGE *TimeMsg) {
 	EDIT_Handle hObj = (EDIT_Handle)TimeMsg->Context;
 	EDIT_Obj *pObj = (EDIT_Obj *)(hObj);
 	WM_Obj *pWin = (hObj);
 	WM_SelectWindow(hObj);
-	_Paint(pObj, hObj);
+	_OnPaint(pObj);
 	pObj->CurrsorShow++;
 	GUI_TIMER_Restart(Timer1);
 }
 ///////
-static void _Paint(EDIT_Obj *pObj, EDIT_Handle hObj) {
+static void _OnPaint(EDIT_Obj *pObj) {
 	GUI_RECT rFillRect, rInside, r, rText, rInvert;
 	const char  *pText = NULL;
 	int IsEnabled, CursorWidth;
-	IsEnabled = WM__IsEnabled(hObj);
+	IsEnabled = WM__IsEnabled(pObj);
 	/* Set colors and font */
 	GUI_SetBkColor(pObj->Props.aBkColor[IsEnabled]);
 	GUI_SetColor(pObj->Props.aTextColor[0]);
@@ -109,7 +108,7 @@ static void _Paint(EDIT_Obj *pObj, EDIT_Handle hObj) {
 				GUI_TIMER_SetTime(Timer1, 1000 * 2);
 				GUI_TIMER_SetPeriod(Timer1, 500);
 			}
-			if (Timer1) GUI_TIMER_Context(Timer1, (uintptr_t)hObj);
+			if (Timer1) GUI_TIMER_Context(Timer1, (uintptr_t)pObj);
 		//	if (pObj->CurrsorShow % 2) //houhh 20061022...
 		//		GUI_InvertRect(rInvert.x0, rInvert.y0, rInvert.x0 + CursorWidth - 1, rInvert.y1);
 			/////////////
@@ -324,10 +323,9 @@ void EDIT__SetCursorPos(EDIT_Obj *pObj, int CursorPos) {
 		pObj->SelSize = 0;
 	}
 }
-static void _OnTouch(EDIT_Obj *pObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
+static void _OnTouch(EDIT_Obj *pObj, const GUI_PID_STATE *pState) {
 	GUI_USE_PARA(pObj);
-	if (pMsg->Data) {  /* Something happened in our area (pressed or released) */
+	if (pState) {  /* Something happened in our area (pressed or released) */
 		static int StartPress = 0;	//houhh 20061023...
 		if (pState->Pressed) {
 			GUI_DEBUG_LOG("EDIT__Callback(WM_TOUCH, Pressed, Handle %d)\n", 1);
@@ -342,39 +340,41 @@ static void _OnTouch(EDIT_Obj *pObj, WM_MESSAGE *pMsg) {
 		GUI_DEBUG_LOG("_EDIT_Callback(WM_TOUCH, Moved out, Handle %d)\n", 1);
 	}
 }
+static int _OnKey(EDIT_Obj *pObj, const WM_KEY_INFO *pInfo) {
+	if (pInfo->PressedCnt > 0) { /* Key pressed? */
+		int Key = pInfo->Key;
+		switch (Key) {
+			case GUI_KEY_TAB:
+				break; /* Send to parent by not doing anything */
+			default:
+				EDIT_AddKey(pObj, Key);
+				return 1;
+		}
+	}
+	return 0;
+}
 static void EDIT__Callback(WM_MESSAGE *pMsg) {
 	int IsEnabled;
-	EDIT_Handle hObj = (EDIT_Handle)pMsg->hWin;
-	EDIT_Obj *pObj = (EDIT_Obj *)(hObj);
-	IsEnabled = WM__IsEnabled(hObj);
+	EDIT_Obj *pObj = pMsg->hWin;
+	IsEnabled = WM__IsEnabled(pObj);
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(hObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
 	}
 	switch (pMsg->MsgId) {
 		case WM_TOUCH:
-			_OnTouch(pObj, pMsg);
+			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
 			break;
 		case WM_PAINT:
-			_Paint(pObj, hObj);
+			_OnPaint(pObj);
 			return;
 		case WM_DELETE:
 			GUI_DEBUG_LOG("EDIT: _Callback(WM_DELETE)\n");
 			_Delete(pObj);
 			break;       /* No return here ... WM_DefaultProc needs to be called */
 		case WM_KEY:
-			if (IsEnabled) {
-				if (((const WM_KEY_INFO *)(pMsg->Data))->PressedCnt > 0) {
-					int Key = ((const WM_KEY_INFO *)(pMsg->Data))->Key;
-					switch (Key) {
-						case GUI_KEY_TAB:
-							break;                    /* Send to parent by not doing anything */
-						default:
-							EDIT_AddKey(hObj, Key);
-							return;
-					}
-				}
-			}
+			if (_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data)) 
+				return;
 			break;
 	}
 	WM_DefaultProc(pMsg);
