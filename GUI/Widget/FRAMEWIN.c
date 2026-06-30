@@ -139,19 +139,15 @@ static void _OnPaint(FRAMEWIN_Obj *pObj) {
 *   and waste of CPU load.
 *
 */
-static void _OnChildHasFocus(FRAMEWIN_Handle hWin, FRAMEWIN_Obj *pObj, WM_MESSAGE *pMsg) {
-	if (pMsg->Data) {
-		const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo = (const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *)pMsg->Data;
-		int IsDesc = WM__IsAncestorOrSelf(pInfo->hNew, hWin);
-		if (IsDesc) {                         /* A child has received the focus, Framewindow needs to be activated */
-			_SetActive(hWin, 1);
-		}
-		else {                  /* A child has lost the focus, we need to deactivate */
-			_SetActive(hWin, 0);
+static void _OnChildHasFocus(FRAMEWIN_Obj *pObj, const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
+	if (pInfo) {
+		if (WM__IsAncestorOrSelf(pInfo->hNew, pObj)) /* A child has received the focus, Framewindow needs to be activated */
+			_SetActive(pObj, 1);
+		else { /* A child has lost the focus, we need to deactivate */
+			_SetActive(pObj, 0);
 			/* Remember the child which had the focus so we can reactive this child */
-			if (WM__IsAncestor(pInfo->hOld, hWin)) {
+			if (WM__IsAncestor(pInfo->hOld, pObj))
 				pObj->hFocussedChild = pInfo->hOld;
-			}
 		}
 	}
 }
@@ -228,7 +224,7 @@ static void _FRAMEWIN_Callback(WM_MESSAGE *pMsg) {
 			}
 			break;
 		case WM_NOTIFY_CHILD_HAS_FOCUS:
-			_OnChildHasFocus(pObj, pObj, pMsg);
+			_OnChildHasFocus(pObj, (const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *)pMsg->Data);
 			break;
 		case WM_DELETE:
 			GUI_DEBUG_LOG("FRAMEWIN: _FRAMEWIN_Callback(WM_DELETE)\n");
@@ -263,14 +259,12 @@ static void FRAMEWIN__cbClient(WM_MESSAGE *pMsg) {
 			}
 			return;
 		case WM_SET_FOCUS:
-			if (pMsg->Data) {     /* Focus received */
-				if (pObj->hFocussedChild && (pObj->hFocussedChild != hWin)) {
+			if (pMsg->Data) { /* Focus received */
+				if (pObj->hFocussedChild && pObj->hFocussedChild != hWin)
 					WM_SetFocus(pObj->hFocussedChild);
-				}
-				else {
+				else
 					pObj->hFocussedChild = WM_SetFocusOnNextChild(hWin);
-				}
-				pMsg->Data = 0;     /* Focus change accepted */
+				pMsg->Data = 0; /* Focus change accepted */
 			}
 			return;
 		case WM_GET_ACCEPT_FOCUS:
@@ -1046,13 +1040,10 @@ static int _CheckReactBorder(FRAMEWIN_Handle hWin, int x, int y) {
 	}
 	return Mode;
 }
-static int _OnTouchResize(FRAMEWIN_Handle hWin, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
+static int _OnTouchResize(FRAMEWIN_Handle hWin, const GUI_PID_STATE *pState) {
 	if (pState) {  /* Something happened in our area (pressed or released) */
-		int x, y, Mode;
-		x = pState->x;
-		y = pState->y;
-		Mode = _CheckReactBorder(hWin, x, y);
+		int x = pState->x, y = pState->y;
+		int Mode = _CheckReactBorder(hWin, x, y);
 		if (pState->Pressed == 1) {
 			if (_CaptureFlags & FRAMEWIN_RESIZE) {
 				_ChangeWindowPosSize(hWin, &x, &y);
@@ -1086,39 +1077,38 @@ static int _OnTouchResize(FRAMEWIN_Handle hWin, WM_MESSAGE *pMsg) {
 	return 0;
 }
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
-static int _ForwardMouseOverMsg(FRAMEWIN_Handle hWin, WM_MESSAGE *pMsg) {
-	GUI_PID_STATE *pState = (GUI_PID_STATE *)pMsg->Data;
+static int _ForwardMouseOverMsg(FRAMEWIN_Handle hWin, const GUI_PID_STATE *pState) {
 	WM_HWIN hBelow;
-	pState->x += WM_GetWindowOrgX(hWin);
-	pState->y += WM_GetWindowOrgY(hWin);
-	hBelow = WM_Screen2hWin(pState->x, pState->y);
+	GUI_PID_STATE StateBelow;
+	StateBelow.x = pState->x + WM_GetWindowOrgX(hWin);
+	StateBelow.y = pState->y + WM_GetWindowOrgY(hWin);
+	hBelow = WM_Screen2hWin(StateBelow.x, StateBelow.y);
 	if (hBelow && (hBelow != hWin)) {
-		pState->x -= WM_GetWindowOrgX(hBelow);
-		pState->y -= WM_GetWindowOrgY(hBelow);
-		WM__SendMessage(hBelow, pMsg);
+		StateBelow.x -= WM_GetWindowOrgX(hBelow);
+		StateBelow.y -= WM_GetWindowOrgY(hBelow);
+		WM_MESSAGE Msg;
+		Msg.MsgId = WM_MOUSEOVER;
+		Msg.Data = (WM_PARAM)&StateBelow;
+		WM__SendMessage(hBelow, &Msg);
 		return 1;
 	}
 	return 0;
 }
 #endif
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
-static int _OnMouseOver(FRAMEWIN_Handle hWin, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
+static int _OnMouseOver(FRAMEWIN_Handle hWin, const GUI_PID_STATE *pState) {
 	if (pState) {
-		int x, y, Mode;
-		x = pState->x;
-		y = pState->y;
-		Mode = _CheckReactBorder(hWin, x, y);
+		int x = pState->x, y = pState->y;
+		int Mode = _CheckReactBorder(hWin, x, y);
 		if (Mode) {
-			if (_ForwardMouseOverMsg(hWin, pMsg) == 0) {
+			if (_ForwardMouseOverMsg(hWin, pState) == 0)
 				_SetCapture(hWin, x, y, Mode | FRAMEWIN_MOUSEOVER);
-			}
 			return 1;
 		}
 		else if (WM_HasCaptured(hWin)) {
 			if ((_CaptureFlags & FRAMEWIN_RESIZE) == 0) {
 				WM_ReleaseCapture();
-				_ForwardMouseOverMsg(hWin, pMsg);
+				_ForwardMouseOverMsg(hWin, pState);
 			}
 			return 1;
 		}
@@ -1136,10 +1126,10 @@ static int _HOOKFUNC_Resizeable(WM_MESSAGE *pMsg) {
 	}
 	switch (pMsg->MsgId) {
 		case WM_TOUCH:
-			return _OnTouchResize(hWin, pMsg);
+			return _OnTouchResize(hWin, (const GUI_PID_STATE *)pMsg->Data);
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 		case WM_MOUSEOVER:
-			return _OnMouseOver(hWin, pMsg);
+			return _OnMouseOver(hWin, (const GUI_PID_STATE *)pMsg->Data);
 #endif
 		case WM_CAPTURE_RELEASED:
 #if GUI_SUPPORT_CURSOR

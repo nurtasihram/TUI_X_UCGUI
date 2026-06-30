@@ -156,17 +156,14 @@ static int _OnKey(BUTTON_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	return 0;
 }
 #if BUTTON_REACT_ON_LEVEL
-static void _OnPidStateChange(BUTTON_Obj *pObj, WM_MESSAGE *pMsg) {
-	const WM_PID_STATE_CHANGED_INFO *pState = (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data;
-	if ((pState->StatePrev == 0) && (pState->State == 1)) {
-		if ((pObj->Widget.State & BUTTON_STATE_PRESSED) == 0) {
+static void _OnPidStateChange(BUTTON_Obj *pObj, const WM_PID_STATE_CHANGED_INFO *pState) {
+	if (pState->StatePrev == 0 && pState->State == 1) {
+		if (!(pObj->Widget.State & BUTTON_STATE_PRESSED))
 			_ButtonPressed(pObj);
-		}
 	}
-	else if ((pState->StatePrev == 1) && (pState->State == 0)) {
-		if (pObj->Widget.State & BUTTON_STATE_PRESSED) {
+	else if (pState->StatePrev == 1 && pState->State == 0) {
+		if (pObj->Widget.State & BUTTON_STATE_PRESSED)
 			_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
-		}
 	}
 }
 #endif
@@ -179,19 +176,19 @@ void BUTTON_Callback(WM_MESSAGE *pMsg) {
 	switch (pMsg->MsgId) {
 #if BUTTON_REACT_ON_LEVEL
 		case WM_PID_STATE_CHANGED:
-			_OnPidStateChange(pObj, pMsg);
-			return;      /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
+			_OnPidStateChange(pObj, (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data);
+			return; /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
 #endif
 		case WM_TOUCH:
 			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
-			return;      /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
+			return; /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
 		case WM_PAINT:
 			_OnPaint(pObj);
 			return;
 		case WM_DELETE:
 			GUI_DEBUG_LOG("BUTTON: _BUTTON_Callback(WM_DELETE)\n");
 			_Delete(pObj);
-			break;       /* No return here ... WM_DefaultProc needs to be called */
+			break; /* No return here ... WM_DefaultProc needs to be called */
 		case WM_KEY:
 			if (_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data))
 				return;

@@ -524,17 +524,13 @@ static void _OnTouch(LISTBOX_Obj *pObj, const GUI_PID_STATE *pState) {
 		_NotifyOwner(pObj, WM_NOTIFICATION_MOVED_OUT);
 }
 #if GUI_SUPPORT_MOUSE
-static int _OnMouseOver(LISTBOX_Obj *pObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
+static int _OnMouseOver(LISTBOX_Obj *pObj, const GUI_PID_STATE *pState) {
 	if (pObj->hOwner) {
 		if (pState) {  /* Something happened in our area (pressed or released) */
-			int Sel;
-			Sel = _GetItemFromPos(pObj, pState->x, pState->y);
-			if (Sel >= 0) {
-				if (Sel < (int)(pObj->ScrollStateV.v + _GetNumVisItems(pObj))) {
+			int Sel  = _GetItemFromPos(pObj, pState->x, pState->y);
+			if (Sel >= 0)
+				if (Sel < (int)(pObj->ScrollStateV.v + _GetNumVisItems(pObj)))
 					LISTBOX_SetSel(pObj, Sel);
-				}
-			}
 		}
 	}
 	return 0;                        /* Message handled */

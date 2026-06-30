@@ -495,18 +495,20 @@ static char _HandlePID(MENU_Obj *pObj, int x, int y, int Pressed) {
 	}
 	return 1;   /* Coordinates are not in widget, we need to forward PID message to owner */
 }
-static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
-	if (_IsTopLevelMenu(pObj) == 0) {
-		WM_HWIN hOwner;
-		hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
+static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, int MsgId, const GUI_PID_STATE *pState) {
+	if (!_IsTopLevelMenu(pObj)) {
+		WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
 		if (hOwner) {
-			if (pMsg->Data) {
-				GUI_PID_STATE *pState;
-				pState = (GUI_PID_STATE *)pMsg->Data;
-				pState->x += WM_GetWindowOrgX(pObj) - WM_GetWindowOrgX(hOwner);
-				pState->y += WM_GetWindowOrgY(pObj) - WM_GetWindowOrgY(hOwner);
+			WM_MESSAGE Msg;
+			Msg.MsgId = MsgId;
+			GUI_PID_STATE State;
+			if (pState) {
+				State = *pState;
+				State.x += WM_GetWindowOrgX(pObj) - WM_GetWindowOrgX(hOwner);
+				State.y += WM_GetWindowOrgY(pObj) - WM_GetWindowOrgY(hOwner);
+				Msg.Data = (WM_PARAM)&State;
 			}
-			WM__SendMessage(hOwner, pMsg);
+			WM__SendMessage(hOwner, &Msg);
 		}
 	}
 }
@@ -520,17 +522,16 @@ static void _OnMenu(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
 				_ClosePopup(pObj);
 				/* No break here. We need to forward message to owner. */
 			case MENU_ON_INITMENU:
-			case MENU_ON_INITSUBMENU:
+			case MENU_ON_INITSUBMENU: {
 				/* Forward message to owner. */
-			{
 				WM_HWIN hOwner;
 				hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
 				if (hOwner) {
 					pMsg->hWinSrc = pObj;
 					WM__SendMessage(hOwner, pMsg);
 				}
+				break;
 			}
-			break;
 			case MENU_ON_OPEN:
 				pObj->Sel = -1;
 				pObj->IsSubmenuActive = 0;
@@ -553,11 +554,9 @@ static char _OnTouch(MENU_Obj *pObj, const GUI_PID_STATE *pState) {
 	return _HandlePID(pObj, -1, -1, -1); /* Moved out */
 }
 #if (GUI_SUPPORT_MOUSE)
-static char _OnMouseOver(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
-	const GUI_PID_STATE *pState = (const GUI_PID_STATE *)pMsg->Data;
-	if (pState) {
+static char _OnMouseOver(MENU_Obj *pObj, const GUI_PID_STATE *pState) {
+	if (pState)
 		return _HandlePID(pObj, pState->x, pState->y, -1);
-	}
 	return 0;
 }
 #endif
@@ -673,15 +672,13 @@ static void _MENU_Callback(WM_MESSAGE *pMsg) {
 			_OnMenu(pObj, pMsg);
 			return;     /* Message handled, do not call WM_DefaultProc() here. */
 		case WM_TOUCH:
-			if (_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data)) {
-				_ForwardPIDMsgToOwner(pObj, pMsg);
-			}
+			if (_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data))
+				_ForwardPIDMsgToOwner(pObj, WM_TOUCH, (const GUI_PID_STATE *)pMsg->Data);
 			break;
 #if (GUI_SUPPORT_MOUSE)
 		case WM_MOUSEOVER:
-			if (_OnMouseOver(pObj, pMsg)) {
-				_ForwardPIDMsgToOwner(pObj, pMsg);
-			}
+			if (_OnMouseOver(pObj, (const GUI_PID_STATE *)pMsg->Data))
+				_ForwardPIDMsgToOwner(pObj, WM_MOUSEOVER, (const GUI_PID_STATE *)pMsg->Data);
 			break;
 #endif
 		case WM_PAINT:
