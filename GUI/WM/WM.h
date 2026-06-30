@@ -223,7 +223,6 @@ int     WM_IsEnabled(WM_HWIN hObj);
 int     WM_IsFocussable(WM_HWIN hWin);
 int     WM_IsVisible(WM_HWIN hWin);
 int     WM_IsWindow(WM_HWIN hWin);    /* Check validity */
-char    WM_IsCompletelyVisible(WM_HWIN hWin);    /* Is the window completely visible ? */
 void    WM_SetHasTrans(WM_HWIN hWin);
 void    WM_SetId(WM_HWIN hObj, int Id);
 void    WM_SetTransState(WM_HWIN hWin, unsigned State);
@@ -289,7 +288,6 @@ void WM_BringToBottom(WM_HWIN hWin);
 void WM_BringToTop(WM_HWIN hWin);
 
 RGB_COLOR WM_SetDesktopColor(RGB_COLOR Color);
-void WM_SetDesktopColors(RGB_COLOR Color);
 
 /* Select window used for drawing operations */
 WM_HWIN WM_SelectWindow(WM_HWIN  hWin);

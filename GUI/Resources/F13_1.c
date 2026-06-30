@@ -18,7 +18,7 @@ Height      : 13
 ---------------------------END-OF-HEADER------------------------------
 */
 
-#include "GUI_FontIntern.h"
+#include "GUI.h"
 
 
 /* Start of unicode area <Latin-1 Supplement> */
@@ -1562,6 +1562,7 @@ const GUI_CHARINFO GUI_Font13_1_CharInfo[96] = {
   ,{   6,   6,  1, acFont13_1_00FF } /* code 00FF */
 };
 
+extern const GUI_FONT_PROP GUI_Font13ASCII_Prop1;
 const GUI_FONT_PROP GUI_Font13_1_Prop1 = {
    160                         /* first character               */
   ,255                         /* last character                */

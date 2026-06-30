@@ -55,7 +55,7 @@ typedef void tLCDDEV_DrawBitmap(int x0, int y0, int xsize, int ysize,
                                 int BitsPerPixel, int BytesPerLine,
                                 const uint8_t  * pData, int Diff,
                                 const void* pTrans);
-                                
+
 typedef struct tLCDDEV_APIList_struct {
   tLCDDEV_DrawBitmap *pfDrawBitmap;
   tLCDDEV_DrawHLine  *pfDrawHLine;

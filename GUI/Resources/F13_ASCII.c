@@ -18,7 +18,7 @@ Height      : 13
 ---------------------------END-OF-HEADER------------------------------
 */
 
-#include "GUI_FontIntern.h"
+#include "GUI.h"
 
 /* Start of unicode area <Basic Latin> */
 
@@ -1559,5 +1559,3 @@ const GUI_FONT GUI_Font13_ASCII = {
   ,{&GUI_Font13ASCII_Prop1}
   , 11, 6, 8
 };
-
-

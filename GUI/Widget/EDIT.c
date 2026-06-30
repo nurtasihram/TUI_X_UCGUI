@@ -41,13 +41,13 @@ static void _OnPaint(EDIT_Obj *pObj) {
 	GUI_RECT rFillRect, rInside, r, rText, rInvert;
 	const char  *pText = NULL;
 	int IsEnabled, CursorWidth;
-	IsEnabled = WM__IsEnabled(pObj);
+	IsEnabled = WM_IsEnabled(pObj);
 	/* Set colors and font */
 	GUI_SetBkColor(pObj->Props.aBkColor[IsEnabled]);
 	GUI_SetColor(pObj->Props.aTextColor[0]);
 	GUI_SetFont(pObj->Props.pFont);
 	/* Calculate size */
-	WM__GetClientRectWin(&pObj->Widget.Win, &r);
+	WM_GetClientRectEx(&pObj->Widget.Win, &r);
 	WIDGET__GetInsideRect(&pObj->Widget, &rFillRect);
 	if (pObj->hpText) {
 		pText = (const char *)(pObj->hpText);
@@ -355,7 +355,7 @@ static int _OnKey(EDIT_Obj *pObj, const WM_KEY_INFO *pInfo) {
 }
 static void EDIT__Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	EDIT_Obj *pObj = hWin;
-	int IsEnabled = WM__IsEnabled(pObj);
+	int IsEnabled = WM_IsEnabled(pObj);
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
 		return;

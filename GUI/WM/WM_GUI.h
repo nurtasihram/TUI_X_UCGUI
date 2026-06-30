@@ -7,13 +7,13 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 int       WM__InitIVRSearch(const GUI_RECT* pMaxRect);
 int       WM__GetNextIVR   (void);
 
-#define WM_ITERATE_START(pRect)                   \
-  {                                               \
-    if (WM__InitIVRSearch(pRect))                 \
+#define WM_ITERATE_START(pRect)   \
+  {                               \
+    if (WM__InitIVRSearch(pRect)) \
       do {
 
-#define WM_ITERATE_END()                          \
-    } while (WM__GetNextIVR());                   \
+#define WM_ITERATE_END()          \
+    } while (WM__GetNextIVR());   \
   }
 
 #define WM_ADDORGX(x)    x += GUI_Context.xOff

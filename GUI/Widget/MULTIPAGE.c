@@ -125,7 +125,7 @@ static void _CalcClientRect(MULTIPAGE_Obj *pObj, GUI_RECT *pRect) {
 *  Calculates the border rect of the client area.
 */
 static void _CalcBorderRect(MULTIPAGE_Obj *pObj, GUI_RECT *pRect) {
-	WM__GetClientRectWin(&pObj->Widget.Win, pRect);
+	WM_GetClientRectEx(&pObj->Widget.Win, pRect);
 	if (pObj->Align & MULTIPAGE_ALIGN_BOTTOM) {
 		pRect->y1 -= GUI_GetYSizeOfFont(pObj->Font) + 6;
 	}

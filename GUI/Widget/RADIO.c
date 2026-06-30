@@ -50,7 +50,7 @@ static void _OnPaint(RADIO_Obj *pObj) {
 	/* Init some data */
 	WIDGET__GetClientRect(&pObj->Widget, &rFocus);
 	HasFocus = (pObj->Widget.State & WIDGET_STATE_FOCUS) ? 1 : 0;
-	pBmRadio = pObj->apBmRadio[WM__IsEnabled(pObj)];
+	pBmRadio = pObj->apBmRadio[WM_IsEnabled(pObj)];
 	pBmCheck = pObj->pBmCheck;
 	rFocus.x1 = pBmRadio->XSize + RADIO_BORDER * 2 - 1;
 	rFocus.y1 = pObj->Height + ((pObj->NumItems - 1) * pObj->Spacing) - 1;
@@ -377,7 +377,7 @@ static int _IsInGroup(WM_HWIN hWin, uint8_t GroupId) {
 	return 0;
 }
 static WM_HWIN _GetPrevInGroup(WM_HWIN hWin, uint8_t GroupId) {
-	for (hWin = WM__GetPrevSibling(hWin); hWin; hWin = WM__GetPrevSibling(hWin)) {
+	for (hWin = WM_GetPrevSibling(hWin); hWin; hWin = WM_GetPrevSibling(hWin)) {
 		if (_IsInGroup(hWin, GroupId)) {
 			return hWin;
 		}

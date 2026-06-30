@@ -34,7 +34,7 @@ static void _OnPaint(BUTTON_Obj *pObj) {
 	GUI_RECT rClient, rInside;
 	State = pObj->Widget.State;
 	PressedState = (State & BUTTON_STATE_PRESSED) ? 1 : 0;
-	ColorIndex = (WM__IsEnabled(pObj)) ? PressedState : 2;
+	ColorIndex = (WM_IsEnabled(pObj)) ? PressedState : 2;
 	GUI_SetFont(pObj->Props.pFont);
 	if (pObj->hpText) {
 		s = (const char *)(pObj->hpText);

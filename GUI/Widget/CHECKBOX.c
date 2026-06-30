@@ -28,7 +28,7 @@ static void _OnPaint(CHECKBOX_Obj *pObj) {
 	GUI_RECT RectBox = { 0 };
 	int ColorIndex, EffectSize;
 	EffectSize = pObj->Widget.pEffect->EffectSize;
-	ColorIndex = WM__IsEnabled(pObj);
+	ColorIndex = WM_IsEnabled(pObj);
 	/* Clear inside ... Just in case      */
 	/* Fill with parents background color */
 #if WM_SUPPORT_TRANSPARENCY
@@ -124,7 +124,7 @@ static void _OnTouch(CHECKBOX_Obj *pObj, const GUI_PID_STATE *pState) {
 	}
 }
 static void  _OnKey(CHECKBOX_Obj *pObj, const WM_KEY_INFO *pInfo) {
-	if (WM__IsEnabled(pObj)) {
+	if (WM_IsEnabled(pObj)) {
 		if (pInfo->PressedCnt > 0) {
 			switch (pInfo->Key) {
 				case GUI_KEY_SPACE:

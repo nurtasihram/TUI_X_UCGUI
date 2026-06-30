@@ -18,7 +18,7 @@ Height      : 8
 ---------------------------END-OF-HEADER------------------------------
 */
 
-#include "GUI_FontIntern.h"
+#include "GUI.h"
 
 #ifndef GUI_NOFCHARS
 #define GUI_NOFCHARS (163)

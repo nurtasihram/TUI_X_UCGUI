@@ -291,9 +291,6 @@
     <ClInclude Include="GUI\WM\WM_Intern.h">
       <Filter>GUI\WM</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\WM\WM_Intern_ConfDep.h">
-      <Filter>GUI\WM</Filter>
-    </ClInclude>
     <ClInclude Include="GUI_X\resource.h">
       <Filter>GUI_X</Filter>
     </ClInclude>
@@ -406,9 +403,6 @@
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\GUI_ConfDefaults.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Core\GUI_FontIntern.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\GUI_Private.h">

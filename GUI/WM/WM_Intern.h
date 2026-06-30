@@ -62,12 +62,12 @@ typedef struct WM_CRITICAL_HANDLE {
   volatile WM_HWIN hWin;
 } WM_CRITICAL_HANDLE;
 
-extern uint16_t                    WM__CreateFlags;
+extern uint16_t               WM__CreateFlags;
 extern WM_HWIN                WM__hCapture;
 extern WM_HWIN                WM__hWinFocus;
 extern char                   WM__CaptureReleaseAuto;
 extern WM_tfPollPID*          WM_pfPollPID;
-extern uint8_t                     WM__PaintCallbackCnt;      /* Public for assertions only */
+extern uint8_t                WM__PaintCallbackCnt;      /* Public for assertions only */
 extern GUI_PID_STATE          WM_PID__StateLast;
 
 #if WM_SUPPORT_TRANSPARENCY
@@ -80,29 +80,15 @@ extern void (*WM__pfShowInvalid)(WM_HWIN hWin);
 extern WM_CRITICAL_HANDLE     WM__CHWinModal;
 extern WM_CRITICAL_HANDLE     WM__CHWinLast;
 
-#ifdef WM_C
-#define GUI_EXTERN
-#else
-#define GUI_EXTERN extern
-#endif
-
-GUI_EXTERN uint16_t     WM__NumWindows;
-GUI_EXTERN uint16_t     WM__NumInvalidWindows;
-GUI_EXTERN WM_HWIN WM__FirstWin;
-GUI_EXTERN WM_CRITICAL_HANDLE*  WM__pFirstCriticalHandle;
-#undef GUI_EXTERN
-
 void    WM__ActivateClipRect        (void);
 int     WM__ClipAtParentBorders     (GUI_RECT* pRect, WM_HWIN hWin);
 void    WM__Client2Screen           (const WM_Obj* pWin, GUI_RECT *pRect);
 void    WM__DetachWindow            (WM_HWIN hChild);
 void    WM__ForEachDesc(WM_HWIN hWin, WM_tfForEach * pcb, void * pData);
-void    WM__GetClientRectWin        (const WM_Obj* pWin, GUI_RECT* pRect);
 WM_HWIN WM__GetFirstSibling         (WM_HWIN hWin);
 WM_HWIN WM__GetFocussedChild        (WM_HWIN hWin);
 int     WM__GetHasFocus             (WM_HWIN hWin);
 WM_HWIN WM__GetLastSibling          (WM_HWIN hWin);
-WM_HWIN WM__GetPrevSibling          (WM_HWIN hWin);
 int     WM__GetWindowSizeX          (const WM_Obj* pWin);
 int     WM__GetWindowSizeY          (const WM_Obj* pWin);
 void    WM__InsertWindowIntoList    (WM_HWIN hWin, WM_HWIN hParent);
@@ -112,13 +98,9 @@ int     WM__IntersectRect           (GUI_RECT* pDest, const GUI_RECT* pr0, const
 int     WM__IsAncestor              (WM_HWIN hChild, WM_HWIN hParent);
 int     WM__IsAncestorOrSelf        (WM_HWIN hChild, WM_HWIN hParent);
 int     WM__IsChild                 (WM_HWIN hWin, WM_HWIN hParent);
-int     WM__IsEnabled               (WM_HWIN hWin);
 int     WM__IsInModalArea           (WM_HWIN hWin);
 int     WM__IsInWindow              (WM_Obj * pWin, int x, int y);
-int     WM__IsWindow                (WM_HWIN hWin);
 void    WM__LeaveIVRSearch          (void);
-void    WM__MoveTo                  (WM_HWIN hWin, int x, int y);
-void    WM__MoveWindow              (WM_HWIN hWin, int dx, int dy);
 void    WM__NotifyVisChanged        (WM_HWIN hWin, GUI_RECT * pRect);
 int     WM__RectIsNZ                (const GUI_RECT* pr);
 void    WM__RemoveWindowFromList    (WM_HWIN hWin);
@@ -128,8 +110,6 @@ void    WM__SendMsgNoData           (WM_HWIN hWin, uint8_t MsgId);
 void    WM__SendMessage             (WM_HWIN hWin, int MsgId, WM_MESSAGE* pm);
 void    WM__SendMessageIfEnabled    (WM_HWIN hWin, int MsgId, WM_MESSAGE* pm);
 void    WM__SendPIDMessage          (WM_HWIN hWin, int MsgId, WM_MESSAGE* pMsg);
-int     WM__SetScrollbarH           (WM_HWIN hWin, int OnOff);
-int     WM__SetScrollbarV           (WM_HWIN hWin, int OnOff);
 void    WM__UpdateChildPositions    (WM_Obj* pObj, int dx0, int dy0, int dx1, int dy1);
 void    WM_PID__GetPrevState        (GUI_PID_STATE* pPrevState);
 void    WM__SendTouchMessage        (WM_HWIN hWin, int MsgId, WM_MESSAGE* pMsg);

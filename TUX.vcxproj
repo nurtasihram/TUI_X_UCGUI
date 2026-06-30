@@ -109,7 +109,6 @@
     <ClInclude Include="GUI\Core\GUIDebug.h" />
     <ClInclude Include="GUI\Core\GUIType.h" />
     <ClInclude Include="GUI\Core\GUI_ConfDefaults.h" />
-    <ClInclude Include="GUI\Core\GUI_FontIntern.h" />
     <ClInclude Include="GUI\Core\GUI_Private.h" />
     <ClInclude Include="GUI\Core\GUI_Protected.h" />
     <ClInclude Include="GUI\Core\GUI_X.h" />
@@ -154,7 +153,6 @@
     <ClInclude Include="GUI\WM\WM.h" />
     <ClInclude Include="GUI\WM\WM_GUI.h" />
     <ClInclude Include="GUI\WM\WM_Intern.h" />
-    <ClInclude Include="GUI\WM\WM_Intern_ConfDep.h" />
     <ClInclude Include="GUI_X\resource.h" />
   </ItemGroup>
   <ItemGroup>

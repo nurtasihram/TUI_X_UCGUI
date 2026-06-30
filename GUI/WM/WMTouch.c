@@ -159,7 +159,7 @@ int WM_HandlePID(void) {
 				/* Send WM_MOUSEOVER Message */
 				if (CHWin.hWin) {
 					/* Do not send messages to disabled windows */
-					if (WM__IsEnabled(CHWin.hWin)) {
+					if (WM_IsEnabled(CHWin.hWin)) {
 						State = StateNew;
 						Msg.Data = (WM_PARAM)&State;
 						WM__SendTouchMessage(CHWin.hWin, WM_MOUSEOVER, &Msg);

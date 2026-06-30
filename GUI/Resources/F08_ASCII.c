@@ -1,24 +1,4 @@
-/*
-*********************************************************************************************************
-*                                                uC/GUI
-*                        Universal graphic software for embedded applications
-*
-*                       (c) Copyright 2002, Micrium Inc., Weston, FL
-*                       (c) Copyright 2002, SEGGER Microcontroller Systeme GmbH
-*
-*              �C/GUI is protected by international copyright laws. Knowledge of the
-*              source code may not be used to write a similar product. This file may
-*              only be used in accordance with a license and should not be redistributed
-*              in any way. We appreciate your understanding and fairness.
-*
-----------------------------------------------------------------------
-File        : F8_ASCII.C
-Purpose     : Proportional 8 pixel font, ASCII character set
-Height      : 8
----------------------------END-OF-HEADER------------------------------
-*/
-
-#include "GUI_FontIntern.h"
+#include "GUI.h"
 
 const uint8_t acFont8ASCII[][8] = {
   {
@@ -1160,7 +1140,6 @@ const GUI_CHARINFO GUI_Font8_ASCII_CharInfo[95] = {
   ,{ 4,4,1, acFont8ASCII[93]} /* char.code 125: '}' */
   ,{ 6,6,1, acFont8ASCII[94]} /* char.code 126: '~' */
 };
-
 
 const GUI_FONT_PROP GUI_Font8ASCII_Prop = {
    32                           /* first character               */

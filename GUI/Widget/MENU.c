@@ -424,7 +424,7 @@ static char _HandlePID(MENU_Obj *pObj, int x, int y, int Pressed) {
 	 */
 	if ((x >= 0) && (y >= 0)) {
 		GUI_RECT r;
-		WM__GetClientRectWin(&pObj->Widget.Win, &r);
+		WM_GetClientRectEx(&pObj->Widget.Win, &r);
 		if ((x <= r.x1) && (y <= r.y1)) {
 			XYInWidget = 1;
 		}
@@ -590,7 +590,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 	int FontHeight = GUI_GetYDistOfFont(pObj->Props.pFont);
 	int EffectSize = _GetEffectSize(pObj);
 	NumItems = MENU__GetNumItems(pObj);
-	WM__GetClientRectWin(&pObj->Widget.Win, &FillRect);
+	WM_GetClientRectEx(&pObj->Widget.Win, &FillRect);
 	GUI__ReduceRect(&FillRect, &FillRect, EffectSize);
 	GUI_SetFont(pObj->Props.pFont);
 	if (pObj->Flags & MENU_SF_VERTICAL) {
@@ -645,7 +645,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 	}
 	if (pObj->Width || pObj->Height) {
 		GUI_RECT r;
-		WM__GetClientRectWin(&pObj->Widget.Win, &r);
+		WM_GetClientRectEx(&pObj->Widget.Win, &r);
 		GUI__ReduceRect(&r, &r, EffectSize);
 		GUI_SetBkColor(pObj->Props.aBkColor[MENU_CI_ENABLED]);
 		GUI_ClearRect(FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1);
