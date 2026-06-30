@@ -353,10 +353,9 @@ static int _OnKey(EDIT_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0;
 }
-static void EDIT__Callback(WM_MESSAGE *pMsg) {
-	int IsEnabled;
-	EDIT_Obj *pObj = pMsg->hWin;
-	IsEnabled = WM__IsEnabled(pObj);
+static void EDIT__Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+	EDIT_Obj *pObj = hWin;
+	int IsEnabled = WM__IsEnabled(pObj);
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
@@ -377,7 +376,7 @@ static void EDIT__Callback(WM_MESSAGE *pMsg) {
 				return;
 			break;
 	}
-	WM_DefaultProc(pMsg);
+	WM_DefaultProc(hWin, pMsg);
 }
 EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int WinFlags, int ExFlags,
 						  int Id, int MaxLen) {

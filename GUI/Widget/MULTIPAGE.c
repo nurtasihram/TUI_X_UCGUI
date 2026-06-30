@@ -339,10 +339,9 @@ static void _OnTouch(MULTIPAGE_Obj *pObj, const GUI_PID_STATE *pState) {
 					State.y = y - WM_GetWindowOrgY(hBelow);
 					State.Pressed = pState->Pressed;
 					WM_MESSAGE Msg;
-					Msg.hWin = hBelow;
 					Msg.MsgId = WM_TOUCH;
 					Msg.Data = (WM_PARAM)&State;
-					(*((WM_Obj *)hBelow)->cb)(&Msg);
+					(*((WM_Obj *)hBelow)->cb)(hBelow, &Msg);
 				}
 			}
 			else
@@ -356,8 +355,8 @@ static void _OnTouch(MULTIPAGE_Obj *pObj, const GUI_PID_STATE *pState) {
 		Notification = WM_NOTIFICATION_MOVED_OUT;
 	WM_NotifyParent(pObj, Notification);
 }
-static void _Callback(WM_MESSAGE *pMsg) {
-	MULTIPAGE_Obj *pObj = pMsg->hWin;
+static void _Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+	MULTIPAGE_Obj *pObj = hWin;
 	int Handled = WIDGET_HandleActive(pObj, pMsg);
 	switch (pMsg->MsgId) {
 		case WM_PAINT:
@@ -391,31 +390,27 @@ static void _Callback(WM_MESSAGE *pMsg) {
 		default:
 			/* Let widget handle the standard messages */
 			if (Handled)
-				WM_DefaultProc(pMsg);
+				WM_DefaultProc(hWin, pMsg);
 	}
 }
-static void _ClientCallback(WM_MESSAGE *pMsg) {
-	WM_HWIN hObj = pMsg->hWin;
-	WM_HWIN hParent = WM_GetParent(hObj);
-	MULTIPAGE_Obj *pParent;
-
-	pParent = (hParent);
+static void _ClientCallback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+	WM_HWIN hObj = hWin;
+	MULTIPAGE_Obj *pParent = WM_GetParent(hObj);
 	switch (pMsg->MsgId) {
 		case WM_PAINT:
 			GUI_SetBkColor(pParent->aBkColor[1]);
 			GUI_Clear();
 			break;
 		case WM_TOUCH:
-			WM_SetFocus(hParent);
-			WM_BringToTop(hParent);
+			WM_SetFocus(pParent);
+			WM_BringToTop(pParent);
 			break;
 		case WM_GET_CLIENT_WINDOW:
 			pMsg->Data = (WM_PARAM)hObj;
 			break;
 		case WM_GET_INSIDE_RECT:
-			WM_DefaultProc(pMsg);
+			WM_DefaultProc(hWin, pMsg);
 	}
-
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

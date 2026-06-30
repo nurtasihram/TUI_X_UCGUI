@@ -230,11 +230,9 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 }
 
 
-static void _cbCallback(WM_MESSAGE *pMsg) {
+static void _cbCallback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 	int NCode, Id;
-	WM_HWIN hDlg, hListBox, hItem;
-	hDlg = pMsg->hWin;
-	hListBox = WM_GetDialogItem(hDlg, GUI_ID_MULTIEDIT0);
+	WM_HWIN hItem, hListBox = WM_GetDialogItem(hWin, GUI_ID_MULTIEDIT0);
 	switch (pMsg->MsgId) {
 		case WM_INIT_DIALOG:
 			LISTBOX_SetText(hListBox, _ListBox);
@@ -250,16 +248,16 @@ static void _cbCallback(WM_MESSAGE *pMsg) {
 			LISTBOX_SetAutoScrollH(hListBox, 1);
 			LISTBOX_SetAutoScrollV(hListBox, 1);
 			LISTBOX_SetOwnerDraw(hListBox, _OwnerDraw);
-			hItem = WM_GetDialogItem(hDlg, GUI_ID_CHECK1);
+			hItem = WM_GetDialogItem(hWin, GUI_ID_CHECK1);
 			CHECKBOX_Check(hItem);
 			break;
 		case WM_KEY:
 			switch (((WM_KEY_INFO *)(pMsg->Data))->Key) {
 				case GUI_KEY_ESCAPE:
-					GUI_EndDialog(hDlg, 1);
+					GUI_EndDialog(hWin, 1);
 					break;
 				case GUI_KEY_ENTER:
-					GUI_EndDialog(hDlg, 0);
+					GUI_EndDialog(hWin, 0);
 					break;
 			}
 			break;
@@ -269,7 +267,7 @@ static void _cbCallback(WM_MESSAGE *pMsg) {
 		case WM_NOTIFY_PARENT:
 			Id = WM_GetId(pMsg->hWinSrc);      /* Id of widget */
 			NCode = (int)pMsg->Data;                 /* Notification code */
-			hItem = WM_GetDialogItem(hDlg, Id);
+			hItem = WM_GetDialogItem(hWin, Id);
 			switch (NCode) {
 				case WM_NOTIFICATION_SEL_CHANGED:
 					LISTBOX_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
@@ -277,10 +275,10 @@ static void _cbCallback(WM_MESSAGE *pMsg) {
 				case WM_NOTIFICATION_RELEASED:      /* React only if released */
 					switch (Id) {
 						case GUI_ID_OK:
-							GUI_EndDialog(hDlg, 0);
+							GUI_EndDialog(hWin, 0);
 							break;
 						case GUI_ID_CANCEL:
-							GUI_EndDialog(hDlg, 1);
+							GUI_EndDialog(hWin, 1);
 							break;
 						case GUI_ID_CHECK0:
 							_MultiSel ^= 1;
@@ -303,7 +301,7 @@ static void _cbCallback(WM_MESSAGE *pMsg) {
 			}
 			break;
 		default:
-			WM_DefaultProc(pMsg);
+			WM_DefaultProc(hWin, pMsg);
 	}
 }
 

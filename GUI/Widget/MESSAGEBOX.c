@@ -24,8 +24,7 @@ static void _OnKey(WM_HWIN hWin, const WM_KEY_INFO *pInfo) {
 		}
 	}
 }
-static void _MESSAGEBOX_cbCallback(WM_MESSAGE *pMsg) {
-	WM_HWIN hWin = pMsg->hWin;
+static void _MESSAGEBOX_cbCallback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 	switch (pMsg->MsgId) {
 		case WM_INIT_DIALOG:
 			FRAMEWIN_SetClientColor(hWin, MESSAGEBOX_BKCOLOR);
@@ -46,7 +45,7 @@ static void _MESSAGEBOX_cbCallback(WM_MESSAGE *pMsg) {
 			break;
 		}
 		default:
-			WM_DefaultProc(pMsg);
+			WM_DefaultProc(hWin, pMsg);
 	}
 }
 WM_HWIN MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags) {

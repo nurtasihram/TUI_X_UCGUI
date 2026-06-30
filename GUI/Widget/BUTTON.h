@@ -49,7 +49,7 @@ void                         BUTTON_SetDefaultTextColor(RGB_COLOR Color, unsigne
 * Do not call it directly ! It is only to be used from within an
 * overwritten callback.
 */
-void BUTTON_Callback(WM_MESSAGE *pMsg);
+void BUTTON_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg);
 RGB_COLOR        BUTTON_GetBkColor         (BUTTON_Handle hObj, unsigned int Index);
 const GUI_FONT  * BUTTON_GetFont(BUTTON_Handle hObj);
 void             BUTTON_GetText            (BUTTON_Handle hObj, char * pBuffer, int MaxLen);

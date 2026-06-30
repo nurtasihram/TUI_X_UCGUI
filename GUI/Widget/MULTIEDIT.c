@@ -946,16 +946,6 @@ static void _OnTouch(MULTIEDIT_OBJ *pObj, const GUI_PID_STATE *pState) {
 		Notification = WM_NOTIFICATION_MOVED_OUT;
 	WM_NotifyParent(pObj, Notification);
 }
-static int _OnKey(MULTIEDIT_OBJ *pObj, const WM_KEY_INFO *pInfo) {
-	if (pInfo->PressedCnt > 0) {
-		int Key = pInfo->Key;
-		if (_AddKey(pObj, Key))
-			return 1;
-	}
-	else if (!(pObj->Flags & MULTIEDIT_SF_READONLY))
-		return 1; /* Key release is consumed (not sent to parent) */
-	return 0; /* Key release is not consumed (sent to parent) */
-}
 /*********************************************************************
 *
 *       _AddKey
@@ -1048,8 +1038,18 @@ static int _AddKey(MULTIEDIT_HANDLE hObj, uint16_t Key) {
 	_InvalidateTextArea(hObj);
 	return r;
 }
-static void _MULTIEDIT_Callback(WM_MESSAGE *pMsg) {
-	MULTIEDIT_OBJ *pObj = pMsg->hWin;
+static int _OnKey(MULTIEDIT_OBJ *pObj, const WM_KEY_INFO *pInfo) {
+	if (pInfo->PressedCnt > 0) {
+		int Key = pInfo->Key;
+		if (_AddKey(pObj, Key))
+			return 1;
+	}
+	else if (!(pObj->Flags & MULTIEDIT_SF_READONLY))
+		return 1; /* Key release is consumed (not sent to parent) */
+	return 0; /* Key release is not consumed (sent to parent) */
+}
+static void _MULTIEDIT_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+	MULTIEDIT_OBJ *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
@@ -1106,7 +1106,7 @@ static void _MULTIEDIT_Callback(WM_MESSAGE *pMsg) {
 				return;
 			break;
 	}
-	WM_DefaultProc(pMsg);
+	WM_DefaultProc(hWin, pMsg);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

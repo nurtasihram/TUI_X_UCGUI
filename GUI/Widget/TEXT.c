@@ -44,8 +44,8 @@ static void _Delete(TEXT_Obj *pObj) {
 	/* Delete attached objects (if any) */
 	_FreeAttached(pObj);
 }
-static void _TEXT_Callback(WM_MESSAGE *pMsg) {
-	TEXT_Obj *pObj = pMsg->hWin;
+static void _TEXT_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+	TEXT_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
@@ -58,7 +58,7 @@ static void _TEXT_Callback(WM_MESSAGE *pMsg) {
 			_Delete(pObj);
 			break; /* No return here ... WM_DefaultProc needs to be called */
 	}
-	WM_DefaultProc(pMsg);
+	WM_DefaultProc(hWin, pMsg);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

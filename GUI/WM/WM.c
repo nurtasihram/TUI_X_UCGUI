@@ -519,20 +519,15 @@ static void _Findx1(WM_HWIN hWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 
 void WM_SendMessage(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 	if (hWin) {
-		WM_Obj *pWin;
-
-		pWin = (hWin);
+		WM_Obj *pWin = hWin;
 		if (pWin->cb != NULL) {
-			pMsg->hWin = hWin;
-			(*pWin->cb)(pMsg);
+			(*pWin->cb)(hWin, pMsg);
 		}
-
 	}
 }
 
 void WM__SendMsgNoData(WM_HWIN hWin, uint8_t MsgId) {
 	WM_MESSAGE Msg;
-	Msg.hWin = hWin;
 	Msg.MsgId = MsgId;
 	WM_SendMessage(hWin, &Msg);
 }
@@ -1064,7 +1059,6 @@ static void _Paint1(WM_HWIN hWin, WM_Obj *pWin) {
 		WM_MESSAGE Msg;
 		WM__PaintCallbackCnt++;
 		if (Status & WM_SF_LATE_CLIP) {
-			Msg.hWin = hWin;
 			Msg.MsgId = WM_PAINT;
 			Msg.Data = (WM_PARAM)&pWin->InvalidRect;
 			WM_SetDefault();
@@ -1072,7 +1066,6 @@ static void _Paint1(WM_HWIN hWin, WM_Obj *pWin) {
 		}
 		else {
 			WM_ITERATE_START(&pWin->InvalidRect) {
-				Msg.hWin = hWin;
 				Msg.MsgId = WM_PAINT;
 				Msg.Data = (WM_PARAM)&pWin->InvalidRect;
 				WM_SetDefault();
@@ -1355,24 +1348,21 @@ int WM_Exec(void) {
 *   Callback for background window
 *
 */
-static void cbBackWin(WM_MESSAGE *pMsg) {
+static void cbBackWin(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 	const WM_KEY_INFO *pKeyInfo;
 	switch (pMsg->MsgId) {
 		case WM_KEY:
 			pKeyInfo = (const WM_KEY_INFO *)pMsg->Data;
-			if (pKeyInfo->PressedCnt == 1) {
+			if (pKeyInfo->PressedCnt == 1)
 				GUI_StoreKey(pKeyInfo->Key);
-			}
 			break;
 		case WM_PAINT:
-		{
 			if (WM__aBkColor != GUI_INVALID_COLOR) {
 				GUI_SetBkColor(WM__aBkColor);
 				GUI_Clear();
 			}
-		}
 		default:
-			WM_DefaultProc(pMsg);
+			WM_DefaultProc(hWin, pMsg);
 	}
 }
 
@@ -1397,14 +1387,12 @@ void WM_Deactivate(void) {
 *   its callback function for messages it does not handle itself.
 *
 */
-void WM_DefaultProc(WM_MESSAGE *pMsg) {
-	WM_HWIN hWin = pMsg->hWin;
-	const void *p = (const void *)pMsg->Data;
-	WM_Obj *pWin = (hWin);
+void WM_DefaultProc(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+	WM_Obj *pWin = hWin;
 	/* Exec message */
 	switch (pMsg->MsgId) {
 		case WM_GET_INSIDE_RECT:      /* return client window in absolute (screen) coordinates */
-			WM__GetClientRectWin(pWin, (GUI_RECT *)p);
+			WM__GetClientRectWin(pWin, (GUI_RECT *)pMsg->Data);
 			break;
 		case WM_GET_CLIENT_WINDOW:      /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
 			pMsg->Data = (WM_PARAM)hWin;
@@ -1620,14 +1608,11 @@ void WM__Screen2Client(const WM_Obj *pWin, GUI_RECT *pRect) {
 }
 
 void WM__SendMessage(WM_HWIN hWin, WM_MESSAGE *pMsg) {
-	WM_Obj *pWin = WM_HANDLE2PTR(hWin);
-	pMsg->hWin = hWin;
-	if (pWin->cb != NULL) {
-		(*pWin->cb)(pMsg);
-	}
-	else {
-		WM_DefaultProc(pMsg);
-	}
+	WM_Obj *pWin = hWin;
+	if (pWin->cb)
+		(*pWin->cb)(hWin, pMsg);
+	else 
+		WM_DefaultProc(hWin, pMsg);
 }
 
 void WM__SendMessageIfEnabled(WM_HWIN hWin, WM_MESSAGE *pMsg) {
@@ -1640,9 +1625,8 @@ void WM__SendMessageNoPara(WM_HWIN hWin, int MsgId) {
 	WM_MESSAGE Msg = { 0 };
 	WM_Obj *pWin = WM_HANDLE2PTR(hWin);
 	if (pWin->cb != NULL) {
-		Msg.hWin = hWin;
 		Msg.MsgId = MsgId;
-		(*pWin->cb)(&Msg);
+		(*pWin->cb)(hWin, &Msg);
 	}
 }
 

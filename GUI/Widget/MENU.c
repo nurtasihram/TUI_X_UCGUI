@@ -659,8 +659,8 @@ static void _OnPaint(MENU_Obj *pObj) {
 		pObj->Widget.pEffect->pfDrawUp();
 	}
 }
-static void _MENU_Callback(WM_MESSAGE *pMsg) {
-	MENU_Obj *pObj = pMsg->hWin;
+static void _MENU_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+	MENU_Obj *pObj = hWin;
 	if (pMsg->MsgId != WM_PID_STATE_CHANGED) {
 		/* Let widget handle the standard messages */
 		if (WIDGET_HandleActive(pObj, pMsg) == 0) {
@@ -686,9 +686,9 @@ static void _MENU_Callback(WM_MESSAGE *pMsg) {
 			break;
 		case WM_DELETE:
 			GUI_ARRAY_Delete(&pObj->ItemArray);
-			break;      /* No return here ... WM_DefaultProc needs to be called */
+			break; /* No return here ... WM_DefaultProc needs to be called */
 	}
-	WM_DefaultProc(pMsg);
+	WM_DefaultProc(hWin, pMsg);
 }
 MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParent, int WinFlags, int ExFlags, int Id) {
 	MENU_Handle hObj;
@@ -966,18 +966,13 @@ void MENU_GetItem(MENU_Handle hObj, uint16_t ItemId, MENU_ITEM_DATA *pItemData) 
 
 void MENU_GetItemText(MENU_Handle hObj, uint16_t ItemId, char *pBuffer, unsigned BufferSize) {
 	if (hObj && pBuffer) {
-		int Index;
-
-		Index = MENU__FindItem(hObj, ItemId, &hObj);
+		int Index = MENU__FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
-			MENU_Obj *pObj;
-			MENU_ITEM *pItem;
-			pObj = (hObj);
-			pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
+			MENU_Obj *pObj = (hObj);
+			MENU_ITEM *pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
 			strncpy(pBuffer, pItem->acText, BufferSize);
 			pBuffer[BufferSize - 1] = 0;
 		}
-
 	}
 }
 

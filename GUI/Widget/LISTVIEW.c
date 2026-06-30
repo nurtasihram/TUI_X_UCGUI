@@ -245,13 +245,11 @@ static void _SetSelFromPos(LISTVIEW_Obj *pObj, const GUI_PID_STATE *pState) {
 *   If no owner is registered, the parent is considered owner.
 */
 static void _NotifyOwner(WM_HWIN hObj, int Notification) {
-	WM_MESSAGE Msg = { 0 };
-	WM_HWIN hOwner;
 	LISTVIEW_Obj *pObj = (hObj);
-	hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
+	WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
+	WM_MESSAGE Msg = { 0 };
 	Msg.MsgId = WM_NOTIFY_PARENT;
-	Msg.Data = (WM_PARAM)(uintptr_t)Notification;
-	Msg.hWin = hObj;
+	Msg.Data = Notification;
 	WM_SendMessage(hOwner, &Msg);
 }
 static void _OnTouch(LISTVIEW_Obj *pObj, const GUI_PID_STATE *pState) {
@@ -405,8 +403,8 @@ static int _AddKey(LISTVIEW_Handle hObj, int Key) {
 	}
 	return 0;                 /* Key has NOT been consumed */
 }
-static void _LISTVIEW_Callback(WM_MESSAGE *pMsg) {
-	LISTVIEW_Obj *pObj = pMsg->hWin;
+static void _LISTVIEW_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+	LISTVIEW_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
@@ -459,7 +457,7 @@ static void _LISTVIEW_Callback(WM_MESSAGE *pMsg) {
 			_FreeAttached(pObj);
 			break; /* No return here ... WM_DefaultProc needs to be called */
 	}
-	WM_DefaultProc(pMsg);
+	WM_DefaultProc(hWin, pMsg);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

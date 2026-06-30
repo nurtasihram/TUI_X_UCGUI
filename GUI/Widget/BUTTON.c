@@ -122,26 +122,20 @@ static void _ButtonReleased(BUTTON_Obj *pObj, int Notification) {
 }
 static void _OnTouch(BUTTON_Obj *pObj, const GUI_PID_STATE *pState) {
 #if BUTTON_REACT_ON_LEVEL
-	if (!pMsg->Data) {  /* Mouse moved out */
+	if (!pMsg->Data) /* Mouse moved out */
 		_ButtonReleased(pObj, WM_NOTIFICATION_MOVED_OUT);
-	}
 #else
 	if (pState) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
-			if ((pObj->Widget.State & BUTTON_STATE_PRESSED) == 0) {
+			if (!(pObj->Widget.State & BUTTON_STATE_PRESSED))
 				_ButtonPressed(pObj);
-			}
 		}
-		else {
-			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
-			if (pObj->Widget.State & BUTTON_STATE_PRESSED) {
-				_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
-			}
-		}
+		/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
+		else if (pObj->Widget.State & BUTTON_STATE_PRESSED)
+			_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
 	}
-	else {
+	else
 		_ButtonReleased(pObj, WM_NOTIFICATION_MOVED_OUT);
-	}
 #endif
 }
 static int _OnKey(BUTTON_Obj *pObj, const WM_KEY_INFO *pInfo) {
@@ -161,14 +155,13 @@ static void _OnPidStateChange(BUTTON_Obj *pObj, const WM_PID_STATE_CHANGED_INFO 
 		if (!(pObj->Widget.State & BUTTON_STATE_PRESSED))
 			_ButtonPressed(pObj);
 	}
-	else if (pState->StatePrev == 1 && pState->State == 0) {
+	else if (pState->StatePrev == 1 && pState->State == 0)
 		if (pObj->Widget.State & BUTTON_STATE_PRESSED)
 			_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
-	}
 }
 #endif
-void BUTTON_Callback(WM_MESSAGE *pMsg) {
-	BUTTON_Obj *pObj = pMsg->hWin;
+void BUTTON_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+	BUTTON_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
@@ -194,7 +187,7 @@ void BUTTON_Callback(WM_MESSAGE *pMsg) {
 				return;
 			break;
 		}
-	WM_DefaultProc(pMsg);
+	WM_DefaultProc(hWin, pMsg);
 }
 BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int WinFlags, int ExFlags, int Id) {
 	BUTTON_Handle hObj;

@@ -145,8 +145,8 @@ static void _OnKey(SLIDER_Obj *pObj, const WM_KEY_INFO *pInfo) {
 		}
 	}
 }
-static void _SLIDER_Callback(WM_MESSAGE *pMsg) {
-	SLIDER_Obj *pObj = pMsg->hWin;
+static void _SLIDER_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+	SLIDER_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
@@ -162,7 +162,7 @@ static void _SLIDER_Callback(WM_MESSAGE *pMsg) {
 			_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data);
 			break;
 	}
-	WM_DefaultProc(pMsg);
+	WM_DefaultProc(hWin, pMsg);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

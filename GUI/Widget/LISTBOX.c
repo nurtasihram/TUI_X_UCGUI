@@ -544,8 +544,8 @@ static int _OnKey(LISTBOX_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0; /* Key has not been consumed */
 }
-static void _LISTBOX_Callback(WM_MESSAGE *pMsg) {
-	LISTBOX_Obj *pObj = pMsg->hWin;
+static void _LISTBOX_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+	LISTBOX_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		/* Owner needs to be informed about focus change */
@@ -616,7 +616,7 @@ static void _LISTBOX_Callback(WM_MESSAGE *pMsg) {
 			WM_Invalidate(pObj);
 			break;
 	}
-	WM_DefaultProc(pMsg);
+	WM_DefaultProc(hWin, pMsg);
 }
 /*********************************************************************
 *

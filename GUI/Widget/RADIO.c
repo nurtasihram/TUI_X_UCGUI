@@ -159,8 +159,8 @@ static void _OnKey(RADIO_Obj *pObj, const WM_KEY_INFO *pInfo) {
 		}
 	}
 }
-static void _RADIO_Callback(WM_MESSAGE *pMsg) {
-	RADIO_Obj *pObj = pMsg->hWin;
+static void _RADIO_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+	RADIO_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
 		return;
@@ -182,7 +182,7 @@ static void _RADIO_Callback(WM_MESSAGE *pMsg) {
 			GUI_ARRAY_Delete(&pObj->TextArray);
 			break;
 	}
-	WM_DefaultProc(pMsg);
+	WM_DefaultProc(hWin, pMsg);
 }
 void RADIO__SetValue(RADIO_Obj *pObj, int v) {
 	if (v >= pObj->NumItems) {
