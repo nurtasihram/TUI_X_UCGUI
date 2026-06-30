@@ -24,8 +24,8 @@ static void _OnKey(WM_HWIN hWin, const WM_KEY_INFO *pInfo) {
 		}
 	}
 }
-static void _MESSAGEBOX_cbCallback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
-	switch (pMsg->MsgId) {
+static void _MESSAGEBOX_cbCallback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+	switch (MsgId) {
 		case WM_INIT_DIALOG:
 			FRAMEWIN_SetClientColor(hWin, MESSAGEBOX_BKCOLOR);
 			break;
@@ -37,15 +37,14 @@ static void _MESSAGEBOX_cbCallback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			int Id = WM_GetId(pMsg->hWinSrc);  /* Get control ID */
 			switch (NCode) {
 				case WM_NOTIFICATION_RELEASED:      /* React only if released */
-					if (Id == GUI_ID_OK) {
+					if (Id == GUI_ID_OK)
 						GUI_EndDialog(hWin, 0);         /* End dialog with return value 0 if OK */
-					}
 					break;
 			}
 			break;
 		}
 		default:
-			WM_DefaultProc(hWin, pMsg);
+			WM_DefaultProc(hWin, MsgId, pMsg);
 	}
 }
 WM_HWIN MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags) {

@@ -151,13 +151,13 @@ static void _OnChildHasFocus(FRAMEWIN_Obj *pObj, const WM_NOTIFY_CHILD_HAS_FOCUS
 		}
 	}
 }
-static int _HandleResizeable(WM_HWIN hWin, WM_MESSAGE *pMsg);
-static void _FRAMEWIN_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static int _HandleResizeable(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg);
+static void _FRAMEWIN_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	FRAMEWIN_Obj *pObj = hWin;
 	if (pObj->Flags & FRAMEWIN_CF_RESIZEABLE) 
-		if (_HandleResizeable(hWin, pMsg))
+		if (_HandleResizeable(hWin, MsgId, pMsg))
 			return;
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_HANDLE_DIALOG_STATUS:
 			if (pMsg->Data) /* set pointer to Dialog status */
 				pObj->pDialogStatus = (WM_DIALOG_STATUS *)pMsg->Data;
@@ -188,8 +188,7 @@ static void _FRAMEWIN_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 				WM_MESSAGE Msg;
 				Msg.hWinSrc = pObj;
 				Msg.Data = pMsg->Data;
-				Msg.MsgId = WM_NOTIFY_PARENT_REFLECTION;
-				WM_SendMessage(pMsg->hWinSrc, &Msg);
+				WM_SendMessage(pMsg->hWinSrc, WM_NOTIFY_PARENT_REFLECTION, &Msg);
 			}
 			return;
 		case WM_SET_FOCUS: /* We have received or lost focus */
@@ -227,15 +226,15 @@ static void _FRAMEWIN_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			break;
 	}
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
 		return;
 	}
-	WM_DefaultProc(hWin, pMsg);
+	WM_DefaultProc(hWin, MsgId, pMsg);
 }
-static void FRAMEWIN__cbClient(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static void FRAMEWIN__cbClient(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	FRAMEWIN_Obj *pParent = WM_GetParent(hWin);
 	WM_CALLBACK *cb = pParent->cb;
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_PAINT:
 			if (pParent->Props.ClientColor != GUI_INVALID_COLOR) {
 				GUI_SetBkColor(pParent->Props.ClientColor);
@@ -243,11 +242,11 @@ static void FRAMEWIN__cbClient(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			}
 			/* Give the user callback  a chance to draw.
 			 * Note that we can not run into the bottom part, as this passes the parents handle
-			 */
-			if (cb) {
-				WM_MESSAGE Msg;
-				Msg = *pMsg;
-				(*cb)(hWin, &Msg);
+			  */
+			 if (cb) {
+				 WM_MESSAGE Msg;
+				 Msg = *pMsg;
+				 (*cb)(hWin, MsgId, &Msg);
 			}
 			return;
 		case WM_SET_FOCUS:
@@ -260,7 +259,7 @@ static void FRAMEWIN__cbClient(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			}
 			return;
 		case WM_GET_ACCEPT_FOCUS:
-			WIDGET_HandleActive(pParent, pMsg);
+			WIDGET_HandleActive(pParent, MsgId, pMsg);
 			return;
 		case WM_GET_BKCOLOR:
 			pMsg->Data = (WM_PARAM)(uintptr_t)pParent->Props.ClientColor;
@@ -268,14 +267,14 @@ static void FRAMEWIN__cbClient(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 		case WM_GET_INSIDE_RECT:        /* This should not be passed to parent ... (We do not want parents coordinates)*/
 		case WM_GET_ID:                 /* This should not be passed to parent ... (Possible recursion problem)*/
 		case WM_GET_CLIENT_WINDOW:      /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
-			WM_DefaultProc(hWin, pMsg);
+			WM_DefaultProc(hWin, MsgId, pMsg);
 			return; /* We are done ! */
 	}
 	/* Call user callback. Note that the user callback gets the handle of the Framewindow itself, NOT the Client. */
 	if (cb)
-		(*cb)(pParent, pMsg);
+		(*cb)(pParent, MsgId, pMsg);
 	else
-		WM_DefaultProc(hWin, pMsg);
+		WM_DefaultProc(hWin, MsgId, pMsg);
 }
 int FRAMEWIN__CalcTitleHeight(FRAMEWIN_Obj *pObj) {
 	int r = 0;
@@ -1073,9 +1072,8 @@ static int _ForwardMouseOverMsg(FRAMEWIN_Handle hWin, const GUI_PID_STATE *pStat
 		StateBelow.x -= WM_GetWindowOrgX(hBelow);
 		StateBelow.y -= WM_GetWindowOrgY(hBelow);
 		WM_MESSAGE Msg;
-		Msg.MsgId = WM_MOUSEOVER;
 		Msg.Data = (WM_PARAM)&StateBelow;
-		WM__SendMessage(hBelow, &Msg);
+		WM__SendMessage(hBelow, WM_MOUSEOVER, &Msg);
 		return 1;
 	}
 	return 0;
@@ -1102,12 +1100,12 @@ static int _OnMouseOver(FRAMEWIN_Handle hWin, const GUI_PID_STATE *pState) {
 	return 0;
 }
 #endif
-static int _HandleResizeable(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static int _HandleResizeable(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	if (WM_HasCaptured(hWin) && _CaptureFlags == 0)
 		return 0;
 	if (FRAMEWIN_IsMinimized(hWin) || FRAMEWIN_IsMaximized(hWin))
 		return 0;
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_TOUCH:
 			return _OnTouchResize(hWin, (const GUI_PID_STATE *)pMsg->Data);
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
@@ -1291,12 +1289,12 @@ WM_HWIN FRAMEWIN_AddButton(FRAMEWIN_Handle hObj, int Flags, int Off, int Id) {
 *     -> FRAMEWIN either a) reacts or b)sends WM_NOTIFY_PARENT_REFLECTION back
 *       In case of a) This module reacts !
 */
-static void _cbClose(WM_HWIN hWin, WM_MESSAGE *pMsg) {
-	if (pMsg->MsgId == WM_NOTIFY_PARENT_REFLECTION) {
+static void _cbClose(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+	if (MsgId == WM_NOTIFY_PARENT_REFLECTION) {
 		WM_DeleteWindow(pMsg->hWinSrc);
 		return; /* We are done ! */
 	}
-	BUTTON_Callback(hWin, pMsg);
+	BUTTON_Callback(hWin, MsgId, pMsg);
 }
 static void _DrawClose(void) {
 	GUI_RECT r;
@@ -1332,8 +1330,8 @@ WM_HWIN FRAMEWIN_AddCloseButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
 *     -> FRAMEWIN either a) reacts or b)sends WM_NOTIFY_PARENT_REFLECTION back
 *       In case of a) This module reacts !
 */
-static void _cbMax(WM_HWIN hWin, WM_MESSAGE *pMsg) {
-	if (pMsg->MsgId == WM_NOTIFY_PARENT_REFLECTION) {
+static void _cbMax(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+	if (MsgId == WM_NOTIFY_PARENT_REFLECTION) {
 		WM_HWIN hWin = pMsg->hWinSrc;
 		FRAMEWIN_Obj *pObj = (hWin);
 		if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED)
@@ -1342,7 +1340,7 @@ static void _cbMax(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			FRAMEWIN_Maximize(hWin);
 		return; /* We are done ! */
 	}
-	BUTTON_Callback(hWin, pMsg);
+	BUTTON_Callback(hWin, MsgId, pMsg);
 }
 static void _PaintMax(void) {
 	GUI_RECT r;
@@ -1411,8 +1409,8 @@ WM_HWIN FRAMEWIN_AddMaxButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
 *     -> FRAMEWIN either a) reacts or b)sends WM_NOTIFY_PARENT_REFLECTION back
 *       In case of a) This module reacts !
 */
-static void _cbMin(WM_HWIN hWin, WM_MESSAGE *pMsg) {
-	if (pMsg->MsgId == WM_NOTIFY_PARENT_REFLECTION) {
+static void _cbMin(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+	if (MsgId == WM_NOTIFY_PARENT_REFLECTION) {
 		WM_HWIN hWin = pMsg->hWinSrc;
 		FRAMEWIN_Obj *pObj = (hWin);
 		if (pObj->Flags & FRAMEWIN_CF_MINIMIZED)
@@ -1421,7 +1419,7 @@ static void _cbMin(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			FRAMEWIN_Minimize(hWin);
 		return; /* We are done ! */
 	}
-	BUTTON_Callback(hWin, pMsg);
+	BUTTON_Callback(hWin, MsgId, pMsg);
 }
 static void _PaintMin(void) {
 	GUI_RECT r;
@@ -1431,9 +1429,8 @@ static void _PaintMin(void) {
 	WM_ADDORG(r.x1, r.y1);
 	Size = (r.x1 - r.x0 + 1) >> 1;
 	WM_ITERATE_START(&r); {
-		for (i = 1; i < Size; i++) {
+		for (i = 1; i < Size; i++)
 			LCD_DrawHLine(r.x0 + i, r.y1 - i - (Size >> 1), r.x1 - i);
-		}
 	} WM_ITERATE_END();
 }
 static void _DrawRestoreMin(void) {

@@ -173,12 +173,11 @@ The following is the list of windows messages.
 typedef uintptr_t WM_PARAM;
 
 typedef struct {
-	int MsgId;
 	WM_HWIN hWinSrc;
 	WM_PARAM Data;
 } WM_MESSAGE;
 
-typedef void WM_CALLBACK(WM_HWIN hWin, WM_MESSAGE *pMsg);
+typedef void WM_CALLBACK(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg);
 
 typedef struct {
 	GUI_RECT Rect;        /* outer dimensions of window */
@@ -188,7 +187,7 @@ typedef struct {
 	WM_HWIN hParent;
 	WM_HWIN hFirstChild;
 	WM_HWIN hNext;
-	uint16_t Status;	          /* Some status flags */
+	uint16_t Status; /* Some status flags */
 } WM_Obj;
 
 typedef void WM_tfPollPID(void);
@@ -321,13 +320,12 @@ void WM_MakeModal(WM_HWIN hWin);
 */
 
 void      WM_NotifyParent(WM_HWIN hWin, int Notification);
-void      WM_SendMessage(WM_HWIN hWin, WM_MESSAGE *p);
+void      WM_SendMessage(WM_HWIN hWin, int MsgId, WM_MESSAGE *p);
 void      WM_SendMessageNoPara(WM_HWIN hWin, int MsgId);             /* not to be documented (may change in future versionumented */
-void      WM_DefaultProc(WM_HWIN hWin, WM_MESSAGE *pMsg);
-int       WM_BroadcastMessage(WM_MESSAGE *pMsg);
+void      WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg);
 void      WM_SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE *pState);
 void      WM_SetEnableState(WM_HWIN hItem, int State);
-void      WM_SendToParent(WM_HWIN hWin, WM_MESSAGE *pMsg);
+void      WM_SendToParent(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg);
 int       WM_HasCaptured(WM_HWIN hWin);
 int       WM_HasFocus(WM_HWIN hWin);
 int       WM_SetFocus(WM_HWIN hWin);

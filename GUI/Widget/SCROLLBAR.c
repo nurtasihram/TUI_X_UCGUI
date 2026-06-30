@@ -268,13 +268,13 @@ void SCROLLBAR__InvalidatePartner(SCROLLBAR_Handle hObj) {     /* Invalidate the
 	WM_Invalidate(WM_GetScrollPartner(hObj));
 	WM_SendMessageNoPara(WM_GetParent(hObj), WM_NOTIFY_CLIENTCHANGE);   /* Client area may have changed */
 }
-static void _SCROLLBAR_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static void _SCROLLBAR_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	SCROLLBAR_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
 		return;
 	}
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_DELETE:
 			SCROLLBAR__InvalidatePartner(pObj);
 			break;
@@ -298,7 +298,7 @@ static void _SCROLLBAR_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			break;
 		}
 	}
-	WM_DefaultProc(hWin, pMsg);
+	WM_DefaultProc(hWin, MsgId, pMsg);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

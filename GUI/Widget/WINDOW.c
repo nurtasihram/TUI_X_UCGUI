@@ -26,10 +26,10 @@ static void _OnKey(WINDOW_OBJ *pObj, const WM_KEY_INFO *pInfo) {
 		}
 	}
 }
-static void _cb(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static void _cb(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	WINDOW_OBJ *pObj = hWin;
 	WM_CALLBACK *cb = pObj->cb;
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_HANDLE_DIALOG_STATUS:
 			if (pMsg->Data) /* set pointer to Dialog status */
 				pObj->pDialogStatus = (WM_DIALOG_STATUS *)pMsg->Data;
@@ -46,7 +46,7 @@ static void _cb(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			}
 			return;
 		case WM_GET_ACCEPT_FOCUS:
-			WIDGET_HandleActive(pObj, pMsg);
+			WIDGET_HandleActive(pObj, MsgId, pMsg);
 			return;
 		case WM_NOTIFY_CHILD_HAS_FOCUS:
 			_OnChildHasFocus(pObj, (const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *)pMsg->Data);
@@ -63,9 +63,9 @@ static void _cb(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			return; /* Message handled */
 	}
 	if (cb)
-		(*cb)(hWin, pMsg);
+		(*cb)(hWin, MsgId, pMsg);
 	else
-		WM_DefaultProc(hWin, pMsg);
+		WM_DefaultProc(hWin, MsgId, pMsg);
 }
 WM_HWIN WINDOW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	WM_HWIN hObj;

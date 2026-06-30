@@ -125,14 +125,14 @@ void    WM__RemoveWindowFromList    (WM_HWIN hWin);
 void    WM__RemoveFromLinList       (WM_HWIN hWin);
 void    WM__Screen2Client           (const WM_Obj* pWin, GUI_RECT *pRect);
 void    WM__SendMsgNoData           (WM_HWIN hWin, uint8_t MsgId);
-void    WM__SendMessage             (WM_HWIN hWin, WM_MESSAGE* pm);
-void    WM__SendMessageIfEnabled    (WM_HWIN hWin, WM_MESSAGE* pm);
-void    WM__SendPIDMessage          (WM_HWIN hWin, WM_MESSAGE* pMsg);
+void    WM__SendMessage             (WM_HWIN hWin, int MsgId, WM_MESSAGE* pm);
+void    WM__SendMessageIfEnabled    (WM_HWIN hWin, int MsgId, WM_MESSAGE* pm);
+void    WM__SendPIDMessage          (WM_HWIN hWin, int MsgId, WM_MESSAGE* pMsg);
 int     WM__SetScrollbarH           (WM_HWIN hWin, int OnOff);
 int     WM__SetScrollbarV           (WM_HWIN hWin, int OnOff);
 void    WM__UpdateChildPositions    (WM_Obj* pObj, int dx0, int dy0, int dx1, int dy1);
 void    WM_PID__GetPrevState        (GUI_PID_STATE* pPrevState);
-void    WM__SendTouchMessage        (WM_HWIN hWin, WM_MESSAGE* pMsg);
+void    WM__SendTouchMessage        (WM_HWIN hWin, int MsgId, WM_MESSAGE* pMsg);
 
 uint16_t     WM_GetFlags(WM_HWIN hWin);
 void    WM__PaintWinAndOverlays     (WM_PAINTINFO* pInfo);

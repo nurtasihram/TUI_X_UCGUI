@@ -399,8 +399,7 @@ static int _ForwardMouseOverMsg(MENU_Obj *pObj, int x, int y) {
 				State.x = x;
 				State.y = y;
 				Msg.Data = (WM_PARAM)&State;
-				Msg.MsgId = WM_MOUSEOVER;
-				WM__SendMessage(hBelow, &Msg);
+				WM__SendMessage(hBelow, WM_MOUSEOVER, &Msg);
 				return 1;
 			}
 		}
@@ -500,7 +499,6 @@ static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, int MsgId, const GUI_PID_STATE
 		WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
 		if (hOwner) {
 			WM_MESSAGE Msg;
-			Msg.MsgId = MsgId;
 			GUI_PID_STATE State;
 			if (pState) {
 				State = *pState;
@@ -508,7 +506,7 @@ static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, int MsgId, const GUI_PID_STATE
 				State.y += WM_GetWindowOrgY(pObj) - WM_GetWindowOrgY(hOwner);
 				Msg.Data = (WM_PARAM)&State;
 			}
-			WM__SendMessage(hOwner, &Msg);
+			WM__SendMessage(hOwner, MsgId, &Msg);
 		}
 	}
 }
@@ -524,11 +522,10 @@ static void _OnMenu(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
 			case MENU_ON_INITMENU:
 			case MENU_ON_INITSUBMENU: {
 				/* Forward message to owner. */
-				WM_HWIN hOwner;
-				hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
+				WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
 				if (hOwner) {
 					pMsg->hWinSrc = pObj;
-					WM__SendMessage(hOwner, pMsg);
+					WM__SendMessage(hOwner, WM_MENU, pMsg);
 				}
 				break;
 			}
@@ -659,15 +656,15 @@ static void _OnPaint(MENU_Obj *pObj) {
 		pObj->Widget.pEffect->pfDrawUp();
 	}
 }
-static void _MENU_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static void _MENU_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	MENU_Obj *pObj = hWin;
-	if (pMsg->MsgId != WM_PID_STATE_CHANGED) {
+	if (MsgId != WM_PID_STATE_CHANGED) {
 		/* Let widget handle the standard messages */
-		if (WIDGET_HandleActive(pObj, pMsg) == 0) {
+		if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
 			return;
 		}
 	}
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_MENU:
 			_OnMenu(pObj, pMsg);
 			return;     /* Message handled, do not call WM_DefaultProc() here. */
@@ -688,7 +685,7 @@ static void _MENU_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			GUI_ARRAY_Delete(&pObj->ItemArray);
 			break; /* No return here ... WM_DefaultProc needs to be called */
 	}
-	WM_DefaultProc(hWin, pMsg);
+	WM_DefaultProc(hWin, MsgId, pMsg);
 }
 MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParent, int WinFlags, int ExFlags, int Id) {
 	MENU_Handle hObj;
@@ -783,14 +780,12 @@ int MENU__SendMenuMessage(MENU_Handle hObj, WM_HWIN hDestWin, uint16_t MsgType, 
 	WM_MESSAGE    Msg = { 0 };
 	MsgData.MsgType = MsgType;
 	MsgData.ItemId = ItemId;
-	Msg.MsgId = WM_MENU;
 	Msg.Data = (WM_PARAM)&MsgData;
 	Msg.hWinSrc = hObj;
-	if (!hDestWin) {
+	if (!hDestWin)
 		hDestWin = WM_GetParent(hObj);
-	}
 	if (hDestWin) {
-		WM__SendMessage(hDestWin, &Msg);
+		WM__SendMessage(hDestWin, WM_MENU, &Msg);
 		return (int)Msg.Data;
 	}
 	return 0;

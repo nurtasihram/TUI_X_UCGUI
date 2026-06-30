@@ -353,14 +353,14 @@ static int _OnKey(EDIT_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0;
 }
-static void EDIT__Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static void EDIT__Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	EDIT_Obj *pObj = hWin;
 	int IsEnabled = WM__IsEnabled(pObj);
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
 		return;
 	}
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_TOUCH:
 			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
 			break;
@@ -376,7 +376,7 @@ static void EDIT__Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 				return;
 			break;
 	}
-	WM_DefaultProc(hWin, pMsg);
+	WM_DefaultProc(hWin, MsgId, pMsg);
 }
 EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int WinFlags, int ExFlags,
 						  int Id, int MaxLen) {

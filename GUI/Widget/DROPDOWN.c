@@ -163,14 +163,14 @@ void DROPDOWN__AdjustHeight(DROPDOWN_Obj *pObj) {
 	Height += pObj->Widget.pEffect->EffectSize + 2 * pObj->Props.TextBorderSize;
 	WM_SetSize(pObj, WM__GetWindowSizeX(&pObj->Widget.Win), Height);
 }
-static void _DROPDOWN_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static void _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	DROPDOWN_Obj *pObj = hWin;
 	char IsExpandedBeforeMsg = pObj->hListWin ? 1 : 0;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
 		return;
 	}
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_NOTIFY_PARENT:
 			switch (pMsg->Data) {
 				case WM_NOTIFICATION_SCROLL_CHANGED:
@@ -207,7 +207,7 @@ static void _DROPDOWN_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 				return;
 			break;
 	}
-	WM_DefaultProc(hWin, pMsg);
+	WM_DefaultProc(hWin, MsgId, pMsg);
 }
 DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 								  int WinFlags, int ExFlags, int Id) {

@@ -178,10 +178,10 @@ void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
 	pWidget->State = State;
 	pWidget->Id = Id;
 }
-int WIDGET_HandleActive(WM_HWIN hObj, WM_MESSAGE *pMsg) {
+int WIDGET_HandleActive(WM_HWIN hObj, int MsgId, WM_MESSAGE *pMsg) {
 	int Diff, Notification;
 	WIDGET *pWidget = (hObj);
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_WIDGET_SET_EFFECT:
 			Diff = pWidget->pEffect->EffectSize;
 			pWidget->pEffect = (const WIDGET_EFFECT *)pMsg->Data;
@@ -320,9 +320,8 @@ const WIDGET_EFFECT *WIDGET_GetDefaultEffect(void) {
 void WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT *pEffect) {
 	WM_MESSAGE Msg;
 	Msg.hWinSrc = 0;
-	Msg.MsgId = WM_WIDGET_SET_EFFECT;
 	Msg.Data = (WM_PARAM)pEffect;
-	WM_SendMessage(hObj, &Msg);
+	WM_SendMessage(hObj, WM_WIDGET_SET_EFFECT, &Msg);
 }
 
 

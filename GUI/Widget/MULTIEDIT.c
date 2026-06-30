@@ -1048,13 +1048,13 @@ static int _OnKey(MULTIEDIT_OBJ *pObj, const WM_KEY_INFO *pInfo) {
 		return 1; /* Key release is consumed (not sent to parent) */
 	return 0; /* Key release is not consumed (sent to parent) */
 }
-static void _MULTIEDIT_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static void _MULTIEDIT_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	MULTIEDIT_OBJ *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
 		return;
 	}
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_NOTIFY_CLIENTCHANGE:
 			_InvalidateCursorXY(pObj);
 			_InvalidateNumLines(pObj);
@@ -1106,7 +1106,7 @@ static void _MULTIEDIT_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 				return;
 			break;
 	}
-	WM_DefaultProc(hWin, pMsg);
+	WM_DefaultProc(hWin, MsgId, pMsg);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

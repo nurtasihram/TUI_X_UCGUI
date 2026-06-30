@@ -135,13 +135,13 @@ static void  _OnKey(CHECKBOX_Obj *pObj, const WM_KEY_INFO *pInfo) {
 		}
 	}
 }
-static void _CHECKBOX_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static void _CHECKBOX_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	CHECKBOX_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
 		return;
 	}
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_KEY:
 			_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data);
 			break;
@@ -152,7 +152,7 @@ static void _CHECKBOX_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
 			break;
 	}
-	WM_DefaultProc(hWin, pMsg);
+	WM_DefaultProc(hWin, MsgId, pMsg);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

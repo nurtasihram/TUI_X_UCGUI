@@ -230,10 +230,10 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 }
 
 
-static void _cbCallback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static void _cbCallback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	int NCode, Id;
 	WM_HWIN hItem, hListBox = WM_GetDialogItem(hWin, GUI_ID_MULTIEDIT0);
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_INIT_DIALOG:
 			LISTBOX_SetText(hListBox, _ListBox);
 			LISTBOX_AddString(hListBox, "Francis");
@@ -301,7 +301,7 @@ static void _cbCallback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			}
 			break;
 		default:
-			WM_DefaultProc(hWin, pMsg);
+			WM_DefaultProc(hWin, MsgId, pMsg);
 	}
 }
 

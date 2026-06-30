@@ -159,13 +159,13 @@ static void _OnKey(RADIO_Obj *pObj, const WM_KEY_INFO *pInfo) {
 		}
 	}
 }
-static void _RADIO_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static void _RADIO_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	RADIO_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
 		return;
 	}
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_PAINT:
 			_OnPaint(pObj);
 			return;
@@ -182,7 +182,7 @@ static void _RADIO_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			GUI_ARRAY_Delete(&pObj->TextArray);
 			break;
 	}
-	WM_DefaultProc(hWin, pMsg);
+	WM_DefaultProc(hWin, MsgId, pMsg);
 }
 void RADIO__SetValue(RADIO_Obj *pObj, int v) {
 	if (v >= pObj->NumItems) {
@@ -371,8 +371,7 @@ static void _SetValue(RADIO_Handle hObj, int v) {
 static int _IsInGroup(WM_HWIN hWin, uint8_t GroupId) {
 	if (GroupId) {
 		WM_MESSAGE Msg;
-		Msg.MsgId = WM_GET_RADIOGROUP;
-		WM_SendMessage(hWin, &Msg);
+		WM_SendMessage(hWin, WM_GET_RADIOGROUP, &Msg);
 		return ((int)Msg.Data == GroupId);
 	}
 	return 0;

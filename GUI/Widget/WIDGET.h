@@ -100,7 +100,7 @@ void      WIDGET__FillStringInRect(const char  * pText, const GUI_RECT * pFillRe
 void  WIDGET_SetState     (WM_HWIN hObj, int State);
 void  WIDGET_AndState     (WM_HWIN hObj, int State);
 void  WIDGET_OrState      (WM_HWIN hObj, int State);
-int   WIDGET_HandleActive (WM_HWIN hObj, WM_MESSAGE* pMsg);
+int   WIDGET_HandleActive (WM_HWIN hObj, int MsgId, WM_MESSAGE* pMsg);
 int   WIDGET_GetState     (WM_HWIN hObj);
 int   WIDGET_SetWidth     (WM_HWIN hObj, int Width);
 void  WIDGET_EFFECT_3D_DrawUp(void);

@@ -181,13 +181,13 @@ static void _OnTouch(HEADER_Obj *pObj, const GUI_PID_STATE *pState) {
 	WM_NotifyParent(pObj, Notification);
 }
 #endif
-static void _HEADER_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static void _HEADER_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	HEADER_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
 		return;
 	}
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_PAINT:
 			_OnPaint(pObj);
 			break;
@@ -204,7 +204,7 @@ static void _HEADER_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 		case WM_DELETE:
 			_FreeAttached(pObj); /* No return here ... WM_DefaultProc needs to be called */
 		default:
-			WM_DefaultProc(hWin, pMsg);
+			WM_DefaultProc(hWin, MsgId, pMsg);
 	}
 
 }

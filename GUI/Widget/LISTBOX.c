@@ -193,13 +193,11 @@ static unsigned _GetNumVisItems(LISTBOX_Obj *pObj) {
 */
 static void _NotifyOwner(WM_HWIN hObj, int Notification) {
 	WM_MESSAGE Msg = { 0 };
-	WM_HWIN hOwner;
 	LISTBOX_Obj *pObj = (hObj);
-	hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
-	Msg.MsgId = WM_NOTIFY_PARENT;
-	Msg.Data = (WM_PARAM)(uintptr_t)Notification;
+	WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
+	Msg.Data = Notification;
 	Msg.hWinSrc = hObj;
-	WM_SendMessage(hOwner, &Msg);
+	WM_SendMessage(hOwner, WM_NOTIFY_PARENT, &Msg);
 }
 int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 	switch (pDrawItemInfo->Cmd) {
@@ -544,17 +542,17 @@ static int _OnKey(LISTBOX_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0; /* Key has not been consumed */
 }
-static void _LISTBOX_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
+static void _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 	LISTBOX_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, pMsg) == 0) {
+	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
 		/* Owner needs to be informed about focus change */
-		if (pMsg->MsgId == WM_SET_FOCUS)
-		if (pMsg->Data == 0) /* Lost focus ? */
-		_NotifyOwner(pObj, LISTBOX_NOTIFICATION_LOST_FOCUS);
+		if (MsgId == WM_SET_FOCUS)
+			if (pMsg->Data == 0) /* Lost focus ? */
+				_NotifyOwner(pObj, LISTBOX_NOTIFICATION_LOST_FOCUS);
 		return;
 	}
-	switch (pMsg->MsgId) {
+	switch (MsgId) {
 		case WM_NOTIFY_PARENT:
 		switch (pMsg->Data) {
 			case WM_NOTIFICATION_VALUE_CHANGED: {
@@ -616,7 +614,7 @@ static void _LISTBOX_Callback(WM_HWIN hWin, WM_MESSAGE *pMsg) {
 			WM_Invalidate(pObj);
 			break;
 	}
-	WM_DefaultProc(hWin, pMsg);
+	WM_DefaultProc(hWin, MsgId, pMsg);
 }
 /*********************************************************************
 *
