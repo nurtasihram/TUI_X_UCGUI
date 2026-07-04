@@ -16,28 +16,16 @@ const GUI_LOGPALETTE GUI_CursorPalI = {
 
 #if GUI_SUPPORT_CURSOR
 
-static GUI_HMEM          _hBuffer;
-static GUI_RECT          _Rect;
-static char              _CursorIsVis;        /* Currently visible ? */
-static char              _CursorOn;
-static const GUI_CURSOR *_pCursor;
-static uint8_t                _CursorDeActCnt;
-static int               _AllocSize;
-static int               _x, _y;              /* Position of hot spot */
-static GUI_RECT          _ClipRect;
-static RGB_COLOR    _ColorIndex[4];      /* Color-Cache */
+static int _AllocSize;
+static GUI_HMEM _hBuffer = NULL;
+static GUI_RECT _Rect;
+static BOOL _CursorIsVis = FALSE, _CursorOn = FALSE;
+static const GUI_CURSOR *_pCursor = NULL;
+static uint8_t _CursorDeActCnt = 0;
+static int16_t _x, _y; /* Position of hot spot */
+static GUI_RECT _ClipRect;
+const RGB_COLOR *aCursorPal = NULL;
 
-/*********************************************************************
-*
-*       _SetPixel
-*
-* Purpose
-*   Sets the pixel index for the Cursor.
-*   Note the following:
-*   - We do the clipping in this routine
-*   - We do NOT call the driver directly, but thru its API table.
-*     This allows others (e.g. the VNC server) to be in the loop-
-*/
 static void _SetPixel(int x, int y, int Index) {
 	if ((y >= _ClipRect.y0) && (y <= _ClipRect.y1)) {
 		if ((x >= _ClipRect.x0) && (x <= _ClipRect.x1)) {
@@ -45,14 +33,6 @@ static void _SetPixel(int x, int y, int Index) {
 		}
 	}
 }
-
-/*********************************************************************
-*
-*       _GetPixel
-*
-* Purpose
-*   Gets a pixel index for the Cursor.
-*/
 static int _GetPixel(int x, int y) {
 	if ((y >= _ClipRect.y0) && (y <= _ClipRect.y1)) {
 		if ((x >= _ClipRect.x0) && (x <= _ClipRect.x1)) {
@@ -62,18 +42,11 @@ static int _GetPixel(int x, int y) {
 	return 0;
 }
 
-/*********************************************************************
-*
-*       _Undraw
-*
-* Purpose
-*   Remove the cursors
-*/
+
 static void _Undraw(void) {
 	int x, y, xSize, ySize;
 	RGB_COLOR *pData;
 	/* Save bitmap data */
-
 	if (_hBuffer) {
 		pData = (RGB_COLOR *)_hBuffer;
 		xSize = _Rect.x1 - _Rect.x0 + 1;
@@ -85,24 +58,12 @@ static void _Undraw(void) {
 			pData += _pCursor->pBitmap->XSize;
 		}
 	}
-
-}
-
-static int _Log2Phys(int Index) {
-	if (Index < 4) {
-		return _ColorIndex[Index];
-	}
-	else {
-		RGB_COLOR Color = *(_pCursor->pBitmap->pPal->pPalEntries + Index);
-		return Color;
-	}
 }
 
 static void _Draw(void) {
 	int x, y, xSize, ySize;
 	RGB_COLOR *pData;
 	const GUI_BITMAP *pBM;
-
 	if (_hBuffer) {
 		/* Save bitmap data */
 		pBM = _pCursor->pBitmap;
@@ -115,13 +76,15 @@ static void _Draw(void) {
 				*(pData + x) = _GetPixel(_Rect.x0 + x, _Rect.y0 + y);
 				BitmapPixel = GUI_GetBitmapPixel(pBM, x, y);
 				if (BitmapPixel) {
-					_SetPixel(_Rect.x0 + x, _Rect.y0 + y, _Log2Phys(BitmapPixel));
+					if (aCursorPal)
+						_SetPixel(_Rect.x0 + x, _Rect.y0 + y, aCursorPal[BitmapPixel]);
+					else
+						_SetPixel(_Rect.x0 + x, _Rect.y0 + y, BitmapPixel);
 				}
 			}
 			pData += pBM->XSize;
 		}
 	}
-
 }
 
 static void _CalcRect(void) {
@@ -140,16 +103,16 @@ static void _Hide(void) {
 	}
 }
 
-static void _Show(void) {
-	if (_CursorOn && (_CursorDeActCnt == 0)) {
-		_CursorIsVis = 1;
+void GUI_CURSOR__TempShow(void) {
+	if (_CursorOn && !_CursorDeActCnt) {
+		_CursorIsVis = TRUE;
 		_Draw();
 	}
 }
 
 /*********************************************************************
 *
-*       _TempHide
+*       GUI_CURSOR__TempHide
 *
 * Purpose:
 *   Hide cursor if a part of the given rectangle is located in the
@@ -168,50 +131,46 @@ static void _Show(void) {
 *   1:      Cursor hidden -> WM needs to restore cursor after
 *           drawing operation
 */
-static char _TempHide(const GUI_RECT *pRect) {
-	if (!_CursorIsVis) {
-		return 0;             /* Cursor not visible -> nothing to do */
+char GUI_CURSOR__TempHide(const GUI_RECT *pRect) {
+	if (!_CursorIsVis)
+		return FALSE; /* Cursor not visible -> nothing to do */
+	if (!pRect || GUI_RectsIntersect(pRect, &_Rect)) {
+		_Hide(); /* Cursor needs to be hidden */
+		return TRUE;
 	}
-	if ((pRect == NULL) || GUI_RectsIntersect(pRect, &_Rect)) {
-		_Hide();              /* Cursor needs to be hidden */
-		return 1;
-	}
-	return 0;               /* Cursor not affected -> nothing to do */
+	return FALSE; /* Cursor not affected -> nothing to do */
 }
 
-static void _TempUnhide(void) {
-	_Show();
+void GUI_CURSOR_Show(void) {
+	LCDDEV_L0_GetRect(&_ClipRect);
+	_Hide();
+	_CursorOn = TRUE;
+	if (!_pCursor)
+		GUI_CURSOR_Select(GUI_DEFAULT_CURSOR);
+	else
+		GUI_CURSOR__TempShow();
 }
-
+void GUI_CURSOR_Hide(void) {
+	_Hide();
+	_CursorOn = FALSE;
+}
 void GUI_CURSOR_Activate(void) {
-
-	if ((--_CursorDeActCnt) == 0) {
-		_Show();
-	}
-
+	if (!--_CursorDeActCnt)
+		GUI_CURSOR__TempShow();
 }
-
 void GUI_CURSOR_Deactivate(void) {
-
 	if (_CursorDeActCnt++ == 0)
 		_Hide();
-
 }
 
 const GUI_CURSOR *GUI_CURSOR_Select(const GUI_CURSOR *pCursor) {
 	int AllocSize;
 	const GUI_BITMAP *pBM;
 	const GUI_CURSOR *pOldCursor;
-
 	pOldCursor = _pCursor;
 	if (pCursor != _pCursor) {
-		int i;
 		pBM = pCursor->pBitmap;
-		i = pBM->pPal->NumEntries > 4 ? 4 : pBM->pPal->NumEntries;
-		while (i--) {
-			RGB_COLOR Color = *(pBM->pPal->pPalEntries + i);
-			_ColorIndex[i] = Color;
-		}
+		aCursorPal = pBM->pPal->pPalEntries;
 		_Hide();
 		AllocSize = pBM->XSize * pBM->YSize * sizeof(RGB_COLOR);
 		if (AllocSize != _AllocSize) {
@@ -219,40 +178,12 @@ const GUI_CURSOR *GUI_CURSOR_Select(const GUI_CURSOR *pCursor) {
 			_hBuffer = 0;
 		}
 		_hBuffer = GUI_ALLOC_AllocZero(AllocSize);
-		_CursorOn = 1;
+		_CursorOn = TRUE;
 		_pCursor = pCursor;
 		_CalcRect();
-		_Show();
+		GUI_CURSOR__TempShow();
 	}
-
 	return pOldCursor;
-}
-
-void GUI_CURSOR_Hide(void) {
-
-	_Hide();
-	_CursorOn = 0;
-	/* Set function pointer which window manager can use */
-	GUI_CURSOR_pfTempHide = NULL;
-	GUI_CURSOR_pfTempUnhide = NULL;
-
-}
-
-void GUI_CURSOR_Show(void) {
-
-	LCDDEV_L0_GetRect(&_ClipRect);
-	_Hide();
-	_CursorOn = 1;
-	/* Set function pointer which window manager can use */
-	GUI_CURSOR_pfTempHide = _TempHide;
-	GUI_CURSOR_pfTempUnhide = _TempUnhide;
-	if (!_pCursor) {
-		GUI_CURSOR_Select(GUI_DEFAULT_CURSOR);
-	}
-	else {
-		_Show();
-	}
-
 }
 
 void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
@@ -260,7 +191,6 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
 	int y, yStart, yStep, yEnd, yOff, yOverlapMin, yOverlapMax;
 	int xSize;
 	RGB_COLOR *pData;
-
 	if (_hBuffer) {
 		if ((_x != xNewPos) | (_y != yNewPos)) {
 			if (_CursorOn) {
@@ -331,8 +261,10 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
 						*pSave = Pixel;
 						/* Write new  ... We could write pixel by pixel here */
 						if (BitmapPixel) {
-							RGB_COLOR NewPixel = _Log2Phys(BitmapPixel);
-							_SetPixel(_Rect.x0 + xNew, _Rect.y0 + yNew, NewPixel);
+							if (aCursorPal)
+								_SetPixel(xNew + _Rect.x0, yNew + _Rect.y0, aCursorPal[BitmapPixel]);
+							else
+								_SetPixel(xNew + _Rect.x0, yNew + _Rect.y0, BitmapPixel);
 						}
 					}
 				}

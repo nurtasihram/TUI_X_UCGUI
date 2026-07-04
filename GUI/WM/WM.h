@@ -169,7 +169,6 @@ typedef struct {
 	WM_HWIN hWinSrc;
 } WM_NOTIFY_INFO;
 
-#define WM_HBKWIN      WM_GetDesktopWindow()                /* Handle of background window */
 #define WM_UNATTACHED  ((WM_HMEM)-1)                        /* Do not attach to a window */
 
 typedef WM_PARAM WM_CALLBACK(WM_HWIN hWin, int MsgId, WM_PARAM Data);
@@ -185,7 +184,6 @@ typedef struct {
 	uint16_t Status; /* Some status flags */
 } WM_Obj;
 
-typedef void WM_tfPollPID(void);
 typedef void WM_tfForEach(WM_HWIN hWin, void *pData);
 
 void WM_Activate(void);

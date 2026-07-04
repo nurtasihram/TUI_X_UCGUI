@@ -122,9 +122,7 @@ TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HW
 
 void TEXT_SetBkColor(TEXT_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
-		TEXT_Obj *pObj;
-
-		pObj = (hObj);
+		TEXT_Obj *pObj = hObj;
 		pObj->BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
 		if (Color <= RGB_WHITE) {
@@ -140,8 +138,7 @@ void TEXT_SetBkColor(TEXT_Handle hObj, RGB_COLOR Color) {
 
 void TEXT_SetFont(TEXT_Handle hObj, const GUI_FONT  *pFont) {
 	if (hObj) {
-		TEXT_Obj *pObj;
-		pObj = (hObj);
+		TEXT_Obj *pObj = hObj;
 		pObj->pFont = pFont;
 		/*
 		GUI_ALLOC_FreePtr(&pObj->hpText);
@@ -160,9 +157,7 @@ void TEXT_SetFont(TEXT_Handle hObj, const GUI_FONT  *pFont) {
 
 void TEXT_SetText(TEXT_Handle hObj, const char *s) {
 	if (hObj) {
-		TEXT_Obj *pObj;
-
-		pObj = (hObj);
+		TEXT_Obj *pObj = hObj;
 		if (GUI__SetText(&pObj->hpText, s)) {
 			WM_Invalidate(hObj);
 		}
@@ -172,9 +167,7 @@ void TEXT_SetText(TEXT_Handle hObj, const char *s) {
 
 void TEXT_SetTextAlign(TEXT_Handle hObj, int Align) {
 	if (hObj) {
-		TEXT_Obj *pObj;
-
-		pObj = (hObj);
+		TEXT_Obj *pObj = hObj;
 		pObj->Align = Align;
 		WM_Invalidate(hObj);
 
@@ -182,9 +175,7 @@ void TEXT_SetTextAlign(TEXT_Handle hObj, int Align) {
 }
 void TEXT_SetTextColor(TEXT_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
-		TEXT_Obj *pObj;
-
-		pObj = (hObj);
+		TEXT_Obj *pObj = hObj;
 		pObj->TextColor = Color;
 		WM_Invalidate(hObj);
 

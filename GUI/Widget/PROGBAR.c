@@ -164,9 +164,7 @@ PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
 }
 void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
 	if (hObj) {
-		PROGBAR_Obj *pObj;
-
-		pObj = (hObj);
+		PROGBAR_Obj *pObj = hObj;
 		/* Put v into legal range */
 		if (v < pObj->Min) {
 			v = pObj->Min;

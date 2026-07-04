@@ -150,13 +150,8 @@ int GUI_GetBitmapPixel(const GUI_BITMAP *pBMP, unsigned x, unsigned y);
 #endif
 #endif
 
-GUI_EXTERN GUI_CONTEXT        GUI_Context;        /* Thread wide globals */
+GUI_EXTERN GUI_CONTEXT GUI_Context;        /* Thread wide globals */
 GUI_EXTERN GUI_tfTimer *GUI_pfTimerExec;
-
-#if GUI_SUPPORT_CURSOR
-GUI_EXTERN GUI_CURSOR_tfTempHide *GUI_CURSOR_pfTempHide;
-GUI_EXTERN GUI_CURSOR_tfTempUnhide *GUI_CURSOR_pfTempUnhide;
-#endif
 
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */

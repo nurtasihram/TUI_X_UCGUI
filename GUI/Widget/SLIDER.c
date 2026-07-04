@@ -260,9 +260,7 @@ void SLIDER_SetValue(SLIDER_Handle hObj, int v) {
 }
 void SLIDER_SetRange(SLIDER_Handle hObj, int Min, int Max) {
 	if (hObj) {
-		SLIDER_Obj *pObj;
-
-		pObj = (hObj);
+		SLIDER_Obj *pObj = hObj;
 		if (Max < Min) {
 			Max = Min;
 		}
@@ -280,9 +278,7 @@ void SLIDER_SetRange(SLIDER_Handle hObj, int Min, int Max) {
 }
 void SLIDER_SetNumTicks(SLIDER_Handle hObj, int NumTicks) {
 	if (hObj && (NumTicks >= 0)) {
-		SLIDER_Obj *pObj;
-
-		pObj = (hObj);
+		SLIDER_Obj *pObj = hObj;
 		pObj->NumTicks = NumTicks;
 		WM_Invalidate(hObj);
 
@@ -290,9 +286,7 @@ void SLIDER_SetNumTicks(SLIDER_Handle hObj, int NumTicks) {
 }
 void SLIDER_SetBkColor(SLIDER_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
-		SLIDER_Obj *pObj;
-
-		pObj = (hObj);
+		SLIDER_Obj *pObj = hObj;
 		pObj->aBkColor[0] = Color;
 #if SLIDER_SUPPORT_TRANSPARENCY
 		if (Color <= RGB_WHITE) {

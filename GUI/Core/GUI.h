@@ -247,10 +247,12 @@ typedef struct {
 #if GUI_SUPPORT_CURSOR
 void               GUI_CURSOR_Activate(void);
 void               GUI_CURSOR_Deactivate(void);
-void               GUI_CURSOR_Hide(void);
 void               GUI_CURSOR_SetPosition(int x, int y);
-const GUI_CURSOR *GUI_CURSOR_Select(const GUI_CURSOR *pCursor);
+const GUI_CURSOR * GUI_CURSOR_Select(const GUI_CURSOR *pCursor);
 void               GUI_CURSOR_Show(void);
+void               GUI_CURSOR_Hide(void);
+void               GUI_CURSOR__TempShow(void);
+char               GUI_CURSOR__TempHide(const GUI_RECT *pRect);
 #endif
 
 extern const GUI_CURSOR GUI_CursorArrowS, GUI_CursorArrowSI;

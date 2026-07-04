@@ -805,7 +805,7 @@ int  WM__GetNextIVR(void) {
 #if GUI_SUPPORT_CURSOR
 	if (_CursorHidden) {
 		_CursorHidden = 0;
-		(*GUI_CURSOR_pfTempUnhide) ();
+		GUI_CURSOR__TempShow();
 	}
 #endif
 	++_ClipContext.Cnt;
@@ -817,9 +817,7 @@ int  WM__GetNextIVR(void) {
 	WM__ActivateClipRect();
 	/* Hide cursor if necessary */
 #if GUI_SUPPORT_CURSOR
-	if (GUI_CURSOR_pfTempHide) {
-		_CursorHidden = (*GUI_CURSOR_pfTempHide) (&_ClipContext.CurRect);
-	}
+	_CursorHidden = GUI_CURSOR__TempHide(&_ClipContext.CurRect);
 #endif
 	return 1;
 }
