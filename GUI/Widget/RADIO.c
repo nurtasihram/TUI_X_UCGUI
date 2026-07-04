@@ -216,9 +216,7 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParen
 	/* Create the window */
 	hObj = WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent, WinFlags, _RADIO_Callback, sizeof(RADIO_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		RADIO_Obj *pObj;
-
-		pObj = (hObj);
+		RADIO_Obj *pObj = hObj;
 		/* Init sub-classes */
 		GUI_ARRAY_CREATE(&pObj->TextArray);
 		for (i = 0; i < NumItems; i++) {
@@ -245,9 +243,7 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParen
 }
 void RADIO_AddValue(RADIO_Handle hObj, int Add) {
 	if (hObj) {
-		RADIO_Obj *pObj;
-
-		pObj = (hObj);
+		RADIO_Obj *pObj = hObj;
 		RADIO_SetValue(hObj, pObj->Sel + Add);
 
 	}
@@ -260,9 +256,7 @@ void RADIO_Inc(RADIO_Handle hObj) {
 }
 void RADIO_SetValue(RADIO_Handle hObj, int v) {
 	if (hObj) {
-		RADIO_Obj *pObj;
-
-		pObj = (hObj);
+		RADIO_Obj *pObj = hObj;
 		if (pObj->GroupId && RADIO__pfHandleSetValue) {
 			(*RADIO__pfHandleSetValue)(pObj, v);
 		}
@@ -278,9 +272,7 @@ void RADIO_SetValue(RADIO_Handle hObj, int v) {
 int RADIO_GetValue(RADIO_Handle hObj) {
 	int r = 0;
 	if (hObj) {
-		RADIO_Obj *pObj;
-
-		pObj = (hObj);
+		RADIO_Obj *pObj = hObj;
 		r = pObj->Sel;
 
 	}
@@ -317,9 +309,7 @@ void RADIO_SetDefaultTextColor(RGB_COLOR TextColor) {
 
 void RADIO_SetBkColor(RADIO_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
-		RADIO_Obj *pObj;
-
-		pObj = (hObj);
+		RADIO_Obj *pObj = hObj;
 		if (Color != pObj->BkColor) {
 			pObj->BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
@@ -459,9 +449,7 @@ void RADIO_SetGroupId(RADIO_Handle hObj, uint8_t NewGroupId) {
 
 void RADIO_SetImage(RADIO_Handle hObj, const GUI_BITMAP *pBitmap, unsigned int Index) {
 	if (hObj) {
-		RADIO_Obj *pObj;
-
-		pObj = (hObj);
+		RADIO_Obj *pObj = hObj;
 		switch (Index) {
 			case RADIO_BI_INACTIV:
 			case RADIO_BI_ACTIV:
@@ -478,9 +466,7 @@ void RADIO_SetImage(RADIO_Handle hObj, const GUI_BITMAP *pBitmap, unsigned int I
 
 void RADIO_SetText(RADIO_Handle hObj, const char *pText, unsigned Index) {
 	if (hObj) {
-		RADIO_Obj *pObj;
-
-		pObj = (hObj);
+		RADIO_Obj *pObj = hObj;
 		if (Index < (unsigned)pObj->NumItems) {
 			GUI_ARRAY_SetItem(&pObj->TextArray, Index, pText, pText ? (GUI__strlen(pText) + 1) : 0);
 			WM_Invalidate(hObj);
@@ -491,9 +477,7 @@ void RADIO_SetText(RADIO_Handle hObj, const char *pText, unsigned Index) {
 
 void RADIO_SetTextColor(RADIO_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
-		RADIO_Obj *pObj;
-
-		pObj = (hObj);
+		RADIO_Obj *pObj = hObj;
 		if (Color != pObj->TextColor) {
 			pObj->TextColor = Color;
 			if (GUI_ARRAY_GetNumItems(&pObj->TextArray)) {

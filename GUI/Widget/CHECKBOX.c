@@ -256,8 +256,7 @@ int CHECKBOX_IsChecked(CHECKBOX_Handle hObj) {
 
 void CHECKBOX_SetBkColor(CHECKBOX_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
-		CHECKBOX_Obj *pObj;
-		pObj = (hObj);
+		CHECKBOX_Obj *pObj = hObj;
 		if (Color != pObj->Props.BkColor) {
 			pObj->Props.BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
@@ -292,8 +291,7 @@ void CHECKBOX_SetFont(CHECKBOX_Handle hObj, const GUI_FONT  *pFont) {
 
 void CHECKBOX_SetImage(CHECKBOX_Handle hObj, const GUI_BITMAP *pBitmap, unsigned int Index) {
 	if (hObj) {
-		CHECKBOX_Obj *pObj;
-		pObj = (hObj);
+		CHECKBOX_Obj *pObj = hObj;
 		if (Index <= GUI_COUNTOF(pObj->Props.apBm)) {
 			pObj->Props.apBm[Index] = pBitmap;
 		}
@@ -398,8 +396,7 @@ void CHECKBOX_SetTextAlign(CHECKBOX_Handle hObj, int Align) {
 
 void CHECKBOX_SetTextColor(CHECKBOX_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
-		CHECKBOX_Obj *pObj;
-		pObj = (hObj);
+		CHECKBOX_Obj *pObj = hObj;
 		if (pObj->Props.TextColor != Color) {
 			pObj->Props.TextColor = Color;
 			WM_Invalidate(hObj);

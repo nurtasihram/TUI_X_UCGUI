@@ -209,9 +209,7 @@ BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 }
 void BUTTON_SetText(BUTTON_Handle hObj, const char *s) {
 	if (hObj) {
-		BUTTON_Obj *pObj;
-
-		pObj = (hObj);
+		BUTTON_Obj *pObj = hObj;
 		if (GUI__SetText(&pObj->hpText, s)) {
 			BUTTON_Invalidate(hObj);
 		}
@@ -220,9 +218,7 @@ void BUTTON_SetText(BUTTON_Handle hObj, const char *s) {
 }
 void BUTTON_SetFont(BUTTON_Handle hObj, const GUI_FONT  *pfont) {
 	if (hObj) {
-		BUTTON_Obj *pObj;
-
-		pObj = (hObj);
+		BUTTON_Obj *pObj = hObj;
 		pObj->Props.pFont = pfont;
 		BUTTON_Invalidate(hObj);
 
@@ -230,9 +226,7 @@ void BUTTON_SetFont(BUTTON_Handle hObj, const GUI_FONT  *pfont) {
 }
 void BUTTON_SetBkColor(BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color) {
 	if (hObj && (Index <= 2)) {
-		BUTTON_Obj *pObj;
-
-		pObj = (hObj);
+		BUTTON_Obj *pObj = hObj;
 		pObj->Props.aBkColor[Index] = Color;
 		BUTTON_Invalidate(hObj);
 
@@ -240,9 +234,7 @@ void BUTTON_SetBkColor(BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color) 
 }
 void BUTTON_SetTextColor(BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color) {
 	if (hObj && (Index <= 2)) {
-		BUTTON_Obj *pObj;
-
-		pObj = (hObj);
+		BUTTON_Obj *pObj = hObj;
 		pObj->Props.aTextColor[Index] = Color;
 		BUTTON_Invalidate(hObj);
 
@@ -330,9 +322,7 @@ int BUTTON_GetDefaultTextAlign(void) {
 RGB_COLOR BUTTON_GetBkColor(BUTTON_Handle hObj, unsigned int Index) {
 	RGB_COLOR Color = 0;
 	if (hObj && (Index < 2)) {
-		BUTTON_Obj *pObj;
-
-		pObj = (hObj);
+		BUTTON_Obj *pObj = hObj;
 		Color = pObj->Props.aBkColor[Index];
 
 	}
@@ -341,9 +331,7 @@ RGB_COLOR BUTTON_GetBkColor(BUTTON_Handle hObj, unsigned int Index) {
 const GUI_FONT  *BUTTON_GetFont(BUTTON_Handle hObj) {
 	const GUI_FONT  *pFont = 0;
 	if (hObj) {
-		BUTTON_Obj *pObj;
-
-		pObj = (hObj);
+		BUTTON_Obj *pObj = hObj;
 		pFont = pObj->Props.pFont;
 
 	}
@@ -351,8 +339,7 @@ const GUI_FONT  *BUTTON_GetFont(BUTTON_Handle hObj) {
 }
 void BUTTON_GetText(BUTTON_Handle hObj, char *pBuffer, int MaxLen) {
 	if (hObj) {
-		BUTTON_Obj *pObj;
-		pObj = (hObj);
+		BUTTON_Obj *pObj = hObj;
 		if (pObj->hpText) {
 			const char *pText = (const char *)(pObj->hpText);
 			int Len = GUI__strlen(pText);
@@ -369,9 +356,7 @@ void BUTTON_GetText(BUTTON_Handle hObj, char *pBuffer, int MaxLen) {
 unsigned BUTTON_IsPressed(BUTTON_Handle hObj) {
 	unsigned r = 0;
 	if (hObj) {
-		BUTTON_Obj *pObj;
-
-		pObj = (hObj);
+		BUTTON_Obj *pObj = hObj;
 		r = (pObj->Widget.State & BUTTON_STATE_PRESSED) ? 1 : 0;
 
 	}
@@ -387,9 +372,7 @@ void BUTTON_SetSelfDraw(BUTTON_Handle hObj, unsigned int Index, GUI_DRAW_SELF_CB
 
 void BUTTON_SetTextAlign(BUTTON_Handle hObj, int Align) {
 	if (hObj) {
-		BUTTON_Obj *pObj;
-
-		pObj = (hObj);
+		BUTTON_Obj *pObj = hObj;
 		pObj->Props.Align = Align;
 		BUTTON_Invalidate(hObj);
 
@@ -398,8 +381,7 @@ void BUTTON_SetTextAlign(BUTTON_Handle hObj, int Align) {
 
 void BUTTON__SetDrawObj(BUTTON_Handle hObj, int Index, GUI_DRAW_HANDLE hDrawObj) {
 	if (hObj) {
-		BUTTON_Obj *pObj;
-		pObj = (hObj);
+		BUTTON_Obj *pObj = hObj;
 		if ((unsigned int)Index <= GUI_COUNTOF(pObj->ahDrawObj)) {
 			GUI_ALLOC_FreePtr(&pObj->ahDrawObj[Index]);
 			pObj->ahDrawObj[Index] = hDrawObj;

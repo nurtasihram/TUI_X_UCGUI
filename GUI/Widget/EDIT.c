@@ -124,9 +124,7 @@ static void _Delete(EDIT_Obj *pObj) {
 }
 void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
 	if (hObj) {
-		EDIT_Obj *pObj;
-
-		pObj = (hObj);
+		EDIT_Obj *pObj = hObj;
 		if (pObj->hpText) {
 			const GUI_FONT  *pOldFont;
 			int xSize, TextWidth, NumChars;
@@ -407,9 +405,7 @@ EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 }
 void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 	if (hObj) {
-		EDIT_Obj *pObj;
-
-		pObj = (hObj);
+		EDIT_Obj *pObj = hObj;
 		if (pObj) {
 			if (pObj->pfAddKeyEx) {
 				pObj->pfAddKeyEx(hObj, Key);
@@ -525,9 +521,7 @@ void EDIT_SetTextColor(EDIT_Handle hObj, unsigned int Index, RGB_COLOR color) {
 }
 void EDIT_SetText(EDIT_Handle hObj, const char *s) {
 	if (hObj) {
-		EDIT_Obj *pObj;
-
-		pObj = (hObj);
+		EDIT_Obj *pObj = hObj;
 		if (s) {
 			int NumBytesNew, NumBytesOld = 0;
 			int NumCharsNew;
@@ -566,9 +560,7 @@ void EDIT_GetText(EDIT_Handle hObj, char *sDest, int MaxLen) {
 	if (sDest) {
 		*sDest = 0;
 		if (hObj) {
-			EDIT_Obj *pObj;
-
-			pObj = (hObj);
+			EDIT_Obj *pObj = hObj;
 			if (pObj->hpText) {
 				char *pText;
 				int NumChars, NumBytes;
@@ -621,9 +613,7 @@ void EDIT_SetValue(EDIT_Handle hObj, int32_t Value) {
 }
 void EDIT_SetMaxLen(EDIT_Handle  hObj, int MaxLen) {
 	if (hObj) {
-		EDIT_Obj *pObj;
-
-		pObj = (hObj);
+		EDIT_Obj *pObj = hObj;
 		if (MaxLen != pObj->MaxLen) {
 			if (MaxLen < pObj->MaxLen) {
 				if (pObj->hpText) {
@@ -716,9 +706,7 @@ RGB_COLOR EDIT_GetDefaultBkColor(unsigned int Index) {
 int EDIT_GetNumChars(EDIT_Handle hObj) {
 	int NumChars = 0;
 	if (hObj) {
-		EDIT_Obj *pObj;
-
-		pObj = (hObj);
+		EDIT_Obj *pObj = hObj;
 		if (pObj->hpText) {
 			char *pText;
 			pText = (char *)(pObj->hpText);
@@ -731,9 +719,7 @@ int EDIT_GetNumChars(EDIT_Handle hObj) {
 
 void EDIT_SetCursorAtChar(EDIT_Handle hObj, int Pos) {
 	if (hObj) {
-		EDIT_Obj *pObj;
-
-		pObj = (hObj);
+		EDIT_Obj *pObj = hObj;
 		EDIT__SetCursorPos(pObj, Pos);
 		EDIT_Invalidate(hObj);
 
@@ -743,9 +729,7 @@ void EDIT_SetCursorAtChar(EDIT_Handle hObj, int Pos) {
 int EDIT_SetInsertMode(EDIT_Handle hObj, int OnOff) {
 	int PrevMode = 0;
 	if (hObj) {
-		EDIT_Obj *pObj;
-
-		pObj = (hObj);
+		EDIT_Obj *pObj = hObj;
 		PrevMode = pObj->EditMode;
 		pObj->EditMode = OnOff ? GUI_EDIT_MODE_INSERT : GUI_EDIT_MODE_OVERWRITE;
 
@@ -755,9 +739,7 @@ int EDIT_SetInsertMode(EDIT_Handle hObj, int OnOff) {
 
 void EDIT_SetpfAddKeyEx(EDIT_Handle hObj, tEDIT_AddKeyEx *pfAddKeyEx) {
 	if (hObj) {
-		EDIT_Obj *pObj;
-
-		pObj = (hObj);
+		EDIT_Obj *pObj = hObj;
 		pObj->pfAddKeyEx = pfAddKeyEx;
 
 	}
@@ -765,9 +747,7 @@ void EDIT_SetpfAddKeyEx(EDIT_Handle hObj, tEDIT_AddKeyEx *pfAddKeyEx) {
 
 void EDIT_SetpfUpdateBuffer(EDIT_Handle hObj, tEDIT_UpdateBuffer *pfUpdateBuffer) {
 	if (hObj) {
-		EDIT_Obj *pObj;
-
-		pObj = (hObj);
+		EDIT_Obj *pObj = hObj;
 		pObj->pfUpdateBuffer = pfUpdateBuffer;
 
 	}
@@ -775,9 +755,7 @@ void EDIT_SetpfUpdateBuffer(EDIT_Handle hObj, tEDIT_UpdateBuffer *pfUpdateBuffer
 
 void EDIT_SetSel(EDIT_Handle hObj, int FirstChar, int LastChar) {
 	if (hObj) {
-		EDIT_Obj *pObj;
-
-		pObj = (hObj);
+		EDIT_Obj *pObj = hObj;
 		if (FirstChar == -1) {
 			pObj->SelSize = 0;
 		}

@@ -403,7 +403,6 @@ static WM_HWIN _CreateMenu(WM_HWIN hParent) {
 void main(void) {
 	GUI_Init();
 	WM_SetDesktopColor(RGB_GRAY);
-	GUI_CURSOR_Show();
 	for (;;) {
 		_MultiSel = 0;
 		_OwnerDrawn = 1;
@@ -457,7 +456,6 @@ const char *pRows[][5] = {
 
 void main(void) {
 	GUI_Init();
-	GUI_CURSOR_Show();
 	WM_HWIN hListView = LISTVIEW_Create(10, 110, 50, 70, 0, 0, WM_CF_SHOW, 0);
 	LISTVIEW_AddColumn(hListView, 0, "Col 1    ", GUI_TA_LEFT);
 	LISTVIEW_AddColumn(hListView, 0, "Col 2    ", GUI_TA_LEFT);
@@ -469,8 +467,7 @@ void main(void) {
 	LISTVIEW_AddRow(hListView, pRows[4]);*/
 	WM_SetScrollbarH(hListView, 1);
 	WM_SetScrollbarV(hListView, 1);
-	for (;;) {
+	for (;;)
 		GUI_Exec();
-	}
 }
 #endif

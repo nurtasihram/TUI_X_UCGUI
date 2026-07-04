@@ -4,17 +4,14 @@
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
 
-int       WM__InitIVRSearch(const GUI_RECT* pMaxRect);
-int       WM__GetNextIVR   (void);
+BOOL WM__InitIVRSearch(const GUI_RECT* pMaxRect);
+BOOL WM__GetNextIVR(void);
 
 #define WM_ITERATE_START(pRect)   \
-  {                               \
-    if (WM__InitIVRSearch(pRect)) \
-      do {
-
+	if (WM__InitIVRSearch(pRect)) \
+		do {
 #define WM_ITERATE_END()          \
-    } while (WM__GetNextIVR());   \
-  }
+	} while (WM__GetNextIVR());
 
 #define WM_ADDORGX(x)    x += GUI_Context.xOff
 #define WM_ADDORGY(y)    y += GUI_Context.yOff
@@ -24,5 +21,5 @@ int       WM__GetNextIVR   (void);
 #define WM_SUBORG(x0,y0) WM_SUBORGX(x0); WM_SUBORGY(y0)
 
 #if defined(__cplusplus)
-  }
+}
 #endif

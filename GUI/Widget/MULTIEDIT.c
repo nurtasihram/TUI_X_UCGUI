@@ -443,8 +443,7 @@ static void _ManageAutoScrollV(MULTIEDIT_OBJ *pObj) {
 * From the child, as this could lead to a recursion problem
 */
 static void _ManageScrollers(MULTIEDIT_HANDLE hObj) {
-	MULTIEDIT_OBJ *pObj;
-	pObj = (hObj);
+	MULTIEDIT_OBJ *pObj = hObj;
 	/* 1. Step: Check if vertical scrollbar is required */
 	_ManageAutoScrollV(pObj);
 	/* 2. Step: Check if horizontal scrollbar is required */
@@ -488,9 +487,7 @@ static int _InvalidateCursorPos(MULTIEDIT_OBJ *pObj) {
 }
 static void _SetFlag(MULTIEDIT_HANDLE hObj, int OnOff, uint8_t Flag) {
 	if (hObj) {
-		MULTIEDIT_OBJ *pObj;
-
-		pObj = (hObj);
+		MULTIEDIT_OBJ *pObj = hObj;
 		if (OnOff) {
 			pObj->Flags |= Flag;
 		}
@@ -580,9 +577,7 @@ static int _SetWrapMode(MULTIEDIT_HANDLE hObj, GUI_WRAPMODE WrapMode) {
 	int r;
 	r = 0;
 	if (hObj) {
-		MULTIEDIT_OBJ *pObj;
-
-		pObj = (hObj);
+		MULTIEDIT_OBJ *pObj = hObj;
 		r = pObj->WrapMode;
 		if (pObj->WrapMode != WrapMode) {
 			int Position;
@@ -955,8 +950,7 @@ static void _OnTouch(MULTIEDIT_OBJ *pObj, const GUI_PID_STATE *pState) {
 */
 static int _AddKey(MULTIEDIT_HANDLE hObj, uint16_t Key) {
 	int r = 0;               /* Key has not been consumed */
-	MULTIEDIT_OBJ *pObj;
-	pObj = (hObj);
+	MULTIEDIT_OBJ *pObj = hObj;
 	switch (Key) {
 		case GUI_KEY_UP:
 			_MoveCursorUp(pObj);
@@ -1212,9 +1206,7 @@ void MULTIEDIT_SetText(MULTIEDIT_HANDLE hObj, const char *pNew) {
 }
 void MULTIEDIT_GetText(MULTIEDIT_HANDLE hObj, char *sDest, int MaxLen) {
 	if (hObj) {
-		MULTIEDIT_OBJ *pObj;
-
-		pObj = (hObj);
+		MULTIEDIT_OBJ *pObj = hObj;
 		if (pObj) {
 			char *pText;
 			int Len;
@@ -1232,9 +1224,7 @@ void MULTIEDIT_GetText(MULTIEDIT_HANDLE hObj, char *sDest, int MaxLen) {
 }
 void MULTIEDIT_GetPrompt(MULTIEDIT_HANDLE hObj, char *sDest, int MaxLen) {
 	if (hObj) {
-		MULTIEDIT_OBJ *pObj;
-
-		pObj = (hObj);
+		MULTIEDIT_OBJ *pObj = hObj;
 		if (pObj) {
 			char *sSource = (char *)(pObj->hText);
 			int Len = GUI_UC__NumChars2NumBytes(sSource, pObj->NumCharsPrompt);
@@ -1264,9 +1254,7 @@ void MULTIEDIT_SetReadOnly(MULTIEDIT_HANDLE hObj, int OnOff) {
 }
 void MULTIEDIT_SetPasswordMode(MULTIEDIT_HANDLE hObj, int OnOff) {
 	if (hObj) {
-		MULTIEDIT_OBJ *pObj;
-
-		pObj = (hObj);
+		MULTIEDIT_OBJ *pObj = hObj;
 		_SetFlag(hObj, OnOff, MULTIEDIT_SF_PASSWORD);
 		_InvalidateCursorXY(pObj);
 		_InvalidateNumLines(pObj);
@@ -1282,9 +1270,7 @@ void MULTIEDIT_SetAutoScrollH(MULTIEDIT_HANDLE hObj, int OnOff) {
 }
 void MULTIEDIT_SetHBorder(MULTIEDIT_HANDLE hObj, unsigned HBorder) {
 	if (hObj) {
-		MULTIEDIT_OBJ *pObj;
-
-		pObj = (hObj);
+		MULTIEDIT_OBJ *pObj = hObj;
 		if ((unsigned)pObj->HBorder != HBorder) {
 			pObj->HBorder = HBorder;
 			_Invalidate(hObj);
@@ -1294,9 +1280,7 @@ void MULTIEDIT_SetHBorder(MULTIEDIT_HANDLE hObj, unsigned HBorder) {
 }
 void MULTIEDIT_SetFont(MULTIEDIT_HANDLE hObj, const GUI_FONT  *pFont) {
 	if (hObj) {
-		MULTIEDIT_OBJ *pObj;
-
-		pObj = (hObj);
+		MULTIEDIT_OBJ *pObj = hObj;
 		if (pObj->pFont != pFont) {
 			pObj->pFont = pFont;
 			_InvalidateTextArea(hObj);
@@ -1309,9 +1293,7 @@ void MULTIEDIT_SetFont(MULTIEDIT_HANDLE hObj, const GUI_FONT  *pFont) {
 }
 void MULTIEDIT_SetBkColor(MULTIEDIT_HANDLE hObj, unsigned Index, RGB_COLOR color) {
 	if (hObj && (Index < NUM_DISP_MODES)) {
-		MULTIEDIT_OBJ *pObj;
-
-		pObj = (hObj);
+		MULTIEDIT_OBJ *pObj = hObj;
 		pObj->aBkColor[Index] = color;
 		_InvalidateTextArea(hObj);
 
@@ -1319,9 +1301,7 @@ void MULTIEDIT_SetBkColor(MULTIEDIT_HANDLE hObj, unsigned Index, RGB_COLOR color
 }
 void MULTIEDIT_SetCursorOffset(MULTIEDIT_HANDLE hObj, int Offset) {
 	if (hObj) {
-		MULTIEDIT_OBJ *pObj;
-
-		pObj = (hObj);
+		MULTIEDIT_OBJ *pObj = hObj;
 		_SetCursorPos(pObj, Offset);
 		WM_Invalidate(hObj);
 
@@ -1329,9 +1309,7 @@ void MULTIEDIT_SetCursorOffset(MULTIEDIT_HANDLE hObj, int Offset) {
 }
 void MULTIEDIT_SetTextColor(MULTIEDIT_HANDLE hObj, unsigned Index, RGB_COLOR color) {
 	if (hObj && (Index < NUM_DISP_MODES)) {
-		MULTIEDIT_OBJ *pObj;
-
-		pObj = (hObj);
+		MULTIEDIT_OBJ *pObj = hObj;
 		pObj->aColor[Index] = color;
 		WM_Invalidate(hObj);
 
@@ -1397,9 +1375,7 @@ void MULTIEDIT_SetBufferSize(MULTIEDIT_HANDLE hObj, int BufferSize) {
 }
 void MULTIEDIT_SetMaxNumChars(MULTIEDIT_HANDLE hObj, unsigned MaxNumChars) {
 	if (hObj) {
-		MULTIEDIT_OBJ *pObj;
-
-		pObj = (hObj);
+		MULTIEDIT_OBJ *pObj = hObj;
 		pObj->MaxNumChars = MaxNumChars;
 		if (MaxNumChars < (unsigned)pObj->NumCharsPrompt) {
 			pObj->NumCharsPrompt = MaxNumChars;
@@ -1432,9 +1408,7 @@ void MULTIEDIT_SetMaxNumChars(MULTIEDIT_HANDLE hObj, unsigned MaxNumChars) {
 int MULTIEDIT_GetTextSize(MULTIEDIT_HANDLE hObj) {
 	int r = 0;
 	if (hObj) {
-		MULTIEDIT_OBJ *pObj;
-
-		pObj = (hObj);
+		MULTIEDIT_OBJ *pObj = hObj;
 		if (pObj->hText) {
 			const char *s;
 			s = (const char *)pObj->hText;

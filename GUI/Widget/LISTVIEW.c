@@ -463,9 +463,7 @@ LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, &_LISTVIEW_Callback,
 								  sizeof(LISTVIEW_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		/* Init sub-classes */
 		GUI_ARRAY_CREATE(&pObj->RowArray);
 		GUI_ARRAY_CREATE(&pObj->AlignArray);
@@ -599,8 +597,7 @@ RGB_COLOR LISTVIEW_SetDefaultGridColor(RGB_COLOR Color) {
 
 void LISTVIEW_DeleteColumn(LISTVIEW_Handle hObj, unsigned Index) {
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		if (Index < GUI_ARRAY_GetNumItems(&pObj->AlignArray)) {
 			unsigned NumRows, i;
 			GUI_ARRAY *pRow;
@@ -680,9 +677,7 @@ void LISTVIEW_DeleteRow(LISTVIEW_Handle hObj, unsigned Index) {
 RGB_COLOR LISTVIEW_GetBkColor(LISTVIEW_Handle hObj, unsigned Index) {
 	RGB_COLOR Color = GUI_INVALID_COLOR;
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		if (Index <= GUI_COUNTOF(pObj->Props.aBkColor)) {
 			Color = pObj->Props.aBkColor[Index];
 		}
@@ -694,9 +689,7 @@ RGB_COLOR LISTVIEW_GetBkColor(LISTVIEW_Handle hObj, unsigned Index) {
 const GUI_FONT  *LISTVIEW_GetFont(LISTVIEW_Handle hObj) {
 	const GUI_FONT  *pFont = NULL;
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		pFont = pObj->Props.pFont;
 
 	}
@@ -706,9 +699,7 @@ const GUI_FONT  *LISTVIEW_GetFont(LISTVIEW_Handle hObj) {
 HEADER_Handle LISTVIEW_GetHeader(LISTVIEW_Handle hObj) {
 	HEADER_Handle hHeader = 0;
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		hHeader = pObj->hHeader;
 
 	}
@@ -718,9 +709,7 @@ HEADER_Handle LISTVIEW_GetHeader(LISTVIEW_Handle hObj) {
 unsigned LISTVIEW_GetNumColumns(LISTVIEW_Handle hObj) {
 	unsigned NumColumns = 0;
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		NumColumns = GUI_ARRAY_GetNumItems(&pObj->AlignArray);
 
 	}
@@ -730,9 +719,7 @@ unsigned LISTVIEW_GetNumColumns(LISTVIEW_Handle hObj) {
 unsigned LISTVIEW_GetNumRows(LISTVIEW_Handle hObj) {
 	unsigned NumRows = 0;
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		NumRows = GUI_ARRAY_GetNumItems(&pObj->RowArray);
 
 	}
@@ -742,9 +729,7 @@ unsigned LISTVIEW_GetNumRows(LISTVIEW_Handle hObj) {
 int LISTVIEW_GetSel(LISTVIEW_Handle hObj) {
 	int r = -1;
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		r = pObj->Sel;
 
 	}
@@ -754,9 +739,7 @@ int LISTVIEW_GetSel(LISTVIEW_Handle hObj) {
 RGB_COLOR LISTVIEW_GetTextColor(LISTVIEW_Handle hObj, unsigned Index) {
 	RGB_COLOR Color = GUI_INVALID_COLOR;
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		if (Index <= GUI_COUNTOF(pObj->Props.aTextColor)) {
 			Color = pObj->Props.aTextColor[Index];
 		}
@@ -782,9 +765,7 @@ void LISTVIEW_SetBkColor(LISTVIEW_Handle hObj, unsigned int Index, RGB_COLOR Col
 
 void LISTVIEW_SetColumnWidth(LISTVIEW_Handle hObj, unsigned int Index, int Width) {
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		HEADER_SetItemWidth(pObj->hHeader, Index, Width);
 
 	}
@@ -792,9 +773,7 @@ void LISTVIEW_SetColumnWidth(LISTVIEW_Handle hObj, unsigned int Index, int Width
 
 void LISTVIEW_SetFont(LISTVIEW_Handle hObj, const GUI_FONT  *pFont) {
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		if (pFont != pObj->Props.pFont) {
 			pObj->Props.pFont = pFont;
 			LISTVIEW__UpdateScrollParas(pObj);
@@ -807,9 +786,7 @@ void LISTVIEW_SetFont(LISTVIEW_Handle hObj, const GUI_FONT  *pFont) {
 int LISTVIEW_SetGridVis(LISTVIEW_Handle hObj, int Show) {
 	int ShowGrid = 0;
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		ShowGrid = pObj->ShowGrid;
 		if (Show != ShowGrid) {
 			pObj->ShowGrid = Show;
@@ -869,9 +846,7 @@ void LISTVIEW_SetItemText(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, c
 		if ((Column < LISTVIEW_GetNumColumns(hObj)) && (Row < LISTVIEW_GetNumRows(hObj))) {
 			int NumBytes;
 			LISTVIEW_ITEM *pItem;
-			LISTVIEW_Obj *pObj;
-
-			pObj = (hObj);
+			LISTVIEW_Obj *pObj = hObj;
 			NumBytes = GUI__strlen(s) + 1;
 			pItem = (LISTVIEW_ITEM *)GUI_ARRAY_ResizeItem((GUI_ARRAY *)GUI_ARRAY_GetpItem(&pObj->RowArray, Row), Column, sizeof(LISTVIEW_ITEM) + NumBytes);
 			if (NumBytes > 1) {
@@ -885,9 +860,7 @@ void LISTVIEW_SetItemText(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, c
 
 void LISTVIEW_SetLBorder(LISTVIEW_Handle hObj, unsigned BorderSize) {
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		if (pObj->LBorder != BorderSize) {
 			pObj->LBorder = BorderSize;
 			LISTVIEW__InvalidateInsideArea(pObj);
@@ -898,9 +871,7 @@ void LISTVIEW_SetLBorder(LISTVIEW_Handle hObj, unsigned BorderSize) {
 
 void LISTVIEW_SetRBorder(LISTVIEW_Handle hObj, unsigned BorderSize) {
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		if (pObj->RBorder != BorderSize) {
 			pObj->RBorder = BorderSize;
 			LISTVIEW__InvalidateInsideArea(pObj);
@@ -912,9 +883,7 @@ void LISTVIEW_SetRBorder(LISTVIEW_Handle hObj, unsigned BorderSize) {
 unsigned LISTVIEW_SetRowHeight(LISTVIEW_Handle hObj, unsigned RowHeight) {
 	unsigned r = 0;
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		r = pObj->RowDistY;
 		if (RowHeight != r) {
 			pObj->RowDistY = RowHeight;
@@ -958,9 +927,7 @@ void LISTVIEW_SetSel(LISTVIEW_Handle hObj, int NewSel) {
 
 void LISTVIEW_SetTextAlign(LISTVIEW_Handle hObj, unsigned int Index, int Align) {
 	if (hObj) {
-		LISTVIEW_Obj *pObj;
-
-		pObj = (hObj);
+		LISTVIEW_Obj *pObj = hObj;
 		if (Index < GUI_ARRAY_GetNumItems(&pObj->AlignArray)) {
 			int *pAlign;
 			pAlign = (int *)GUI_ARRAY_GetpItem(&pObj->AlignArray, Index);

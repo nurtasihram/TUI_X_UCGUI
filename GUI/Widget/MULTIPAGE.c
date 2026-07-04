@@ -504,8 +504,7 @@ void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_HWIN hWin, const char *pText) {
 }
 void MULTIPAGE_DeletePage(MULTIPAGE_Handle hObj, unsigned Index, int Delete) {
 	if (hObj) {
-		MULTIPAGE_Obj *pObj;
-		pObj = (hObj);
+		MULTIPAGE_Obj *pObj = hObj;
 		if (pObj) {
 			if ((int)Index < pObj->Handles.NumItems) {
 				WM_HWIN hWin;
@@ -540,9 +539,7 @@ void MULTIPAGE_DeletePage(MULTIPAGE_Handle hObj, unsigned Index, int Delete) {
 }
 void MULTIPAGE_SelectPage(MULTIPAGE_Handle hObj, unsigned Index) {
 	if (hObj) {
-		MULTIPAGE_Obj *pObj;
-
-		pObj = (hObj);
+		MULTIPAGE_Obj *pObj = hObj;
 		if (pObj) {
 			if ((int)Index < pObj->Handles.NumItems) {
 				if (Index != pObj->Selection && _GetEnable(pObj, Index)) {
@@ -557,9 +554,7 @@ void MULTIPAGE_SelectPage(MULTIPAGE_Handle hObj, unsigned Index) {
 }
 void MULTIPAGE_DisablePage(MULTIPAGE_Handle hObj, unsigned Index) {
 	if (hObj) {
-		MULTIPAGE_Obj *pObj;
-
-		pObj = (hObj);
+		MULTIPAGE_Obj *pObj = hObj;
 		if (pObj) {
 			_SetEnable(pObj, Index, 0);
 			WM_Invalidate(hObj);
@@ -569,9 +564,7 @@ void MULTIPAGE_DisablePage(MULTIPAGE_Handle hObj, unsigned Index) {
 }
 void MULTIPAGE_EnablePage(MULTIPAGE_Handle hObj, unsigned Index) {
 	if (hObj) {
-		MULTIPAGE_Obj *pObj;
-
-		pObj = (hObj);
+		MULTIPAGE_Obj *pObj = hObj;
 		if (pObj) {
 			_SetEnable(pObj, Index, 1);
 			WM_Invalidate(hObj);
@@ -656,9 +649,7 @@ void MULTIPAGE_SetAlign(MULTIPAGE_Handle hObj, unsigned Align) {
 int MULTIPAGE_GetSelection(MULTIPAGE_Handle hObj) {
 	int r = 0;
 	if (hObj) {
-		MULTIPAGE_Obj *pObj;
-
-		pObj = (hObj);
+		MULTIPAGE_Obj *pObj = hObj;
 		if (pObj) {
 			r = pObj->Selection;
 		}
@@ -669,9 +660,7 @@ int MULTIPAGE_GetSelection(MULTIPAGE_Handle hObj) {
 WM_HWIN MULTIPAGE_GetWindow(MULTIPAGE_Handle hObj, unsigned Index) {
 	WM_HWIN r = 0;
 	if (hObj) {
-		MULTIPAGE_Obj *pObj;
-
-		pObj = (hObj);
+		MULTIPAGE_Obj *pObj = hObj;
 		if (pObj) {
 			if ((int)Index < pObj->Handles.NumItems) {
 				MULTIPAGE_PAGE *pPage;
@@ -686,9 +675,7 @@ WM_HWIN MULTIPAGE_GetWindow(MULTIPAGE_Handle hObj, unsigned Index) {
 int MULTIPAGE_IsPageEnabled(MULTIPAGE_Handle hObj, unsigned Index) {
 	int r = 0;
 	if (hObj) {
-		MULTIPAGE_Obj *pObj;
-
-		pObj = (hObj);
+		MULTIPAGE_Obj *pObj = hObj;
 		if (pObj) {
 			r = _GetEnable(pObj, Index);
 		}

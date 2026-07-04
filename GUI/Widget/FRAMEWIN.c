@@ -41,8 +41,7 @@ FRAMEWIN_PROPS FRAMEWIN__DefaultProps = {
 };
 static int16_t FRAMEWIN__MinVisibility = 5;
 static void _SetActive(FRAMEWIN_Handle hObj, int State) {
-	FRAMEWIN_Obj *pObj;
-	pObj = (hObj);
+	FRAMEWIN_Obj *pObj = hObj;
 	if (State && !(pObj->Flags & FRAMEWIN_CF_ACTIVE)) {
 		pObj->Flags |= FRAMEWIN_CF_ACTIVE;
 		FRAMEWIN_Invalidate(hObj);
@@ -398,9 +397,7 @@ FRAMEWIN_Handle FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 }
 void FRAMEWIN_SetText(FRAMEWIN_Handle hObj, const char *s) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		if (GUI__SetText(&pObj->hText, s)) {
 			FRAMEWIN_Invalidate(hObj);
 		}
@@ -409,9 +406,7 @@ void FRAMEWIN_SetText(FRAMEWIN_Handle hObj, const char *s) {
 }
 void FRAMEWIN_SetTextAlign(FRAMEWIN_Handle hObj, int Align) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		if (pObj->TextAlign != Align) {
 			pObj->TextAlign = Align;
 			FRAMEWIN_Invalidate(hObj);
@@ -421,9 +416,7 @@ void FRAMEWIN_SetTextAlign(FRAMEWIN_Handle hObj, int Align) {
 }
 void FRAMEWIN_SetMoveable(FRAMEWIN_Handle hObj, int State) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		if (State) {
 			pObj->Flags |= FRAMEWIN_CF_MOVEABLE;
 		}
@@ -443,8 +436,7 @@ void FRAMEWIN_SetActive(FRAMEWIN_Handle hObj, int State) {
 
 void FRAMEWIN_AddMenu(FRAMEWIN_Handle hObj, WM_HWIN hMenu) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		if (pObj) {
 			int TitleHeight, BorderSize, IBorderSize = 0;
 			int x0, y0, xSize;
@@ -548,8 +540,7 @@ int FRAMEWIN_GetTitleHeight(FRAMEWIN_Handle hObj) {
 	POSITIONS Pos;
 	/* Move client window accordingly */
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		FRAMEWIN__CalcPositions(pObj, &Pos);
 		r = pObj->Props.TitleHeight;
 		if (r == 0) {
@@ -562,8 +553,7 @@ int FRAMEWIN_GetBorderSize(FRAMEWIN_Handle hObj) {
 	int r = 0;
 	/* Move client window accordingly */
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		r = pObj->Props.BorderSize;
 	}
 	return r;
@@ -572,8 +562,7 @@ int FRAMEWIN_GetBorderSize(FRAMEWIN_Handle hObj) {
 int FRAMEWIN_IsMinimized(FRAMEWIN_Handle hObj) {
 	int r = 0;
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		r = (pObj->Flags & FRAMEWIN_CF_MINIMIZED) ? 1 : 0;
 	}
 	return r;
@@ -581,8 +570,7 @@ int FRAMEWIN_IsMinimized(FRAMEWIN_Handle hObj) {
 int FRAMEWIN_IsMaximized(FRAMEWIN_Handle hObj) {
 	int r = 0;
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		r = (pObj->Flags & FRAMEWIN_CF_MAXIMIZED) ? 1 : 0;
 	}
 	return r;
@@ -658,22 +646,19 @@ static void _MaximizeFramewin(FRAMEWIN_Obj *pObj) {
 }
 void FRAMEWIN_Minimize(FRAMEWIN_Handle hObj) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		_MinimizeFramewin(pObj);
 	}
 }
 void FRAMEWIN_Maximize(FRAMEWIN_Handle hObj) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		_MaximizeFramewin(pObj);
 	}
 }
 void FRAMEWIN_Restore(FRAMEWIN_Handle hObj) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		_RestoreMinimized(pObj);
 		_RestoreMaximized(pObj);
 	}
@@ -710,8 +695,7 @@ void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
 
 void FRAMEWIN_SetBarColor(FRAMEWIN_Handle hObj, unsigned Index, RGB_COLOR Color) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		if (Index < GUI_COUNTOF(pObj->Props.aBarColor)) {
 			pObj->Props.aBarColor[Index] = Color;
 			FRAMEWIN_Invalidate(hObj);
@@ -731,8 +715,7 @@ void FRAMEWIN_SetTextColor(FRAMEWIN_Handle hObj, RGB_COLOR Color) {
 }
 void FRAMEWIN_SetTextColorEx(FRAMEWIN_Handle hObj, unsigned Index, RGB_COLOR Color) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		if (Index < GUI_COUNTOF(pObj->Props.aTextColor)) {
 			pObj->Props.aTextColor[Index] = Color;
 			FRAMEWIN_Invalidate(hObj);
@@ -741,8 +724,7 @@ void FRAMEWIN_SetTextColorEx(FRAMEWIN_Handle hObj, unsigned Index, RGB_COLOR Col
 }
 void FRAMEWIN_SetClientColor(FRAMEWIN_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj;
-		pObj = (hObj);
+		FRAMEWIN_Obj *pObj = hObj;
 		if (pObj->Props.ClientColor != Color) {
 			pObj->Props.ClientColor = Color;
 			FRAMEWIN_Invalidate(pObj->hClient);

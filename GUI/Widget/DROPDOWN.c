@@ -79,8 +79,7 @@ static int _Tolower(int Key) {
 }
 static void _SelectByKey(DROPDOWN_Handle hObj, int Key) {
 	int i;
-	DROPDOWN_Obj *pObj;
-	pObj = (hObj);
+	DROPDOWN_Obj *pObj = hObj;
 	Key = _Tolower(Key);
 	for (i = 0; i < _GetNumItems(pObj); i++) {
 		char c = _Tolower(*_GetpItem(pObj, i));
@@ -213,9 +212,7 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, -1, hParent, WinFlags, _DROPDOWN_Callback,
 								  sizeof(DROPDOWN_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		DROPDOWN_Obj *pObj;
-
-		pObj = (hObj);
+		DROPDOWN_Obj *pObj = hObj;
 		/* Init sub-classes */
 		GUI_ARRAY_CREATE(&pObj->Handles);
 		/* init widget specific variables */
@@ -504,9 +501,7 @@ void DROPDOWN_InsertString(DROPDOWN_Handle hObj, const char *s, unsigned int Ind
 
 void DROPDOWN_SetItemSpacing(DROPDOWN_Handle hObj, unsigned Value) {
 	if (hObj) {
-		DROPDOWN_Obj *pObj;
-
-		pObj = (hObj);
+		DROPDOWN_Obj *pObj = hObj;
 		pObj->ItemSpacing = Value;
 		if (pObj->hListWin) {
 			LISTBOX_SetItemSpacing(pObj->hListWin, Value);
@@ -517,9 +512,7 @@ void DROPDOWN_SetItemSpacing(DROPDOWN_Handle hObj, unsigned Value) {
 unsigned DROPDOWN_GetItemSpacing(DROPDOWN_Handle hObj) {
 	unsigned Value = 0;
 	if (hObj) {
-		DROPDOWN_Obj *pObj;
-
-		pObj = (hObj);
+		DROPDOWN_Obj *pObj = hObj;
 		Value = pObj->ItemSpacing;
 
 	}

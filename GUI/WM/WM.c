@@ -790,38 +790,35 @@ static int _FindNext_IVR(void) {
   Returns: 0 if no valid rectangle is found
 		   1 if rectangle has been found
 */
-int  WM__GetNextIVR(void) {
+BOOL WM__GetNextIVR(void) {
 #if GUI_SUPPORT_CURSOR
 	static char _CursorHidden;
 #endif
 	/* If WM is not active, we have no rectangles to return */
-	if (WM_IsActive == 0) {
-		return 0;
-	}
+	if (!WM_IsActive)
+		return FALSE;
 	if (_ClipContext.EntranceCnt > 1) {
 		_ClipContext.EntranceCnt--;
-		return 0;
+		return FALSE;
 	}
 #if GUI_SUPPORT_CURSOR
 	if (_CursorHidden) {
 		_CursorHidden = 0;
-		(*GUI_CURSOR_pfTempUnhide) ();
+		GUI_CURSOR__TempShow();
 	}
 #endif
 	++_ClipContext.Cnt;
 	/* Find next rectangle and use it as ClipRect */
 	if (!_FindNext_IVR()) {
 		_ClipContext.EntranceCnt--;  /* This search is over ! */
-		return 0;        /* Could not find an other one ! */
+		return FALSE;        /* Could not find an other one ! */
 	}
 	WM__ActivateClipRect();
 	/* Hide cursor if necessary */
 #if GUI_SUPPORT_CURSOR
-	if (GUI_CURSOR_pfTempHide) {
-		_CursorHidden = (*GUI_CURSOR_pfTempHide) (&_ClipContext.CurRect);
-	}
+	_CursorHidden = GUI_CURSOR__TempHide(&_ClipContext.CurRect);
 #endif
-	return 1;
+	return TRUE;
 }
 /*********************************************************************
 *
@@ -833,68 +830,61 @@ int  WM__GetNextIVR(void) {
 	0 : There is no valid rectangle (nothing to do ...)
 	1 : There is a valid rectangle
 */
-int WM__InitIVRSearch(const GUI_RECT *pMaxRect) {
+BOOL WM__InitIVRSearch(const GUI_RECT *pMaxRect) {
 	GUI_RECT r;
 	WM_Obj *pAWin;
 	/* If WM is not active -> nothing to do, leave cliprect alone */
-	if (WM_IsActive == 0) {
+	if (!WM_IsActive) {
 		WM__ActivateClipRect();
-		return 1;
+		return TRUE;
 	}
 	/* If we entered multiple times, leave Cliprect alone */
 	if (++_ClipContext.EntranceCnt > 1)
-		return 1;
+		return TRUE;
 	pAWin = (GUI_Context.hAWin);
 	_ClipContext.Cnt = -1;
 	/* When using callback mechanism, it is legal to reduce drawing
 	   area to the invalid area ! */
-	if (WM__PaintCallbackCnt) {
+	if (WM__PaintCallbackCnt)
 		WM__GetInvalidRectAbs(pAWin, &r);
-	}
-	else {  /* Not using callback mechanism, therefor allow entire rectangle */
-		if (pAWin->Status & WM_SF_ISVIS) {
-			r = pAWin->Rect;
-		}
-		else {
-			--_ClipContext.EntranceCnt;
-			return 0;  /* window is not even visible ! */
-		}
+	else if (pAWin->Status & WM_SF_ISVIS) /* Not using callback mechanism, therefor allow entire rectangle */
+		r = pAWin->Rect;
+	else {
+		--_ClipContext.EntranceCnt;
+		return FALSE;  /* window is not even visible ! */
 	}
 	/* If the drawing routine has specified a rectangle, use it to reduce the rectangle */
-	if (pMaxRect) {
+	if (pMaxRect)
 		GUI__IntersectRect(&r, pMaxRect);
-	}
 	/* If user has reduced the cliprect size, reduce the rectangle */
 	if (GUI_Context.WM__pUserClipRect) {
 		WM_Obj *pWin = pAWin;
 		GUI_RECT rUser = *(GUI_Context.WM__pUserClipRect);
 #if WM_SUPPORT_TRANSPARENCY
-		if (WM__hATransWindow) {
-			pWin = (WM__hATransWindow);
-		}
+		if (WM__hATransWindow)
+			pWin = WM__hATransWindow;
 #endif
 		WM__Client2Screen(pWin, &rUser);
 		GUI__IntersectRect(&r, &rUser);
 	}
 	/* For transparent windows, we need to further reduce the rectangle */
 #if WM_SUPPORT_TRANSPARENCY
-	if (WM__hATransWindow) {
+	if (WM__hATransWindow)
 		if (WM__ClipAtParentBorders(&r, WM__hATransWindow) == 0) {
 			--_ClipContext.EntranceCnt;
-			return 0;           /* Nothing to draw */
+			return FALSE;           /* Nothing to draw */
 		}
-	}
 #endif
 	/* Iterate over all ancestors and clip at their borders. If there is no visible part, we are done */
 	if (WM__ClipAtParentBorders(&r, GUI_Context.hAWin) == 0) {
 		--_ClipContext.EntranceCnt;
-		return 0;           /* Nothing to draw */
+		return FALSE;           /* Nothing to draw */
 	}
 	/* Store the rectangle and find the first rectangle of the area */
 	_ClipContext.ClientRect = r;
 	return WM__GetNextIVR();
 }
-void  WM__ActivateClipRect(void) {
+void WM__ActivateClipRect(void) {
 	if (WM_IsActive)
 		_SetClipRectUserIntersect(&_ClipContext.CurRect);
 	else {    /* Window manager disabled, typically because meory device is active */
@@ -1185,10 +1175,10 @@ static WM_PARAM cbBackWin(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	return 0;
 }
 void WM_Activate(void) {
-	WM_IsActive = 1;       /* Running */
+	WM_IsActive = TRUE;       /* Running */
 }
 void WM_Deactivate(void) {
-	WM_IsActive = 0;       /* No clipping performed by WM */
+	WM_IsActive = FALSE;       /* No clipping performed by WM */
 	LCD_SetClipRectMax();
 }
 
