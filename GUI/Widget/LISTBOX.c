@@ -195,9 +195,8 @@ static void _NotifyOwner(WM_HWIN hObj, int Notification) {
 	WM_MESSAGE Msg = { 0 };
 	LISTBOX_Obj *pObj = (hObj);
 	WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
-	Msg.Data = Notification;
 	Msg.hWinSrc = hObj;
-	WM_SendMessage(hOwner, WM_NOTIFY_PARENT, &Msg);
+	WM_SendMessage(hOwner, WM_NOTIFY_PARENT, Notification, &Msg);
 }
 int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 	switch (pDrawItemInfo->Cmd) {
@@ -522,7 +521,7 @@ static void _OnTouch(LISTBOX_Obj *pObj, const GUI_PID_STATE *pState) {
 		_NotifyOwner(pObj, WM_NOTIFICATION_MOVED_OUT);
 }
 #if GUI_SUPPORT_MOUSE
-static int _OnMouseOver(LISTBOX_Obj *pObj, const GUI_PID_STATE *pState) {
+static void _OnMouseOver(LISTBOX_Obj *pObj, const GUI_PID_STATE *pState) {
 	if (pObj->hOwner) {
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			int Sel  = _GetItemFromPos(pObj, pState->x, pState->y);
@@ -531,7 +530,6 @@ static int _OnMouseOver(LISTBOX_Obj *pObj, const GUI_PID_STATE *pState) {
 					LISTBOX_SetSel(pObj, Sel);
 		}
 	}
-	return 0;                        /* Message handled */
 }
 #endif
 static int _OnKey(LISTBOX_Obj *pObj, const WM_KEY_INFO *pInfo) {
@@ -542,20 +540,20 @@ static int _OnKey(LISTBOX_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0; /* Key has not been consumed */
 }
-static void _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	LISTBOX_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
+	if (!WIDGET_HandleActive(pObj, MsgId, &Data)) {
 		/* Owner needs to be informed about focus change */
 		if (MsgId == WM_SET_FOCUS)
-			if (pMsg->Data == 0) /* Lost focus ? */
+			if (!Data) /* Lost focus ? */
 				_NotifyOwner(pObj, LISTBOX_NOTIFICATION_LOST_FOCUS);
-		return;
+		return Data;
 	}
 	switch (MsgId) {
 		case WM_NOTIFY_PARENT:
-		switch (pMsg->Data) {
-			case WM_NOTIFICATION_VALUE_CHANGED: {
+			switch (Data) {
+				case WM_NOTIFICATION_VALUE_CHANGED: {
 					WM_SCROLL_STATE ScrollState;
 					if (pMsg->hWinSrc == WM_GetScrollbarV(pObj)) {
 						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
@@ -575,12 +573,12 @@ static void _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 					LISTBOX_UpdateScrollers(pObj);
 					break;
 			}
-			break;
+			return 0;
 		case WM_PAINT:
-			_OnPaint(pObj, (const GUI_RECT *)pMsg->Data);
-			break;
+			_OnPaint(pObj, (const GUI_RECT *)Data);
+			return 0;
 		case WM_PID_STATE_CHANGED: {
-			const WM_PID_STATE_CHANGED_INFO *pInfo = (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data;
+			const WM_PID_STATE_CHANGED_INFO *pInfo = (const WM_PID_STATE_CHANGED_INFO *)Data;
 			if (pInfo->State) {
 				int Sel;
 				Sel = _GetItemFromPos(pObj, pInfo->x, pInfo->y);
@@ -589,32 +587,30 @@ static void _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 					LISTBOX_SetSel(pObj, Sel);
 				}
 				_NotifyOwner(pObj, WM_NOTIFICATION_CLICKED);
-				return;
 			}
-			break;
+			return 0;
 		}
 		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
-			return;
+			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
+			return 0;
 #if GUI_SUPPORT_MOUSE
 		case WM_MOUSEOVER:
-			if (_OnMouseOver(pObj, pMsg) == 0)
-				return;
-			break;
+			_OnMouseOver(pObj, (const GUI_PID_STATE *)Data);
+			return 0;
 #endif
 		case WM_DELETE:
 			_FreeAttached(pObj);
-			break;       /* No return here ... WM_DefaultProc needs to be called */
+			return 0;
 		case WM_KEY:
-			if (_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data))
-				return;
+			if (_OnKey(pObj, (const WM_KEY_INFO *)Data))
+				return 0;
 			break;
 		case WM_SIZE:
 			LISTBOX_UpdateScrollers(pObj);
 			WM_Invalidate(pObj);
-			break;
+			return 0;
 	}
-	WM_DefaultProc(hWin, MsgId, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 /*********************************************************************
 *

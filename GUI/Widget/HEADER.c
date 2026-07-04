@@ -181,32 +181,30 @@ static void _OnTouch(HEADER_Obj *pObj, const GUI_PID_STATE *pState) {
 	WM_NotifyParent(pObj, Notification);
 }
 #endif
-static void _HEADER_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM _HEADER_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	HEADER_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
-		return;
-	}
+	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		return Data;
 	switch (MsgId) {
 		case WM_PAINT:
 			_OnPaint(pObj);
-			break;
+			return 0;
 #if (HEADER_SUPPORT_DRAG)
 		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
-			break;
+			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
+			return 0;
 #endif
 #if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
 		case WM_MOUSEOVER:
-			_OnMouseOver(pObj, (const GUI_PID_STATE *)pMsg->Data);
-			break;
+			_OnMouseOver(pObj, (const GUI_PID_STATE *)Data);
+			return 0;
 #endif
 		case WM_DELETE:
 			_FreeAttached(pObj); /* No return here ... WM_DefaultProc needs to be called */
-		default:
-			WM_DefaultProc(hWin, MsgId, pMsg);
+			return 0;
 	}
-
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 HEADER_Handle HEADER_Create(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, int ExFlags) {
 	return HEADER_CreateEx(x0, y0, xsize, ysize, hParent, Flags, ExFlags, Id);

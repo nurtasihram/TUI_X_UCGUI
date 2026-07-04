@@ -122,7 +122,7 @@ static void _ButtonReleased(BUTTON_Obj *pObj, int Notification) {
 }
 static void _OnTouch(BUTTON_Obj *pObj, const GUI_PID_STATE *pState) {
 #if BUTTON_REACT_ON_LEVEL
-	if (!pMsg->Data) /* Mouse moved out */
+	if (!pState) /* Mouse moved out */
 		_ButtonReleased(pObj, WM_NOTIFICATION_MOVED_OUT);
 #else
 	if (pState) {  /* Something happened in our area (pressed or released) */
@@ -160,40 +160,38 @@ static void _OnPidStateChange(BUTTON_Obj *pObj, const WM_PID_STATE_CHANGED_INFO 
 			_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
 }
 #endif
-void BUTTON_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+WM_PARAM BUTTON_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	BUTTON_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
-		return;
-	}
+	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		return Data;
 	switch (MsgId) {
 #if BUTTON_REACT_ON_LEVEL
 		case WM_PID_STATE_CHANGED:
-			_OnPidStateChange(pObj, (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data);
-			return; /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
+			_OnPidStateChange(pObj, (const WM_PID_STATE_CHANGED_INFO *)Data);
+			return 0; /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
 #endif
 		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)pMsgData);
-			return; /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
+			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
+			return 0; /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
 		case WM_PAINT:
 			_OnPaint(pObj);
-			return;
+			return 0;
 		case WM_DELETE:
 			GUI_DEBUG_LOG("BUTTON: _BUTTON_Callback(WM_DELETE)\n");
 			_Delete(pObj);
 			break; /* No return here ... WM_DefaultProc needs to be called */
 		case WM_KEY:
-			if (_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data))
-				return;
+			if (_OnKey(pObj, (const WM_KEY_INFO *)Data))
+				return 0;
 			break;
-		}
-	WM_DefaultProc(hWin, MsgId, pMsg);
+	}
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int WinFlags, int ExFlags, int Id) {
 	BUTTON_Handle hObj;
 	GUI_USE_PARA(ExFlags);
 	/* Create the window */
-
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, BUTTON_Callback,
 								  sizeof(BUTTON_Obj) - sizeof(WM_Obj));
 	if (hObj) {

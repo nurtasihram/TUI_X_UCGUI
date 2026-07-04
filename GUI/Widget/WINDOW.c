@@ -17,55 +17,49 @@ static void _OnChildHasFocus(WINDOW_OBJ *pObj, const WM_NOTIFY_CHILD_HAS_FOCUS_I
 				pObj->hFocussedChild = pInfo->hOld;
 }
 static void _OnKey(WINDOW_OBJ *pObj, const WM_KEY_INFO *pInfo) {
-	int Key = pInfo->Key;
 	if (pInfo->PressedCnt > 0) {
-		switch (Key) {
+		switch (pInfo->Key) {
 			case GUI_KEY_TAB:
 				pObj->hFocussedChild = WM_SetFocusOnNextChild(pObj);
 				break; /* Send to parent by not doing anything */
 		}
 	}
 }
-static void _cb(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM _cb(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	WINDOW_OBJ *pObj = hWin;
 	WM_CALLBACK *cb = pObj->cb;
 	switch (MsgId) {
 		case WM_HANDLE_DIALOG_STATUS:
-			if (pMsg->Data) /* set pointer to Dialog status */
-				pObj->pDialogStatus = (WM_DIALOG_STATUS *)pMsg->Data;
-			else /* return pointer to Dialog status */
-				pMsg->Data = (WM_PARAM)pObj->pDialogStatus;
-			return;
+			if (Data) /* set pointer to Dialog status */
+				pObj->pDialogStatus = (WM_DIALOG_STATUS *)Data;
+			return (WM_PARAM)pObj->pDialogStatus;
 		case WM_SET_FOCUS:
-			if ((int)pMsg->Data) {   /* Focus received */
+			if (Data) {   /* Focus received */
 				if (pObj->hFocussedChild && pObj->hFocussedChild != pObj)
 					WM_SetFocus(pObj->hFocussedChild);
 				else
 					pObj->hFocussedChild = WM_SetFocusOnNextChild(pObj);
-				pMsg->Data = (WM_PARAM)0; /* Focus change accepted */
 			}
-			return;
+			return 0;
 		case WM_GET_ACCEPT_FOCUS:
-			WIDGET_HandleActive(pObj, MsgId, pMsg);
-			return;
+			WIDGET_HandleActive(pObj, MsgId, &Data);
+			return Data;
 		case WM_NOTIFY_CHILD_HAS_FOCUS:
-			_OnChildHasFocus(pObj, (const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *)pMsg->Data);
-			return;
+			_OnChildHasFocus(pObj, (const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *)Data);
+			return 0;
 		case WM_KEY:
-			_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data);
+			_OnKey(pObj, (const WM_KEY_INFO *)Data);
 			break;
 		case WM_PAINT:
 			GUI_SetBkColor(WINDOW__DefaultBkColor);
 			GUI_Clear();
-			break;
+			return 0;
 		case WM_GET_BKCOLOR:
-			pMsg->Data = (WM_PARAM)(uintptr_t)WINDOW__DefaultBkColor;
-			return; /* Message handled */
+			return WINDOW__DefaultBkColor;
 	}
 	if (cb)
-		(*cb)(hWin, MsgId, pMsg);
-	else
-		WM_DefaultProc(hWin, MsgId, pMsg);
+		return cb(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 WM_HWIN WINDOW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	WM_HWIN hObj;

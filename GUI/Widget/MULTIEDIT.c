@@ -1048,12 +1048,11 @@ static int _OnKey(MULTIEDIT_OBJ *pObj, const WM_KEY_INFO *pInfo) {
 		return 1; /* Key release is consumed (not sent to parent) */
 	return 0; /* Key release is not consumed (sent to parent) */
 }
-static void _MULTIEDIT_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM _MULTIEDIT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	MULTIEDIT_OBJ *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
-		return;
-	}
+	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		return Data;
 	switch (MsgId) {
 		case WM_NOTIFY_CLIENTCHANGE:
 			_InvalidateCursorXY(pObj);
@@ -1061,16 +1060,16 @@ static void _MULTIEDIT_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 			_InvalidateTextSizeX(pObj);
 			_ClearCache(pObj);
 			_CalcScrollParas(pObj);
-			break;
+			return 0;
 		case WM_SIZE:
 			_InvalidateCursorXY(pObj);
 			_InvalidateNumLines(pObj);
 			_InvalidateTextSizeX(pObj);
 			_ClearCache(pObj);
 			_Invalidate(pObj);
-			break;
+			return 0;
 		case WM_NOTIFY_PARENT:
-			switch (pMsg->Data) {
+			switch (Data) {
 				case WM_NOTIFICATION_VALUE_CHANGED: {
 					WM_SCROLL_STATE ScrollState;
 					if (pMsg->hWinSrc == WM_GetScrollbarV(pObj)) {
@@ -1091,22 +1090,22 @@ static void _MULTIEDIT_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 					_SetScrollState(pObj);
 					break;
 			}
-			break;
+			return 0;
 		case WM_PAINT:
 			_MULTIEDIT_Paint(pObj);
-			return;
+			return 0;
 		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
-			break;
+			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
+			return 0;
 		case WM_DELETE:
 			GUI_ALLOC_FreePtr(&pObj->hText);
-			break;
+			return 0;
 		case WM_KEY:
-			if (_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data))
-				return;
+			if (_OnKey(pObj, (const WM_KEY_INFO *)Data))
+				return 0;
 			break;
 	}
-	WM_DefaultProc(hWin, MsgId, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

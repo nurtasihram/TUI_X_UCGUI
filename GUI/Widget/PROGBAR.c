@@ -121,12 +121,11 @@ static void _OnPaint(PROGBAR_Obj *pObj) {
 static void _Delete(PROGBAR_Obj *pObj) {
 	_FreeText(pObj);
 }
-static void _PROGBAR_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM _PROGBAR_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	PROGBAR_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
-		return;
-	}
+	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		return Data;
 	switch (MsgId) {
 		case WM_PAINT:
 			_OnPaint(pObj);
@@ -135,7 +134,7 @@ static void _PROGBAR_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 			_Delete(pObj);
 			break;
 	}
-	WM_DefaultProc(hWin, MsgId, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 								int WinFlags, int ExFlags, int Id) {

@@ -239,20 +239,20 @@ static void _OnTouch(SCROLLBAR_Obj *pObj, const GUI_PID_STATE *pState) {
 			_ScrollbarReleased(pObj);
 	}
 }
-static void _OnKey(SCROLLBAR_Obj *pObj, const WM_KEY_INFO *pInfo) {
-	int Key = pInfo->Key;
+static char _OnKey(SCROLLBAR_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	if (pInfo->PressedCnt > 0) {
-		switch (Key) {
+		switch (pInfo->Key) {
 			case GUI_KEY_RIGHT:
 			case GUI_KEY_DOWN:
 				SCROLLBAR_Inc(pObj);
-				break; /* Send to parent by not doing anything */
+				return 1; /* Send to parent by not doing anything */
 			case GUI_KEY_LEFT:
 			case GUI_KEY_UP:
 				SCROLLBAR_Dec(pObj);
-				break; /* Send to parent by not doing anything */
+				return 1; /* Send to parent by not doing anything */
 		}
 	}
+	return 0;
 }
 static void _OnSetScrollState(SCROLLBAR_Obj *pObj, const WM_SCROLL_STATE *pState) {
 	if ((pState->NumItems != pObj->NumItems)
@@ -268,37 +268,37 @@ void SCROLLBAR__InvalidatePartner(SCROLLBAR_Handle hObj) {     /* Invalidate the
 	WM_Invalidate(WM_GetScrollPartner(hObj));
 	WM_SendMessageNoPara(WM_GetParent(hObj), WM_NOTIFY_CLIENTCHANGE);   /* Client area may have changed */
 }
-static void _SCROLLBAR_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM _SCROLLBAR_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	SCROLLBAR_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
-		return;
-	}
+	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		return Data;
 	switch (MsgId) {
-		case WM_DELETE:
-			SCROLLBAR__InvalidatePartner(pObj);
-			break;
 		case WM_PAINT:
 			_OnPaint(pObj);
-			return;
+			return 0;
+		case WM_DELETE:
+			SCROLLBAR__InvalidatePartner(pObj);
+			return 0;
 		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
-			break;
+			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
+			return 0;
 		case WM_KEY:
-			_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data);
+			if (_OnKey(pObj, (const WM_KEY_INFO *)Data))
+				return 0; /* Send to parent by not doing anything */
 			break;
 		case WM_SET_SCROLL_STATE:
-			_OnSetScrollState(pObj, (const WM_SCROLL_STATE *)pMsg->Data);
-			break;
+			_OnSetScrollState(pObj, (const WM_SCROLL_STATE *)Data);
+			return 0;
 		case WM_GET_SCROLL_STATE: {
-			WM_SCROLL_STATE *pState = (WM_SCROLL_STATE *)pMsg->Data;
+			WM_SCROLL_STATE *pState = (WM_SCROLL_STATE *)Data;
 			pState->NumItems = pObj->NumItems;
 			pState->PageSize = pObj->PageSize;
 			pState->v = pObj->v;
 			break;
 		}
 	}
-	WM_DefaultProc(hWin, MsgId, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

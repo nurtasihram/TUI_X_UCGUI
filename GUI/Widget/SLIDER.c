@@ -132,37 +132,37 @@ static void _OnTouch(SLIDER_Obj *pObj, const GUI_PID_STATE *pState) {
 		}
 	}
 }
-static void _OnKey(SLIDER_Obj *pObj, const WM_KEY_INFO *pInfo) {
-	int Key = pInfo->Key;
+static char _OnKey(SLIDER_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	if (pInfo->PressedCnt > 0) {
-		switch (Key) {
+		switch (pInfo->Key) {
 			case GUI_KEY_RIGHT:
 				SLIDER_Inc(pObj);
-				break; /* Send to parent by not doing anything */
+				return 1;
 			case GUI_KEY_LEFT:
 				SLIDER_Dec(pObj);
-				break; /* Send to parent by not doing anything */
+				return 1;
 		}
 	}
+	return 0;
 }
-static void _SLIDER_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM _SLIDER_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	SLIDER_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
-		return;
-	}
+	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		return Data;
 	switch (MsgId) {
 		case WM_PAINT:
 			_OnPaint(pObj);
-			return;
+			return 0;
 		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
-			break;
+			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
+			return 0;
 		case WM_KEY:
-			_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data);
+			if (_OnKey(pObj, (const WM_KEY_INFO *)Data))
+				return 0;
 			break;
 	}
-	WM_DefaultProc(hWin, MsgId, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

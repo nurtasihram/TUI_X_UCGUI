@@ -245,11 +245,11 @@ static void _SetSelFromPos(LISTVIEW_Obj *pObj, const GUI_PID_STATE *pState) {
 *   If no owner is registered, the parent is considered owner.
 */
 static void _NotifyOwner(WM_HWIN hObj, int Notification) {
+	WM_MESSAGE Msg = { 0 };
 	LISTVIEW_Obj *pObj = (hObj);
 	WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
-	WM_MESSAGE Msg = { 0 };
-	Msg.Data = Notification;
-	WM_SendMessage(hOwner, WM_NOTIFY_PARENT, &Msg);
+	Msg.hWinSrc = hObj;
+	WM_SendMessage(hOwner, WM_NOTIFY_PARENT, Notification, &Msg);
 }
 static void _OnTouch(LISTVIEW_Obj *pObj, const GUI_PID_STATE *pState) {
 	int Notification;
@@ -402,19 +402,18 @@ static int _AddKey(LISTVIEW_Handle hObj, int Key) {
 	}
 	return 0;                 /* Key has NOT been consumed */
 }
-static void _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	LISTVIEW_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
-		return;
-	}
+	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		return Data;
 	switch (MsgId) {
 		case WM_NOTIFY_CLIENTCHANGE:
 		case WM_SIZE:
 			LISTVIEW__UpdateScrollParas(pObj);
-			return;
+			return 0;
 		case WM_NOTIFY_PARENT:
-			switch (pMsg->Data) {
+			switch (Data) {
 				case WM_NOTIFICATION_CHILD_DELETED:
 					/* make sure we do not send any messages to the header child once it has been deleted */
 					if (pMsg->hWinSrc == pObj->hHeader)
@@ -441,22 +440,22 @@ static void _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 					LISTVIEW__UpdateScrollParas(pObj);
 					break;
 			}
-			return;
+			return 0;
 		case WM_PAINT:
-			_OnPaint(pObj, (const GUI_RECT *)pMsg->Data);
-			return;
+			_OnPaint(pObj, (const GUI_RECT *)Data);
+			return 0;
 		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
-			return;        /* Important: message handled ! */
+			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
+			return 0;
 		case WM_KEY:
-			if (_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data))
-				return;
+			if (_OnKey(pObj, (const WM_KEY_INFO *)Data))
+				return 0;
 			break; /* No return here ... WM_DefaultProc needs to be called */
 		case WM_DELETE:
 			_FreeAttached(pObj);
-			break; /* No return here ... WM_DefaultProc needs to be called */
+			return 0;
 	}
-	WM_DefaultProc(hWin, MsgId, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

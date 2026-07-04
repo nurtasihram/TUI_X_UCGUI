@@ -398,8 +398,7 @@ static int _ForwardMouseOverMsg(MENU_Obj *pObj, int x, int y) {
 				State.Pressed = 0;
 				State.x = x;
 				State.y = y;
-				Msg.Data = (WM_PARAM)&State;
-				WM__SendMessage(hBelow, WM_MOUSEOVER, &Msg);
+				WM__SendMessage(hBelow, WM_MOUSEOVER, (WM_PARAM)&State, &Msg);
 				return 1;
 			}
 		}
@@ -504,46 +503,47 @@ static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, int MsgId, const GUI_PID_STATE
 				State = *pState;
 				State.x += WM_GetWindowOrgX(pObj) - WM_GetWindowOrgX(hOwner);
 				State.y += WM_GetWindowOrgY(pObj) - WM_GetWindowOrgY(hOwner);
-				Msg.Data = (WM_PARAM)&State;
+				pState = &State;
 			}
-			WM__SendMessage(hOwner, MsgId, &Msg);
+			WM__SendMessage(hOwner, MsgId, (WM_PARAM)pState, &Msg);
 		}
 	}
 }
-static void _OnMenu(MENU_Obj *pObj, WM_MESSAGE *pMsg) {
-	const MENU_MSG_DATA *pData = (const MENU_MSG_DATA *)pMsg->Data;
-	if (pData) {
-		switch (pData->MsgType) {
-			case MENU_ON_ITEMSELECT:
-				_DeactivateMenu(pObj);
-				_DeselectItem(pObj);
-				_ClosePopup(pObj);
-				/* No break here. We need to forward message to owner. */
-			case MENU_ON_INITMENU:
-			case MENU_ON_INITSUBMENU: {
-				/* Forward message to owner. */
-				WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
-				if (hOwner) {
-					pMsg->hWinSrc = pObj;
-					WM__SendMessage(hOwner, WM_MENU, pMsg);
-				}
-				break;
+static WM_PARAM _OnMenu(MENU_Obj *pObj, WM_PARAM Data) {
+	const MENU_MSG_DATA *pData = (const MENU_MSG_DATA *)Data;
+	if (!pData) 
+		return 0;
+	switch (pData->MsgType) {
+		case MENU_ON_ITEMSELECT:
+			_DeactivateMenu(pObj);
+			_DeselectItem(pObj);
+			_ClosePopup(pObj);
+			/* No break here. We need to forward message to owner. */
+		case MENU_ON_INITMENU:
+		case MENU_ON_INITSUBMENU: {
+			/* Forward message to owner. */
+			WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
+			if (hOwner) {
+				WM_MESSAGE Msg;
+				Msg.hWinSrc = pObj;
+				WM__SendMessage(hOwner, WM_MENU, Data, &Msg);
 			}
-			case MENU_ON_OPEN:
-				pObj->Sel = -1;
-				pObj->IsSubmenuActive = 0;
-				pObj->Flags |= MENU_SF_ACTIVE | MENU_SF_OPEN_ON_POINTEROVER;
-				_SetCapture(pObj);
-				MENU__ResizeMenu(pObj);
-				break;
-			case MENU_ON_CLOSE:
-				_CloseSubmenu(pObj);
-				break;
-			case MENU_IS_MENU:
-				pMsg->Data = 1;
-				break;
+			break;
 		}
+		case MENU_ON_OPEN:
+			pObj->Sel = -1;
+			pObj->IsSubmenuActive = 0;
+			pObj->Flags |= MENU_SF_ACTIVE | MENU_SF_OPEN_ON_POINTEROVER;
+			_SetCapture(pObj);
+			MENU__ResizeMenu(pObj);
+			break;
+		case MENU_ON_CLOSE:
+			_CloseSubmenu(pObj);
+			break;
+		case MENU_IS_MENU:
+			return 1;
 	}
+	return 0;
 }
 static char _OnTouch(MENU_Obj *pObj, const GUI_PID_STATE *pState) {
 	if (pState) /* Something happened in our area (pressed or released) */
@@ -656,36 +656,33 @@ static void _OnPaint(MENU_Obj *pObj) {
 		pObj->Widget.pEffect->pfDrawUp();
 	}
 }
-static void _MENU_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM _MENU_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	MENU_Obj *pObj = hWin;
-	if (MsgId != WM_PID_STATE_CHANGED) {
+	if (MsgId != WM_PID_STATE_CHANGED)
 		/* Let widget handle the standard messages */
-		if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
-			return;
-		}
-	}
+		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+			return Data;
 	switch (MsgId) {
 		case WM_MENU:
-			_OnMenu(pObj, pMsg);
-			return;     /* Message handled, do not call WM_DefaultProc() here. */
+			return _OnMenu(pObj, Data);
 		case WM_TOUCH:
-			if (_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data))
-				_ForwardPIDMsgToOwner(pObj, WM_TOUCH, (const GUI_PID_STATE *)pMsg->Data);
+			if (_OnTouch(pObj, (const GUI_PID_STATE *)Data))
+				_ForwardPIDMsgToOwner(pObj, WM_TOUCH, (const GUI_PID_STATE *)Data);
 			break;
 #if (GUI_SUPPORT_MOUSE)
 		case WM_MOUSEOVER:
-			if (_OnMouseOver(pObj, (const GUI_PID_STATE *)pMsg->Data))
-				_ForwardPIDMsgToOwner(pObj, WM_MOUSEOVER, (const GUI_PID_STATE *)pMsg->Data);
+			if (_OnMouseOver(pObj, (const GUI_PID_STATE *)Data))
+				_ForwardPIDMsgToOwner(pObj, WM_MOUSEOVER, (const GUI_PID_STATE *)Data);
 			break;
 #endif
 		case WM_PAINT:
 			_OnPaint(pObj);
-			break;
+			return 0;
 		case WM_DELETE:
 			GUI_ARRAY_Delete(&pObj->ItemArray);
 			break; /* No return here ... WM_DefaultProc needs to be called */
 	}
-	WM_DefaultProc(hWin, MsgId, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParent, int WinFlags, int ExFlags, int Id) {
 	MENU_Handle hObj;
@@ -776,17 +773,15 @@ void MENU__SetItemFlags(MENU_Obj *pObj, unsigned Index, uint16_t Mask, uint16_t 
 	pItem->Flags |= Flags;
 }
 int MENU__SendMenuMessage(MENU_Handle hObj, WM_HWIN hDestWin, uint16_t MsgType, uint16_t ItemId) {
-	MENU_MSG_DATA MsgData;
-	WM_MESSAGE    Msg = { 0 };
-	MsgData.MsgType = MsgType;
-	MsgData.ItemId = ItemId;
-	Msg.Data = (WM_PARAM)&MsgData;
-	Msg.hWinSrc = hObj;
 	if (!hDestWin)
 		hDestWin = WM_GetParent(hObj);
 	if (hDestWin) {
-		WM__SendMessage(hDestWin, WM_MENU, &Msg);
-		return (int)Msg.Data;
+		MENU_MSG_DATA MsgData;
+		WM_MESSAGE    Msg = { 0 };
+		MsgData.MsgType = MsgType;
+		MsgData.ItemId = ItemId;
+		Msg.hWinSrc = hObj;
+		return (int)WM__SendMessage(hDestWin, WM_MENU, (WM_PARAM)&MsgData, &Msg);
 	}
 	return 0;
 }

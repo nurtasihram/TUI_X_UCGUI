@@ -145,44 +145,44 @@ static void _OnTouch(RADIO_Obj *pObj, const GUI_PID_STATE *pState) {
 		GUI_StoreKey(pObj->Widget.Id);
 	}
 }
-static void _OnKey(RADIO_Obj *pObj, const WM_KEY_INFO *pInfo) {
+static char _OnKey(RADIO_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	if (pInfo->PressedCnt > 0) {
 		switch (pInfo->Key) {
 			case GUI_KEY_RIGHT:
 			case GUI_KEY_DOWN:
 				RADIO_Inc(pObj);
-				break; /* Send to parent by not doing anything */
+				return 1;
 			case GUI_KEY_LEFT:
 			case GUI_KEY_UP:
 				RADIO_Dec(pObj);
-				break; /* Send to parent by not doing anything */
+				return 1;
 		}
 	}
+	return 0;
 }
-static void _RADIO_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM _RADIO_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	RADIO_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
-		return;
-	}
+	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		return Data;
 	switch (MsgId) {
 		case WM_PAINT:
 			_OnPaint(pObj);
-			return;
+			return 0;
 		case WM_GET_RADIOGROUP:
-			pMsg->Data = (WM_PARAM)(uintptr_t)pObj->GroupId;
-			return;
+			return pObj->GroupId;
 		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
-			break;
+			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
+			return 0;
 		case WM_KEY:
-			_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data);
+			if (_OnKey(pObj, (const WM_KEY_INFO *)Data))
+				return 0;
 			break;
 		case WM_DELETE:
 			GUI_ARRAY_Delete(&pObj->TextArray);
-			break;
+			return 0;
 	}
-	WM_DefaultProc(hWin, MsgId, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 void RADIO__SetValue(RADIO_Obj *pObj, int v) {
 	if (v >= pObj->NumItems) {
@@ -371,8 +371,7 @@ static void _SetValue(RADIO_Handle hObj, int v) {
 static int _IsInGroup(WM_HWIN hWin, uint8_t GroupId) {
 	if (GroupId) {
 		WM_MESSAGE Msg;
-		WM_SendMessage(hWin, WM_GET_RADIOGROUP, &Msg);
-		return ((int)Msg.Data == GroupId);
+		return WM_SendMessage(hWin, WM_GET_RADIOGROUP, 0, &Msg) == GroupId;
 	}
 	return 0;
 }

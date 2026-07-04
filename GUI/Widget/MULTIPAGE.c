@@ -27,11 +27,11 @@ typedef struct {
 	unsigned        Selection;
 	int             ScrollState;
 	unsigned        Align;
-	const GUI_FONT  *Font;
+	const GUI_FONT *Font;
 	RGB_COLOR       aBkColor[MULTIPAGE_NUMCOLORS];
 	RGB_COLOR       aTextColor[MULTIPAGE_NUMCOLORS];
 } MULTIPAGE_Obj;
-const GUI_FONT  *MULTIPAGE__pDefaultFont = MULTIPAGE_FONT_DEFAULT;
+const GUI_FONT *MULTIPAGE__pDefaultFont = MULTIPAGE_FONT_DEFAULT;
 unsigned                     MULTIPAGE__DefaultAlign = MULTIPAGE_ALIGN_DEFAULT;
 RGB_COLOR                    MULTIPAGE__DefaultBkColor[2] = { MULTIPAGE_BKCOLOR0_DEFAULT, MULTIPAGE_BKCOLOR1_DEFAULT };
 RGB_COLOR                    MULTIPAGE__DefaultTextColor[2] = { MULTIPAGE_TEXTCOLOR0_DEFAULT, MULTIPAGE_TEXTCOLOR1_DEFAULT };
@@ -339,8 +339,7 @@ static void _OnTouch(MULTIPAGE_Obj *pObj, const GUI_PID_STATE *pState) {
 					State.y = y - WM_GetWindowOrgY(hBelow);
 					State.Pressed = pState->Pressed;
 					WM_MESSAGE Msg;
-					Msg.Data = (WM_PARAM)&State;
-					(*((WM_Obj *)hBelow)->cb)(hBelow, WM_TOUCH, &Msg);
+					((WM_Obj *)hBelow)->cb(hBelow, WM_TOUCH, (WM_PARAM)&State, &Msg);
 				}
 			}
 			else
@@ -350,66 +349,66 @@ static void _OnTouch(MULTIPAGE_Obj *pObj, const GUI_PID_STATE *pState) {
 		else
 			Notification = WM_NOTIFICATION_RELEASED;
 	}
-	else 
+	else
 		Notification = WM_NOTIFICATION_MOVED_OUT;
 	WM_NotifyParent(pObj, Notification);
 }
-static void _Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM _Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	MULTIPAGE_Obj *pObj = hWin;
 	int Handled = WIDGET_HandleActive(pObj, MsgId, pMsg);
 	switch (MsgId) {
 		case WM_PAINT:
 			_OnPaint(pObj);
-			break;
+			return 0;
 		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
-			break;
+			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
+			return 0;
 		case WM_NOTIFY_PARENT:
-			if ((int)pMsg->Data == WM_NOTIFICATION_VALUE_CHANGED) {
+			if (Data == WM_NOTIFICATION_VALUE_CHANGED) {
 				if (WM_GetId(pMsg->hWinSrc) == GUI_ID_HSCROLL) {
 					pObj->ScrollState = SCROLLBAR_GetValue(pMsg->hWinSrc);
 					WM_Invalidate(pObj);
 				}
 			}
-			break;
+			return 0;
 		case WM_GET_CLIENT_WINDOW:
-			pMsg->Data = (WM_PARAM)pObj->hClient;
-			break;
+			return (WM_PARAM)pObj->hClient;
 		case WM_GET_INSIDE_RECT:
-			_CalcClientRect(pObj, (GUI_RECT *)(pMsg->Data));
-			break;
+			_CalcClientRect(pObj, (GUI_RECT *)(Data));
+			return 0;
 		case WM_WIDGET_SET_EFFECT:
-			WIDGET_SetEffect(WM_GetScrollbarH(pObj), (WIDGET_EFFECT const *)pMsg->Data);
+			WIDGET_SetEffect(WM_GetScrollbarH(pObj), (WIDGET_EFFECT const *)Data);
 		case WM_SIZE:
 			_UpdatePositions(pObj);
-			break;
+			return 0;
 		case WM_DELETE:
 			GUI_ARRAY_Delete(&pObj->Handles);
 			/* No break here ... WM_DefaultProc needs to be called */
 		default:
-				/* Let widget handle the standard messages */
-				if (Handled)
-					WM_DefaultProc(hWin, MsgId, pMsg);
-			}
+			/* Let widget handle the standard messages */
+			if (Handled)
+				return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	}
+	return 0;
 }
-static void _ClientCallback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM _ClientCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	WM_HWIN hObj = hWin;
 	MULTIPAGE_Obj *pParent = WM_GetParent(hObj);
 	switch (MsgId) {
 		case WM_PAINT:
 			GUI_SetBkColor(pParent->aBkColor[1]);
 			GUI_Clear();
-			break;
+			return 0;
 		case WM_TOUCH:
 			WM_SetFocus(pParent);
 			WM_BringToTop(pParent);
-			break;
+			return 0;
 		case WM_GET_CLIENT_WINDOW:
-			pMsg->Data = (WM_PARAM)hObj;
-			break;
+			return (WM_PARAM)hObj;
 		case WM_GET_INSIDE_RECT:
-			WM_DefaultProc(hWin, MsgId, pMsg);
-		}
+			return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	}
+	return 0;
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */
@@ -624,7 +623,7 @@ void MULTIPAGE_SetTextColor(MULTIPAGE_Handle hObj, RGB_COLOR Color, unsigned Ind
 
 	}
 }
-void MULTIPAGE_SetFont(MULTIPAGE_Handle hObj, const GUI_FONT  *pFont) {
+void MULTIPAGE_SetFont(MULTIPAGE_Handle hObj, const GUI_FONT *pFont) {
 	MULTIPAGE_Obj *pObj;
 	if (hObj && pFont) {
 
@@ -719,7 +718,7 @@ RGB_COLOR MULTIPAGE_GetDefaultBkColor(unsigned Index) {
 	}
 	return Color;
 }
-const GUI_FONT  *MULTIPAGE_GetDefaultFont(void) {
+const GUI_FONT *MULTIPAGE_GetDefaultFont(void) {
 	return MULTIPAGE__pDefaultFont;
 }
 RGB_COLOR MULTIPAGE_GetDefaultTextColor(unsigned Index) {
@@ -737,7 +736,7 @@ void MULTIPAGE_SetDefaultBkColor(RGB_COLOR Color, unsigned Index) {
 		MULTIPAGE__DefaultBkColor[Index] = Color;
 	}
 }
-void MULTIPAGE_SetDefaultFont(const GUI_FONT  *pFont) {
+void MULTIPAGE_SetDefaultFont(const GUI_FONT *pFont) {
 	MULTIPAGE__pDefaultFont = pFont;
 }
 void MULTIPAGE_SetDefaultTextColor(RGB_COLOR Color, unsigned Index) {

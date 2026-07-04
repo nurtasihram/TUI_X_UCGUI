@@ -172,10 +172,9 @@ typedef uintptr_t WM_PARAM;
 
 typedef struct {
 	WM_HWIN hWinSrc;
-	WM_PARAM Data;
 } WM_MESSAGE;
 
-typedef void WM_CALLBACK(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg);
+typedef WM_PARAM WM_CALLBACK(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg);
 
 typedef struct {
 	GUI_RECT Rect;        /* outer dimensions of window */
@@ -304,7 +303,6 @@ void WM_EnableMemdev(WM_HWIN hWin);
 void WM_DisableMemdev(WM_HWIN hWin);
 
 int WM_OnKey(int Key, int Pressed);
-void WM_MakeModal(WM_HWIN hWin);
 
 /******************************************************************
 *
@@ -316,12 +314,14 @@ void WM_MakeModal(WM_HWIN hWin);
 */
 
 void      WM_NotifyParent(WM_HWIN hWin, int Notification);
-void      WM_SendMessage(WM_HWIN hWin, int MsgId, WM_MESSAGE *p);
-void      WM_SendMessageNoPara(WM_HWIN hWin, int MsgId);             /* not to be documented (may change in future versionumented */
-void      WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg);
+WM_PARAM  WM_SendMessage(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg);
+void      WM_SendMessageNoPara(WM_HWIN hWin, int MsgId); /* not to be documented (may change in future versionumented */
+void      WM_SendToParent(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg);
+
+WM_PARAM  WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg);
+
 void      WM_SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE *pState);
 void      WM_SetEnableState(WM_HWIN hItem, int State);
-void      WM_SendToParent(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg);
 int       WM_HasCaptured(WM_HWIN hWin);
 int       WM_HasFocus(WM_HWIN hWin);
 int       WM_SetFocus(WM_HWIN hWin);

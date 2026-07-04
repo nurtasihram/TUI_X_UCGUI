@@ -163,16 +163,15 @@ void DROPDOWN__AdjustHeight(DROPDOWN_Obj *pObj) {
 	Height += pObj->Widget.pEffect->EffectSize + 2 * pObj->Props.TextBorderSize;
 	WM_SetSize(pObj, WM__GetWindowSizeX(&pObj->Widget.Win), Height);
 }
-static void _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	DROPDOWN_Obj *pObj = hWin;
 	char IsExpandedBeforeMsg = pObj->hListWin ? 1 : 0;
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
-		return;
-	}
+	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		return Data;
 	switch (MsgId) {
 		case WM_NOTIFY_PARENT:
-			switch (pMsg->Data) {
+			switch (Data) {
 				case WM_NOTIFICATION_SCROLL_CHANGED:
 					WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					break;
@@ -187,27 +186,27 @@ static void _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 			break;
 		case WM_PID_STATE_CHANGED:
 			if (IsExpandedBeforeMsg == 0) {    /* Make sure we do not react a second time */
-				const WM_PID_STATE_CHANGED_INFO *pInfo = (const WM_PID_STATE_CHANGED_INFO *)pMsg->Data;
+				const WM_PID_STATE_CHANGED_INFO *pInfo = (const WM_PID_STATE_CHANGED_INFO *)Data;
 				if (pInfo->State)
 					DROPDOWN_Expand(pObj);
 			}
 			break;
 		case WM_TOUCH:
-			if (_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data) == 0)
-				return;
+			if (_OnTouch(pObj, (const GUI_PID_STATE *)Data) == 0)
+				return 0;
 			break;
 		case WM_PAINT:
 			_OnPaint(pObj);
-			break;
+			return 0;
 		case WM_DELETE:
 			_FreeAttached(pObj);
-			break;       /* No return here ... WM_DefaultProc needs to be called */
+			break; /* No return here ... WM_DefaultProc needs to be called */
 		case WM_KEY:
-			if (_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data)) 
-				return;
+			if (_OnKey(pObj, (const WM_KEY_INFO *)Data)) 
+				return 0;
 			break;
 	}
-	WM_DefaultProc(hWin, MsgId, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 								  int WinFlags, int ExFlags, int Id) {

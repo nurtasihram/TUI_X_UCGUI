@@ -101,13 +101,12 @@ int     WM__RectIsNZ                (const GUI_RECT* pr);
 void    WM__RemoveWindowFromList    (WM_HWIN hWin);
 void    WM__RemoveFromLinList       (WM_HWIN hWin);
 void    WM__Screen2Client           (const WM_Obj* pWin, GUI_RECT *pRect);
-void    WM__SendMsgNoData           (WM_HWIN hWin, uint8_t MsgId);
-void    WM__SendMessage             (WM_HWIN hWin, int MsgId, WM_MESSAGE* pm);
-void    WM__SendMessageIfEnabled    (WM_HWIN hWin, int MsgId, WM_MESSAGE* pm);
-void    WM__SendPIDMessage          (WM_HWIN hWin, int MsgId, WM_MESSAGE* pMsg);
 void    WM__UpdateChildPositions    (WM_Obj* pObj, int dx0, int dy0, int dx1, int dy1);
+
+void     WM__SendMsgNoData           (WM_HWIN hWin, int MsgId);
+WM_PARAM WM__SendMessage             (WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE* pMsg);
+
 void    WM_PID__GetPrevState        (GUI_PID_STATE* pPrevState);
-void    WM__SendTouchMessage        (WM_HWIN hWin, int MsgId, WM_MESSAGE* pMsg);
 
 uint16_t     WM_GetFlags(WM_HWIN hWin);
 void    WM__PaintWinAndOverlays     (WM_Obj *pWin);
@@ -115,5 +114,5 @@ void    WM__AddCriticalHandle       (WM_CRITICAL_HANDLE* pCH);
 void    WM__RemoveCriticalHandle    (WM_CRITICAL_HANDLE* pCH);
 
 #if defined(__cplusplus)
-  }
+}
 #endif

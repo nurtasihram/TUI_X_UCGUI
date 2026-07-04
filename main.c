@@ -230,8 +230,7 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 }
 
 
-static void _cbCallback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
-	int NCode, Id;
+static WM_PARAM  _cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	WM_HWIN hItem, hListBox = WM_GetDialogItem(hWin, GUI_ID_MULTIEDIT0);
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
@@ -250,9 +249,10 @@ static void _cbCallback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 			LISTBOX_SetOwnerDraw(hListBox, _OwnerDraw);
 			hItem = WM_GetDialogItem(hWin, GUI_ID_CHECK1);
 			CHECKBOX_Check(hItem);
-			break;
-		case WM_KEY:
-			switch (((WM_KEY_INFO *)(pMsg->Data))->Key) {
+			return 0;
+		case WM_KEY: {
+			const WM_KEY_INFO *pInfo = (const WM_KEY_INFO *)Data;
+			switch (pInfo->Key) {
 				case GUI_KEY_ESCAPE:
 					GUI_EndDialog(hWin, 1);
 					break;
@@ -260,15 +260,15 @@ static void _cbCallback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 					GUI_EndDialog(hWin, 0);
 					break;
 			}
-			break;
+			return 0;
+		}
 		case WM_TOUCH_CHILD:
 			//WM_SetFocus(hListBox);
-			break;
-		case WM_NOTIFY_PARENT:
-			Id = WM_GetId(pMsg->hWinSrc);      /* Id of widget */
-			NCode = (int)pMsg->Data;                 /* Notification code */
+			return 0;
+		case WM_NOTIFY_PARENT: {
+			int Id = WM_GetId(pMsg->hWinSrc);      /* Id of widget */
 			hItem = WM_GetDialogItem(hWin, Id);
-			switch (NCode) {
+			switch (Data) {
 				case WM_NOTIFICATION_SEL_CHANGED:
 					LISTBOX_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
 					break;
@@ -299,10 +299,10 @@ static void _cbCallback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 					}
 					break;
 			}
-			break;
-		default:
-			WM_DefaultProc(hWin, MsgId, pMsg);
+			return 0;
+		}
 	}
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 
 #define ID_MENU             (GUI_ID_USER +  0)

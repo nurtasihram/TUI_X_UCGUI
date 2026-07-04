@@ -353,30 +353,28 @@ static int _OnKey(EDIT_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0;
 }
-static void EDIT__Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
+static WM_PARAM EDIT__Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	EDIT_Obj *pObj = hWin;
 	int IsEnabled = WM_IsEnabled(pObj);
 	/* Let widget handle the standard messages */
-	if (WIDGET_HandleActive(pObj, MsgId, pMsg) == 0) {
-		return;
-	}
+	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		return Data;
 	switch (MsgId) {
 		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
-			break;
+			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
+			return 0;
 		case WM_PAINT:
 			_OnPaint(pObj);
-			return;
+			return 0;
 		case WM_DELETE:
-			GUI_DEBUG_LOG("EDIT: _Callback(WM_DELETE)\n");
 			_Delete(pObj);
-			break;       /* No return here ... WM_DefaultProc needs to be called */
+			return 0;
 		case WM_KEY:
-			if (_OnKey(pObj, (const WM_KEY_INFO *)pMsg->Data)) 
-				return;
+			if (_OnKey(pObj, (const WM_KEY_INFO *)Data)) 
+				return 0;
 			break;
 	}
-	WM_DefaultProc(hWin, MsgId, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int WinFlags, int ExFlags,
 						  int Id, int MaxLen) {
