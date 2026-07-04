@@ -268,12 +268,16 @@ static void _OnTouch(LISTVIEW_Obj *pObj, const GUI_PID_STATE *pState) {
 	_NotifyOwner(pObj, Notification);
 }
 static int _OnKey(LISTVIEW_Obj *pObj, const WM_KEY_INFO *pInfo) {
-	if (pInfo->PressedCnt > 0) {
-		int Key = pInfo->Key;
-		if (_AddKey(pObj, Key)) 
-			return 1; /* Key has been consumed */
-	}
-	return 0; /* Key has not been consumed */
+	if (pInfo->PressedCnt > 0)
+		switch (pInfo->Key) {
+			case GUI_KEY_DOWN:
+				LISTVIEW_IncSel(pObj);
+				return 1;
+			case GUI_KEY_UP:
+				LISTVIEW_DecSel(pObj);
+				return 1;
+		}
+	return 0;
 }
 /*********************************************************************
 *
@@ -384,24 +388,6 @@ static void _FreeAttached(LISTVIEW_Obj *pObj) {
 	GUI_ARRAY_Delete(&pObj->AlignArray);
 	GUI_ARRAY_Delete(&pObj->RowArray);
 }
-/*********************************************************************
-*
-*       _AddKey
-*
-* Returns: 1 if Key has been consumed
-*          0 else
-*/
-static int _AddKey(LISTVIEW_Handle hObj, int Key) {
-	switch (Key) {
-		case GUI_KEY_DOWN:
-			LISTVIEW_IncSel(hObj);
-			return 1;               /* Key has been consumed */
-		case GUI_KEY_UP:
-			LISTVIEW_DecSel(hObj);
-			return 1;               /* Key has been consumed */
-	}
-	return 0;                 /* Key has NOT been consumed */
-}
 static WM_PARAM _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	LISTVIEW_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
@@ -450,7 +436,7 @@ static WM_PARAM _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_ME
 		case WM_KEY:
 			if (_OnKey(pObj, (const WM_KEY_INFO *)Data))
 				return 0;
-			break; /* No return here ... WM_DefaultProc needs to be called */
+			break;
 		case WM_DELETE:
 			_FreeAttached(pObj);
 			return 0;

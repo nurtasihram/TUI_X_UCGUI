@@ -355,7 +355,7 @@ static void _OnTouch(MULTIPAGE_Obj *pObj, const GUI_PID_STATE *pState) {
 }
 static WM_PARAM _Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 	MULTIPAGE_Obj *pObj = hWin;
-	int Handled = WIDGET_HandleActive(pObj, MsgId, pMsg);
+	int Handled = WIDGET_HandleActive(pObj, MsgId, &Data);
 	switch (MsgId) {
 		case WM_PAINT:
 			_OnPaint(pObj);

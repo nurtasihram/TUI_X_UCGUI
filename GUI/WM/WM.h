@@ -196,7 +196,6 @@ void WM_Init(void);
 int  WM_Exec(void);    /* Execute all jobs ... Return 0 if nothing was done. */
 int  WM_Exec1(void);    /* Execute one job  ... Return 0 if nothing was done. */
 uint16_t  WM_SetCreateFlags(uint16_t Flags);
-WM_tfPollPID *WM_SetpfPollPID(WM_tfPollPID *pf);
 void WM_SetCapture(WM_HWIN hObj, int AutoRelease);
 void WM_SetCaptureMove(WM_HWIN hWin, const GUI_PID_STATE *pState, int MinVisibility); /* Not yet documented */
 void WM_ReleaseCapture(void);

@@ -52,10 +52,10 @@ static WM_PARAM _TEXT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAG
 	switch (MsgId) {
 		case WM_PAINT:
 			_OnPaint(pObj);
-			return;
+			return 0;
 		case WM_DELETE:
 			_Delete(pObj);
-			break; /* No return here ... WM_DefaultProc needs to be called */
+			return 0;
 	}
 	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }

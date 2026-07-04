@@ -129,10 +129,10 @@ static WM_PARAM _PROGBAR_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MES
 	switch (MsgId) {
 		case WM_PAINT:
 			_OnPaint(pObj);
-			return;
+			return 0;
 		case WM_DELETE:
 			_Delete(pObj);
-			break;
+			return 0;
 	}
 	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }

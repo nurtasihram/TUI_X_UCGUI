@@ -178,7 +178,7 @@ void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
 	pWidget->State = State;
 	pWidget->Id = Id;
 }
-int WIDGET_HandleActive(WM_HWIN hObj, int MsgId, WM_PARAM *Data, WM_MESSAGE *pMsg) {
+int WIDGET_HandleActive(WM_HWIN hObj, int MsgId, WM_PARAM *Data) {
 	int Diff, Notification;
 	WIDGET *pWidget = (hObj);
 	switch (MsgId) {
@@ -214,7 +214,7 @@ int WIDGET_HandleActive(WM_HWIN hObj, int MsgId, WM_PARAM *Data, WM_MESSAGE *pMs
 		}
 		case WM_SET_ID:
 			pWidget->Id = (int16_t)*Data;
-			return 0;                        /* Message handled -> Return */
+			return 0; /* Message handled -> Return */
 		case WM_SET_FOCUS:
 			if (*Data) {
 				WIDGET_SetState(hObj, pWidget->State | WIDGET_STATE_FOCUS);

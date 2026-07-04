@@ -13,19 +13,11 @@ WM_CRITICAL_HANDLE *WM__pFirstCriticalHandle;
 WM_HWIN   WM__ahDesktopWin;   /* Desktop window handle */
 RGB_COLOR WM__aBkColor;       /* Desktop background color */
 
-typedef struct {
-	GUI_RECT ClientRect;
-	GUI_RECT CurRect;
-	int Cnt;
-	int EntranceCnt;
-} WM_IVR_CONTEXT;
-
 uint8_t                WM_IsActive;
 uint16_t               WM__CreateFlags;
 WM_HWIN                WM__hCapture;
 WM_HWIN                WM__hWinFocus;
 char                   WM__CaptureReleaseAuto;
-WM_tfPollPID *WM_pfPollPID;
 uint8_t                WM__PaintCallbackCnt;      /* Public for assertions only */
 GUI_PID_STATE          WM_PID__StateLast;
 #if WM_SUPPORT_TRANSPARENCY
@@ -34,7 +26,6 @@ WM_HWIN                WM__hATransWindow;
 #endif
 void (*WM__pfShowInvalid)(WM_HWIN hWin);
 static WM_HWIN        NextDrawWin;
-static WM_IVR_CONTEXT _ClipContext;
 static char           _IsInited;
 /*********************************************************************
 *
@@ -198,25 +189,7 @@ int WM__ClipAtParentBorders(GUI_RECT *pRect, WM_HWIN hWin) {
 	if (_DesktopHandle2Index(hWin) < 0) {
 		return 0;           /* No desktop - (unattached) - Nothing to draw */
 	}
-	return 1;               /* Something may be visible */
-}
-void  WM__ActivateClipRect(void) {
-	if (WM_IsActive) {
-		_SetClipRectUserIntersect(&_ClipContext.CurRect);
-	}
-	else {    /* Window manager disabled, typically because meory device is active */
-		GUI_RECT r;
-		WM_Obj *pAWin;
-		pAWin = (GUI_Context.hAWin);
-		r = pAWin->Rect;
-#if WM_SUPPORT_TRANSPARENCY
-		if (WM__hATransWindow) {
-			WM__ClipAtParentBorders(&r, WM__hATransWindow);
-		}
-#endif
-		/* Take UserClipRect into account */
-		_SetClipRectUserIntersect(&r);
-	}
+	return 1; /* Something may be visible */
 }
 /*********************************************************************
 *
@@ -725,6 +698,15 @@ WM_HWIN WM_SelectWindow(WM_HWIN  hWin) {
 WM_HWIN WM_GetActiveWindow(void) {
 	return GUI_Context.hAWin;
 }
+
+#pragma region IVR
+struct {
+	GUI_RECT ClientRect;
+	GUI_RECT CurRect;
+	int Cnt;
+	int EntranceCnt;
+} static _ClipContext;
+
 /*********************************************************************
 *
 *       IVR calculation
@@ -988,6 +970,24 @@ int WM__InitIVRSearch(const GUI_RECT *pMaxRect) {
 	_ClipContext.ClientRect = r;
 	return WM__GetNextIVR();
 }
+void  WM__ActivateClipRect(void) {
+	if (WM_IsActive)
+		_SetClipRectUserIntersect(&_ClipContext.CurRect);
+	else {    /* Window manager disabled, typically because meory device is active */
+		GUI_RECT r;
+		WM_Obj *pAWin;
+		pAWin = (GUI_Context.hAWin);
+		r = pAWin->Rect;
+#if WM_SUPPORT_TRANSPARENCY
+		if (WM__hATransWindow)
+			WM__ClipAtParentBorders(&r, WM__hATransWindow);
+#endif
+		/* Take UserClipRect into account */
+		_SetClipRectUserIntersect(&r);
+	}
+}
+#pragma endregion
+
 void WM_SetDefault(void) {
 	GUI_SetDefault();
 	GUI_Context.WM__pUserClipRect = NULL;   /* No add. clipping */
@@ -1222,27 +1222,20 @@ static void _DrawNext(void) {
 }
 int WM_Exec1(void) {
 	/* Poll PID if necessary */
-	if (WM_pfPollPID) {
-		WM_pfPollPID();
-	}
-	if (WM_pfHandlePID) {
-		if (WM_pfHandlePID())
-			return 1;               /* We have done something ... */
-	}
-	if (GUI_PollKeyMsg()) {
-		return 1;               /* We have done something ... */
-	}
+	if (WM_HandlePID())
+		return 1; /* We have done something ... */
+	if (GUI_PollKeyMsg())
+		return 1; /* We have done something ... */
 	if (WM_IsActive && WM__NumInvalidWindows) {
 		_DrawNext();
-		return 1;               /* We have done something ... */
+		return 1; /* We have done something ... */
 	}
-	return 0;                  /* There was nothing to do ... */
+	return 0; /* There was nothing to do ... */
 }
 int WM_Exec(void) {
 	int r = 0;
-	while (WM_Exec1()) {
-		r = 1;                  /* We have done something */
-	}
+	while (WM_Exec1())
+		r = 1; /* We have done something */
 	return r;
 }
 /*********************************************************************
@@ -2297,19 +2290,24 @@ static WM_HWIN _Screen2hWin(WM_HWIN hWin, WM_HWIN hStop, int x, int y) {
 	WM_HWIN hChild;
 	WM_HWIN hHit;
 	/* First check if the  coordinates are in the given window. If not, return 0 */
-	if (WM__IsInWindow(pWin, x, y) == 0) {
+	if (!WM__IsInWindow(pWin, x, y))
 		return 0;
-	}
 	/* If the coordinates are in a child, search deeper ... */
 	for (hChild = pWin->hFirstChild; hChild && (hChild != hStop); ) {
 		WM_Obj *pChild = WM_HANDLE2PTR(hChild);
-		if ((hHit = _Screen2hWin(hChild, hStop, x, y)) != 0) {
+		if ((hHit = _Screen2hWin(hChild, hStop, x, y)) != 0)
 			hWin = hHit;        /* Found a window */
-		}
 		hChild = pChild->hNext;
 	}
-	return hWin;            /* No Child affected ... The parent is the right one */
+	return hWin; /* No Child affected ... The parent is the right one */
 }
+WM_HWIN WM_Screen2hWin(int x, int y) {
+	return _Screen2hWin(WM__FirstWin, 0, x, y);
+}
+WM_HWIN WM_Screen2hWinEx(WM_HWIN hStop, int x, int y) {
+	return _Screen2hWin(WM__FirstWin, hStop, x, y);
+}
+
 int WM__IsInWindow(WM_Obj *pWin, int x, int y) {
 	if ((pWin->Status & WM_SF_ISVIS)
 		&& (x >= pWin->Rect.x0)
@@ -2319,16 +2317,6 @@ int WM__IsInWindow(WM_Obj *pWin, int x, int y) {
 		return 1;
 	}
 	return 0;
-}
-WM_HWIN WM_Screen2hWin(int x, int y) {
-	WM_HWIN r;
-	r = _Screen2hWin(WM__FirstWin, 0, x, y);
-	return r;
-}
-WM_HWIN WM_Screen2hWinEx(WM_HWIN hStop, int x, int y) {
-	WM_HWIN r;
-	r = _Screen2hWin(WM__FirstWin, hStop, x, y);
-	return r;
 }
 void WM_SetAnchor(WM_HWIN hWin, uint16_t AnchorFlags) {
 	if (hWin) {
@@ -2563,11 +2551,6 @@ void WM_SetId(WM_HWIN hObj, int Id) {
 	WM_MESSAGE Msg;
 	WM_SendMessage(hObj, WM_SET_ID, (WM_PARAM)Id, &Msg);
 }
-WM_tfPollPID *WM_SetpfPollPID(WM_tfPollPID *pf) {
-	WM_tfPollPID *r = WM_pfPollPID;
-	WM_pfPollPID = pf;
-	return r;
-}
 /*********************************************************************
 *
 *       _SetScrollbar
@@ -2647,8 +2630,6 @@ int WM_GetHasTrans(WM_HWIN hWin) {
 	}
 	return r;
 }
-#endif /*WM_SUPPORT_TRANSPARENCY*/
-#if WM_SUPPORT_TRANSPARENCY
 void WM_SetTransState(WM_HWIN hWin, unsigned State) {
 	WM_Obj *pWin;
 	if (hWin) {
@@ -2673,10 +2654,8 @@ void WM_SetTransState(WM_HWIN hWin, unsigned State) {
 		}
 	}
 }
-#else
-void WM_SetTransState_c(void);
-void WM_SetTransState_c(void) {} /* avoid empty object files */
 #endif /* WM_SUPPORT_TRANSPARENCY */
+
 const GUI_RECT *WM_SetUserClipRect(const GUI_RECT *pRect) {
 	const GUI_RECT *pRectReturn;
 	pRectReturn = GUI_Context.WM__pUserClipRect;

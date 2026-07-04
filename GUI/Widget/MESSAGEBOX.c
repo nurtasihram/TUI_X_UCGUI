@@ -28,7 +28,7 @@ static WM_PARAM _MESSAGEBOX_cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data, W
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
 			FRAMEWIN_SetClientColor(hWin, MESSAGEBOX_BKCOLOR);
-			break;
+			return 0;
 		case WM_KEY:
 			_OnKey(hWin, (const WM_KEY_INFO *)Data);
 			return 0;
@@ -40,11 +40,10 @@ static WM_PARAM _MESSAGEBOX_cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data, W
 						GUI_EndDialog(hWin, 0); /* End dialog with return value 0 if OK */
 					break;
 			}
-			break;
+			return 0;
 		}
-		default:
-			return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 	}
+	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
 }
 WM_HWIN MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags) {
 	GUI_WIDGET_CREATE_INFO _aDialogCreate[3];                                     /* 0: FrameWin, 1: Text, 2: Button */

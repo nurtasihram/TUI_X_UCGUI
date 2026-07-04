@@ -197,7 +197,7 @@ void LCD_L0_DrawBitmap(int x0, int y0,
 			break;
 		case 16:
 			for (; y0 < y1; y0++, pData += BytesPerLine)
-				DrawBitLine16BPP(x0, y0, pData, xsize, pTrans);
+				DrawBitLine16BPP(x0, y0, (const uint16_t *)pData, xsize, pTrans);
 			break;
 	}
 }

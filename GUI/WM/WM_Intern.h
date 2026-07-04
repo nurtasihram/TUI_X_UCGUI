@@ -61,7 +61,6 @@ extern uint16_t               WM__CreateFlags;
 extern WM_HWIN                WM__hCapture;
 extern WM_HWIN                WM__hWinFocus;
 extern char                   WM__CaptureReleaseAuto;
-extern WM_tfPollPID*          WM_pfPollPID;
 extern uint8_t                WM__PaintCallbackCnt;      /* Public for assertions only */
 extern GUI_PID_STATE          WM_PID__StateLast;
 
