@@ -353,7 +353,7 @@ static int _OnKey(EDIT_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0;
 }
-static WM_PARAM EDIT__Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM EDIT__Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	EDIT_Obj *pObj = hWin;
 	int IsEnabled = WM_IsEnabled(pObj);
 	/* Let widget handle the standard messages */
@@ -374,7 +374,7 @@ static WM_PARAM EDIT__Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAG
 				return 0;
 			break;
 	}
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int WinFlags, int ExFlags,
 						  int Id, int MaxLen) {

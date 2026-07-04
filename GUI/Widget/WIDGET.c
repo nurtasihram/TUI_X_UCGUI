@@ -313,8 +313,7 @@ const WIDGET_EFFECT *WIDGET_GetDefaultEffect(void) {
 }
 
 void WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT *pEffect) {
-	WM_MESSAGE Msg = { 0 };
-	WM_SendMessage(hObj, WM_WIDGET_SET_EFFECT, (WM_PARAM)pEffect, &Msg);
+	WM_SendMessage(hObj, WM_WIDGET_SET_EFFECT, (WM_PARAM)pEffect);
 }
 
 /*********************************************************************

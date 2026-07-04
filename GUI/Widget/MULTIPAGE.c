@@ -338,8 +338,7 @@ static void _OnTouch(MULTIPAGE_Obj *pObj, const GUI_PID_STATE *pState) {
 					State.x = x - WM_GetWindowOrgX(hBelow);
 					State.y = y - WM_GetWindowOrgY(hBelow);
 					State.Pressed = pState->Pressed;
-					WM_MESSAGE Msg;
-					((WM_Obj *)hBelow)->cb(hBelow, WM_TOUCH, (WM_PARAM)&State, &Msg);
+					((WM_Obj *)hBelow)->cb(hBelow, WM_TOUCH, (WM_PARAM)&State);
 				}
 			}
 			else
@@ -353,7 +352,7 @@ static void _OnTouch(MULTIPAGE_Obj *pObj, const GUI_PID_STATE *pState) {
 		Notification = WM_NOTIFICATION_MOVED_OUT;
 	WM_NotifyParent(pObj, Notification);
 }
-static WM_PARAM _Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	MULTIPAGE_Obj *pObj = hWin;
 	int Handled = WIDGET_HandleActive(pObj, MsgId, &Data);
 	switch (MsgId) {
@@ -363,14 +362,17 @@ static WM_PARAM _Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pM
 		case WM_TOUCH:
 			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
 			return 0;
-		case WM_NOTIFY_PARENT:
-			if (Data == WM_NOTIFICATION_VALUE_CHANGED) {
-				if (WM_GetId(pMsg->hWinSrc) == GUI_ID_HSCROLL) {
-					pObj->ScrollState = SCROLLBAR_GetValue(pMsg->hWinSrc);
+		case WM_NOTIFY_PARENT: {
+			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
+			WM_HWIN hWinSrc = pInfo->hWinSrc;
+			if (pInfo->Notification == WM_NOTIFICATION_VALUE_CHANGED) {
+				if (WM_GetId(hWinSrc) == GUI_ID_HSCROLL) {
+					pObj->ScrollState = SCROLLBAR_GetValue(hWinSrc);
 					WM_Invalidate(pObj);
 				}
 			}
 			return 0;
+		}
 		case WM_GET_CLIENT_WINDOW:
 			return (WM_PARAM)pObj->hClient;
 		case WM_GET_INSIDE_RECT:
@@ -387,11 +389,11 @@ static WM_PARAM _Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pM
 		default:
 			/* Let widget handle the standard messages */
 			if (Handled)
-				return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+				return WM_DefaultProc(hWin, MsgId, Data);
 	}
 	return 0;
 }
-static WM_PARAM _ClientCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _ClientCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	WM_HWIN hObj = hWin;
 	MULTIPAGE_Obj *pParent = WM_GetParent(hObj);
 	switch (MsgId) {
@@ -406,7 +408,7 @@ static WM_PARAM _ClientCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSA
 		case WM_GET_CLIENT_WINDOW:
 			return (WM_PARAM)hObj;
 		case WM_GET_INSIDE_RECT:
-			return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+			return WM_DefaultProc(hWin, MsgId, Data);
 	}
 	return 0;
 }

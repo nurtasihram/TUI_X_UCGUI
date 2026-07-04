@@ -1048,7 +1048,7 @@ static int _OnKey(MULTIEDIT_OBJ *pObj, const WM_KEY_INFO *pInfo) {
 		return 1; /* Key release is consumed (not sent to parent) */
 	return 0; /* Key release is not consumed (sent to parent) */
 }
-static WM_PARAM _MULTIEDIT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _MULTIEDIT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	MULTIEDIT_OBJ *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -1068,18 +1068,20 @@ static WM_PARAM _MULTIEDIT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_M
 			_ClearCache(pObj);
 			_Invalidate(pObj);
 			return 0;
-		case WM_NOTIFY_PARENT:
-			switch (Data) {
+		case WM_NOTIFY_PARENT: {
+			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
+			WM_HWIN hWinSrc = pInfo->hWinSrc;
+			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED: {
 					WM_SCROLL_STATE ScrollState;
-					if (pMsg->hWinSrc == WM_GetScrollbarV(pObj)) {
-						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
+					if (hWinSrc == WM_GetScrollbarV(pObj)) {
+						WM_GetScrollState(hWinSrc, &ScrollState);
 						pObj->ScrollStateV.v = ScrollState.v;
 						WM_Invalidate(pObj);
 						WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
-					else if (pMsg->hWinSrc == WM_GetScrollbarH(pObj)) {
-						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
+					else if (hWinSrc == WM_GetScrollbarH(pObj)) {
+						WM_GetScrollState(hWinSrc, &ScrollState);
 						pObj->ScrollStateH.v = ScrollState.v;
 						WM_Invalidate(pObj);
 						WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
@@ -1091,6 +1093,7 @@ static WM_PARAM _MULTIEDIT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_M
 					break;
 			}
 			return 0;
+		}
 		case WM_PAINT:
 			_MULTIEDIT_Paint(pObj);
 			return 0;
@@ -1105,7 +1108,7 @@ static WM_PARAM _MULTIEDIT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_M
 				return 0;
 			break;
 	}
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

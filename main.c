@@ -230,7 +230,7 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 }
 
 
-static WM_PARAM  _cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	WM_HWIN hItem, hListBox = WM_GetDialogItem(hWin, GUI_ID_MULTIEDIT0);
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
@@ -266,13 +266,14 @@ static WM_PARAM  _cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE 
 			//WM_SetFocus(hListBox);
 			return 0;
 		case WM_NOTIFY_PARENT: {
-			int Id = WM_GetId(pMsg->hWinSrc);      /* Id of widget */
+			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
+			int Id = WM_GetId(pInfo->hWinSrc); /* Id of widget */
 			hItem = WM_GetDialogItem(hWin, Id);
-			switch (Data) {
+			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SEL_CHANGED:
 					LISTBOX_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
 					break;
-				case WM_NOTIFICATION_RELEASED:      /* React only if released */
+				case WM_NOTIFICATION_RELEASED: /* React only if released */
 					switch (Id) {
 						case GUI_ID_OK:
 							GUI_EndDialog(hWin, 0);
@@ -288,12 +289,10 @@ static WM_PARAM  _cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE 
 							break;
 						case GUI_ID_CHECK1:
 							_OwnerDrawn ^= 1;
-							if (_OwnerDrawn) {
+							if (_OwnerDrawn)
 								LISTBOX_SetOwnerDraw(hListBox, _OwnerDraw);
-							}
-							else {
+							else
 								LISTBOX_SetOwnerDraw(hListBox, NULL);
-							}
 							LISTBOX_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
 							break;
 					}
@@ -302,7 +301,7 @@ static WM_PARAM  _cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE 
 			return 0;
 		}
 	}
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 
 #define ID_MENU             (GUI_ID_USER +  0)

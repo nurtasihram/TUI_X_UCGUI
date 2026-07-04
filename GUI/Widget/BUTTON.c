@@ -160,7 +160,7 @@ static void _OnPidStateChange(BUTTON_Obj *pObj, const WM_PID_STATE_CHANGED_INFO 
 			_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
 }
 #endif
-WM_PARAM BUTTON_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+WM_PARAM BUTTON_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	BUTTON_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -186,7 +186,7 @@ WM_PARAM BUTTON_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMs
 				return 0;
 			break;
 	}
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int WinFlags, int ExFlags, int Id) {
 	BUTTON_Handle hObj;

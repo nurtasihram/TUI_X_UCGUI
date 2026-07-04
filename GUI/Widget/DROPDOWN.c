@@ -133,13 +133,11 @@ static void _OnPaint(DROPDOWN_Handle hObj) {
 	_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.y1 - r.y0 - 8) / 2);
 	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &r);
 }
-static int _OnTouch(DROPDOWN_Obj *pObj, const GUI_PID_STATE *pState) {
-	if (pState) {  /* Something happened in our area (pressed or released) */
+static void _OnTouch(DROPDOWN_Obj *pObj, const GUI_PID_STATE *pState) {
+	if (pState) /* Something happened in our area (pressed or released) */
 		WM_NotifyParent(pObj, pState->Pressed ? WM_NOTIFICATION_CLICKED : WM_NOTIFICATION_RELEASED);
-	}
 	else /* Mouse moved out */
 		WM_NotifyParent(pObj, WM_NOTIFICATION_MOVED_OUT);
-	return 0; /* Message handled */
 }
 static int _OnKey(DROPDOWN_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	if (pInfo->PressedCnt > 0) {
@@ -163,15 +161,16 @@ void DROPDOWN__AdjustHeight(DROPDOWN_Obj *pObj) {
 	Height += pObj->Widget.pEffect->EffectSize + 2 * pObj->Props.TextBorderSize;
 	WM_SetSize(pObj, WM__GetWindowSizeX(&pObj->Widget.Win), Height);
 }
-static WM_PARAM _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	DROPDOWN_Obj *pObj = hWin;
 	char IsExpandedBeforeMsg = pObj->hListWin ? 1 : 0;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 		return Data;
 	switch (MsgId) {
-		case WM_NOTIFY_PARENT:
-			switch (Data) {
+		case WM_NOTIFY_PARENT: {
+			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
+			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SCROLL_CHANGED:
 					WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					break;
@@ -183,30 +182,30 @@ static WM_PARAM _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_ME
 					DROPDOWN_Collapse(pObj);
 					break;
 			}
-			break;
+			return 0;
+		}
 		case WM_PID_STATE_CHANGED:
 			if (IsExpandedBeforeMsg == 0) {    /* Make sure we do not react a second time */
 				const WM_PID_STATE_CHANGED_INFO *pInfo = (const WM_PID_STATE_CHANGED_INFO *)Data;
 				if (pInfo->State)
 					DROPDOWN_Expand(pObj);
 			}
-			break;
+			return 0;
 		case WM_TOUCH:
-			if (_OnTouch(pObj, (const GUI_PID_STATE *)Data) == 0)
-				return 0;
-			break;
+			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
+			return 0;
 		case WM_PAINT:
 			_OnPaint(pObj);
 			return 0;
 		case WM_DELETE:
 			_FreeAttached(pObj);
-			break; /* No return here ... WM_DefaultProc needs to be called */
+			return 0;
 		case WM_KEY:
 			if (_OnKey(pObj, (const WM_KEY_INFO *)Data)) 
 				return 0;
 			break;
 	}
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 								  int WinFlags, int ExFlags, int Id) {

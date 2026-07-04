@@ -181,7 +181,7 @@ static void _OnTouch(HEADER_Obj *pObj, const GUI_PID_STATE *pState) {
 	WM_NotifyParent(pObj, Notification);
 }
 #endif
-static WM_PARAM _HEADER_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _HEADER_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	HEADER_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -204,7 +204,7 @@ static WM_PARAM _HEADER_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESS
 			_FreeAttached(pObj); /* No return here ... WM_DefaultProc needs to be called */
 			return 0;
 	}
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 HEADER_Handle HEADER_Create(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, int ExFlags) {
 	return HEADER_CreateEx(x0, y0, xsize, ysize, hParent, Flags, ExFlags, Id);

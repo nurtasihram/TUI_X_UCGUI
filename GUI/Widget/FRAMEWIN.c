@@ -152,7 +152,7 @@ static void _OnChildHasFocus(FRAMEWIN_Obj *pObj, const WM_NOTIFY_CHILD_HAS_FOCUS
 	}
 }
 static int _HandleResizeable(WM_HWIN hWin, int MsgId, WM_PARAM Data);
-static WM_PARAM _FRAMEWIN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _FRAMEWIN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	FRAMEWIN_Obj *pObj = hWin;
 	if (pObj->Flags & FRAMEWIN_CF_RESIZEABLE) 
 		if (_HandleResizeable(hWin, MsgId, Data))
@@ -180,13 +180,30 @@ static WM_PARAM _FRAMEWIN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_ME
 		}
 		case WM_GET_CLIENT_WINDOW: /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
 			return (WM_PARAM)pObj->hClient;
-		case WM_NOTIFY_PARENT:
-			if (Data == WM_NOTIFICATION_RELEASED) {
-				WM_MESSAGE Msg;
-				Msg.hWinSrc = pObj;
-				WM_SendMessage(pMsg->hWinSrc, WM_NOTIFY_PARENT_REFLECTION, Data, &Msg);
+		case WM_NOTIFY_PARENT: {
+			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
+			if (pInfo->Notification == WM_NOTIFICATION_RELEASED) {
+				int Id = WM_GetId(pInfo->hWinSrc);
+				switch (Id) {
+					case GUI_ID_CLOSE:
+						WM_DeleteWindow(pObj);
+						break;
+					case GUI_ID_MAXIMIZE:
+						if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED)
+							FRAMEWIN_Restore(pObj);
+						else
+							FRAMEWIN_Maximize(pObj);
+						break;
+					case GUI_ID_MINIMIZE:
+						if (pObj->Flags & FRAMEWIN_CF_MINIMIZED)
+							FRAMEWIN_Restore(pObj);
+						else
+							FRAMEWIN_Minimize(pObj);
+						break;
+				}
 			}
 			return 0;
+		}
 		case WM_SET_FOCUS: /* We have received or lost focus */
 			if (Data) {
 				if (WM_IsWindow(pObj->hFocussedChild))
@@ -221,9 +238,9 @@ static WM_PARAM _FRAMEWIN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_ME
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 		return Data;
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
-static WM_PARAM FRAMEWIN__cbClient(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM FRAMEWIN__cbClient(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	FRAMEWIN_Obj *pParent = WM_GetParent(hWin);
 	WM_CALLBACK *cb = pParent->cb;
 	switch (MsgId) {
@@ -235,11 +252,8 @@ static WM_PARAM FRAMEWIN__cbClient(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_ME
 			/* Give the user callback  a chance to draw.
 			 * Note that we can not run into the bottom part, as this passes the parents handle
 			  */
-			 if (cb) {
-				 WM_MESSAGE Msg;
-				 Msg = *pMsg;
-				 (*cb)(hWin, MsgId, Data, &Msg);
-			}
+			 if (cb)
+				 cb(hWin, MsgId, Data);
 			return 0;
 		case WM_SET_FOCUS:
 			if (Data) { /* Focus received */
@@ -258,12 +272,12 @@ static WM_PARAM FRAMEWIN__cbClient(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_ME
 		case WM_GET_INSIDE_RECT:        /* This should not be passed to parent ... (We do not want parents coordinates)*/
 		case WM_GET_ID:                 /* This should not be passed to parent ... (Possible recursion problem)*/
 		case WM_GET_CLIENT_WINDOW:      /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
-			return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+			return WM_DefaultProc(hWin, MsgId, Data);
 	}
 	/* Call user callback. Note that the user callback gets the handle of the Framewindow itself, NOT the Client. */
 	if (cb)
-		return (*cb)(pParent, MsgId, Data, pMsg);
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+		return cb(pParent, MsgId, Data);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 int FRAMEWIN__CalcTitleHeight(FRAMEWIN_Obj *pObj) {
 	int r = 0;
@@ -1060,8 +1074,7 @@ static int _ForwardMouseOverMsg(FRAMEWIN_Handle hWin, const GUI_PID_STATE *pStat
 	if (hBelow && (hBelow != hWin)) {
 		StateBelow.x -= WM_GetWindowOrgX(hBelow);
 		StateBelow.y -= WM_GetWindowOrgY(hBelow);
-		WM_MESSAGE Msg;
-		WM__SendMessage(hBelow, WM_MOUSEOVER, (WM_PARAM)&StateBelow, &Msg);
+		WM__SendMessage(hBelow, WM_MOUSEOVER, (WM_PARAM)&StateBelow);
 		return 1;
 	}
 	return 0;
@@ -1264,26 +1277,6 @@ WM_HWIN FRAMEWIN_AddButton(FRAMEWIN_Handle hObj, int Flags, int Off, int Id) {
 	return r;
 }
 
-/*********************************************************************
-*
-*       Callback
-*
-* This is the overwritten callback routine for the button.
-* The primary reason for overwriting it is that we define the default
-* action of the Framewindow here.
-* It works as follows:
-* - User clicks and releases the button
-*   -> BUTTON sends WM_NOTIFY_PARENT to FRAMEWIN
-*     -> FRAMEWIN either a) reacts or b)sends WM_NOTIFY_PARENT_REFLECTION back
-*       In case of a) This module reacts !
-*/
-static WM_PARAM _cbClose(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
-	if (MsgId == WM_NOTIFY_PARENT_REFLECTION) {
-		WM_DeleteWindow(pMsg->hWinSrc);
-		return 0; /* We are done ! */
-	}
-	return BUTTON_Callback(hWin, MsgId, Data, pMsg);
-}
 static void _DrawClose(void) {
 	GUI_RECT r;
 	int i, Size;
@@ -1301,34 +1294,9 @@ static void _DrawClose(void) {
 WM_HWIN FRAMEWIN_AddCloseButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
 	WM_HWIN hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_CLOSE);
 	BUTTON_SetSelfDraw(hButton, 0, &_DrawClose);
-	WM_SetCallback(hButton, _cbClose);
 	return hButton;
 }
-/*********************************************************************
-*
-*       Callback
-*
-* This is the overwritten callback routine for the button.
-* The primary reason for overwriting it is that we define the default
-* action of the Framewindow here.
-* It works as follows:
-* - User clicks and releases the button
-*   -> BUTTON sends WM_NOTIFY_PARENT to FRAMEWIN
-*     -> FRAMEWIN either a) reacts or b)sends WM_NOTIFY_PARENT_REFLECTION back
-*       In case of a) This module reacts !
-*/
-static WM_PARAM _cbMax(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
-	if (MsgId == WM_NOTIFY_PARENT_REFLECTION) {
-		WM_HWIN hWin = pMsg->hWinSrc;
-		FRAMEWIN_Obj *pObj = (hWin);
-		if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED)
-			FRAMEWIN_Restore(hWin);
-		else
-			FRAMEWIN_Maximize(hWin);
-		return 0; /* We are done ! */
-	}
-	return BUTTON_Callback(hWin, MsgId, Data, pMsg);
-}
+
 static void _PaintMax(void) {
 	GUI_RECT r;
 	WM_GetInsideRect(&r);
@@ -1376,35 +1344,9 @@ static void _DrawMax(void) {
 WM_HWIN FRAMEWIN_AddMaxButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
 	WM_HWIN hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_MAXIMIZE);
 	BUTTON_SetSelfDraw(hButton, 0, &_DrawMax);
-	WM_SetCallback(hButton, _cbMax);
 	return hButton;
 }
 
-/*********************************************************************
-*
-*       Callback
-*
-* This is the overwritten callback routine for the button.
-* The primary reason for overwriting it is that we define the default
-* action of the Framewindow here.
-* It works as follows:
-* - User clicks and releases the button
-*   -> BUTTON sends WM_NOTIFY_PARENT to FRAMEWIN
-*     -> FRAMEWIN either a) reacts or b)sends WM_NOTIFY_PARENT_REFLECTION back
-*       In case of a) This module reacts !
-*/
-static WM_PARAM _cbMin(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
-	if (MsgId == WM_NOTIFY_PARENT_REFLECTION) {
-		WM_HWIN hWin = pMsg->hWinSrc;
-		FRAMEWIN_Obj *pObj = (hWin);
-		if (pObj->Flags & FRAMEWIN_CF_MINIMIZED)
-			FRAMEWIN_Restore(hWin);
-		else
-			FRAMEWIN_Minimize(hWin);
-		return 0; /* We are done ! */
-	}
-	return BUTTON_Callback(hWin, MsgId, Data, pMsg);
-}
 static void _PaintMin(void) {
 	GUI_RECT r;
 	int i, Size;
@@ -1443,6 +1385,5 @@ static void _DrawMin(void) {
 WM_HWIN FRAMEWIN_AddMinButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
 	WM_HWIN hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_MINIMIZE);
 	BUTTON_SetSelfDraw(hButton, 0, &_DrawMin);
-	WM_SetCallback(hButton, _cbMin);
 	return hButton;
 }

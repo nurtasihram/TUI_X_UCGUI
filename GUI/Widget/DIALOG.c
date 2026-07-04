@@ -16,12 +16,10 @@ RGB_COLOR DIALOG_SetBkColor(RGB_COLOR BkColor) {
 	return r;
 }
 void GUI_SetDialogStatusPtr(WM_HWIN hDialog, WM_DIALOG_STATUS *pDialogStatus) {
-	WM_MESSAGE Msg = { 0 };
-	WM_SendMessage(hDialog, WM_HANDLE_DIALOG_STATUS, (WM_PARAM)pDialogStatus, &Msg);
+	WM_SendMessage(hDialog, WM_HANDLE_DIALOG_STATUS, (WM_PARAM)pDialogStatus);
 }
 WM_DIALOG_STATUS *GUI_GetDialogStatusPtr(WM_HWIN hDialog) {
-	WM_MESSAGE Msg = { 0 };
-	return (WM_DIALOG_STATUS *)WM_SendMessage(hDialog, WM_HANDLE_DIALOG_STATUS, 0, &Msg);
+	return (WM_DIALOG_STATUS *)WM_SendMessage(hDialog, WM_HANDLE_DIALOG_STATUS, 0);
 }
 WM_HWIN GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidgets, WM_CALLBACK *cb, WM_HWIN hParent,
 							int x0, int y0) {

@@ -44,7 +44,7 @@ static void _Delete(TEXT_Obj *pObj) {
 	/* Delete attached objects (if any) */
 	_FreeAttached(pObj);
 }
-static WM_PARAM _TEXT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _TEXT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	TEXT_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -57,7 +57,7 @@ static WM_PARAM _TEXT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAG
 			_Delete(pObj);
 			return 0;
 	}
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

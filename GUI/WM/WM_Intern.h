@@ -37,8 +37,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 
 #define WM_SF_CONST_OUTLINE     WM_CF_CONST_OUTLINE       /* Constant outline.*/
 
-#define WM_HANDLE2PTR(hWin) ((WM_Obj*)(hWin))    /* older form ... to be eliminated */
-
 #if GUI_DEBUG_LEVEL  >= GUI_DEBUG_LEVEL_LOG_WARNINGS
 #define WM_ASSERT_NOT_IN_PAINT() { if (WM__PaintCallbackCnt) \
                                        GUI_DEBUG_ERROROUT("Function may not be called from within a paint event"); \
@@ -101,7 +99,7 @@ void    WM__Screen2Client           (const WM_Obj* pWin, GUI_RECT *pRect);
 void    WM__UpdateChildPositions    (WM_Obj* pObj, int dx0, int dy0, int dx1, int dy1);
 
 void     WM__SendMsgNoData           (WM_HWIN hWin, int MsgId);
-WM_PARAM WM__SendMessage             (WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE* pMsg);
+WM_PARAM WM__SendMessage             (WM_HWIN hWin, int MsgId, WM_PARAM Data);
 
 void    WM_PID__GetPrevState        (GUI_PID_STATE* pPrevState);
 

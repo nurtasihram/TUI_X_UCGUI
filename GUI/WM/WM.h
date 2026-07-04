@@ -72,10 +72,6 @@ The following is the list of windows messages.
 
 #define WM_NOTIFY_CLIENTCHANGE      37      /* Client area may have changed */
 #define WM_NOTIFY_PARENT            38      /* Notify parent. Information is detailed as notification code */
-#define WM_NOTIFY_PARENT_REFLECTION 39      /* Notify parent reflection.
-											Sometimes send back as a result of the WM_NOTIFY_PARENT message
-											to let child react on behalf of its parent.
-											Information is detailed as notification code */
 #define WM_NOTIFY_ENABLE            40      /* Enable or disable widget */
 #define WM_NOTIFY_VIS_CHANGED       41      /* Visibility of a window has or may have changed */
 
@@ -143,6 +139,12 @@ The following is the list of windows messages.
 #define WM_CF_RESERVED3        (1<<14)
 #define WM_CF_RESERVED4        (1<<15)
 
+
+#define WM_HWIN GUI_HWIN
+#define WM_HMEM GUI_HMEM
+
+typedef uintptr_t WM_PARAM;
+
 typedef struct {
 	int16_t Key, PressedCnt;
 } WM_KEY_INFO;
@@ -162,19 +164,15 @@ typedef struct {
 	uint8_t StatePrev;
 } WM_PID_STATE_CHANGED_INFO;
 
-#define WM_HWIN GUI_HWIN
-#define WM_HMEM GUI_HMEM
+typedef struct {
+	int Notification;
+	WM_HWIN hWinSrc;
+} WM_NOTIFY_INFO;
 
 #define WM_HBKWIN      WM_GetDesktopWindow()                /* Handle of background window */
 #define WM_UNATTACHED  ((WM_HMEM)-1)                        /* Do not attach to a window */
 
-typedef uintptr_t WM_PARAM;
-
-typedef struct {
-	WM_HWIN hWinSrc;
-} WM_MESSAGE;
-
-typedef WM_PARAM WM_CALLBACK(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg);
+typedef WM_PARAM WM_CALLBACK(WM_HWIN hWin, int MsgId, WM_PARAM Data);
 
 typedef struct {
 	GUI_RECT Rect;        /* outer dimensions of window */
@@ -313,11 +311,10 @@ int WM_OnKey(int Key, int Pressed);
 */
 
 void      WM_NotifyParent(WM_HWIN hWin, int Notification);
-WM_PARAM  WM_SendMessage(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg);
+WM_PARAM  WM_SendMessage(WM_HWIN hWin, int MsgId, WM_PARAM Data);
 void      WM_SendMessageNoPara(WM_HWIN hWin, int MsgId); /* not to be documented (may change in future versionumented */
-void      WM_SendToParent(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg);
 
-WM_PARAM  WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg);
+WM_PARAM  WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_PARAM Data);
 
 void      WM_SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE *pState);
 void      WM_SetEnableState(WM_HWIN hItem, int State);

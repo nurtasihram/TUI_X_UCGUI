@@ -9,7 +9,7 @@ void WM_EnableMemdev (WM_HWIN hWin) {
     if (hWin) {
       WM_Obj * pWin;
 
-      pWin = WM_HANDLE2PTR(hWin);
+      pWin = (hWin);
       pWin->Status |= (WM_SF_MEMDEV);
 
     }
@@ -24,7 +24,7 @@ void WM_DisableMemdev(WM_HWIN hWin) {
     if (hWin) {
       WM_Obj * pWin;
 
-      pWin = WM_HANDLE2PTR(hWin);
+      pWin = (hWin);
       pWin->Status &= ~(WM_SF_MEMDEV | WM_SF_MEMDEV_ON_REDRAW);
 
     }

@@ -423,18 +423,6 @@ static void _Findx1(WM_HWIN hWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 		}
 	}
 }
-WM_PARAM WM_SendMessage(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
-	if (hWin) {
-		WM_Obj *pWin = hWin;
-		if (pWin->cb)
-			return pWin->cb(hWin, MsgId, Data, pMsg);
-	}
-	return 0;
-}
-void WM__SendMsgNoData(WM_HWIN hWin, int MsgId) {
-	WM_MESSAGE Msg = { 0 };
-	WM_SendMessage(hWin, MsgId, 0, &Msg);
-}
 /*********************************************************************
 *
 *       WM_GetClientRectEx
@@ -932,16 +920,15 @@ static void _Paint1(WM_Obj *pWin) {
 	int Status = pWin->Status;
 	/* Send WM_PAINT if window is visible and a callback is defined */
 	if ((pWin->cb != NULL) && (Status & WM_SF_ISVIS)) {
-		WM_MESSAGE Msg;
 		WM__PaintCallbackCnt++;
 		if (Status & WM_SF_LATE_CLIP) {
 			WM_SetDefault();
-			WM_SendMessage(pWin, WM_PAINT, (WM_PARAM)&pWin->InvalidRect, &Msg);
+			WM_SendMessage(pWin, WM_PAINT, (WM_PARAM)&pWin->InvalidRect);
 		}
 		else {
 			WM_ITERATE_START(&pWin->InvalidRect) {
 				WM_SetDefault();
-				WM_SendMessage(pWin, WM_PAINT, (WM_PARAM)&pWin->InvalidRect, &Msg);
+				WM_SendMessage(pWin, WM_PAINT, (WM_PARAM)&pWin->InvalidRect);
 			} WM_ITERATE_END();
 		}
 		WM__PaintCallbackCnt--;
@@ -1178,7 +1165,7 @@ int WM_Exec(void) {
 *   Callback for background window
 *
 */
-static WM_PARAM cbBackWin(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM cbBackWin(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_KEY: {
 			const WM_KEY_INFO *pKeyInfo = (const WM_KEY_INFO *)Data;
@@ -1193,7 +1180,7 @@ static WM_PARAM cbBackWin(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pM
 			}
 			return 0;
 		default:
-			return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+			return WM_DefaultProc(hWin, MsgId, Data);
 	}
 	return 0;
 }
@@ -1205,19 +1192,38 @@ void WM_Deactivate(void) {
 	LCD_SetClipRectMax();
 }
 
-void WM_SendToParent(WM_HWIN hChild, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
-	if (pMsg) {
-		WM_HWIN hParent = WM_GetParent(hChild);
-		if (hParent) {
-			pMsg->hWinSrc = hChild;
-			WM_SendMessage(hParent, MsgId, Data, pMsg);
-		}
+void WM_NotifyParent(WM_HWIN hWin, int Notification) {
+	WM_HWIN hParent = WM_GetParent(hWin);
+	if (hParent) {
+		WM_NOTIFY_INFO NotifyInfo;
+		NotifyInfo.Notification = Notification;
+		NotifyInfo.hWinSrc = hWin;
+		WM_SendMessage(hParent, WM_NOTIFY_PARENT, (WM_PARAM)&NotifyInfo);
 	}
 }
-void WM_NotifyParent(WM_HWIN hWin, int Notification) {
-	WM_MESSAGE Msg = { 0 };
-	WM_SendToParent(hWin, WM_NOTIFY_PARENT, Notification, &Msg);
+WM_PARAM WM_SendMessage(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+	if (hWin) {
+		WM_Obj *pWin = hWin;
+		if (pWin->cb)
+			return pWin->cb(hWin, MsgId, Data);
+	}
+	return 0;
 }
+WM_PARAM WM__SendMessage(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+	WM_Obj *pWin = hWin;
+	if (pWin->cb)
+		return pWin->cb(hWin, MsgId, Data);
+	return WM_DefaultProc(hWin, MsgId, Data);
+}
+void WM_SendMessageNoPara(WM_HWIN hWin, int MsgId) {
+	WM_Obj *pWin = (hWin);
+	if (pWin->cb)
+		pWin->cb(hWin, MsgId, 0);
+}
+void WM__SendMsgNoData(WM_HWIN hWin, int MsgId) {
+	WM_SendMessage(hWin, MsgId, 0);
+}
+
 
 /*********************************************************************
 *
@@ -1229,7 +1235,7 @@ void WM_NotifyParent(WM_HWIN hWin, int Notification) {
 *   its callback function for messages it does not handle itself.
 *
 */
-WM_PARAM WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+WM_PARAM WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	WM_Obj *pWin = hWin;
 	/* Exec message */
 	switch (MsgId) {
@@ -1238,8 +1244,8 @@ WM_PARAM WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg
 			return 0;
 		case WM_GET_CLIENT_WINDOW: /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
 			return (WM_PARAM)hWin;
-		case WM_KEY:
-			WM_SendToParent(hWin, WM_KEY, Data, pMsg);
+		case WM_KEY: 
+			WM_SendMessage(WM_GetParent(hWin), WM_KEY, Data);
 			return 0;	
 		case WM_GET_BKCOLOR:
 			return GUI_INVALID_COLOR;
@@ -1286,8 +1292,13 @@ void WM__ForEachDesc(WM_HWIN hWin, WM_tfForEach *pcb, void *pData) {
   Return value: Handle of parent, 0 if none
 */
 WM_HWIN WM__GetFirstSibling(WM_HWIN hWin) {
+	WM_Obj *pWin;
 	hWin = WM_GetParent(hWin);
-	return (hWin) ? WM_HANDLE2PTR(hWin)->hFirstChild : 0;
+	if (hWin) {
+		pWin = (hWin);
+		return pWin->hFirstChild;
+	}
+	return 0;
 }
 WM_HWIN WM__GetFocussedChild(WM_HWIN hWin) {
 	WM_HWIN r = 0;
@@ -1422,18 +1433,6 @@ void WM__NotifyVisChanged(WM_HWIN hWin, GUI_RECT *pRect) {
 }
 void WM__Screen2Client(const WM_Obj *pWin, GUI_RECT *pRect) {
 	GUI_MoveRect(pRect, -pWin->Rect.x0, -pWin->Rect.y0);
-}
-WM_PARAM WM__SendMessage(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
-	WM_Obj *pWin = hWin;
-	if (pWin->cb)
-		return pWin->cb(hWin, MsgId, Data, pMsg);
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
-}
-void WM_SendMessageNoPara(WM_HWIN hWin, int MsgId) {
-	WM_MESSAGE Msg = { 0 };
-	WM_Obj *pWin = WM_HANDLE2PTR(hWin);
-	if (pWin->cb)
-		pWin->cb(hWin, MsgId, 0, &Msg);
 }
 #define WM_DEBUG_LEVEL 1
 /*********************************************************************
@@ -1674,9 +1673,8 @@ void WM_SetEnableState(WM_HWIN hWin, int State) {
 	else 
 		Status |= WM_SF_DISABLED;
 	if (pWin->Status != Status) {
-		WM_MESSAGE Msg;
 		pWin->Status = Status;
-		WM_SendMessage(hWin, WM_NOTIFY_ENABLE, (WM_PARAM)State, &Msg);
+		WM_SendMessage(hWin, WM_NOTIFY_ENABLE, (WM_PARAM)State);
 	}
 }
 void WM_EnableWindow(WM_HWIN hWin) {
@@ -1698,9 +1696,8 @@ void WM_ForEachDesc(WM_HWIN hWin, WM_tfForEach *pcb, void *pData) {
 	procedure returns GUI_INVALID_COLOR
 */
 RGB_COLOR WM_GetBkColor(WM_HWIN hObj) {
-	WM_MESSAGE Msg;
 	if (hObj) 
-		return (RGB_COLOR)WM_SendMessage(hObj, WM_GET_BKCOLOR, 0, &Msg);
+		return (RGB_COLOR)WM_SendMessage(hObj, WM_GET_BKCOLOR, 0);
 	return GUI_INVALID_COLOR;
 }
 void WM_GetClientRect(GUI_RECT *pRect) {
@@ -1713,8 +1710,7 @@ void WM_GetClientRect(GUI_RECT *pRect) {
 	WM_GetClientRectEx(hWin, pRect);
 }
 WM_HWIN WM_GetClientWindow(WM_HWIN hObj) {
-	WM_MESSAGE Msg;
-	return (WM_HWIN)WM_SendMessage(hObj, WM_GET_CLIENT_WINDOW, 0, &Msg);
+	return (WM_HWIN)WM_SendMessage(hObj, WM_GET_CLIENT_WINDOW, 0);
 }
 WM_HWIN WM_GetDesktopWindow(void) {
 	return WM__ahDesktopWin;
@@ -1743,7 +1739,7 @@ WM_HWIN WM_GetDialogItem(WM_HWIN hWin, int Id) {
 		/* Any child windows Id matching ? */
 		if ((r = WM_GetDialogItem(hi, Id)))
 			break;
-		hi = WM_HANDLE2PTR(hi)->hNext;
+		hi = ((WM_Obj *)hi)->hNext;
 	}
 	return r;
 }
@@ -1764,8 +1760,7 @@ WM_HWIN WM_GetFocussedWindow(void) {
 	return WM__hWinFocus;
 }
 int WM_GetId(WM_HWIN hObj) {
-	WM_MESSAGE Msg;
-	return (int)WM_SendMessage(hObj, WM_GET_ID, 0, &Msg);
+	return (int)WM_SendMessage(hObj, WM_GET_ID, 0);
 }
 /*********************************************************************
 *
@@ -1778,8 +1773,7 @@ int WM_GetId(WM_HWIN hObj) {
 	(2 for the standard 3D effect).
 */
 void WM_GetInsideRectEx(WM_HWIN hWin, GUI_RECT *pRect) {
-	WM_MESSAGE Msg;
-	WM_SendMessage(hWin, WM_GET_INSIDE_RECT, (WM_PARAM)pRect, &Msg);
+	WM_SendMessage(hWin, WM_GET_INSIDE_RECT, (WM_PARAM)pRect);
 }
 void WM_GetInsideRect(GUI_RECT *pRect) {
 	WM_GetInsideRectEx(GUI_Context.hAWin, pRect);
@@ -1837,7 +1831,7 @@ int WM_GetInvalidRect(WM_HWIN hWin, GUI_RECT *pRect) {
 	int IsInvalid = 0;
 	if (hWin) {
 		WM_Obj *pWin;
-		pWin = WM_HANDLE2PTR(hWin);
+		pWin = (hWin);
 		if (pWin->Status & WM_SF_INVALID) {
 			IsInvalid = 1;
 			*pRect = pWin->InvalidRect;
@@ -1854,14 +1848,14 @@ WM_HWIN WM_GetNextSibling(WM_HWIN hWin) {
 int WM_GetWindowOrgX(WM_HWIN hWin) {
 	int r = 0;
 	if (hWin) {
-		r = WM_HANDLE2PTR(hWin)->Rect.x0;
+		r = ((WM_Obj *)hWin)->Rect.x0;
 	}
 	return r;
 }
 int WM_GetWindowOrgY(WM_HWIN hWin) {
 	int r = 0;
 	if (hWin) {
-		r = WM_HANDLE2PTR(hWin)->Rect.y0;
+		r = ((WM_Obj *)hWin)->Rect.y0;
 	}
 	return r;
 }
@@ -1894,8 +1888,7 @@ WM_HWIN WM_GetScrollPartner(WM_HWIN hScroll) {
 	return WM_GetDialogItem(WM_GetParent(hScroll), Id);
 }
 void WM_GetScrollState(WM_HWIN hObj, WM_SCROLL_STATE *pScrollState) {
-	WM_MESSAGE Msg;
-	WM_SendMessage(hObj, WM_GET_SCROLL_STATE, (WM_PARAM)pScrollState, &Msg);
+	WM_SendMessage(hObj, WM_GET_SCROLL_STATE, (WM_PARAM)pScrollState);
 }
 #define WM_DEBUG_LEVEL 1
 /*********************************************************************
@@ -1913,14 +1906,14 @@ void WM_GetWindowRect(GUI_RECT *pRect) {
 #else
 		hWin = GUI_Context.hAWin;
 #endif
-		pWin = WM_HANDLE2PTR(hWin);
+		pWin = (hWin);
 		*pRect = pWin->Rect;
 	}
 }
 void WM_GetWindowRectEx(WM_HWIN hWin, GUI_RECT *pRect) {
 	if (hWin && pRect) {
 		WM_Obj *pWin;
-		pWin = WM_HANDLE2PTR(hWin);
+		pWin = (hWin);
 		if (pWin) {
 			*pRect = pWin->Rect;
 		}
@@ -1988,13 +1981,13 @@ BOOL WM_HasFocus(WM_HWIN hWin) {
 void WM_HideWindow(WM_HWIN hWin) {
 	if (hWin) {
 		WM_Obj *pWin;
-		pWin = WM_HANDLE2PTR(hWin);
+		pWin = (hWin);
 		/* First check if this is necessary at all */
 		if (pWin->Status & WM_SF_ISVIS) {
 			/* Clear Visibility flag */
 			pWin->Status &= ~WM_SF_ISVIS;
 			/* Mark content as invalid */
-			WM__InvalidateAreaBelow(&WM_HANDLE2PTR(hWin)->Rect, hWin);
+			WM__InvalidateAreaBelow(&pWin->Rect, hWin);
 #if WM_SUPPORT_NOTIFY_VIS_CHANGED
 			WM__SendMsgNoData(hWin, WM_NOTIFY_VIS_CHANGED);             /* Notify window that visibility may have changed */
 #endif
@@ -2057,9 +2050,8 @@ static int _HasOverlap(WM_Obj *pWin, GUI_RECT *pRect) {
 	return 0;
 }
 BOOL WM_IsFocussable(WM_HWIN hWin) {
-	WM_MESSAGE Msg;
 	if (hWin)
-		return WM_SendMessage(hWin, WM_GET_ACCEPT_FOCUS, 0, &Msg) ? TRUE : FALSE;
+		return WM_SendMessage(hWin, WM_GET_ACCEPT_FOCUS, 0) ? TRUE : FALSE;
 	return FALSE;
 }
 BOOL WM_IsVisible(WM_HWIN hWin) {
@@ -2086,7 +2078,7 @@ BOOL WM_IsVisible(WM_HWIN hWin) {
 static void _MoveDescendents(WM_HWIN hWin, int dx, int dy) {
 	WM_Obj *pWin;
 	for (; hWin; hWin = pWin->hNext) {
-		pWin = WM_HANDLE2PTR(hWin);
+		pWin = (hWin);
 		GUI_MoveRect(&pWin->Rect, dx, dy);
 		GUI_MoveRect(&pWin->InvalidRect, dx, dy);
 		_MoveDescendents(pWin->hFirstChild, dx, dy);  /* Children need to be moved along ...*/
@@ -2097,7 +2089,7 @@ void WM_MoveWindow(WM_HWIN hWin, int dx, int dy) {
 	GUI_RECT r;
 	WM_Obj *pWin;
 	if (hWin) {
-		pWin = WM_HANDLE2PTR(hWin);
+		pWin = (hWin);
 		r = pWin->Rect;
 		GUI_MoveRect(&pWin->Rect, dx, dy);
 		GUI_MoveRect(&pWin->InvalidRect, dx, dy);
@@ -2112,7 +2104,7 @@ void WM_MoveWindow(WM_HWIN hWin, int dx, int dy) {
 }
 void WM_MoveTo(WM_HWIN hWin, int x, int y) {
 	if (hWin) {
-		WM_Obj *pWin = WM_HANDLE2PTR(hWin);
+		WM_Obj *pWin = (hWin);
 		x -= pWin->Rect.x0;
 		y -= pWin->Rect.y0;
 		WM_MoveWindow(hWin, x, y);
@@ -2124,8 +2116,8 @@ void WM_MoveChildTo(WM_HWIN hWin, int x, int y) {
 		hParent = WM_GetParent(hWin);
 		if (hParent) {
 			WM_Obj *pParent, *pWin;
-			pParent = WM_HANDLE2PTR(hParent);
-			pWin = WM_HANDLE2PTR(hWin);
+			pParent = (hParent);
+			pWin = (hWin);
 			x -= pWin->Rect.x0 - pParent->Rect.x0;
 			y -= pWin->Rect.y0 - pParent->Rect.y0;
 			WM_MoveWindow(hWin, x, y);
@@ -2157,7 +2149,7 @@ void WM_ResizeWindow(WM_HWIN hWin, int dx, int dy) {
 	if (((dx | dy) == 0) || (hWin == 0)) { /* Early out if there is nothing to do */
 		return;
 	}
-	pWin = WM_HANDLE2PTR(hWin);
+	pWin = (hWin);
 	rOld = pWin->Rect;
 	rNew = rOld;
 	if (dx) {
@@ -2194,7 +2186,7 @@ void WM_ResizeWindow(WM_HWIN hWin, int dx, int dy) {
 	   coordinate falls.
 */
 static WM_HWIN _Screen2hWin(WM_HWIN hWin, WM_HWIN hStop, int x, int y) {
-	WM_Obj *pWin = WM_HANDLE2PTR(hWin);
+	WM_Obj *pWin = (hWin);
 	WM_HWIN hChild;
 	WM_HWIN hHit;
 	/* First check if the  coordinates are in the given window. If not, return 0 */
@@ -2202,7 +2194,7 @@ static WM_HWIN _Screen2hWin(WM_HWIN hWin, WM_HWIN hStop, int x, int y) {
 		return 0;
 	/* If the coordinates are in a child, search deeper ... */
 	for (hChild = pWin->hFirstChild; hChild && (hChild != hStop); ) {
-		WM_Obj *pChild = WM_HANDLE2PTR(hChild);
+		WM_Obj *pChild = (hChild);
 		if ((hHit = _Screen2hWin(hChild, hStop, x, y)) != 0)
 			hWin = hHit;        /* Found a window */
 		hChild = pChild->hNext;
@@ -2250,9 +2242,8 @@ WM_CALLBACK *WM_SetCallback(WM_HWIN hWin, WM_CALLBACK *cb) {
 }
 void WM_ReleaseCapture(void) {
 	if (WM__hCapture) {
-		WM_MESSAGE Msg = { 0 };
-		WM_SendMessage(WM__hCapture, WM_CAPTURE_RELEASED, 0, &Msg);
-		WM__hCapture = 0;
+		WM_SendMessage(WM__hCapture, WM_CAPTURE_RELEASED, 0);
+		WM__hCapture = NULL;
 	}
 }
 void WM_SetCapture(WM_HWIN hObj, int AutoRelease) {
@@ -2316,25 +2307,24 @@ RGB_COLOR WM_SetDesktopColor(RGB_COLOR Color) {
 */
 int WM_SetFocus(WM_HWIN hWin) {
 	int r;
-	WM_MESSAGE Msg = { 0 };
 	if (hWin && hWin != WM__hWinFocus) {
 		WM_NOTIFY_CHILD_HAS_FOCUS_INFO Info;
 		Info.hOld = WM__hWinFocus;
 		Info.hNew = hWin;
 		/* Send a "no more focus" message to window losing focus */
 		if (WM__hWinFocus)
-			WM_SendMessage(WM__hWinFocus, WM_SET_FOCUS, 0, &Msg);
+			WM_SendMessage(WM__hWinFocus, WM_SET_FOCUS, 0);
 		/* Send "You have the focus now" message to the window */
-		r = (int)WM_SendMessage(WM__hWinFocus = hWin, WM_SET_FOCUS, 1, &Msg);
+		r = (int)WM_SendMessage(WM__hWinFocus = hWin, WM_SET_FOCUS, 1);
 		if (!r) { /* On success only */
 			/* Set message to ancestors of window getting the focus */
 			while ((hWin = WM_GetParent(hWin)))
-				WM_SendMessage(hWin, WM_NOTIFY_CHILD_HAS_FOCUS, (WM_PARAM)&Info, &Msg);
+				WM_SendMessage(hWin, WM_NOTIFY_CHILD_HAS_FOCUS, (WM_PARAM)&Info);
 			/* Set message to ancestors of window loosing the focus */
 			hWin = Info.hOld;
 			if (WM_IsWindow(hWin)) /* Make sure window has not been deleted in the mean time. Can be optimized: _DeleteWindow could clear the handle to avoid this check (RS) */
 				while ((hWin = WM_GetParent(hWin)))
-					WM_SendMessage(hWin, WM_NOTIFY_CHILD_HAS_FOCUS, (WM_PARAM)&Info, &Msg);
+					WM_SendMessage(hWin, WM_NOTIFY_CHILD_HAS_FOCUS, (WM_PARAM)&Info);
 		}
 	}
 	else {
@@ -2361,11 +2351,11 @@ static WM_HWIN _GetNextChild(WM_HWIN hParent, WM_HWIN hChild) {
 	WM_HWIN hObj = 0;
 	WM_Obj *pObj;
 	if (hChild) {
-		pObj = WM_HANDLE2PTR(hChild);
+		pObj = (hChild);
 		hObj = pObj->hNext;
 	}
 	if (!hObj) {
-		pObj = WM_HANDLE2PTR(hParent);
+		pObj = (hParent);
 		hObj = pObj->hFirstChild;
 	}
 	if (hObj != hChild) {
@@ -2451,8 +2441,7 @@ WM_HWIN _SetFoWM_SetFocusOnPrevChildcusOnPrevChild(WM_HWIN hParent) {
 	return 0;
 }
 void WM_SetId(WM_HWIN hObj, int Id) {
-	WM_MESSAGE Msg;
-	WM_SendMessage(hObj, WM_SET_ID, (WM_PARAM)Id, &Msg);
+	WM_SendMessage(hObj, WM_SET_ID, (WM_PARAM)Id);
 }
 /*********************************************************************
 *
@@ -2480,10 +2469,8 @@ int WM_SetScrollbarH(WM_HWIN hWin, int OnOff) {
 	return _SetScrollbar(hWin, OnOff, GUI_ID_HSCROLL, 0);
 }
 void WM_SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE *pState) {
-	if (hWin && pState) {
-		WM_MESSAGE Msg;
-		WM_SendMessage(hWin, WM_SET_SCROLL_STATE, (WM_PARAM)pState, &Msg);
-	}
+	if (hWin && pState)
+		WM_SendMessage(hWin, WM_SET_SCROLL_STATE, (WM_PARAM)pState);
 }
 #define WM_DEBUG_LEVEL 1
 void WM_SetSize(WM_HWIN hWin, int xSize, int ySize) {
@@ -2684,7 +2671,7 @@ static void _SubRect(GUI_RECT *pDest, const GUI_RECT *pr0, const GUI_RECT *pr1) 
 void WM_ValidateRect(WM_HWIN hWin, const GUI_RECT *pRect) {
 	WM_Obj *pWin;
 	if (hWin) {
-		pWin = WM_HANDLE2PTR(hWin);
+		pWin = (hWin);
 		if (pWin->Status & WM_SF_INVALID) {
 			if (pRect) {
 				_SubRect(&pWin->InvalidRect, &pWin->InvalidRect, pRect);
@@ -2699,7 +2686,7 @@ void WM_ValidateRect(WM_HWIN hWin, const GUI_RECT *pRect) {
 void WM_ValidateWindow(WM_HWIN hWin) {
 	WM_Obj *pWin;
 	if (hWin) {
-		pWin = WM_HANDLE2PTR(hWin);
+		pWin = (hWin);
 		if (pWin->Status & WM_SF_INVALID) {
 			pWin->Status &= ~WM_SF_INVALID;
 			WM__NumInvalidWindows--;
@@ -2708,11 +2695,10 @@ void WM_ValidateWindow(WM_HWIN hWin) {
 }
 int WM_OnKey(int Key, int Pressed) {
 	if (WM__hWinFocus) {
-		WM_MESSAGE Msg;
 		WM_KEY_INFO Info;
 		Info.Key = Key;
 		Info.PressedCnt = Pressed;
-		WM__SendMessage(WM__hWinFocus, WM_KEY, (WM_PARAM)&Info, &Msg);
+		WM__SendMessage(WM__hWinFocus, WM_KEY, (WM_PARAM)&Info);
 		return 1;
 	}
 	return 0;

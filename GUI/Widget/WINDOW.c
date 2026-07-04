@@ -25,7 +25,7 @@ static void _OnKey(WINDOW_OBJ *pObj, const WM_KEY_INFO *pInfo) {
 		}
 	}
 }
-static WM_PARAM _cb(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _cb(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	WINDOW_OBJ *pObj = hWin;
 	WM_CALLBACK *cb = pObj->cb;
 	switch (MsgId) {
@@ -58,8 +58,8 @@ static WM_PARAM _cb(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
 			return WINDOW__DefaultBkColor;
 	}
 	if (cb)
-		return cb(hWin, MsgId, Data, pMsg);
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+		return cb(hWin, MsgId, Data);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 WM_HWIN WINDOW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	WM_HWIN hObj;

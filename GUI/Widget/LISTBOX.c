@@ -192,11 +192,12 @@ static unsigned _GetNumVisItems(LISTBOX_Obj *pObj) {
 *   If no owner is registered, the parent is considered owner.
 */
 static void _NotifyOwner(WM_HWIN hObj, int Notification) {
-	WM_MESSAGE Msg = { 0 };
 	LISTBOX_Obj *pObj = (hObj);
 	WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
-	Msg.hWinSrc = hObj;
-	WM_SendMessage(hOwner, WM_NOTIFY_PARENT, Notification, &Msg);
+	WM_NOTIFY_INFO Info;
+	Info.Notification = Notification;
+	Info.hWinSrc = hObj;
+	WM_SendMessage(hOwner, WM_NOTIFY_PARENT, (WM_PARAM)&Info);
 }
 int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 	switch (pDrawItemInfo->Cmd) {
@@ -540,7 +541,7 @@ static int _OnKey(LISTBOX_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0; /* Key has not been consumed */
 }
-static WM_PARAM _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	LISTBOX_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data)) {
@@ -551,18 +552,20 @@ static WM_PARAM _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MES
 		return Data;
 	}
 	switch (MsgId) {
-		case WM_NOTIFY_PARENT:
-			switch (Data) {
+		case WM_NOTIFY_PARENT: {
+			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
+			WM_HWIN hWinSrc = pInfo->hWinSrc;
+			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED: {
 					WM_SCROLL_STATE ScrollState;
-					if (pMsg->hWinSrc == WM_GetScrollbarV(pObj)) {
-						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
+					if (hWinSrc == WM_GetScrollbarV(pObj)) {
+						WM_GetScrollState(hWinSrc, &ScrollState);
 						pObj->ScrollStateV.v = ScrollState.v;
 						LISTBOX__InvalidateInsideArea(pObj);
 						_NotifyOwner(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
-					else if (pMsg->hWinSrc == WM_GetScrollbarH(pObj)) {
-						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
+					else if (hWinSrc == WM_GetScrollbarH(pObj)) {
+						WM_GetScrollState(hWinSrc, &ScrollState);
 						pObj->ScrollStateH.v = ScrollState.v;
 						LISTBOX__InvalidateInsideArea(pObj);
 						_NotifyOwner(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
@@ -574,6 +577,7 @@ static WM_PARAM _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MES
 					break;
 			}
 			return 0;
+		}
 		case WM_PAINT:
 			_OnPaint(pObj, (const GUI_RECT *)Data);
 			return 0;
@@ -610,7 +614,7 @@ static WM_PARAM _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MES
 			WM_Invalidate(pObj);
 			return 0;
 	}
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 /*********************************************************************
 *

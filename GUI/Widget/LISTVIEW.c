@@ -245,11 +245,12 @@ static void _SetSelFromPos(LISTVIEW_Obj *pObj, const GUI_PID_STATE *pState) {
 *   If no owner is registered, the parent is considered owner.
 */
 static void _NotifyOwner(WM_HWIN hObj, int Notification) {
-	WM_MESSAGE Msg = { 0 };
 	LISTVIEW_Obj *pObj = (hObj);
 	WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
-	Msg.hWinSrc = hObj;
-	WM_SendMessage(hOwner, WM_NOTIFY_PARENT, Notification, &Msg);
+	WM_NOTIFY_INFO Info;
+	Info.Notification = Notification;
+	Info.hWinSrc = hObj;
+	WM_SendMessage(hOwner, WM_NOTIFY_PARENT, (WM_PARAM)&Info);
 }
 static void _OnTouch(LISTVIEW_Obj *pObj, const GUI_PID_STATE *pState) {
 	int Notification;
@@ -388,7 +389,7 @@ static void _FreeAttached(LISTVIEW_Obj *pObj) {
 	GUI_ARRAY_Delete(&pObj->AlignArray);
 	GUI_ARRAY_Delete(&pObj->RowArray);
 }
-static WM_PARAM _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	LISTVIEW_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -398,23 +399,25 @@ static WM_PARAM _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_ME
 		case WM_SIZE:
 			LISTVIEW__UpdateScrollParas(pObj);
 			return 0;
-		case WM_NOTIFY_PARENT:
-			switch (Data) {
+		case WM_NOTIFY_PARENT: {
+			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
+			WM_HWIN hWinSrc = pInfo->hWinSrc;
+			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_CHILD_DELETED:
 					/* make sure we do not send any messages to the header child once it has been deleted */
-					if (pMsg->hWinSrc == pObj->hHeader)
+					if (hWinSrc == pObj->hHeader)
 						pObj->hHeader = NULL;
 					break;
 				case WM_NOTIFICATION_VALUE_CHANGED: {
 					WM_SCROLL_STATE ScrollState;
-					if (pMsg->hWinSrc == WM_GetScrollbarV(pObj)) {
-						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
+					if (hWinSrc == WM_GetScrollbarV(pObj)) {
+						WM_GetScrollState(hWinSrc, &ScrollState);
 						pObj->ScrollStateV.v = ScrollState.v;
 						LISTVIEW__InvalidateInsideArea(pObj);
 						_NotifyOwner(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
-					else if (pMsg->hWinSrc == WM_GetScrollbarH(pObj)) {
-						WM_GetScrollState(pMsg->hWinSrc, &ScrollState);
+					else if (hWinSrc == WM_GetScrollbarH(pObj)) {
+						WM_GetScrollState(hWinSrc, &ScrollState);
 						pObj->ScrollStateH.v = ScrollState.v;
 						LISTVIEW__UpdateScrollParas(pObj);
 						HEADER_SetScrollPos(pObj->hHeader, pObj->ScrollStateH.v);
@@ -427,6 +430,7 @@ static WM_PARAM _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_ME
 					break;
 			}
 			return 0;
+		}
 		case WM_PAINT:
 			_OnPaint(pObj, (const GUI_RECT *)Data);
 			return 0;
@@ -441,7 +445,7 @@ static WM_PARAM _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_ME
 			_FreeAttached(pObj);
 			return 0;
 	}
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */

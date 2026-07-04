@@ -24,7 +24,7 @@ static void _OnKey(WM_HWIN hWin, const WM_KEY_INFO *pInfo) {
 		}
 	}
 }
-static WM_PARAM _MESSAGEBOX_cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _MESSAGEBOX_cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
 			FRAMEWIN_SetClientColor(hWin, MESSAGEBOX_BKCOLOR);
@@ -33,8 +33,10 @@ static WM_PARAM _MESSAGEBOX_cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data, W
 			_OnKey(hWin, (const WM_KEY_INFO *)Data);
 			return 0;
 		case WM_NOTIFY_PARENT: {
-			int Id = WM_GetId(pMsg->hWinSrc); /* Get control ID */
-			switch (Data) {
+			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
+			WM_HWIN hWinSrc = pInfo->hWinSrc;
+			int Id = WM_GetId(hWinSrc); /* Get control ID */
+			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_RELEASED: /* React only if released */
 					if (Id == GUI_ID_OK)
 						GUI_EndDialog(hWin, 0); /* End dialog with return value 0 if OK */
@@ -43,7 +45,7 @@ static WM_PARAM _MESSAGEBOX_cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data, W
 			return 0;
 		}
 	}
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 WM_HWIN MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags) {
 	GUI_WIDGET_CREATE_INFO _aDialogCreate[3];                                     /* 0: FrameWin, 1: Text, 2: Button */

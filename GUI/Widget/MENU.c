@@ -391,14 +391,13 @@ static int _ForwardMouseOverMsg(MENU_Obj *pObj, int x, int y) {
 			y += WM_GetWindowOrgY(pObj);
 			hBelow = WM_Screen2hWin(x, y);
 			if (hBelow && (hBelow != pObj)) {
-				WM_MESSAGE Msg;
 				GUI_PID_STATE State;
 				x -= WM_GetWindowOrgX(hBelow);
 				y -= WM_GetWindowOrgY(hBelow);
 				State.Pressed = 0;
 				State.x = x;
 				State.y = y;
-				WM__SendMessage(hBelow, WM_MOUSEOVER, (WM_PARAM)&State, &Msg);
+				WM__SendMessage(hBelow, WM_MOUSEOVER, (WM_PARAM)&State);
 				return 1;
 			}
 		}
@@ -424,13 +423,11 @@ static char _HandlePID(MENU_Obj *pObj, int x, int y, int Pressed) {
 	if ((x >= 0) && (y >= 0)) {
 		GUI_RECT r;
 		WM_GetClientRectEx(&pObj->Widget.Win, &r);
-		if ((x <= r.x1) && (y <= r.y1)) {
+		if (x <= r.x1 && y <= r.y1)
 			XYInWidget = 1;
-		}
 	}
 	if (XYInWidget) {
-		int ItemIndex;
-		ItemIndex = _GetItemFromPos(pObj, x, y);
+		int ItemIndex = _GetItemFromPos(pObj, x, y);
 		/*
 		 * Handle PID when coordinates are inside the widget.
 		 */
@@ -439,21 +436,17 @@ static char _HandlePID(MENU_Obj *pObj, int x, int y, int Pressed) {
 			 * Coordinates are inside the menu.
 			 */
 			if (Pressed == 1) {
-				if (PrevState.Pressed == 0) {  /* Clicked */
+				if (PrevState.Pressed == 0) /* Clicked */
 					_ActivateMenu(pObj, ItemIndex);
-				}
 				_SelectItem(pObj, ItemIndex);
 			}
-			else if ((Pressed == 0) && (PrevState.Pressed == 1)) {  /* Released */
+			else if (Pressed == 0 && PrevState.Pressed == 1) /* Released */
 				_ActivateItem(pObj, ItemIndex);
-			}
 			else if (Pressed < 0) {  /* Mouse moved */
-				if (_ForwardMouseOverMsg(pObj, x, y) == 0) {
+				if (_ForwardMouseOverMsg(pObj, x, y) == 0)
 					_SelectItem(pObj, ItemIndex);
-				}
-				else {
+				else
 					_DeselectItem(pObj);
-				}
 			}
 		}
 		else {
@@ -461,18 +454,16 @@ static char _HandlePID(MENU_Obj *pObj, int x, int y, int Pressed) {
 			 * Coordinates are outside the menu but inside the widget.
 			 */
 			if (Pressed == 1) {
-				if (PrevState.Pressed == 0) {  /* Clicked */
+				if (PrevState.Pressed == 0) /* Clicked */
 					/*
 					 * User has clicked outside the menu. Close the active submenu.
 					 * The widget itself must be closed (if needed) by the owner.
 					 */
 					_DeactivateMenu(pObj);
-				}
 				_DeselectItem(pObj);
 			}
-			else if (Pressed < 0) {  /* Moved out or mouse moved */
+			else if (Pressed < 0) /* Moved out or mouse moved */
 				_DeselectItem(pObj);
-			}
 		}
 		return 0;
 	}
@@ -480,7 +471,7 @@ static char _HandlePID(MENU_Obj *pObj, int x, int y, int Pressed) {
 		/*
 		 * Handle PID when coordinates are outside the widget.
 		 */
-		if ((Pressed == 1) && (PrevState.Pressed == 0)) {
+		if (Pressed == 1 && PrevState.Pressed == 0) {
 			/*
 			 * User has clicked outside the menu. Close the active submenu.
 			 * The widget itself must be closed (if needed) by the owner.
@@ -497,7 +488,6 @@ static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, int MsgId, const GUI_PID_STATE
 	if (!_IsTopLevelMenu(pObj)) {
 		WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
 		if (hOwner) {
-			WM_MESSAGE Msg;
 			GUI_PID_STATE State;
 			if (pState) {
 				State = *pState;
@@ -505,7 +495,7 @@ static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, int MsgId, const GUI_PID_STATE
 				State.y += WM_GetWindowOrgY(pObj) - WM_GetWindowOrgY(hOwner);
 				pState = &State;
 			}
-			WM__SendMessage(hOwner, MsgId, (WM_PARAM)pState, &Msg);
+			WM__SendMessage(hOwner, MsgId, (WM_PARAM)pState);
 		}
 	}
 }
@@ -523,11 +513,8 @@ static WM_PARAM _OnMenu(MENU_Obj *pObj, WM_PARAM Data) {
 		case MENU_ON_INITSUBMENU: {
 			/* Forward message to owner. */
 			WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
-			if (hOwner) {
-				WM_MESSAGE Msg;
-				Msg.hWinSrc = pObj;
-				WM__SendMessage(hOwner, WM_MENU, Data, &Msg);
-			}
+			if (hOwner)
+				WM__SendMessage(hOwner, WM_MENU, Data);
 			break;
 		}
 		case MENU_ON_OPEN:
@@ -656,7 +643,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 		pObj->Widget.pEffect->pfDrawUp();
 	}
 }
-static WM_PARAM _MENU_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _MENU_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	MENU_Obj *pObj = hWin;
 	if (MsgId != WM_PID_STATE_CHANGED)
 		/* Let widget handle the standard messages */
@@ -682,7 +669,7 @@ static WM_PARAM _MENU_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAG
 			GUI_ARRAY_Delete(&pObj->ItemArray);
 			break; /* No return here ... WM_DefaultProc needs to be called */
 	}
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParent, int WinFlags, int ExFlags, int Id) {
 	MENU_Handle hObj;
@@ -777,11 +764,9 @@ int MENU__SendMenuMessage(MENU_Handle hObj, WM_HWIN hDestWin, uint16_t MsgType, 
 		hDestWin = WM_GetParent(hObj);
 	if (hDestWin) {
 		MENU_MSG_DATA MsgData;
-		WM_MESSAGE    Msg = { 0 };
 		MsgData.MsgType = MsgType;
 		MsgData.ItemId = ItemId;
-		Msg.hWinSrc = hObj;
-		return (int)WM__SendMessage(hDestWin, WM_MENU, (WM_PARAM)&MsgData, &Msg);
+		return (int)WM__SendMessage(hDestWin, WM_MENU, (WM_PARAM)&MsgData);
 	}
 	return 0;
 }
@@ -1005,7 +990,6 @@ void MENU_Popup(MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int
 	GUI_USE_PARA(Flags);
 	if (hObj && hDestWin) {
 		MENU_Obj *pObj;
-
 		pObj = (hObj);
 		if (pObj) {
 			pObj->Flags |= MENU_SF_POPUP;
@@ -1017,14 +1001,12 @@ void MENU_Popup(MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int
 			WM_AttachWindowAt(hObj, WM_HBKWIN, x, y);
 			MENU__SendMenuMessage(hDestWin, hObj, MENU_ON_OPEN, 0);
 		}
-
 	}
 }
 
 void MENU_SetBkColor(MENU_Handle hObj, unsigned ColorIndex, RGB_COLOR Color) {
 	if (hObj) {
 		MENU_Obj *pObj;
-
 		pObj = (hObj);
 		if (pObj) {
 			if (ColorIndex < GUI_COUNTOF(pObj->Props.aBkColor)) {

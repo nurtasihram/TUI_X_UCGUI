@@ -160,7 +160,7 @@ static char _OnKey(RADIO_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0;
 }
-static WM_PARAM _RADIO_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static WM_PARAM _RADIO_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	RADIO_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -182,7 +182,7 @@ static WM_PARAM _RADIO_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSA
 			GUI_ARRAY_Delete(&pObj->TextArray);
 			return 0;
 	}
-	return WM_DefaultProc(hWin, MsgId, Data, pMsg);
+	return WM_DefaultProc(hWin, MsgId, Data);
 }
 void RADIO__SetValue(RADIO_Obj *pObj, int v) {
 	if (v >= pObj->NumItems) {
@@ -350,29 +350,22 @@ void RADIO_SetDefaultImage(const GUI_BITMAP *pBitmap, unsigned int Index) {
 
 void RADIO_SetFont(RADIO_Handle hObj, const GUI_FONT *pFont) {
 	if (hObj) {
-		RADIO_Obj *pObj;
-
-		pObj = (hObj);
+		RADIO_Obj *pObj = (hObj);
 		if (pFont != pObj->pFont) {
 			pObj->pFont = pFont;
-			if (GUI_ARRAY_GetNumItems(&pObj->TextArray)) {
+			if (GUI_ARRAY_GetNumItems(&pObj->TextArray))
 				WM_Invalidate(hObj);
-			}
 		}
-
 	}
 }
 
 static void _SetValue(RADIO_Handle hObj, int v) {
-	RADIO_Obj *pObj;
-	pObj = (hObj);
+	RADIO_Obj *pObj = (hObj);
 	RADIO__SetValue(pObj, v);
 }
 static int _IsInGroup(WM_HWIN hWin, uint8_t GroupId) {
-	if (GroupId) {
-		WM_MESSAGE Msg;
-		return WM_SendMessage(hWin, WM_GET_RADIOGROUP, 0, &Msg) == GroupId;
-	}
+	if (GroupId)
+		return WM_SendMessage(hWin, WM_GET_RADIOGROUP, 0) == GroupId;
 	return 0;
 }
 static WM_HWIN _GetPrevInGroup(WM_HWIN hWin, uint8_t GroupId) {
@@ -384,11 +377,9 @@ static WM_HWIN _GetPrevInGroup(WM_HWIN hWin, uint8_t GroupId) {
 	return 0;
 }
 static WM_HWIN _GetNextInGroup(WM_HWIN hWin, uint8_t GroupId) {
-	for (; hWin; hWin = WM_GetNextSibling(hWin)) {
-		if (_IsInGroup(hWin, GroupId)) {
+	for (; hWin; hWin = WM_GetNextSibling(hWin))
+		if (_IsInGroup(hWin, GroupId))
 			return hWin;
-		}
-	}
 	return 0;
 }
 static void _ClearSelection(RADIO_Handle hObj, uint8_t GroupId) {
@@ -396,11 +387,9 @@ static void _ClearSelection(RADIO_Handle hObj, uint8_t GroupId) {
 	WM_Obj *pWin;
 	for (hWin = WM__GetFirstSibling(hObj); hWin; hWin = pWin->hNext) {
 		pWin = (hWin);
-		if (hWin != hObj) {
-			if (_IsInGroup(hWin, GroupId)) {
+		if (hWin != hObj)
+			if (_IsInGroup(hWin, GroupId))
 				RADIO__SetValue((RADIO_Obj *)pWin, -1);
-			}
-		}
 	}
 }
 static void _HandleSetValue(RADIO_Obj *pObj, int v) {

@@ -4,36 +4,32 @@
 WM_CRITICAL_HANDLE  WM__CHWinModal;
 WM_CRITICAL_HANDLE  WM__CHWinLast;
 
-BOOL WM__IsInModalArea(WM_HWIN hWin) {
+static BOOL _IsInModalArea(WM_HWIN hWin) {
 	return (!WM__CHWinModal.hWin ||
 		WM__IsAncestor(hWin, WM__CHWinModal.hWin) ||
 		WM__CHWinModal.hWin == hWin) ? TRUE : FALSE;
 }
 
-void WM__SendMessageIfEnabled(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {
+static void _SendMessageIfEnabled(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	if (WM_IsEnabled(hWin))
-		WM__SendMessage(hWin, MsgId, Data, pMsg);
+		WM__SendMessage(hWin, MsgId, Data);
 }
 
-void WM__SendTouchMessage(WM_HWIN hWin, int MsgId, GUI_PID_STATE *pState, WM_MESSAGE *pMsg) {
+static void _SendTouchMessage(WM_HWIN hWin, int MsgId, GUI_PID_STATE *pState) {
 	if (pState) {
 		WM_Obj *pWin = hWin;
 		pState->x -= pWin->Rect.x0;
 		pState->y -= pWin->Rect.y0;
 	}
-	WM_MESSAGE Msg;
-	/* Send message to the affected window */
-	Msg = *pMsg; /* Save message as it may be modified in callback (as return value) */
-	WM__SendMessageIfEnabled(hWin, MsgId, (WM_PARAM)pState, &Msg);
+	_SendMessageIfEnabled(hWin, MsgId, (WM_PARAM)pState);
 	/* Send notification to all ancestors.
 	   We need to check if the window which has received the last message still exists,
 	   since it may have deleted itself and its parent as result of the message.
 	*/
-	Msg.hWinSrc = hWin;
 	while (WM_IsWindow(hWin)) {
 		hWin = WM_GetParent(hWin);
 		if (hWin)
-			WM__SendMessageIfEnabled(hWin, WM_TOUCH_CHILD, (WM_PARAM)pState, &Msg); /* Send message to the ancestors */
+			_SendMessageIfEnabled(hWin, WM_TOUCH_CHILD, (WM_PARAM)pState); /* Send message to the ancestors */
 	}
 }
 
@@ -56,7 +52,6 @@ static WM_HWIN _Screen2Win(GUI_PID_STATE *pState) {
 */
 int WM_HandlePID(void) {
 	int r = 0;
-	WM_MESSAGE Msg;
 	WM_CRITICAL_HANDLE CHWin;
 	GUI_PID_STATE State, StateNew;
 	GUI_PID_GetState(&StateNew);
@@ -67,7 +62,7 @@ int WM_HandlePID(void) {
 		GUI_CURSOR_SetPosition(StateNew.x, StateNew.y);
 #endif
 		CHWin.hWin = _Screen2Win(&StateNew);
-		if (WM__IsInModalArea(CHWin.hWin)) {
+		if (_IsInModalArea(CHWin.hWin)) {
 			/*
 			 * Send WM_PID_STATE_CHANGED message if state has changed (just pressed or just released)
 			 */
@@ -78,7 +73,7 @@ int WM_HandlePID(void) {
 				Info.StatePrev = WM_PID__StateLast.Pressed;
 				Info.x = StateNew.x - pWin->Rect.x0;
 				Info.y = StateNew.y - pWin->Rect.y0;
-				WM__SendMessageIfEnabled(CHWin.hWin, WM_PID_STATE_CHANGED, (WM_PARAM)&Info, &Msg);
+				_SendMessageIfEnabled(CHWin.hWin, WM_PID_STATE_CHANGED, (WM_PARAM)&Info);
 			}
 			/*
 			 * Send WM_TOUCH message(s)
@@ -96,7 +91,7 @@ int WM_HandlePID(void) {
 					if (WM__CHWinLast.hWin) {
 						GUI_PID_STATE *pState = WM_PID__StateLast.Pressed ? &WM_PID__StateLast : NULL;
 						GUI_DEBUG_LOG("\nSending WM_Touch to LastWindow %d (out of area)", WM__CHWinLast.hWin);
-						WM__SendTouchMessage(WM__CHWinLast.hWin, WM_TOUCH, pState, &Msg);
+						_SendTouchMessage(WM__CHWinLast.hWin, WM_TOUCH, pState);
 						WM__CHWinLast.hWin = 0;
 					}
 				}
@@ -113,7 +108,7 @@ int WM_HandlePID(void) {
 							WM_ReleaseCapture();
 						WM__CHWinLast.hWin = 0;
 					}
-					WM__SendTouchMessage(CHWin.hWin, WM_TOUCH, &State, &Msg);
+					_SendTouchMessage(CHWin.hWin, WM_TOUCH, &State);
 				}
 			}
 #if GUI_SUPPORT_MOUSE
@@ -122,7 +117,7 @@ int WM_HandlePID(void) {
 				/* Do not send messages to disabled windows */
 				if (WM_IsEnabled(CHWin.hWin)) {
 					State = StateNew;
-					WM__SendTouchMessage(CHWin.hWin, WM_MOUSEOVER, &State, &Msg);
+					_SendTouchMessage(CHWin.hWin, WM_MOUSEOVER, &State);
 				}
 #endif
 		}
