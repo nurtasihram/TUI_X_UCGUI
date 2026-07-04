@@ -4,8 +4,8 @@
 #include "GUI.h"
 #include "GUI_Private.h"
 
-#define LCD_XSIZE 320
-#define LCD_YSIZE 240
+#define LCD_XSIZE 320 * 2
+#define LCD_YSIZE 240 * 2
 
 Ayxandar Ayx;
 
