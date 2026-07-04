@@ -661,7 +661,7 @@ void EDIT_SetTextAlign(EDIT_Handle hObj, int Align) {
 }
 
 EDIT_Handle EDIT_Create(int x0, int y0, int xsize, int ysize, int Id, int MaxLen, int Flags) {
-	return EDIT_CreateEx(x0, y0, xsize, ysize, WM_HMEM_NULL, Flags, 0, Id, MaxLen);
+	return EDIT_CreateEx(x0, y0, xsize, ysize, NULL, Flags, 0, Id, MaxLen);
 }
 EDIT_Handle EDIT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, int MaxLen) {
 	return EDIT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id, MaxLen);

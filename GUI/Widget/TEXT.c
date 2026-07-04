@@ -107,7 +107,7 @@ const GUI_FONT  *TEXT_GetDefaultFont(void) {
 }
 
 TEXT_Handle TEXT_Create(int x0, int y0, int xsize, int ysize, int Id, int Flags, const char *s, int Align) {
-	return TEXT_CreateEx(x0, y0, xsize, ysize, WM_HMEM_NULL, Flags, Align, Id, s);
+	return TEXT_CreateEx(x0, y0, xsize, ysize, NULL, Flags, Align, Id, s);
 }
 TEXT_Handle TEXT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, const char *s, int Align) {
 	return TEXT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, Align, Id, s);

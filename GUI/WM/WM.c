@@ -115,7 +115,7 @@ static void _Invalidate1Abs(WM_HWIN hWin, const GUI_RECT *pRect) {
   When drawing, we have to start at the bottom window !
 */
 static void ResetNextDrawWin(void) {
-	NextDrawWin = WM_HWIN_NULL;
+	NextDrawWin = NULL;
 }
 /*********************************************************************
 *
@@ -589,7 +589,7 @@ WM_HWIN WM_CreateWindowAsChild(int x0, int y0, int width, int height
 		}
 	}
 	if (hParent == WM_UNATTACHED) {
-		hParent = WM_HWIN_NULL;
+		hParent = NULL;
 	}
 	if (hParent) {
 		WM_Obj *pParent = (hParent);
@@ -991,7 +991,7 @@ void WM_SetDefault(void) {
 	GUI_SetDefault();
 	GUI_Context.WM__pUserClipRect = NULL;   /* No add. clipping */
 }
-static void _Paint1(WM_HWIN hWin, WM_Obj *pWin) {
+static void _Paint1(WM_Obj *pWin) {
 	int Status = pWin->Status;
 	/* Send WM_PAINT if window is visible and a callback is defined */
 	if ((pWin->cb != NULL) && (Status & WM_SF_ISVIS)) {
@@ -1000,13 +1000,13 @@ static void _Paint1(WM_HWIN hWin, WM_Obj *pWin) {
 		if (Status & WM_SF_LATE_CLIP) {
 			Msg.Data = (WM_PARAM)&pWin->InvalidRect;
 			WM_SetDefault();
-			WM_SendMessage(hWin, WM_PAINT, &Msg);
+			WM_SendMessage(pWin, WM_PAINT, &Msg);
 		}
 		else {
 			WM_ITERATE_START(&pWin->InvalidRect) {
 				Msg.Data = (WM_PARAM)&pWin->InvalidRect;
 				WM_SetDefault();
-				WM_SendMessage(hWin, WM_PAINT, &Msg);
+				WM_SendMessage(pWin, WM_PAINT, &Msg);
 			} WM_ITERATE_END();
 		}
 		WM__PaintCallbackCnt--;
@@ -1034,7 +1034,7 @@ static void _Paint1(WM_HWIN hWin, WM_Obj *pWin) {
 *   in the worst case.
 */
 #if WM_SUPPORT_TRANSPARENCY
-static int _Paint1Trans(WM_HWIN hWin, WM_Obj *pWin) {
+static int _Paint1Trans(WM_Obj *pWin) {
 	int xPrev, yPrev;
 	WM_Obj *pAWin = (GUI_Context.hAWin);
 	/* Check if we need to do any drawing */
@@ -1044,11 +1044,11 @@ static int _Paint1Trans(WM_HWIN hWin, WM_Obj *pWin) {
 		yPrev = GUI_Context.yOff;
 		/* Set values for the current (transparent) window, rather than the one below */
 		GUI__IntersectRects(&pWin->InvalidRect, &pWin->Rect, &pAWin->InvalidRect);
-		WM__hATransWindow = hWin;
+		WM__hATransWindow = pWin;
 		GUI_Context.xOff = pWin->Rect.x0;
 		GUI_Context.yOff = pWin->Rect.y0;
 		/* Do the actual drawing ... */
-		_Paint1(hWin, pWin);
+		_Paint1(pWin);
 		/* Restore settings */
 		WM__hATransWindow = 0;
 		GUI_Context.xOff = xPrev;
@@ -1071,18 +1071,16 @@ static int _Paint1Trans(WM_HWIN hWin, WM_Obj *pWin) {
 */
 #if WM_SUPPORT_TRANSPARENCY
 static void _PaintTransChildren(WM_Obj *pWin) {
-	WM_HWIN hChild;
 	WM_Obj *pChild;
 	if (pWin->Status & WM_SF_ISVIS) {
-		for (hChild = pWin->hFirstChild; hChild; hChild = pChild->hNext) {
-			pChild = (hChild);
+		for (pChild = pWin->hFirstChild; pChild; pChild = pChild->hNext) {
 			if ((pChild->Status & (WM_SF_HASTRANS | WM_SF_ISVIS))   /* Transparent & visible ? */
 				== (WM_SF_HASTRANS | WM_SF_ISVIS)) {
 				/* Set invalid area of the window to draw */
 				if (GUI_RectsIntersect(&pChild->Rect, &pWin->InvalidRect)) {
 					GUI_RECT InvalidRectPrev;
 					InvalidRectPrev = pWin->InvalidRect;
-					if (_Paint1Trans(hChild, pChild)) {
+					if (_Paint1Trans(pChild)) {
 						_PaintTransChildren(pChild);
 					}
 					pWin->InvalidRect = InvalidRectPrev;
@@ -1104,24 +1102,19 @@ static void _PaintTransChildren(WM_Obj *pWin) {
 * Returns:   ---
 */
 #if WM_SUPPORT_TRANSPARENCY
-static void _PaintTransTopSiblings(WM_HWIN hWin, WM_Obj *pWin) {
-	WM_HWIN hParent;
-	WM_Obj *pParent;
-	hParent = pWin->hParent;
-	hWin = pWin->hNext;
-	while (hParent) { /* Go hierarchy up to desktop window */
-		for (; hWin; hWin = pWin->hNext) {
-			pWin = (hWin);
+static void _PaintTransTopSiblings(WM_Obj *pWin) {
+	WM_Obj *pParent = pWin->hParent;
+	pWin = pWin->hNext;
+	while (pParent) { /* Go hierarchy up to desktop window */
+		for (; pWin; pWin = pWin->hNext) {
 			/* paint window if it is transparent & visible */
-			if ((pWin->Status & (WM_SF_HASTRANS | WM_SF_ISVIS)) == (WM_SF_HASTRANS | WM_SF_ISVIS)) {
-				_Paint1Trans(hWin, pWin);
-			}
+			if ((pWin->Status & (WM_SF_HASTRANS | WM_SF_ISVIS)) == (WM_SF_HASTRANS | WM_SF_ISVIS))
+				_Paint1Trans(pWin);
 			/* paint transparent & visible children */
 			_PaintTransChildren(pWin);
 		}
-		pParent = (hParent);
-		hWin = pParent->hNext;
-		hParent = pParent->hParent;
+		pWin = pParent->hNext;
+		pParent = pParent->hParent;
 	}
 }
 #endif
@@ -1137,21 +1130,17 @@ static void _PaintTransTopSiblings(WM_HWIN hWin, WM_Obj *pWin) {
 *   Paint the given window and all overlaying windows
 *   (transparent children and transparent top siblings)
 */
-void WM__PaintWinAndOverlays(WM_PAINTINFO *pInfo) {
-	WM_HWIN hWin;
-	WM_Obj *pWin;
-	hWin = pInfo->hWin;
-	pWin = pInfo->pWin;
+void WM__PaintWinAndOverlays(WM_Obj *pWin) {
 #if WM_SUPPORT_TRANSPARENCY
 	/* Transparent windows without const outline are drawn as part of the background and can be skipped. */
 	if ((pWin->Status & (WM_SF_HASTRANS | WM_SF_CONST_OUTLINE)) != WM_SF_HASTRANS) {
 #endif
-		_Paint1(hWin, pWin);    /* Draw the window itself */
+		_Paint1(pWin); /* Draw the window itself */
 #if WM_SUPPORT_TRANSPARENCY
 	}
 	if (WM__TransWindowCnt != 0) {
-		_PaintTransChildren(pWin);       /* Draw all transparent children */
-		_PaintTransTopSiblings(hWin, pWin);    /* Draw all transparent top level siblings */
+		_PaintTransChildren(pWin); /* Draw all transparent children */
+		_PaintTransTopSiblings(pWin); /* Draw all transparent top level siblings */
 	}
 #endif
 }
@@ -1173,7 +1162,7 @@ static void _cbPaintMemDev(void *p) {
 	WM_Obj *pWin = (GUI_Context.hAWin);
 	Rect = pWin->InvalidRect;
 	pWin->InvalidRect = GUI_Context.ClipRect;
-	WM__PaintWinAndOverlays((WM_PAINTINFO *)p);
+	WM__PaintWinAndOverlays((WM_Obj *)p);
 	pWin->InvalidRect = Rect;
 }
 #endif
@@ -1184,15 +1173,12 @@ static void _cbPaintMemDev(void *p) {
 	1: a window has been redrawn
 	0: No window has been drawn
 */
-static int _Paint(WM_HWIN hWin, WM_Obj *pWin) {
+static int _Paint(WM_Obj *pWin) {
 	int Ret = 0;
 	if (pWin->Status & WM_SF_INVALID) {
 		if (pWin->cb) {
-			if (WM__ClipAtParentBorders(&pWin->InvalidRect, hWin)) {
-				WM_PAINTINFO Info;
-				Info.hWin = hWin;
-				Info.pWin = pWin;
-				WM_SelectWindow(hWin);
+			if (WM__ClipAtParentBorders(&pWin->InvalidRect, pWin)) {
+				WM_SelectWindow(pWin);
 #if GUI_SUPPORT_MEMDEV
 				if (pWin->Status & WM_SF_MEMDEV) {
 					int Flags;
@@ -1204,12 +1190,12 @@ static int _Paint(WM_HWIN hWin, WM_Obj *pWin) {
 					if (pWin->hParent == 0) {
 						Flags = GUI_MEMDEV_HASTRANS;
 					}
-					GUI_MEMDEV_Draw(&r, _cbPaintMemDev, &Info, 0, Flags);
+					GUI_MEMDEV_Draw(&r, _cbPaintMemDev, pWin, 0, Flags);
 				}
 				else
 #endif
 				{
-					WM__PaintWinAndOverlays(&Info);
+					WM__PaintWinAndOverlays(pWin);
 					Ret = 1;    /* Something has been done */
 				}
 			}
@@ -1225,17 +1211,13 @@ static int _Paint(WM_HWIN hWin, WM_Obj *pWin) {
 }
 static void _DrawNext(void) {
 	int UpdateRem = 1;
-	WM_HWIN iWin = (NextDrawWin == WM_HWIN_NULL) ? WM__FirstWin : NextDrawWin;
+	WM_Obj *iWin = (NextDrawWin == NULL) ? WM__FirstWin : NextDrawWin;
 	GUI_CONTEXT ContextOld;
 	GUI_SaveContext(&ContextOld);
 	/* Make sure the next window to redraw is valid */
-	for (; iWin && UpdateRem; ) {
-		WM_Obj *pWin = (iWin);
-		if (_Paint(iWin, pWin)) {
+	for (; iWin && UpdateRem; iWin = iWin->hNextLin)
+		if (_Paint(iWin))
 			UpdateRem--;  /* Only the given number of windows at a time ... */
-		}
-		iWin = pWin->hNextLin;
-	}
 	NextDrawWin = iWin;   /* Remember the window */
 	GUI_RestoreContext(&ContextOld);
 }
@@ -1331,7 +1313,7 @@ void WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 }
 void WM_Init(void) {
 	if (!_IsInited) {
-		NextDrawWin = WM__FirstWin = WM_HWIN_NULL;
+		NextDrawWin = WM__FirstWin = NULL;
 		GUI_Context.WM__pUserClipRect = NULL;
 		WM__NumWindows = WM__NumInvalidWindows = 0;
 		/* Make sure we have at least one window. This greatly simplifies the
@@ -2285,19 +2267,15 @@ void WM_NotifyParent(WM_HWIN hWin, int Notification) {
 }
 void WM_Paint(WM_HWIN hWin) {
 	GUI_CONTEXT Context;
-	WM_PAINTINFO PaintInfo;
-	WM_Obj *pWin;
+	WM_Obj *pWin = hWin;
 	WM_ASSERT_NOT_IN_PAINT();
 	if (hWin) {
 		GUI_SaveContext(&Context);
-		pWin = (hWin);
 		WM_SelectWindow(hWin);
 		WM_SetDefault();
 		WM_Invalidate(hWin);  /* Important ... Window procedure is informed about invalid rect and may optimize */
 		/* Paint the window and its overlaying transparent windows */
-		PaintInfo.hWin = hWin;
-		PaintInfo.pWin = pWin;
-		WM__PaintWinAndOverlays(&PaintInfo);
+		WM__PaintWinAndOverlays(pWin);
 		WM_ValidateWindow(hWin);
 		GUI_RestoreContext(&Context);
 	}

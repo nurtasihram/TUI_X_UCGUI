@@ -849,7 +849,7 @@ void LISTBOX_DecSel(LISTBOX_Handle hObj) {
 }
 
 LISTBOX_Handle LISTBOX_Create(const GUI_ConstString *ppText, int x0, int y0, int xsize, int ysize, int Flags) {
-	return LISTBOX_CreateEx(x0, y0, xsize, ysize, WM_HWIN_NULL, Flags, 0, 0, ppText);
+	return LISTBOX_CreateEx(x0, y0, xsize, ysize, NULL, Flags, 0, 0, ppText);
 }
 LISTBOX_Handle LISTBOX_CreateAsChild(const GUI_ConstString *ppText, WM_HWIN hWinParent,
 									 int x0, int y0, int xsize, int ysize, int Flags) {

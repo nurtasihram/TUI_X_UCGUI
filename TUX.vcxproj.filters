@@ -148,9 +148,6 @@
     <ClCompile Include="GUI\Widget\GUI_DRAW_Self.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\GUI_HOOK.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\HEADER.c">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
@@ -325,9 +322,6 @@
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\GUI_ARRAY.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\GUI_HOOK.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\HEADER.h">

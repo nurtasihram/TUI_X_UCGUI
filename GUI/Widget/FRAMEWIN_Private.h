@@ -3,7 +3,6 @@
 #include "WM.h"
 #include "FRAMEWIN.h"
 #include "WIDGET.h"
-#include "GUI_HOOK.h"
 
 typedef struct {
 	const GUI_FONT *pFont;
@@ -27,7 +26,6 @@ typedef struct {
 	uint16_t Flags;
 	WM_HWIN hFocussedChild;          /* Handle to focussed child .. default none (0) */
 	WM_DIALOG_STATUS *pDialogStatus;
-	GUI_HOOK *pFirstHook;
 } FRAMEWIN_Obj;
 
 typedef struct {

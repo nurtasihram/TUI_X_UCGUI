@@ -48,11 +48,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
 
 typedef struct {
-  WM_HWIN hWin;
-  WM_Obj* pWin;
-} WM_PAINTINFO;
-
-typedef struct {
   WM_HWIN hOld;
   WM_HWIN hNew;
 } WM_NOTIFY_CHILD_HAS_FOCUS_INFO;
@@ -115,7 +110,7 @@ void    WM_PID__GetPrevState        (GUI_PID_STATE* pPrevState);
 void    WM__SendTouchMessage        (WM_HWIN hWin, int MsgId, WM_MESSAGE* pMsg);
 
 uint16_t     WM_GetFlags(WM_HWIN hWin);
-void    WM__PaintWinAndOverlays     (WM_PAINTINFO* pInfo);
+void    WM__PaintWinAndOverlays     (WM_Obj *pWin);
 void    WM__AddCriticalHandle       (WM_CRITICAL_HANDLE* pCH);
 void    WM__RemoveCriticalHandle    (WM_CRITICAL_HANDLE* pCH);
 

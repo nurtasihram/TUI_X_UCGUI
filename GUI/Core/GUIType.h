@@ -201,4 +201,3 @@ struct GUI_FONT {
 */
 
 typedef void *GUI_HMEM, *GUI_HWIN;
-#define GUI_HMEM_NULL NULL

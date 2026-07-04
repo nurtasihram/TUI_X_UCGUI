@@ -173,7 +173,7 @@ void BUTTON_Callback(WM_HWIN hWin, int MsgId, WM_MESSAGE *pMsg) {
 			return; /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
 #endif
 		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)pMsg->Data);
+			_OnTouch(pObj, (const GUI_PID_STATE *)pMsgData);
 			return; /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
 		case WM_PAINT:
 			_OnPaint(pObj);
@@ -278,7 +278,7 @@ void BUTTON_SetBitmap(BUTTON_Handle hObj, unsigned int Index, const GUI_BITMAP *
 }
 
 BUTTON_Handle BUTTON_Create(int x0, int y0, int xsize, int ysize, int Id, int Flags) {
-	return BUTTON_CreateEx(x0, y0, xsize, ysize, WM_HMEM_NULL, Flags, 0, Id);
+	return BUTTON_CreateEx(x0, y0, xsize, ysize, NULL, Flags, 0, Id);
 }
 BUTTON_Handle BUTTON_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags) {
 	return BUTTON_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id);

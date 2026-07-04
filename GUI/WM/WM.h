@@ -129,9 +129,7 @@ The following is the list of windows messages.
 #define WM_NOTIFICATION_USER               16      /* Space for  application (user) defined notifications */
 
 #define WM_HWIN        GUI_HWIN
-#define WM_HWIN_NULL   GUI_HMEM_NULL
 #define WM_HMEM        GUI_HMEM
-#define WM_HMEM_NULL   GUI_HMEM_NULL
 
 #define WM_HBKWIN      WM_GetDesktopWindow()                /* Handle of background window */
 #define WM_UNATTACHED  ((WM_HMEM)-1)                        /* Do not attach to a window */

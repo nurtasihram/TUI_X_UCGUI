@@ -76,7 +76,6 @@
     <ClCompile Include="GUI\Widget\GUI_DRAW.c" />
     <ClCompile Include="GUI\Widget\GUI_DRAW_BITMAP.c" />
     <ClCompile Include="GUI\Widget\GUI_DRAW_Self.c" />
-    <ClCompile Include="GUI\Widget\GUI_HOOK.c" />
     <ClCompile Include="GUI\Widget\HEADER.c" />
     <ClCompile Include="GUI\Widget\LISTBOX.c" />
     <ClCompile Include="GUI\Widget\LISTVIEW.c" />
@@ -128,7 +127,6 @@
     <ClInclude Include="GUI\Widget\FRAMEWIN.h" />
     <ClInclude Include="GUI\Widget\FRAMEWIN_Private.h" />
     <ClInclude Include="GUI\Widget\GUI_ARRAY.h" />
-    <ClInclude Include="GUI\Widget\GUI_HOOK.h" />
     <ClInclude Include="GUI\Widget\HEADER.h" />
     <ClInclude Include="GUI\Widget\HEADER_Private.h" />
     <ClInclude Include="GUI\Widget\LISTBOX.h" />
