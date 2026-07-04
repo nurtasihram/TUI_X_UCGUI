@@ -27,25 +27,6 @@ generate any code !
 #define WM_SUPPORT_NOTIFY_VIS_CHANGED 0
 #endif
 
-typedef struct {
-	int16_t Key, PressedCnt;
-} WM_KEY_INFO;
-
-typedef struct {
-	int16_t NumItems, v, PageSize;
-} WM_SCROLL_STATE;
-
-typedef struct {
-	int16_t Done;
-	int16_t ReturnValue;
-} WM_DIALOG_STATUS;
-
-typedef struct {
-	int16_t x, y;
-	uint8_t State;
-	uint8_t StatePrev;
-} WM_PID_STATE_CHANGED_INFO;
-
 /*********************************************************************
 *
 *               Messages Ids
@@ -128,19 +109,13 @@ The following is the list of windows messages.
 #define WM_NOTIFICATION_WIDGET             11      /* Space for widget defined notifications */
 #define WM_NOTIFICATION_USER               16      /* Space for  application (user) defined notifications */
 
-#define WM_HWIN        GUI_HWIN
-#define WM_HMEM        GUI_HMEM
-
-#define WM_HBKWIN      WM_GetDesktopWindow()                /* Handle of background window */
-#define WM_UNATTACHED  ((WM_HMEM)-1)                        /* Do not attach to a window */
-
-											/*********************************************************************
-											*
-											*           Window create flags.
-											* These flags can be passed to the create window
-											* function as flag-parameter. The flags are combinable using the
-											* binary or operator.
-											*/
+/*********************************************************************
+*
+*           Window create flags.
+* These flags can be passed to the create window
+* function as flag-parameter. The flags are combinable using the
+* binary or operator.
+*/
 
 #define WM_CF_HASTRANS         (1<<0)  /* Has transparency. Needs to be defined for windows which do not fill the entire
 										section of their (client) rectangle. */
@@ -167,6 +142,31 @@ The following is the list of windows messages.
 #define WM_CF_MEMDEV_ON_REDRAW (1<<13)
 #define WM_CF_RESERVED3        (1<<14)
 #define WM_CF_RESERVED4        (1<<15)
+
+typedef struct {
+	int16_t Key, PressedCnt;
+} WM_KEY_INFO;
+
+typedef struct {
+	int16_t NumItems, v, PageSize;
+} WM_SCROLL_STATE;
+
+typedef struct {
+	int16_t Done;
+	int16_t ReturnValue;
+} WM_DIALOG_STATUS;
+
+typedef struct {
+	int16_t x, y;
+	uint8_t State;
+	uint8_t StatePrev;
+} WM_PID_STATE_CHANGED_INFO;
+
+#define WM_HWIN GUI_HWIN
+#define WM_HMEM GUI_HMEM
+
+#define WM_HBKWIN      WM_GetDesktopWindow()                /* Handle of background window */
+#define WM_UNATTACHED  ((WM_HMEM)-1)                        /* Do not attach to a window */
 
 typedef uintptr_t WM_PARAM;
 
@@ -215,10 +215,10 @@ void    WM_InvalidateArea(const GUI_RECT *pRect);
 void    WM_InvalidateRect(WM_HWIN hWin, const GUI_RECT *pRect);
 void    WM_Invalidate(WM_HWIN hWin);
 void    WM_InvalidateDescs(WM_HWIN hWin);    /* not to be documented (may change in future version) */
-int     WM_IsEnabled(WM_HWIN hObj);
-int     WM_IsFocussable(WM_HWIN hWin);
-int     WM_IsVisible(WM_HWIN hWin);
-int     WM_IsWindow(WM_HWIN hWin);    /* Check validity */
+BOOL    WM_IsEnabled(WM_HWIN hObj);
+BOOL    WM_IsFocussable(WM_HWIN hWin);
+BOOL    WM_IsVisible(WM_HWIN hWin);
+BOOL    WM_IsWindow(WM_HWIN hWin);    /* Check validity */
 void    WM_SetHasTrans(WM_HWIN hWin);
 void    WM_SetId(WM_HWIN hObj, int Id);
 void    WM_SetTransState(WM_HWIN hWin, unsigned State);
@@ -321,8 +321,8 @@ WM_PARAM  WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMs
 
 void      WM_SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE *pState);
 void      WM_SetEnableState(WM_HWIN hItem, int State);
-int       WM_HasCaptured(WM_HWIN hWin);
-int       WM_HasFocus(WM_HWIN hWin);
+BOOL      WM_HasCaptured(WM_HWIN hWin);
+BOOL      WM_HasFocus(WM_HWIN hWin);
 int       WM_SetFocus(WM_HWIN hWin);
 WM_HWIN   WM_SetFocusOnNextChild(WM_HWIN hParent);     /* Set the focus to the next child */
 WM_HWIN   WM_SetFocusOnPrevChild(WM_HWIN hParent);     /* Set the focus to the previous child */
@@ -337,8 +337,6 @@ int       WM_HandlePID(void);
 WM_HWIN   WM_Screen2hWin(int x, int y);
 WM_HWIN   WM_Screen2hWinEx(WM_HWIN hStop, int x, int y);
 void      WM_ForEachDesc(WM_HWIN hWin, WM_tfForEach *pcb, void *pData);
-
-void WM_DIAG_EnableInvalidationColoring(int OnOff);
 
 #if defined(__cplusplus)
 }

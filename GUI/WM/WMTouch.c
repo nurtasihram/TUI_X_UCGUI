@@ -4,11 +4,10 @@
 WM_CRITICAL_HANDLE  WM__CHWinModal;
 WM_CRITICAL_HANDLE  WM__CHWinLast;
 
-int WM__IsInModalArea(WM_HWIN hWin) {
-	return
-		!WM__CHWinModal.hWin ||
+BOOL WM__IsInModalArea(WM_HWIN hWin) {
+	return (!WM__CHWinModal.hWin ||
 		WM__IsAncestor(hWin, WM__CHWinModal.hWin) ||
-		WM__CHWinModal.hWin == hWin;
+		WM__CHWinModal.hWin == hWin) ? TRUE : FALSE;
 }
 
 void WM__SendMessageIfEnabled(WM_HWIN hWin, int MsgId, WM_PARAM Data, WM_MESSAGE *pMsg) {

@@ -5,10 +5,14 @@
 #include "LCD.h"
 #include "GUIConf.h"
 
+typedef int BOOL;
+#define TRUE 1
+#define FALSE 0
+
 typedef const char *GUI_ConstString;
 
 typedef struct {
-	void      (*pfDraw)(int x0, int y0, int xsize, int ysize, const uint8_t  *pPixel, const GUI_LOGPALETTE  *pLogPal, int xMag, int yMag);
+	void(*pfDraw)(int x0, int y0, int xsize, int ysize, const uint8_t  *pPixel, const GUI_LOGPALETTE  *pLogPal, int xMag, int yMag);
 } GUI_BITMAP_METHODS;
 
 typedef struct {
