@@ -1,10 +1,13 @@
 ﻿#pragma once
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
+
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
+
 typedef WM_HMEM DROPDOWN_Handle;
+
 #define DROPDOWN_CF_AUTOSCROLLBAR   (1 << 0)
 #define DROPDOWN_CF_UP              (1 << 1)
 #define DROPDOWN_CI_UNSEL    0
@@ -41,6 +44,7 @@ void     DROPDOWN_SetTextColor    (DROPDOWN_Handle hObj, unsigned int index, RGB
 void     DROPDOWN_SetTextHeight   (DROPDOWN_Handle hObj, unsigned TextHeight);
 const GUI_FONT  * DROPDOWN_GetDefaultFont(void);
 void            DROPDOWN_SetDefaultFont(const GUI_FONT* pFont);
+
 #if defined(__cplusplus)
   }
 #endif

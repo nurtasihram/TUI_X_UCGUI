@@ -408,12 +408,17 @@ void main(void) {
 		_MemDevPhase = 0;
 		_hMemDevFrame = _CreateMemDevFrame(280, 50, "MemDev ON", 1, &_hMemDevPane);
 		_hNoMemDevFrame = _CreateMemDevFrame(480, 50, "MemDev OFF", 0, &_hNoMemDevPane);
-		WM_HWIN hDrp = DROPDOWN_Create(WM_GetClientWindow(hDialog), 10, 110, 100, 80, WM_CF_SHOW);
+		WM_HWIN hDrp = DROPDOWN_CreateEx(10, 110, 100, 80,
+										 WM_GetClientWindow(hDialog), 
+										 WM_CF_SHOW, DROPDOWN_CF_AUTOSCROLLBAR, 0);
+		DROPDOWN_AddString(hDrp, "1");
 		DROPDOWN_AddString(hDrp, "12");
 		DROPDOWN_AddString(hDrp, "123");
-		DROPDOWN_AddString(hDrp, "124");
-		DROPDOWN_AddString(hDrp, "125");
-		DROPDOWN_AddString(hDrp, "12578");
+		DROPDOWN_AddString(hDrp, "1234");
+		DROPDOWN_AddString(hDrp, "12345");
+		DROPDOWN_AddString(hDrp, "123456");
+		DROPDOWN_AddString(hDrp, "1234567");
+		DROPDOWN_AddString(hDrp, "12345678");
 		WM_DIALOG_STATUS DialogStatus = { 0 };
 		/* Let window know how to send feedback (close info & return value) */
 		GUI_SetDialogStatusPtr(hDialog, &DialogStatus);

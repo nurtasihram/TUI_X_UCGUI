@@ -1,4 +1,4 @@
-#include "GUIDebug.h"
+﻿#include "GUIDebug.h"
 #include "GUI_Protected.h"
 #include "GUI_ARRAY.h"
 
@@ -251,7 +251,7 @@ int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 				}
 				else {
 					if (ItemIndex == pObj->Sel) {
-						ColorIndex = (pObj->Widget.State & WIDGET_STATE_FOCUS) ? 2 : 1;
+						ColorIndex = (pObj->Widget.State & WIDGET_STATE_FOCUS || pObj->hOwner) ? 2 : 1;
 					}
 					else {
 						ColorIndex = 0;
@@ -542,13 +542,13 @@ static int _OnKey(LISTBOX_Obj *pObj, const WM_KEY_INFO *pInfo) {
 }
 static WM_PARAM _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	LISTBOX_Obj *pObj = hWin;
-	/* Let widget handle the standard messages */
-	if (!WIDGET_HandleActive(pObj, MsgId, &Data)) {
-		/* Owner needs to be informed about focus change */
-		if (MsgId == WM_SET_FOCUS)
-			if (!Data) /* Lost focus ? */
-				_NotifyOwner(pObj, LISTBOX_NOTIFICATION_LOST_FOCUS);
-		return Data;
+	/* In popup mode (hOwner set), bypass WIDGET_HandleActive for WM_PID_STATE_CHANGED.
+	 * WIDGET_HandleActive internally calls WM_SetFocus on press, which would steal
+	 * focus from the dropdown and cause its parent window to flicker. */
+	if (!(pObj->hOwner && MsgId == WM_PID_STATE_CHANGED)) {
+		/* Let widget handle the standard messages */
+		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+			return Data;
 	}
 	switch (MsgId) {
 		case WM_NOTIFY_PARENT: {
@@ -593,9 +593,20 @@ static WM_PARAM _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			}
 			return 0;
 		}
-		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
+		case WM_TOUCH: {
+			const GUI_PID_STATE *pState = (const GUI_PID_STATE *)Data;
+			if (pObj->hOwner && pState) {
+				GUI_RECT r;
+				WM_GetClientRectEx(&pObj->Widget.Win, &r);
+				if (pState->x < 0 || pState->y < 0 || pState->x > r.x1 || pState->y > r.y1) {
+					if (pState->Pressed)
+						_NotifyOwner(pObj, LISTBOX_NOTIFICATION_LOST_FOCUS);
+					return 0;
+				}
+			}
+			_OnTouch(pObj, pState);
 			return 0;
+		}
 #if GUI_SUPPORT_MOUSE
 		case WM_MOUSEOVER:
 			_OnMouseOver(pObj, (const GUI_PID_STATE *)Data);

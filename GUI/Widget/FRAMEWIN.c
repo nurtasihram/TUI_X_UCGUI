@@ -214,7 +214,7 @@ static WM_PARAM _FRAMEWIN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			}
 			else
 				FRAMEWIN_SetActive(pObj, 0);
-			return 1;
+			return 0;
 		case WM_TOUCH_CHILD:
 			/* If a child of this framewindow has been touched and the frame window was not active,
 			   the framewindow will receive the focus.
@@ -262,7 +262,7 @@ static WM_PARAM FRAMEWIN__cbClient(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 					pParent->hFocussedChild = WM_SetFocusOnNextChild(hWin);
 				return 0; /* Focus change accepted */
 			}
-			return 1;
+			return 0;
 		case WM_GET_ACCEPT_FOCUS:
 			WIDGET_HandleActive(pParent, MsgId, &Data);
 			return Data;

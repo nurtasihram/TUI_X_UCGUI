@@ -41,10 +41,9 @@ extern int  LCD_L0_Init(void) {
 		if (xPos < 0 || yPos < 0)
 			return;
 		static GUI_PID_STATE _State;
-		if (mk.Left) _State.Pressed = 1;
-		else _State.Pressed = 0;
 		_State.x = xPos;
 		_State.y = yPos;
+		_State.Pressed = mk.Left;
 		GUI_PID_StoreState(&_State);
 	});
 	SimDisp::SetOnDestroy([] {

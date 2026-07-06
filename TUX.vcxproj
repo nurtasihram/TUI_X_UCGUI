@@ -160,6 +160,7 @@
     <ResourceCompile Include="GUI_X\SimDisp.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".github\copilot-instructions.md" />
     <None Include="GUI\Core\Dots.inl" />
     <None Include="test_cert.pfx" />
   </ItemGroup>

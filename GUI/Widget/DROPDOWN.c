@@ -92,6 +92,7 @@ static void _SelectByKey(DROPDOWN_Handle hObj, int Key) {
 static void _FreeAttached(DROPDOWN_Obj *pObj) {
 	GUI_ARRAY_Delete(&pObj->Handles);
 	WM_DeleteWindow(pObj->hListWin);
+	pObj->hListWin = 0;
 }
 static void _OnPaint(DROPDOWN_Handle hObj) {
 	int Border;
@@ -133,10 +134,18 @@ static void _OnPaint(DROPDOWN_Handle hObj) {
 	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &r);
 }
 static void _OnTouch(DROPDOWN_Obj *pObj, const GUI_PID_STATE *pState) {
-	if (pState) /* Something happened in our area (pressed or released) */
-		WM_NotifyParent(pObj, pState->Pressed ? WM_NOTIFICATION_CLICKED : WM_NOTIFICATION_RELEASED);
-	else /* Mouse moved out */
+	if (pState) { /* Something happened in our area (pressed or released) */
+		if (pState->Pressed) {
+			DROPDOWN_Expand(pObj);
+			WM_NotifyParent(pObj, WM_NOTIFICATION_CLICKED);
+		}
+		else {
+			WM_NotifyParent(pObj, WM_NOTIFICATION_RELEASED);
+		}
+	}
+	else { /* Mouse moved out */
 		WM_NotifyParent(pObj, WM_NOTIFICATION_MOVED_OUT);
+	}
 }
 static int _OnKey(DROPDOWN_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	if (pInfo->PressedCnt > 0) {
@@ -162,7 +171,7 @@ void DROPDOWN__AdjustHeight(DROPDOWN_Obj *pObj) {
 }
 static WM_PARAM _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	DROPDOWN_Obj *pObj = hWin;
-	char IsExpandedBeforeMsg = pObj->hListWin ? 1 : 0;
+	char IsExpandedBeforeMsg = (pObj->hListWin && WM_IsVisible(pObj->hListWin)) ? 1 : 0;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 		return Data;
@@ -173,8 +182,14 @@ static WM_PARAM _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 				case WM_NOTIFICATION_SCROLL_CHANGED:
 					WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					break;
-				case WM_NOTIFICATION_CLICKED:
-					DROPDOWN_SetSel(pObj, LISTBOX_GetSel(pObj->hListWin));
+				case WM_NOTIFICATION_CLICKED: {
+					WM_HWIN hListWin = pInfo->hWinSrc;
+					int Sel = LISTBOX_GetSel(hListWin);
+					DROPDOWN_SetSel(pObj, Sel);
+					break;
+				}
+				case WM_NOTIFICATION_RELEASED:
+					DROPDOWN_Collapse(pObj);
 					WM_SetFocus(pObj);
 					break;
 				case LISTBOX_NOTIFICATION_LOST_FOCUS:
@@ -200,7 +215,7 @@ static WM_PARAM _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			_FreeAttached(pObj);
 			return 0;
 		case WM_KEY:
-			if (_OnKey(pObj, (const WM_KEY_INFO *)Data)) 
+			if (_OnKey(pObj, (const WM_KEY_INFO *)Data))
 				return 0;
 			break;
 	}
@@ -232,8 +247,10 @@ void DROPDOWN_Collapse(DROPDOWN_Handle hObj) {
 
 		pObj = (hObj);
 		if (pObj->hListWin) {
-			WM_DeleteWindow(pObj->hListWin);
+			WM_HWIN hListWin = pObj->hListWin;
 			pObj->hListWin = 0;
+			WM_ReleaseCapture();
+			WM_DeleteWindow(hListWin);
 		}
 
 	}
@@ -242,51 +259,52 @@ void DROPDOWN_Expand(DROPDOWN_Handle hObj) {
 	int xSize, ySize, i, NumItems;
 	WM_HWIN hLst;
 	GUI_RECT r;
-	WM_HWIN hParent;
-	WM_Obj *pParent;
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
 
 		pObj = (hObj);
-		if (pObj->hListWin == 0) {
-			hParent = WM_GetParent(hObj);
-			pParent = (hParent);
-			xSize = WM__GetWindowSizeX(&pObj->Widget.Win);
-			ySize = pObj->ySizeEx;
-			NumItems = _GetNumItems(pObj);
-			/* Get coordinates of window in client coordiantes of parent */
-			r = pObj->Widget.Win.Rect;
-			GUI_MoveRect(&r, -pParent->Rect.x0, -pParent->Rect.y0);
-			if (pObj->Flags & DROPDOWN_CF_UP) {
-				r.y0 -= ySize;
+		xSize = WM__GetWindowSizeX(&pObj->Widget.Win);
+		ySize = pObj->ySizeEx;
+		NumItems = _GetNumItems(pObj);
+		WM_GetWindowRectEx(hObj, &r);
+		if (pObj->Flags & DROPDOWN_CF_UP) {
+			r.y0 -= ySize;
+		}
+		else {
+			r.y0 = r.y1 + 1;
+		}
+		hLst = pObj->hListWin;
+		if (hLst == 0) {
+			hLst = LISTBOX_CreateAsChild(NULL, WM_GetDesktopWindow(), r.x0, r.y0
+										 , xSize, ySize, WM_CF_SHOW | WM_CF_STAYONTOP | WM_CF_ACTIVATE);
+			if (hLst) {
+				if (pObj->Flags & DROPDOWN_SF_AUTOSCROLLBAR) {
+					LISTBOX_SetScrollbarWidth(hLst, pObj->ScrollbarWidth);
+					LISTBOX_SetAutoScrollV(hLst, 1);
+				}
+				pObj->hListWin = hLst;
+				LISTBOX_SetOwner(hLst, hObj);
 			}
-			else {
-				r.y0 = r.y1;
-			}
-			hLst = LISTBOX_CreateAsChild(NULL, WM_GetParent(hObj), r.x0, r.y0
-										 , xSize, ySize, WM_CF_SHOW);
-			if (pObj->Flags & DROPDOWN_SF_AUTOSCROLLBAR) {
-				LISTBOX_SetScrollbarWidth(hLst, pObj->ScrollbarWidth);
-				LISTBOX_SetAutoScrollV(hLst, 1);
-			}
-			for (i = 0; i < NumItems; i++) {
+		}
+		else {
+			WM_MoveTo(hLst, r.x0, r.y0);
+			WM_ShowWindow(hLst);
+		}
+		if (hLst) {
+			while (LISTBOX_GetNumItems(hLst) > 0)
+				LISTBOX_DeleteItem(hLst, 0);
+			for (i = 0; i < NumItems; i++)
 				LISTBOX_AddString(hLst, _GetpItem(pObj, i));
-			}
-			for (i = 0; i < GUI_COUNTOF(pObj->Props.aBackColor); i++) {
+			for (i = 0; i < GUI_COUNTOF(pObj->Props.aBackColor); i++)
 				LISTBOX_SetBkColor(hLst, i, pObj->Props.aBackColor[i]);
-			}
-			for (i = 0; i < GUI_COUNTOF(pObj->Props.aTextColor); i++) {
+			for (i = 0; i < GUI_COUNTOF(pObj->Props.aTextColor); i++)
 				LISTBOX_SetTextColor(hLst, i, pObj->Props.aTextColor[i]);
-			}
 			LISTBOX_SetItemSpacing(hLst, pObj->ItemSpacing);
 			LISTBOX_SetFont(hLst, pObj->Props.pFont);
-			WM_SetFocus(hLst);
-			pObj->hListWin = hLst;
-			LISTBOX_SetOwner(hLst, hObj);
 			LISTBOX_SetSel(hLst, pObj->Sel);
 			WM_NotifyParent(hObj, WM_NOTIFICATION_CLICKED);
+			WM_SetCapture(hLst, 0);
 		}
-
 	}
 }
 void DROPDOWN_AddKey(DROPDOWN_Handle hObj, int Key) {
@@ -327,7 +345,7 @@ int DROPDOWN_GetNumItems(DROPDOWN_Handle hObj) {
 	}
 	return r;
 }
-void DROPDOWN_SetFont(DROPDOWN_Handle hObj, const GUI_FONT  *pfont) {
+void DROPDOWN_SetFont(DROPDOWN_Handle hObj, const GUI_FONT *pfont) {
 	int OldHeight;
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
@@ -434,7 +452,7 @@ void DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width) {
 void DROPDOWN_SetDefaultFont(const GUI_FONT *pFont) {
 	DROPDOWN__DefaultProps.pFont = pFont;
 }
-const GUI_FONT  *DROPDOWN_GetDefaultFont(void) {
+const GUI_FONT *DROPDOWN_GetDefaultFont(void) {
 	return DROPDOWN__DefaultProps.pFont;
 }
 

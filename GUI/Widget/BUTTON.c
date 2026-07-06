@@ -160,7 +160,7 @@ static void _OnPidStateChange(BUTTON_Obj *pObj, const WM_PID_STATE_CHANGED_INFO 
 			_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
 }
 #endif
-WM_PARAM BUTTON_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _BUTTON_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	BUTTON_Obj *pObj = hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -192,7 +192,7 @@ BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 	BUTTON_Handle hObj;
 	GUI_USE_PARA(ExFlags);
 	/* Create the window */
-	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, BUTTON_Callback,
+	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _BUTTON_Callback,
 								  sizeof(BUTTON_Obj) - sizeof(WM_Obj));
 	if (hObj) {
 		BUTTON_Obj *pObj = (hObj);

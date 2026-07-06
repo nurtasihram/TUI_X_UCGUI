@@ -439,5 +439,6 @@
     <None Include="GUI\Core\Dots.inl">
       <Filter>GUI\Core</Filter>
     </None>
+    <None Include=".github\copilot-instructions.md" />
   </ItemGroup>
 </Project>

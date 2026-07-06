@@ -25,7 +25,7 @@ typedef struct {
 	WM_HWIN hListWin;
 	uint8_t      Flags;
 	uint16_t     ItemSpacing;
-	uint8_t      ScrollbarWidth;
+	uint8_t     ScrollbarWidth;
 	char  IsPressed;
 } DROPDOWN_Obj;
 
