@@ -51,52 +51,7 @@
     <ClCompile Include="GUI\MemDev\GUIDEV_16.c">
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_Auto.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_Banding.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_Clear.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_CopyFromLCD.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_GetDataPtr.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_GetXSize.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_GetYSize.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_Measure.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_ReduceYSize.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_SetOrg.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_Usage.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\MemDev\GUIDEV_UsageBM.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_Write.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_WriteAlpha.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_WriteEx.c">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_XY2PTR.c">
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
     <ClCompile Include="GUI\WM\WM.c">

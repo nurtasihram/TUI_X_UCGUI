@@ -6,19 +6,14 @@
 /* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
 
-#define PIXELINDEX    uint16_t
-#define API_LIST      GUI_MEMDEV__APIList16
+#define PIXELINDEX uint16_t
 
 static const RGB_COLOR aID[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
 static PIXELINDEX *_XY2PTR(int x, int y) {
 	GUI_MEMDEV *pDev = (GUI_Context.hDevData);
 	uint8_t *pData = (uint8_t *)(pDev + 1);
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-	if ((x >= pDev->x0 + pDev->XSize) | (x < pDev->x0) | (y >= pDev->y0 + pDev->YSize) | (y < pDev->y0)) {
-	}
-#endif
-	pData += (size_t)(y - pDev->y0) * (size_t)pDev->BytesPerLine;
+	pData += (y - pDev->y0) * pDev->BytesPerLine;
 	return ((PIXELINDEX *)pData) + x - pDev->x0;
 }
 
@@ -398,8 +393,7 @@ static void _DrawVLine(int x, int y0, int y1) {
 		} while (++y0 <= y1);
 	}
 	else {
-		unsigned NumPixels;
-		NumPixels = y1 - y0 + 1;
+		unsigned NumPixels = y1 - y0 + 1;
 		do {
 			*pData = LCD_COLORINDEX;
 			pData = (PIXELINDEX *)((uint8_t *)pData + BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
@@ -422,16 +416,16 @@ static RGB_COLOR _GetPixel(int x, int y) {
 	return *pData;
 }
 
-const tLCDDEV_APIList API_LIST = {
-  (tLCDDEV_DrawBitmap *)_DrawBitmap,
-  _DrawHLine,
-  _DrawVLine,
-  _FillRect,
-  _GetPixel,
-  GUI_MEMDEV__GetRect,
-  _SetPixel,
-  NULL, /* MemDevAPI       */
-  16    /* BitsPerPixel    */
+const tLCDDEV_APIList GUI_MEMDEV__APIList16 = {
+	(tLCDDEV_DrawBitmap *)_DrawBitmap,
+	_DrawHLine,
+	_DrawVLine,
+	_FillRect,
+	_GetPixel,
+	GUI_MEMDEV__GetRect,
+	_SetPixel,
+	NULL, /* MemDevAPI */
+	16    /* BitsPerPixel */
 };
 
 #endif /* GUI_SUPPORT_MEMDEV */

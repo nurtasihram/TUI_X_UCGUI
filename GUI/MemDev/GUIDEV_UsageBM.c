@@ -192,9 +192,4 @@ GUI_USAGE_Handle GUI_USAGE_BM_Create(int x0, int y0, int xsize, int ysize, int F
   return hMem;
 }
 
-#else
-
-void GUIDEV_UsageBM(void) {} /* avoid empty object files */
-
 #endif /* GUI_SUPPORT_MEMDEV */
-
