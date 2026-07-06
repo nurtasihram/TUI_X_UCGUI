@@ -79,16 +79,11 @@ void LCD_DrawVLine(int x, int y0,  int y1);
 void LCD_SetClipRectEx(const GUI_RECT* pRect);
 void LCD_SetClipRectMax(void);
 
-/* Initialize LCD using config-paramters */
-int LCD_Init(void);
-
 void LCD_SetPixel(int x, int y, int Color);
 RGB_COLOR LCD_GetPixel(int x, int y);
 
 GUI_DRAWMODE LCD_SetDrawMode(GUI_DRAWMODE dm);
 void LCD_FillRect(int x0, int y0, int x1, int y1);
-
-RGB_COLOR LCD_MixColors256(RGB_COLOR Color, RGB_COLOR BkColor, unsigned Intens);
 
 void LCD_X_Init(void);
 

@@ -7,34 +7,33 @@
 #include "WM_GUI.h"
 #include "WM.h"
 
-int GUI_Init(void) {
-	int r;
+void GUI_Init(void) {
 	GUI_X_Init();
 	/* Init context */
 	/* memset(..,0,..) is not required, as this function is called only at startup of the GUI when data is 0 */
 #if GUI_SUPPORT_DEVICES
 	GUI_Context.pDeviceAPI = LCD_aAPI[0]; /* &LCD_L0_APIList; */
 #endif
-	GUI_Context.pClipRect_HL = &GUI_Context.ClipRect;
 	LCD_L0_GetRect(&GUI_Context.ClipRect);
 	GUI_Context.pAFont = GUI_DEFAULT_FONT;
-	GUI_Context.pClipRect_HL = &GUI_Context.ClipRect;
 	GUI_Context.hAWin = WM_GetDesktopWindow();
 	GUI_Context.Color = GUI_INVALID_COLOR;
 	GUI_Context.BkColor = GUI_INVALID_COLOR;
 	GUI_SetBkColor(GUI_DEFAULT_BKCOLOR);
 	GUI_SetColor(GUI_DEFAULT_COLOR);
 	GUI_Context.pUC_API = &GUI__API_TableNone;
-	r = LCD_Init();
+	LCD_SetClipRectMax();
+	LCD_L0_Init();
+	LCD_SetDrawMode(DRAWMODE_REV);
+	LCD_FillRect(0, 0, GUI_XMAX, GUI_YMAX);
+	LCD_SetDrawMode(0);
 	WM_Init();
-	return r;
 }
 void GUI_SelectLCD(void) {
 #if GUI_SUPPORT_DEVICES
 	GUI_Context.pDeviceAPI = LCD_aAPI[0];
 	GUI_Context.hDevData = 0;
 #endif
-	GUI_Context.pClipRect_HL = &GUI_Context.ClipRect;
 	LCD_SetClipRectMax();
 	GUI_SetColor(GUI_Context.Color);
 	GUI_SetBkColor(GUI_Context.BkColor);
@@ -61,8 +60,8 @@ int GUI_Exec(void) {
 }
 
 void GUI_GotoXY(int x, int y) {
-	GUI_Context.DispPosX = x;
-	GUI_Context.DispPosY = y;
+	GUI_Context.DispPos.x = x;
+	GUI_Context.DispPos.y = y;
 }
 
 #pragma region Set/Get Properties
@@ -82,47 +81,31 @@ void GUI_RestoreContext(const GUI_CONTEXT *pContext) {
 	GUI_Context = *pContext;
 }
 
-int GUI_SetLBorder(int x) {
-	int r;
-	r = GUI_Context.LBorder;
-	GUI_Context.LBorder = x;
-	return r;
-}
-
 GUI_DRAWMODE GUI_SetDrawMode(GUI_DRAWMODE dm) {
 	GUI_DRAWMODE OldMode;
 	OldMode = LCD_SetDrawMode(dm);
 	return OldMode;
 }
 
-int GUI_SetTextAlign(int Align) {
-	int r;
-	r = GUI_Context.TextAlign;
+void GUI_SetTextAlign(int Align) {
 	GUI_Context.TextAlign = Align;
-	return r;
 }
-int GUI_GetTextAlign(void) {
-	return GUI_Context.TextAlign;
+void GUI_SetTextMode(int Mode) {
+	GUI_Context.TextMode = Mode;
 }
 
-int GUI_SetTextMode(int Mode) {
-	int r;
-	r = GUI_Context.TextMode;
-	GUI_Context.TextMode = Mode;
-	return r;
+int GUI_GetTextAlign(void) {
+	return GUI_Context.TextAlign;
 }
 int GUI_GetTextMode(void) {
 	return GUI_Context.TextMode;
 }
 
-static int _GetColorIndex(int i)  /* i is 0 or 1 */ {
-	return  (GUI_Context.DrawMode & DRAWMODE_REV) ? i - 1 : i;
-}
 void GUI_SetBkColor(RGB_COLOR color) {
-	LCD_ACOLORINDEX[_GetColorIndex(0)] = color;
+	LCD_ACOLORINDEX[(GUI_Context.DrawMode & DRAWMODE_REV) ? 1 : 0] = color;
 }
 void GUI_SetColor(RGB_COLOR color) {
-	LCD_ACOLORINDEX[_GetColorIndex(1)] = color;
+	LCD_ACOLORINDEX[(GUI_Context.DrawMode & DRAWMODE_REV) ? 0 : 1] = color;
 }
 
 RGB_COLOR GUI_GetBkColor(void) {
@@ -296,8 +279,8 @@ void GUI_GetTextExtend(GUI_RECT *pRect, const char *s, int MaxNumChars) {
 	int NumLines = 0;
 	int LineSizeX = 0;
 	uint16_t Char;
-	pRect->x0 = GUI_Context.DispPosX;
-	pRect->y0 = GUI_Context.DispPosY;
+	pRect->x0 = GUI_Context.DispPos.x;
+	pRect->y0 = GUI_Context.DispPos.y;
 	while (MaxNumChars--) {
 		Char = GUI_UC__GetCharCodeInc(&s);
 		if ((Char == '\n') || (Char == 0)) {
@@ -450,8 +433,8 @@ char GUI_IsInFont(const GUI_FONT *pFont, uint16_t c) {
 void GUIMONO_DispChar(uint16_t c) {
 	int c0, c1;
 	const uint8_t *pd;
-	int x = GUI_Context.DispPosX;
-	int y = GUI_Context.DispPosY;
+	int x = GUI_Context.DispPos.x;
+	int y = GUI_Context.DispPos.y;
 	/* do some checking if drawing is actually necessary ... */
 	const GUI_FONT_MONO *pMono = GUI_Context.pAFont->p.pMono;
 	unsigned int FirstChar = pMono->FirstChar;
@@ -525,7 +508,7 @@ void GUIMONO_DispChar(uint16_t c) {
 			LCD_SetDrawMode(OldMode);
 		}
 	}
-	GUI_Context.DispPosX += pMono->XDist;
+	GUI_Context.DispPos.x += pMono->XDist;
 
 }
 
@@ -581,7 +564,7 @@ void GUIPROP_DispChar(uint16_t c) {
 		const GUI_CHARINFO *pCharInfo = pProp->paCharInfo + (c - pProp->First);
 		BytesPerLine = pCharInfo->BytesPerLine;
 		OldDrawMode = LCD_SetDrawMode(DrawMode);
-		LCD_DrawBitmap(GUI_Context.DispPosX, GUI_Context.DispPosY,
+		LCD_DrawBitmap(GUI_Context.DispPos.x, GUI_Context.DispPos.y,
 					   pCharInfo->XSize, GUI_Context.pAFont->YSize,
 					   1,     /* Bits per Pixel */
 					   BytesPerLine,
@@ -595,15 +578,15 @@ void GUIPROP_DispChar(uint16_t c) {
 			if (DrawMode != DRAWMODE_TRANS) {
 				RGB_COLOR OldColor = GUI_GetColor();
 				GUI_SetColor(GUI_GetBkColor());
-				LCD_FillRect(GUI_Context.DispPosX,
-							 GUI_Context.DispPosY + YSize,
-							 GUI_Context.DispPosX + pCharInfo->XSize,
-							 GUI_Context.DispPosY + YDist);
+				LCD_FillRect(GUI_Context.DispPos.x,
+							 GUI_Context.DispPos.y + YSize,
+							 GUI_Context.DispPos.x + pCharInfo->XSize,
+							 GUI_Context.DispPos.y + YDist);
 				GUI_SetColor(OldColor);
 			}
 		}
 		LCD_SetDrawMode(OldDrawMode); /* Restore draw mode */
-		GUI_Context.DispPosX += pCharInfo->XDist;
+		GUI_Context.DispPos.x += pCharInfo->XDist;
 	}
 }
 
@@ -628,20 +611,12 @@ char GUIPROP_IsInFont(const GUI_FONT *pFont, uint16_t c) {
 
 static void _DispLine(const char *s, int MaxNumChars, const GUI_RECT *pRect) {
 	/* Check if we have anything to do at all ... */
-	if (GUI_Context.pClipRect_HL) {
-		if (GUI_RectsIntersect(GUI_Context.pClipRect_HL, pRect) == 0)
-			return;
-	}
-	if (GUI_Context.pAFont->pafEncode) {
+	if (!GUI_RectsIntersect(&GUI_Context.ClipRect, pRect))
+		return;
+	if (GUI_Context.pAFont->pafEncode)
 		GUI_Context.pAFont->pafEncode->pfDispLine(s, MaxNumChars);
-	}
-	else {
-		uint16_t Char;
-		while (--MaxNumChars >= 0) {
-			Char = GUI_UC__GetCharCodeInc(&s);
-			GUI_Context.pAFont->pfDispChar(Char);
-		}
-	}
+	else while (MaxNumChars--) 
+		GUI_Context.pAFont->pfDispChar(GUI_UC__GetCharCodeInc(&s));
 }
 void GUI__DispLine(const char *s, int MaxNumChars, const GUI_RECT *pr) {
 	GUI_RECT r;
@@ -649,12 +624,12 @@ void GUI__DispLine(const char *s, int MaxNumChars, const GUI_RECT *pr) {
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
 	WM_ITERATE_START(&r) {
-		GUI_Context.DispPosX = r.x0;
-		GUI_Context.DispPosY = r.y0;
+		GUI_Context.DispPos.x = r.x0;
+		GUI_Context.DispPos.y = r.y0;
 		/* Do the actual drawing via routine call. */
 		_DispLine(s, MaxNumChars, &r);
 	} WM_ITERATE_END();
-	WM_SUBORG(GUI_Context.DispPosX, GUI_Context.DispPosY);
+	WM_SUBORG(GUI_Context.DispPos.x, GUI_Context.DispPos.y);
 }
 
 void GUI_DispString(const char *s) {
@@ -664,10 +639,10 @@ void GUI_DispString(const char *s) {
 		return;
 
 	FontSizeY = GUI_GetFontDistY();
-	xOrg = GUI_Context.DispPosX;
+	xOrg = GUI_Context.DispPos.x;
 	/* Adjust vertical position */
 	yAdjust = GUI_GetYAdjust();
-	GUI_Context.DispPosY -= yAdjust;
+	GUI_Context.DispPos.y -= yAdjust;
 	for (; *s; s++) {
 		GUI_RECT r;
 		int LineNumChars = GUI__GetLineNumChars(s, 0x7fff);
@@ -678,39 +653,39 @@ void GUI_DispString(const char *s) {
 			case GUI_TA_RIGHT:  xAdjust = xLineSize; break;
 			default:            xAdjust = 0;
 		}
-		r.x0 = GUI_Context.DispPosX -= xAdjust;
+		r.x0 = GUI_Context.DispPos.x -= xAdjust;
 		r.x1 = r.x0 + xLineSize - 1;
-		r.y0 = GUI_Context.DispPosY;
+		r.y0 = GUI_Context.DispPos.y;
 		r.y1 = r.y0 + FontSizeY - 1;
 		GUI__DispLine(s, LineNumChars, &r);
-		GUI_Context.DispPosY = r.y0;
+		GUI_Context.DispPos.y = r.y0;
 		s += GUI_UC__NumChars2NumBytes(s, LineNumChars);
 		if ((*s == '\n') || (*s == '\r')) {
 			switch (GUI_Context.TextAlign & GUI_TA_HORIZONTAL) {
 				case GUI_TA_CENTER:
 				case GUI_TA_RIGHT:
-					GUI_Context.DispPosX = xOrg;
+					GUI_Context.DispPos.x = xOrg;
 					break;
 				default:
-					GUI_Context.DispPosX = GUI_Context.LBorder;
+					GUI_Context.DispPos.x = 0;
 					break;
 			}
 			if (*s == '\n')
-				GUI_Context.DispPosY += FontSizeY;
+				GUI_Context.DispPos.y += FontSizeY;
 		}
 		else {
-			GUI_Context.DispPosX = r.x0 + xLineSize;
+			GUI_Context.DispPos.x = r.x0 + xLineSize;
 		}
 		if (*s == 0)    /* end of string (last line) reached ? */
 			break;
 	}
-	GUI_Context.DispPosY += yAdjust;
+	GUI_Context.DispPos.y += yAdjust;
 	GUI_Context.TextAlign &= ~GUI_TA_HORIZONTAL;
 
 }
 void GUI_DispStringAt(const char *s, int x, int y) {
-	GUI_Context.DispPosX = x;
-	GUI_Context.DispPosY = y;
+	GUI_Context.DispPos.x = x;
+	GUI_Context.DispPos.y = y;
 	GUI_DispString(s);
 }
 void GUI__DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign, int MaxNumChars) {
@@ -768,9 +743,9 @@ void GUI__DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign, int Ma
 			case GUI_TA_RIGHT:
 				xLine = r.x1 - xLineSize + 1;
 		}
-		rLine.x0 = GUI_Context.DispPosX = xLine;
+		rLine.x0 = GUI_Context.DispPos.x = xLine;
 		rLine.x1 = rLine.x0 + xLineSize - 1;
-		rLine.y0 = GUI_Context.DispPosY = y;
+		rLine.y0 = GUI_Context.DispPos.y = y;
 		rLine.y1 = y + FontYSize - 1;
 		GUI__DispLine(s, LineLen, &rLine);
 		s += GUI_UC__NumChars2NumBytes(s, LineLen);
@@ -806,21 +781,21 @@ void GUI_DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign) {
 #pragma region Display Char
 void GUI_DispChar(uint16_t c) {
 	GUI_RECT r;
-	WM_ADDORG(GUI_Context.DispPosX, GUI_Context.DispPosY);
-	r.x1 = (r.x0 = GUI_Context.DispPosX) + GUI_GetCharDistX(c) - 1;
-	r.y1 = (r.y0 = GUI_Context.DispPosY) + GUI_GetFontSizeY() - 1;
+	WM_ADDORG(GUI_Context.DispPos.x, GUI_Context.DispPos.y);
+	r.x1 = (r.x0 = GUI_Context.DispPos.x) + GUI_GetCharDistX(c) - 1;
+	r.y1 = (r.y0 = GUI_Context.DispPos.y) + GUI_GetFontSizeY() - 1;
 	WM_ITERATE_START(&r) {
 		GL_DispChar(c);
 	} WM_ITERATE_END();
 	if (c != '\n') {
-		GUI_Context.DispPosX = r.x1 + 1;
+		GUI_Context.DispPos.x = r.x1 + 1;
 	}
-	WM_SUBORG(GUI_Context.DispPosX, GUI_Context.DispPosY);
+	WM_SUBORG(GUI_Context.DispPos.x, GUI_Context.DispPos.y);
 }
 
 void GUI_DispCharAt(uint16_t c, int16_t x, int16_t y) {
-	GUI_Context.DispPosX = x;
-	GUI_Context.DispPosY = y;
+	GUI_Context.DispPos.x = x;
+	GUI_Context.DispPos.y = y;
 	GUI_DispChar(c);
 }
 void GUI_DispChars(uint16_t c, int NumChars) {
@@ -829,8 +804,8 @@ void GUI_DispChars(uint16_t c, int NumChars) {
 }
 
 void GUI_DispNextLine(void) {
-	GUI_Context.DispPosY += GUI_GetFontDistY();
-	GUI_Context.DispPosX = GUI_Context.LBorder;
+	GUI_Context.DispPos.y += GUI_GetFontDistY();
+	GUI_Context.DispPos.x = 0;
 }
 void GL_DispChar(uint16_t c) {
 	/* check for control characters */
