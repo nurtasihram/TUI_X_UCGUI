@@ -10,15 +10,13 @@
 #define PROGBAR_DEFAULT_TEXTCOLOR1 RGB_BLACK
 typedef struct {
 	WIDGET Widget;
-	int v;
-	const GUI_FONT  *pFont;
+	const GUI_FONT *pFont;
 	RGB_COLOR BarColor[2];
 	RGB_COLOR TextColor[2];
 	WM_HMEM hpText;
 	int16_t XOff, YOff;
 	int16_t TextAlign;
-	int Min, Max;
-	/*  int16_t Options; */
+	int16_t v, Min, Max;
 } PROGBAR_Obj;
 #define Invalidate(h) WM_Invalidate(h)
 static void _FreeText(PROGBAR_Obj *pObj) {
@@ -96,14 +94,14 @@ static void _OnPaint(PROGBAR_Obj *pObj) {
 	GUI_RECT r, rInside, rClient, rText;
 	const char *pText;
 	char ac[5];
-	int tm, xPos;
+	int xPos;
 	WM_GetClientRect(&rClient);
 	GUI__ReduceRect(&rInside, &rClient, pObj->Widget.pEffect->EffectSize);
 	xPos = _Value2X(pObj, pObj->v);
 	pText = _GetText(pObj, ac);
 	GUI_SetFont(pObj->pFont);
 	_GetTextRect(pObj, &rText, pText);
-	tm = GUI_SetTextMode(DRAWMODE_TRANS);
+	GUI_SetTextMode(DRAWMODE_TRANS);
 	/* Draw left bar */
 	r = rInside;
 	r.x1 = xPos - 1;
@@ -115,7 +113,6 @@ static void _OnPaint(PROGBAR_Obj *pObj) {
 	WM_SetUserClipRect(&r);
 	_DrawPart(pObj, 1, rText.x0, rText.y0, pText);
 	WM_SetUserClipRect(NULL);
-	GUI_SetTextMode(tm);
 	WIDGET__EFFECT_DrawDownRect(&pObj->Widget, &rClient);
 }
 static void _Delete(PROGBAR_Obj *pObj) {

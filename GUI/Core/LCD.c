@@ -17,26 +17,6 @@ void LCD_SetClipRectEx(const GUI_RECT *pRect) {
 	GUI__IntersectRects(&GUI_Context.ClipRect, pRect, &r);
 }
 
-int LCD_Init(void) {
-	LCD_SetClipRectMax();
-	LCD_L0_Init();
-	LCD_SetDrawMode(DRAWMODE_REV);
-	LCD_FillRect(0, 0, GUI_XMAX, GUI_YMAX);
-	LCD_SetDrawMode(0);
-	return 0;
-}
-
-GUI_DRAWMODE LCD_SetDrawMode(GUI_DRAWMODE dm) {
-	GUI_DRAWMODE OldDM = GUI_Context.DrawMode;
-	if ((GUI_Context.DrawMode ^ dm) & DRAWMODE_REV) {
-		RGB_COLOR temp = LCD_BKCOLORINDEX;
-		LCD_BKCOLORINDEX = LCD_COLORINDEX;
-		LCD_COLORINDEX = temp;
-	}
-	GUI_Context.DrawMode = dm;
-	return OldDM;
-}
-
 #define RETURN_IF_Y_OUT() \
   if (y < GUI_Context.ClipRect.y0) return;             \
   if (y > GUI_Context.ClipRect.y1) return;

@@ -6,49 +6,49 @@
 
 static int _KeyMsgCnt;
 static struct {
-  int Key;
-  int PressedCnt;
+	int Key;
+	int PressedCnt;
 } _KeyMsg;
 
 static int _Key;
 
 int GUI_GetKey(void) {
-  int r = _Key;
-  _Key = 0;
-  return r;
+	int r = _Key;
+	_Key = 0;
+	return r;
 }
 
 void GUI_StoreKey(int Key) {
-  if (!_Key) {
-    _Key = Key;
-  }
+	if (!_Key) {
+		_Key = Key;
+	}
 }
 
 void GUI_ClearKeyBuffer(void) {
-  while (GUI_GetKey());
+	while (GUI_GetKey());
 }
 
 void GUI_StoreKeyMsg(int Key, int PressedCnt) {
-  _KeyMsg.Key = Key;
-  _KeyMsg.PressedCnt = PressedCnt;
-  _KeyMsgCnt = 1;
+	_KeyMsg.Key = Key;
+	_KeyMsg.PressedCnt = PressedCnt;
+	_KeyMsgCnt = 1;
 }
 
 int GUI_PollKeyMsg(void) {
-  int r = 0;
+	int r = 0;
 
-  if (_KeyMsgCnt) {
-    int Key;
-    _KeyMsgCnt--;
-    Key = _KeyMsg.Key;
-    WM_OnKey(Key, _KeyMsg.PressedCnt);
-    if (_KeyMsg.PressedCnt == 1) {
-      GUI_StoreKey(Key);
-    }
-    r = 1;              /* We have done something */
-  }
+	if (_KeyMsgCnt) {
+		int Key;
+		_KeyMsgCnt--;
+		Key = _KeyMsg.Key;
+		WM_OnKey(Key, _KeyMsg.PressedCnt);
+		if (_KeyMsg.PressedCnt == 1) {
+			GUI_StoreKey(Key);
+		}
+		r = 1;              /* We have done something */
+	}
 
-  return r;
+	return r;
 }
 
 /*********************************************************************
@@ -61,7 +61,7 @@ int GUI_PollKeyMsg(void) {
 *   and wait for somebody to poll the buffer.
 */
 void GUI_SendKeyMsg(int Key, int PressedCnt) {
-    if (!WM_OnKey(Key, PressedCnt)) {
-      GUI_StoreKeyMsg(Key, PressedCnt);
-    }
+	if (!WM_OnKey(Key, PressedCnt)) {
+		GUI_StoreKeyMsg(Key, PressedCnt);
+	}
 }

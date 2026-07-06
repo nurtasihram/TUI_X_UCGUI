@@ -22,7 +22,6 @@ typedef struct {
 	uint16_t BitsPerPixel;
 	const uint8_t  *pData;
 	const GUI_LOGPALETTE  *pPal;
-	const GUI_BITMAP_METHODS *pMethods;
 } GUI_BITMAP;
 
 typedef struct {

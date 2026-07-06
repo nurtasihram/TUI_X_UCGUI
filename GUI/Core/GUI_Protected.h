@@ -108,7 +108,6 @@ int GUI__strcmp(const char *s0, const char *s1);
 int GUI__strcpy(char *sDest, const char *sSrc);
 
 void GL_DispChar(uint16_t c);
-void GL_DrawBitmap(const GUI_BITMAP *pBM, int x0, int y0);
 
 /************************************************************
 *

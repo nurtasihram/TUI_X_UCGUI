@@ -176,17 +176,12 @@ typedef struct {
 	uint32_t aColor[2];
 	GUI_RECT ClipRect;
 	uint8_t DrawMode;
-	uint8_t TextStyle;
-	/* Variables in GL module */
-	GUI_RECT *pClipRect_HL; /* High level clip rectangle ... Speed optimization so drawing routines can optimize */
 	/* Variables in GUICHAR module */
 	const GUI_FONT *pAFont;
 	const GUI_UC_ENC_APILIST *pUC_API; /* Unicode encoding API */
-	int16_t LBorder;
-	int16_t DispPosX, DispPosY;
-	int16_t DrawPosX, DrawPosY;
+	GUI_POINT DispPos;
 	int16_t TextMode, TextAlign;
-	RGB_COLOR Color, BkColor; /* Required only when changing devices and for speed opt (caching) */
+	//RGB_COLOR Color, BkColor; /* Required only when changing devices and for speed opt (caching) */
 	/* Variables in WM module */
 	const GUI_RECT *WM__pUserClipRect;
 	GUI_HWIN hAWin;
@@ -199,7 +194,7 @@ typedef struct {
 #endif
 } GUI_CONTEXT;
 
-int          GUI_Init(void);
+void         GUI_Init(void);
 void         GUI_SetDefault(void);
 GUI_DRAWMODE GUI_SetDrawMode(GUI_DRAWMODE dm);
 void         GUI_SaveContext(GUI_CONTEXT *pContext);
@@ -213,7 +208,6 @@ void GUI__IntersectRect(GUI_RECT *pDest, const GUI_RECT *pr0);
 void GUI__ReduceRect(GUI_RECT *pDest, const GUI_RECT *pRect, int Dist);
 
 int  GUI__DivideRound(int a, int b);
-int32_t  GUI__DivideRound32(int32_t a, int32_t b);
 int  GUI__SetText(GUI_HMEM *phText, const char *s);
 int GUI__strcmp(const char *s0, const char *s1);
 
@@ -291,9 +285,8 @@ int   GUI_GetYDistOfFont(const GUI_FONT *pFont);
 int   GUI_GetTextAlign(void);
 int   GUI_GetTextMode(void);
 char  GUI_IsInFont(const GUI_FONT *pFont, uint16_t c);
-int   GUI_SetTextAlign(int Align);
-int   GUI_SetTextMode(int Mode);
-int   GUI_SetLBorder(int x);
+void  GUI_SetTextAlign(int Align);
+void  GUI_SetTextMode(int Mode);
 const GUI_FONT *GUI_SetFont(const GUI_FONT *pNewFont);
 void  GUI_GotoXY(int x, int y);
 void  GUI_DispNextLine(void);
@@ -323,20 +316,6 @@ void     GUI__memmove(void *pDest, const void *pSrc, size_t NumBytes);
 typedef GUI_HMEM GUI_MEMDEV_Handle;
 typedef void GUI_CALLBACK_VOID_P(void *p);
 
-typedef struct {
-	GUI_RECT rView, rPrev;
-	char FirstCall;
-} GUI_AUTODEV;
-
-typedef struct {
-	char DrawFixed;
-	char IsMeasurement;
-} GUI_AUTODEV_INFO;
-
-int  GUI_MEMDEV_CreateAuto(GUI_AUTODEV *pAutoDev);
-void GUI_MEMDEV_DeleteAuto(GUI_AUTODEV *pAutoDev);
-int  GUI_MEMDEV_DrawAuto(GUI_AUTODEV *pAutoDev, GUI_AUTODEV_INFO *pAutoDevInfo, GUI_CALLBACK_VOID_P *pfDraw, void *pData);
-
 /* Create a memory device which is compatible to the selected LCD */
 GUI_MEMDEV_Handle GUI_MEMDEV_Create(int x0, int y0, int XSize, int YSize);
 GUI_MEMDEV_Handle GUI_MEMDEV_CreateEx(int x0, int y0, int XSize, int YSize, int Flags);
@@ -352,14 +331,7 @@ int  GUI_MEMDEV_GetYSize(GUI_MEMDEV_Handle hMem);
 void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV_Handle hMem, int YSize);
 GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem);  /* Select (activate) a particular memory device. */
 void  GUI_MEMDEV_SetOrg(GUI_MEMDEV_Handle hMem, int x0, int y0);
-void  GUI_MEMDEV_WriteAt(GUI_MEMDEV_Handle hMem, int x, int y);
-void  GUI_MEMDEV_Write(GUI_MEMDEV_Handle hMem);
-void  GUI_MEMDEV_WriteAlphaAt(GUI_MEMDEV_Handle hMem, int Alpha, int x, int y);
-void  GUI_MEMDEV_WriteAlpha(GUI_MEMDEV_Handle hMem, int Alpha);
-void  GUI_MEMDEV_WriteExAt(GUI_MEMDEV_Handle hMem, int x, int y, int xMag, int yMag, int Alpha);
-void  GUI_MEMDEV_WriteEx(GUI_MEMDEV_Handle hMem, int xMag, int yMag, int Alpha);
 int   GUI_MEMDEV_Draw(GUI_RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int MemSize, int Flags);
-void *GUI_MEMDEV_GetDataPtr(GUI_MEMDEV_Handle hMem);
 #endif
 
 void GUI_SelectLCD(void);
