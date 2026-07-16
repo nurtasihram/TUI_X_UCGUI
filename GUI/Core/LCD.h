@@ -70,7 +70,7 @@ typedef struct tLCDDEV_APIList_struct {
 #endif
 } tLCDDEV_APIList;
 
-extern const tLCDDEV_APIList GUI_MEMDEV__APIList16;
+extern const tLCDDEV_APIList GUI_MEMDEV__APIList24;
 
 void LCD_DrawHLine(int x0, int y0,  int x1);
 void LCD_DrawPixel(int x0, int y0);

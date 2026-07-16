@@ -171,6 +171,18 @@ static void  DrawBitLine16BPP(int x, int y, uint16_t const *p, int xsize, const 
 		LCD_L0_SetPixel(x, y, *p);
 }
 
+static void _DrawBitLine24BPP(int x, int y, RGB_COLOR const *p, int xsize, const RGB_COLOR *pTrans) {
+	RGB_COLOR pixel;
+	if (GUI_Context.DrawMode & DRAWMODE_TRANS)
+		for (; xsize--; x++, p++) {
+			pixel = *p;
+			if (pixel)
+				LCD_L0_SetPixel(x, y, pixel);
+		}
+	else for (; xsize--; x++, p++)
+		LCD_L0_SetPixel(x, y, *p);
+}
+
 void LCD_L0_DrawBitmap(int x0, int y0,
 					   int xsize, int ysize,
 					   int BitsPerPixel,
@@ -198,6 +210,10 @@ void LCD_L0_DrawBitmap(int x0, int y0,
 		case 16:
 			for (; y0 < y1; y0++, pData += BytesPerLine)
 				DrawBitLine16BPP(x0, y0, (const uint16_t *)pData, xsize, pTrans);
+			break;
+		case 24:
+			for (; y0 < y1; y0++, pData += BytesPerLine)
+				_DrawBitLine24BPP(x0, y0, (const RGB_COLOR *)pData, xsize, pTrans);
 			break;
 	}
 }

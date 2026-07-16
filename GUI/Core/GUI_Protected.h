@@ -68,10 +68,9 @@ struct GUI_Usage {
 
 #if GUI_SUPPORT_MEMDEV
 typedef struct /*GUI_MEMDEV*/ {
-	int16_t                   x0, y0, XSize, YSize;
-	unsigned               BytesPerLine;
-	unsigned               BitsPerPixel;
-	GUI_HMEM               hUsage;
+	int16_t x0, y0, XSize, YSize;
+	int16_t BytesPerLine;
+	int16_t BitsPerPixel;
 	const tLCDDEV_APIList *pAPIList;
 } GUI_MEMDEV;
 
@@ -117,8 +116,6 @@ void GL_DispChar(uint16_t c);
 Dynamic linkage pointers reduces configuration hassles.
 */
 typedef int  GUI_tfTimer(void);
-typedef char GUI_CURSOR_tfTempHide(const GUI_RECT *pRect);
-typedef void GUI_CURSOR_tfTempUnhide(void);
 
 extern const uint8_t  GUI_Pixels_ArrowS[45];
 extern const uint8_t  GUI_Pixels_ArrowM[60];
@@ -149,11 +146,11 @@ int GUI_GetBitmapPixel(const GUI_BITMAP *pBMP, unsigned x, unsigned y);
 #endif
 #endif
 
-GUI_EXTERN GUI_CONTEXT GUI_Context;        /* Thread wide globals */
+GUI_EXTERN GUI_CONTEXT GUI_Context; /* Thread wide globals */
 GUI_EXTERN GUI_tfTimer *GUI_pfTimerExec;
 
 #if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
+extern "C" { /* Make sure we have C-declarations in C++ programs */
 #endif
 
 extern const GUI_UC_ENC_APILIST GUI__API_TableNone;

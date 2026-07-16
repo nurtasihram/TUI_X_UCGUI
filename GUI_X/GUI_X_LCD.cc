@@ -31,7 +31,6 @@ void LCD_L0_FillRect(int x0, int y0, int x1, int y1) {
 	Ayx.Fill(LCD_COLORINDEX, { x0, y0, x1, y1 });
 }
 
-
 extern int  LCD_L0_Init(void) {
 	SimDisp::LoadDll(_T("SimClient.dll"));
 	//SimDisp::LoadDll(_T("SimDisp.dll"));

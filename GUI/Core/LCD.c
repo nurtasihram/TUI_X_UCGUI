@@ -151,6 +151,9 @@ void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize,
 			case 16:
 				pPixel += (Diff << 1); x0 += Diff; Diff = 0;
 				break;
+			case 24:
+				pPixel += (Diff << 2); x0 += Diff; Diff = 0;  /* 24-bit uses 4 bytes per pixel */
+				break;
 		}
 	}
 	if (xsize <= 0) {
@@ -168,7 +171,8 @@ const tLCDDEV_APIList LCD_L0_APIList = {
 	LCD_L0_GetRect,
 	LCD_L0_SetPixel,
 #if GUI_SUPPORT_MEMDEV
-	& GUI_MEMDEV__APIList16
+	& GUI_MEMDEV__APIList24,
+	24    /* BitsPerPixel - LCD driver bit depth */
 #endif
 };
 

@@ -22,8 +22,6 @@ void GUI_MEMDEV_Delete(GUI_MEMDEV_Handle hMemDev) {
 		if (GUI_Context.hDevData == hMemDev)
 			GUI_SelectLCD();
 		/* Delete the associated usage device */
-		if (pDev->hUsage)
-			GUI_USAGE_DecUseCnt(pDev->hUsage);
 		GUI_ALLOC_Free(hMemDev);
 	}
 }
@@ -31,11 +29,18 @@ void GUI_MEMDEV_Delete(GUI_MEMDEV_Handle hMemDev) {
 GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Flags,
 										  const tLCDDEV_APIList *pMemDevAPI) {
 	size_t MemSize;
-	GUI_USAGE_Handle hUsage = 0;
 	unsigned int BitsPerPixel, BytesPerLine;
 	GUI_MEMDEV_Handle hMemDev;
 	BitsPerPixel = pMemDevAPI->BitsPerPixel;
-	BytesPerLine = (xsize * BitsPerPixel + 7) >> 3;     /* Note: This code works with 8 and 16 bit memory devices. If other BPPs are introduced for MemDevs, it needs to be changed */
+	/* Calculate BytesPerLine based on BitsPerPixel */
+	if (BitsPerPixel == 24) {
+		/* For 24-bit, use 4 bytes (32-bit) per pixel for alignment */
+		BytesPerLine = xsize * 4;
+	}
+	else {
+		/* For 8 and 16 bit memory devices */
+		BytesPerLine = (xsize * BitsPerPixel + 7) >> 3;
+	}
 	/* Calc available MemSize */
 	MemSize = GUI_ALLOC_GetMaxSize();
 	if (!(Flags & GUI_MEMDEV_NOTRANS)) {
@@ -44,10 +49,6 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
 	if (ysize <= 0) {
 		int MaxLines = (int)((MemSize - sizeof(GUI_MEMDEV)) / BytesPerLine);
 		ysize = (MaxLines > -ysize) ? -ysize : MaxLines;
-	}
-	if (!(Flags & GUI_MEMDEV_NOTRANS)) {
-		/* Create the usage map */
-		hUsage = GUI_USAGE_BM_Create(x0, y0, xsize, ysize, 0);
 	}
 	/* Check if we can alloc sufficient memory */
 	if (ysize <= 0) {
@@ -70,15 +71,11 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
 		pDevData->XSize = xsize;
 		pDevData->YSize = ysize;
 		pDevData->BytesPerLine = BytesPerLine;
-		pDevData->hUsage = hUsage;
 
 		pDevData->pAPIList = pMemDevAPI;
 		pDevData->BitsPerPixel = BitsPerPixel;
 	}
 	else {
-		if (hUsage) {
-			GUI_ALLOC_Free(hUsage);
-		}
 		GUI_DEBUG_WARN("GUI_MEMDEV_Create: Alloc failed");
 	}
 	return hMemDev;
@@ -112,42 +109,19 @@ GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem) {
 
 void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 	GUI_MEMDEV *pDev = (hMem);
-	GUI_USAGE_h hUsage = pDev->hUsage;
-	GUI_USAGE *pUsage;
 	int YSize = pDev->YSize;
-	int yi;
 	unsigned int BytesPerLine = pDev->BytesPerLine;
 	unsigned int BitsPerPixel = pDev->BitsPerPixel;
-	int BytesPerPixel = BitsPerPixel >> 3;
-	uint8_t *pData = (uint8_t *)(pDev + 1);
-	if (hUsage) {
-		pUsage = (hUsage);
-		for (yi = 0; yi < YSize; yi++) {
-			int xOff = 0;
-			int XSize;
-			XSize = GUI_USAGE_GetNextDirty(pUsage, &xOff, yi);
-			if (XSize == pDev->XSize) {
-				/* If the entire line is affected, calculate the number of entire lines */
-				int y0 = yi;
-				while ((GUI_USAGE_GetNextDirty(pUsage, &xOff, yi + 1)) == XSize) {
-					yi++;
-				}
-				LCD_DrawBitmap(x, y + y0, pDev->XSize, yi - y0 + 1, BitsPerPixel, BytesPerLine, pData, NULL);
-				pData += (yi - y0 + 1) * BytesPerLine;
-			}
-			else {
-				/* Draw the partial line which needs to be drawn */
-				for (; XSize; ) {
-					LCD_DrawBitmap(x + xOff, y + yi, XSize, 1, BitsPerPixel, BytesPerLine, pData + xOff * BytesPerPixel, NULL);
-					xOff += XSize;
-					XSize = GUI_USAGE_GetNextDirty(pUsage, &xOff, yi);
-				}
-				pData += BytesPerLine;
-			}
-		}
+	int BytesPerPixel;
+	/* Calculate BytesPerPixel correctly for 24-bit (uses 4 bytes per pixel) */
+	if (BitsPerPixel == 24) {
+		BytesPerPixel = 4;
 	}
-	else
-		LCD_DrawBitmap(x, y, pDev->XSize, YSize, BitsPerPixel, BytesPerLine, pData, NULL);
+	else {
+		BytesPerPixel = BitsPerPixel >> 3;
+	}
+	uint8_t *pData = (uint8_t *)(pDev + 1);
+	LCD_DrawBitmap(x, y, pDev->XSize, YSize, BitsPerPixel, BytesPerLine, pData, NULL);
 }
 
 void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
@@ -178,15 +152,6 @@ void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV_Handle hMem) {
 	GUI_MEMDEV_CopyToLCDAt(hMem, GUI_POS_AUTO, GUI_POS_AUTO);
 }
 
-void GUI_MEMDEV_Clear(GUI_MEMDEV_Handle hMem) {
-	if (!hMem)
-		if (!(hMem = GUI_Context.hDevData))
-			return;
-	GUI_USAGE *pUsage = ((GUI_MEMDEV *)hMem)->hUsage;
-	if (pUsage)
-		GUI_USAGE_Clear(pUsage);
-}
-
 int GUI_MEMDEV_GetXSize(GUI_MEMDEV_Handle hMem) {
 	if (!hMem)
 		hMem = GUI_Context.hDevData;
@@ -211,36 +176,6 @@ void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV_Handle hMem, int YSize) {
 	if (pDevData->YSize > YSize)
 		pDevData->YSize = YSize;
 }
-void GUI_USAGE_Select(GUI_USAGE_Handle hUsage) {
-	((GUI_MEMDEV *)GUI_Context.hDevData)->hUsage = hUsage;
-}
-
-/*********************************************************************
-*
-*       GUI_USAGE_DecUseCnt
-*
-* Purpose: Decrements the usage count and deletes the usage object if
-*          the counter reaches 0.
-*/
-void GUI_USAGE_DecUseCnt(GUI_USAGE_Handle  hUsage) {
-	GUI_USAGE *pThis = hUsage;
-	if (!--pThis->UseCnt)
-		GUI_ALLOC_Free(hUsage);
-}
-
-/*********************************************************************
-*
-*       GUI_USAGE_AddRect
-*
-* Parameters:
-*   hUsage: Handle to usage object. May not be 0 !
-*/
-void GUI_USAGE_AddRect(GUI_USAGE *pUsage, int x0, int y0, int xSize, int ySize) {
-	do {
-		GUI_USAGE_AddHLine(pUsage, x0, y0++, xSize);
-	} while (--ySize);
-}
-
 
 void GUI_MEMDEV_SetOrg(GUI_MEMDEV_Handle hMem, int x0, int y0) {
 	/* Make sure memory handle is valid */
@@ -255,14 +190,6 @@ void GUI_MEMDEV_SetOrg(GUI_MEMDEV_Handle hMem, int x0, int y0) {
 		pDev->y0 = y0;
 		pDev->x0 = x0;
 		LCD_SetClipRectMax();
-		/* Move usage along */
-		if (pDev->hUsage) {
-			GUI_USAGE *pUsage = (pDev->hUsage);
-			if (((pUsage->XSize = pDev->XSize) != 0) && ((pUsage->YSize = pDev->YSize) != 0)) {
-				pUsage->x0 = x0;
-				pUsage->y0 = y0;
-			}
-		}
 	}
 
 }
@@ -323,7 +250,6 @@ int GUI_MEMDEV_Draw(GUI_RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, i
 			}
 			if (i) {
 				GUI_MEMDEV_SetOrg(hMD, x0, y0 + i);
-				GUI_MEMDEV_Clear(hMD);
 			}
 			pfDraw(pData);
 			GUI_MEMDEV_CopyToLCD(hMD);
