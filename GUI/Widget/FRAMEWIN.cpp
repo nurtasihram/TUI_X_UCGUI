@@ -28,7 +28,7 @@
 #define FRAMEWIN_TEXTCOLOR0_DEFAULT RGB_WHITE
 /* Default textcolor when framewin is inactive */
 #define FRAMEWIN_TEXTCOLOR1_DEFAULT RGB_WHITE
-FRAMEWIN_PROPS FRAMEWIN__DefaultProps = {
+FRAMEWIN_Obj::Properties FRAMEWIN_Obj::DefaultProps {
   FRAMEWIN_DEFAULT_FONT,
   FRAMEWIN_BARCOLOR_INACTIVE_DEFAULT,
   FRAMEWIN_BARCOLOR_ACTIVE_DEFAULT,
@@ -355,7 +355,7 @@ FRAMEWIN_Handle FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS);
 		/* init member variables */
-		pObj->Props = FRAMEWIN__DefaultProps;
+		pObj->Props = FRAMEWIN_Obj::DefaultProps;
 		pObj->TextAlign = GUI_TA_LEFT;
 		pObj->cb = cb;
 		pObj->Flags = ExFlags;
@@ -463,50 +463,50 @@ FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInf
 	return hObj;
 }
 void FRAMEWIN_SetDefaultFont(const GUI_FONT  *pFont) {
-	FRAMEWIN__DefaultProps.pFont = pFont;
+	FRAMEWIN_Obj::DefaultProps.pFont = pFont;
 }
 const GUI_FONT  *FRAMEWIN_GetDefaultFont(void) {
-	return FRAMEWIN__DefaultProps.pFont;
+	return FRAMEWIN_Obj::DefaultProps.pFont;
 }
 void FRAMEWIN_SetDefaultBarColor(unsigned Index, RGB_COLOR Color) {
-	if (Index < GUI_COUNTOF(FRAMEWIN__DefaultProps.aBarColor)) {
-		FRAMEWIN__DefaultProps.aBarColor[Index] = Color;
+	if (Index < GUI_COUNTOF(FRAMEWIN_Obj::DefaultProps.aBarColor)) {
+		FRAMEWIN_Obj::DefaultProps.aBarColor[Index] = Color;
 	}
 }
 RGB_COLOR FRAMEWIN_GetDefaultBarColor(unsigned Index) {
 	RGB_COLOR Color = 0;
-	if (Index < GUI_COUNTOF(FRAMEWIN__DefaultProps.aBarColor)) {
-		Color = FRAMEWIN__DefaultProps.aBarColor[Index];
+	if (Index < GUI_COUNTOF(FRAMEWIN_Obj::DefaultProps.aBarColor)) {
+		Color = FRAMEWIN_Obj::DefaultProps.aBarColor[Index];
 	}
 	return Color;
 }
 void FRAMEWIN_SetDefaultClientColor(RGB_COLOR Color) {
-	FRAMEWIN__DefaultProps.ClientColor = Color;
+	FRAMEWIN_Obj::DefaultProps.ClientColor = Color;
 }
 RGB_COLOR FRAMEWIN_GetDefaultClientColor(void) {
-	return FRAMEWIN__DefaultProps.ClientColor;
+	return FRAMEWIN_Obj::DefaultProps.ClientColor;
 }
 void FRAMEWIN_SetDefaultTitleHeight(int Height) {
-	FRAMEWIN__DefaultProps.TitleHeight = Height;
+	FRAMEWIN_Obj::DefaultProps.TitleHeight = Height;
 }
 int FRAMEWIN_GetDefaultTitleHeight(void) {
-	return FRAMEWIN__DefaultProps.TitleHeight;
+	return FRAMEWIN_Obj::DefaultProps.TitleHeight;
 }
 void FRAMEWIN_SetDefaultBorderSize(int DefaultBorderSize) {
-	FRAMEWIN__DefaultProps.BorderSize = DefaultBorderSize;
+	FRAMEWIN_Obj::DefaultProps.BorderSize = DefaultBorderSize;
 }
 int FRAMEWIN_GetDefaultBorderSize(void) {
-	return FRAMEWIN__DefaultProps.BorderSize;
+	return FRAMEWIN_Obj::DefaultProps.BorderSize;
 }
 void FRAMEWIN_SetDefaultTextColor(unsigned Index, RGB_COLOR Color) {
-	if (Index < GUI_COUNTOF(FRAMEWIN__DefaultProps.aTextColor)) {
-		FRAMEWIN__DefaultProps.aTextColor[Index] = Color;
+	if (Index < GUI_COUNTOF(FRAMEWIN_Obj::DefaultProps.aTextColor)) {
+		FRAMEWIN_Obj::DefaultProps.aTextColor[Index] = Color;
 	}
 }
 RGB_COLOR FRAMEWIN_GetDefaultTextColor(unsigned Index) {
 	RGB_COLOR Color = 0;
-	if (Index < GUI_COUNTOF(FRAMEWIN__DefaultProps.aTextColor)) {
-		Color = FRAMEWIN__DefaultProps.aTextColor[Index];
+	if (Index < GUI_COUNTOF(FRAMEWIN_Obj::DefaultProps.aTextColor)) {
+		Color = FRAMEWIN_Obj::DefaultProps.aTextColor[Index];
 	}
 	return Color;
 }

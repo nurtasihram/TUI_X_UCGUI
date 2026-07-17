@@ -13,7 +13,7 @@
 #define CHECKBOX_SPACING_DEFAULT 4
 #define CHECKBOX_TEXTCOLOR_DEFAULT RGB_BLACK
 #define CHECKBOX_TEXTALIGN_DEFAULT (GUI_TA_LEFT | GUI_TA_VCENTER)
-CHECKBOX_PROPS CHECKBOX__DefaultProps = {
+CHECKBOX_Obj::Properties CHECKBOX_Obj::DefaultProps {
   CHECKBOX_FONT_DEFAULT,
   CHECKBOX_BKCOLOR0_DEFAULT,
   CHECKBOX_BKCOLOR1_DEFAULT,
@@ -166,14 +166,14 @@ CHECKBOX_Handle CHECKBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 		int EffectSize;
 		EffectSize = WIDGET_GetDefaultEffect()->EffectSize;
 		if (xsize == 0) {
-			xsize = CHECKBOX__DefaultProps.apBm[0]->XSize + 2 * EffectSize;
+			xsize = CHECKBOX_Obj::DefaultProps.apBm[0]->XSize + 2 * EffectSize;
 		}
 		if (ysize == 0) {
-			ysize = CHECKBOX__DefaultProps.apBm[0]->YSize + 2 * EffectSize;
+			ysize = CHECKBOX_Obj::DefaultProps.apBm[0]->YSize + 2 * EffectSize;
 		}
 	}
 #if WM_SUPPORT_TRANSPARENCY
-	if (CHECKBOX__DefaultProps.BkColor == GUI_INVALID_COLOR) {
+	if (CHECKBOX_Obj::DefaultProps.BkColor == GUI_INVALID_COLOR) {
 		WinFlags |= WM_CF_HASTRANS;
 	}
 #endif
@@ -185,7 +185,7 @@ CHECKBOX_Handle CHECKBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
-		pObj->Props = CHECKBOX__DefaultProps;
+		pObj->Props = CHECKBOX_Obj::DefaultProps;
 		pObj->NumStates = 2; /* Default behaviour is 2 states: checked and unchecked */
 	}
 	else {
@@ -208,34 +208,34 @@ CHECKBOX_Handle CHECKBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInf
 }
 
 void CHECKBOX_SetDefaultSpacing(int Spacing) {
-	CHECKBOX__DefaultProps.Spacing = Spacing;
+	CHECKBOX_Obj::DefaultProps.Spacing = Spacing;
 }
 void CHECKBOX_SetDefaultTextColor(RGB_COLOR Color) {
-	CHECKBOX__DefaultProps.TextColor = Color;
+	CHECKBOX_Obj::DefaultProps.TextColor = Color;
 }
 void CHECKBOX_SetDefaultBkColor(RGB_COLOR Color) {
-	CHECKBOX__DefaultProps.BkColor = Color;
+	CHECKBOX_Obj::DefaultProps.BkColor = Color;
 }
 void CHECKBOX_SetDefaultFont(const GUI_FONT  *pFont) {
-	CHECKBOX__DefaultProps.pFont = pFont;
+	CHECKBOX_Obj::DefaultProps.pFont = pFont;
 }
 void CHECKBOX_SetDefaultAlign(int Align) {
-	CHECKBOX__DefaultProps.Align = Align;
+	CHECKBOX_Obj::DefaultProps.Align = Align;
 }
 int CHECKBOX_GetDefaultSpacing(void) {
-	return CHECKBOX__DefaultProps.Spacing;
+	return CHECKBOX_Obj::DefaultProps.Spacing;
 }
 RGB_COLOR CHECKBOX_GetDefaultTextColor(void) {
-	return CHECKBOX__DefaultProps.TextColor;
+	return CHECKBOX_Obj::DefaultProps.TextColor;
 }
 RGB_COLOR CHECKBOX_GetDefaultBkColor(void) {
-	return CHECKBOX__DefaultProps.BkColor;
+	return CHECKBOX_Obj::DefaultProps.BkColor;
 }
 const GUI_FONT  *CHECKBOX_GetDefaultFont(void) {
-	return CHECKBOX__DefaultProps.pFont;
+	return CHECKBOX_Obj::DefaultProps.pFont;
 }
 int CHECKBOX_GetDefaultAlign(void) {
-	return CHECKBOX__DefaultProps.Align;
+	return CHECKBOX_Obj::DefaultProps.Align;
 }
 
 int CHECKBOX_GetState(CHECKBOX_Handle hObj) {
@@ -271,8 +271,8 @@ void CHECKBOX_SetBkColor(CHECKBOX_Handle hObj, RGB_COLOR Color) {
 }
 
 void CHECKBOX_SetDefaultImage(const GUI_BITMAP *pBitmap, unsigned int Index) {
-	if (Index <= GUI_COUNTOF(CHECKBOX__DefaultProps.apBm)) {
-		CHECKBOX__DefaultProps.apBm[Index] = pBitmap;
+	if (Index <= GUI_COUNTOF(CHECKBOX_Obj::DefaultProps.apBm)) {
+		CHECKBOX_Obj::DefaultProps.apBm[Index] = pBitmap;
 	}
 }
 
@@ -334,15 +334,15 @@ void CHECKBOX_SetNumStates(CHECKBOX_Handle hObj, unsigned NumStates) {
 	};
 
 	CHECKBOX_Obj *pObj = (CHECKBOX_Obj *)hObj;
-	if (!CHECKBOX__DefaultProps.apBm[2]) {
+	if (!CHECKBOX_Obj::DefaultProps.apBm[2]) {
 		CHECKBOX_SetDefaultImage(&_abmCheck[0], 2);
 	}
-	if (!CHECKBOX__DefaultProps.apBm[3]) {
+	if (!CHECKBOX_Obj::DefaultProps.apBm[3]) {
 		CHECKBOX_SetDefaultImage(&_abmCheck[1], 3);
 	}
 	if (hObj && ((NumStates == 2) || (NumStates == 3))) {
-		pObj->Props.apBm[2] = CHECKBOX__DefaultProps.apBm[2];
-		pObj->Props.apBm[3] = CHECKBOX__DefaultProps.apBm[3];
+		pObj->Props.apBm[2] = CHECKBOX_Obj::DefaultProps.apBm[2];
+		pObj->Props.apBm[3] = CHECKBOX_Obj::DefaultProps.apBm[3];
 		pObj->NumStates = NumStates;
 	}
 }

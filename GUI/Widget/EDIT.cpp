@@ -14,7 +14,7 @@
 #define EDIT_TEXTCOLOR1_DEFAULT RGB_BLACK
 #define EDIT_BORDER_DEFAULT 1
 #define EDIT_XOFF 1
-EDIT_PROPS EDIT__DefaultProps = {
+EDIT_Obj::Properties EDIT_Obj::DefaultProps {
   EDIT_ALIGN_DEFAULT,
   EDIT_BORDER_DEFAULT,
   EDIT_FONT_DEFAULT,
@@ -369,7 +369,7 @@ EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
-		pObj->Props = EDIT__DefaultProps;
+		pObj->Props = EDIT_Obj::DefaultProps;
 		pObj->XSizeCursor = 1;
 		pObj->MaxLen = (MaxLen == 0) ? 8 : MaxLen;
 		pObj->BufferSize = 0;
@@ -621,38 +621,38 @@ EDIT_Handle EDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HW
 }
 
 void EDIT_SetDefaultFont(const GUI_FONT *pFont) {
-	EDIT__DefaultProps.pFont = pFont;
+	EDIT_Obj::DefaultProps.pFont = pFont;
 }
 const GUI_FONT  *EDIT_GetDefaultFont(void) {
-	return EDIT__DefaultProps.pFont;
+	return EDIT_Obj::DefaultProps.pFont;
 }
 void EDIT_SetDefaultTextAlign(int Align) {
-	EDIT__DefaultProps.Align = Align;
+	EDIT_Obj::DefaultProps.Align = Align;
 }
 int EDIT_GetDefaultTextAlign(void) {
-	return EDIT__DefaultProps.Align;
+	return EDIT_Obj::DefaultProps.Align;
 }
 void EDIT_SetDefaultTextColor(unsigned int Index, RGB_COLOR Color) {
-	if (Index <= GUI_COUNTOF(EDIT__DefaultProps.aTextColor)) {
-		EDIT__DefaultProps.aTextColor[Index] = Color;
+	if (Index <= GUI_COUNTOF(EDIT_Obj::DefaultProps.aTextColor)) {
+		EDIT_Obj::DefaultProps.aTextColor[Index] = Color;
 	}
 }
 void EDIT_SetDefaultBkColor(unsigned int Index, RGB_COLOR Color) {
-	if (Index <= GUI_COUNTOF(EDIT__DefaultProps.aBkColor)) {
-		EDIT__DefaultProps.aBkColor[Index] = Color;
+	if (Index <= GUI_COUNTOF(EDIT_Obj::DefaultProps.aBkColor)) {
+		EDIT_Obj::DefaultProps.aBkColor[Index] = Color;
 	}
 }
 RGB_COLOR EDIT_GetDefaultTextColor(unsigned int Index) {
 	RGB_COLOR Color = 0;
-	if (Index <= GUI_COUNTOF(EDIT__DefaultProps.aTextColor)) {
-		Color = EDIT__DefaultProps.aTextColor[Index];
+	if (Index <= GUI_COUNTOF(EDIT_Obj::DefaultProps.aTextColor)) {
+		Color = EDIT_Obj::DefaultProps.aTextColor[Index];
 	}
 	return Color;
 }
 RGB_COLOR EDIT_GetDefaultBkColor(unsigned int Index) {
 	RGB_COLOR Color = 0;
-	if (Index <= GUI_COUNTOF(EDIT__DefaultProps.aBkColor)) {
-		Color = EDIT__DefaultProps.aBkColor[Index];
+	if (Index <= GUI_COUNTOF(EDIT_Obj::DefaultProps.aBkColor)) {
+		Color = EDIT_Obj::DefaultProps.aBkColor[Index];
 	}
 	return Color;
 }

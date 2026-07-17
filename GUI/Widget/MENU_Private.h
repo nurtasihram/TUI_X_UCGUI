@@ -19,15 +19,14 @@ typedef struct {
 	char acText[1];
 } MENU_ITEM;
 
-typedef struct {
-	RGB_COLOR aTextColor[5];
-	RGB_COLOR aBkColor[5];
-	uint8_t aBorder[4];
-	const GUI_FONT *pFont;
-} MENU_PROPS;
-
 struct MENU_Obj : public WIDGET {
-	MENU_PROPS  Props;
+	struct Properties {
+		RGB_COLOR aTextColor[5];
+		RGB_COLOR aBkColor[5];
+		uint8_t aBorder[4];
+		const GUI_FONT *pFont;
+	} Props;
+	static Properties DefaultProps;
 	GUI_ARRAY   ItemArray;
 	WM_HWIN hOwner;
 	uint16_t Flags;
@@ -37,7 +36,6 @@ struct MENU_Obj : public WIDGET {
 	uint16_t Sel;
 };
 
-extern MENU_PROPS           MENU__DefaultProps;
 extern const WIDGET_EFFECT *MENU__pDefaultEffect;
 
 void      MENU__RecalcTextWidthOfItems(MENU_Obj *pObj);

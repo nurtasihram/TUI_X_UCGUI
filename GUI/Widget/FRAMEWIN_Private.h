@@ -4,18 +4,17 @@
 #include "FRAMEWIN.h"
 #include "WIDGET.h"
 
-typedef struct {
-	const GUI_FONT *pFont;
-	RGB_COLOR  aBarColor[2];
-	RGB_COLOR  aTextColor[2];
-	RGB_COLOR  ClientColor;
-	int16_t    TitleHeight;
-	int16_t    BorderSize;
-	int16_t    IBorderSize;
-} FRAMEWIN_PROPS;
-
 struct FRAMEWIN_Obj : public WIDGET {
-	FRAMEWIN_PROPS Props;
+	struct Properties {
+		const GUI_FONT *pFont;
+		RGB_COLOR  aBarColor[2];
+		RGB_COLOR  aTextColor[2];
+		RGB_COLOR  ClientColor;
+		int16_t    TitleHeight;
+		int16_t    BorderSize;
+		int16_t    IBorderSize;
+	} Props;
+	static Properties DefaultProps;
 	WM_CALLBACK *cb;
 	WM_HWIN hClient;
 	WM_HWIN hMenu;
@@ -34,7 +33,6 @@ typedef struct {
 	GUI_RECT rTitleText;
 } POSITIONS;
 
-extern FRAMEWIN_PROPS FRAMEWIN__DefaultProps;
 
 void            FRAMEWIN__CalcPositions(FRAMEWIN_Obj *pObj, POSITIONS *pPos);
 int             FRAMEWIN__CalcTitleHeight(FRAMEWIN_Obj *pObj);

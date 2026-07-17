@@ -14,19 +14,19 @@ typedef struct {
 	char acText[1];
 } LISTBOX_ITEM;
 
-typedef struct {
-	const GUI_FONT *pFont;
-	uint16_t ScrollStepH;
-	RGB_COLOR aBackColor[4];
-	RGB_COLOR aTextColor[4];
-} LISTBOX_PROPS;
 
 struct LISTBOX_Obj : public WIDGET {
+	struct Properties {
+		const GUI_FONT *pFont;
+		uint16_t ScrollStepH;
+		RGB_COLOR aBackColor[4];
+		RGB_COLOR aTextColor[4];
+	} Props;
+	static Properties DefaultProps;
 	GUI_ARRAY ItemArray;
 	WIDGET_DRAW_ITEM_FUNC *pfDrawItem;
 	WM_SCROLL_STATE ScrollStateV;
 	WM_SCROLL_STATE ScrollStateH;
-	LISTBOX_PROPS Props;
 	WM_HWIN hOwner;
 	int16_t Sel;                        /* current selection */
 	uint8_t Flags;
@@ -34,7 +34,6 @@ struct LISTBOX_Obj : public WIDGET {
 	uint16_t ItemSpacing;
 };
 
-extern LISTBOX_PROPS LISTBOX_DefaultProps;
 unsigned LISTBOX__GetNumItems(LISTBOX_Obj *pObj);
 const char *LISTBOX__GetpString(LISTBOX_Obj *pObj, int Index);
 void LISTBOX__InvalidateInsideArea(LISTBOX_Handle hObj);

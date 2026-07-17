@@ -22,7 +22,7 @@
 #define DROPDOWN_TEXTCOLOR2_DEFAULT RGB_WHITE   /* Selected, focus */
 #define DROPDOWN_BORDER_DEFAULT 2
 #define DROPDOWN_ALIGN_DEFAULT GUI_TA_LEFT      /* Default text alignment */
-DROPDOWN_PROPS DROPDOWN__DefaultProps = {
+DROPDOWN_Obj::Properties DROPDOWN_Obj::DefaultProps {
   DROPDOWN_FONT_DEFAULT,
   DROPDOWN_BKCOLOR0_DEFAULT,
   DROPDOWN_BKCOLOR1_DEFAULT,
@@ -233,7 +233,7 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		pObj->Flags = ExFlags;
-		pObj->Props = DROPDOWN__DefaultProps;
+		pObj->Props = DROPDOWN_Obj::DefaultProps;
 		pObj->ScrollbarWidth = 0;
 		pObj->ySizeEx = ysize;
 		DROPDOWN__AdjustHeight(pObj);
@@ -450,10 +450,10 @@ void DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width) {
 	}
 }
 void DROPDOWN_SetDefaultFont(const GUI_FONT *pFont) {
-	DROPDOWN__DefaultProps.pFont = pFont;
+	DROPDOWN_Obj::DefaultProps.pFont = pFont;
 }
 const GUI_FONT *DROPDOWN_GetDefaultFont(void) {
-	return DROPDOWN__DefaultProps.pFont;
+	return DROPDOWN_Obj::DefaultProps.pFont;
 }
 
 DROPDOWN_Handle DROPDOWN_Create(WM_HWIN hWinParent, int x0, int y0, int xsize, int ysize, int Flags) {

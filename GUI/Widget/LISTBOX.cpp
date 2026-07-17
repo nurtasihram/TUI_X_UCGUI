@@ -23,7 +23,8 @@
 #define LISTBOX_TEXTCOLOR2_DEFAULT RGB_WHITE   /* Selected, focus */
 #define LISTBOX_TEXTCOLOR3_DEFAULT RGB_GRAY    /* Disabled */
 #define LISTBOX_SCROLLSTEP_H_DEFAULT 10
-LISTBOX_PROPS LISTBOX_DefaultProps = {
+
+LISTBOX_Obj::Properties LISTBOX_Obj::DefaultProps {
   LISTBOX_FONT_DEFAULT,
   LISTBOX_SCROLLSTEP_H_DEFAULT,
   LISTBOX_BKCOLOR0_DEFAULT,
@@ -706,7 +707,7 @@ LISTBOX_Handle LISTBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
 		GUI_ARRAY_CREATE(&pObj->ItemArray);
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		pObj->Props = LISTBOX_DefaultProps;
+		pObj->Props = LISTBOX_Obj::DefaultProps;
 		if (ppText) {
 			/* init member variables */
 			/* Set non-zero attributes */
@@ -871,36 +872,36 @@ LISTBOX_Handle LISTBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo,
 }
 
 void LISTBOX_SetDefaultFont(const GUI_FONT  *pFont) {
-	LISTBOX_DefaultProps.pFont = pFont;
+	LISTBOX_Obj::DefaultProps.pFont = pFont;
 }
 const GUI_FONT  *LISTBOX_GetDefaultFont(void) {
-	return LISTBOX_DefaultProps.pFont;
+	return LISTBOX_Obj::DefaultProps.pFont;
 }
 void LISTBOX_SetDefaultScrollStepH(int Value) {
-	LISTBOX_DefaultProps.ScrollStepH = Value;
+	LISTBOX_Obj::DefaultProps.ScrollStepH = Value;
 }
 int LISTBOX_GetDefaultScrollStepH(void) {
-	return LISTBOX_DefaultProps.ScrollStepH;
+	return LISTBOX_Obj::DefaultProps.ScrollStepH;
 }
 void LISTBOX_SetDefaultBkColor(unsigned Index, RGB_COLOR Color) {
-	if (Index < GUI_COUNTOF(LISTBOX_DefaultProps.aBackColor)) {
-		LISTBOX_DefaultProps.aBackColor[Index] = Color;
+	if (Index < GUI_COUNTOF(LISTBOX_Obj::DefaultProps.aBackColor)) {
+		LISTBOX_Obj::DefaultProps.aBackColor[Index] = Color;
 	}
 }
 RGB_COLOR LISTBOX_GetDefaultBkColor(unsigned Index) {
-	if (Index < GUI_COUNTOF(LISTBOX_DefaultProps.aBackColor)) {
-		return LISTBOX_DefaultProps.aBackColor[Index];
+	if (Index < GUI_COUNTOF(LISTBOX_Obj::DefaultProps.aBackColor)) {
+		return LISTBOX_Obj::DefaultProps.aBackColor[Index];
 	}
 	return GUI_INVALID_COLOR;
 }
 void LISTBOX_SetDefaultTextColor(unsigned Index, RGB_COLOR Color) {
-	if (Index < GUI_COUNTOF(LISTBOX_DefaultProps.aTextColor)) {
-		LISTBOX_DefaultProps.aTextColor[Index] = Color;
+	if (Index < GUI_COUNTOF(LISTBOX_Obj::DefaultProps.aTextColor)) {
+		LISTBOX_Obj::DefaultProps.aTextColor[Index] = Color;
 	}
 }
 RGB_COLOR LISTBOX_GetDefaultTextColor(unsigned Index) {
-	if (Index < GUI_COUNTOF(LISTBOX_DefaultProps.aTextColor)) {
-		return LISTBOX_DefaultProps.aTextColor[Index];
+	if (Index < GUI_COUNTOF(LISTBOX_Obj::DefaultProps.aTextColor)) {
+		return LISTBOX_Obj::DefaultProps.aTextColor[Index];
 	}
 	return GUI_INVALID_COLOR;
 }

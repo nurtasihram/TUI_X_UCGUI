@@ -22,15 +22,15 @@
 #define LISTVIEW_GRIDCOLOR_DEFAULT RGB_LIGHTGRAY
 /* Define default alignment */
 #define LISTVIEW_ALIGN_DEFAULT (GUI_TA_VCENTER | GUI_TA_HCENTER)
-LISTVIEW_PROPS LISTVIEW_DefaultProps = {
+LISTVIEW_Obj::Properties LISTVIEW_Obj::DefaultProps {
+  LISTVIEW_FONT_DEFAULT,
   LISTVIEW_BKCOLOR0_DEFAULT,
   LISTVIEW_BKCOLOR1_DEFAULT,
   LISTVIEW_BKCOLOR2_DEFAULT,
   LISTVIEW_TEXTCOLOR0_DEFAULT,
   LISTVIEW_TEXTCOLOR1_DEFAULT,
   LISTVIEW_TEXTCOLOR2_DEFAULT,
-  LISTVIEW_GRIDCOLOR_DEFAULT,
-  LISTVIEW_FONT_DEFAULT
+  LISTVIEW_GRIDCOLOR_DEFAULT
 };
 unsigned LISTVIEW__GetRowDistY(LISTVIEW_Obj *pObj) {
 	unsigned RowDistY;
@@ -470,7 +470,7 @@ LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 		/* Init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* Init member variables */
-		pObj->Props = LISTVIEW_DefaultProps;
+		pObj->Props = LISTVIEW_Obj::DefaultProps;
 		pObj->ShowGrid = 0;
 		pObj->RowDistY = 0;
 		pObj->Sel = -1;
@@ -569,29 +569,29 @@ LISTVIEW_Handle LISTVIEW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInf
 }
 
 const GUI_FONT  *LISTVIEW_SetDefaultFont(const GUI_FONT  *pFont) {
-	const GUI_FONT  *pOldFont = LISTVIEW_DefaultProps.pFont;
-	LISTVIEW_DefaultProps.pFont = pFont;
+	const GUI_FONT  *pOldFont = LISTVIEW_Obj::DefaultProps.pFont;
+	LISTVIEW_Obj::DefaultProps.pFont = pFont;
 	return pOldFont;
 }
 RGB_COLOR LISTVIEW_SetDefaultTextColor(unsigned Index, RGB_COLOR Color) {
 	RGB_COLOR OldColor = 0;
-	if (Index < GUI_COUNTOF(LISTVIEW_DefaultProps.aTextColor)) {
-		OldColor = LISTVIEW_DefaultProps.aTextColor[Index];
-		LISTVIEW_DefaultProps.aTextColor[Index] = Color;
+	if (Index < GUI_COUNTOF(LISTVIEW_Obj::DefaultProps.aTextColor)) {
+		OldColor = LISTVIEW_Obj::DefaultProps.aTextColor[Index];
+		LISTVIEW_Obj::DefaultProps.aTextColor[Index] = Color;
 	}
 	return OldColor;
 }
 RGB_COLOR LISTVIEW_SetDefaultBkColor(unsigned Index, RGB_COLOR Color) {
 	RGB_COLOR OldColor = 0;
-	if (Index < GUI_COUNTOF(LISTVIEW_DefaultProps.aBkColor)) {
-		OldColor = LISTVIEW_DefaultProps.aBkColor[Index];
-		LISTVIEW_DefaultProps.aBkColor[Index] = Color;
+	if (Index < GUI_COUNTOF(LISTVIEW_Obj::DefaultProps.aBkColor)) {
+		OldColor = LISTVIEW_Obj::DefaultProps.aBkColor[Index];
+		LISTVIEW_Obj::DefaultProps.aBkColor[Index] = Color;
 	}
 	return OldColor;
 }
 RGB_COLOR LISTVIEW_SetDefaultGridColor(RGB_COLOR Color) {
-	RGB_COLOR OldColor = LISTVIEW_DefaultProps.GridColor;
-	LISTVIEW_DefaultProps.GridColor = Color;
+	RGB_COLOR OldColor = LISTVIEW_Obj::DefaultProps.GridColor;
+	LISTVIEW_Obj::DefaultProps.GridColor = Color;
 	return OldColor;
 }
 

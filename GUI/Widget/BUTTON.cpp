@@ -17,7 +17,7 @@
 #define BUTTON_TEXTCOLOR2_DEFAULT RGB_DARKGRAY
 #define BUTTON_REACT_ON_LEVEL 0
 #define BUTTON_ALIGN_DEFAULT GUI_TA_HCENTER | GUI_TA_VCENTER
-BUTTON_PROPS BUTTON__DefaultProps = {
+BUTTON_Obj::Properties BUTTON_Obj::DefaultProps {
   BUTTON_BKCOLOR0_DEFAULT,
   BUTTON_BKCOLOR1_DEFAULT,
   BUTTON_BKCOLOR2_DEFAULT,
@@ -198,7 +198,7 @@ BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
-		pObj->Props = BUTTON__DefaultProps;
+		pObj->Props = BUTTON_Obj::DefaultProps;
 	}
 	else {
 		GUI_DEBUG_ERROROUT_IF(hObj == 0, "BUTTON_Create failed")
@@ -280,40 +280,40 @@ BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, W
 	return hThis;
 }
 void BUTTON_SetDefaultFont(const GUI_FONT  *pFont) {
-	BUTTON__DefaultProps.pFont = pFont;
+	BUTTON_Obj::DefaultProps.pFont = pFont;
 }
 void BUTTON_SetDefaultTextColor(RGB_COLOR Color, unsigned Index) {
-	if (Index < GUI_COUNTOF(BUTTON__DefaultProps.aTextColor)) {
-		BUTTON__DefaultProps.aTextColor[Index] = Color;
+	if (Index < GUI_COUNTOF(BUTTON_Obj::DefaultProps.aTextColor)) {
+		BUTTON_Obj::DefaultProps.aTextColor[Index] = Color;
 	}
 }
 void BUTTON_SetDefaultBkColor(RGB_COLOR Color, unsigned Index) {
-	if (Index < GUI_COUNTOF(BUTTON__DefaultProps.aBkColor)) {
-		BUTTON__DefaultProps.aBkColor[Index] = Color;
+	if (Index < GUI_COUNTOF(BUTTON_Obj::DefaultProps.aBkColor)) {
+		BUTTON_Obj::DefaultProps.aBkColor[Index] = Color;
 	}
 }
 void BUTTON_SetDefaultTextAlign(int Align) {
-	BUTTON__DefaultProps.Align = Align;
+	BUTTON_Obj::DefaultProps.Align = Align;
 }
 const GUI_FONT  *BUTTON_GetDefaultFont(void) {
-	return BUTTON__DefaultProps.pFont;
+	return BUTTON_Obj::DefaultProps.pFont;
 }
 RGB_COLOR BUTTON_GetDefaultTextColor(unsigned Index) {
 	RGB_COLOR Color = GUI_INVALID_COLOR;
-	if (Index < GUI_COUNTOF(BUTTON__DefaultProps.aTextColor)) {
-		Color = BUTTON__DefaultProps.aTextColor[Index];
+	if (Index < GUI_COUNTOF(BUTTON_Obj::DefaultProps.aTextColor)) {
+		Color = BUTTON_Obj::DefaultProps.aTextColor[Index];
 	}
 	return Color;
 }
 RGB_COLOR BUTTON_GetDefaultBkColor(unsigned Index) {
 	RGB_COLOR Color = GUI_INVALID_COLOR;
-	if (Index < GUI_COUNTOF(BUTTON__DefaultProps.aBkColor)) {
-		Color = BUTTON__DefaultProps.aBkColor[Index];
+	if (Index < GUI_COUNTOF(BUTTON_Obj::DefaultProps.aBkColor)) {
+		Color = BUTTON_Obj::DefaultProps.aBkColor[Index];
 	}
 	return Color;
 }
 int BUTTON_GetDefaultTextAlign(void) {
-	return BUTTON__DefaultProps.Align;
+	return BUTTON_Obj::DefaultProps.Align;
 }
 RGB_COLOR BUTTON_GetBkColor(BUTTON_Handle hObj, unsigned int Index) {
 	RGB_COLOR Color = 0;
