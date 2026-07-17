@@ -47,8 +47,8 @@ static void _OnPaint(EDIT_Obj *pObj) {
 	GUI_SetColor(pObj->Props.aTextColor[0]);
 	GUI_SetFont(pObj->Props.pFont);
 	/* Calculate size */
-	WM_GetClientRectEx(&pObj->Widget.Win, &r);
-	WIDGET__GetInsideRect(&pObj->Widget, &rFillRect);
+	WM_GetClientRectEx(pObj, &r);
+	WIDGET__GetInsideRect(pObj, &rFillRect);
 	if (pObj->pText)
 		pText = pObj->pText;
 	rInside = rFillRect;
@@ -56,7 +56,7 @@ static void _OnPaint(EDIT_Obj *pObj) {
 	rInside.x1 -= pObj->Props.Border + EDIT_XOFF;
 	GUI__CalcTextRect(pText, &rInside, &rText, pObj->Props.Align);
 	/* Calculate position and size of cursor */
-	if (pObj->Widget.State & WIDGET_STATE_FOCUS) {
+	if (pObj->State & WIDGET_STATE_FOCUS) {
 		const char  *p = pText;
 		CursorWidth = ((pObj->XSizeCursor > 0) ? (pObj->XSizeCursor) : (1));
 		if (pText) {
@@ -99,7 +99,7 @@ static void _OnPaint(EDIT_Obj *pObj) {
 		/* Display text */
 		WIDGET__FillStringInRect(pText, &rFillRect, &rInside, &rText);
 		/* Display cursor if needed */
-		if (pObj->Widget.State & WIDGET_STATE_FOCUS) {
+		if (pObj->State & WIDGET_STATE_FOCUS) {
 			///////////////houhh 20061020...
 			//  static GUI_TIMER_HANDLE Timer1 = NULL;	//houhh 20061018...
 			if (!Timer1) {
@@ -115,7 +115,7 @@ static void _OnPaint(EDIT_Obj *pObj) {
 		}
 		WM_SetUserClipRect(NULL);
 		/* Draw the 3D effect (if configured) */
-		WIDGET__EFFECT_DrawDown(&pObj->Widget);
+		WIDGET__EFFECT_DrawDown(pObj);
 	} WM_ITERATE_END();
 }
 static void _Delete(EDIT_Obj *pObj) {
@@ -140,7 +140,7 @@ void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
 					xPos -= xSize - TextWidth - (pObj->Props.Border + EDIT_XOFF);
 					break;
 				default:
-					xPos -= (pObj->Props.Border + EDIT_XOFF) + pObj->Widget.pEffect->EffectSize;
+					xPos -= (pObj->Props.Border + EDIT_XOFF) + pObj->pEffect->EffectSize;
 			}
 			NumChars = GUI__GetNumChars(pText);
 			if (xPos < 0) {
@@ -367,7 +367,7 @@ EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 
 		pObj = (EDIT_Obj *)(hObj);
 		/* init widget specific variables */
-		WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE);
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
 		pObj->Props = EDIT__DefaultProps;
 		pObj->XSizeCursor = 1;

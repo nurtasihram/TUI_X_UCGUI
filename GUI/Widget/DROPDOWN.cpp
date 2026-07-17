@@ -103,16 +103,16 @@ static void _OnPaint(DROPDOWN_Handle hObj) {
 	int TextBorderSize;
 	/* Do some initial calculations */
 	pObj = (DROPDOWN_Obj *)hObj;
-	Border = pObj->Widget.pEffect->EffectSize;
+	Border = pObj->pEffect->EffectSize;
 	TextBorderSize = pObj->Props.TextBorderSize;
 	GUI_SetFont(pObj->Props.pFont);
-	ColorIndex = (pObj->Widget.State & WIDGET_STATE_FOCUS) ? 2 : 1;
+	ColorIndex = (pObj->State & WIDGET_STATE_FOCUS) ? 2 : 1;
 	s = _GetpItem(pObj, pObj->Sel);
 	WM_GetClientRect(&r);
 	GUI__ReduceRect(&r, &r, Border);
 	InnerSize = r.y1 - r.y0 + 1;
 	/* Draw the 3D effect (if configured) */
-	WIDGET__EFFECT_DrawDown(&pObj->Widget);
+	WIDGET__EFFECT_DrawDown(pObj);
 	/* Draw the outer text frames */
 	r.x1 -= InnerSize;     /* Spare square area to the right */
 	GUI_SetColor(pObj->Props.aBackColor[ColorIndex]);
@@ -131,7 +131,7 @@ static void _OnPaint(DROPDOWN_Handle hObj) {
 	GUI_FillRectEx(&r);
 	GUI_SetColor(RGB_BLACK);
 	_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.y1 - r.y0 - 8) / 2);
-	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &r);
+	WIDGET__EFFECT_DrawUpRect(pObj, &r);
 }
 static void _OnTouch(DROPDOWN_Obj *pObj, const GUI_PID_STATE *pState) {
 	if (pState) { /* Something happened in our area (pressed or released) */
@@ -166,8 +166,8 @@ static void DROPDOWN__AdjustHeight(DROPDOWN_Obj *pObj) {
 	if (!Height) {
 		Height = GUI_GetYDistOfFont(pObj->Props.pFont);
 	}
-	Height += pObj->Widget.pEffect->EffectSize + 2 * pObj->Props.TextBorderSize;
-	WM_SetSize(pObj, WM__GetWindowSizeX(&pObj->Widget.Win), Height);
+	Height += pObj->pEffect->EffectSize + 2 * pObj->Props.TextBorderSize;
+	WM_SetSize(pObj, WM__GetWindowSizeX(pObj), Height);
 }
 static WM_PARAM _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	DROPDOWN_Obj *pObj = (DROPDOWN_Obj *)hWin;
@@ -231,7 +231,7 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 		/* Init sub-classes */
 		GUI_ARRAY_CREATE(&pObj->Handles);
 		/* init widget specific variables */
-		WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE);
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		pObj->Flags = ExFlags;
 		pObj->Props = DROPDOWN__DefaultProps;
 		pObj->ScrollbarWidth = 0;
@@ -263,7 +263,7 @@ void DROPDOWN_Expand(DROPDOWN_Handle hObj) {
 	if (hObj) {
 
 		pObj = (DROPDOWN_Obj *)hObj;
-		xSize = WM__GetWindowSizeX(&pObj->Widget.Win);
+		xSize = WM__GetWindowSizeX(pObj);
 		ySize = pObj->ySizeEx;
 		NumItems = _GetNumItems(pObj);
 		WM_GetWindowRectEx(hObj, &r);

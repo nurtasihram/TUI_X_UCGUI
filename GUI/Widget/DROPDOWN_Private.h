@@ -14,8 +14,7 @@ typedef struct {
 	int16_t       Align;
 } DROPDOWN_PROPS;
 
-typedef struct {
-	WIDGET  Widget;
+struct DROPDOWN_Obj : public WIDGET {
 	int16_t     Sel;                        /* current selection */
 	int16_t     ySizeEx;                    /* Drop down size */
 	int16_t     TextHeight;
@@ -27,4 +26,4 @@ typedef struct {
 	uint16_t     ItemSpacing;
 	uint8_t     ScrollbarWidth;
 	char  IsPressed;
-} DROPDOWN_Obj;
+};

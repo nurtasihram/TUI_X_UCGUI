@@ -26,8 +26,7 @@ typedef struct {
 	const GUI_FONT *pFont;
 } MENU_PROPS;
 
-typedef struct {
-	WIDGET      Widget;
+struct MENU_Obj : public WIDGET {
 	MENU_PROPS  Props;
 	GUI_ARRAY   ItemArray;
 	WM_HWIN hOwner;
@@ -36,7 +35,7 @@ typedef struct {
 	uint16_t Width;
 	uint16_t Height;
 	uint16_t Sel;
-} MENU_Obj;
+};
 
 extern MENU_PROPS           MENU__DefaultProps;
 extern const WIDGET_EFFECT *MENU__pDefaultEffect;

@@ -119,7 +119,7 @@ static void _OnPaint(FRAMEWIN_Obj *pObj) {
 		GUI_FillRect(0, y0, xsize - 1, y0 + pObj->Props.IBorderSize - 1);
 		/* Draw the 3D effect (if configured) */
 		if (pObj->Props.BorderSize >= 2) {
-			WIDGET_EFFECT_3D_DrawUp();  /* pObj->Widget.pEffect->pfDrawUp(); */
+			WIDGET_EFFECT_3D_DrawUp();  /* pObj->pEffect->pfDrawUp(); */
 		}
 	} WM_ITERATE_END();
 }
@@ -280,7 +280,7 @@ static WM_PARAM FRAMEWIN__cbClient(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 }
 int FRAMEWIN__CalcTitleHeight(FRAMEWIN_Obj *pObj) {
 	int r = 0;
-	if (pObj->Widget.State & FRAMEWIN_CF_TITLEVIS) {
+	if (pObj->State & FRAMEWIN_CF_TITLEVIS) {
 		r = pObj->Props.TitleHeight;
 		if (r == 0) {
 			r = 2 + GUI_GetYSizeOfFont(pObj->Props.pFont);
@@ -291,10 +291,10 @@ int FRAMEWIN__CalcTitleHeight(FRAMEWIN_Obj *pObj) {
 void FRAMEWIN__CalcPositions(FRAMEWIN_Obj *pObj, POSITIONS *pPos) {
 	WM_Obj *pChild;
 	int BorderSize = pObj->Props.BorderSize;
-	int xsize = WM__GetWindowSizeX(&pObj->Widget.Win);
-	int ysize = WM__GetWindowSizeY(&pObj->Widget.Win);
+	int xsize = WM__GetWindowSizeX(pObj);
+	int ysize = WM__GetWindowSizeY(pObj);
 	int IBorderSize = 0;
-	if (pObj->Widget.State & FRAMEWIN_CF_TITLEVIS)
+	if (pObj->State & FRAMEWIN_CF_TITLEVIS)
 		IBorderSize = pObj->Props.IBorderSize;
 	int TitleHeight = FRAMEWIN__CalcTitleHeight(pObj);
 	int MenuHeight = 0;
@@ -313,10 +313,10 @@ void FRAMEWIN__CalcPositions(FRAMEWIN_Obj *pObj, POSITIONS *pPos) {
 	pPos->rTitleText.y0 = BorderSize;
 	pPos->rTitleText.y1 = BorderSize + TitleHeight - 1;
 	/* Iterate over all children */
-	for (pChild = (WM_Obj *)pObj->Widget.Win.hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
-		int x0 = pChild->Rect.x0 - pObj->Widget.Win.Rect.x0;
-		int x1 = pChild->Rect.x1 - pObj->Widget.Win.Rect.x0;
-		int y0 = pChild->Rect.y0 - pObj->Widget.Win.Rect.y0;
+	for (pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
+		int x0 = pChild->Rect.x0 - pObj->Rect.x0;
+		int x1 = pChild->Rect.x1 - pObj->Rect.x0;
+		int y0 = pChild->Rect.y0 - pObj->Rect.y0;
 		if (y0 == BorderSize) {
 			if (pChild->Status & WM_SF_ANCHOR_RIGHT) {
 				if (x0 <= pPos->rTitleText.x1)
@@ -353,7 +353,7 @@ FRAMEWIN_Handle FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
 		POSITIONS Pos;
 		/* init widget specific variables */
-		WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS);
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS);
 		/* init member variables */
 		pObj->Props = FRAMEWIN__DefaultProps;
 		pObj->TextAlign = GUI_TA_LEFT;
@@ -427,12 +427,12 @@ void FRAMEWIN_AddMenu(FRAMEWIN_Handle hObj, WM_HWIN hMenu) {
 			int x0, y0, xSize;
 			TitleHeight = FRAMEWIN__CalcTitleHeight(pObj);
 			BorderSize = pObj->Props.BorderSize;
-			if (pObj->Widget.State & FRAMEWIN_CF_TITLEVIS) {
+			if (pObj->State & FRAMEWIN_CF_TITLEVIS) {
 				IBorderSize = pObj->Props.IBorderSize;
 			}
 			x0 = BorderSize;
 			y0 = BorderSize + TitleHeight + IBorderSize;
-			xSize = WM__GetWindowSizeX(&pObj->Widget.Win);
+			xSize = WM__GetWindowSizeX(pObj);
 			xSize -= BorderSize * 2;
 			pObj->hMenu = hMenu;
 			if (pObj->cb) {
@@ -563,14 +563,14 @@ int FRAMEWIN_IsMaximized(FRAMEWIN_Handle hObj) {
 
 static void _InvalidateButton(FRAMEWIN_Obj *pObj, int Id) {
 	WM_Obj *pChild;
-	for (pChild = (WM_Obj *)pObj->Widget.Win.hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext)
+	for (pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext)
 		if (WM_GetId(pChild) == Id)
 			WM_Invalidate(pChild);
 }
 static void _RestoreMinimized(FRAMEWIN_Obj *pObj) {
 	/* When window was minimized, restore it */
 	if (pObj->Flags & FRAMEWIN_CF_MINIMIZED) {
-		int OldHeight = 1 + pObj->Widget.Win.Rect.y1 - pObj->Widget.Win.Rect.y0;
+		int OldHeight = 1 + pObj->Rect.y1 - pObj->Rect.y0;
 		int NewHeight = 1 + pObj->rRestore.y1 - pObj->rRestore.y0;
 		WM_ResizeWindow(pObj, 0, NewHeight - OldHeight);
 		WM_ShowWindow(pObj->hClient);
@@ -595,9 +595,9 @@ static void _MinimizeFramewin(FRAMEWIN_Obj *pObj) {
 	_RestoreMaximized(pObj);
 	/* When window is not minimized, minimize it */
 	if ((pObj->Flags & FRAMEWIN_CF_MINIMIZED) == 0) {
-		int OldHeight = pObj->Widget.Win.Rect.y1 - pObj->Widget.Win.Rect.y0 + 1;
-		int NewHeight = FRAMEWIN__CalcTitleHeight(pObj) + pObj->Widget.pEffect->EffectSize * 2 + 2;
-		pObj->rRestore = pObj->Widget.Win.Rect;
+		int OldHeight = pObj->Rect.y1 - pObj->Rect.y0 + 1;
+		int NewHeight = FRAMEWIN__CalcTitleHeight(pObj) + pObj->pEffect->EffectSize * 2 + 2;
+		pObj->rRestore = pObj->Rect;
 		WM_HideWindow(pObj->hClient);
 		WM_HideWindow(pObj->hMenu);
 		WM_ResizeWindow(pObj, 0, NewHeight - OldHeight);
@@ -610,13 +610,13 @@ static void _MaximizeFramewin(FRAMEWIN_Obj *pObj) {
 	_RestoreMinimized(pObj);
 	/* When window is not maximized, maximize it */
 	if (!(pObj->Flags & FRAMEWIN_CF_MAXIMIZED)) {
-		WM_Obj *pParent = (WM_Obj *)pObj->Widget.Win.hParent;
+		WM_Obj *pParent = (WM_Obj *)pObj->hParent;
 		GUI_RECT r = pParent->Rect;
 		if (!pParent->hParent) {
 			r.x1 = LCD_GetXSize();
 			r.y1 = LCD_GetYSize();
 		}
-		pObj->rRestore = pObj->Widget.Win.Rect;
+		pObj->rRestore = pObj->Rect;
 		WM_MoveTo(pObj, r.x0, r.y0);
 		WM_SetSize(pObj, r.x1 - r.x0 + 1, r.y1 - r.y0 + 1);
 		FRAMEWIN__UpdatePositions(pObj);
@@ -650,9 +650,9 @@ void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
 		int OldHeight = FRAMEWIN__CalcTitleHeight(pObj);
 		int OldSize = pObj->Props.BorderSize;
 		int Diff = Size - OldSize;
-		for (auto pChild = (WM_Obj *)pObj->Widget.Win.hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
+		for (auto pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
 			GUI_RECT r = pChild->Rect;
-			GUI_MoveRect(&r, -pObj->Widget.Win.Rect.x0, -pObj->Widget.Win.Rect.y0);
+			GUI_MoveRect(&r, -pObj->Rect.x0, -pObj->Rect.y0);
 			if ((r.y0 == pObj->Props.BorderSize) && ((r.y1 - r.y0 + 1) == OldHeight)) {
 				if (pChild->Status & WM_SF_ANCHOR_RIGHT)
 					WM_MoveWindow(pChild, -Diff, Diff);
@@ -1105,10 +1105,10 @@ int FRAMEWIN_SetTitleHeight(FRAMEWIN_Handle hObj, int Height) {
 static void _ShowHideButtons(FRAMEWIN_Obj *pObj) {
 	WM_Obj *pChild;
 	int y0;
-	for (pChild = (WM_Obj *)pObj->Widget.Win.hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
-		y0 = pChild->Rect.y0 - pObj->Widget.Win.Rect.y0;
+	for (pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
+		y0 = pChild->Rect.y0 - pObj->Rect.y0;
 		if ((y0 == pObj->Props.BorderSize) && (pChild != pObj->hClient)) {
-			if (pObj->Widget.State & FRAMEWIN_CF_TITLEVIS) {
+			if (pObj->State & FRAMEWIN_CF_TITLEVIS) {
 				WM_ShowWindow(pChild);
 			}
 			else {
@@ -1122,15 +1122,15 @@ void FRAMEWIN_SetTitleVis(FRAMEWIN_Handle hObj, int Show) {
 		FRAMEWIN_Obj *pObj;
 		int State;
 		pObj = (FRAMEWIN_Obj *)hObj;
-		State = pObj->Widget.State;
+		State = pObj->State;
 		if (Show) {
 			State |= FRAMEWIN_CF_TITLEVIS;
 		}
 		else {
 			State &= ~FRAMEWIN_CF_TITLEVIS;
 		}
-		if (pObj->Widget.State != State) {
-			pObj->Widget.State = State;
+		if (pObj->State != State) {
+			pObj->State = State;
 			FRAMEWIN__UpdatePositions(pObj);
 			_ShowHideButtons(pObj);
 			if (pObj->Flags & FRAMEWIN_CF_MINIMIZED) {
@@ -1166,9 +1166,9 @@ void FRAMEWIN__UpdateButtons(FRAMEWIN_Obj *pObj, int OldHeight) {
 			pLeft = pRight = NULL;
 			xLeft = GUI_XMAX;
 			xRight = GUI_XMIN;
-			for (pChild = (WM_Obj *)pObj->Widget.Win.hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
+			for (pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
 				r = pChild->Rect;
-				GUI_MoveRect(&r, -pObj->Widget.Win.Rect.x0, -pObj->Widget.Win.Rect.y0);
+				GUI_MoveRect(&r, -pObj->Rect.x0, -pObj->Rect.y0);
 				if ((r.y0 == pObj->Props.BorderSize) && ((r.y1 - r.y0 + 1) == OldHeight)) {
 					if (pChild->Status & WM_SF_ANCHOR_RIGHT) {
 						if (r.x1 > xRight) {

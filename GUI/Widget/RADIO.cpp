@@ -48,8 +48,8 @@ static void _OnPaint(RADIO_Obj *pObj) {
 	int i, y, HasFocus, FontDistY;
 	uint16_t SpaceAbove, CHeight, FocusBorder;
 	/* Init some data */
-	WIDGET__GetClientRect(&pObj->Widget, &rFocus);
-	HasFocus = (pObj->Widget.State & WIDGET_STATE_FOCUS) ? 1 : 0;
+	WIDGET__GetClientRect(pObj, &rFocus);
+	HasFocus = (pObj->State & WIDGET_STATE_FOCUS) ? 1 : 0;
 	pBmRadio = pObj->apBmRadio[WM_IsEnabled(pObj)];
 	pBmCheck = pObj->pBmCheck;
 	rFocus.x1 = pBmRadio->XSize + RADIO_BORDER * 2 - 1;
@@ -112,7 +112,7 @@ static void _OnPaint(RADIO_Obj *pObj) {
 	/* Draw the focus rect */
 	if (HasFocus) {
 		GUI_SetColor(RGB_BLACK);
-		WIDGET__DrawFocusRect(&pObj->Widget, &rFocus, 0);
+		WIDGET__DrawFocusRect(pObj, &rFocus, 0);
 	}
 }
 static void _OnTouch(RADIO_Obj *pObj, const GUI_PID_STATE *pState) {
@@ -142,7 +142,7 @@ static void _OnTouch(RADIO_Obj *pObj, const GUI_PID_STATE *pState) {
 	}
 	WM_NotifyParent(pObj, Notification);
 	if (Hit == 1) {
-		GUI_StoreKey(pObj->Widget.Id);
+		GUI_StoreKey(pObj->Id);
 	}
 }
 static char _OnKey(RADIO_Obj *pObj, const WM_KEY_INFO *pInfo) {
@@ -224,7 +224,7 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParen
 		}
 		/* Init widget specific variables */
 		ExFlags &= RADIO_TEXTPOS_LEFT;
-		WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE | ExFlags);
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | ExFlags);
 		/* Init member variables */
 		pObj->apBmRadio[0] = RADIO__apDefaultImage[0];
 		pObj->apBmRadio[1] = RADIO__apDefaultImage[1];
@@ -389,7 +389,7 @@ static void _HandleSetValue(RADIO_Obj *pObj, int v) {
 		}
 	}
 	else if (v >= pObj->NumItems) {
-		WM_HWIN hWin = _GetNextInGroup(pObj->Widget.Win.hNext, pObj->GroupId);
+		WM_HWIN hWin = _GetNextInGroup(pObj->hNext, pObj->GroupId);
 		if (hWin) {
 			WM_SetFocus(hWin);
 			_SetValue(hWin, 0);

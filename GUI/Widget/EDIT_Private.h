@@ -12,8 +12,7 @@ typedef struct {
 	RGB_COLOR aBkColor[2];
 } EDIT_PROPS;
 
-typedef struct {
-	WIDGET Widget;
+struct EDIT_Obj : public WIDGET {
 	char *pText;
 	int16_t MaxLen;
 	uint16_t BufferSize;
@@ -29,7 +28,7 @@ typedef struct {
 	tEDIT_UpdateBuffer *pfUpdateBuffer;  /* Update textbuffer */
 	EDIT_PROPS Props;
 	int CurrsorShow;	//houhh 20061022...
-} EDIT_Obj;
+};
 
 extern EDIT_PROPS EDIT__DefaultProps;
 

@@ -21,8 +21,7 @@ typedef struct {
 	const GUI_FONT *pFont;
 } LISTVIEW_PROPS;
 
-typedef struct {
-	WIDGET          Widget;
+struct LISTVIEW_Obj : public WIDGET {
 	HEADER_Handle   hHeader;
 	GUI_ARRAY       RowArray;         /* One entry per line. Every entry is a handle of GUI_ARRAY of strings */
 	GUI_ARRAY       AlignArray;       /* One entry per column */
@@ -35,7 +34,7 @@ typedef struct {
 	WM_SCROLL_STATE ScrollStateV;
 	WM_SCROLL_STATE ScrollStateH;
 	WM_HWIN         hOwner;
-} LISTVIEW_Obj;
+};
 
 extern LISTVIEW_PROPS LISTVIEW_DefaultProps;
 

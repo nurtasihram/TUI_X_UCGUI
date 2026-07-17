@@ -27,7 +27,7 @@ CHECKBOX_PROPS CHECKBOX__DefaultProps = {
 static void _OnPaint(CHECKBOX_Obj *pObj) {
 	GUI_RECT RectBox = { 0 };
 	int ColorIndex, EffectSize;
-	EffectSize = pObj->Widget.pEffect->EffectSize;
+	EffectSize = pObj->pEffect->EffectSize;
 	ColorIndex = WM_IsEnabled(pObj);
 	/* Clear inside ... Just in case      */
 	/* Fill with parents background color */
@@ -55,7 +55,7 @@ static void _OnPaint(CHECKBOX_Obj *pObj) {
 		GUI_DrawBitmap(pObj->Props.apBm[Index], EffectSize, EffectSize);
 	}
 	/* Draw the effect arround the box */
-	WIDGET__EFFECT_DrawDownRect(&pObj->Widget, &RectBox);
+	WIDGET__EFFECT_DrawDownRect(pObj, &RectBox);
 	WM_SetUserClipRect(NULL);
 	/* Draw text if needed */
 	if (pObj->pText) {
@@ -69,7 +69,7 @@ static void _OnPaint(CHECKBOX_Obj *pObj) {
 		GUI_SetFont(pObj->Props.pFont);
 		GUI_DispStringInRect(s, &RectText, pObj->Props.Align);
 		/* Draw focus rectangle */
-		if (pObj->Widget.State & WIDGET_STATE_FOCUS) {
+		if (pObj->State & WIDGET_STATE_FOCUS) {
 			int xSizeText = GUI_GetStringDistX(s);
 			int ySizeText = GUI_GetFontSizeY();
 			GUI_RECT RectFocus = RectText;
@@ -92,7 +92,7 @@ static void _OnPaint(CHECKBOX_Obj *pObj) {
 			RectFocus.x1 = RectFocus.x0 + xSizeText;
 			RectFocus.y1 = RectFocus.y0 + ySizeText;
 			GUI_SetColor(RGB_BLACK);
-			WIDGET__DrawFocusRect(&pObj->Widget, &RectFocus, 0);
+			WIDGET__DrawFocusRect(pObj, &RectFocus, 0);
 		}
 	}
 }
@@ -119,7 +119,7 @@ static void _OnTouch(CHECKBOX_Obj *pObj, const GUI_PID_STATE *pState) {
 	WM_NotifyParent(pObj, Notification);
 	if (Hit == 1) {
 		GUI_DEBUG_LOG("CHECKBOX: Hit\n");
-		GUI_StoreKey(pObj->Widget.Id);
+		GUI_StoreKey(pObj->Id);
 	}
 }
 static char _OnKey(CHECKBOX_Obj *pObj, const WM_KEY_INFO *pInfo) {
@@ -183,7 +183,7 @@ CHECKBOX_Handle CHECKBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 	if (hObj) {
 		CHECKBOX_Obj *pObj = (CHECKBOX_Obj *)hObj;
 		/* init widget specific variables */
-		WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE);
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
 		pObj->Props = CHECKBOX__DefaultProps;
 		pObj->NumStates = 2; /* Default behaviour is 2 states: checked and unchecked */

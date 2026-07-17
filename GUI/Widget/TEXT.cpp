@@ -73,7 +73,7 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 	if (hObj) {
 		TEXT_Obj *pObj = (TEXT_Obj *)hObj;
 		/* init widget specific variables */
-		WIDGET__Init(&pObj->Widget, Id, 0);
+		WIDGET__Init(pObj, Id, 0);
 		/* init member variables */
 		if (pText) 
 			GUI__SetText(&pObj->pText, pText);

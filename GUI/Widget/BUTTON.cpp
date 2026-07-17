@@ -32,7 +32,7 @@ static void _OnPaint(BUTTON_Obj *pObj) {
 	unsigned int Index;
 	int State, PressedState, ColorIndex;
 	GUI_RECT rClient, rInside;
-	State = pObj->Widget.State;
+	State = pObj->State;
 	PressedState = (State & BUTTON_STATE_PRESSED) ? 1 : 0;
 	ColorIndex = (WM_IsEnabled(pObj)) ? PressedState : 2;
 	GUI_SetFont(pObj->Props.pFont);
@@ -46,8 +46,8 @@ static void _OnPaint(BUTTON_Obj *pObj) {
 	{
 		int EffectSize;
 		if ((PressedState) == 0) {
-			pObj->Widget.pEffect->pfDrawUp();  /* _WIDGET_EFFECT_3D_DrawUp(); */
-			EffectSize = pObj->Widget.pEffect->EffectSize;
+			pObj->pEffect->pfDrawUp();  /* _WIDGET_EFFECT_3D_DrawUp(); */
+			EffectSize = pObj->pEffect->EffectSize;
 		}
 		else {
 			GUI_SetColor(RGB_BLACK);
@@ -105,18 +105,18 @@ static void _Delete(BUTTON_Obj *pObj) {
 }
 static void _ButtonPressed(BUTTON_Obj *pObj) {
 	WIDGET_OrState(pObj, BUTTON_STATE_PRESSED);
-	if (pObj->Widget.Win.Status & WM_SF_ISVIS) {
+	if (pObj->Status & WM_SF_ISVIS) {
 		WM_NotifyParent(pObj, WM_NOTIFICATION_CLICKED);
 	}
 }
 static void _ButtonReleased(BUTTON_Obj *pObj, int Notification) {
 	WIDGET_AndState(pObj, BUTTON_STATE_PRESSED);
-	if (pObj->Widget.Win.Status & WM_SF_ISVIS) {
+	if (pObj->Status & WM_SF_ISVIS) {
 		WM_NotifyParent(pObj, Notification);
 	}
 	if (Notification == WM_NOTIFICATION_RELEASED) {
 		GUI_DEBUG_LOG("BUTTON: Hit\n");
-		GUI_StoreKey(pObj->Widget.Id);
+		GUI_StoreKey(pObj->Id);
 	}
 }
 static void _OnTouch(BUTTON_Obj *pObj, const GUI_PID_STATE *pState) {
@@ -126,11 +126,11 @@ static void _OnTouch(BUTTON_Obj *pObj, const GUI_PID_STATE *pState) {
 #else
 	if (pState) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
-			if (!(pObj->Widget.State & BUTTON_STATE_PRESSED))
+			if (!(pObj->State & BUTTON_STATE_PRESSED))
 				_ButtonPressed(pObj);
 		}
 		/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
-		else if (pObj->Widget.State & BUTTON_STATE_PRESSED)
+		else if (pObj->State & BUTTON_STATE_PRESSED)
 			_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
 	}
 	else
@@ -151,11 +151,11 @@ static int _OnKey(BUTTON_Obj *pObj, const WM_KEY_INFO *pInfo) {
 #if BUTTON_REACT_ON_LEVEL
 static void _OnPidStateChange(BUTTON_Obj *pObj, const WM_PID_STATE_CHANGED_INFO *pState) {
 	if (pState->StatePrev == 0 && pState->State == 1) {
-		if (!(pObj->Widget.State & BUTTON_STATE_PRESSED))
+		if (!(pObj->State & BUTTON_STATE_PRESSED))
 			_ButtonPressed(pObj);
 	}
 	else if (pState->StatePrev == 1 && pState->State == 0)
-		if (pObj->Widget.State & BUTTON_STATE_PRESSED)
+		if (pObj->State & BUTTON_STATE_PRESSED)
 			_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
 }
 #endif
@@ -196,7 +196,7 @@ BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 	if (hObj) {
 		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
 		/* init widget specific variables */
-		WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE);
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
 		pObj->Props = BUTTON__DefaultProps;
 	}
@@ -353,7 +353,7 @@ unsigned BUTTON_IsPressed(BUTTON_Handle hObj) {
 	unsigned r = 0;
 	if (hObj) {
 		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
-		r = (pObj->Widget.State & BUTTON_STATE_PRESSED) ? 1 : 0;
+		r = (pObj->State & BUTTON_STATE_PRESSED) ? 1 : 0;
 
 	}
 	return r;

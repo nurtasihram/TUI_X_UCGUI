@@ -14,8 +14,7 @@ typedef struct {
 	int16_t    IBorderSize;
 } FRAMEWIN_PROPS;
 
-typedef struct {
-	WIDGET Widget;
+struct FRAMEWIN_Obj : public WIDGET {
 	FRAMEWIN_PROPS Props;
 	WM_CALLBACK *cb;
 	WM_HWIN hClient;
@@ -26,7 +25,7 @@ typedef struct {
 	uint16_t Flags;
 	WM_HWIN hFocussedChild;          /* Handle to focussed child .. default none (0) */
 	WM_DIALOG_STATUS *pDialogStatus;
-} FRAMEWIN_Obj;
+};
 
 typedef struct {
 	int16_t TitleHeight;

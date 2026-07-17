@@ -66,7 +66,7 @@ static int _HasEffect(MENU_Obj *pObj) {
 static int _GetEffectSize(MENU_Obj *pObj) {
 	int r = 0;
 	if (_HasEffect(pObj)) {
-		r = pObj->Widget.pEffect->EffectSize;
+		r = pObj->pEffect->EffectSize;
 	}
 	return r;
 }
@@ -424,7 +424,7 @@ static char _HandlePID(MENU_Obj *pObj, int x, int y, int Pressed) {
 	 */
 	if ((x >= 0) && (y >= 0)) {
 		GUI_RECT r;
-		WM_GetClientRectEx(&pObj->Widget.Win, &r);
+		WM_GetClientRectEx(pObj, &r);
 		if (x <= r.x1 && y <= r.y1)
 			XYInWidget = 1;
 	}
@@ -579,7 +579,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 	int FontHeight = GUI_GetYDistOfFont(pObj->Props.pFont);
 	int EffectSize = _GetEffectSize(pObj);
 	NumItems = MENU__GetNumItems(pObj);
-	WM_GetClientRectEx(&pObj->Widget.Win, &FillRect);
+	WM_GetClientRectEx(pObj, &FillRect);
 	GUI__ReduceRect(&FillRect, &FillRect, EffectSize);
 	GUI_SetFont(pObj->Props.pFont);
 	if (pObj->Flags & MENU_SF_VERTICAL) {
@@ -634,7 +634,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 	}
 	if (pObj->Width || pObj->Height) {
 		GUI_RECT r;
-		WM_GetClientRectEx(&pObj->Widget.Win, &r);
+		WM_GetClientRectEx(pObj, &r);
 		GUI__ReduceRect(&r, &r, EffectSize);
 		GUI_SetBkColor(pObj->Props.aBkColor[MENU_CI_ENABLED]);
 		GUI_ClearRect(FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1);
@@ -642,7 +642,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 	}
 	/* Draw 3D effect (if configured) */
 	if (_HasEffect(pObj)) {
-		pObj->Widget.pEffect->pfDrawUp();
+		pObj->pEffect->pfDrawUp();
 	}
 }
 static WM_PARAM _MENU_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
@@ -685,7 +685,7 @@ MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParent,
 		/* Init sub-classes */
 		GUI_ARRAY_CREATE(&pObj->ItemArray);
 		/* init widget specific variables */
-		WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE);
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
 		if (ExFlags & MENU_SF_OPEN_ON_POINTEROVER) {
 			ExFlags |= MENU_SF_ACTIVE;

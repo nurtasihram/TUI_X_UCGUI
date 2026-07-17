@@ -25,8 +25,8 @@ static void _UpdateChildPostions(WM_HWIN hObj, int Diff) {
 static int _EffectRequiresRedraw(const WIDGET *pWidget, const GUI_RECT *pRect) {
 	int EffectSize = pWidget->pEffect->EffectSize;
 	GUI_RECT InvalidRect;
-	InvalidRect = pWidget->Win.InvalidRect;
-	WM__Client2Screen(&pWidget->Win, &InvalidRect);
+	InvalidRect = pWidget->InvalidRect;
+	WM__Client2Screen(pWidget, &InvalidRect);
 	/* Check if there a part of the effect is inside the invalid rectangle */
 	if ((pRect->x0 + EffectSize) > InvalidRect.x0) {
 		return 1;               /* Overlap ... Drawing required */
@@ -46,7 +46,7 @@ void WIDGET__RotateRect90(WIDGET *pWidget, GUI_RECT *pDest, const GUI_RECT *pRec
 	int x0, x1, XSize;
 	x0 = pRect->x0;
 	x1 = pRect->x1;
-	XSize = pWidget->Win.Rect.x1 - pWidget->Win.Rect.x0;
+	XSize = pWidget->Rect.x1 - pWidget->Rect.x0;
 	pDest->x0 = XSize - pRect->y1;
 	pDest->x1 = XSize - pRect->y0;
 	pDest->y0 = x0;
@@ -80,26 +80,26 @@ RGB_COLOR WIDGET__GetBkColor(WM_HWIN hObj) {
 	return BkColor;
 }
 void WIDGET__GetInsideRect(WIDGET *pWidget, GUI_RECT *pRect) {
-	WM_GetClientRectEx(&pWidget->Win, pRect);
+	WM_GetClientRectEx(pWidget, pRect);
 	GUI__ReduceRect(pRect, pRect, pWidget->pEffect->EffectSize);
 }
 int WIDGET__GetXSize(const WIDGET *pWidget) {
 	int r;
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
-		r = pWidget->Win.Rect.y1 - pWidget->Win.Rect.y0;
+		r = pWidget->Rect.y1 - pWidget->Rect.y0;
 	}
 	else {
-		r = pWidget->Win.Rect.x1 - pWidget->Win.Rect.x0;
+		r = pWidget->Rect.x1 - pWidget->Rect.x0;
 	}
 	return r + 1;
 }
 int WIDGET__GetYSize(const WIDGET *pWidget) {
 	int r;
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
-		r = pWidget->Win.Rect.x1 - pWidget->Win.Rect.x0;
+		r = pWidget->Rect.x1 - pWidget->Rect.x0;
 	}
 	else {
-		r = pWidget->Win.Rect.y1 - pWidget->Win.Rect.y0;
+		r = pWidget->Rect.y1 - pWidget->Rect.y0;
 	}
 	return r + 1;
 }

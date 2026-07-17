@@ -83,12 +83,12 @@ static void _OnPaint(LISTVIEW_Obj *pObj, const GUI_RECT *pClipRect) {
 	RowDistY = LISTVIEW__GetRowDistY(pObj);
 	LBorder = pObj->LBorder;
 	RBorder = pObj->RBorder;
-	EffectSize = pObj->Widget.pEffect->EffectSize;
+	EffectSize = pObj->pEffect->EffectSize;
 	yPos = HEADER_GetHeight(pObj->hHeader) + EffectSize;
 	EndRow = pObj->ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
 	/* Calculate clipping rectangle */
 	ClipRect = *pClipRect;
-	GUI_MoveRect(&ClipRect, -pObj->Widget.Win.Rect.x0, -pObj->Widget.Win.Rect.y0);
+	GUI_MoveRect(&ClipRect, -pObj->Rect.x0, -pObj->Rect.y0);
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	GUI__IntersectRect(&ClipRect, &Rect);
 	/* Set drawing color, font and text mode */
@@ -110,7 +110,7 @@ static void _OnPaint(LISTVIEW_Obj *pObj, const GUI_RECT *pClipRect) {
 				int ColorIndex;
 				/* Set background color */
 				if (i == pObj->Sel) {
-					ColorIndex = (pObj->Widget.State & WIDGET_STATE_FOCUS) ? 2 : 1;
+					ColorIndex = (pObj->State & WIDGET_STATE_FOCUS) ? 2 : 1;
 				}
 				else {
 					ColorIndex = 0;
@@ -197,7 +197,7 @@ static void _OnPaint(LISTVIEW_Obj *pObj, const GUI_RECT *pClipRect) {
 		}
 	}
 	/* Draw the effect */
-	WIDGET__EFFECT_DrawDown(&pObj->Widget);
+	WIDGET__EFFECT_DrawDown(pObj);
 }
 void LISTVIEW__InvalidateInsideArea(LISTVIEW_Obj *pObj) {
 	GUI_RECT Rect;
@@ -468,7 +468,7 @@ LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 		GUI_ARRAY_CREATE(&pObj->RowArray);
 		GUI_ARRAY_CREATE(&pObj->AlignArray);
 		/* Init widget specific variables */
-		WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE);
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* Init member variables */
 		pObj->Props = LISTVIEW_DefaultProps;
 		pObj->ShowGrid = 0;

@@ -10,12 +10,11 @@ typedef struct {
 	int16_t Align;
 } BUTTON_PROPS;
 
-typedef struct {
-	WIDGET Widget;
+struct BUTTON_Obj : public WIDGET {
 	BUTTON_PROPS Props;
 	char *pText;
 	WM_HMEM ahDrawObj[3];
-} BUTTON_Obj;
+};
 
 extern BUTTON_PROPS BUTTON__DefaultProps;
 

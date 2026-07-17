@@ -35,11 +35,10 @@ void TEXT_SetTextColor(TEXT_Handle pObj, RGB_COLOR Color);
 void            TEXT_SetDefaultFont(const GUI_FONT  * pFont);
 const GUI_FONT  * TEXT_GetDefaultFont(void);
 void            TEXT_SetDefaultTextColor(RGB_COLOR Color);
-typedef struct {
-  WIDGET Widget;
+struct TEXT_Obj : public WIDGET {
   char *pText;
   const GUI_FONT *pFont;
   int16_t Align;
   RGB_COLOR TextColor;
   RGB_COLOR BkColor;
-} TEXT_Obj;
+};

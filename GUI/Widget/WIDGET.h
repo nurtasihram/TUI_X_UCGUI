@@ -17,7 +17,7 @@
 #define WM_WIDGET_SET_EFFECT    WM_WIDGET + 0
 #define WIDGET_CF_VERTICAL      WIDGET_STATE_VERTICAL
 
-	typedef struct {
+typedef struct {
 	WM_HWIN hWin;
 	int     Cmd;         /* WIDGET_ITEM_GET_XSIZE, WIDGET_ITEM_GET_YSIZE, WIDGET_ITEM_DRAW, */
 	int     ItemIndex;
@@ -41,12 +41,11 @@ typedef struct {
 	int EffectSize;
 } WIDGET_EFFECT;
 
-typedef struct {
-	WM_Obj Win;
+struct WIDGET : public WM_Obj {
 	const WIDGET_EFFECT *pEffect;
 	int16_t Id;
 	uint16_t State;
-} WIDGET;
+};
 
 /*********************************************************************
 *

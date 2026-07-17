@@ -251,7 +251,7 @@ int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 				}
 				else {
 					if (ItemIndex == pObj->Sel) {
-						ColorIndex = (pObj->Widget.State & WIDGET_STATE_FOCUS || pObj->hOwner) ? 2 : 1;
+						ColorIndex = (pObj->State & WIDGET_STATE_FOCUS || pObj->hOwner) ? 2 : 1;
 					}
 					else {
 						ColorIndex = 0;
@@ -437,7 +437,7 @@ static void _OnPaint(LISTBOX_Obj *pObj, const GUI_RECT *pClipRect) {
 	GUI_SetFont(pObj->Props.pFont);
 	/* Calculate clipping rectangle */
 	ClipRect = *pClipRect;
-	GUI_MoveRect(&ClipRect, -pObj->Widget.Win.Rect.x0, -pObj->Widget.Win.Rect.y0);
+	GUI_MoveRect(&ClipRect, -pObj->Rect.x0, -pObj->Rect.y0);
 	WM_GetInsideRectExScrollbar(pObj, &RectInside);
 	GUI__IntersectRect(&ClipRect, &RectInside);
 	RectItem.x0 = ClipRect.x0;
@@ -479,7 +479,7 @@ static void _OnPaint(LISTBOX_Obj *pObj, const GUI_RECT *pClipRect) {
 	GUI_SetBkColor(pObj->Props.aBackColor[0]);
 	GUI_ClearRectEx(&RectItem);
 	/* Draw the 3D effect (if configured) */
-	WIDGET__EFFECT_DrawDown(&pObj->Widget);
+	WIDGET__EFFECT_DrawDown(pObj);
 }
 static void _ToggleMultiSel(LISTBOX_Obj *pObj, int Sel) {
 	if (pObj->Flags & LISTBOX_SF_MULTISEL) {
@@ -597,7 +597,7 @@ static WM_PARAM _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			const GUI_PID_STATE *pState = (const GUI_PID_STATE *)Data;
 			if (pObj->hOwner && pState) {
 				GUI_RECT r;
-				WM_GetClientRectEx(&pObj->Widget.Win, &r);
+				WM_GetClientRectEx(pObj, &r);
 				if (pState->x < 0 || pState->y < 0 || pState->x > r.x1 || pState->y > r.y1) {
 					if (pState->Pressed)
 						_NotifyOwner(pObj, LISTBOX_NOTIFICATION_LOST_FOCUS);
@@ -705,7 +705,7 @@ LISTBOX_Handle LISTBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
 		/* Init sub-classes */
 		GUI_ARRAY_CREATE(&pObj->ItemArray);
 		/* init widget specific variables */
-		WIDGET__Init(&pObj->Widget, Id, WIDGET_STATE_FOCUSSABLE);
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		pObj->Props = LISTBOX_DefaultProps;
 		if (ppText) {
 			/* init member variables */

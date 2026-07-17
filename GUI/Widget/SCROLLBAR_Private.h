@@ -8,12 +8,11 @@ extern RGB_COLOR SCROLLBAR__aDefaultBkColor[2];
 extern RGB_COLOR SCROLLBAR__aDefaultColor[2];
 extern int16_t SCROLLBAR__DefaultWidth;
 
-typedef struct {
-	WIDGET Widget;
+struct SCROLLBAR_Obj : public WIDGET {
 	RGB_COLOR aBkColor[2];
 	RGB_COLOR aColor[2];
 	int16_t NumItems, v, PageSize;
-} SCROLLBAR_Obj;
+};
 
 typedef struct {
 	int16_t x0_LeftArrow;

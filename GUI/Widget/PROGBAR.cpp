@@ -8,8 +8,7 @@
 #define PROGBAR_DEFAULT_BARCOLOR1 RGB_GRAYL(0xAA)
 #define PROGBAR_DEFAULT_TEXTCOLOR0 RGB_WHITE
 #define PROGBAR_DEFAULT_TEXTCOLOR1 RGB_BLACK
-typedef struct {
-	WIDGET Widget;
+struct PROGBAR_Obj : public WIDGET {
 	const GUI_FONT *pFont;
 	RGB_COLOR BarColor[2];
 	RGB_COLOR TextColor[2];
@@ -17,14 +16,14 @@ typedef struct {
 	int16_t XOff, YOff;
 	int16_t TextAlign;
 	int16_t v, Min, Max;
-} PROGBAR_Obj;
+};
 #define Invalidate(h) WM_Invalidate(h)
 static void _FreeText(PROGBAR_Obj *pObj) {
 	GUI_ALLOC_FreePtr((void **)&pObj->pText);
 }
 static int _Value2X(const PROGBAR_Obj *pObj, int v) {
-	int EffectSize = pObj->Widget.pEffect->EffectSize;
-	int xSize = pObj->Widget.Win.Rect.x1 - pObj->Widget.Win.Rect.x0 + 1;
+	int EffectSize = pObj->pEffect->EffectSize;
+	int xSize = pObj->Rect.x1 - pObj->Rect.x0 + 1;
 	int Min = pObj->Min;
 	int Max = pObj->Max;
 	if (v < Min) {
@@ -69,11 +68,11 @@ static const char *_GetText(const PROGBAR_Obj *pObj, char *pBuffer) {
 	return (const char *)pText;
 }
 static void _GetTextRect(const PROGBAR_Obj *pObj, GUI_RECT *pRect, const char *pText) {
-	int xSize = pObj->Widget.Win.Rect.x1 - pObj->Widget.Win.Rect.x0 + 1;
-	int ySize = pObj->Widget.Win.Rect.y1 - pObj->Widget.Win.Rect.y0 + 1;
+	int xSize = pObj->Rect.x1 - pObj->Rect.x0 + 1;
+	int ySize = pObj->Rect.y1 - pObj->Rect.y0 + 1;
 	int TextWidth = GUI_GetStringDistX(pText);
 	int TextHeight = GUI_GetFontSizeY();
-	int EffectSize = pObj->Widget.pEffect->EffectSize;
+	int EffectSize = pObj->pEffect->EffectSize;
 	switch (pObj->TextAlign & GUI_TA_HORIZONTAL) {
 		case GUI_TA_CENTER:
 			pRect->x0 = (xSize - TextWidth) / 2;
@@ -96,7 +95,7 @@ static void _OnPaint(PROGBAR_Obj *pObj) {
 	char ac[5];
 	int xPos;
 	WM_GetClientRect(&rClient);
-	GUI__ReduceRect(&rInside, &rClient, pObj->Widget.pEffect->EffectSize);
+	GUI__ReduceRect(&rInside, &rClient, pObj->pEffect->EffectSize);
 	xPos = _Value2X(pObj, pObj->v);
 	pText = _GetText(pObj, ac);
 	GUI_SetFont(pObj->pFont);
@@ -113,7 +112,7 @@ static void _OnPaint(PROGBAR_Obj *pObj) {
 	WM_SetUserClipRect(&r);
 	_DrawPart(pObj, 1, rText.x0, rText.y0, pText);
 	WM_SetUserClipRect(NULL);
-	WIDGET__EFFECT_DrawDownRect(&pObj->Widget, &rClient);
+	WIDGET__EFFECT_DrawDownRect(pObj, &rClient);
 }
 static void _Delete(PROGBAR_Obj *pObj) {
 	_FreeText(pObj);
@@ -144,7 +143,7 @@ PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
 
 		pObj = (PROGBAR_Obj *)(hObj);
 		/* init widget specific variables */
-		WIDGET__Init(&pObj->Widget, Id, 0);
+		WIDGET__Init(pObj, Id, 0);
 		WIDGET_SetEffect(hObj, &WIDGET_Effect_None); /* Standard effect for progbar: None */
 		/* init member variables */
 		pObj->pFont = GUI_DEFAULT_FONT;

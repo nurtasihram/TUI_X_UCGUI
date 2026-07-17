@@ -26,7 +26,7 @@ static void _OnPaint(HEADER_Obj *pObj) {
 	GUI_RECT Rect;
 	int i, xPos = -pObj->ScrollPos;
 	int NumItems = GUI_ARRAY_GetNumItems(&pObj->Columns);
-	int EffectSize = pObj->Widget.pEffect->EffectSize;
+	int EffectSize = pObj->pEffect->EffectSize;
 	GUI_SetBkColor(pObj->BkColor);
 	GUI_SetFont(pObj->pFont);
 	GUI_Clear();
@@ -57,7 +57,7 @@ static void _OnPaint(HEADER_Obj *pObj) {
 			GUI_DRAW__Draw(pColumn->hDrawObj, xPos + xOff, yOff);
 			WM_SetUserClipRect(NULL);
 		}
-		WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &Rect);
+		WIDGET__EFFECT_DrawUpRect(pObj, &Rect);
 		xPos += Rect.x1 - Rect.x0;
 		Rect.x0 += EffectSize + _DefaultBorderH;
 		Rect.x1 -= EffectSize + _DefaultBorderH;
@@ -69,7 +69,7 @@ static void _OnPaint(HEADER_Obj *pObj) {
 	WM_GetClientRect(&Rect);
 	Rect.x0 = xPos;
 	Rect.x1 = 0xfff;
-	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &Rect);
+	WIDGET__EFFECT_DrawUpRect(pObj, &Rect);
 }
 static void _RestoreOldCursor(void) {
 	if (_pOldCursor) {
@@ -236,7 +236,7 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 		/* Init sub-classes */
 		GUI_ARRAY_CREATE(&pObj->Columns);
 		/* init widget specific variables */
-		WIDGET__Init(&pObj->Widget, Id, 0);
+		WIDGET__Init(pObj, Id, 0);
 		/* init member variables */
 		pObj->BkColor = _DefaultBkColor;
 		pObj->TextColor = _DefaultTextColor;
@@ -346,7 +346,7 @@ void HEADER_AddItem(HEADER_Handle hObj, int Width, const char *s, int Align) {
 		HEADER_COLUMN Column;
 		if (!Width) {
 			const GUI_FONT  *pFont = GUI_SetFont(pObj->pFont);
-			Width = GUI_GetStringDistX(s) + 2 * (pObj->Widget.pEffect->EffectSize + _DefaultBorderH);
+			Width = GUI_GetStringDistX(s) + 2 * (pObj->pEffect->EffectSize + _DefaultBorderH);
 			GUI_SetFont(pFont);
 		}
 		Column.Width = Width;

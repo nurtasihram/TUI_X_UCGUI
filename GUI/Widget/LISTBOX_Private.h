@@ -21,8 +21,7 @@ typedef struct {
 	RGB_COLOR aTextColor[4];
 } LISTBOX_PROPS;
 
-typedef struct {
-	WIDGET Widget;
+struct LISTBOX_Obj : public WIDGET {
 	GUI_ARRAY ItemArray;
 	WIDGET_DRAW_ITEM_FUNC *pfDrawItem;
 	WM_SCROLL_STATE ScrollStateV;
@@ -33,7 +32,7 @@ typedef struct {
 	uint8_t Flags;
 	uint8_t  ScrollbarWidth;
 	uint16_t ItemSpacing;
-} LISTBOX_Obj;
+};
 
 extern LISTBOX_PROPS LISTBOX_DefaultProps;
 unsigned LISTBOX__GetNumItems(LISTBOX_Obj *pObj);

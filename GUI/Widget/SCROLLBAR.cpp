@@ -23,8 +23,8 @@ int16_t       SCROLLBAR__DefaultWidth = SCROLLBAR_DEFAULT_WIDTH;
 */
 static int _GetArrowSize(SCROLLBAR_Obj *pObj) {
 	unsigned int r;
-	unsigned int xSize = WIDGET__GetXSize(&pObj->Widget);
-	unsigned int ySize = WIDGET__GetYSize(&pObj->Widget);
+	unsigned int xSize = WIDGET__GetXSize(pObj);
+	unsigned int ySize = WIDGET__GetYSize(pObj);
 	r = ySize / 2 + 5;
 	if (r > xSize - 5)
 		r = xSize - 5;
@@ -43,7 +43,7 @@ static int _GetArrowSize(SCROLLBAR_Obj *pObj) {
 */
 static void _WIDGET__RECT2VRECT(const WIDGET *pWidget, GUI_RECT *pRect) {
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
-		int xSize = pWidget->Win.Rect.x1 - pWidget->Win.Rect.x0 + 1;
+		int xSize = pWidget->Rect.x1 - pWidget->Rect.x0 + 1;
 		int x0, x1;
 		x0 = pRect->x0;
 		x1 = pRect->x1;
@@ -65,13 +65,13 @@ static void _CalcPositions(SCROLLBAR_Obj *pObj, SCROLLBAR_POSITIONS *pPos) {
 	WM_HWIN hWin;
 	GUI_RECT r, rSub;
 	int x0, y0;
-	r = pObj->Widget.Win.Rect;
+	r = pObj->Rect;
 	x0 = r.x0;
 	y0 = r.y0;
-	pPos->x1 = (pObj->Widget.State & WIDGET_STATE_VERTICAL) ? r.y1 : r.x1;
+	pPos->x1 = (pObj->State & WIDGET_STATE_VERTICAL) ? r.y1 : r.x1;
 	/* Subtract the rectangle of the other scrollbar (if existing and visible) */
-	if (pObj->Widget.Id == GUI_ID_HSCROLL) {
-		hWin = WM_GetScrollbarV(pObj->Widget.Win.hParent);
+	if (pObj->Id == GUI_ID_HSCROLL) {
+		hWin = WM_GetScrollbarV(pObj->hParent);
 		if (hWin) {
 			WM_GetWindowRectEx(hWin, &rSub);
 			if (r.x1 == rSub.x1) {
@@ -79,8 +79,8 @@ static void _CalcPositions(SCROLLBAR_Obj *pObj, SCROLLBAR_POSITIONS *pPos) {
 			}
 		}
 	}
-	if (pObj->Widget.Id == GUI_ID_VSCROLL) {
-		hWin = WM_GetScrollbarH(pObj->Widget.Win.hParent);
+	if (pObj->Id == GUI_ID_VSCROLL) {
+		hWin = WM_GetScrollbarH(pObj->hParent);
 		if (hWin) {
 			WM_GetWindowRectEx(hWin, &rSub);
 			if (r.y1 == rSub.y1) {
@@ -91,7 +91,7 @@ static void _CalcPositions(SCROLLBAR_Obj *pObj, SCROLLBAR_POSITIONS *pPos) {
 	/* Convert coordinates of this window */
 	GUI_MoveRect(&r, -x0, -y0);
 	/* Convert real into virtual coordinates */
-	_WIDGET__RECT2VRECT(&pObj->Widget, &r);
+	_WIDGET__RECT2VRECT(pObj, &r);
 	NumItems = pObj->NumItems;
 	xSize = r.x1 - r.x0 + 1;
 	xSizeArrow = _GetArrowSize(pObj);
@@ -133,7 +133,7 @@ static void _OnPaint(SCROLLBAR_Obj *pObj) {
 	  Get / calc position info
 	*/
 	_CalcPositions(pObj, &Pos);
-	WIDGET__GetClientRect(&pObj->Widget, &rClient);
+	WIDGET__GetClientRect(pObj, &rClient);
 	r = rClient;
 	ArrowSize = ((r.y1 - r.y0) / 3) - 1;
 	ArrowOff = 3 + ArrowSize + ArrowSize / 3;
@@ -144,21 +144,21 @@ static void _OnPaint(SCROLLBAR_Obj *pObj) {
 	r = rClient;
 	r.x0 = Pos.x0_LeftArrow;
 	r.x1 = Pos.x1_LeftArrow;
-	WIDGET__FillRectEx(&pObj->Widget, &r);
+	WIDGET__FillRectEx(pObj, &r);
 	GUI_SetColor(pObj->aBkColor[1]);
-	_DrawTriangle(&pObj->Widget, r.x0 + ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, -1);
-	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &r);
+	_DrawTriangle(pObj, r.x0 + ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, -1);
+	WIDGET__EFFECT_DrawUpRect(pObj, &r);
 	/*
 	  Draw the thumb area which is not covered by the thumb
 	*/
 	GUI_SetColor(pObj->aBkColor[0]);
 	r.x0 = Pos.x1_LeftArrow + 1;
 	r.x1 = Pos.x0_Thumb - 1;
-	WIDGET__FillRectEx(&pObj->Widget, &r);
+	WIDGET__FillRectEx(pObj, &r);
 	r = rClient;
 	r.x0 = Pos.x1_Thumb + 1;
 	r.x1 = Pos.x0_RightArrow - 1;
-	WIDGET__FillRectEx(&pObj->Widget, &r);
+	WIDGET__FillRectEx(pObj, &r);
 	/*
 	  Draw Thumb
 	*/
@@ -166,18 +166,18 @@ static void _OnPaint(SCROLLBAR_Obj *pObj) {
 	r.x0 = Pos.x0_Thumb;
 	r.x1 = Pos.x1_Thumb;
 	GUI_SetColor(pObj->aColor[0]);
-	WIDGET__FillRectEx(&pObj->Widget, &r);
-	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &r);
+	WIDGET__FillRectEx(pObj, &r);
+	WIDGET__EFFECT_DrawUpRect(pObj, &r);
 	/*
 	  Draw right Arrow
 	*/
 	GUI_SetColor(pObj->aColor[0]);
 	r.x0 = Pos.x0_RightArrow;
 	r.x1 = Pos.x1_RightArrow;
-	WIDGET__FillRectEx(&pObj->Widget, &r);
+	WIDGET__FillRectEx(pObj, &r);
 	GUI_SetColor(pObj->aBkColor[1]);
-	_DrawTriangle(&pObj->Widget, r.x1 - ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, 1);
-	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &r);
+	_DrawTriangle(pObj, r.x1 - ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, 1);
+	WIDGET__EFFECT_DrawUpRect(pObj, &r);
 	/*
 	  Draw overlap area (if any ...)
 	*/
@@ -185,18 +185,18 @@ static void _OnPaint(SCROLLBAR_Obj *pObj) {
 		r.x0 = Pos.x1_RightArrow + 1;
 		r.x1 = Pos.x1;
 		GUI_SetColor(pObj->aColor[0]);
-		WIDGET__FillRectEx(&pObj->Widget, &r);
+		WIDGET__FillRectEx(pObj, &r);
 	}
 }
 static void _ScrollbarPressed(SCROLLBAR_Obj *pObj) {
 	WIDGET_OrState(pObj, SCROLLBAR_STATE_PRESSED);
-	if (pObj->Widget.Win.Status & WM_SF_ISVIS) {
+	if (pObj->Status & WM_SF_ISVIS) {
 		WM_NotifyParent(pObj, WM_NOTIFICATION_CLICKED);
 	}
 }
 static void _ScrollbarReleased(SCROLLBAR_Obj *pObj) {
 	WIDGET_AndState(pObj, SCROLLBAR_STATE_PRESSED);
-	if (pObj->Widget.Win.Status & WM_SF_ISVIS) {
+	if (pObj->Status & WM_SF_ISVIS) {
 		WM_NotifyParent(pObj, WM_NOTIFICATION_RELEASED);
 	}
 }
@@ -210,7 +210,7 @@ static void _OnTouch(SCROLLBAR_Obj *pObj, const GUI_PID_STATE *pState) {
 			_CalcPositions(pObj, &Pos);
 			Range = pObj->NumItems - pObj->PageSize;
 			/* Swap mouse coordinates if necessary */
-			if (pObj->Widget.State & WIDGET_STATE_VERTICAL)
+			if (pObj->State & WIDGET_STATE_VERTICAL)
 				x = pState->y;
 			else
 				x = pState->x;
@@ -231,11 +231,11 @@ static void _OnTouch(SCROLLBAR_Obj *pObj, const GUI_PID_STATE *pState) {
 			/* WM_SetFocus(hObj); */
 			WM_SetCapture(pObj, 1);
 			SCROLLBAR_SetValue(pObj, Sel);
-			if (!(pObj->Widget.State & SCROLLBAR_STATE_PRESSED))
+			if (!(pObj->State & SCROLLBAR_STATE_PRESSED))
 				_ScrollbarPressed(pObj);
 		}
 		/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
-		else if (pObj->Widget.State & SCROLLBAR_STATE_PRESSED)
+		else if (pObj->State & SCROLLBAR_STATE_PRESSED)
 			_ScrollbarReleased(pObj);
 	}
 }
@@ -341,7 +341,7 @@ SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 			InitState |= WIDGET_STATE_FOCUSSABLE;
 		}
 		/* init widget specific variables */
-		WIDGET__Init(&pObj->Widget, Id, InitState);
+		WIDGET__Init(pObj, Id, InitState);
 		/* init member variables */
 		pObj->aBkColor[0] = SCROLLBAR__aDefaultBkColor[0];
 		pObj->aBkColor[1] = SCROLLBAR__aDefaultBkColor[1];

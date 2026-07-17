@@ -10,20 +10,19 @@
 #define SLIDER_BKCOLOR1_DEFAULT RGB_WHITE
 #define SLIDER_COLOR0_DEFAULT RGB_GRAYL(0xc0)
 #define SLIDER_COLOR1_DEFAULT RGB_BLACK
-typedef struct {
-	WIDGET Widget;
+struct SLIDER_Obj : public WIDGET {
 	RGB_COLOR aBkColor[2];
 	RGB_COLOR aColor[2];
 	int Min, Max, v;
 	int Flags;
 	int NumTicks;
 	int16_t Width;
-} SLIDER_Obj;
+};
 static RGB_COLOR _DefaultBkColor = SLIDER_BKCOLOR0_DEFAULT;
 static void _OnPaint(SLIDER_Obj *pObj) {
 	GUI_RECT r, rFocus, rSlider, rSlot;
 	int x0, xsize, i, Range, NumTicks;
-	WIDGET__GetClientRect(&pObj->Widget, &rFocus);
+	WIDGET__GetClientRect(pObj, &rFocus);
 	GUI__ReduceRect(&r, &rFocus, 1);
 	NumTicks = pObj->NumTicks;
 	xsize = r.x1 - r.x0 + 1 - pObj->Width;
@@ -35,14 +34,14 @@ static void _OnPaint(SLIDER_Obj *pObj) {
 	/* Fill with parents background color */
 #if !SLIDER_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent*/
 	if (pObj->aBkColor[0] == GUI_INVALID_COLOR) {
-		GUI_SetBkColor(WIDGET__GetBkColor(&pObj->Widget));
+		GUI_SetBkColor(WIDGET__GetBkColor(pObj));
 	}
 	else {
 		GUI_SetBkColor(pObj->aBkColor[0]);
 	}
 	GUI_Clear();
 #else
-	if (!WM_GetHasTrans(&pObj->Widget)) {
+	if (!WM_GetHasTrans(pObj)) {
 		GUI_SetBkColor(pObj->aBkColor[0]);
 		GUI_Clear();
 	}
@@ -57,7 +56,7 @@ static void _OnPaint(SLIDER_Obj *pObj) {
 	rSlot.x1 = x0 + xsize;
 	rSlot.y0 = (rSlider.y0 + rSlider.y1) / 2 - 1;
 	rSlot.y1 = rSlot.y0 + 3;
-	WIDGET__EFFECT_DrawDownRect(&pObj->Widget, &rSlot);        /* Draw slot */
+	WIDGET__EFFECT_DrawDownRect(pObj, &rSlot);        /* Draw slot */
 	/* Draw the ticks */
 	if (NumTicks < 0) {
 		NumTicks = Range + 1;
@@ -69,29 +68,29 @@ static void _OnPaint(SLIDER_Obj *pObj) {
 		GUI_SetColor(RGB_BLACK);
 		for (i = 0; i < NumTicks; i++) {
 			int x = x0 + xsize * i / (NumTicks - 1);
-			WIDGET__DrawVLine(&pObj->Widget, x, 1, 3);
+			WIDGET__DrawVLine(pObj, x, 1, 3);
 		}
 	}
 	/* Draw the slider itself */
 	GUI_SetColor(pObj->aColor[0]);
-	WIDGET__FillRectEx(&pObj->Widget, &rSlider);
+	WIDGET__FillRectEx(pObj, &rSlider);
 	GUI_SetColor(RGB_BLACK);
-	WIDGET__EFFECT_DrawUpRect(&pObj->Widget, &rSlider);
+	WIDGET__EFFECT_DrawUpRect(pObj, &rSlider);
 	/* Draw focus */
-	if (pObj->Widget.State & WIDGET_STATE_FOCUS) {
+	if (pObj->State & WIDGET_STATE_FOCUS) {
 		GUI_SetColor(RGB_BLACK);
-		WIDGET__DrawFocusRect(&pObj->Widget, &rFocus, 0);
+		WIDGET__DrawFocusRect(pObj, &rFocus, 0);
 	}
 }
 static void _SliderPressed(SLIDER_Obj *pObj) {
 	WIDGET_OrState(pObj, SLIDER_STATE_PRESSED);
-	if (pObj->Widget.Win.Status & WM_SF_ISVIS) {
+	if (pObj->Status & WM_SF_ISVIS) {
 		WM_NotifyParent(pObj, WM_NOTIFICATION_CLICKED);
 	}
 }
 static void _SliderReleased(SLIDER_Obj *pObj) {
 	WIDGET_AndState(pObj, SLIDER_STATE_PRESSED);
-	if (pObj->Widget.Win.Status & WM_SF_ISVIS) {
+	if (pObj->Status & WM_SF_ISVIS) {
 		WM_NotifyParent(pObj, WM_NOTIFICATION_RELEASED);
 	}
 }
@@ -101,7 +100,7 @@ static void _OnTouch(SLIDER_Obj *pObj, const GUI_PID_STATE *pState) {
 			int x0, xsize, x, Sel, Range;
 			Range = (pObj->Max - pObj->Min);
 			x0 = 1 + pObj->Width / 2;  /* 1 pixel focus rectangle + width of actual slider */
-			x = (pObj->Widget.State & WIDGET_STATE_VERTICAL) ? pState->y : pState->x;
+			x = (pObj->State & WIDGET_STATE_VERTICAL) ? pState->y : pState->x;
 			x -= x0;
 			xsize = WIDGET__GetWindowSizeX(pObj) - 2 * x0;
 			if (x <= 0) {
@@ -120,13 +119,13 @@ static void _OnTouch(SLIDER_Obj *pObj, const GUI_PID_STATE *pState) {
 			}
 			WM_SetCapture(pObj, 1);
 			SLIDER_SetValue(pObj, Sel);
-			if ((pObj->Widget.State & SLIDER_STATE_PRESSED) == 0) {
+			if ((pObj->State & SLIDER_STATE_PRESSED) == 0) {
 				_SliderPressed(pObj);
 			}
 		}
 		else {
 			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
-			if (pObj->Widget.State & SLIDER_STATE_PRESSED) {
+			if (pObj->State & SLIDER_STATE_PRESSED) {
 				_SliderReleased(pObj);
 			}
 		}
@@ -184,7 +183,7 @@ SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 			InitState |= WIDGET_CF_VERTICAL;
 		}
 		/* init widget specific variables */
-		WIDGET__Init(&pObj->Widget, Id, InitState);
+		WIDGET__Init(pObj, Id, InitState);
 		/* init member variables */
 		pObj->aBkColor[0] = _DefaultBkColor;
 		pObj->aBkColor[1] = SLIDER_BKCOLOR1_DEFAULT;
