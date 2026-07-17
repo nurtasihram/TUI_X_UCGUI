@@ -1,8 +1,5 @@
 #pragma once
 
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 
 #include "WM_Intern.h"  /* Window manager, including some internals, which speed things up */
 
@@ -130,6 +127,3 @@ void  WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT *pEffect);
 const WIDGET_EFFECT *WIDGET_GetDefaultEffect(void);
 int   WIDGET_SetWidth(WM_HWIN hObj, int Width);
 
-#if defined(__cplusplus)
-}
-#endif

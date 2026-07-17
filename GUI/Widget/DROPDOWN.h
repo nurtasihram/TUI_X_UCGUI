@@ -2,9 +2,6 @@
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 
 typedef WM_HMEM DROPDOWN_Handle;
 
@@ -45,6 +42,3 @@ void     DROPDOWN_SetTextHeight   (DROPDOWN_Handle hObj, unsigned TextHeight);
 const GUI_FONT  * DROPDOWN_GetDefaultFont(void);
 void            DROPDOWN_SetDefaultFont(const GUI_FONT* pFont);
 
-#if defined(__cplusplus)
-  }
-#endif

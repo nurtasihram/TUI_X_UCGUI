@@ -1,8 +1,5 @@
 #pragma once
 
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 
 BOOL WM__InitIVRSearch(const GUI_RECT* pMaxRect);
 BOOL WM__GetNextIVR(void);
@@ -20,6 +17,3 @@ BOOL WM__GetNextIVR(void);
 #define WM_SUBORGY(y)    y -= GUI_Context.yOff
 #define WM_SUBORG(x0,y0) WM_SUBORGX(x0); WM_SUBORGY(y0)
 
-#if defined(__cplusplus)
-}
-#endif

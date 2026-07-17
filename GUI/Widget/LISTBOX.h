@@ -2,9 +2,6 @@
 #include "WM.h"
 #include "WIDGET.h"             /* Req. for WIDGET_DRAW_ITEM_FUNC */
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 #define LISTBOX_ALL_ITEMS  -1
 #define LISTBOX_CI_UNSEL    0
 #define LISTBOX_CI_SEL      1
@@ -78,6 +75,3 @@ void        LISTBOX_SetDefaultBkColor     (unsigned Index, RGB_COLOR Color);
 void        LISTBOX_SetDefaultTextColor   (unsigned Index, RGB_COLOR Color);
 #define LISTBOX_SetBackColor(hObj, Index, Color) LISTBOX_SetBkColor(hObj, Index, Color)
 #define LISTBOX_DeleteString  LISTBOX_DeleteItem
-#if defined(__cplusplus)
-  }
-#endif

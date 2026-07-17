@@ -20,7 +20,7 @@ typedef struct {
 	WM_CALLBACK *cb;
 	WM_HWIN hClient;
 	WM_HWIN hMenu;
-	WM_HWIN hText;
+	char *pText;
 	GUI_RECT rRestore;
 	int16_t TextAlign;
 	uint16_t Flags;

@@ -1,9 +1,6 @@
 ﻿#pragma once
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 typedef WM_HMEM PROGBAR_Handle;
 PROGBAR_Handle PROGBAR_Create        (int x0, int y0, int xsize, int ysize, int Flags);
 PROGBAR_Handle PROGBAR_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags);
@@ -22,6 +19,3 @@ void            PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align);
 void            PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int index, RGB_COLOR color);
 void            PROGBAR_SetTextPos  (PROGBAR_Handle hObj, int XOff, int YOff);
 void            PROGBAR_SetValue    (PROGBAR_Handle hObj, int v);
-#if defined(__cplusplus)
-  }
-#endif

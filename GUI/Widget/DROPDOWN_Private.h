@@ -28,5 +28,3 @@ typedef struct {
 	uint8_t     ScrollbarWidth;
 	char  IsPressed;
 } DROPDOWN_Obj;
-
-void DROPDOWN__AdjustHeight(DROPDOWN_Handle pObj);

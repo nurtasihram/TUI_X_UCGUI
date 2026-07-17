@@ -3,6 +3,7 @@
 #include "GUI_Protected.h"
 #include "LCD_Private.h"
 
+
 #if GUI_SUPPORT_DEVICES
 #define LCDDEV_L0_DrawBitmap GUI_Context.pDeviceAPI->pfDrawBitmap
 #define LCDDEV_L0_DrawHLine  GUI_Context.pDeviceAPI->pfDrawHLine

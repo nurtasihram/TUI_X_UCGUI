@@ -13,7 +13,7 @@ typedef struct {
 typedef struct {
 	WIDGET Widget;
 	BUTTON_PROPS Props;
-	WM_HMEM hpText;
+	char *pText;
 	WM_HMEM ahDrawObj[3];
 } BUTTON_Obj;
 

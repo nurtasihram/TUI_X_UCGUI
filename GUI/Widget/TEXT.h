@@ -3,9 +3,6 @@
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 #include "WIDGET.h"      /* Req. for Create indirect data structure */
 #include "GUIDebug.h" /* Req. for GUI_DEBUG_LEVEL */
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 #define TEXT_CF_LEFT    GUI_TA_LEFT
 #define TEXT_CF_RIGHT   GUI_TA_RIGHT
 #define TEXT_CF_HCENTER GUI_TA_HCENTER
@@ -40,12 +37,9 @@ const GUI_FONT  * TEXT_GetDefaultFont(void);
 void            TEXT_SetDefaultTextColor(RGB_COLOR Color);
 typedef struct {
   WIDGET Widget;
-  WM_HMEM hpText;
-  const GUI_FONT  * pFont;
+  char *pText;
+  const GUI_FONT *pFont;
   int16_t Align;
   RGB_COLOR TextColor;
   RGB_COLOR BkColor;
 } TEXT_Obj;
-#if defined(__cplusplus)
-  }
-#endif

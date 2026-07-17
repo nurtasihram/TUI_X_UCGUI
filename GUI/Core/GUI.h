@@ -4,9 +4,6 @@
 #include "GUIType.h"
 #include "Dots.inl"
 
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 
 #define GUI_COUNTOF(a) (sizeof(a) / sizeof(a[0]))
 
@@ -208,7 +205,7 @@ void GUI__IntersectRect(GUI_RECT *pDest, const GUI_RECT *pr0);
 void GUI__ReduceRect(GUI_RECT *pDest, const GUI_RECT *pRect, int Dist);
 
 int  GUI__DivideRound(int a, int b);
-int  GUI__SetText(GUI_HMEM *phText, const char *s);
+int  GUI__SetText(char **ppText, const char *s);
 int GUI__strcmp(const char *s0, const char *s1);
 
 RGB_COLOR GUI_GetBkColor(void);
@@ -299,12 +296,12 @@ void     GUI_UC_SetEncodeUTF8(void);
 
 void GUI_UC_DispString(const uint16_t *s);
 
-GUI_HMEM GUI_ALLOC_AllocInit(const void *pInitData, size_t Size);
-GUI_HMEM GUI_ALLOC_AllocNoInit(size_t size);
-GUI_HMEM GUI_ALLOC_AllocZero(size_t size);
-void     GUI_ALLOC_Free(GUI_HMEM  hMem);
-void     GUI_ALLOC_FreePtr(GUI_HMEM *phMem);
-GUI_HMEM GUI_ALLOC_Realloc(GUI_HMEM hOld, int NewSize);
+void *GUI_ALLOC_AllocInit(const void *pInitData, size_t Size);
+void *GUI_ALLOC_AllocNoInit(size_t size);
+void *GUI_ALLOC_AllocZero(size_t size);
+void     GUI_ALLOC_Free(void *ptr);
+void     GUI_ALLOC_FreePtr(void **pptr);
+void *GUI_ALLOC_Realloc(void *ptr, size_t NewSize);
 size_t   GUI_ALLOC_GetMaxSize(void);
 void     GUI__memcpy(void *pDest, const void *pSrc, size_t NumBytes);
 void     GUI__memmove(void *pDest, const void *pSrc, size_t NumBytes);
@@ -313,7 +310,7 @@ void     GUI__memmove(void *pDest, const void *pSrc, size_t NumBytes);
 #define GUI_MEMDEV_NOTRANS    (1<<0)
 
 #if GUI_SUPPORT_DEVICES
-typedef GUI_HMEM GUI_MEMDEV_Handle;
+typedef void *GUI_MEMDEV_Handle;
 typedef void GUI_CALLBACK_VOID_P(void *p);
 
 /* Create a memory device which is compatible to the selected LCD */
@@ -335,14 +332,6 @@ int   GUI_MEMDEV_Draw(GUI_RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData,
 #endif
 
 void GUI_SelectLCD(void);
-
-typedef GUI_HMEM GUI_MEASDEV_Handle;
-
-GUI_MEASDEV_Handle GUI_MEASDEV_Create(void);
-void               GUI_MEASDEV_Delete(GUI_MEASDEV_Handle hMemDev);
-void               GUI_MEASDEV_Select(GUI_MEASDEV_Handle hMem);
-void               GUI_MEASDEV_GetRect(GUI_MEASDEV_Handle hMem, GUI_RECT *pRect);
-void               GUI_MEASDEV_ClearRect(GUI_MEASDEV_Handle hMem);
 
 void GUI_Delay(int Period);
 int  GUI_GetTime(void);
@@ -368,7 +357,7 @@ typedef struct {
 	uintptr_t Context;
 } GUI_TIMER_MESSAGE;
 
-typedef GUI_HMEM GUI_TIMER_HANDLE;
+typedef void *GUI_TIMER_HANDLE;
 typedef void GUI_TIMER_CALLBACK(/*const*/ GUI_TIMER_MESSAGE *pTM);
 
 GUI_TIMER_HANDLE GUI_TIMER_Create(GUI_TIMER_CALLBACK *cb, int Time, uint32_t Context, int Flags);
@@ -408,6 +397,3 @@ void GUI_TOUCH_StoreUnstable(int x, int y);
 
 #define GUI_DispString_UC  GUI_UC_DispString
 
-#if defined(__cplusplus)
-}
-#endif

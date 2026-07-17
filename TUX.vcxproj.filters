@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="GUI">
@@ -36,194 +36,194 @@
     <ClCompile Include="GUI_X\GUI_X.cc">
       <Filter>GUI_X</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Resources\F8x8.c">
+    <ClCompile Include="GUI\Resources\F8x8.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Resources\F13_1.c">
+    <ClCompile Include="GUI\Resources\F13_1.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Resources\F13_ASCII.c">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV.c">
+    <ClCompile Include="GUI\MemDev\GUIDEV.cpp">
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_24.c">
+    <ClCompile Include="GUI\MemDev\GUIDEV_24.cpp">
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\WM\WM.c">
+    <ClCompile Include="GUI\WM\WM.cpp">
       <Filter>GUI\WM</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\WM\WMMemDev.c">
+    <ClCompile Include="GUI\WM\WMMemDev.cpp">
       <Filter>GUI\WM</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\WM\WMTouch.c">
+    <ClCompile Include="GUI\WM\WMTouch.cpp">
       <Filter>GUI\WM</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\LCDDriver\LCD9325.c">
+    <ClCompile Include="GUI\LCDDriver\LCD9325.cpp">
       <Filter>GUI\LCDDriver</Filter>
     </ClCompile>
-    <ClCompile Include="main.c" />
-    <ClCompile Include="GUI\Resources\F08_1.c">
+    <ClCompile Include="GUI\Resources\F08_1.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Resources\F08_ASCII.c">
+    <ClCompile Include="GUI\Resources\F6x8.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Resources\F6x8.c">
+    <ClCompile Include="GUI\Widget\BUTTON.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CHECKBOX.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\DIALOG.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\DROPDOWN.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\EDIT.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\GUI_ARRAY.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\GUI_DRAW.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\GUI_DRAW_BITMAP.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\GUI_DRAW_Self.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\HEADER.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTBOX.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\LISTVIEW.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MENU.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MESSAGEBOX.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MULTIEDIT.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MULTIPAGE.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\PROGBAR.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\RADIO.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\SCROLLBAR.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\SLIDER.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\TEXT.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D1L.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D2L.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET_Effect_None.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WIDGET_Effect_Simple.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\WINDOW.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FRAMEWIN.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUI_GetBitmapPixelIndex.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUI_MOUSE.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUI_OnKey.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUI_PID.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUI_UC.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUI_UC_DispString.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUI_UC_EncodeNone.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUI_UC_EncodeUTF8.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUI_X_MEM.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUICore.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUICurs.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUITime.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUITimer.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\LCD.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\LCD_Mirror.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Resources\GUI_CursorArrowL.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\BUTTON.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\DIALOG.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\DROPDOWN.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\EDIT.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\GUI_ARRAY.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\GUI_DRAW.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\GUI_DRAW_BITMAP.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\GUI_DRAW_Self.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\HEADER.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MESSAGEBOX.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MULTIEDIT.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MULTIPAGE.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\PROGBAR.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\RADIO.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\SCROLLBAR.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\SLIDER.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\TEXT.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D1L.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D2L.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_None.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_Simple.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WINDOW.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN.c">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetBitmapPixelIndex.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_MOUSE.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_OnKey.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_PID.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_UC.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_UC_DispString.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_UC_EncodeNone.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_UC_EncodeUTF8.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_X_MEM.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUICore.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUICurs.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUITime.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUITimer.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_Mirror.c">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorArrowL.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorArrowS.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorArrowS.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorCrossL.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorCrossL.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorCrossM.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorCrossM.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorCrossS.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorCrossS.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorHeaderM.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorHeaderM.c">
+    <ClCompile Include="GUI\Resources\GUI_CursorArrowM.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorArrowM.c">
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="GUI\Resources\F08_ASCII.cpp">
+      <Filter>GUI\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Resources\F13_ASCII.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -391,6 +391,5 @@
     <None Include="GUI\Core\Dots.inl">
       <Filter>GUI\Core</Filter>
     </None>
-    <None Include=".github\copilot-instructions.md" />
   </ItemGroup>
 </Project>

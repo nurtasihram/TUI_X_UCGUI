@@ -14,7 +14,7 @@ typedef struct {
 
 typedef struct {
 	WIDGET Widget;
-	WM_HMEM hpText;
+	char *pText;
 	int16_t MaxLen;
 	uint16_t BufferSize;
 	int32_t Min, Max;            /* Min max values as normalized floats (integers) */

@@ -3,9 +3,6 @@
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 
 /*********************************************************************
 *
@@ -142,6 +139,3 @@ void  GUI_EditString(char * pString, int Len, int xsize);
 #define EDIT_CI_DISABELD EDIT_CI_DISABLED
 #define EDIT_CI_ENABELD  EDIT_CI_ENABLED
 
-#if defined(__cplusplus)
-  }
-#endif

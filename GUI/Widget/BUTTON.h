@@ -2,9 +2,6 @@
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 #include "WIDGET.h"
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 /* For compatibility only ! */
 #define BUTTON_CF_HIDE   WM_CF_HIDE
 #define BUTTON_CF_SHOW   WM_CF_SHOW
@@ -69,6 +66,3 @@ void             BUTTON_SetTextColor       (BUTTON_Handle hObj, unsigned int Ind
 void             BUTTON_SetSelfDrawEx      (BUTTON_Handle hObj, unsigned int Index, void (*pDraw)(void), int x, int y); /* Not to be doc. */
 void             BUTTON_SetSelfDraw        (BUTTON_Handle hObj, unsigned int Index, void (*pDraw)(void));               /* Not to be doc. */
 #define BUTTON_STATE_HASFOCUS 0
-#if defined(__cplusplus)
-  }
-#endif

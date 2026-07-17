@@ -4,9 +4,6 @@
 #include "GUIType.h"      /* Needed because of typedefs only */
 #include "WM_GUI.h"       /* Some functions needed by GUI routines */
 
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 
 /* Support for transparency. Switching it off makes Wm smaller and faster */
 #ifndef WM_SUPPORT_TRANSPARENCY
@@ -333,6 +330,3 @@ WM_HWIN   WM_Screen2hWin(int x, int y);
 WM_HWIN   WM_Screen2hWinEx(WM_HWIN hStop, int x, int y);
 void      WM_ForEachDesc(WM_HWIN hWin, WM_tfForEach *pcb, void *pData);
 
-#if defined(__cplusplus)
-}
-#endif

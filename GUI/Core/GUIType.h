@@ -151,9 +151,6 @@ int  GUI##Type##_GetCharDistX(uint16_t c);                         \
 void GUI##Type##_GetFontInfo (const GUI_FONT  * pFont, GUI_FONTINFO * pfi); \
 char GUI##Type##_IsInFont    (const GUI_FONT  * pFont, uint16_t c)
 
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 
 	/* MONO: Monospaced fonts */
 	DECLARE_FONT(MONO);
@@ -173,9 +170,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 	GUIPROP_IsInFont,             \
   (tGUI_ENC_APIList*)0
 
-#if defined(__cplusplus)
-}
-#endif
 
 struct GUI_FONT {
 	GUI_DISPCHAR *pfDispChar;

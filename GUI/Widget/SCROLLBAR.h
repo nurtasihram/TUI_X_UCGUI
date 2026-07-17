@@ -1,19 +1,20 @@
 ﻿#pragma once
+
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 #include "WIDGET.h"
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
+
 #define SCROLLBAR_STATE_PRESSED    WIDGET_STATE_USER0
 #define SCROLLBAR_CF_VERTICAL     WIDGET_CF_VERTICAL
 #define SCROLLBAR_CF_FOCUSSABLE   WIDGET_STATE_FOCUSSABLE
+
 /*********************************************************************
 *
 *                         Public Types
 *
 **********************************************************************
 */
+
 typedef WM_HMEM SCROLLBAR_Handle;
 SCROLLBAR_Handle SCROLLBAR_Create        (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int WinFlags, int SpecialFlags);
 SCROLLBAR_Handle SCROLLBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
@@ -36,6 +37,3 @@ RGB_COLOR SCROLLBAR_SetDefaultBkColor(RGB_COLOR Color, unsigned int Index); /* N
 RGB_COLOR SCROLLBAR_SetDefaultColor  (RGB_COLOR Color, unsigned int Index); /* Not yet documented */
 int       SCROLLBAR_SetDefaultWidth  (int DefaultWidth);
 int SCROLLBAR_GetValue(SCROLLBAR_Handle hObj);
-#if defined(__cplusplus)
-  }
-#endif

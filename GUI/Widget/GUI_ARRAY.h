@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "WM_Intern.h"
+
+
 typedef enum {
   GUI_ARRAY_STATE_NOT_CREATED,
   GUI_ARRAY_STATE_CREATED,

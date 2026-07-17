@@ -3,9 +3,6 @@
 #include "WM.h"
 #include "GUI_Protected.h"       /* For GUI_Context */
 
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 
 /*********************************************************************
 *
@@ -109,6 +106,3 @@ void    WM__PaintWinAndOverlays     (WM_Obj *pWin);
 void    WM__AddCriticalHandle       (WM_CRITICAL_HANDLE* pCH);
 void    WM__RemoveCriticalHandle    (WM_CRITICAL_HANDLE* pCH);
 
-#if defined(__cplusplus)
-}
-#endif

@@ -24,7 +24,7 @@ typedef struct {
 	CHECKBOX_PROPS Props;
 	uint8_t NumStates;
 	uint8_t CurrentState;
-	WM_HMEM hpText;
+	char *pText;
 } CHECKBOX_Obj;
 
 extern CHECKBOX_PROPS CHECKBOX__DefaultProps;

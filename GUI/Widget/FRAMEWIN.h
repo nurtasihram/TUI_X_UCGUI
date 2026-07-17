@@ -1,9 +1,6 @@
 ﻿#pragma once
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 #define FRAMEWIN_CF_ACTIVE     (1<<3)
 #define FRAMEWIN_CF_MOVEABLE   (1<<4)
 #define FRAMEWIN_CF_RESIZEABLE (1<<5)
@@ -66,6 +63,3 @@ void            FRAMEWIN_SetDefaultTextColor  (unsigned Index, RGB_COLOR Color);
 #define         FRAMEWIN_CreateCloseButton(hObj, Flags, Off) FRAMEWIN_AddCloseButton(hObj, Flags, Off)
 #define         FRAMEWIN_CreateMaxButton(hObj, Flags, Off)   FRAMEWIN_AddMaxButton(hObj, Flags, Off)
 #define         FRAMEWIN_CreateMinButton(hObj, Flags, Off)   FRAMEWIN_AddMinButton(hObj, Flags, Off)
-#if defined(__cplusplus)
-  }
-#endif

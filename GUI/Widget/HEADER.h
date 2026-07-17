@@ -2,9 +2,6 @@
 #include "GUI.h"
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 typedef WM_HMEM HEADER_Handle;
 HEADER_Handle HEADER_Create        (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, int SpecialFlags);
 HEADER_Handle HEADER_CreateIndirect(const GUI_WIDGET_CREATE_INFO * pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK * cb);
@@ -57,6 +54,3 @@ void HEADER_SetTextColor       (HEADER_Handle hObj, RGB_COLOR Color);
 #define HEADER_SetDefaultSpacingV(Value) HEADER_SetDefaultBorderV(Value)
 #define HEADER_GetDefaultSpacingH()      HEADER_GetDefaultBorderH()
 #define HEADER_GetDefaultSpacingV()      HEADER_GetDefaultBorderV()
-#if defined(__cplusplus)
-  }
-#endif

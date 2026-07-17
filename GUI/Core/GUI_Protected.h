@@ -6,10 +6,6 @@
 
 #include "WM_GUI.h"
 
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
-
 #ifndef GUI_DEFAULT_FONT
 #define GUI_DEFAULT_FONT    &GUI_Font6x8
 #endif
@@ -28,43 +24,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 
 typedef enum { GUI_WRAPMODE_NONE, GUI_WRAPMODE_WORD, GUI_WRAPMODE_CHAR } GUI_WRAPMODE;
 
-typedef GUI_HMEM GUI_USAGE_Handle;
-typedef struct tsUSAGE_APIList tUSAGE_APIList;
-typedef struct GUI_Usage GUI_USAGE;
-#define GUI_USAGE_h GUI_USAGE_Handle
-
-typedef GUI_USAGE_h tUSAGE_CreateCompatible(GUI_USAGE *p);
-typedef void        tUSAGE_AddPixel(GUI_USAGE *p, int x, int y);
-typedef void        tUSAGE_AddHLine(GUI_USAGE *p, int x0, int y0, int len);
-typedef void        tUSAGE_Clear(GUI_USAGE *p);
-typedef void        tUSAGE_Delete(GUI_USAGE_h h);
-typedef int         tUSAGE_GetNextDirty(GUI_USAGE *p, int *pxOff, int yOff);
-
-void GUI_USAGE_DecUseCnt(GUI_USAGE_Handle  hUsage);
-
-GUI_USAGE_Handle GUI_USAGE_BM_Create(int x0, int y0, int xsize, int ysize, int Flags);
-void    GUI_USAGE_Select(GUI_USAGE_Handle hUsage);
-void    GUI_USAGE_AddRect(GUI_USAGE *pUsage, int x0, int y0, int xSize, int ySize);
-#define GUI_USAGE_AddPixel(p, x,y)            p->pAPI->pfAddPixel(p,x,y)
-#define GUI_USAGE_AddHLine(p,x,y,len)         p->pAPI->pfAddHLine(p,x,y,len)
-#define GUI_USAGE_Clear(p)                    p->pAPI->pfClear(p)
-#define GUI_USAGE_Delete(p)                   p->pAPI->pfDelete(p)
-#define GUI_USAGE_GetNextDirty(p,pxOff, yOff) p->pAPI->pfGetNextDirty(p,pxOff, yOff)
-
-struct tsUSAGE_APIList {
-	tUSAGE_AddPixel *pfAddPixel;
-	tUSAGE_AddHLine *pfAddHLine;
-	tUSAGE_Clear *pfClear;
-	tUSAGE_CreateCompatible *pfCreateCompatible;
-	tUSAGE_Delete *pfDelete;
-	tUSAGE_GetNextDirty *pfGetNextDirty;
-};
-
-struct GUI_Usage {
-	int16_t x0, y0, XSize, YSize;
-	const tUSAGE_APIList *pAPI;
-	int16_t UseCnt;
-};
 
 #if GUI_SUPPORT_MEMDEV
 typedef struct /*GUI_MEMDEV*/ {
@@ -73,7 +32,6 @@ typedef struct /*GUI_MEMDEV*/ {
 	int16_t BitsPerPixel;
 	const tLCDDEV_APIList *pAPIList;
 } GUI_MEMDEV;
-
 
 void         GUI_MEMDEV__CopyFromLCD(GUI_MEMDEV_Handle hMem);
 void         GUI_MEMDEV__GetRect(GUI_RECT *pRect);
@@ -132,31 +90,15 @@ extern GUI_RECT  GUI_RectDispString; /* Used by LCD_Rotate...() and GUI_DispStri
 
 int GUI_GetBitmapPixel(const GUI_BITMAP *pBMP, unsigned x, unsigned y);
 
-#if defined(__cplusplus)
-}
-#endif
-
 #ifdef  GL_CORE_C
 #define GUI_EXTERN
 #else
-#if defined(__cplusplus)
-#define GUI_EXTERN extern "C"
-#else
 #define GUI_EXTERN extern
-#endif
 #endif
 
 GUI_EXTERN GUI_CONTEXT GUI_Context; /* Thread wide globals */
 GUI_EXTERN GUI_tfTimer *GUI_pfTimerExec;
 
-#if defined(__cplusplus)
-extern "C" { /* Make sure we have C-declarations in C++ programs */
-#endif
-
 extern const GUI_UC_ENC_APILIST GUI__API_TableNone;
-
-#if defined(__cplusplus)
-}
-#endif
 
 #undef GUI_EXTERN

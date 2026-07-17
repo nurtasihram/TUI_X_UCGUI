@@ -2,9 +2,6 @@
 #include "WM.h"
 #include "WIDGET.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 #define MENU_CF_HORIZONTAL              (0<<0)
 #define MENU_CF_VERTICAL                (1<<0)
 #define MENU_CF_OPEN_ON_POINTEROVER     (1<<1)
@@ -73,7 +70,4 @@ void                        MENU_SetDefaultBkColor    (unsigned ColorIndex, RGB_
 void                        MENU_SetDefaultBorderSize (unsigned BorderIndex, uint8_t BorderSize);
 void                        MENU_SetDefaultEffect     (const WIDGET_EFFECT* pEffect);
 void                        MENU_SetDefaultFont       (const GUI_FONT * pFont);
-#if defined(__cplusplus)
-  }
-#endif
 

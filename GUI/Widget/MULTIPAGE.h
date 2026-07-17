@@ -1,9 +1,6 @@
 ﻿#pragma once
 #include "WM.h"
 #include "DIALOG.h"      /* Req. for Create indirect data structure */
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 #define MULTIPAGE_ALIGN_LEFT    (0<<0)
 #define MULTIPAGE_ALIGN_RIGHT   (1<<0)
 #define MULTIPAGE_ALIGN_TOP     (0<<2)
@@ -35,6 +32,3 @@ void                         MULTIPAGE_SetDefaultAlign(unsigned Align);
 void                         MULTIPAGE_SetDefaultBkColor(RGB_COLOR Color, unsigned Index);
 void                         MULTIPAGE_SetDefaultFont(const GUI_FONT  * pFont);
 void                         MULTIPAGE_SetDefaultTextColor(RGB_COLOR Color, unsigned Index);
-#if defined(__cplusplus)
-  }
-#endif

@@ -2,9 +2,6 @@
 #include "WM.h"
 #include "DIALOG.h"      /* Req. for Create indirect data structure */
 #include "HEADER.h"
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 #define LISTVIEW_CI_UNSEL    0
 #define LISTVIEW_CI_SEL      1
 #define LISTVIEW_CI_SELFOCUS 2
@@ -49,6 +46,3 @@ RGB_COLOR        LISTVIEW_SetDefaultBkColor  (unsigned Index, RGB_COLOR Color);
 const GUI_FONT  * LISTVIEW_SetDefaultFont     (const GUI_FONT  * pFont);
 RGB_COLOR        LISTVIEW_SetDefaultGridColor(RGB_COLOR Color);
 RGB_COLOR        LISTVIEW_SetDefaultTextColor(unsigned Index, RGB_COLOR Color);
-#if defined(__cplusplus)
-  }
-#endif

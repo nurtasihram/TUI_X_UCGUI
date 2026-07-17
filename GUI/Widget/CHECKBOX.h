@@ -1,9 +1,6 @@
 #pragma once
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 #define CHECKBOX_BI_INACTIV        0
 #define CHECKBOX_BI_ACTIV          1
 #define CHECKBOX_BI_INACTIV_3STATE 2
@@ -45,6 +42,3 @@ void CHECKBOX_SetTextAlign(CHECKBOX_Handle hObj, int Align);
 void CHECKBOX_SetTextColor(CHECKBOX_Handle hObj, RGB_COLOR Color);
 #define CHECKBOX_Check(hObj)   CHECKBOX_SetState(hObj, 1)
 #define CHECKBOX_Uncheck(hObj) CHECKBOX_SetState(hObj, 0)
-#if defined(__cplusplus)
-  }
-#endif

@@ -2,9 +2,6 @@
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 #include "WIDGET.h"      /* Req. for Create indirect data structure */
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 #define SLIDER_STATE_PRESSED    WIDGET_STATE_USER0
 #define SLIDER_CF_VERTICAL WIDGET_CF_VERTICAL
 /*********************************************************************
@@ -30,6 +27,3 @@ void SLIDER_SetRange    (SLIDER_Handle hObj, int Min, int Max);
 void SLIDER_SetNumTicks (SLIDER_Handle hObj, int NumTicks);
 void SLIDER_SetDefaultBkColor(RGB_COLOR Color);
 int SLIDER_GetValue(SLIDER_Handle hObj);
-#if defined(__cplusplus)
-  }
-#endif

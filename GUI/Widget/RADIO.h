@@ -1,9 +1,6 @@
 ﻿#pragma once
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 #define RADIO_BI_INACTIV 0
 #define RADIO_BI_ACTIV   1
 #define RADIO_BI_CHECK   2
@@ -38,7 +35,4 @@ void RADIO_SetText      (RADIO_Handle hObj, const char* pText, unsigned Index);
 void RADIO_SetTextColor (RADIO_Handle hObj, RGB_COLOR Color);
 void RADIO_SetValue     (RADIO_Handle hObj, int v);
 int RADIO_GetValue(RADIO_Handle hObj);
-#if defined(__cplusplus)
-  }
-#endif
 

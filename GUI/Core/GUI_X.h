@@ -2,10 +2,6 @@
 
 #include "GUI.h"
 
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
-
 /**** Init ****/
 void GUI_X_Init(void);
 
@@ -17,7 +13,3 @@ void GUI_X_Delay(int Period);
 void GUI_X_Log(const char *s, ...);
 void GUI_X_Warn(const char *s, ...);
 void GUI_X_ErrorOut(const char *s, ...);
-
-#if defined(__cplusplus)
-  }
-#endif

@@ -1,9 +1,6 @@
 ﻿#pragma once
 #include "WM.h"
 #include "DIALOG.h"      /* Req. for Create indirect data structure */
-#if defined(__cplusplus)
-extern "C" {     /* Make sure we have C-declarations in C++ programs */
-#endif
 #define MULTIEDIT_CF_READONLY        (1 << 0)
 #define MULTIEDIT_CF_INSERT          (1 << 2)
 #define MULTIEDIT_CF_AUTOSCROLLBAR_V (1 << 3)
@@ -49,6 +46,3 @@ void MULTIEDIT_SetWrapChar      (MULTIEDIT_HANDLE hObj);
 void MULTIEDIT_SetWrapWord      (MULTIEDIT_HANDLE hObj);
 #define MULTIEDIT_SetMaxLen(hObj, MaxLen) MULTIEDIT_SetBufferSize(hObj, MaxLen)
 #define MULTIEDIT_GetStringSize           MULTIEDIT_GetTextSize
-#if defined(__cplusplus)
-  }
-#endif
