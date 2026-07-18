@@ -22,7 +22,7 @@ static RGB_COLOR _DefaultBkColor = SLIDER_BKCOLOR0_DEFAULT;
 static void _OnPaint(SLIDER_Obj *pObj) {
 	GUI_RECT r, rFocus, rSlider, rSlot;
 	int x0, xsize, i, Range, NumTicks;
-	WIDGET__GetClientRect(pObj, &rFocus);
+	rFocus = WIDGET__GetClientRect(pObj);
 	GUI__ReduceRect(&r, &rFocus, 1);
 	NumTicks = pObj->NumTicks;
 	xsize = r.x1 - r.x0 + 1 - pObj->Width;
@@ -56,7 +56,7 @@ static void _OnPaint(SLIDER_Obj *pObj) {
 	rSlot.x1 = x0 + xsize;
 	rSlot.y0 = (rSlider.y0 + rSlider.y1) / 2 - 1;
 	rSlot.y1 = rSlot.y0 + 3;
-	WIDGET__EFFECT_DrawDownRect(pObj, &rSlot);        /* Draw slot */
+	WIDGET__EFFECT_DrawDownRect(pObj, rSlot);        /* Draw slot */
 	/* Draw the ticks */
 	if (NumTicks < 0) {
 		NumTicks = Range + 1;
@@ -73,13 +73,13 @@ static void _OnPaint(SLIDER_Obj *pObj) {
 	}
 	/* Draw the slider itself */
 	GUI_SetColor(pObj->aColor[0]);
-	WIDGET__FillRectEx(pObj, &rSlider);
+	WIDGET__FillRect(pObj, rSlider);
 	GUI_SetColor(RGB_BLACK);
-	WIDGET__EFFECT_DrawUpRect(pObj, &rSlider);
+	WIDGET__EFFECT_DrawUpRect(pObj, rSlider);
 	/* Draw focus */
 	if (pObj->State & WIDGET_STATE_FOCUS) {
 		GUI_SetColor(RGB_BLACK);
-		WIDGET__DrawFocusRect(pObj, &rFocus, 0);
+		WIDGET__DrawFocusRect(pObj, rFocus, 0);
 	}
 }
 static void _SliderPressed(SLIDER_Obj *pObj) {

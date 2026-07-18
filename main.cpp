@@ -22,7 +22,7 @@ XXoooooo,oooooooo,oooooooo,XX______,
 __XXoooo,ooXXXXXX,ooooooXX,________,
 ____XXoo,XXoooooo,XXooXX__,________,
 ______XX,oooooooo,ooXX____,________,
-________,XXXXXXXX,XX______,________};
+________,XXXXXXXX,XX______,________ };
 const GUI_BITMAP bmSmilie0 = {
 	/* Size */ 13, 13,
 	/* BytesPerLine */ 4,
@@ -44,7 +44,7 @@ XXoooooo,oooooooo,oooooooo,XX______,
 __XXoooo,XXoooooo,XXooooXX,________,
 ____XXoo,ooXXXXXX,ooooXX__,________,
 ______XX,oooooooo,ooXX____,________,
-________,XXXXXXXX,XX______,________};
+________,XXXXXXXX,XX______,________ };
 const GUI_BITMAP bmSmilie1 = {
 	/* Size */ 13, 13,
 	/* BytesPerLine */ 4,
@@ -75,9 +75,10 @@ static int _GetItemSizeX(WM_HWIN hWin, int ItemIndex) {
 }
 static int _GetItemSizeY(WM_HWIN hWin, int ItemIndex) {
 	int DistY = GUI_GetFontDistY() + 1;
-	if (LISTBOX_GetMulti(hWin))
+	if (LISTBOX_GetMulti(hWin)) {
 		if (LISTBOX_GetItemSel(hWin, ItemIndex))
 			DistY += 8;
+	}
 	else if (LISTBOX_GetSel(hWin) == ItemIndex)
 		DistY += 8;
 	return DistY;
@@ -107,64 +108,49 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 			return _GetItemSizeY(hWin, Index);
 		case WIDGET_ITEM_DRAW:
 		{
-			int MultiSel, Sel, YSize, FontDistY;
-			int IsDisabled, IsSelected;
 			int ColorIndex = 0;
 			char acBuffer[100];
-			const GUI_BITMAP *pBm;
-			const GUI_FONT *pOldFont = 0;
 			RGB_COLOR aColor[4] = { RGB_BLACK, RGB_WHITE, RGB_WHITE, RGB_GRAY };
 			RGB_COLOR aBkColor[4] = { RGB_WHITE, RGB_GRAY, RGB_BLUE, RGB_GRAYL(0xC0) };
-			IsDisabled = LISTBOX_GetItemDisabled(pDrawItemInfo->hWin, pDrawItemInfo->ItemIndex);
-			IsSelected = LISTBOX_GetItemSel(hWin, Index);
-			MultiSel = LISTBOX_GetMulti(hWin);
-			Sel = LISTBOX_GetSel(hWin);
-			YSize = _GetItemSizeY(hWin, Index);
+			bool IsDisabled = LISTBOX_GetItemDisabled(pDrawItemInfo->hWin, pDrawItemInfo->ItemIndex);
+			bool IsSelected = LISTBOX_GetItemSel(hWin, Index);
+			int MultiSel = LISTBOX_GetMulti(hWin);
+			int Sel = LISTBOX_GetSel(hWin);
+			int YSize = _GetItemSizeY(hWin, Index);
 			/* Calculate color index */
-			if (MultiSel) {
-				if (IsDisabled) {
+			if (MultiSel)
+				if (IsDisabled)
 					ColorIndex = 3;
-				}
-				else {
-					ColorIndex = (IsSelected) ? 2 : 0;
-				}
-			}
-			else {
-				if (IsDisabled) {
-					ColorIndex = 3;
-				}
-				else {
-					if (pDrawItemInfo->ItemIndex == Sel) {
-						ColorIndex = WM_HasFocus(pDrawItemInfo->hWin) ? 2 : 1;
-					}
-					else {
-						ColorIndex = 0;
-					}
-				}
-			}
+				else
+					ColorIndex = IsSelected ? 2 : 0;
+			else if (IsDisabled)
+				ColorIndex = 3;
+			else if (pDrawItemInfo->ItemIndex == Sel)
+				ColorIndex = WM_HasFocus(pDrawItemInfo->hWin) ? 2 : 1;
+			else
+				ColorIndex = 0;
 			/* Draw item */
 			GUI_SetBkColor(aBkColor[ColorIndex]);
 			GUI_SetColor(aColor[ColorIndex]);
 			LISTBOX_GetItemText(pDrawItemInfo->hWin, pDrawItemInfo->ItemIndex, acBuffer, sizeof(acBuffer));
 			GUI_Clear();
-			FontDistY = GUI_GetFontDistY();
+			auto FontDistY = GUI_GetFontDistY();
 			GUI_DispStringAt(acBuffer, pDrawItemInfo->x0 + bmSmilie0.XSize + 16, pDrawItemInfo->y0 + (YSize - FontDistY) / 2);
 			/* Draw bitmap */
-			pBm = MultiSel ? IsSelected ? &bmSmilie1 : &bmSmilie0 : (pDrawItemInfo->ItemIndex == Sel) ? &bmSmilie1 : &bmSmilie0;
+			auto pBm = MultiSel ? IsSelected ? &bmSmilie1 : &bmSmilie0 : (pDrawItemInfo->ItemIndex == Sel) ? &bmSmilie1 : &bmSmilie0;
 			GUI_DrawBitmap(pBm, pDrawItemInfo->x0 + 7, pDrawItemInfo->y0 + (YSize - pBm->YSize) / 2);
 			/* Draw focus rectangle */
 			if (MultiSel && (pDrawItemInfo->ItemIndex == Sel)) {
 				GUI_RECT rFocus;
-				GUI_RECT rInside;
-				WM_GetInsideRectEx(pDrawItemInfo->hWin, &rInside);
+				GUI_RECT rInside = WM_GetInsideRect(pDrawItemInfo->hWin);
 				rFocus.x0 = pDrawItemInfo->x0;
 				rFocus.y0 = pDrawItemInfo->y0;
 				rFocus.x1 = rInside.x1;
 				rFocus.y1 = pDrawItemInfo->y0 + YSize - 1;
 				GUI_SetColor(RGB_WHITE - aBkColor[ColorIndex]);
-				GUI_DrawFocusRect(&rFocus, 0);
+				GUI_DrawFocusRect(rFocus, 0);
 			}
-		break;
+			break;
 		}
 		default:
 			return LISTBOX_OwnerDraw(pDrawItemInfo);
@@ -189,18 +175,18 @@ static WM_PARAM _cbMemDevPane(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			GUI_SetBkColor(RGB_WHITE);
 			GUI_Clear();
 			GUI_SetColor(RGB_DARKGRAY);
-			GUI_DrawRect(0, 0, xSize - 1, ySize - 1);
+			GUI_DrawRect({0, 0, xSize - 1, ySize - 1});
 			GUI_SetColor(RGB_BLACK);
 			GUI_DispStringAt(MemDevOn ? "MemDev ON" : "MemDev OFF", 8, 8);
 			GUI_DispStringAt(MemDevOn ? "WM_CF_MEMDEV enabled" : "WM_CF_MEMDEV disabled", 8, 24);
 			GUI_SetColor(RGB_GRAY);
-			GUI_DrawRect(10, 48, xSize - 11, 72);
+			GUI_DrawRect({10, 48, xSize - 11, 72});
 			GUI_SetColor(MemDevOn ? RGB_GREEN : RGB_RED);
-			GUI_FillRect(10 + XPos, 49, 10 + XPos + BarWidth, 71);
+			GUI_FillRect({10 + XPos, 49, 10 + XPos + BarWidth, 71});
 			GUI_SetColor(RGB_BLUE);
-			GUI_FillRect(10, ySize - 40, xSize - 11, ySize - 25);
+			GUI_FillRect({10, ySize - 40, xSize - 11, ySize - 25});
 			GUI_SetColor(RGB_YELLOW);
-			GUI_FillRect(10 + XPos / 2, ySize - 39, 35 + XPos / 2, ySize - 26);
+			GUI_FillRect({10 + XPos / 2, ySize - 39, 35 + XPos / 2, ySize - 26});
 			GUI_SetColor(RGB_BLACK);
 			GUI_DispStringAt("Animated redraw area", 8, ySize - 18);
 			return 0;
@@ -215,7 +201,6 @@ static WM_HWIN _CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMem
 	int xSize;
 	int ySize;
 	int Flags;
-
 	Flags = WM_CF_SHOW;
 	if (UseMemDev) {
 		Flags |= WM_CF_MEMDEV;
@@ -408,7 +393,7 @@ int main(void) {
 		_hMemDevFrame = _CreateMemDevFrame(280, 50, "MemDev ON", 1, &_hMemDevPane);
 		_hNoMemDevFrame = _CreateMemDevFrame(480, 50, "MemDev OFF", 0, &_hNoMemDevPane);
 		WM_HWIN hDrp = DROPDOWN_CreateEx(10, 110, 100, 80,
-										 WM_GetClientWindow(hDialog), 
+										 WM_GetClientWindow(hDialog),
 										 WM_CF_SHOW, DROPDOWN_CF_AUTOSCROLLBAR, 0);
 		DROPDOWN_AddString(hDrp, "1");
 		DROPDOWN_AddString(hDrp, "12");

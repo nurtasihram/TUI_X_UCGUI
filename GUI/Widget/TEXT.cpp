@@ -13,7 +13,6 @@ static void _FreeAttached(TEXT_Obj *pObj) {
 }
 static void _OnPaint(TEXT_Obj *pObj) {
 	const char *s;
-	GUI_RECT Rect;
 	GUI_USE_PARA(pObj);
 	GUI_SetColor(pObj->TextColor);
 	GUI_SetFont(pObj->pFont);
@@ -36,8 +35,8 @@ static void _OnPaint(TEXT_Obj *pObj) {
 	if (pObj->pText) {
 		s = pObj->pText;
 		GUI_SetTextMode(DRAWMODE_TRANS);
-		WM_GetClientRect(&Rect);
-		GUI_DispStringInRect(s, &Rect, pObj->Align);
+		auto r = WM_GetClientRect();
+		GUI_DispStringInRect(s, &r, pObj->Align);
 	}
 }
 static void _Delete(TEXT_Obj *pObj) {

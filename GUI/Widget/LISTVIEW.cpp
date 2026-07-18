@@ -143,22 +143,20 @@ static void _OnPaint(LISTVIEW_Obj *pObj, const GUI_RECT *pClipRect) {
 							GUI_SetColor(pObj->Props.aTextColor[ColorIndex]);
 						}
 						/* Clear background */
-						GUI_ClearRect(Rect.x0, Rect.y0, Rect.x1, Rect.y1);
+						GUI_ClearRect(Rect);
 						/* Draw text */
 						Rect.x0 += LBorder;
 						Rect.x1 -= RBorder;
 						Align = *((int *)GUI_ARRAY_GetpItem(&pObj->AlignArray, j));
 						GUI_DispStringInRect(pItem->acText, &Rect, Align);
-						if (pItem->hItemInfo) {
+						if (pItem->hItemInfo)
 							GUI_SetBkColor(pObj->Props.aBkColor[ColorIndex]);
-						}
 					}
 					xPos += Width;
 				}
 				/* Clear unused area to the right of items */
-				if (xPos <= ClipRect.x1) {
-					GUI_ClearRect(xPos, Rect.y0, ClipRect.x1, Rect.y1);
-				}
+				if (xPos <= ClipRect.x1)
+					GUI_ClearRect({ xPos, Rect.y0, ClipRect.x1, Rect.y1 });
 			}
 			yPos += RowDistY;
 		}
@@ -166,7 +164,7 @@ static void _OnPaint(LISTVIEW_Obj *pObj, const GUI_RECT *pClipRect) {
 	/* Clear unused area below items */
 	if (yPos <= ClipRect.y1) {
 		GUI_SetBkColor(pObj->Props.aBkColor[0]);
-		GUI_ClearRect(ClipRect.x0, yPos, ClipRect.x1, ClipRect.y1);
+		GUI_ClearRect({ ClipRect.x0, yPos, ClipRect.x1, ClipRect.y1 });
 	}
 	/* Draw grid */
 	if (pObj->ShowGrid) {
@@ -455,8 +453,7 @@ LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 	GUI_USE_PARA(ExFlags);
 	/* Create the window */
 	if ((xsize == 0) && (ysize == 0) && (x0 == 0) && (y0 == 0)) {
-		GUI_RECT Rect;
-		WM_GetClientRectEx(hParent, &Rect);
+		GUI_RECT Rect = WM_GetClientRect(hParent);
 		xsize = Rect.x1 - Rect.x0 + 1;
 		ysize = Rect.y1 - Rect.y0 + 1;
 	}

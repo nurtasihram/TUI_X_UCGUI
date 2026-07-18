@@ -915,7 +915,7 @@ static void _MULTIEDIT_Paint(MULTIEDIT_Obj *pObj) {
 		r.y0 = y + yOff;
 		r.x1 = r.x0 + _GetCursorSizeX(pObj) - 1;
 		r.y1 = r.y0 + FontSizeY - 1;
-		GUI_DrawRect(r.x0, r.y0, r.x1, r.y1);
+		GUI_DrawRect(r);
 	}
 	WM_SetUserClipRect(prOldClip);
 	/* Draw the 3D effect (if configured) */
@@ -1111,8 +1111,7 @@ MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 	/* Create the window */
 
 	if ((xsize == 0) && (ysize == 0) && (x0 == 0) && (y0 == 0)) {
-		GUI_RECT Rect;
-		WM_GetClientRectEx(hParent, &Rect);
+		GUI_RECT Rect = WM_GetClientRect(hParent);
 		xsize = Rect.x1 - Rect.x0 + 1;
 		ysize = Rect.y1 - Rect.y0 + 1;
 	}

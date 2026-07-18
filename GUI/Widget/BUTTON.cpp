@@ -38,7 +38,7 @@ static void _OnPaint(BUTTON_Obj *pObj) {
 	GUI_SetFont(pObj->Props.pFont);
 	if (pObj->pText)
 		s = pObj->pText;
-	WM_GetClientRect(&rClient);
+	rClient = WM_GetClientRect();
 	/* Start drawing */
 	rInside = rClient;
 	/* Draw the 3D effect (if configured) */
@@ -51,7 +51,7 @@ static void _OnPaint(BUTTON_Obj *pObj) {
 		}
 		else {
 			GUI_SetColor(RGB_BLACK);
-			GUI_DrawRect(rClient.y0, rClient.x0, rClient.x1, rClient.y1);
+			GUI_DrawRect({rClient.x0, rClient.y0, rClient.x1, rClient.y1});
 			EffectSize = 1;
 		}
 		GUI__ReduceRect(&rInside, &rInside, EffectSize);
@@ -88,7 +88,7 @@ static void _OnPaint(BUTTON_Obj *pObj) {
 	/* Draw focus */
 	if (State & BUTTON_STATE_FOCUS) {
 		GUI_SetColor(RGB_BLACK);
-		GUI_DrawFocusRect(&rClient, 2);
+		GUI_DrawFocusRect(rClient, 2);
 	}
 	WM_SetUserClipRect(NULL);
 }

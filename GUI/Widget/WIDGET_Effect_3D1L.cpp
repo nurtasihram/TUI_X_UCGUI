@@ -14,9 +14,7 @@
 *   reasons. If this is required, it should be done in the calling
 *   routine.
 */
-static void _WIDGET_EFFECT_3D1L_DrawUpRect(const GUI_RECT* pRect) {
-  GUI_RECT r;
-  r = *pRect;
+static void _WIDGET_EFFECT_3D1L_DrawUpRect(GUI_RECT r) {
   /* Draw the upper left sides */
   GUI_SetColor(RGB_GRAYL(0xE7));
   GUI_DrawHLine(r.y0, r.x0, r.x1 - 1);
@@ -27,13 +25,9 @@ static void _WIDGET_EFFECT_3D1L_DrawUpRect(const GUI_RECT* pRect) {
   GUI_DrawVLine(r.x1, r.y0, r.y1 - 1);
 }
 static void _WIDGET_EFFECT_3D1L_DrawUp(void) {
-  GUI_RECT r;
-  WM_GetClientRect(&r);
-  _WIDGET_EFFECT_3D1L_DrawUpRect(&r);
+  _WIDGET_EFFECT_3D1L_DrawUpRect(WM_GetClientRect());
 }
-static void _WIDGET_EFFECT_3D1L_DrawDownRect(const GUI_RECT* pRect) {
-  GUI_RECT r;
-  r = *pRect;
+static void _WIDGET_EFFECT_3D1L_DrawDownRect(GUI_RECT r) {
   /* Draw the upper left sides */
   GUI_SetColor(RGB_GRAYL(0x60));
   GUI_DrawHLine(r.y0, r.x0, r.x1 - 1);
@@ -44,13 +38,12 @@ static void _WIDGET_EFFECT_3D1L_DrawDownRect(const GUI_RECT* pRect) {
   GUI_DrawVLine(r.x1, r.y0, r.y1 - 1);
 }
 static void _WIDGET_EFFECT_3D1L_DrawDown(void) {
-  GUI_RECT r;
-  WM_GetClientRect(&r);
-  _WIDGET_EFFECT_3D1L_DrawDownRect(&r);
+  _WIDGET_EFFECT_3D1L_DrawDownRect(WM_GetClientRect());
 }
-static void _WIDGET_EFFECT_3D1L_GetRect(GUI_RECT* pRect) {
-  WM_GetClientRect(pRect);
-  GUI__ReduceRect(pRect, pRect, 1);
+static GUI_RECT _WIDGET_EFFECT_3D1L_GetRect() {
+  GUI_RECT Rect = WM_GetClientRect();
+  GUI__ReduceRect(&Rect, &Rect, 1);
+  return Rect;
 }
 void WIDGET_SetDefaultEffect_3D1L(void) {
   WIDGET_SetDefaultEffect(&WIDGET_Effect_3D1L);

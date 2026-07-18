@@ -248,13 +248,14 @@ void WM_CheckScrollBounds(WM_SCROLL_STATE *pScrollState); /* not to be documente
 WM_CALLBACK *WM_SetCallback(WM_HWIN Win, WM_CALLBACK *cb);
 
 /* Get size/origin of a window */
-void WM_GetClientRect(GUI_RECT *pRect);
-void WM_GetClientRectEx(WM_HWIN hWin, GUI_RECT *pRect);
-void WM_GetInsideRect(GUI_RECT *pRect);
-void WM_GetInsideRectEx(WM_HWIN hWin, GUI_RECT *pRect);
+GUI_RECT WM_GetClientRect();
+GUI_RECT WM_GetClientRect(WM_HWIN hWin);
+GUI_RECT WM_GetInsideRect();
+GUI_RECT WM_GetInsideRect(WM_HWIN hWin);
+GUI_RECT WM_GetWindowRect();
+GUI_RECT WM_GetWindowRect(WM_HWIN hWin);
+
 void WM_GetInsideRectExScrollbar(WM_HWIN hWin, GUI_RECT *pRect); /* not to be documented (may change in future version) */
-void WM_GetWindowRect(GUI_RECT *pRect);
-void WM_GetWindowRectEx(WM_HWIN hWin, GUI_RECT *pRect);
 int  WM_GetOrgX(void);
 int  WM_GetOrgY(void);
 int  WM_GetWindowOrgX(WM_HWIN hWin);

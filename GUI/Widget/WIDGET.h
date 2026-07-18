@@ -35,9 +35,9 @@ typedef int WIDGET_DRAW_ITEM_FUNC(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo);
 typedef struct {
 	void  (*pfDrawUp)(void);
 	void  (*pfDrawDown)(void);
-	void  (*pfDrawUpRect)  (const GUI_RECT *pRect);
-	void  (*pfDrawDownRect)(const GUI_RECT *pRect);
-	void  (*pfGetRect)(GUI_RECT *pRect);
+	void  (*pfDrawUpRect)  (GUI_RECT r);
+	void  (*pfDrawDownRect)(GUI_RECT r);
+	GUI_RECT  (*pfGetRect)();
 	int EffectSize;
 } WIDGET_EFFECT;
 
@@ -92,22 +92,22 @@ extern const WIDGET_EFFECT WIDGET_Effect_3D2L;
 extern const WIDGET_EFFECT WIDGET_Effect_None;
 extern const WIDGET_EFFECT WIDGET_Effect_Simple;
 
-void      WIDGET__DrawFocusRect(WIDGET *pWidget, const GUI_RECT *pRect, int Dist);
+void      WIDGET__DrawFocusRect(WIDGET *pWidget, GUI_RECT r, int Dist);
 void      WIDGET__DrawVLine(WIDGET *pWidget, int x, int y0, int y1);
-void      WIDGET__EFFECT_DrawDownRect(WIDGET *pWidget, GUI_RECT *pRect);
+void      WIDGET__EFFECT_DrawDownRect(WIDGET *pWidget, GUI_RECT r);
 void      WIDGET__EFFECT_DrawDown(WIDGET *pWidget);
-void      WIDGET__EFFECT_DrawUpRect(WIDGET *pWidget, GUI_RECT *pRect);
-void      WIDGET__FillRectEx(WIDGET *pWidget, const GUI_RECT *pRect);
+void      WIDGET__EFFECT_DrawUpRect(WIDGET *pWidget, GUI_RECT r);
+void      WIDGET__FillRect(WIDGET *pWidget, GUI_RECT r);
 int       WIDGET__GetWindowSizeX(WM_HWIN hWin);
 RGB_COLOR WIDGET__GetBkColor(WM_HWIN hObj);
 int       WIDGET__GetXSize(const WIDGET *pWidget);
 int       WIDGET__GetYSize(const WIDGET *pWidget);
-void      WIDGET__GetClientRect(WIDGET *pWidget, GUI_RECT *pRect);
-void      WIDGET__GetInsideRect(WIDGET *pWidget, GUI_RECT *pRect);
+GUI_RECT  WIDGET__GetClientRect(WIDGET *pWidget);
+GUI_RECT  WIDGET__GetInsideRect(WIDGET *pWidget);
 void      WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State);
 void      WIDGET__RotateRect90(WIDGET *pWidget, GUI_RECT *pDest, const GUI_RECT *pRect);
 void      WIDGET__SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE *pVState, const WM_SCROLL_STATE *pState);
-void      WIDGET__FillStringInRect(const char *pText, const GUI_RECT *pFillRect, const GUI_RECT *pTextRectMax, const GUI_RECT *pTextRectAct);
+void      WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_RECT TextRectMax, GUI_RECT TextRectAct);
 
 void  WIDGET_SetState(WM_HWIN hObj, int State);
 void  WIDGET_AndState(WM_HWIN hObj, int State);

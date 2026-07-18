@@ -109,14 +109,14 @@ static void _OnPaint(FRAMEWIN_Obj *pObj) {
 		/* Draw Title */
 		GUI_SetBkColor(pObj->Props.aBarColor[Index]);
 		GUI_SetColor(pObj->Props.aTextColor[Index]);
-		WIDGET__FillStringInRect(pText, &r, &Pos.rTitleText, &rText);
+		WIDGET__FillStringInRect(pText, r, Pos.rTitleText, rText);
 		/* Draw Frame */
 		GUI_SetColor(FRAMEWIN_FRAMECOLOR_DEFAULT);
-		GUI_FillRect(0, 0, xsize - 1, BorderSize - 1);
-		GUI_FillRect(0, 0, Pos.rClient.x0 - 1, ysize - 1);
-		GUI_FillRect(Pos.rClient.x1 + 1, 0, xsize - 1, ysize - 1);
-		GUI_FillRect(0, Pos.rClient.y1 + 1, xsize - 1, ysize - 1);
-		GUI_FillRect(0, y0, xsize - 1, y0 + pObj->Props.IBorderSize - 1);
+		GUI_FillRect({ 0, 0, xsize - 1, BorderSize - 1 });
+		GUI_FillRect({ 0, 0, Pos.rClient.x0 - 1, ysize - 1 });
+		GUI_FillRect({ Pos.rClient.x1 + 1, 0, xsize - 1, ysize - 1 });
+		GUI_FillRect({ 0, Pos.rClient.y1 + 1, xsize - 1, ysize - 1 });
+		GUI_FillRect({ 0, y0, xsize - 1, y0 + pObj->Props.IBorderSize - 1});
 		/* Draw the 3D effect (if configured) */
 		if (pObj->Props.BorderSize >= 2) {
 			WIDGET_EFFECT_3D_DrawUp();  /* pObj->pEffect->pfDrawUp(); */
@@ -914,8 +914,7 @@ static void _SetCapture(FRAMEWIN_Handle hWin, int x, int y, int Mode) {
 }
 static void _ChangeWindowPosSize(FRAMEWIN_Handle hWin, int *px, int *py) {
 	int dx = 0, dy = 0;
-	GUI_RECT Rect;
-	WM_GetClientRectEx(hWin, &Rect);
+	GUI_RECT Rect = WM_GetClientRect(hWin);
 	/* Calculate new size of window */
 	if (_CaptureFlags & FRAMEWIN_RESIZE_X) {
 		dx = (_CaptureFlags & FRAMEWIN_REPOS_X) ? (_CaptureX - *px) : (*px - _CaptureX);
@@ -964,8 +963,7 @@ static int _CheckBorderY(int y, int y1, int Border) {
 }
 static int _CheckReactBorder(FRAMEWIN_Handle hWin, int x, int y) {
 	int Mode = 0;
-	GUI_RECT r;
-	WM_GetClientRectEx(hWin, &r);
+	GUI_RECT r = WM_GetClientRect(hWin);
 	if ((x >= 0) && (y >= 0) && (x <= r.x1) && (y <= r.y1)) {
 		Mode |= _CheckBorderX(x, r.x1, FRAMEWIN_REACT_BORDER);
 		if (Mode) {
@@ -1224,14 +1222,12 @@ WM_HWIN FRAMEWIN_AddButton(FRAMEWIN_Handle hObj, int Flags, int Off, int Id) {
 }
 
 static void _DrawClose(void) {
-	GUI_RECT r;
-	int i, Size;
-	WM_GetInsideRect(&r);
+	auto r = WM_GetInsideRect();
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	Size = r.x1 - r.x0 - 2;
+	int Size = r.x1 - r.x0 - 2;
 	WM_ITERATE_START(&r); {
-		for (i = 2; i < Size; i++) {
+		for (int i = 2; i < Size; i++) {
 			LCD_DrawHLine(r.x0 + i, r.y0 + i, r.x0 + i + 1);
 			LCD_DrawHLine(r.x1 - i - 1, r.y0 + i, r.x1 - i);
 		}
@@ -1244,8 +1240,7 @@ WM_HWIN FRAMEWIN_AddCloseButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
 }
 
 static void _PaintMax(void) {
-	GUI_RECT r;
-	WM_GetInsideRect(&r);
+	auto r = WM_GetInsideRect();
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
 	WM_ITERATE_START(&r); {
@@ -1257,12 +1252,10 @@ static void _PaintMax(void) {
 	} WM_ITERATE_END();
 }
 static void _DrawRestoreClose(void) {
-	GUI_RECT r;
-	int Size;
-	WM_GetInsideRect(&r);
+	auto r = WM_GetInsideRect();
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	Size = ((r.x1 - r.x0 + 1) << 1) / 3;
+	int Size = ((r.x1 - r.x0 + 1) << 1) / 3;
 	WM_ITERATE_START(&r); {
 		LCD_DrawHLine(r.x1 - Size, r.y0 + 1, r.x1 - 1);
 		LCD_DrawHLine(r.x1 - Size, r.y0 + 2, r.x1 - 1);
@@ -1290,26 +1283,22 @@ WM_HWIN FRAMEWIN_AddMaxButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
 }
 
 static void _PaintMin(void) {
-	GUI_RECT r;
-	int i, Size;
-	WM_GetInsideRect(&r);
+	auto r = WM_GetInsideRect();
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	Size = (r.x1 - r.x0 + 1) >> 1;
+	int Size = (r.x1 - r.x0 + 1) >> 1;
 	WM_ITERATE_START(&r); {
-		for (i = 1; i < Size; i++)
+		for (int i = 1; i < Size; i++)
 			LCD_DrawHLine(r.x0 + i, r.y1 - i - (Size >> 1), r.x1 - i);
 	} WM_ITERATE_END();
 }
 static void _DrawRestoreMin(void) {
-	GUI_RECT r;
-	int i, Size;
-	WM_GetInsideRect(&r);
+	auto r = WM_GetInsideRect();
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	Size = (r.x1 - r.x0 + 1) >> 1;
+	int Size = (r.x1 - r.x0 + 1) >> 1;
 	WM_ITERATE_START(&r); {
-		for (i = 1; i < Size; i++)
+		for (int i = 1; i < Size; i++)
 			LCD_DrawHLine(r.x0 + i, r.y0 + i + (Size >> 1), r.x1 - i);
 	} WM_ITERATE_END();
 }

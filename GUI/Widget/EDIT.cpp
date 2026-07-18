@@ -47,8 +47,8 @@ static void _OnPaint(EDIT_Obj *pObj) {
 	GUI_SetColor(pObj->Props.aTextColor[0]);
 	GUI_SetFont(pObj->Props.pFont);
 	/* Calculate size */
-	WM_GetClientRectEx(pObj, &r);
-	WIDGET__GetInsideRect(pObj, &rFillRect);
+	r = WM_GetClientRect(pObj);
+	rFillRect = WIDGET__GetInsideRect(pObj);
 	if (pObj->pText)
 		pText = pObj->pText;
 	rInside = rFillRect;
@@ -97,7 +97,7 @@ static void _OnPaint(EDIT_Obj *pObj) {
 		/* Set clipping rectangle */
 		WM_SetUserClipRect(&rFillRect);
 		/* Display text */
-		WIDGET__FillStringInRect(pText, &rFillRect, &rInside, &rText);
+		WIDGET__FillStringInRect(pText, rFillRect, rInside, rText);
 		/* Display cursor if needed */
 		if (pObj->State & WIDGET_STATE_FOCUS) {
 			///////////////houhh 20061020...

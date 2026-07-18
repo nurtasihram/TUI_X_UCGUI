@@ -117,61 +117,40 @@ RGB_COLOR GUI_GetColor(void) {
 #pragma endregion
 
 #pragma region Draw
-void GUI_ClearRect(int x0, int y0, int x1, int y1) {
-	GUI_RECT r;
+void GUI_ClearRect(GUI_RECT r) {
 	GUI_DRAWMODE PrevDraw = GUI_SetDrawMode(DRAWMODE_REV);
-	WM_ADDORG(x0, y0);
-	WM_ADDORG(x1, y1);
-	r.x0 = x0;
-	r.x1 = x1;
-	r.y0 = y0;
-	r.y1 = y1;
+	WM_ADDORG(r.x0, r.y0);
+	WM_ADDORG(r.x1, r.y1);
 	WM_ITERATE_START(&r) {
-		LCD_FillRect(x0, y0, x1, y1);
+		LCD_FillRect(r.x0, r.y0, r.x1, r.y1);
 	} WM_ITERATE_END();
 	GUI_SetDrawMode(PrevDraw);
 }
 void GUI_Clear(void) {
 	GUI_GotoXY(0, 0);     /* Reset text cursor to upper left */
-	GUI_ClearRect(GUI_XMIN, GUI_YMIN, GUI_XMAX, GUI_YMAX);
+	GUI_RECT r = {GUI_XMIN, GUI_YMIN, GUI_XMAX, GUI_YMAX};
+	GUI_ClearRect(r);
 }
-void GUI_ClearRectEx(const GUI_RECT *pRect) {
-	GUI_ClearRect(pRect->x0, pRect->y0, pRect->x1, pRect->y1);
-}
-void GUI_FillRect(int x0, int y0, int x1, int y1) {
-	GUI_RECT r;
-	WM_ADDORG(x0, y0);
-	WM_ADDORG(x1, y1);
-	r.x0 = x0; r.x1 = x1;
-	r.y0 = y0; r.y1 = y1;
+void GUI_FillRect(GUI_RECT r) {
+	WM_ADDORG(r.x0, r.y0);
+	WM_ADDORG(r.x1, r.y1);
 	WM_ITERATE_START(&r); {
-		LCD_FillRect(x0, y0, x1, y1);
+		LCD_FillRect(r.x0, r.y0, r.x1, r.y1);
 	} WM_ITERATE_END();
 }
-void GUI_FillRectEx(const GUI_RECT *pRect) {
-	GUI_FillRect(pRect->x0, pRect->y0, pRect->x1, pRect->y1);
-}
-void GUI_DrawRect(int x0, int y0, int x1, int y1) {
-	GUI_RECT r;
-	WM_ADDORG(x0, y0);
-	WM_ADDORG(x1, y1);
-	r.x0 = x0;
-	r.x1 = x1;
-	r.y0 = y0;
-	r.y1 = y1;
+void GUI_DrawRect(GUI_RECT r) {
+	WM_ADDORG(r.x0, r.y0);
+	WM_ADDORG(r.x1, r.y1);
 	WM_ITERATE_START(&r); {
-		LCD_DrawHLine(x0, y0, x1);
-		LCD_DrawHLine(x0, y1, x1);
-		LCD_DrawVLine(x0, y0 + 1, y1 - 1);
-		LCD_DrawVLine(x1, y0 + 1, y1 - 1);
+		LCD_DrawHLine(r.x0, r.y0, r.x1);
+		LCD_DrawHLine(r.x0, r.y1, r.x1);
+		LCD_DrawVLine(r.x0, r.y0 + 1, r.y1 - 1);
+		LCD_DrawVLine(r.x1, r.y0 + 1, r.y1 - 1);
 	} WM_ITERATE_END();
 }
-void GUI_DrawRectEx(const GUI_RECT *pRect) {
-	GUI_DrawRect(pRect->x0, pRect->y0, pRect->x1, pRect->y1);
-}
-void GUI_DrawFocusRect(const GUI_RECT *pRect, int Dist) {
+void GUI_DrawFocusRect(GUI_RECT Rect, int Dist) {
 	GUI_RECT r;
-	GUI__ReduceRect(&r, pRect, Dist);
+	GUI__ReduceRect(&r, &Rect, Dist);
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
 	WM_ITERATE_START(&r); {
@@ -671,7 +650,7 @@ void GUI__DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign, int Ma
 		r = *pRect;
 	}
 	else {
-		WM_GetClientRect(&r);
+		r = WM_GetClientRect();
 	}
 	/* handle vertical alignment */
 	if ((TextAlign & GUI_TA_VERTICAL) == GUI_TA_TOP) {

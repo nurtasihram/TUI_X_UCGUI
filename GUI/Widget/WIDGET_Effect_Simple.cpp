@@ -5,33 +5,30 @@
 #include "GUI_Protected.h"
 #include "WM_Intern.h"
 
-static void _WIDGET_EFFECT_Simple_DrawUpRect(const GUI_RECT* pRect) {
+static void _WIDGET_EFFECT_Simple_DrawUpRect(GUI_RECT r) {
   GUI_CONTEXT Context;
   GUI_SaveContext(&Context);
   GUI_SetColor(RGB_BLACK);
-  GUI_DrawRect(pRect->x0, pRect->y0, pRect->x1, pRect->y1);          /* Draw rectangle around it */
+  GUI_DrawRect(r);          /* Draw rectangle around it */
   GUI_RestoreContext(&Context);
 }
 static void _WIDGET_EFFECT_Simple_DrawUp(void) {
-  GUI_RECT r;
-  WM_GetClientRect(&r);
-  _WIDGET_EFFECT_Simple_DrawUpRect(&r);
+  _WIDGET_EFFECT_Simple_DrawUpRect(WM_GetClientRect());
 }
-static void _WIDGET_EFFECT_Simple_DrawDownRect(const GUI_RECT* pRect) {
+static void _WIDGET_EFFECT_Simple_DrawDownRect(GUI_RECT r) {
   GUI_CONTEXT Context;
   GUI_SaveContext(&Context);
   GUI_SetColor(RGB_BLACK);
-  GUI_DrawRect(pRect->x0, pRect->y0, pRect->x1, pRect->y1);          /* Draw rectangle around it */
+  GUI_DrawRect(r);          /* Draw rectangle around it */
   GUI_RestoreContext(&Context);
 }
 static void _WIDGET_EFFECT_Simple_DrawDown(void) {
-  GUI_RECT r;
-  WM_GetClientRect(&r);
-  _WIDGET_EFFECT_Simple_DrawDownRect(&r);
+  _WIDGET_EFFECT_Simple_DrawDownRect(WM_GetClientRect());
 }
-static void _WIDGET_EFFECT_Simple_GetRect(GUI_RECT* pRect) {
-  WM_GetClientRect(pRect);
-  GUI__ReduceRect(pRect, pRect, 1);
+static GUI_RECT _WIDGET_EFFECT_Simple_GetRect() {
+  GUI_RECT Rect = WM_GetClientRect();
+  GUI__ReduceRect(&Rect, &Rect, 1);
+  return Rect;
 }
 void WIDGET_SetDefaultEffect_Simple(void) {
   WIDGET_SetDefaultEffect(&WIDGET_Effect_Simple);

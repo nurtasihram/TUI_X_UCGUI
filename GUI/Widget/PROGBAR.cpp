@@ -90,11 +90,11 @@ static void _GetTextRect(const PROGBAR_Obj *pObj, GUI_RECT *pRect, const char *p
 	pRect->y1 = pRect->y0 + TextHeight - 1;
 }
 static void _OnPaint(PROGBAR_Obj *pObj) {
-	GUI_RECT r, rInside, rClient, rText;
+	GUI_RECT r, rInside, rText;
 	const char *pText;
 	char ac[5];
 	int xPos;
-	WM_GetClientRect(&rClient);
+	auto rClient = WM_GetClientRect();
 	GUI__ReduceRect(&rInside, &rClient, pObj->pEffect->EffectSize);
 	xPos = _Value2X(pObj, pObj->v);
 	pText = _GetText(pObj, ac);
@@ -112,7 +112,7 @@ static void _OnPaint(PROGBAR_Obj *pObj) {
 	WM_SetUserClipRect(&r);
 	_DrawPart(pObj, 1, rText.x0, rText.y0, pText);
 	WM_SetUserClipRect(NULL);
-	WIDGET__EFFECT_DrawDownRect(pObj, &rClient);
+	WIDGET__EFFECT_DrawDownRect(pObj, rClient);
 }
 static void _Delete(PROGBAR_Obj *pObj) {
 	_FreeText(pObj);

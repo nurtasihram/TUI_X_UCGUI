@@ -423,8 +423,7 @@ static char _HandlePID(MENU_Obj *pObj, int x, int y, int Pressed) {
 	 * Check if coordinates are inside the widget.
 	 */
 	if ((x >= 0) && (y >= 0)) {
-		GUI_RECT r;
-		WM_GetClientRectEx(pObj, &r);
+		GUI_RECT r = WM_GetClientRect(pObj);
 		if (x <= r.x1 && y <= r.y1)
 			XYInWidget = 1;
 	}
@@ -579,7 +578,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 	int FontHeight = GUI_GetYDistOfFont(pObj->Props.pFont);
 	int EffectSize = _GetEffectSize(pObj);
 	NumItems = MENU__GetNumItems(pObj);
-	WM_GetClientRectEx(pObj, &FillRect);
+	FillRect = WM_GetClientRect(pObj);
 	GUI__ReduceRect(&FillRect, &FillRect, EffectSize);
 	GUI_SetFont(pObj->Props.pFont);
 	if (pObj->Flags & MENU_SF_VERTICAL) {
@@ -593,7 +592,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 			_SetPaintColors(pObj, pItem, i);
 			FillRect.y1 = FillRect.y0 + ItemHeight - 1;
 			if (pItem->Flags & MENU_IF_SEPARATOR) {
-				GUI_ClearRectEx(&FillRect);
+				GUI_ClearRect(FillRect);
 				GUI_SetColor(RGB_GRAYL(0x7C));
 				GUI_DrawHLine(FillRect.y0 + BorderTop + 1, FillRect.x0 + 2, FillRect.x1 - 2);
 			}
@@ -602,7 +601,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 				TextRect.x1 = TextRect.x0 + TextWidth - 1;
 				TextRect.y0 = FillRect.y0 + BorderTop;
 				TextRect.y1 = TextRect.y0 + FontHeight - 1;
-				WIDGET__FillStringInRect(pItem->acText, &FillRect, &TextRect, &TextRect);
+				WIDGET__FillStringInRect(pItem->acText, FillRect, TextRect, TextRect);
 			}
 			FillRect.y0 += ItemHeight;
 		}
@@ -619,7 +618,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 			_SetPaintColors(pObj, pItem, i);
 			FillRect.x1 = FillRect.x0 + ItemWidth - 1;
 			if (pItem->Flags & MENU_IF_SEPARATOR) {
-				GUI_ClearRectEx(&FillRect);
+				GUI_ClearRect(FillRect);
 				GUI_SetColor(RGB_GRAYL(0x7C));
 				GUI_DrawVLine(FillRect.x0 + BorderLeft + 1, FillRect.y0 + 2, FillRect.y1 - 2);
 			}
@@ -627,18 +626,17 @@ static void _OnPaint(MENU_Obj *pObj) {
 				TextWidth = pItem->TextWidth;
 				TextRect.x0 = FillRect.x0 + BorderLeft;
 				TextRect.x1 = TextRect.x0 + TextWidth - 1;
-				WIDGET__FillStringInRect(pItem->acText, &FillRect, &TextRect, &TextRect);
+				WIDGET__FillStringInRect(pItem->acText, FillRect, TextRect, TextRect);
 			}
 			FillRect.x0 += ItemWidth;
 		}
 	}
 	if (pObj->Width || pObj->Height) {
-		GUI_RECT r;
-		WM_GetClientRectEx(pObj, &r);
+		GUI_RECT r = WM_GetClientRect(pObj);
 		GUI__ReduceRect(&r, &r, EffectSize);
 		GUI_SetBkColor(pObj->Props.aBkColor[MENU_CI_ENABLED]);
-		GUI_ClearRect(FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1);
-		GUI_ClearRect(EffectSize, FillRect.y1 + 1, r.x1, r.y1);
+		GUI_ClearRect({ FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1 });
+		GUI_ClearRect({ EffectSize, FillRect.y1 + 1, r.x1, r.y1 });
 	}
 	/* Draw 3D effect (if configured) */
 	if (_HasEffect(pObj)) {

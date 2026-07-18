@@ -223,7 +223,6 @@ int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 			LISTBOX_Obj *pObj;
 			LISTBOX_ITEM *pItem;
 			WM_HMEM hItem;
-			GUI_RECT r;
 			int FontDistY;
 			int ItemIndex = pDrawItemInfo->ItemIndex;
 			const char *s;
@@ -233,7 +232,7 @@ int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 			pObj = (LISTBOX_Obj *)(pDrawItemInfo->hWin);
 			hItem = GUI_ARRAY_GethItem(&pObj->ItemArray, ItemIndex);
 			pItem = (LISTBOX_ITEM *)(hItem);
-			WM_GetInsideRect(&r);
+			auto r = WM_GetInsideRect();
 			FontDistY = GUI_GetFontDistY();
 			/* Calculate color index */
 			IsDisabled = (pItem->Status & LISTBOX_ITEM_DISABLED) ? 1 : 0;
@@ -274,7 +273,7 @@ int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 				rFocus.x1 = r.x1;
 				rFocus.y1 = pDrawItemInfo->y0 + FontDistY - 1;
 				GUI_SetColor(RGB_WHITE - pObj->Props.aBackColor[ColorIndex]);
-				GUI_DrawFocusRect(&rFocus, 0);
+				GUI_DrawFocusRect(rFocus, 0);
 			}
 			return 0;
 		}
@@ -478,7 +477,7 @@ static void _OnPaint(LISTBOX_Obj *pObj, const GUI_RECT *pClipRect) {
 	RectItem.y0 = ItemInfo.y0;
 	RectItem.y1 = RectInside.y1;
 	GUI_SetBkColor(pObj->Props.aBackColor[0]);
-	GUI_ClearRectEx(&RectItem);
+	GUI_ClearRect(RectItem);
 	/* Draw the 3D effect (if configured) */
 	WIDGET__EFFECT_DrawDown(pObj);
 }
@@ -597,8 +596,7 @@ static WM_PARAM _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 		case WM_TOUCH: {
 			const GUI_PID_STATE *pState = (const GUI_PID_STATE *)Data;
 			if (pObj->hOwner && pState) {
-				GUI_RECT r;
-				WM_GetClientRectEx(pObj, &r);
+				GUI_RECT r = WM_GetClientRect(pObj);
 				if (pState->x < 0 || pState->y < 0 || pState->x > r.x1 || pState->y > r.y1) {
 					if (pState->Pressed)
 						_NotifyOwner(pObj, LISTBOX_NOTIFICATION_LOST_FOCUS);

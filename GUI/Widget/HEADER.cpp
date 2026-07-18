@@ -23,16 +23,16 @@ static int                _DefaultBorderH = HEADER_BORDER_H_DEFAULT;
 static int                _DefaultBorderV = HEADER_BORDER_V_DEFAULT;
 static const GUI_FONT  *_pDefaultFont = HEADER_FONT_DEFAULT;
 static void _OnPaint(HEADER_Obj *pObj) {
-	GUI_RECT Rect;
-	int i, xPos = -pObj->ScrollPos;
+	int xPos = -pObj->ScrollPos;
 	int NumItems = GUI_ARRAY_GetNumItems(&pObj->Columns);
 	int EffectSize = pObj->pEffect->EffectSize;
+	GUI_RECT Rect;
 	GUI_SetBkColor(pObj->BkColor);
 	GUI_SetFont(pObj->pFont);
 	GUI_Clear();
-	for (i = 0; i < NumItems; i++) {
+	for (int i = 0; i < NumItems; i++) {
 		HEADER_COLUMN *pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, i);
-		WM_GetClientRect(&Rect);
+		Rect = WM_GetClientRect();
 		Rect.x0 = xPos;
 		Rect.x1 = Rect.x0 + pColumn->Width;
 		if (pColumn->hDrawObj) {
@@ -57,7 +57,7 @@ static void _OnPaint(HEADER_Obj *pObj) {
 			GUI_DRAW__Draw(pColumn->hDrawObj, xPos + xOff, yOff);
 			WM_SetUserClipRect(NULL);
 		}
-		WIDGET__EFFECT_DrawUpRect(pObj, &Rect);
+		WIDGET__EFFECT_DrawUpRect(pObj, Rect);
 		xPos += Rect.x1 - Rect.x0;
 		Rect.x0 += EffectSize + _DefaultBorderH;
 		Rect.x1 -= EffectSize + _DefaultBorderH;
@@ -66,10 +66,10 @@ static void _OnPaint(HEADER_Obj *pObj) {
 		GUI_SetColor(pObj->TextColor);
 		GUI_DispStringInRect(pColumn->acText, &Rect, pColumn->Align);
 	}
-	WM_GetClientRect(&Rect);
+	Rect = WM_GetClientRect();
 	Rect.x0 = xPos;
 	Rect.x1 = 0xfff;
-	WIDGET__EFFECT_DrawUpRect(pObj, &Rect);
+	WIDGET__EFFECT_DrawUpRect(pObj, Rect);
 }
 static void _RestoreOldCursor(void) {
 	if (_pOldCursor) {
@@ -216,8 +216,7 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 	/* Create the window */
 
 	if ((xsize == 0) && (x0 == 0) && (y0 == 0)) {
-		GUI_RECT Rect;
-		WM_GetInsideRectEx(hParent, &Rect);
+		GUI_RECT Rect = WM_GetInsideRect(hParent);
 		xsize = Rect.x1 - Rect.x0 + 1;
 		x0 = Rect.x0;
 		y0 = Rect.y0;
@@ -295,8 +294,7 @@ void HEADER_SetFont(HEADER_Handle hObj, const GUI_FONT  *pFont) {
 }
 void HEADER_SetHeight(HEADER_Handle hObj, int Height) {
 	if (hObj) {
-		GUI_RECT Rect;
-		WM_GetClientRectEx(hObj, &Rect);
+		GUI_RECT Rect = WM_GetClientRect(hObj);
 		WM_SetSize(hObj, Rect.x1 - Rect.x0 + 1, Height);
 		WM_Invalidate(WM_GetParent(hObj));
 	}
@@ -402,8 +400,7 @@ void HEADER_SetItemWidth(HEADER_Handle hObj, unsigned int Index, int Width) {
 int HEADER_GetHeight(HEADER_Handle hObj) {
 	int Height = 0;
 	if (hObj) {
-		GUI_RECT Rect;
-		WM_GetClientRectEx(hObj, &Rect);
+		GUI_RECT Rect = WM_GetClientRect(hObj);
 		GUI_MoveRect(&Rect, -Rect.x0, -Rect.y0);
 		Height = Rect.y1 - Rect.y0 + 1;
 	}
@@ -457,8 +454,7 @@ void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW_HANDLE hDra
 	if (hObj) {
 		HEADER_Obj *pObj = (HEADER_Obj *)hObj;
 		if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
-			HEADER_COLUMN *pColumn;
-			pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
+			auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
 			if (pColumn) {
 				GUI_ALLOC_FreePtr(&pColumn->hDrawObj);
 				pColumn->hDrawObj = hDrawObj;

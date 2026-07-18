@@ -216,24 +216,23 @@ void      GUI_SetColor(RGB_COLOR);
 int  GUI_BMP_Draw(const void *pFileData, int x0, int y0);
 int  GUI_BMP_GetXSize(const void *pFileData);
 int  GUI_BMP_GetYSize(const void *pFileData);
-void GUI_Clear(void);
-void GUI_ClearRect(int x0, int y0, int x1, int y1);
-void GUI_ClearRectEx(const GUI_RECT *pRect);
-void GUI_DrawBitmap(const GUI_BITMAP *pBM, int x0, int y0);
-void GUI_DrawHLine(int y0, int x0, int x1);
-void GUI_DrawPixel(int x, int y);
-void GUI_DrawPoint(int x, int y);
-void GUI_DrawFocusRect(const GUI_RECT *pRect, int Dist);
-void GUI_DrawRect(int x0, int y0, int x1, int y1);
-void GUI_DrawRectEx(const GUI_RECT *pRect);
-void GUI_DrawVLine(int x0, int y0, int y1);
-void GUI_FillRect(int x0, int y0, int x1, int y1);
-void GUI_FillRectEx(const GUI_RECT *pRect);
 
-typedef struct {
-	const  GUI_BITMAP *pBitmap;
+void GUI_Clear(void);
+void GUI_ClearRect(GUI_RECT r);
+void GUI_DrawFocusRect(GUI_RECT r, int Dist);
+void GUI_DrawRect(GUI_RECT r);
+void GUI_FillRect(GUI_RECT r);
+
+void GUI_DrawBitmap(const GUI_BITMAP *pBM, int x0, int y0);
+
+void GUI_DrawHLine(int y0, int x0, int x1);
+void GUI_DrawVLine(int x0, int y0, int y1);
+void GUI_DrawPixel(int x, int y);
+
+struct GUI_CURSOR {
+	const GUI_BITMAP *pBitmap;
 	int xHot, yHot;
-} GUI_CURSOR;
+};
 
 #if GUI_SUPPORT_CURSOR
 void               GUI_CURSOR_Activate(void);

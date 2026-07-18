@@ -1,9 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-
 #include "GUI_ConfDefaults.h" /* Used for  */
-
 
 #define DRAWMODE_NORMAL (0)
 #define DRAWMODE_TRANS  (1<<1)
@@ -12,8 +10,8 @@
 typedef int GUI_DRAWMODE;
 typedef uint32_t RGB_COLOR;
 
-typedef struct { int16_t x, y; } GUI_POINT;
-typedef struct { int16_t x0, y0, x1, y1; } GUI_RECT;
+struct GUI_POINT { int16_t x = 0, y = 0; };
+struct GUI_RECT { int16_t x0 = 0, y0 = 0, x1 = 0, y1 = 0; };
 
 typedef struct {
 	int  NumEntries;

@@ -55,14 +55,14 @@ static void _OnPaint(CHECKBOX_Obj *pObj) {
 		GUI_DrawBitmap(pObj->Props.apBm[Index], EffectSize, EffectSize);
 	}
 	/* Draw the effect arround the box */
-	WIDGET__EFFECT_DrawDownRect(pObj, &RectBox);
+	WIDGET__EFFECT_DrawDownRect(pObj, RectBox);
 	WM_SetUserClipRect(NULL);
 	/* Draw text if needed */
 	if (pObj->pText) {
 		GUI_RECT RectText;
 		/* Draw the text */
 		const char *s = pObj->pText;
-		WM_GetClientRect(&RectText);
+		RectText = WM_GetClientRect();
 		RectText.x0 += RectBox.x1 + 1 + pObj->Props.Spacing;
 		GUI_SetTextMode(DRAWMODE_TRANS);
 		GUI_SetColor(pObj->Props.TextColor);
@@ -92,7 +92,7 @@ static void _OnPaint(CHECKBOX_Obj *pObj) {
 			RectFocus.x1 = RectFocus.x0 + xSizeText;
 			RectFocus.y1 = RectFocus.y0 + ySizeText;
 			GUI_SetColor(RGB_BLACK);
-			WIDGET__DrawFocusRect(pObj, &RectFocus, 0);
+			WIDGET__DrawFocusRect(pObj, RectFocus, 0);
 		}
 	}
 }

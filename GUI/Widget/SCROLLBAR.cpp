@@ -73,7 +73,7 @@ static void _CalcPositions(SCROLLBAR_Obj *pObj, SCROLLBAR_POSITIONS *pPos) {
 	if (pObj->Id == GUI_ID_HSCROLL) {
 		hWin = WM_GetScrollbarV(pObj->hParent);
 		if (hWin) {
-			WM_GetWindowRectEx(hWin, &rSub);
+			rSub = WM_GetWindowRect(hWin);
 			if (r.x1 == rSub.x1) {
 				r.x1 = rSub.x0 - 1;
 			}
@@ -82,7 +82,7 @@ static void _CalcPositions(SCROLLBAR_Obj *pObj, SCROLLBAR_POSITIONS *pPos) {
 	if (pObj->Id == GUI_ID_VSCROLL) {
 		hWin = WM_GetScrollbarH(pObj->hParent);
 		if (hWin) {
-			WM_GetWindowRectEx(hWin, &rSub);
+			rSub = WM_GetWindowRect(hWin);
 			if (r.y1 == rSub.y1) {
 				r.y1 = rSub.y0 - 1;
 			}
@@ -133,7 +133,7 @@ static void _OnPaint(SCROLLBAR_Obj *pObj) {
 	  Get / calc position info
 	*/
 	_CalcPositions(pObj, &Pos);
-	WIDGET__GetClientRect(pObj, &rClient);
+	rClient = WIDGET__GetClientRect(pObj);
 	r = rClient;
 	ArrowSize = ((r.y1 - r.y0) / 3) - 1;
 	ArrowOff = 3 + ArrowSize + ArrowSize / 3;
@@ -144,21 +144,21 @@ static void _OnPaint(SCROLLBAR_Obj *pObj) {
 	r = rClient;
 	r.x0 = Pos.x0_LeftArrow;
 	r.x1 = Pos.x1_LeftArrow;
-	WIDGET__FillRectEx(pObj, &r);
+	WIDGET__FillRect(pObj, r);
 	GUI_SetColor(pObj->aBkColor[1]);
 	_DrawTriangle(pObj, r.x0 + ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, -1);
-	WIDGET__EFFECT_DrawUpRect(pObj, &r);
+	WIDGET__EFFECT_DrawUpRect(pObj, r);
 	/*
 	  Draw the thumb area which is not covered by the thumb
 	*/
 	GUI_SetColor(pObj->aBkColor[0]);
 	r.x0 = Pos.x1_LeftArrow + 1;
 	r.x1 = Pos.x0_Thumb - 1;
-	WIDGET__FillRectEx(pObj, &r);
+	WIDGET__FillRect(pObj, r);
 	r = rClient;
 	r.x0 = Pos.x1_Thumb + 1;
 	r.x1 = Pos.x0_RightArrow - 1;
-	WIDGET__FillRectEx(pObj, &r);
+	WIDGET__FillRect(pObj, r);
 	/*
 	  Draw Thumb
 	*/
@@ -166,18 +166,18 @@ static void _OnPaint(SCROLLBAR_Obj *pObj) {
 	r.x0 = Pos.x0_Thumb;
 	r.x1 = Pos.x1_Thumb;
 	GUI_SetColor(pObj->aColor[0]);
-	WIDGET__FillRectEx(pObj, &r);
-	WIDGET__EFFECT_DrawUpRect(pObj, &r);
+	WIDGET__FillRect(pObj, r);
+	WIDGET__EFFECT_DrawUpRect(pObj, r);
 	/*
 	  Draw right Arrow
 	*/
 	GUI_SetColor(pObj->aColor[0]);
 	r.x0 = Pos.x0_RightArrow;
 	r.x1 = Pos.x1_RightArrow;
-	WIDGET__FillRectEx(pObj, &r);
+	WIDGET__FillRect(pObj, r);
 	GUI_SetColor(pObj->aBkColor[1]);
 	_DrawTriangle(pObj, r.x1 - ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, 1);
-	WIDGET__EFFECT_DrawUpRect(pObj, &r);
+	WIDGET__EFFECT_DrawUpRect(pObj, r);
 	/*
 	  Draw overlap area (if any ...)
 	*/
@@ -185,7 +185,7 @@ static void _OnPaint(SCROLLBAR_Obj *pObj) {
 		r.x0 = Pos.x1_RightArrow + 1;
 		r.x1 = Pos.x1;
 		GUI_SetColor(pObj->aColor[0]);
-		WIDGET__FillRectEx(pObj, &r);
+		WIDGET__FillRect(pObj, r);
 	}
 }
 static void _ScrollbarPressed(SCROLLBAR_Obj *pObj) {
@@ -308,8 +308,7 @@ SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 
 	/* Set defaults if necessary */
 	if ((xsize == 0) && (ysize == 0)) {
-		GUI_RECT Rect;
-		WM_GetInsideRectEx(hParent, &Rect);
+		GUI_RECT Rect = WM_GetInsideRect(hParent);
 		if (ExFlags & SCROLLBAR_CF_VERTICAL) {
 			xsize = SCROLLBAR__DefaultWidth;
 			x0 = Rect.x1 + 1 - xsize;

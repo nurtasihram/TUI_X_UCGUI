@@ -105,7 +105,7 @@ static int _GetEnable(MULTIPAGE_Obj *pObj, unsigned Index) {
 *  Calculates the rect of the client area.
 */
 static void _CalcClientRect(MULTIPAGE_Obj *pObj, GUI_RECT *pRect) {
-	WIDGET__GetInsideRect(pObj, pRect);
+	*pRect = WIDGET__GetInsideRect(pObj);
 	if (pObj->Align & MULTIPAGE_ALIGN_BOTTOM) {
 		pRect->y1 -= GUI_GetYSizeOfFont(pObj->Font) + 6;
 	}
@@ -120,7 +120,7 @@ static void _CalcClientRect(MULTIPAGE_Obj *pObj, GUI_RECT *pRect) {
 *  Calculates the border rect of the client area.
 */
 static void _CalcBorderRect(MULTIPAGE_Obj *pObj, GUI_RECT *pRect) {
-	WM_GetClientRectEx(pObj, pRect);
+	*pRect = WM_GetClientRect(pObj);
 	if (pObj->Align & MULTIPAGE_ALIGN_BOTTOM) {
 		pRect->y1 -= GUI_GetYSizeOfFont(pObj->Font) + 6;
 	}
@@ -232,7 +232,7 @@ static void _DrawTextItem(MULTIPAGE_Obj *pObj, const char *pText, unsigned Index
 	r = *pRect;
 	r.x0 += x0;
 	r.x1 = r.x0 + w;
-	WIDGET__EFFECT_DrawUpRect(pObj, &r);
+	WIDGET__EFFECT_DrawUpRect(pObj, r);
 	GUI__ReduceRect(&r, &r, pObj->pEffect->EffectSize);
 	if (pObj->Selection == Index) {
 		if (pObj->Align & MULTIPAGE_ALIGN_BOTTOM) {
@@ -255,7 +255,7 @@ static void _DrawTextItem(MULTIPAGE_Obj *pObj, const char *pText, unsigned Index
 		}
 	}
 	GUI_SetColor(pObj->aBkColor[ColorIndex]);
-	WIDGET__FillRectEx(pObj, &r);
+	WIDGET__FillRect(pObj, r);
 	GUI_SetBkColor(pObj->aBkColor[ColorIndex]);
 	GUI_SetColor(pObj->aTextColor[ColorIndex]);
 	GUI_DispStringAt(pText, r.x0 + 4, pRect->y0 + 3);
@@ -264,7 +264,7 @@ static void _OnPaint(MULTIPAGE_Obj *pObj) {
 	GUI_RECT rBorder;
 	/* Draw border of multipage */
 	_CalcBorderRect(pObj, &rBorder);
-	WIDGET__EFFECT_DrawUpRect(pObj, &rBorder);
+	WIDGET__EFFECT_DrawUpRect(pObj, rBorder);
 	/* Draw text items */
 	if (pObj->Handles.NumItems > 0) {
 		MULTIPAGE_PAGE *pPage;

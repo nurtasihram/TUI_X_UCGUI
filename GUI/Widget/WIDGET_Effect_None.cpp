@@ -9,14 +9,14 @@ static void _WIDGET_EFFECT_None_DrawDown(void) {
 }
 static void _WIDGET_EFFECT_None_DrawUp(void) {
 }
-static void _WIDGET_EFFECT_None_DrawDownRect(const GUI_RECT* pRect) {
-  GUI_USE_PARA(pRect);
+static void _WIDGET_EFFECT_None_DrawDownRect(GUI_RECT r) {
+  GUI_USE_PARA(r);
 }
-static void _WIDGET_EFFECT_None_DrawUpRect(const GUI_RECT* pRect) {
-  GUI_USE_PARA(pRect);
+static void _WIDGET_EFFECT_None_DrawUpRect(GUI_RECT r) {
+  GUI_USE_PARA(r);
 }
-static void _WIDGET_EFFECT_None_GetRect(GUI_RECT * pRect) {
-  WM_GetClientRect(pRect);
+static GUI_RECT _WIDGET_EFFECT_None_GetRect() {
+  return WM_GetClientRect();
 }
 void WIDGET_SetDefaultEffect_None(void) {
   WIDGET_SetDefaultEffect(&WIDGET_Effect_None);

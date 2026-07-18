@@ -48,7 +48,7 @@ static void _OnPaint(RADIO_Obj *pObj) {
 	int i, y, HasFocus, FontDistY;
 	uint16_t SpaceAbove, CHeight, FocusBorder;
 	/* Init some data */
-	WIDGET__GetClientRect(pObj, &rFocus);
+	rFocus = WIDGET__GetClientRect(pObj);
 	HasFocus = (pObj->State & WIDGET_STATE_FOCUS) ? 1 : 0;
 	pBmRadio = pObj->apBmRadio[WM_IsEnabled(pObj)];
 	pBmCheck = pObj->pBmCheck;
@@ -112,7 +112,7 @@ static void _OnPaint(RADIO_Obj *pObj) {
 	/* Draw the focus rect */
 	if (HasFocus) {
 		GUI_SetColor(RGB_BLACK);
-		WIDGET__DrawFocusRect(pObj, &rFocus, 0);
+		WIDGET__DrawFocusRect(pObj, rFocus, 0);
 	}
 }
 static void _OnTouch(RADIO_Obj *pObj, const GUI_PID_STATE *pState) {

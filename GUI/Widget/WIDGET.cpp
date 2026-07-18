@@ -59,18 +59,19 @@ void WIDGET__RotateRect90(WIDGET *pWidget, GUI_RECT *pDest, const GUI_RECT *pRec
   client rectangle for widgets with their standard orientation
   and the rotated one for rotated widgets.
 */
-void WIDGET__GetClientRect(WIDGET *pWidget, GUI_RECT *pRect) {
+GUI_RECT WIDGET__GetClientRect(WIDGET *pWidget) {
+	GUI_RECT Rect;
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
-		GUI_RECT Rect;
-		WM_GetClientRect(&Rect);
-		pRect->x0 = Rect.y0;
-		pRect->x1 = Rect.y1;
-		pRect->y0 = Rect.x0;
-		pRect->y1 = Rect.x1;
+		GUI_RECT r = WM_GetClientRect();
+		Rect.x0 = r.y0;
+		Rect.x1 = r.y1;
+		Rect.y0 = r.x0;
+		Rect.y1 = r.x1;
 	}
 	else {
-		WM_GetClientRect(pRect);
+		Rect = WM_GetClientRect();
 	}
+	return Rect;
 }
 RGB_COLOR WIDGET__GetBkColor(WM_HWIN hObj) {
 	RGB_COLOR BkColor = WM_GetBkColor(WM_GetParent(hObj));
@@ -79,9 +80,10 @@ RGB_COLOR WIDGET__GetBkColor(WM_HWIN hObj) {
 	}
 	return BkColor;
 }
-void WIDGET__GetInsideRect(WIDGET *pWidget, GUI_RECT *pRect) {
-	WM_GetClientRectEx(pWidget, pRect);
-	GUI__ReduceRect(pRect, pRect, pWidget->pEffect->EffectSize);
+GUI_RECT WIDGET__GetInsideRect(WIDGET *pWidget) {
+	GUI_RECT Rect = WM_GetClientRect(pWidget);
+	GUI__ReduceRect(&Rect, &Rect, pWidget->pEffect->EffectSize);
+	return Rect;
 }
 int WIDGET__GetXSize(const WIDGET *pWidget) {
 	int r;
@@ -215,7 +217,7 @@ int WIDGET_HandleActive(WM_HWIN hObj, int MsgId, WM_PARAM *Data) {
 			*Data = (pWidget->State & WIDGET_STATE_FOCUSSABLE) ? 1 : 0; /* Can handle focus */
 			return 0; /* Message handled */
 		case WM_GET_INSIDE_RECT:
-			WIDGET__GetInsideRect(pWidget, (GUI_RECT *)*Data);
+			*(GUI_RECT *)*Data = WIDGET__GetInsideRect(pWidget);
 			return 0; /* Message handled */
 	}
 	return 1; /* Message NOT handled */
@@ -229,13 +231,13 @@ void WIDGET__SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE *pVState, const 
 	hScroll = WM_GetDialogItem(hWin, GUI_ID_HSCROLL);
 	WM_SetScrollState(hScroll, pHState);
 }
-void WIDGET__DrawFocusRect(WIDGET *pWidget, const GUI_RECT *pRect, int Dist) {
-	GUI_RECT Rect;
+void WIDGET__DrawFocusRect(WIDGET *pWidget, GUI_RECT r, int Dist) {
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
-		WIDGET__RotateRect90(pWidget, &Rect, pRect);
-		pRect = &Rect;
+		GUI_RECT Rect;
+		WIDGET__RotateRect90(pWidget, &Rect, &r);
+		r = Rect;
 	}
-	GUI_DrawFocusRect(pRect, Dist);
+	GUI_DrawFocusRect(r, Dist);
 }
 void WIDGET__DrawVLine(WIDGET *pWidget, int x, int y0, int y1) {
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
@@ -251,39 +253,35 @@ void WIDGET__DrawVLine(WIDGET *pWidget, int x, int y0, int y1) {
 		GUI_DrawVLine(x, y0, y1);
 	}
 }
-void WIDGET__FillRectEx(WIDGET *pWidget, const GUI_RECT *pRect) {
+void WIDGET__FillRect(WIDGET *pWidget, GUI_RECT r) {
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
-		GUI_RECT r;
-		WIDGET__RotateRect90(pWidget, &r, pRect);
-		pRect = &r;
+		GUI_RECT Rect;
+		WIDGET__RotateRect90(pWidget, &Rect, &r);
+		r = Rect;
 	}
-	GUI_FillRectEx(pRect);
+	GUI_FillRect(r);
 }
-void WIDGET__EFFECT_DrawDownRect(WIDGET *pWidget, GUI_RECT *pRect) {
-	GUI_RECT Rect;
-	if (pRect == NULL) {
-		WM_GetClientRect(&Rect);
-		pRect = &Rect;
-	}
+void WIDGET__EFFECT_DrawDownRect(WIDGET *pWidget, GUI_RECT r) {
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
-		WIDGET__RotateRect90(pWidget, &Rect, pRect);
-		pRect = &Rect;
+		GUI_RECT Rect;
+		WIDGET__RotateRect90(pWidget, &Rect, &r);
+		r = Rect;
 	}
-	if (_EffectRequiresRedraw(pWidget, pRect)) {
-		pWidget->pEffect->pfDrawDownRect(pRect);
+	if (_EffectRequiresRedraw(pWidget, &r)) {
+		pWidget->pEffect->pfDrawDownRect(r);
 	}
 }
 void WIDGET__EFFECT_DrawDown(WIDGET *pWidget) {
-	WIDGET__EFFECT_DrawDownRect(pWidget, NULL);
+	WIDGET__EFFECT_DrawDownRect(pWidget, WM_GetClientRect());
 }
-void WIDGET__EFFECT_DrawUpRect(WIDGET *pWidget, GUI_RECT *pRect) {
-	GUI_RECT Rect;
+void WIDGET__EFFECT_DrawUpRect(WIDGET *pWidget, GUI_RECT r) {
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
-		WIDGET__RotateRect90(pWidget, &Rect, pRect);
-		pRect = &Rect;
+		GUI_RECT Rect;
+		WIDGET__RotateRect90(pWidget, &Rect, &r);
+		r = Rect;
 	}
-	if (_EffectRequiresRedraw(pWidget, pRect)) {
-		pWidget->pEffect->pfDrawUpRect(pRect);
+	if (_EffectRequiresRedraw(pWidget, &r)) {
+		pWidget->pEffect->pfDrawUpRect(r);
 	}
 }
 const WIDGET_EFFECT *WIDGET_SetDefaultEffect(const WIDGET_EFFECT *pEffect) {
@@ -335,9 +333,9 @@ int WIDGET_SetWidth(WM_HWIN hObj, int Width) {
 *
 * Notes
 */
-void WIDGET__FillStringInRect(const char *pText, const GUI_RECT *pFillRect, const GUI_RECT *pTextRectMax, const GUI_RECT *pTextRectAct) {
+void WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_RECT TextRectMax, GUI_RECT TextRectAct) {
 	/* Check if we have anything to do at all ... */
-	GUI_RECT r = *pFillRect;
+	GUI_RECT r = FillRect;
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
 	if (!GUI_RectsIntersect(&GUI_Context.ClipRect, &r))
@@ -346,16 +344,16 @@ void WIDGET__FillStringInRect(const char *pText, const GUI_RECT *pFillRect, cons
 		if (*pText) { /* Speed optimization, not required */
 			const GUI_RECT *pOldClipRect;
 			/* Fill border */
-			GUI_ClearRectEx(pFillRect);
+			GUI_ClearRect(FillRect);
 			/* Set clipping rectangle */
-			pOldClipRect = WM_SetUserClipRect(pTextRectMax);
+			pOldClipRect = WM_SetUserClipRect(&TextRectMax);
 			/* Display text */
 			GUI_SetTextMode(DRAWMODE_NORMAL);
-			GUI_DispStringAt(pText, pTextRectAct->x0, pTextRectAct->y0);
+			GUI_DispStringAt(pText, TextRectAct.x0, TextRectAct.y0);
 			/* Restore clipping rectangle */
 			WM_SetUserClipRect(pOldClipRect);
 			return;
 		}
 	}
-	GUI_ClearRectEx(pFillRect);
+	GUI_ClearRect(FillRect);
 }

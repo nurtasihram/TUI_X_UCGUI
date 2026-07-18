@@ -423,22 +423,7 @@ static void _Findx1(WM_HWIN hWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 		}
 	}
 }
-/*********************************************************************
-*
-*       WM_GetClientRectEx
-*
-  Get client rectangle in windows coordinates. This means that the
-  upper left corner is always at (0,0).
-*/
-void WM_GetClientRectEx(WM_HWIN hWin, GUI_RECT *pRect) {
-	const WM_Obj *pWin = (const WM_Obj *)hWin;
-	pRect->x0 = pRect->y0 = 0;
-	pRect->x1 = pWin->Rect.x1 - pWin->Rect.x0;
-	pRect->y1 = pWin->Rect.y1 - pWin->Rect.y0;
-}
-static void WM__GetInvalidRectAbs(WM_Obj *pWin, GUI_RECT *pRect) {
-	*pRect = pWin->InvalidRect;
-}
+
 /*********************************************************************
 *
 *       WM_InvalidateRect
@@ -847,7 +832,7 @@ BOOL WM__InitIVRSearch(const GUI_RECT *pMaxRect) {
 	/* When using callback mechanism, it is legal to reduce drawing
 	   area to the invalid area ! */
 	if (WM__PaintCallbackCnt)
-		WM__GetInvalidRectAbs(pAWin, &r);
+		r = pAWin->InvalidRect;
 	else if (pAWin->Status & WM_SF_ISVIS) /* Not using callback mechanism, therefor allow entire rectangle */
 		r = pAWin->Rect;
 	else {
@@ -1231,7 +1216,7 @@ WM_PARAM WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	/* Exec message */
 	switch (MsgId) {
 		case WM_GET_INSIDE_RECT: /* return client window in absolute (screen) coordinates */
-			WM_GetClientRectEx(pWin, (GUI_RECT *)Data);
+			*(GUI_RECT *)Data = WM_GetClientRect(pWin);
 			return 0;
 		case WM_GET_CLIENT_WINDOW: /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
 			return (WM_PARAM)hWin;
@@ -1651,7 +1636,7 @@ static void _ShowInvalid(WM_HWIN hWin) {
 	WM_SelectWindow(hWin);
 	GUI_SetColor(RGB_GREEN);
 	GUI_SetBkColor(RGB_GREEN);
-	GUI_FillRect(rClient.x0, rClient.y0, rClient.x1, rClient.y1);
+	GUI_FillRect(rClient);
 	GUI_Context = Context;
 }
 void WM_SetEnableState(WM_HWIN hWin, int State) {
@@ -1691,14 +1676,47 @@ RGB_COLOR WM_GetBkColor(WM_HWIN hObj) {
 		return (RGB_COLOR)WM_SendMessage(hObj, WM_GET_BKCOLOR, 0);
 	return GUI_INVALID_COLOR;
 }
-void WM_GetClientRect(GUI_RECT *pRect) {
+GUI_RECT WM_GetClientRect() {
 	WM_HWIN hWin;
 #if WM_SUPPORT_TRANSPARENCY
 	hWin = WM__hATransWindow ? WM__hATransWindow : GUI_Context.hAWin;
 #else
 	hWin = GUI_Context.hAWin;
 #endif
-	WM_GetClientRectEx(hWin, pRect);
+	return WM_GetClientRect(hWin);
+}
+/*********************************************************************
+*
+*       WM_GetClientRect (overloaded with WM_HWIN parameter)
+*
+  Get client rectangle in windows coordinates. This means that the
+  upper left corner is always at (0,0).
+*/
+GUI_RECT WM_GetClientRect(WM_HWIN hWin) {
+	GUI_RECT Rect;
+	const WM_Obj *pWin = (const WM_Obj *)hWin;
+	Rect.x0 = Rect.y0 = 0;
+	Rect.x1 = pWin->Rect.x1 - pWin->Rect.x0;
+	Rect.y1 = pWin->Rect.y1 - pWin->Rect.y0;
+	return Rect;
+}
+/*********************************************************************
+*
+*       WM_GetInsideRect (overloaded with WM_HWIN parameter)
+*
+  Purpose:
+	Return the inside rectangle in client coordinates.
+	The inside rectangle is the client rectangle minus the effect,
+	which typically reduces the rectangle by 0 - 3 pixels on either side
+	(2 for the standard 3D effect).
+*/
+GUI_RECT WM_GetInsideRect(WM_HWIN hWin) {
+	GUI_RECT Rect;
+	WM_SendMessage(hWin, WM_GET_INSIDE_RECT, (WM_PARAM)&Rect);
+	return Rect;
+}
+GUI_RECT WM_GetInsideRect() {
+	return WM_GetInsideRect(GUI_Context.hAWin);
 }
 WM_HWIN WM_GetClientWindow(WM_HWIN hObj) {
 	return (WM_HWIN)WM_SendMessage(hObj, WM_GET_CLIENT_WINDOW, 0);
@@ -1755,22 +1773,6 @@ int WM_GetId(WM_HWIN hObj) {
 }
 /*********************************************************************
 *
-*       WM_GetInsideRectEx
-*
-  Purpose:
-	Return the inside rectangle in client coordinates.
-	The inside rectangle is the client rectangle minus the effect,
-	which typically reduces the rectangle by 0 - 3 pixels on either side
-	(2 for the standard 3D effect).
-*/
-void WM_GetInsideRectEx(WM_HWIN hWin, GUI_RECT *pRect) {
-	WM_SendMessage(hWin, WM_GET_INSIDE_RECT, (WM_PARAM)pRect);
-}
-void WM_GetInsideRect(GUI_RECT *pRect) {
-	WM_GetInsideRectEx(GUI_Context.hAWin, pRect);
-}
-/*********************************************************************
-*
 *       WM_GetInsideRectExScrollbar
 *
   Purpose:
@@ -1787,10 +1789,10 @@ void WM_GetInsideRectExScrollbar(WM_HWIN hWin, GUI_RECT *pRect) {
 		if (pRect) {
 			hBarH = WM_GetDialogItem(hWin, GUI_ID_HSCROLL);
 			hBarV = WM_GetDialogItem(hWin, GUI_ID_VSCROLL);
-			WM_GetWindowRectEx(hWin, &rWin);     /* The entire window in screen coordinates */
-			WM_GetInsideRectEx(hWin, &rInside);
+			rWin = WM_GetWindowRect(hWin);     /* The entire window in screen coordinates */
+			rInside = WM_GetInsideRect(hWin);
 			if (hBarV) {
-				WM_GetWindowRectEx(hBarV, &rScrollbar);
+				rScrollbar = WM_GetWindowRect(hBarV);
 				GUI_MoveRect(&rScrollbar, -rWin.x0, -rWin.y0);
 				WinFlags = WM_GetFlags(hBarV);
 				if ((WinFlags & WM_SF_ANCHOR_RIGHT) && (WinFlags & WM_SF_ISVIS)) {
@@ -1798,7 +1800,7 @@ void WM_GetInsideRectExScrollbar(WM_HWIN hWin, GUI_RECT *pRect) {
 				}
 			}
 			if (hBarH) {
-				WM_GetWindowRectEx(hBarH, &rScrollbar);
+				rScrollbar = WM_GetWindowRect(hBarH);
 				GUI_MoveRect(&rScrollbar, -rWin.x0, -rWin.y0);
 				WinFlags = WM_GetFlags(hBarH);
 				if ((WinFlags & WM_SF_ANCHOR_BOTTOM) && (WinFlags & WM_SF_ISVIS)) {
@@ -1888,27 +1890,27 @@ void WM_GetScrollState(WM_HWIN hObj, WM_SCROLL_STATE *pScrollState) {
 *
 * Returns the window rect in screen (desktop) coordinates.
 */
-void WM_GetWindowRect(GUI_RECT *pRect) {
+GUI_RECT WM_GetWindowRect() {
 	WM_HWIN hWin;
-	if (pRect) {
-		WM_Obj *pWin;
+	WM_Obj *pWin;
 #if WM_SUPPORT_TRANSPARENCY
-		hWin = WM__hATransWindow ? WM__hATransWindow : GUI_Context.hAWin;
+	hWin = WM__hATransWindow ? WM__hATransWindow : GUI_Context.hAWin;
 #else
-		hWin = GUI_Context.hAWin;
+	hWin = GUI_Context.hAWin;
 #endif
-		pWin = (WM_Obj *)hWin;
-		*pRect = pWin->Rect;
-	}
+	pWin = (WM_Obj *)hWin;
+	return pWin->Rect;
 }
-void WM_GetWindowRectEx(WM_HWIN hWin, GUI_RECT *pRect) {
-	if (hWin && pRect) {
+GUI_RECT WM_GetWindowRect(WM_HWIN hWin) {
+	GUI_RECT Rect = {};
+	if (hWin) {
 		WM_Obj *pWin;
 		pWin = (WM_Obj *)hWin;
 		if (pWin) {
-			*pRect = pWin->Rect;
+			Rect = pWin->Rect;
 		}
 	}
+	return Rect;
 }
 /*********************************************************************
 *
@@ -2261,8 +2263,8 @@ void WM_SetCaptureMove(WM_HWIN hWin, const GUI_PID_STATE *pState, int MinVisibil
 		else {
 			GUI_RECT Rect, RectParent;
 			/* make sure at least a part of the windows stays inside of its parent */
-			WM_GetWindowRectEx(hWin, &Rect);
-			WM_GetWindowRectEx(WM_GetParent(hWin), &RectParent);
+			Rect = WM_GetWindowRect(hWin);
+			RectParent = WM_GetWindowRect(WM_GetParent(hWin));
 			GUI_MoveRect(&Rect, dx, dy);
 			GUI__ReduceRect(&RectParent, &RectParent, MinVisibility);
 			if (GUI_RectsIntersect(&Rect, &RectParent)) {

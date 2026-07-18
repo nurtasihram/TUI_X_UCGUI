@@ -96,7 +96,6 @@ static void _FreeAttached(DROPDOWN_Obj *pObj) {
 }
 static void _OnPaint(DROPDOWN_Handle hObj) {
 	int Border;
-	GUI_RECT r;
 	const char *s;
 	int InnerSize, ColorIndex;
 	DROPDOWN_Obj *pObj;
@@ -108,7 +107,7 @@ static void _OnPaint(DROPDOWN_Handle hObj) {
 	GUI_SetFont(pObj->Props.pFont);
 	ColorIndex = (pObj->State & WIDGET_STATE_FOCUS) ? 2 : 1;
 	s = _GetpItem(pObj, pObj->Sel);
-	WM_GetClientRect(&r);
+	auto r = WM_GetClientRect();
 	GUI__ReduceRect(&r, &r, Border);
 	InnerSize = r.y1 - r.y0 + 1;
 	/* Draw the 3D effect (if configured) */
@@ -118,20 +117,20 @@ static void _OnPaint(DROPDOWN_Handle hObj) {
 	GUI_SetColor(pObj->Props.aBackColor[ColorIndex]);
 	/* Draw the text */
 	GUI_SetBkColor(pObj->Props.aBackColor[ColorIndex]);
-	GUI_FillRectEx(&r);
+	GUI_FillRect(r);
 	r.x0 += TextBorderSize;
 	r.x1 -= TextBorderSize;
 	GUI_SetColor(pObj->Props.aTextColor[ColorIndex]);
 	GUI_DispStringInRect(s, &r, pObj->Props.Align);/**/
 	/* Draw arrow */
-	WM_GetClientRect(&r);
+	r = WM_GetClientRect();
 	GUI__ReduceRect(&r, &r, Border);
 	r.x0 = r.x1 + 1 - InnerSize;
 	GUI_SetColor(RGB_GRAYL(0xc0));
-	GUI_FillRectEx(&r);
+	GUI_FillRect(r);
 	GUI_SetColor(RGB_BLACK);
 	_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.y1 - r.y0 - 8) / 2);
-	WIDGET__EFFECT_DrawUpRect(pObj, &r);
+	WIDGET__EFFECT_DrawUpRect(pObj, r);
 }
 static void _OnTouch(DROPDOWN_Obj *pObj, const GUI_PID_STATE *pState) {
 	if (pState) { /* Something happened in our area (pressed or released) */
@@ -266,7 +265,7 @@ void DROPDOWN_Expand(DROPDOWN_Handle hObj) {
 		xSize = WM__GetWindowSizeX(pObj);
 		ySize = pObj->ySizeEx;
 		NumItems = _GetNumItems(pObj);
-		WM_GetWindowRectEx(hObj, &r);
+		r = WM_GetWindowRect(hObj);
 		if (pObj->Flags & DROPDOWN_CF_UP) {
 			r.y0 -= ySize;
 		}
