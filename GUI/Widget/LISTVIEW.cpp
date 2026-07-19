@@ -87,10 +87,9 @@ static void _OnPaint(LISTVIEW_Obj *pObj, const GUI_RECT *pClipRect) {
 	yPos = HEADER_GetHeight(pObj->hHeader) + EffectSize;
 	EndRow = pObj->ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
 	/* Calculate clipping rectangle */
-	ClipRect = *pClipRect;
-	GUI_MoveRect(&ClipRect, -pObj->Rect.x0, -pObj->Rect.y0);
+	ClipRect = *pClipRect + GUI_POINT{-pObj->Rect.x0, -pObj->Rect.y0};
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
-	GUI__IntersectRect(&ClipRect, &Rect);
+	ClipRect &= Rect;
 	/* Set drawing color, font and text mode */
 	GUI_SetColor(pObj->Props.aTextColor[0]);
 	GUI_SetFont(pObj->Props.pFont);

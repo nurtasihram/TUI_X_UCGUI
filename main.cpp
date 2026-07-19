@@ -2,7 +2,7 @@
 #include "DIALOG.h"
 #include "DROPDOWN.h"
 
-static BOOL _MultiSel = FALSE, _OwnerDrawn = TRUE;
+static bool _MultiSel = false, _OwnerDrawn = true;
 static WM_HWIN _hMemDevFrame, _hMemDevPane;
 static WM_HWIN _hNoMemDevFrame, _hNoMemDevPane;
 static int _MemDevPhase;

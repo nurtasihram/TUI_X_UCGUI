@@ -25,7 +25,7 @@ CHECKBOX_Obj::Properties CHECKBOX_Obj::DefaultProps {
   CHECKBOX_IMAGE1_DEFAULT
 };
 static void _OnPaint(CHECKBOX_Obj *pObj) {
-	GUI_RECT RectBox = { 0 };
+	GUI_RECT RectBox;
 	int ColorIndex, EffectSize;
 	EffectSize = pObj->pEffect->EffectSize;
 	ColorIndex = WM_IsEnabled(pObj);

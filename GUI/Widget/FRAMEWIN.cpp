@@ -652,7 +652,7 @@ void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
 		int Diff = Size - OldSize;
 		for (auto pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
 			GUI_RECT r = pChild->Rect;
-			GUI_MoveRect(&r, -pObj->Rect.x0, -pObj->Rect.y0);
+			r += GUI_POINT{-pObj->Rect.x0, -pObj->Rect.y0};
 			if ((r.y0 == pObj->Props.BorderSize) && ((r.y1 - r.y0 + 1) == OldHeight)) {
 				if (pChild->Status & WM_SF_ANCHOR_RIGHT)
 					WM_MoveWindow(pChild, -Diff, Diff);
@@ -1166,7 +1166,7 @@ void FRAMEWIN__UpdateButtons(FRAMEWIN_Obj *pObj, int OldHeight) {
 			xRight = GUI_XMIN;
 			for (pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
 				r = pChild->Rect;
-				GUI_MoveRect(&r, -pObj->Rect.x0, -pObj->Rect.y0);
+				r += GUI_POINT{-pObj->Rect.x0, -pObj->Rect.y0};
 				if ((r.y0 == pObj->Props.BorderSize) && ((r.y1 - r.y0 + 1) == OldHeight)) {
 					if (pChild->Status & WM_SF_ANCHOR_RIGHT) {
 						if (r.x1 > xRight) {
@@ -1226,7 +1226,7 @@ static void _DrawClose(void) {
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
 	int Size = r.x1 - r.x0 - 2;
-	WM_ITERATE_START(&r); {
+	WM_ITERATE_START(&r) {
 		for (int i = 2; i < Size; i++) {
 			LCD_DrawHLine(r.x0 + i, r.y0 + i, r.x0 + i + 1);
 			LCD_DrawHLine(r.x1 - i - 1, r.y0 + i, r.x1 - i);
@@ -1243,7 +1243,7 @@ static void _PaintMax(void) {
 	auto r = WM_GetInsideRect();
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	WM_ITERATE_START(&r); {
+	WM_ITERATE_START(&r) {
 		LCD_DrawHLine(r.x0 + 1, r.y0 + 1, r.x1 - 1);
 		LCD_DrawHLine(r.x0 + 1, r.y0 + 2, r.x1 - 1);
 		LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x1 - 1);
@@ -1256,7 +1256,7 @@ static void _DrawRestoreClose(void) {
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
 	int Size = ((r.x1 - r.x0 + 1) << 1) / 3;
-	WM_ITERATE_START(&r); {
+	WM_ITERATE_START(&r) {
 		LCD_DrawHLine(r.x1 - Size, r.y0 + 1, r.x1 - 1);
 		LCD_DrawHLine(r.x1 - Size, r.y0 + 2, r.x1 - 1);
 		LCD_DrawHLine(r.x0 + Size, r.y0 + Size, r.x1 - 1);
@@ -1287,7 +1287,7 @@ static void _PaintMin(void) {
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
 	int Size = (r.x1 - r.x0 + 1) >> 1;
-	WM_ITERATE_START(&r); {
+	WM_ITERATE_START(&r) {
 		for (int i = 1; i < Size; i++)
 			LCD_DrawHLine(r.x0 + i, r.y1 - i - (Size >> 1), r.x1 - i);
 	} WM_ITERATE_END();
@@ -1297,7 +1297,7 @@ static void _DrawRestoreMin(void) {
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
 	int Size = (r.x1 - r.x0 + 1) >> 1;
-	WM_ITERATE_START(&r); {
+	WM_ITERATE_START(&r) {
 		for (int i = 1; i < Size; i++)
 			LCD_DrawHLine(r.x0 + i, r.y0 + i + (Size >> 1), r.x1 - i);
 	} WM_ITERATE_END();

@@ -42,7 +42,7 @@ static void _WIDGET_EFFECT_3D1L_DrawDown(void) {
 }
 static GUI_RECT _WIDGET_EFFECT_3D1L_GetRect() {
   GUI_RECT Rect = WM_GetClientRect();
-  GUI__ReduceRect(&Rect, &Rect, 1);
+  Rect -= 1;
   return Rect;
 }
 void WIDGET_SetDefaultEffect_3D1L(void) {

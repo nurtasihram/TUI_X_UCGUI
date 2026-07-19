@@ -89,7 +89,7 @@ static void _CalcPositions(SCROLLBAR_Obj *pObj, SCROLLBAR_POSITIONS *pPos) {
 		}
 	}
 	/* Convert coordinates of this window */
-	GUI_MoveRect(&r, -x0, -y0);
+	r += GUI_POINT{-x0, -y0};
 	/* Convert real into virtual coordinates */
 	_WIDGET__RECT2VRECT(pObj, &r);
 	NumItems = pObj->NumItems;

@@ -54,7 +54,7 @@ static void _WIDGET_EFFECT_3D_DrawDown(void) {
 }
 static GUI_RECT _WIDGET_EFFECT_3D_GetRect() {
   GUI_RECT Rect = WM_GetClientRect();
-  GUI__ReduceRect(&Rect, &Rect, 2);
+  Rect -= 2;
   return Rect;
 }
 void WIDGET_EFFECT_3D_DrawUp(void) {

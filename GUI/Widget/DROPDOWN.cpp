@@ -108,7 +108,7 @@ static void _OnPaint(DROPDOWN_Handle hObj) {
 	ColorIndex = (pObj->State & WIDGET_STATE_FOCUS) ? 2 : 1;
 	s = _GetpItem(pObj, pObj->Sel);
 	auto r = WM_GetClientRect();
-	GUI__ReduceRect(&r, &r, Border);
+	r -= Border;
 	InnerSize = r.y1 - r.y0 + 1;
 	/* Draw the 3D effect (if configured) */
 	WIDGET__EFFECT_DrawDown(pObj);
@@ -124,7 +124,7 @@ static void _OnPaint(DROPDOWN_Handle hObj) {
 	GUI_DispStringInRect(s, &r, pObj->Props.Align);/**/
 	/* Draw arrow */
 	r = WM_GetClientRect();
-	GUI__ReduceRect(&r, &r, Border);
+	r -= Border;
 	r.x0 = r.x1 + 1 - InnerSize;
 	GUI_SetColor(RGB_GRAYL(0xc0));
 	GUI_FillRect(r);

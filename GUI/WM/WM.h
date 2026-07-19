@@ -208,10 +208,10 @@ void    WM_InvalidateArea(const GUI_RECT *pRect);
 void    WM_InvalidateRect(WM_HWIN hWin, const GUI_RECT *pRect);
 void    WM_Invalidate(WM_HWIN hWin);
 void    WM_InvalidateDescs(WM_HWIN hWin);    /* not to be documented (may change in future version) */
-BOOL    WM_IsEnabled(WM_HWIN hObj);
-BOOL    WM_IsFocussable(WM_HWIN hWin);
-BOOL    WM_IsVisible(WM_HWIN hWin);
-BOOL    WM_IsWindow(WM_HWIN hWin);    /* Check validity */
+bool    WM_IsEnabled(WM_HWIN hObj);
+bool    WM_IsFocussable(WM_HWIN hWin);
+bool    WM_IsVisible(WM_HWIN hWin);
+bool    WM_IsWindow(WM_HWIN hWin);    /* Check validity */
 void    WM_SetHasTrans(WM_HWIN hWin);
 void    WM_SetId(WM_HWIN hObj, int Id);
 void    WM_SetTransState(WM_HWIN hWin, unsigned State);
@@ -314,8 +314,8 @@ WM_PARAM  WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_PARAM Data);
 
 void      WM_SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE *pState);
 void      WM_SetEnableState(WM_HWIN hItem, int State);
-BOOL      WM_HasCaptured(WM_HWIN hWin);
-BOOL      WM_HasFocus(WM_HWIN hWin);
+bool      WM_HasCaptured(WM_HWIN hWin);
+bool      WM_HasFocus(WM_HWIN hWin);
 int       WM_SetFocus(WM_HWIN hWin);
 WM_HWIN   WM_SetFocusOnNextChild(WM_HWIN hParent);     /* Set the focus to the next child */
 WM_HWIN   WM_SetFocusOnPrevChild(WM_HWIN hParent);     /* Set the focus to the previous child */

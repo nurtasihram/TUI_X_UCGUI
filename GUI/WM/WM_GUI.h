@@ -1,8 +1,8 @@
 #pragma once
 
 
-BOOL WM__InitIVRSearch(const GUI_RECT* pMaxRect);
-BOOL WM__GetNextIVR(void);
+bool WM__InitIVRSearch(const GUI_RECT* pMaxRect);
+bool WM__GetNextIVR(void);
 
 #define WM_ITERATE_START(pRect)   \
 	if (WM__InitIVRSearch(pRect)) \

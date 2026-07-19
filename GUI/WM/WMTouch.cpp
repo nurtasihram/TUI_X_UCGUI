@@ -3,10 +3,10 @@
 WM_CRITICAL_HANDLE  WM__CHWinModal;
 WM_CRITICAL_HANDLE  WM__CHWinLast;
 
-static BOOL _IsInModalArea(WM_HWIN hWin) {
+static bool _IsInModalArea(WM_HWIN hWin) {
 	return (!WM__CHWinModal.hWin ||
 		WM__IsAncestor(hWin, WM__CHWinModal.hWin) ||
-		WM__CHWinModal.hWin == hWin) ? TRUE : FALSE;
+		WM__CHWinModal.hWin == hWin) ? true : false;
 }
 
 static void _SendMessageIfEnabled(WM_HWIN hWin, int MsgId, WM_PARAM Data) {

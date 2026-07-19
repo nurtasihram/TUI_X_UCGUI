@@ -233,7 +233,7 @@ static void _DrawTextItem(MULTIPAGE_Obj *pObj, const char *pText, unsigned Index
 	r.x0 += x0;
 	r.x1 = r.x0 + w;
 	WIDGET__EFFECT_DrawUpRect(pObj, r);
-	GUI__ReduceRect(&r, &r, pObj->pEffect->EffectSize);
+	r -= pObj->pEffect->EffectSize;
 	if (pObj->Selection == Index) {
 		if (pObj->Align & MULTIPAGE_ALIGN_BOTTOM) {
 			r.y0 -= pObj->pEffect->EffectSize + 1;

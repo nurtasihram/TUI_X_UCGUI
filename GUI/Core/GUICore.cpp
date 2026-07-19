@@ -134,32 +134,30 @@ void GUI_Clear(void) {
 void GUI_FillRect(GUI_RECT r) {
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	WM_ITERATE_START(&r); {
+	WM_ITERATE_START(&r) {
 		LCD_FillRect(r.x0, r.y0, r.x1, r.y1);
 	} WM_ITERATE_END();
 }
 void GUI_DrawRect(GUI_RECT r) {
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	WM_ITERATE_START(&r); {
+	WM_ITERATE_START(&r) {
 		LCD_DrawHLine(r.x0, r.y0, r.x1);
 		LCD_DrawHLine(r.x0, r.y1, r.x1);
 		LCD_DrawVLine(r.x0, r.y0 + 1, r.y1 - 1);
 		LCD_DrawVLine(r.x1, r.y0 + 1, r.y1 - 1);
 	} WM_ITERATE_END();
 }
-void GUI_DrawFocusRect(GUI_RECT Rect, int Dist) {
-	GUI_RECT r;
-	GUI__ReduceRect(&r, &Rect, Dist);
+void GUI_DrawFocusRect(GUI_RECT r, int Dist) {
+	r -= Dist;
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	WM_ITERATE_START(&r); {
-		int i;
-		for (i = r.x0; i <= r.x1; i += 2) {
+	WM_ITERATE_START(&r) {
+		for (int i = r.x0; i <= r.x1; i += 2) {
 			LCD_DrawPixel(i, r.y0);
 			LCD_DrawPixel(i, r.y1);
 		}
-		for (i = r.y0; i <= r.y1; i += 2) {
+		for (int i = r.y0; i <= r.y1; i += 2) {
 			LCD_DrawPixel(r.x0, i);
 			LCD_DrawPixel(r.x1, i);
 		}
@@ -172,7 +170,7 @@ void GUI_DrawVLine(int x0, int y0, int y1) {
 	r.x1 = r.x0 = x0;
 	r.y0 = y0;
 	r.y1 = y1;
-	WM_ITERATE_START(&r); {
+	WM_ITERATE_START(&r) {
 		LCD_DrawVLine(x0, y0, y1);
 	} WM_ITERATE_END();
 
@@ -711,7 +709,8 @@ void GUI_DispStringInRectMax(const char *s, GUI_RECT *pRect, int TextAlign, int 
 		if (pRect) {
 			pOldClipRect = WM_SetUserClipRect(pRect);
 			if (pOldClipRect) {
-				GUI__IntersectRects(&r, pRect, pOldClipRect);
+				r = *pRect;
+				r &= *pOldClipRect;
 				WM_SetUserClipRect(&r);
 			}
 		}
@@ -765,40 +764,38 @@ void GL_DispChar(uint16_t c) {
 #pragma endregion
 
 #pragma region Text operators
-BOOL GUI__SetText(char **ppText, const char *s) {
+bool GUI__SetText(char **ppText, const char *s) {
 	if (!ppText)
-		return FALSE;
+		return false;
 	if (!s) {
 		if (*ppText) 
 			GUI_ALLOC_Free(*ppText);
 		*ppText = NULL;
-		return TRUE;
+		return true;
 	}
-	if (GUI__strcmp(*ppText, s) == 0) 
-		return FALSE;	
+	if (!GUI__strcmp(*ppText, s)) 
+		return false;	
 	char *pNewText = (char *)GUI_ALLOC_AllocNoInit(GUI__strlen(s) + 1);
 	if (!pNewText) 
-		return FALSE;
+		return false;
 	GUI__strcpy(pNewText, s);
 	GUI_ALLOC_Free(*ppText);
 	*ppText = pNewText;
-	return TRUE;
+	return true;
 }
-int GUI__strcmp(const char *s0, const char *s1) {
+bool GUI__strcmp(const char *s0, const char *s1) {
 	if (s0 == NULL)
 		s0 = "";
 	if (s1 == NULL)
 		s1 = "";
 	do {
-		if (*s0 != *s1) {
-			return 1;
-		}
+		if (*s0 != *s1)
+			return true;
 		s1++;
 	} while (*++s0);
-	if (*s1) {
-		return 1;    /* Not equal, since s1 is longer than s0 */
-	}
-	return 0;      /* Equal ! */
+	if (*s1)
+		return true;    /* Not equal, since s1 is longer than s0 */
+	return false;      /* Equal ! */
 }
 int GUI__strlen(const char *s) {
 	int r = -1;
@@ -965,40 +962,6 @@ int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, GUI_WRAPMODE Wr
 #define MIN(v0,v1) ((v0>v1) ? v1 : v0)
 #define MAX(v0,v1) ((v0>v1) ? v0 : v1)
 
-int GUI__IntersectRects(GUI_RECT *pDest, const GUI_RECT *pr0, const GUI_RECT *pr1) {
-	pDest->x0 = MAX(pr0->x0, pr1->x0);
-	pDest->y0 = MAX(pr0->y0, pr1->y0);
-	pDest->x1 = MIN(pr0->x1, pr1->x1);
-	pDest->y1 = MIN(pr0->y1, pr1->y1);
-	if (pDest->x1 < pDest->x0) {
-		return 0;
-	}
-	if (pDest->y1 < pDest->y0) {
-		return 0;
-	}
-	return 1;
-}
-
-void GUI_MergeRect(GUI_RECT *pDest, const GUI_RECT *pr0, const GUI_RECT *pr1) {
-	if (pDest) {
-		if (pr0 && pr1) {
-			pDest->x0 = MIN(pr0->x0, pr1->x0);
-			pDest->y0 = MIN(pr0->y0, pr1->y0);
-			pDest->x1 = MAX(pr0->x1, pr1->x1);
-			pDest->y1 = MAX(pr0->y1, pr1->y1);
-			return;
-		}
-		*pDest = *(pr0 ? pr0 : pr1);
-	}
-}
-void GUI_MoveRect(GUI_RECT *pRect, int dx, int dy) {
-	if (pRect) {
-		pRect->x0 += dx;
-		pRect->x1 += dx;
-		pRect->y0 += dy;
-		pRect->y1 += dy;
-	}
-}
 int GUI_RectsIntersect(const GUI_RECT *pr0, const GUI_RECT *pr1) {
 	if (pr0->y0 <= pr1->y1) {
 		if (pr1->y0 <= pr0->y1) {
@@ -1011,26 +974,43 @@ int GUI_RectsIntersect(const GUI_RECT *pr0, const GUI_RECT *pr1) {
 	}
 	return 0;
 }
-void GUI__IntersectRect(GUI_RECT *pDest, const GUI_RECT *pr0) {
-	if (pDest->x0 < pr0->x0) {
-		pDest->x0 = pr0->x0;
-	}
-	if (pDest->y0 < pr0->y0) {
-		pDest->y0 = pr0->y0;
-	}
-	if (pDest->x1 > pr0->x1) {
-		pDest->x1 = pr0->x1;
-	}
-	if (pDest->y1 > pr0->y1) {
-		pDest->y1 = pr0->y1;
-	}
+
+GUI_RECT& GUI_RECT::operator+=(const GUI_POINT& pt) {
+	x0 += pt.x, y0 += pt.y, x1 += pt.x, y1 += pt.y;
+	return *this;
 }
-void GUI__ReduceRect(GUI_RECT *pDest, const GUI_RECT *pRect, int Dist) {
-	pDest->x0 = pRect->x0 + Dist;
-	pDest->x1 = pRect->x1 - Dist;
-	pDest->y0 = pRect->y0 + Dist;
-	pDest->y1 = pRect->y1 - Dist;
+GUI_RECT GUI_RECT::operator+(const GUI_POINT& pt) const
+{ return{ x0 + pt.x, y0 + pt.y, x1 + pt.x, y1 + pt.y }; }
+
+GUI_RECT& GUI_RECT::operator-=(int dist) {
+	x0 += dist, y0 += dist, x1 -= dist, y1 -= dist;
+	return *this;
 }
+GUI_RECT GUI_RECT::operator-(int dist) const
+{ return{ x0 + dist, y0 + dist, x1 - dist, y1 - dist }; }
+
+GUI_RECT& GUI_RECT::operator&=(const GUI_RECT& r) {
+	x0 = MAX(x0, r.x0);
+	y0 = MAX(y0, r.y0);
+	x1 = MIN(x1, r.x1);
+	y1 = MIN(y1, r.y1);
+	return *this;
+}
+GUI_RECT GUI_RECT::operator&(const GUI_RECT& r) const
+{ return{ MAX(x0, r.x0), MAX(y0, r.y0), MIN(x1, r.x1), MIN(y1, r.y1) }; }
+
+GUI_RECT& GUI_RECT::operator|=(const GUI_RECT& r) {
+	x0 = MIN(x0, r.x0);
+	y0 = MIN(y0, r.y0);
+	x1 = MAX(x1, r.x1);
+	y1 = MAX(y1, r.y1);
+	return *this;
+}
+GUI_RECT GUI_RECT::operator|(const GUI_RECT& r) const
+{ return{ MIN(x0, r.x0), MIN(y0, r.y0), MAX(x1, r.x1), MAX(y1, r.y1) }; }
+
+GUI_RECT::operator bool() const
+{ return x0 <= x1 && y0 <= y1; }
 #pragma endregion
 
 /*********************************************************************

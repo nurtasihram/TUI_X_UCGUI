@@ -54,7 +54,7 @@ static void _OnPaint(BUTTON_Obj *pObj) {
 			GUI_DrawRect({rClient.x0, rClient.y0, rClient.x1, rClient.y1});
 			EffectSize = 1;
 		}
-		GUI__ReduceRect(&rInside, &rInside, EffectSize);
+		rInside -= EffectSize;
 	}
 #endif
 	/* Draw background */
@@ -79,7 +79,7 @@ static void _OnPaint(BUTTON_Obj *pObj) {
 		r = rInside;
 #if BUTTON_USE_3D
 		if (PressedState) {
-			GUI_MoveRect(&r, BUTTON_3D_MOVE_X, BUTTON_3D_MOVE_Y);
+			r += GUI_POINT{BUTTON_3D_MOVE_X, BUTTON_3D_MOVE_Y};
 		}
 #endif
 		GUI_SetTextMode(DRAWMODE_TRANS);

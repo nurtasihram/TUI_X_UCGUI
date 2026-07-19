@@ -436,10 +436,9 @@ static void _OnPaint(LISTBOX_Obj *pObj, const GUI_RECT *pClipRect) {
 	NumItems = LISTBOX__GetNumItems(pObj);
 	GUI_SetFont(pObj->Props.pFont);
 	/* Calculate clipping rectangle */
-	ClipRect = *pClipRect;
-	GUI_MoveRect(&ClipRect, -pObj->Rect.x0, -pObj->Rect.y0);
+	ClipRect = *pClipRect + GUI_POINT{-pObj->Rect.x0, -pObj->Rect.y0};
 	WM_GetInsideRectExScrollbar(pObj, &RectInside);
-	GUI__IntersectRect(&ClipRect, &RectInside);
+	ClipRect &= RectInside;
 	RectItem.x0 = ClipRect.x0;
 	RectItem.x1 = ClipRect.x1;
 	/* Fill item info structure */

@@ -82,7 +82,7 @@ RGB_COLOR WIDGET__GetBkColor(WM_HWIN hObj) {
 }
 GUI_RECT WIDGET__GetInsideRect(WIDGET *pWidget) {
 	GUI_RECT Rect = WM_GetClientRect(pWidget);
-	GUI__ReduceRect(&Rect, &Rect, pWidget->pEffect->EffectSize);
+	Rect -= pWidget->pEffect->EffectSize;
 	return Rect;
 }
 int WIDGET__GetXSize(const WIDGET *pWidget) {

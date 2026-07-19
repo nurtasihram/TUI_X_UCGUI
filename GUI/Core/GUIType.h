@@ -5,10 +5,6 @@
 #include "LCD.h"
 #include "GUIConf.h"
 
-typedef int BOOL;
-#define TRUE 1
-#define FALSE 0
-
 typedef const char *GUI_ConstString;
 
 typedef struct {

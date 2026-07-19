@@ -19,7 +19,7 @@ const GUI_LOGPALETTE GUI_CursorPalI = {
 static int _AllocSize;
 static void *_pBuffer = NULL;
 static GUI_RECT _Rect;
-static BOOL _CursorIsVis = FALSE, _CursorOn = FALSE;
+static bool _CursorIsVis = false, _CursorOn = false;
 static const GUI_CURSOR *_pCursor = NULL;
 static uint8_t _CursorDeActCnt = 0;
 static int16_t _x, _y; /* Position of hot spot */
@@ -105,25 +105,25 @@ static void _Hide(void) {
 
 void GUI_CURSOR__TempShow(void) {
 	if (_CursorOn && !_CursorDeActCnt) {
-		_CursorIsVis = TRUE;
+		_CursorIsVis = true;
 		_Draw();
 	}
 }
 
-BOOL GUI_CURSOR__TempHide(const GUI_RECT *pRect) {
+bool GUI_CURSOR__TempHide(const GUI_RECT *pRect) {
 	if (!_CursorIsVis)
-		return FALSE; /* Cursor not visible -> nothing to do */
+		return false; /* Cursor not visible -> nothing to do */
 	if (!pRect || GUI_RectsIntersect(pRect, &_Rect)) {
 		_Hide(); /* Cursor needs to be hidden */
-		return TRUE;
+		return true;
 	}
-	return FALSE; /* Cursor not affected -> nothing to do */
+	return false; /* Cursor not affected -> nothing to do */
 }
 
 void GUI_CURSOR_Show(void) {
 	LCDDEV_L0_GetRect(&_ClipRect);
 	_Hide();
-	_CursorOn = TRUE;
+	_CursorOn = true;
 	if (!_pCursor)
 		GUI_CURSOR_Select(GUI_DEFAULT_CURSOR);
 	else
@@ -131,7 +131,7 @@ void GUI_CURSOR_Show(void) {
 }
 void GUI_CURSOR_Hide(void) {
 	_Hide();
-	_CursorOn = FALSE;
+	_CursorOn = false;
 }
 void GUI_CURSOR_Activate(void) {
 	if (!--_CursorDeActCnt)
@@ -157,7 +157,7 @@ const GUI_CURSOR *GUI_CURSOR_Select(const GUI_CURSOR *pCursor) {
 			_pBuffer = 0;
 		}
 		_pBuffer = GUI_ALLOC_AllocZero(AllocSize);
-		_CursorOn = TRUE;
+		_CursorOn = true;
 		_pCursor = pCursor;
 		_CalcRect();
 		GUI_CURSOR__TempShow();

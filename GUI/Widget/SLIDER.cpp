@@ -23,7 +23,7 @@ static void _OnPaint(SLIDER_Obj *pObj) {
 	GUI_RECT r, rFocus, rSlider, rSlot;
 	int x0, xsize, i, Range, NumTicks;
 	rFocus = WIDGET__GetClientRect(pObj);
-	GUI__ReduceRect(&r, &rFocus, 1);
+	r = rFocus - 1;
 	NumTicks = pObj->NumTicks;
 	xsize = r.x1 - r.x0 + 1 - pObj->Width;
 	x0 = r.x0 + pObj->Width / 2;

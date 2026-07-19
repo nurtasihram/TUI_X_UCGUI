@@ -579,7 +579,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 	int EffectSize = _GetEffectSize(pObj);
 	NumItems = MENU__GetNumItems(pObj);
 	FillRect = WM_GetClientRect(pObj);
-	GUI__ReduceRect(&FillRect, &FillRect, EffectSize);
+	FillRect -= EffectSize;
 	GUI_SetFont(pObj->Props.pFont);
 	if (pObj->Flags & MENU_SF_VERTICAL) {
 		int ItemHeight, xSize;
@@ -633,7 +633,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 	}
 	if (pObj->Width || pObj->Height) {
 		GUI_RECT r = WM_GetClientRect(pObj);
-		GUI__ReduceRect(&r, &r, EffectSize);
+		r -= EffectSize;
 		GUI_SetBkColor(pObj->Props.aBkColor[MENU_CI_ENABLED]);
 		GUI_ClearRect({ FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1 });
 		GUI_ClearRect({ EffectSize, FillRect.y1 + 1, r.x1, r.y1 });

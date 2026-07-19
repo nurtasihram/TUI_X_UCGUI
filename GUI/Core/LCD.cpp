@@ -14,7 +14,7 @@ void LCD_L0_GetRect(GUI_RECT *pRect) {
 void LCD_SetClipRectEx(const GUI_RECT *pRect) {
 	GUI_RECT r;
 	LCDDEV_L0_GetRect(&r);
-	GUI__IntersectRects(&GUI_Context.ClipRect, pRect, &r);
+	GUI_Context.ClipRect = *pRect & r;
 }
 
 #define RETURN_IF_Y_OUT() \

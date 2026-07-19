@@ -44,7 +44,7 @@ static void _OnPaint(RADIO_Obj *pObj) {
 	const GUI_BITMAP *pBmCheck;
 	const char *pText;
 	GUI_FONTINFO FontInfo;
-	GUI_RECT Rect, r, rFocus = { 0 };
+	GUI_RECT Rect, r, rFocus;
 	int i, y, HasFocus, FontDistY;
 	uint16_t SpaceAbove, CHeight, FocusBorder;
 	/* Init some data */
@@ -100,7 +100,7 @@ static void _OnPaint(RADIO_Obj *pObj) {
 			if (*pText) {
 				r = Rect;
 				r.x1 = r.x0 + GUI_GetStringDistX(pText) - 2;
-				GUI_MoveRect(&r, 0, y);
+				r += GUI_POINT{0, y};
 				GUI_DispStringAt(pText, r.x0, r.y0 - SpaceAbove);
 				/* Calculate focus rect */
 				if (HasFocus && (pObj->Sel == i)) {

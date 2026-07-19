@@ -10,8 +10,34 @@
 typedef int GUI_DRAWMODE;
 typedef uint32_t RGB_COLOR;
 
-struct GUI_POINT { int16_t x = 0, y = 0; };
-struct GUI_RECT { int16_t x0 = 0, y0 = 0, x1 = 0, y1 = 0; };
+struct GUI_POINT {
+	int16_t x = 0, y = 0;
+
+	GUI_POINT() {}
+	GUI_POINT(int x, int y) :
+		x(x), y(y) {}
+};
+struct GUI_RECT { 
+	int16_t x0 = 0, y0 = 0, x1 = 0, y1 = 0;
+
+	GUI_RECT() {}
+	GUI_RECT(int x0, int y0, int x1, int y1) :
+		x0(x0), y0(y0), x1(x1), y1(y1) {}
+
+	GUI_RECT& operator+=(const GUI_POINT& pt);
+	GUI_RECT operator+(const GUI_POINT& pt) const;
+
+	GUI_RECT& operator-=(int dist);
+	GUI_RECT operator-(int dist) const;
+
+	GUI_RECT& operator&=(const GUI_RECT& r);
+	GUI_RECT operator&(const GUI_RECT& r) const;
+
+	GUI_RECT& operator|=(const GUI_RECT& r);
+	GUI_RECT operator|(const GUI_RECT& r) const;
+
+	explicit operator bool() const;
+};
 
 typedef struct {
 	int  NumEntries;

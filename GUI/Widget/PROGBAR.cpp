@@ -95,7 +95,7 @@ static void _OnPaint(PROGBAR_Obj *pObj) {
 	char ac[5];
 	int xPos;
 	auto rClient = WM_GetClientRect();
-	GUI__ReduceRect(&rInside, &rClient, pObj->pEffect->EffectSize);
+	rInside = rClient - pObj->pEffect->EffectSize;
 	xPos = _Value2X(pObj, pObj->v);
 	pText = _GetText(pObj, ac);
 	GUI_SetFont(pObj->pFont);
@@ -187,10 +187,10 @@ void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
 				GUI_RECT rText;
 				pOldFont = GUI_SetFont(pObj->pFont);
 				_GetTextRect(pObj, &rText, _GetText(pObj, acBuffer));
-				GUI_MergeRect(&r, &r, &rText);
+				r |= rText;
 				pObj->v = v;
 				_GetTextRect(pObj, &rText, _GetText(pObj, acBuffer));
-				GUI_MergeRect(&r, &r, &rText);
+				r |= rText;
 				GUI_SetFont(pOldFont);
 			}
 			else {
@@ -244,11 +244,10 @@ void PROGBAR_SetText(PROGBAR_Handle hObj, const char *s) {
 		if (GUI__SetText(&pObj->pText, s)) {
 			GUI_RECT r2;
 			_GetTextRect(pObj, &r2, _GetText(pObj, acBuffer));
-			GUI_MergeRect(&r1, &r1, &r2);
+			r1 |= r2;
 			WM_InvalidateRect(hObj, &r1);
 		}
 		GUI_SetFont(pOldFont);
-
 	}
 }
 void PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align) {

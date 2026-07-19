@@ -60,8 +60,10 @@ void GUI__CalcTextRect(const char *pText, const GUI_RECT *pTextRectIn, GUI_RECT 
 int GUI__WrapGetNumCharsDisp(const char *pText, int xSize, GUI_WRAPMODE WrapMode);
 int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, GUI_WRAPMODE WrapMode);
 int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, GUI_WRAPMODE WrapMode);
+
+bool GUI__SetText(char **ppText, const char *s);
+bool GUI__strcmp(const char *s0, const char *s1);
 int GUI__strlen(const char *s);
-int GUI__strcmp(const char *s0, const char *s1);
 int GUI__strcpy(char *sDest, const char *sSrc);
 
 void GL_DispChar(uint16_t c);

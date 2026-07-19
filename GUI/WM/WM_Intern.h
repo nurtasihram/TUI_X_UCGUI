@@ -68,7 +68,7 @@ extern WM_CRITICAL_HANDLE     WM__CHWinModal;
 extern WM_CRITICAL_HANDLE     WM__CHWinLast;
 
 void    WM__ActivateClipRect        (void);
-BOOL    WM__ClipAtParentBorders     (GUI_RECT* pRect, WM_HWIN hWin);
+bool    WM__ClipAtParentBorders     (GUI_RECT& r, WM_HWIN hWin);
 void    WM__Client2Screen           (const WM_Obj* pWin, GUI_RECT *pRect);
 void    WM__DetachWindow            (WM_HWIN hChild);
 void    WM__ForEachDesc(WM_HWIN hWin, WM_tfForEach * pcb, void * pData);
@@ -81,15 +81,13 @@ int     WM__GetWindowSizeY          (const WM_Obj* pWin);
 void    WM__InsertWindowIntoList    (WM_HWIN hWin, WM_HWIN hParent);
 void    WM__InvalidateAreaBelow     (const GUI_RECT* pRect, WM_HWIN StopWin);
 void    WM__InvalidateTransAreaAbove(const GUI_RECT* pRect, WM_HWIN StopWin);
-int     WM__IntersectRect           (GUI_RECT* pDest, const GUI_RECT* pr0, const GUI_RECT* pr1);
-BOOL    WM__IsAncestor              (WM_HWIN hChild, WM_HWIN hParent);
-BOOL    WM__IsAncestorOrSelf        (WM_HWIN hChild, WM_HWIN hParent);
-BOOL    WM__IsChild                 (WM_HWIN hWin, WM_HWIN hParent);
-BOOL    WM__IsInModalArea           (WM_HWIN hWin);
-BOOL    WM__IsInWindow              (WM_Obj * pWin, int x, int y);
+bool    WM__IsAncestor              (WM_HWIN hChild, WM_HWIN hParent);
+bool    WM__IsAncestorOrSelf        (WM_HWIN hChild, WM_HWIN hParent);
+bool    WM__IsChild                 (WM_HWIN hWin, WM_HWIN hParent);
+bool    WM__IsInModalArea           (WM_HWIN hWin);
+bool    WM__IsInWindow              (WM_Obj * pWin, int x, int y);
 void    WM__LeaveIVRSearch          (void);
 void    WM__NotifyVisChanged        (WM_HWIN hWin, GUI_RECT * pRect);
-BOOL    WM__RectIsNZ                (const GUI_RECT* pr);
 void    WM__RemoveWindowFromList    (WM_HWIN hWin);
 void    WM__RemoveFromLinList       (WM_HWIN hWin);
 void    WM__Screen2Client           (const WM_Obj* pWin, GUI_RECT *pRect);
@@ -100,7 +98,7 @@ WM_PARAM WM__SendMessage             (WM_HWIN hWin, int MsgId, WM_PARAM Data);
 
 void    WM_PID__GetPrevState        (GUI_PID_STATE* pPrevState);
 
-uint16_t     WM_GetFlags(WM_HWIN hWin);
+uint16_t WM_GetFlags(WM_HWIN hWin);
 void    WM__PaintWinAndOverlays     (WM_Obj *pWin);
 
 void    WM__AddCriticalHandle       (WM_CRITICAL_HANDLE* pCH);

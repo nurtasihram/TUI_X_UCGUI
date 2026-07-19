@@ -198,15 +198,8 @@ void         GUI_SaveContext(GUI_CONTEXT *pContext);
 void         GUI_RestoreContext(const GUI_CONTEXT *pContext);
 
 int  GUI_RectsIntersect(const GUI_RECT *pr0, const GUI_RECT *pr1);
-void GUI_MoveRect(GUI_RECT *pRect, int x, int y);
-void GUI_MergeRect(GUI_RECT *pDest, const GUI_RECT *pr0, const GUI_RECT *pr1);
-int  GUI__IntersectRects(GUI_RECT *pDest, const GUI_RECT *pr0, const GUI_RECT *pr1);
-void GUI__IntersectRect(GUI_RECT *pDest, const GUI_RECT *pr0);
-void GUI__ReduceRect(GUI_RECT *pDest, const GUI_RECT *pRect, int Dist);
 
 int  GUI__DivideRound(int a, int b);
-int  GUI__SetText(char **ppText, const char *s);
-int GUI__strcmp(const char *s0, const char *s1);
 
 RGB_COLOR GUI_GetBkColor(void);
 RGB_COLOR GUI_GetColor(void);
@@ -242,7 +235,7 @@ const GUI_CURSOR * GUI_CURSOR_Select(const GUI_CURSOR *pCursor);
 void               GUI_CURSOR_Show(void);
 void               GUI_CURSOR_Hide(void);
 void               GUI_CURSOR__TempShow(void);
-BOOL               GUI_CURSOR__TempHide(const GUI_RECT *pRect);
+bool               GUI_CURSOR__TempHide(const GUI_RECT *pRect);
 #endif
 
 extern const GUI_CURSOR GUI_CursorArrowS, GUI_CursorArrowSI;
