@@ -6,33 +6,40 @@
 
 struct FRAMEWIN_Obj : public WIDGET {
 	struct Properties {
-		const GUI_FONT *pFont;
-		RGB_COLOR  aBarColor[2];
-		RGB_COLOR  aTextColor[2];
-		RGB_COLOR  ClientColor;
-		int16_t    TitleHeight;
-		int16_t    BorderSize;
-		int16_t    IBorderSize;
-	} Props;
-	static Properties DefaultProps;
+		const GUI_FONT *pFont{ &GUI_Font13_1 };
+		RGB_COLOR aTextColor[2]{
+			/* Lose focused */	RGB_BLACK,
+			/* Focused */		RGB_WHITE
+		};
+		RGB_COLOR aBarColor[2]{
+			/* Lose focused */	RGB_GRAYL(0x80),
+			/* Focused */		RGB_BLUEL(0x80)
+		};
+		RGB_COLOR ClientColor{ RGB_GRAYL(0xE4) };
+		RGB_COLOR FrameColor{ RGB_GRAYL(0xAA) };
+		uint16_t TitleHeight{ 20 };
+		uint16_t BorderSize{ 2 };
+		uint16_t IBorderSize{ 1 };
+		TEXTALIGN Align{ TEXTALIGN_VCENTER };
+		uint8_t Border{ 0 };
+	} static DefaultProps;
+	Properties Props;
 	WM_CALLBACK *cb;
 	WM_HWIN hClient;
 	WM_HWIN hMenu;
 	char *pText;
 	GUI_RECT rRestore;
-	int16_t TextAlign;
 	uint16_t Flags;
-	WM_HWIN hFocussedChild;          /* Handle to focussed child .. default none (0) */
+	WM_HWIN hFocussedChild; /* Handle to focussed child .. default none (0) */
 	WM_DIALOG_STATUS *pDialogStatus;
 };
 
-typedef struct {
+struct POSITIONS {
 	int16_t TitleHeight;
 	int16_t MenuHeight;
 	GUI_RECT rClient;
 	GUI_RECT rTitleText;
-} POSITIONS;
-
+} ;
 
 void            FRAMEWIN__CalcPositions(FRAMEWIN_Obj *pObj, POSITIONS *pPos);
 int             FRAMEWIN__CalcTitleHeight(FRAMEWIN_Obj *pObj);

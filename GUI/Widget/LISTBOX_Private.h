@@ -8,27 +8,35 @@
 #define LISTBOX_ITEM_SELECTED (1 << 0)
 #define LISTBOX_ITEM_DISABLED (1 << 1)
 
-typedef struct {
+struct LISTBOX_ITEM {
 	uint16_t xSize, ySize;
 	uint8_t Status;
 	char acText[1];
-} LISTBOX_ITEM;
-
+};
 
 struct LISTBOX_Obj : public WIDGET {
 	struct Properties {
-		const GUI_FONT *pFont;
-		uint16_t ScrollStepH;
-		RGB_COLOR aBackColor[4];
-		RGB_COLOR aTextColor[4];
-	} Props;
-	static Properties DefaultProps;
+		const GUI_FONT *pFont{ &GUI_Font13_1 };
+		RGB_COLOR aBkColor[4]{
+			/* Unselect */			RGB_WHITE,
+			/* Selected */			RGB_GRAY,
+			/* Selected focussed */	RGB_DARKBLUE,
+			/* Disabled */			RGB_GRAYL(0xC0)
+		};
+		RGB_COLOR aTextColor[4]{
+			/* Unselect */			RGB_BLACK,
+			/* Selected */			RGB_WHITE,
+			/* Selected focussed */	RGB_WHITE,
+			/* Disabled */			RGB_GRAY
+		};
+		uint8_t ScrollStepH{ 10 };
+	} static DefaultProps;
+	Properties Props;
 	GUI_ARRAY ItemArray;
 	WIDGET_DRAW_ITEM_FUNC *pfDrawItem;
-	WM_SCROLL_STATE ScrollStateV;
-	WM_SCROLL_STATE ScrollStateH;
+	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
 	WM_HWIN hOwner;
-	int16_t Sel;                        /* current selection */
+	int16_t Sel; /* current selection */
 	uint8_t Flags;
 	uint8_t  ScrollbarWidth;
 	uint16_t ItemSpacing;

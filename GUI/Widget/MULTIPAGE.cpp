@@ -4,8 +4,6 @@
 #include "MULTIPAGE.h"
 #include "MULTIPAGE_Private.h"
 
-#define MAX(a, b)	((a > b) ? a : b)
-
 /* Define default fonts */
 #define MULTIPAGE_FONT_DEFAULT        &GUI_Font13_1
 #define MULTIPAGE_ALIGN_DEFAULT       (MULTIPAGE_ALIGN_LEFT | MULTIPAGE_ALIGN_TOP)
@@ -211,7 +209,7 @@ static void _UpdatePositions(MULTIPAGE_Obj *pObj) {
 		/* A scrollbar is required so we add one to the multipage */
 		_AddScrollbar(pObj, x0, y0, 2 * Size, Size);
 		_GetTextRect(pObj, &rText);
-		while (Width >= MAX((rText.x1 - rText.x0 + 1), 1)) {
+		while (Width >= Max((rText.x1 - rText.x0 + 1), 1)) {
 			Width -= _GetPageSizeX(pObj, NumItems++);
 		}
 		_SetScrollbar(pObj, NumItems + 1);
@@ -290,7 +288,7 @@ static void _OnPaint(MULTIPAGE_Obj *pObj) {
 			w = GUI_GetStringDistX(&pPage->acText) + 10;
 			_DrawTextItem(pObj, &pPage->acText, i, &rText, x0, w, (pPage->Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0);
 		}
-		WM_SetUserClipRect(NULL);
+		WM_SetUserClipRect(nullptr);
 	}
 }
 static int _ClickedOnMultipage(MULTIPAGE_Obj *pObj, int x, int y) {
@@ -663,40 +661,4 @@ MULTIPAGE_Handle MULTIPAGE_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateI
 	hThis = MULTIPAGE_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
 							   hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 	return hThis;
-}
-unsigned MULTIPAGE_GetDefaultAlign(void) {
-	return MULTIPAGE__DefaultAlign;
-}
-RGB_COLOR MULTIPAGE_GetDefaultBkColor(unsigned Index) {
-	RGB_COLOR Color = GUI_INVALID_COLOR;
-	if (Index < GUI_COUNTOF(MULTIPAGE__DefaultBkColor)) {
-		Color = MULTIPAGE__DefaultBkColor[Index];
-	}
-	return Color;
-}
-const GUI_FONT *MULTIPAGE_GetDefaultFont(void) {
-	return MULTIPAGE__pDefaultFont;
-}
-RGB_COLOR MULTIPAGE_GetDefaultTextColor(unsigned Index) {
-	RGB_COLOR Color = GUI_INVALID_COLOR;
-	if (Index < GUI_COUNTOF(MULTIPAGE__DefaultTextColor)) {
-		Color = MULTIPAGE__DefaultTextColor[Index];
-	}
-	return Color;
-}
-void MULTIPAGE_SetDefaultAlign(unsigned Align) {
-	MULTIPAGE__DefaultAlign = Align;
-}
-void MULTIPAGE_SetDefaultBkColor(RGB_COLOR Color, unsigned Index) {
-	if (Index < GUI_COUNTOF(MULTIPAGE__DefaultBkColor)) {
-		MULTIPAGE__DefaultBkColor[Index] = Color;
-	}
-}
-void MULTIPAGE_SetDefaultFont(const GUI_FONT *pFont) {
-	MULTIPAGE__pDefaultFont = pFont;
-}
-void MULTIPAGE_SetDefaultTextColor(RGB_COLOR Color, unsigned Index) {
-	if (Index < GUI_COUNTOF(MULTIPAGE__DefaultTextColor)) {
-		MULTIPAGE__DefaultTextColor[Index] = Color;
-	}
 }

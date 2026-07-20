@@ -774,7 +774,7 @@ void MENU_AddItem(MENU_Handle hObj, const MENU_ITEM_DATA *pItemData) {
 	if (hObj && pItemData) {
 		MENU_Obj *pObj = (MENU_Obj *)hObj;
 		if (pObj) {
-			if (GUI_ARRAY_AddItem(&pObj->ItemArray, NULL, 0) == 0) {
+			if (GUI_ARRAY_AddItem(&pObj->ItemArray, nullptr, 0) == 0) {
 				unsigned Index;
 				Index = MENU__GetNumItems(pObj) - 1;
 				if (MENU__SetItem(pObj, Index, pItemData) == 0) {
@@ -818,55 +818,6 @@ MENU_Handle MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HW
 	hMenu = MENU_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
 						  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 	return hMenu;
-}
-
-void MENU_SetDefaultTextColor(unsigned ColorIndex, RGB_COLOR Color) {
-	if (ColorIndex <= GUI_COUNTOF(MENU_Obj::DefaultProps.aTextColor)) {
-		MENU_Obj::DefaultProps.aTextColor[ColorIndex] = Color;
-	}
-}
-void MENU_SetDefaultBkColor(unsigned ColorIndex, RGB_COLOR Color) {
-	if (ColorIndex <= GUI_COUNTOF(MENU_Obj::DefaultProps.aBkColor)) {
-		MENU_Obj::DefaultProps.aBkColor[ColorIndex] = Color;
-	}
-}
-void MENU_SetDefaultBorderSize(unsigned BorderIndex, uint8_t BorderSize) {
-	if (BorderIndex <= GUI_COUNTOF(MENU_Obj::DefaultProps.aBorder)) {
-		MENU_Obj::DefaultProps.aBorder[BorderIndex] = BorderSize;
-	}
-}
-void MENU_SetDefaultEffect(const WIDGET_EFFECT *pEffect) {
-	MENU__pDefaultEffect = pEffect;
-}
-void MENU_SetDefaultFont(const GUI_FONT  *pFont) {
-	MENU_Obj::DefaultProps.pFont = pFont;
-}
-RGB_COLOR MENU_GetDefaultTextColor(unsigned ColorIndex) {
-	RGB_COLOR Color = GUI_INVALID_COLOR;
-	if (ColorIndex <= GUI_COUNTOF(MENU_Obj::DefaultProps.aTextColor)) {
-		Color = MENU_Obj::DefaultProps.aTextColor[ColorIndex];
-	}
-	return Color;
-}
-RGB_COLOR MENU_GetDefaultBkColor(unsigned ColorIndex) {
-	RGB_COLOR Color = GUI_INVALID_COLOR;
-	if (ColorIndex <= GUI_COUNTOF(MENU_Obj::DefaultProps.aBkColor)) {
-		Color = MENU_Obj::DefaultProps.aBkColor[ColorIndex];
-	}
-	return Color;
-}
-uint8_t MENU_GetDefaultBorderSize(unsigned BorderIndex) {
-	uint8_t BorderSize = 0;
-	if (BorderIndex <= GUI_COUNTOF(MENU_Obj::DefaultProps.aBorder)) {
-		BorderSize = MENU_Obj::DefaultProps.aBorder[BorderIndex];
-	}
-	return BorderSize;
-}
-const WIDGET_EFFECT *MENU_GetDefaultEffect(void) {
-	return MENU__pDefaultEffect;
-}
-const GUI_FONT  *MENU_GetDefaultFont(void) {
-	return MENU_Obj::DefaultProps.pFont;
 }
 
 void MENU_DeleteItem(MENU_Handle hObj, uint16_t ItemId) {

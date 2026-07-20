@@ -21,7 +21,7 @@
 #define LISTVIEW_TEXTCOLOR2_DEFAULT RGB_WHITE   /* Selected, focus */
 #define LISTVIEW_GRIDCOLOR_DEFAULT RGB_LIGHTGRAY
 /* Define default alignment */
-#define LISTVIEW_ALIGN_DEFAULT (GUI_TA_VCENTER | GUI_TA_HCENTER)
+#define LISTVIEW_ALIGN_DEFAULT (TEXTALIGN_VCENTER | TEXTALIGN_HCENTER)
 LISTVIEW_Obj::Properties LISTVIEW_Obj::DefaultProps {
   LISTVIEW_FONT_DEFAULT,
   LISTVIEW_BKCOLOR0_DEFAULT,
@@ -403,7 +403,7 @@ static WM_PARAM _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 				case WM_NOTIFICATION_CHILD_DELETED:
 					/* make sure we do not send any messages to the header child once it has been deleted */
 					if (hWinSrc == pObj->hHeader)
-						pObj->hHeader = NULL;
+						pObj->hHeader = nullptr;
 					break;
 				case WM_NOTIFICATION_VALUE_CHANGED: {
 					WM_SCROLL_STATE ScrollState;
@@ -504,7 +504,7 @@ void LISTVIEW_AddColumn(LISTVIEW_Handle hObj, int Width, const char *s, int Alig
 			unsigned i;
 			for (i = 0; i < NumRows; i++) {
 				pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&pObj->RowArray, i);
-				GUI_ARRAY_AddItem(pRow, NULL, sizeof(LISTVIEW_ITEM) + 1);
+				GUI_ARRAY_AddItem(pRow, nullptr, sizeof(LISTVIEW_ITEM) + 1);
 			}
 		}
 		LISTVIEW__UpdateScrollParas(pObj);
@@ -520,7 +520,7 @@ void LISTVIEW_AddRow(LISTVIEW_Handle hObj, const GUI_ConstString *ppText) {
 		pObj = (LISTVIEW_Obj *)hObj;
 		NumRows = GUI_ARRAY_GetNumItems(&pObj->RowArray);
 		/* Create GUI_ARRAY for the new row */
-		if (GUI_ARRAY_AddItem(&pObj->RowArray, NULL, sizeof(GUI_ARRAY)) == 0) {
+		if (GUI_ARRAY_AddItem(&pObj->RowArray, nullptr, sizeof(GUI_ARRAY)) == 0) {
 			int i, NumColumns, NumBytes;
 			GUI_ARRAY *pRow;
 			const char *s;
@@ -534,8 +534,8 @@ void LISTVIEW_AddRow(LISTVIEW_Handle hObj, const GUI_ConstString *ppText) {
 				if (s == 0) {
 					ppText = 0;
 				}
-				NumBytes = GUI__strlen(s) + 1;     /* 0 if no string is specified (s == NULL) */
-				GUI_ARRAY_AddItem(pRow, NULL, sizeof(LISTVIEW_ITEM) + NumBytes);
+				NumBytes = GUI__strlen(s) + 1;     /* 0 if no string is specified (s == nullptr) */
+				GUI_ARRAY_AddItem(pRow, nullptr, sizeof(LISTVIEW_ITEM) + NumBytes);
 				pItem = (LISTVIEW_ITEM *)GUI_ARRAY_GetpItem(pRow, i);
 				if (NumBytes > 1) {
 					GUI__strcpy(pItem->acText, s);
@@ -562,33 +562,6 @@ LISTVIEW_Handle LISTVIEW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInf
 	hThis = LISTVIEW_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
 							  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 	return hThis;
-}
-
-const GUI_FONT  *LISTVIEW_SetDefaultFont(const GUI_FONT  *pFont) {
-	const GUI_FONT  *pOldFont = LISTVIEW_Obj::DefaultProps.pFont;
-	LISTVIEW_Obj::DefaultProps.pFont = pFont;
-	return pOldFont;
-}
-RGB_COLOR LISTVIEW_SetDefaultTextColor(unsigned Index, RGB_COLOR Color) {
-	RGB_COLOR OldColor = 0;
-	if (Index < GUI_COUNTOF(LISTVIEW_Obj::DefaultProps.aTextColor)) {
-		OldColor = LISTVIEW_Obj::DefaultProps.aTextColor[Index];
-		LISTVIEW_Obj::DefaultProps.aTextColor[Index] = Color;
-	}
-	return OldColor;
-}
-RGB_COLOR LISTVIEW_SetDefaultBkColor(unsigned Index, RGB_COLOR Color) {
-	RGB_COLOR OldColor = 0;
-	if (Index < GUI_COUNTOF(LISTVIEW_Obj::DefaultProps.aBkColor)) {
-		OldColor = LISTVIEW_Obj::DefaultProps.aBkColor[Index];
-		LISTVIEW_Obj::DefaultProps.aBkColor[Index] = Color;
-	}
-	return OldColor;
-}
-RGB_COLOR LISTVIEW_SetDefaultGridColor(RGB_COLOR Color) {
-	RGB_COLOR OldColor = LISTVIEW_Obj::DefaultProps.GridColor;
-	LISTVIEW_Obj::DefaultProps.GridColor = Color;
-	return OldColor;
 }
 
 void LISTVIEW_DeleteColumn(LISTVIEW_Handle hObj, unsigned Index) {
@@ -671,7 +644,7 @@ void LISTVIEW_DeleteRow(LISTVIEW_Handle hObj, unsigned Index) {
 
 
 RGB_COLOR LISTVIEW_GetBkColor(LISTVIEW_Handle hObj, unsigned Index) {
-	RGB_COLOR Color = GUI_INVALID_COLOR;
+	RGB_COLOR Color = RGB_INVALID_COLOR;
 	if (hObj) {
 		LISTVIEW_Obj *pObj = (LISTVIEW_Obj *)hObj;
 		if (Index <= GUI_COUNTOF(pObj->Props.aBkColor)) {
@@ -683,7 +656,7 @@ RGB_COLOR LISTVIEW_GetBkColor(LISTVIEW_Handle hObj, unsigned Index) {
 }
 
 const GUI_FONT  *LISTVIEW_GetFont(LISTVIEW_Handle hObj) {
-	const GUI_FONT  *pFont = NULL;
+	const GUI_FONT  *pFont = nullptr;
 	if (hObj) {
 		LISTVIEW_Obj *pObj = (LISTVIEW_Obj *)hObj;
 		pFont = pObj->Props.pFont;
@@ -733,7 +706,7 @@ int LISTVIEW_GetSel(LISTVIEW_Handle hObj) {
 }
 
 RGB_COLOR LISTVIEW_GetTextColor(LISTVIEW_Handle hObj, unsigned Index) {
-	RGB_COLOR Color = GUI_INVALID_COLOR;
+	RGB_COLOR Color = RGB_INVALID_COLOR;
 	if (hObj) {
 		LISTVIEW_Obj *pObj = (LISTVIEW_Obj *)hObj;
 		if (Index <= GUI_COUNTOF(pObj->Props.aTextColor)) {

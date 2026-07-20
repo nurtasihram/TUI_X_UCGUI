@@ -1,9 +1,9 @@
 #include <string.h>
 
-
 #include "GUI.h"
 #include "BUTTON.h"
 #include "FRAMEWIN.h"
+#include "FRAMEWIN_Private.h"
 #include "TEXT.h"
 #include "DIALOG.h"
 #include "MESSAGEBOX.h"
@@ -35,8 +35,8 @@ static WM_PARAM _MESSAGEBOX_cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			_OnKey(hWin, (const WM_KEY_INFO *)Data);
 			return 0;
 		case WM_NOTIFY_PARENT: {
-			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
-			WM_HWIN hWinSrc = pInfo->hWinSrc;
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto hWinSrc = pInfo->hWinSrc;
 			int Id = WM_GetId(hWinSrc); /* Get control ID */
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_RELEASED: /* React only if released */
@@ -51,7 +51,7 @@ static WM_PARAM _MESSAGEBOX_cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 }
 WM_HWIN MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags) {
 	GUI_WIDGET_CREATE_INFO _aDialogCreate[3];                                     /* 0: FrameWin, 1: Text, 2: Button */
-	int BorderSize = FRAMEWIN_GetDefaultBorderSize();                             /* Default border size of frame window */
+	int BorderSize = FRAMEWIN_Obj::DefaultProps.BorderSize;                       /* Default border size of frame window */
 	int xSizeFrame = MESSAGEBOX_XSIZEOK + 2 * BorderSize + MESSAGEBOX_BORDER * 2; /* XSize of frame window */
 	int ySizeFrame;                                                               /* YSize of frame window */
 	int x0, y0;                                                                   /* Position of frame window */
@@ -60,18 +60,17 @@ WM_HWIN MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags)
 	int ySizeCaption;                                                             /* YSize of caption */
 	int ySizeMessage;                                                             /* YSize of message */
 	GUI_RECT Rect;
-	const GUI_FONT  *pOldFont;
 	/* Zeroinit variables */
 	memset(_aDialogCreate, 0, sizeof(_aDialogCreate));
 	/* Get dimension of message */
-	pOldFont = GUI_SetFont(TEXT_GetDefaultFont());
+	//auto pOldFont = GUI_SetFont(TEXT_GetDefaultFont());	/////////// FIX ///////////
 	GUI_GetTextExtend(&Rect, sMessage, 255);
 	xSizeMessage = Rect.x1 - Rect.x0 + MESSAGEBOX_BORDER * 2;
 	ySizeMessage = Rect.y1 - Rect.y0 + 1;
 	if (xSizeFrame < (xSizeMessage + 4 + MESSAGEBOX_BORDER * 2)) {
 		xSizeFrame = xSizeMessage + 4 + MESSAGEBOX_BORDER * 2;
 	}
-	ySizeCaption = GUI_GetYSizeOfFont(FRAMEWIN_GetDefaultFont());
+	ySizeCaption = GUI_GetYSizeOfFont(FRAMEWIN_Obj::DefaultProps.pFont);
 	ySizeFrame = ySizeMessage +            /* size of message */
 		MESSAGEBOX_YSIZEOK +      /* size of button */
 		ySizeCaption +            /* caption size */
@@ -94,7 +93,7 @@ WM_HWIN MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags)
 	x0 = (LCD_GetXSize() - xSizeFrame) / 2;
 	y0 = (LCD_GetYSize() - ySizeFrame) / 2;
 	/* restore modified Context */
-	GUI_SetFont(pOldFont);
+	//GUI_SetFont(pOldFont); /////////// FIX ///////////
 	/* Fill frame win resource */
 	_aDialogCreate[0].pfCreateIndirect = FRAMEWIN_CreateIndirect;
 	_aDialogCreate[0].pName = sCaption;
@@ -112,7 +111,7 @@ WM_HWIN MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags)
 	_aDialogCreate[1].y0 = MESSAGEBOX_BORDER;
 	_aDialogCreate[1].xSize = xSizeMessage;
 	_aDialogCreate[1].ySize = ySizeMessage;
-	_aDialogCreate[1].Para = GUI_TA_TOP | GUI_TA_HCENTER;
+	_aDialogCreate[1].Para = TEXTALIGN_TOP | TEXTALIGN_HCENTER;
 	/* Fill button resource */
 	_aDialogCreate[2].pfCreateIndirect = BUTTON_CreateIndirect;
 	_aDialogCreate[2].pName = "OK";

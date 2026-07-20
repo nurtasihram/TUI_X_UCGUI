@@ -20,8 +20,8 @@ struct LISTVIEW_Obj : public WIDGET {
 		RGB_COLOR aBkColor[3];
 		RGB_COLOR aTextColor[3];
 		RGB_COLOR GridColor;
-	} Props;
-	static Properties DefaultProps;
+	} static DefaultProps;
+	Properties Props;
 	HEADER_Handle   hHeader;
 	GUI_ARRAY       RowArray;         /* One entry per line. Every entry is a handle of GUI_ARRAY of strings */
 	GUI_ARRAY       AlignArray;       /* One entry per column */

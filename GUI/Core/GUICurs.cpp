@@ -17,14 +17,14 @@ const GUI_LOGPALETTE GUI_CursorPalI = {
 #if GUI_SUPPORT_CURSOR
 
 static int _AllocSize;
-static void *_pBuffer = NULL;
+static void *_pBuffer = nullptr;
 static GUI_RECT _Rect;
 static bool _CursorIsVis = false, _CursorOn = false;
-static const GUI_CURSOR *_pCursor = NULL;
+static const GUI_CURSOR *_pCursor = nullptr;
 static uint8_t _CursorDeActCnt = 0;
 static int16_t _x, _y; /* Position of hot spot */
 static GUI_RECT _ClipRect;
-const RGB_COLOR *aCursorPal = NULL;
+const RGB_COLOR *aCursorPal = nullptr;
 
 static void _SetPixel(int x, int y, int Index) {
 	if ((y >= _ClipRect.y0) && (y <= _ClipRect.y1)) {

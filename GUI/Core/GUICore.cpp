@@ -191,9 +191,9 @@ void GUI_DrawBitmap(const GUI_BITMAP *pBitmap, int x0, int y0) {
 	const GUI_LOGPALETTE *pPal = pBitmap->pPal;
 	GUI_DRAWMODE PrevDraw = GUI_SetDrawMode(0);  /* No Get... at this point */
 	GUI_SetDrawMode((pPal && pPal->HasTrans) ? (PrevDraw | DRAWMODE_TRANS) : PrevDraw & (~DRAWMODE_TRANS));
-	const RGB_COLOR *pTrans = pBitmap->pPal ? pBitmap->pPal->pPalEntries : NULL;
+	const RGB_COLOR *pTrans = pBitmap->pPal ? pBitmap->pPal->pPalEntries : nullptr;
 	if (!pTrans) 
-		pTrans = (pBitmap->BitsPerPixel != 1) ? NULL : &LCD_BKCOLORINDEX;
+		pTrans = (pBitmap->BitsPerPixel != 1) ? nullptr : &LCD_BKCOLORINDEX;
 	GUI_RECT r;
 	WM_ADDORG(x0, y0);
 	r.x1 = (r.x0 = x0) + pBitmap->XSize - 1;
@@ -260,11 +260,11 @@ void GUI__CalcTextRect(const char *pText, const GUI_RECT *pTextRectIn, GUI_RECT 
 
 		/* Calculate X-pos of text */
 		TextWidth = GUI_GetStringDistX(pText);
-		switch (TextAlign & GUI_TA_HORIZONTAL) {
-			case GUI_TA_HCENTER:
+		switch (TextAlign & TEXTALIGN_HORIZONTAL) {
+			case TEXTALIGN_HCENTER:
 				xPos = pTextRectIn->x0 + ((pTextRectIn->x1 - pTextRectIn->x0 + 1) - TextWidth) / 2;
 				break;
-			case GUI_TA_RIGHT:
+			case TEXTALIGN_RIGHT:
 				xPos = pTextRectIn->x1 - TextWidth + 1;
 				break;
 			default:
@@ -273,14 +273,14 @@ void GUI__CalcTextRect(const char *pText, const GUI_RECT *pTextRectIn, GUI_RECT 
 
 		/* Calculate Y-pos of text*/
 		TextHeight = GUI_GetFontDistY();
-		switch (TextAlign & GUI_TA_VERTICAL) {
-			case GUI_TA_VCENTER:
+		switch (TextAlign & TEXTALIGN_VERTICAL) {
+			case TEXTALIGN_VCENTER:
 				yPos = pTextRectIn->y0 + ((pTextRectIn->y1 - pTextRectIn->y0 + 1) - TextHeight) / 2;
 				break;
-			case GUI_TA_BOTTOM:
+			case TEXTALIGN_BOTTOM:
 				yPos = pTextRectIn->y1 - TextHeight + 1;
 				break;
-			case GUI_TA_BASELINE:
+			case TEXTALIGN_BASELINE:
 			default:
 				yPos = pTextRectIn->y0;
 		}
@@ -326,14 +326,14 @@ int GUI__GetLineDistX(const char *s, int MaxNumChars) {
 */
 int GUI_GetYAdjust(void) {
 	int r = 0;
-	switch (GUI_Context.TextAlign & GUI_TA_VERTICAL) {
-		case GUI_TA_BOTTOM:
+	switch (GUI_Context.TextAlign & TEXTALIGN_VERTICAL) {
+		case TEXTALIGN_BOTTOM:
 			r = GUI_Context.pAFont->YSize - 1;
 			break;
-		case GUI_TA_VCENTER:
+		case TEXTALIGN_VCENTER:
 			r = GUI_Context.pAFont->YSize / 2;
 			break;
-		case GUI_TA_BASELINE:
+		case TEXTALIGN_BASELINE:
 			r = GUI_Context.pAFont->YSize / 2;
 	}
 	return r;
@@ -359,7 +359,7 @@ int GUI_GetFontSizeY(void) {
 }
 
 void GUI_GetFontInfo(const GUI_FONT *pFont, GUI_FONTINFO *pFontInfo) {
-	if (pFont == NULL) {
+	if (pFont == nullptr) {
 		pFont = GUI_Context.pAFont;
 	}
 	pFontInfo->Baseline = pFont->Baseline;
@@ -369,7 +369,7 @@ void GUI_GetFontInfo(const GUI_FONT *pFont, GUI_FONTINFO *pFontInfo) {
 }
 
 char GUI_IsInFont(const GUI_FONT *pFont, uint16_t c) {
-	if (pFont == NULL)
+	if (pFont == nullptr)
 		pFont = GUI_Context.pAFont;
 	return pFont->pfIsInFont(pFont, c);
 }
@@ -548,7 +548,7 @@ void GUIPROP_GetFontInfo(const GUI_FONT *pFont, GUI_FONTINFO *pfi) {
 
 char GUIPROP_IsInFont(const GUI_FONT *pFont, uint16_t c) {
 	const GUI_FONT_PROP *pProp = GUIPROP_FindChar(pFont->p.pProp, c);
-	return (pProp == NULL) ? 0 : 1;
+	return (pProp == nullptr) ? 0 : 1;
 }
 #pragma endregion
 #pragma endregion
@@ -594,9 +594,9 @@ void GUI_DispString(const char *s) {
 		int LineNumChars = GUI__GetLineNumChars(s, 0x7fff);
 		int xLineSize = GUI__GetLineDistX(s, LineNumChars);
 		/* Check if x-position needs to be changed due to h-alignment */
-		switch (GUI_Context.TextAlign & GUI_TA_HORIZONTAL) {
-			case GUI_TA_CENTER: xAdjust = xLineSize / 2; break;
-			case GUI_TA_RIGHT:  xAdjust = xLineSize; break;
+		switch (GUI_Context.TextAlign & TEXTALIGN_HORIZONTAL) {
+			case TEXTALIGN_CENTER: xAdjust = xLineSize / 2; break;
+			case TEXTALIGN_RIGHT:  xAdjust = xLineSize; break;
 			default:            xAdjust = 0;
 		}
 		r.x0 = GUI_Context.DispPos.x -= xAdjust;
@@ -607,9 +607,9 @@ void GUI_DispString(const char *s) {
 		GUI_Context.DispPos.y = r.y0;
 		s += GUI_UC__NumChars2NumBytes(s, LineNumChars);
 		if ((*s == '\n') || (*s == '\r')) {
-			switch (GUI_Context.TextAlign & GUI_TA_HORIZONTAL) {
-				case GUI_TA_CENTER:
-				case GUI_TA_RIGHT:
+			switch (GUI_Context.TextAlign & TEXTALIGN_HORIZONTAL) {
+				case TEXTALIGN_CENTER:
+				case TEXTALIGN_RIGHT:
 					GUI_Context.DispPos.x = xOrg;
 					break;
 				default:
@@ -626,7 +626,7 @@ void GUI_DispString(const char *s) {
 			break;
 	}
 	GUI_Context.DispPos.y += yAdjust;
-	GUI_Context.TextAlign &= ~GUI_TA_HORIZONTAL;
+	GUI_Context.TextAlign &= ~TEXTALIGN_HORIZONTAL;
 
 }
 void GUI_DispStringAt(const char *s, int x, int y) {
@@ -651,7 +651,7 @@ void GUI__DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign, int Ma
 		r = WM_GetClientRect();
 	}
 	/* handle vertical alignment */
-	if ((TextAlign & GUI_TA_VERTICAL) == GUI_TA_TOP) {
+	if ((TextAlign & TEXTALIGN_VERTICAL) == TEXTALIGN_TOP) {
 		y = r.y0;
 	}
 	else {
@@ -665,12 +665,12 @@ void GUI__DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign, int Ma
 				break;
 		}
 		/* Do the vertical alignment */
-		switch (TextAlign & GUI_TA_VERTICAL) {
-			case GUI_TA_BASELINE:
-			case GUI_TA_BOTTOM:
+		switch (TextAlign & TEXTALIGN_VERTICAL) {
+			case TEXTALIGN_BASELINE:
+			case TEXTALIGN_BOTTOM:
 				y = r.y1 - NumLines * FontYSize + 1;
 				break;
-			case GUI_TA_VCENTER:
+			case TEXTALIGN_VCENTER:
 				y = r.y0 + (r.y1 - r.y0 + 1 - NumLines * FontYSize) / 2;
 				break;
 		}
@@ -681,12 +681,12 @@ void GUI__DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign, int Ma
 		LineLen = GUI__GetLineNumChars(s, NumCharsRem);
 		NumCharsRem -= LineLen;
 		xLineSize = GUI__GetLineDistX(s, LineLen);
-		switch (TextAlign & GUI_TA_HORIZONTAL) {
-			case GUI_TA_HCENTER:
+		switch (TextAlign & TEXTALIGN_HORIZONTAL) {
+			case TEXTALIGN_HCENTER:
 				xLine = r.x0 + (r.x1 - r.x0 - xLineSize) / 2; break;
-			case GUI_TA_LEFT:
+			case TEXTALIGN_LEFT:
 				xLine = r.x0; break;
-			case GUI_TA_RIGHT:
+			case TEXTALIGN_RIGHT:
 				xLine = r.x1 - xLineSize + 1;
 		}
 		rLine.x0 = GUI_Context.DispPos.x = xLine;
@@ -703,7 +703,7 @@ void GUI__DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign, int Ma
 
 void GUI_DispStringInRectMax(const char *s, GUI_RECT *pRect, int TextAlign, int MaxLen) {
 	if (s) {
-		const GUI_RECT *pOldClipRect = NULL;
+		const GUI_RECT *pOldClipRect = nullptr;
 		GUI_RECT r;
 
 		if (pRect) {
@@ -770,7 +770,7 @@ bool GUI__SetText(char **ppText, const char *s) {
 	if (!s) {
 		if (*ppText) 
 			GUI_ALLOC_Free(*ppText);
-		*ppText = NULL;
+		*ppText = nullptr;
 		return true;
 	}
 	if (!GUI__strcmp(*ppText, s)) 
@@ -784,9 +784,9 @@ bool GUI__SetText(char **ppText, const char *s) {
 	return true;
 }
 bool GUI__strcmp(const char *s0, const char *s1) {
-	if (s0 == NULL)
+	if (s0 == nullptr)
 		s0 = "";
-	if (s1 == NULL)
+	if (s1 == nullptr)
 		s1 = "";
 	do {
 		if (*s0 != *s1)
@@ -959,9 +959,6 @@ int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, GUI_WRAPMODE Wr
 #pragma endregion
 
 #pragma region Rect operators
-#define MIN(v0,v1) ((v0>v1) ? v1 : v0)
-#define MAX(v0,v1) ((v0>v1) ? v0 : v1)
-
 int GUI_RectsIntersect(const GUI_RECT *pr0, const GUI_RECT *pr1) {
 	if (pr0->y0 <= pr1->y1) {
 		if (pr1->y0 <= pr0->y1) {
@@ -974,43 +971,6 @@ int GUI_RectsIntersect(const GUI_RECT *pr0, const GUI_RECT *pr1) {
 	}
 	return 0;
 }
-
-GUI_RECT& GUI_RECT::operator+=(const GUI_POINT& pt) {
-	x0 += pt.x, y0 += pt.y, x1 += pt.x, y1 += pt.y;
-	return *this;
-}
-GUI_RECT GUI_RECT::operator+(const GUI_POINT& pt) const
-{ return{ x0 + pt.x, y0 + pt.y, x1 + pt.x, y1 + pt.y }; }
-
-GUI_RECT& GUI_RECT::operator-=(int dist) {
-	x0 += dist, y0 += dist, x1 -= dist, y1 -= dist;
-	return *this;
-}
-GUI_RECT GUI_RECT::operator-(int dist) const
-{ return{ x0 + dist, y0 + dist, x1 - dist, y1 - dist }; }
-
-GUI_RECT& GUI_RECT::operator&=(const GUI_RECT& r) {
-	x0 = MAX(x0, r.x0);
-	y0 = MAX(y0, r.y0);
-	x1 = MIN(x1, r.x1);
-	y1 = MIN(y1, r.y1);
-	return *this;
-}
-GUI_RECT GUI_RECT::operator&(const GUI_RECT& r) const
-{ return{ MAX(x0, r.x0), MAX(y0, r.y0), MIN(x1, r.x1), MIN(y1, r.y1) }; }
-
-GUI_RECT& GUI_RECT::operator|=(const GUI_RECT& r) {
-	x0 = MIN(x0, r.x0);
-	y0 = MIN(y0, r.y0);
-	x1 = MAX(x1, r.x1);
-	y1 = MAX(y1, r.y1);
-	return *this;
-}
-GUI_RECT GUI_RECT::operator|(const GUI_RECT& r) const
-{ return{ MIN(x0, r.x0), MIN(y0, r.y0), MAX(x1, r.x1), MAX(y1, r.y1) }; }
-
-GUI_RECT::operator bool() const
-{ return x0 <= x1 && y0 <= y1; }
 #pragma endregion
 
 /*********************************************************************

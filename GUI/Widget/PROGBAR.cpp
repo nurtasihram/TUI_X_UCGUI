@@ -3,21 +3,27 @@
 #include "WIDGET.h"
 #include "PROGBAR.h"
 
-#define PROGBAR_DEFAULT_FONT GUI_DEFAULT_FONT
-#define PROGBAR_DEFAULT_BARCOLOR0 RGB_GRAYL(0x55)
-#define PROGBAR_DEFAULT_BARCOLOR1 RGB_GRAYL(0xAA)
-#define PROGBAR_DEFAULT_TEXTCOLOR0 RGB_WHITE
-#define PROGBAR_DEFAULT_TEXTCOLOR1 RGB_BLACK
 struct PROGBAR_Obj : public WIDGET {
-	const GUI_FONT *pFont;
-	RGB_COLOR BarColor[2];
-	RGB_COLOR TextColor[2];
+	struct Properties {
+		const GUI_FONT *pFont{ &GUI_Font13_1 };
+		RGB_COLOR aBkColor[2]{
+			/* Active */	RGB_DARKBLUE,
+			/* Inactive */	RGB_GRAYL(0x55)
+		};
+		RGB_COLOR aTextColor[2]{
+			/* Active */	RGB_WHITE,
+			/* Inactive */	RGB_BLACK
+		};
+		TEXTALIGN Align{ TEXTALIGN_HCENTER };
+	} static DefaultProps;
+	Properties Props;
 	char *pText;
 	int16_t XOff, YOff;
-	int16_t TextAlign;
 	int16_t v, Min, Max;
 };
-#define Invalidate(h) WM_Invalidate(h)
+
+PROGBAR_Obj::Properties PROGBAR_Obj::DefaultProps;
+
 static void _FreeText(PROGBAR_Obj *pObj) {
 	GUI_ALLOC_FreePtr((void **)&pObj->pText);
 }
@@ -36,8 +42,8 @@ static int _Value2X(const PROGBAR_Obj *pObj, int v) {
 }
 static void _DrawPart(const PROGBAR_Obj *pObj, int Index,
 					  int xText, int yText, const char *pText) {
-	GUI_SetBkColor(pObj->BarColor[Index]);
-	GUI_SetColor(pObj->TextColor[Index]);
+	GUI_SetBkColor(pObj->Props.aBkColor[Index]);
+	GUI_SetColor(pObj->Props.aTextColor[Index]);
 	GUI_Clear();
 	GUI_GotoXY(xText, yText);
 	GUI_DispString(pText);
@@ -73,11 +79,11 @@ static void _GetTextRect(const PROGBAR_Obj *pObj, GUI_RECT *pRect, const char *p
 	int TextWidth = GUI_GetStringDistX(pText);
 	int TextHeight = GUI_GetFontSizeY();
 	int EffectSize = pObj->pEffect->EffectSize;
-	switch (pObj->TextAlign & GUI_TA_HORIZONTAL) {
-		case GUI_TA_CENTER:
+	switch (pObj->Props.Align & TEXTALIGN_HORIZONTAL) {
+		case TEXTALIGN_CENTER:
 			pRect->x0 = (xSize - TextWidth) / 2;
 			break;
-		case GUI_TA_RIGHT:
+		case TEXTALIGN_RIGHT:
 			pRect->x0 = xSize - TextWidth - 1 - EffectSize;
 			break;
 		default:
@@ -98,7 +104,7 @@ static void _OnPaint(PROGBAR_Obj *pObj) {
 	rInside = rClient - pObj->pEffect->EffectSize;
 	xPos = _Value2X(pObj, pObj->v);
 	pText = _GetText(pObj, ac);
-	GUI_SetFont(pObj->pFont);
+	GUI_SetFont(pObj->Props.pFont);
 	_GetTextRect(pObj, &rText, pText);
 	GUI_SetTextMode(DRAWMODE_TRANS);
 	/* Draw left bar */
@@ -111,7 +117,7 @@ static void _OnPaint(PROGBAR_Obj *pObj) {
 	r.x0 = xPos;
 	WM_SetUserClipRect(&r);
 	_DrawPart(pObj, 1, rText.x0, rText.y0, pText);
-	WM_SetUserClipRect(NULL);
+	WM_SetUserClipRect(nullptr);
 	WIDGET__EFFECT_DrawDownRect(pObj, rClient);
 }
 static void _Delete(PROGBAR_Obj *pObj) {
@@ -146,12 +152,7 @@ PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
 		WIDGET__Init(pObj, Id, 0);
 		WIDGET_SetEffect(hObj, &WIDGET_Effect_None); /* Standard effect for progbar: None */
 		/* init member variables */
-		pObj->pFont = GUI_DEFAULT_FONT;
-		pObj->BarColor[0] = PROGBAR_DEFAULT_BARCOLOR0;
-		pObj->BarColor[1] = PROGBAR_DEFAULT_BARCOLOR1;
-		pObj->TextColor[0] = PROGBAR_DEFAULT_TEXTCOLOR0;
-		pObj->TextColor[1] = PROGBAR_DEFAULT_TEXTCOLOR1;
-		pObj->TextAlign = GUI_TA_CENTER;
+		pObj->Props = PROGBAR_Obj::DefaultProps;
 		pObj->Max = 100;
 		pObj->Min = 0;
 
@@ -185,7 +186,7 @@ void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
 				const GUI_FONT  *pOldFont;
 				char acBuffer[5];
 				GUI_RECT rText;
-				pOldFont = GUI_SetFont(pObj->pFont);
+				pOldFont = GUI_SetFont(pObj->Props.pFont);
 				_GetTextRect(pObj, &rText, _GetText(pObj, acBuffer));
 				r |= rText;
 				pObj->v = v;
@@ -205,7 +206,7 @@ void PROGBAR_SetFont(PROGBAR_Handle hObj, const GUI_FONT  *pfont) {
 	PROGBAR_Obj *pObj = (PROGBAR_Obj *)hObj;
 	if (hObj) {
 
-		pObj->pFont = pfont;
+		pObj->Props.pFont = pfont;
 		WM_Invalidate(hObj);
 
 	}
@@ -213,23 +214,19 @@ void PROGBAR_SetFont(PROGBAR_Handle hObj, const GUI_FONT  *pfont) {
 void PROGBAR_SetBarColor(PROGBAR_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	PROGBAR_Obj *pObj = (PROGBAR_Obj *)hObj;
 	if (hObj) {
-
-		if (Index < GUI_COUNTOF(pObj->BarColor)) {
-			pObj->BarColor[Index] = color;
+		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
+			pObj->Props.aBkColor[Index] = color;
 			WM_Invalidate(hObj);
 		}
-
 	}
 }
 void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	PROGBAR_Obj *pObj = (PROGBAR_Obj *)hObj;
 	if (hObj) {
-
-		if (Index < GUI_COUNTOF(pObj->TextColor)) {
-			pObj->TextColor[Index] = color;
+		if (Index < GUI_COUNTOF(pObj->Props.aTextColor)) {
+			pObj->Props.aTextColor[Index] = color;
 			WM_Invalidate(hObj);
 		}
-
 	}
 }
 void PROGBAR_SetText(PROGBAR_Handle hObj, const char *s) {
@@ -239,7 +236,7 @@ void PROGBAR_SetText(PROGBAR_Handle hObj, const char *s) {
 		GUI_RECT r1;
 		char acBuffer[5];
 
-		pOldFont = GUI_SetFont(pObj->pFont);
+		pOldFont = GUI_SetFont(pObj->Props.pFont);
 		_GetTextRect(pObj, &r1, _GetText(pObj, acBuffer));
 		if (GUI__SetText(&pObj->pText, s)) {
 			GUI_RECT r2;
@@ -253,7 +250,7 @@ void PROGBAR_SetText(PROGBAR_Handle hObj, const char *s) {
 void PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align) {
 	PROGBAR_Obj *pObj = (PROGBAR_Obj *)hObj;
 	if (hObj) {
-		pObj->TextAlign = Align;
+		pObj->Props.Align = Align;
 		WM_Invalidate(hObj);
 	}
 }

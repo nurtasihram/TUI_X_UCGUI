@@ -359,7 +359,7 @@ const tLCDDEV_APIList GUI_MEMDEV__APIList24 = {
 	_GetPixel,
 	GUI_MEMDEV__GetRect,
 	_SetPixel,
-	NULL, /* MemDevAPI */
+	nullptr, /* MemDevAPI */
 	24    /* BitsPerPixel */
 };
 

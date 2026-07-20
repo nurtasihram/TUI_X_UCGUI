@@ -1,31 +1,28 @@
 ﻿#pragma once
+
 #include "WM.h"
 #include "WIDGET.h"             /* Req. for WIDGET_DRAW_ITEM_FUNC */
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
+
 #define LISTBOX_ALL_ITEMS  -1
-#define LISTBOX_CI_UNSEL    0
-#define LISTBOX_CI_SEL      1
-#define LISTBOX_CI_SELFOCUS 2
+
+enum LISTBOX_CI {
+	 LISTBOX_CI_UNSEL = 0,
+	 LISTBOX_CI_SEL,
+	 LISTBOX_CI_SELFOCUS,
+	 LISTBOX_CI_DISABLED
+};
+
 typedef WM_HMEM LISTBOX_Handle;
-/*********************************************************************
-*
-*               Notification codes
-*
-* The following is the list of notification codes specific to this widget,
-* Send with the WM_NOTIFY_PARENT message
-*/
-#define LISTBOX_NOTIFICATION_LOST_FOCUS    (WM_NOTIFICATION_WIDGET + 0)
+
+#define LISTBOX_NOTIFICATION_LOST_FOCUS (WM_NOTIFICATION_WIDGET + 0)
 #define LISTBOX_CF_AUTOSCROLLBAR_H   (1<<0)
 #define LISTBOX_CF_AUTOSCROLLBAR_V   (1<<1)
 #define LISTBOX_CF_MULTISEL          (1<<2)
 #define LISTBOX_SF_AUTOSCROLLBAR_H   LISTBOX_CF_AUTOSCROLLBAR_H
 #define LISTBOX_SF_AUTOSCROLLBAR_V   LISTBOX_CF_AUTOSCROLLBAR_V
 #define LISTBOX_SF_MULTISEL          LISTBOX_CF_MULTISEL
-#define LISTBOX_EnableMemdev(hObj)  WM_EnableMemdev(hObj)
-#define LISTBOX_DisableMemdev(hObj) WM_DisableMemdev(hObj)
-#define LISTBOX_Delete(hObj)        WM_DeleteWindow(hObj)
-#define LISTBOX_Paint(hObj)         WM_Paint(hObj)
-#define LISTBOX_Invalidate(hObj)    WM_Invalidate(hObj)
+
 LISTBOX_Handle LISTBOX_Create        (const GUI_ConstString* ppText, int x0, int y0, int xsize, int ysize, int Flags);
 LISTBOX_Handle LISTBOX_CreateAsChild (const GUI_ConstString* ppText, WM_HWIN hWinParent, int x0, int y0, int xsize, int ysize, int Flags);
 LISTBOX_Handle LISTBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
@@ -64,14 +61,4 @@ void         LISTBOX_SetString       (LISTBOX_Handle hObj, const char* s, unsign
 void         LISTBOX_SetText         (LISTBOX_Handle hObj, const GUI_ConstString* ppText);
 RGB_COLOR    LISTBOX_SetTextColor    (LISTBOX_Handle hObj, unsigned int Index, RGB_COLOR Color);
 int          LISTBOX_UpdateScrollers (LISTBOX_Handle hObj);
-void         LISTBOX_InvalidateItem  (LISTBOX_Handle hObj, int Index);
-const GUI_FONT * LISTBOX_GetDefaultFont(void);
-int         LISTBOX_GetDefaultScrollStepH (void);
-RGB_COLOR   LISTBOX_GetDefaultBkColor     (unsigned Index);
-RGB_COLOR   LISTBOX_GetDefaultTextColor   (unsigned Index);
-void        LISTBOX_SetDefaultFont        (const GUI_FONT  * pFont);
-void        LISTBOX_SetDefaultScrollStepH (int Value);
-void        LISTBOX_SetDefaultBkColor     (unsigned Index, RGB_COLOR Color);
-void        LISTBOX_SetDefaultTextColor   (unsigned Index, RGB_COLOR Color);
-#define LISTBOX_SetBackColor(hObj, Index, Color) LISTBOX_SetBkColor(hObj, Index, Color)
-#define LISTBOX_DeleteString  LISTBOX_DeleteItem
+void         WM_InvalidateItem  (LISTBOX_Handle hObj, int Index);

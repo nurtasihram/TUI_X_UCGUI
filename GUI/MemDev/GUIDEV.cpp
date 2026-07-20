@@ -118,7 +118,7 @@ void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 		BytesPerPixel = BitsPerPixel >> 3;
 	}
 	uint8_t *pData = (uint8_t *)(pDev + 1);
-	LCD_DrawBitmap(x, y, pDev->XSize, YSize, BitsPerPixel, BytesPerLine, pData, NULL);
+	LCD_DrawBitmap(x, y, pDev->XSize, YSize, BitsPerPixel, BytesPerLine, pData, nullptr);
 }
 
 void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {

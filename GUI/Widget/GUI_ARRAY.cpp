@@ -223,7 +223,7 @@ WM_HMEM GUI_ARRAY_GethItem(const GUI_ARRAY *pThis, unsigned int Index) {
 *       function.
 */
 void *GUI_ARRAY_GetpItem(const GUI_ARRAY *pThis, unsigned int Index) {
-	void *p = NULL;
+	void *p = nullptr;
 	WM_HMEM h;
 	GUI_ARRAY_CHECK(pThis);    /* Sanity checks at higher debug levels only */
 	h = GUI_ARRAY_GethItem(pThis, Index);
@@ -315,7 +315,7 @@ void GUI_ARRAY_DeleteItem(GUI_ARRAY *pThis, unsigned int Index) {
 *
 */
 void *GUI_ARRAY_ResizeItem(GUI_ARRAY *pThis, unsigned int Index, int Len) {
-	void *r = NULL;
+	void *r = nullptr;
 	WM_HMEM hNew;
 	hNew = GUI_ALLOC_AllocZero(Len);
 	if (hNew) {

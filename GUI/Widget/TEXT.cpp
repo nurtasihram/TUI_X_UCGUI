@@ -18,7 +18,7 @@ static void _OnPaint(TEXT_Obj *pObj) {
 	GUI_SetFont(pObj->pFont);
 	/* Fill with parents background color */
 #if !WM_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent*/
-	if (pObj->BkColor == GUI_INVALID_COLOR) {
+	if (pObj->BkColor == RGB_INVALID_COLOR) {
 		GUI_SetBkColor(WIDGET__GetBkColor(hObj));
 	}
 	else {
@@ -77,28 +77,19 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 		if (pText) 
 			GUI__SetText(&pObj->pText, pText);
 		else
-			pObj->pText = NULL;
+			pObj->pText = nullptr;
 		pObj->Align = ExFlags;
 		pObj->pFont = _pDefaultFont;
-		pObj->BkColor = GUI_INVALID_COLOR;
+		pObj->BkColor = RGB_INVALID_COLOR;
 		pObj->TextColor = _DefaultTextColor;
 	}
 	else {
 	}
 	return hObj;
 }
-void TEXT_SetDefaultFont(const GUI_FONT  *pFont) {
-	_pDefaultFont = pFont;
-}
-void TEXT_SetDefaultTextColor(RGB_COLOR Color) {
-	_DefaultTextColor = Color;
-}
-const GUI_FONT  *TEXT_GetDefaultFont(void) {
-	return _pDefaultFont;
-}
 
 TEXT_Handle TEXT_Create(int x0, int y0, int xsize, int ysize, int Id, int Flags, const char *s, int Align) {
-	return TEXT_CreateEx(x0, y0, xsize, ysize, NULL, Flags, Align, Id, s);
+	return TEXT_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, Align, Id, s);
 }
 TEXT_Handle TEXT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, const char *s, int Align) {
 	return TEXT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, Align, Id, s);

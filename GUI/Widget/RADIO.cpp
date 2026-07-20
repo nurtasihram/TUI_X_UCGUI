@@ -76,7 +76,7 @@ static void _OnPaint(RADIO_Obj *pObj) {
 	if (!WM_GetHasTrans(pObj))
 #endif
 	{
-		if (pObj->BkColor != GUI_INVALID_COLOR) {
+		if (pObj->BkColor != RGB_INVALID_COLOR) {
 			GUI_SetBkColor(pObj->BkColor);
 		}
 		else {
@@ -220,7 +220,7 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParen
 		/* Init sub-classes */
 		GUI_ARRAY_CREATE(&pObj->TextArray);
 		for (i = 0; i < NumItems; i++) {
-			GUI_ARRAY_AddItem(&pObj->TextArray, NULL, 0);
+			GUI_ARRAY_AddItem(&pObj->TextArray, nullptr, 0);
 		}
 		/* Init widget specific variables */
 		ExFlags &= RADIO_TEXTPOS_LEFT;
@@ -293,20 +293,6 @@ RADIO_Handle RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_
 	return hThis;
 }
 
-const GUI_FONT *RADIO_GetDefaultFont(void) {
-	return RADIO__pDefaultFont;
-}
-RGB_COLOR RADIO_GetDefaultTextColor(void) {
-	return RADIO__DefaultTextColor;
-}
-void RADIO_SetDefaultFont(const GUI_FONT *pFont) {
-	RADIO__pDefaultFont = pFont;
-}
-void RADIO_SetDefaultTextColor(RGB_COLOR TextColor) {
-	RADIO__DefaultTextColor = TextColor;
-}
-
-
 void RADIO_SetBkColor(RADIO_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		RADIO_Obj *pObj = (RADIO_Obj *)hObj;
@@ -325,19 +311,6 @@ void RADIO_SetBkColor(RADIO_Handle hObj, RGB_COLOR Color) {
 
 	}
 }
-
-void RADIO_SetDefaultImage(const GUI_BITMAP *pBitmap, unsigned int Index) {
-	switch (Index) {
-		case RADIO_BI_INACTIV:
-		case RADIO_BI_ACTIV:
-			RADIO__apDefaultImage[Index] = pBitmap;
-			break;
-		case RADIO_BI_CHECK:
-			RADIO__pDefaultImageCheck = pBitmap;
-			break;
-	}
-}
-
 void RADIO_SetFont(RADIO_Handle hObj, const GUI_FONT *pFont) {
 	if (hObj) {
 		RADIO_Obj *pObj = (RADIO_Obj *)hObj;
@@ -413,7 +386,7 @@ void RADIO_SetGroupId(RADIO_Handle hObj, uint8_t NewGroupId) {
 			WM_HWIN hFirst;
 			hFirst = WM__GetFirstSibling(hObj);
 			/* Set function pointer if necessary */
-			if (NewGroupId && (RADIO__pfHandleSetValue == NULL)) {
+			if (NewGroupId && (RADIO__pfHandleSetValue == nullptr)) {
 				RADIO__pfHandleSetValue = _HandleSetValue;
 			}
 			/* Pass our selection, if we have one, to another radio button in */

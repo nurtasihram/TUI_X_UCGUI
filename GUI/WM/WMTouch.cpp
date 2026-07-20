@@ -88,9 +88,9 @@ int WM_HandlePID(void) {
 				if (WM__CHWinLast.hWin != CHWin.hWin) {
 					if (WM__CHWinLast.hWin) {
 						GUI_DEBUG_LOG("\nSending WM_Touch to LastWindow %d (out of area)", WM__CHWinLast.hWin);
-						GUI_PID_STATE *pState = StateNew.Pressed ? NULL : &WM_PID__StateLast;
+						GUI_PID_STATE *pState = StateNew.Pressed ? nullptr : &WM_PID__StateLast;
 						_SendTouchMessage(WM__CHWinLast.hWin, WM_TOUCH, pState);
-						WM__CHWinLast.hWin = NULL;
+						WM__CHWinLast.hWin = nullptr;
 					}
 				}
 				/* Sending WM_Touch to current window */
@@ -102,7 +102,7 @@ int WM_HandlePID(void) {
 						/* Handle automatic capture release */
 						if (WM__CaptureReleaseAuto)
 							WM_ReleaseCapture();
-						WM__CHWinLast.hWin = NULL;
+						WM__CHWinLast.hWin = nullptr;
 					}
 					_SendTouchMessage(CHWin.hWin, WM_TOUCH, &StateNew);
 				}

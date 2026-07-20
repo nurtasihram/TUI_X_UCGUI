@@ -9,33 +9,8 @@
 #include "LISTBOX.h"
 #include "LISTBOX_Private.h"
 
-/* Support for 3D effects */
-#define LISTBOX_USE_3D 1
-/* Define default fonts */
-#define LISTBOX_FONT_DEFAULT &GUI_Font13_1
-/* Define colors */
-#define LISTBOX_BKCOLOR0_DEFAULT RGB_WHITE     /* Not selected */
-#define LISTBOX_BKCOLOR1_DEFAULT RGB_GRAY      /* Selected, no focus */
-#define LISTBOX_BKCOLOR2_DEFAULT RGB_BLUE      /* Selected, focus */
-#define LISTBOX_BKCOLOR3_DEFAULT RGB_GRAYL(0xC0)      /* Disabled */
-#define LISTBOX_TEXTCOLOR0_DEFAULT RGB_BLACK   /* Not selected */
-#define LISTBOX_TEXTCOLOR1_DEFAULT RGB_WHITE   /* Selected, no focus */
-#define LISTBOX_TEXTCOLOR2_DEFAULT RGB_WHITE   /* Selected, focus */
-#define LISTBOX_TEXTCOLOR3_DEFAULT RGB_GRAY    /* Disabled */
-#define LISTBOX_SCROLLSTEP_H_DEFAULT 10
+LISTBOX_Obj::Properties LISTBOX_Obj::DefaultProps;
 
-LISTBOX_Obj::Properties LISTBOX_Obj::DefaultProps {
-  LISTBOX_FONT_DEFAULT,
-  LISTBOX_SCROLLSTEP_H_DEFAULT,
-  LISTBOX_BKCOLOR0_DEFAULT,
-  LISTBOX_BKCOLOR1_DEFAULT,
-  LISTBOX_BKCOLOR2_DEFAULT,
-  LISTBOX_BKCOLOR3_DEFAULT,
-  LISTBOX_TEXTCOLOR0_DEFAULT,
-  LISTBOX_TEXTCOLOR1_DEFAULT,
-  LISTBOX_TEXTCOLOR2_DEFAULT,
-  LISTBOX_TEXTCOLOR3_DEFAULT,
-};
 static int _CallOwnerDraw(LISTBOX_Obj *pObj, int Cmd, int ItemIndex) {
 	WIDGET_ITEM_DRAW_INFO ItemInfo;
 	int r;
@@ -68,7 +43,7 @@ unsigned LISTBOX__GetNumItems(LISTBOX_Obj *pObj) {
 *    Pointer to the specified item
 */
 const char *LISTBOX__GetpString(LISTBOX_Obj *pObj, int Index) {
-	const char *s = NULL;
+	const char *s = nullptr;
 	LISTBOX_ITEM *pItem = (LISTBOX_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
 	if (pItem) {
 		s = pItem->acText;
@@ -259,7 +234,7 @@ int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 				}
 			}
 			/* Display item */
-			GUI_SetBkColor(pObj->Props.aBackColor[ColorIndex]);
+			GUI_SetBkColor(pObj->Props.aBkColor[ColorIndex]);
 			GUI_SetColor(pObj->Props.aTextColor[ColorIndex]);
 			s = LISTBOX__GetpString(pObj, ItemIndex);
 			GUI_SetTextMode(DRAWMODE_TRANS);
@@ -272,7 +247,7 @@ int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 				rFocus.y0 = pDrawItemInfo->y0;
 				rFocus.x1 = r.x1;
 				rFocus.y1 = pDrawItemInfo->y0 + FontDistY - 1;
-				GUI_SetColor(RGB_WHITE - pObj->Props.aBackColor[ColorIndex]);
+				GUI_SetColor(RGB_WHITE - pObj->Props.aBkColor[ColorIndex]);
 				GUI_DrawFocusRect(rFocus, 0);
 			}
 			return 0;
@@ -351,24 +326,19 @@ void LISTBOX__InvalidateItemAndBelow(LISTBOX_Obj *pObj, int Sel) {
 	}
 }
 void LISTBOX__SetScrollbarWidth(LISTBOX_Obj *pObj) {
-	WM_HWIN hBarH, hBarV;
-	int Width;
-	Width = pObj->ScrollbarWidth;
-	if (Width == 0) {
-		Width = SCROLLBAR_GetDefaultWidth();
-	}
-	hBarH = WM_GetDialogItem(pObj, GUI_ID_HSCROLL);
-	hBarV = WM_GetDialogItem(pObj, GUI_ID_VSCROLL);
-	SCROLLBAR_SetWidth(hBarH, Width);
-	SCROLLBAR_SetWidth(hBarV, Width);
+	int Width = pObj->ScrollbarWidth;
+//	if (Width == 0)
+//		Width = SCROLLBAR_GetDefaultWidth();	////////////// FIX //////////////
+	SCROLLBAR_SetWidth(WM_GetDialogItem(pObj, GUI_ID_HSCROLL), Width);
+	SCROLLBAR_SetWidth(WM_GetDialogItem(pObj, GUI_ID_VSCROLL), Width);
 }
 static int _CalcScrollParas(LISTBOX_Handle hObj) {
-	GUI_RECT Rect;
 	LISTBOX_Obj *pObj = (LISTBOX_Obj *)hObj;
 	/* Calc vertical scroll parameters */
 	pObj->ScrollStateV.NumItems = LISTBOX__GetNumItems(pObj);
 	pObj->ScrollStateV.PageSize = _GetNumVisItems(pObj);
 	/* Calc horizontal scroll parameters */
+	GUI_RECT Rect;
 	WM_GetInsideRectExScrollbar(hObj, &Rect);
 	pObj->ScrollStateH.NumItems = _GetContentsSizeX(hObj);
 	pObj->ScrollStateH.PageSize = Rect.x1 - Rect.x0 + 1;
@@ -471,11 +441,11 @@ static void _OnPaint(LISTBOX_Obj *pObj, const GUI_RECT *pClipRect) {
 		}
 		ItemInfo.y0 += ItemDistY;
 	}
-	WM_SetUserClipRect(NULL);
+	WM_SetUserClipRect(nullptr);
 	/* Calculate & clear 'data free' area */
 	RectItem.y0 = ItemInfo.y0;
 	RectItem.y1 = RectInside.y1;
-	GUI_SetBkColor(pObj->Props.aBackColor[0]);
+	GUI_SetBkColor(pObj->Props.aBkColor[0]);
 	GUI_ClearRect(RectItem);
 	/* Draw the 3D effect (if configured) */
 	WIDGET__EFFECT_DrawDown(pObj);
@@ -715,7 +685,7 @@ LISTBOX_Handle LISTBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
 	}
 	return hObj;
 }
-void LISTBOX_InvalidateItem(LISTBOX_Handle hObj, int Index) {
+void WM_InvalidateItem(LISTBOX_Handle hObj, int Index) {
 	if (hObj) {
 		LISTBOX_Obj *pObj;
 		int NumItems;
@@ -783,7 +753,7 @@ void LISTBOX_SetText(LISTBOX_Handle hObj, const GUI_ConstString *ppText) {
 				LISTBOX_AddString(hObj, s);
 			}
 		}
-		LISTBOX_InvalidateItem(hObj, LISTBOX_ALL_ITEMS);
+		WM_InvalidateItem(hObj, LISTBOX_ALL_ITEMS);
 
 	}
 }
@@ -853,7 +823,7 @@ void LISTBOX_DecSel(LISTBOX_Handle hObj) {
 }
 
 LISTBOX_Handle LISTBOX_Create(const GUI_ConstString *ppText, int x0, int y0, int xsize, int ysize, int Flags) {
-	return LISTBOX_CreateEx(x0, y0, xsize, ysize, NULL, Flags, 0, 0, ppText);
+	return LISTBOX_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, 0, ppText);
 }
 LISTBOX_Handle LISTBOX_CreateAsChild(const GUI_ConstString *ppText, WM_HWIN hWinParent,
 									 int x0, int y0, int xsize, int ysize, int Flags) {
@@ -866,41 +836,6 @@ LISTBOX_Handle LISTBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo,
 	hObj = LISTBOX_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
 							hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, 0);
 	return hObj;
-}
-
-void LISTBOX_SetDefaultFont(const GUI_FONT  *pFont) {
-	LISTBOX_Obj::DefaultProps.pFont = pFont;
-}
-const GUI_FONT  *LISTBOX_GetDefaultFont(void) {
-	return LISTBOX_Obj::DefaultProps.pFont;
-}
-void LISTBOX_SetDefaultScrollStepH(int Value) {
-	LISTBOX_Obj::DefaultProps.ScrollStepH = Value;
-}
-int LISTBOX_GetDefaultScrollStepH(void) {
-	return LISTBOX_Obj::DefaultProps.ScrollStepH;
-}
-void LISTBOX_SetDefaultBkColor(unsigned Index, RGB_COLOR Color) {
-	if (Index < GUI_COUNTOF(LISTBOX_Obj::DefaultProps.aBackColor)) {
-		LISTBOX_Obj::DefaultProps.aBackColor[Index] = Color;
-	}
-}
-RGB_COLOR LISTBOX_GetDefaultBkColor(unsigned Index) {
-	if (Index < GUI_COUNTOF(LISTBOX_Obj::DefaultProps.aBackColor)) {
-		return LISTBOX_Obj::DefaultProps.aBackColor[Index];
-	}
-	return GUI_INVALID_COLOR;
-}
-void LISTBOX_SetDefaultTextColor(unsigned Index, RGB_COLOR Color) {
-	if (Index < GUI_COUNTOF(LISTBOX_Obj::DefaultProps.aTextColor)) {
-		LISTBOX_Obj::DefaultProps.aTextColor[Index] = Color;
-	}
-}
-RGB_COLOR LISTBOX_GetDefaultTextColor(unsigned Index) {
-	if (Index < GUI_COUNTOF(LISTBOX_Obj::DefaultProps.aTextColor)) {
-		return LISTBOX_Obj::DefaultProps.aTextColor[Index];
-	}
-	return GUI_INVALID_COLOR;
 }
 
 void LISTBOX_DeleteItem(LISTBOX_Handle hObj, unsigned int Index) {
@@ -941,12 +876,12 @@ void LISTBOX_SetFont(LISTBOX_Handle hObj, const GUI_FONT  *pFont) {
 
 		pObj = (LISTBOX_Obj *)hObj;
 		pObj->Props.pFont = pFont;
-		LISTBOX_InvalidateItem(hObj, LISTBOX_ALL_ITEMS);
+		WM_InvalidateItem(hObj, LISTBOX_ALL_ITEMS);
 
 	}
 }
 const GUI_FONT  *LISTBOX_GetFont(LISTBOX_Handle hObj) {
-	const GUI_FONT  *pFont = NULL;
+	const GUI_FONT  *pFont = nullptr;
 	LISTBOX_Obj *pObj;
 	if (hObj) {
 
@@ -1001,7 +936,7 @@ void LISTBOX_InsertString(LISTBOX_Handle hObj, const char *s, unsigned int Index
 				LISTBOX_ITEM *pItem = (LISTBOX_ITEM *)(hItem);
 				pItem->Status = 0;
 				GUI__strcpy(pItem->acText, s);
-				LISTBOX_InvalidateItem(hObj, Index);
+				WM_InvalidateItem(hObj, Index);
 			}
 		}
 		else {
@@ -1061,7 +996,7 @@ void LISTBOX_SetItemSpacing(LISTBOX_Handle hObj, unsigned Value) {
 	if (hObj) {
 		LISTBOX_Obj *pObj = (LISTBOX_Obj *)hObj;
 		pObj->ItemSpacing = Value;
-		LISTBOX_InvalidateItem(hObj, LISTBOX_ALL_ITEMS);
+		WM_InvalidateItem(hObj, LISTBOX_ALL_ITEMS);
 
 	}
 }
@@ -1208,10 +1143,10 @@ void LISTBOX_SetAutoScrollV(LISTBOX_Handle hObj, int State) {
 void LISTBOX_SetBkColor(LISTBOX_Handle hObj, unsigned Index, RGB_COLOR color) {
 	LISTBOX_Obj *pObj;
 	if (hObj) {
-		if ((unsigned int)Index < GUI_COUNTOF(pObj->Props.aBackColor)) {
+		if ((unsigned int)Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
 
 			pObj = (LISTBOX_Obj *)hObj;
-			pObj->Props.aBackColor[Index] = color;
+			pObj->Props.aBkColor[Index] = color;
 			LISTBOX__InvalidateInsideArea(hObj);
 
 		}
@@ -1233,7 +1168,7 @@ void LISTBOX_SetOwnerDraw(LISTBOX_Handle hObj, WIDGET_DRAW_ITEM_FUNC *pfDrawItem
 
 		pObj = (LISTBOX_Obj *)hObj;
 		pObj->pfDrawItem = pfDrawItem;
-		LISTBOX_InvalidateItem(hObj, LISTBOX_ALL_ITEMS);
+		WM_InvalidateItem(hObj, LISTBOX_ALL_ITEMS);
 
 	}
 }
@@ -1246,7 +1181,7 @@ void LISTBOX_SetScrollbarWidth(LISTBOX_Handle hObj, unsigned Width) {
 		if (Width != (unsigned)pObj->ScrollbarWidth) {
 			pObj->ScrollbarWidth = Width;
 			LISTBOX__SetScrollbarWidth(pObj);
-			LISTBOX_Invalidate(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -1270,10 +1205,10 @@ void LISTBOX_SetString(LISTBOX_Handle hObj, const char *s, unsigned int Index) {
 }
 
 RGB_COLOR LISTBOX_SetTextColor(LISTBOX_Handle hObj, unsigned int Index, RGB_COLOR Color) {
-	RGB_COLOR r = GUI_INVALID_COLOR;
+	RGB_COLOR r = RGB_INVALID_COLOR;
 	if (hObj) {
 		LISTBOX_Obj *pObj;
-		if (Index < GUI_COUNTOF(pObj->Props.aBackColor)) {
+		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
 
 			pObj = (LISTBOX_Obj *)hObj;
 			pObj->Props.aTextColor[Index] = Color;

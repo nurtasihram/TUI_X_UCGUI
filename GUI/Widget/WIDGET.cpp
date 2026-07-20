@@ -4,54 +4,25 @@
 #include "GUI.h"
 #include "GUI_Protected.h"
 #include "WM_Intern.h"
-const WIDGET_EFFECT *_pEffectDefault = &WIDGET_Effect_3D;
+
+const WIDGET_EFFECT *WIDGET::DefaultEffect = &WIDGET_Effect_3D2L;
+
 static void _UpdateChildPostions(WM_HWIN hObj, int Diff) {
 	WM_Obj *pObj;
-
 	pObj = (WM_Obj *)(hObj);
 	WM__UpdateChildPositions(pObj, -Diff, -Diff, Diff, Diff);
+}
 
-}
-/*********************************************************************
-*
-*       _EffectRequiresRedraw
-*
-* Purpose
-*   Check if the effect to draw is inside the invalid rectangle.
-* Returns:
-*   0 if nothing need to be done.
-*   1 if the effect needs to be drawn
-*/
-static int _EffectRequiresRedraw(const WIDGET *pWidget, const GUI_RECT *pRect) {
-	int EffectSize = pWidget->pEffect->EffectSize;
-	GUI_RECT InvalidRect;
-	InvalidRect = pWidget->InvalidRect;
-	WM__Client2Screen(pWidget, &InvalidRect);
-	/* Check if there a part of the effect is inside the invalid rectangle */
-	if ((pRect->x0 + EffectSize) > InvalidRect.x0) {
-		return 1;               /* Overlap ... Drawing required */
-	}
-	if ((pRect->x1 - EffectSize) < InvalidRect.x1) {
-		return 1;               /* Overlap ... Drawing required */
-	}
-	if ((pRect->y0 + EffectSize) > InvalidRect.y0) {
-		return 1;               /* Overlap ... Drawing required */
-	}
-	if ((pRect->y1 - EffectSize) < InvalidRect.y1) {
-		return 1;               /* Overlap ... Drawing required */
-	}
-	return 0;                 /* No overlap ! */
-}
 void WIDGET__RotateRect90(WIDGET *pWidget, GUI_RECT *pDest, const GUI_RECT *pRect) {
-	int x0, x1, XSize;
-	x0 = pRect->x0;
-	x1 = pRect->x1;
-	XSize = pWidget->Rect.x1 - pWidget->Rect.x0;
+	int x0 = pRect->x0;
+	int x1 = pRect->x1;
+	int XSize = pWidget->Rect.x1 - pWidget->Rect.x0;
 	pDest->x0 = XSize - pRect->y1;
 	pDest->x1 = XSize - pRect->y0;
 	pDest->y0 = x0;
 	pDest->y1 = x1;
 }
+
 /*********************************************************************
 *
 *       WIDGET__GetClientRect
@@ -60,30 +31,19 @@ void WIDGET__RotateRect90(WIDGET *pWidget, GUI_RECT *pDest, const GUI_RECT *pRec
   and the rotated one for rotated widgets.
 */
 GUI_RECT WIDGET__GetClientRect(WIDGET *pWidget) {
-	GUI_RECT Rect;
-	if (pWidget->State & WIDGET_STATE_VERTICAL) {
-		GUI_RECT r = WM_GetClientRect();
-		Rect.x0 = r.y0;
-		Rect.x1 = r.y1;
-		Rect.y0 = r.x0;
-		Rect.y1 = r.x1;
-	}
-	else {
-		Rect = WM_GetClientRect();
-	}
-	return Rect;
+	if (pWidget->State & WIDGET_STATE_VERTICAL)
+		return ~WM_GetClientRect();
+	return WM_GetClientRect();
 }
 RGB_COLOR WIDGET__GetBkColor(WM_HWIN hObj) {
 	RGB_COLOR BkColor = WM_GetBkColor(WM_GetParent(hObj));
-	if (BkColor == GUI_INVALID_COLOR) {
+	if (BkColor == RGB_INVALID_COLOR) {
 		BkColor = DIALOG_GetBkColor();
 	}
 	return BkColor;
 }
 GUI_RECT WIDGET__GetInsideRect(WIDGET *pWidget) {
-	GUI_RECT Rect = WM_GetClientRect(pWidget);
-	Rect -= pWidget->pEffect->EffectSize;
-	return Rect;
+	return WM_GetClientRect(pWidget)- pWidget->pEffect->EffectSize;
 }
 int WIDGET__GetXSize(const WIDGET *pWidget) {
 	int r;
@@ -124,15 +84,14 @@ void WIDGET_SetState(WM_HWIN hObj, int State) {
 	}
 }
 int WIDGET_GetState(WM_HWIN hObj) {
-	int Ret = 0;
 	WIDGET *pWidget = (WIDGET *)hObj;
 	if (hObj)
 		return pWidget->State;
-	return Ret;
+	return 0;
 }
 void WIDGET_OrState(WM_HWIN hObj, int State) {
+	WIDGET *pWidget = (WIDGET *)hObj;
 	if (hObj) {
-		WIDGET *pWidget = (WIDGET *)hObj;
 		if (State != (pWidget->State & State)) {
 			pWidget->State |= State;
 			WM_Invalidate(hObj);
@@ -149,10 +108,9 @@ void WIDGET_OrState(WM_HWIN hObj, int State) {
 	...(..., 3);   // Clears bit 0, 1 int the state member
 */
 void WIDGET_AndState(WM_HWIN hObj, int Mask) {
-	uint16_t StateNew;
 	if (hObj) {
 		WIDGET *pWidget = (WIDGET *)hObj;
-		StateNew = pWidget->State & (~Mask);
+		auto StateNew = pWidget->State & (~Mask);
 		if (pWidget->State != StateNew) {
 			pWidget->State = StateNew;
 			WM_Invalidate(hObj);
@@ -160,7 +118,7 @@ void WIDGET_AndState(WM_HWIN hObj, int Mask) {
 	}
 }
 void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
-	pWidget->pEffect = _pEffectDefault;
+	pWidget->pEffect = WIDGET::DefaultEffect;
 	pWidget->State = State;
 	pWidget->Id = Id;
 }
@@ -223,13 +181,8 @@ int WIDGET_HandleActive(WM_HWIN hObj, int MsgId, WM_PARAM *Data) {
 	return 1; /* Message NOT handled */
 }
 void WIDGET__SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE *pVState, const WM_SCROLL_STATE *pHState) {
-	WM_HWIN hScroll;
-	/* vertical scrollbar */
-	hScroll = WM_GetDialogItem(hWin, GUI_ID_VSCROLL);
-	WM_SetScrollState(hScroll, pVState);
-	/* horizontal scrollbar */
-	hScroll = WM_GetDialogItem(hWin, GUI_ID_HSCROLL);
-	WM_SetScrollState(hScroll, pHState);
+	WM_SetScrollState(WM_GetDialogItem(hWin, GUI_ID_VSCROLL), pVState);
+	WM_SetScrollState(WM_GetDialogItem(hWin, GUI_ID_HSCROLL), pHState);
 }
 void WIDGET__DrawFocusRect(WIDGET *pWidget, GUI_RECT r, int Dist) {
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
@@ -261,15 +214,40 @@ void WIDGET__FillRect(WIDGET *pWidget, GUI_RECT r) {
 	}
 	GUI_FillRect(r);
 }
+
+/*********************************************************************
+*
+*       _EffectRequiresRedraw
+*
+* Purpose
+*   Check if the effect to draw is inside the invalid rectangle.
+* Returns:
+*   false if nothing need to be done.
+*   true if the effect needs to be drawn
+*/
+static bool _EffectRequiresRedraw(const WIDGET *pWidget, GUI_RECT r) {
+	int EffectSize = pWidget->pEffect->EffectSize;
+	GUI_RECT InvalidRect = pWidget->InvalidRect;
+	WM__Client2Screen(pWidget, &InvalidRect);
+	/* Check if there a part of the effect is inside the invalid rectangle */
+	if (r.x0 + EffectSize > InvalidRect.x0)
+		return true; /* Overlap ... Drawing required */
+	if (r.y0 + EffectSize > InvalidRect.y0)
+		return true; /* Overlap ... Drawing required */
+	if (r.x1 - EffectSize < InvalidRect.x1)
+		return true; /* Overlap ... Drawing required */
+	if (r.y1 - EffectSize < InvalidRect.y1)
+		return true; /* Overlap ... Drawing required */
+	return false; /* No overlap ! */
+}
 void WIDGET__EFFECT_DrawDownRect(WIDGET *pWidget, GUI_RECT r) {
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
 		GUI_RECT Rect;
 		WIDGET__RotateRect90(pWidget, &Rect, &r);
 		r = Rect;
 	}
-	if (_EffectRequiresRedraw(pWidget, &r)) {
+	if (_EffectRequiresRedraw(pWidget, r))
 		pWidget->pEffect->pfDrawDownRect(r);
-	}
 }
 void WIDGET__EFFECT_DrawDown(WIDGET *pWidget) {
 	WIDGET__EFFECT_DrawDownRect(pWidget, WM_GetClientRect());
@@ -280,18 +258,8 @@ void WIDGET__EFFECT_DrawUpRect(WIDGET *pWidget, GUI_RECT r) {
 		WIDGET__RotateRect90(pWidget, &Rect, &r);
 		r = Rect;
 	}
-	if (_EffectRequiresRedraw(pWidget, &r)) {
+	if (_EffectRequiresRedraw(pWidget, r))
 		pWidget->pEffect->pfDrawUpRect(r);
-	}
-}
-const WIDGET_EFFECT *WIDGET_SetDefaultEffect(const WIDGET_EFFECT *pEffect) {
-	const WIDGET_EFFECT *r;
-	r = _pEffectDefault;
-	_pEffectDefault = pEffect;
-	return r;
-}
-const WIDGET_EFFECT *WIDGET_GetDefaultEffect(void) {
-	return _pEffectDefault;
 }
 
 void WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT *pEffect) {
@@ -308,18 +276,13 @@ void WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT *pEffect) {
 */
 int WIDGET_SetWidth(WM_HWIN hObj, int Width) {
 	WIDGET *pWidget = (WIDGET *)hObj;
-	int r = 0;
 	if (hObj) {
-		if (pWidget->State & WIDGET_STATE_VERTICAL) {
-			r = WM_SetXSize(hObj, Width);
-		}
-		else {
-			r = WM_SetYSize(hObj, Width);
-		}
+		if (pWidget->State & WIDGET_STATE_VERTICAL)
+			return WM_SetXSize(hObj, Width);
+		return WM_SetYSize(hObj, Width);
 	}
-	return r;
+	return 0;
 }
-
 
 #define WIDGET_FILL_TEXT_USES_TRANS 0
 
@@ -342,11 +305,10 @@ void WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_RECT Tex
 		return;
 	if (pText) {
 		if (*pText) { /* Speed optimization, not required */
-			const GUI_RECT *pOldClipRect;
 			/* Fill border */
 			GUI_ClearRect(FillRect);
 			/* Set clipping rectangle */
-			pOldClipRect = WM_SetUserClipRect(&TextRectMax);
+			auto pOldClipRect = WM_SetUserClipRect(&TextRectMax);
 			/* Display text */
 			GUI_SetTextMode(DRAWMODE_NORMAL);
 			GUI_DispStringAt(pText, TextRectAct.x0, TextRectAct.y0);

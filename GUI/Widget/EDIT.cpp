@@ -4,25 +4,10 @@
 #include "EDIT.h"
 #include "EDIT_Private.h"
 
-/* Define default fonts */
-#define EDIT_FONT_DEFAULT &GUI_Font13_1
-#define EDIT_ALIGN_DEFAULT GUI_TA_LEFT | GUI_TA_VCENTER
-/* Define colors */
-#define EDIT_BKCOLOR0_DEFAULT RGB_GRAYL(0xC0)
-#define EDIT_BKCOLOR1_DEFAULT RGB_WHITE
-#define EDIT_TEXTCOLOR0_DEFAULT RGB_BLACK
-#define EDIT_TEXTCOLOR1_DEFAULT RGB_BLACK
 #define EDIT_BORDER_DEFAULT 1
 #define EDIT_XOFF 1
-EDIT_Obj::Properties EDIT_Obj::DefaultProps {
-  EDIT_ALIGN_DEFAULT,
-  EDIT_BORDER_DEFAULT,
-  EDIT_FONT_DEFAULT,
-  EDIT_TEXTCOLOR0_DEFAULT,
-  EDIT_TEXTCOLOR1_DEFAULT,
-  EDIT_BKCOLOR0_DEFAULT,
-  EDIT_BKCOLOR1_DEFAULT
-};
+
+EDIT_Obj::Properties EDIT_Obj::DefaultProps;
 
 ///////////houhh 20061018...
 static GUI_TIMER_HANDLE Timer1 = 0;	//houhh 20061018...
@@ -39,7 +24,7 @@ void ShowCurrsor(GUI_TIMER_MESSAGE *TimeMsg) {
 ///////
 static void _OnPaint(EDIT_Obj *pObj) {
 	GUI_RECT rFillRect, rInside, r, rText, rInvert;
-	const char  *pText = NULL;
+	const char  *pText = nullptr;
 	int IsEnabled, CursorWidth;
 	IsEnabled = WM_IsEnabled(pObj);
 	/* Set colors and font */
@@ -93,7 +78,7 @@ static void _OnPaint(EDIT_Obj *pObj) {
 		}
 	}
 	/* WM loop */
-	WM_ITERATE_START(NULL) {
+	WM_ITERATE_START(nullptr) {
 		/* Set clipping rectangle */
 		WM_SetUserClipRect(&rFillRect);
 		/* Display text */
@@ -101,7 +86,7 @@ static void _OnPaint(EDIT_Obj *pObj) {
 		/* Display cursor if needed */
 		if (pObj->State & WIDGET_STATE_FOCUS) {
 			///////////////houhh 20061020...
-			//  static GUI_TIMER_HANDLE Timer1 = NULL;	//houhh 20061018...
+			//  static GUI_TIMER_HANDLE Timer1 = nullptr;	//houhh 20061018...
 			if (!Timer1) {
 				Timer1 = GUI_TIMER_Create((GUI_TIMER_CALLBACK *)ShowCurrsor, 1000 * 2, 0, 0);	//houhh 20061018...
 				GUI_TIMER_SetTime(Timer1, 1000 * 2);
@@ -113,7 +98,7 @@ static void _OnPaint(EDIT_Obj *pObj) {
 			/////////////
 		//	GUI_InvertRect(rInvert.x0, rInvert.y0, rInvert.x0 + CursorWidth - 1, rInvert.y1);
 		}
-		WM_SetUserClipRect(NULL);
+		WM_SetUserClipRect(nullptr);
 		/* Draw the 3D effect (if configured) */
 		WIDGET__EFFECT_DrawDown(pObj);
 	} WM_ITERATE_END();
@@ -132,11 +117,11 @@ void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
 			pOldFont = GUI_SetFont(pObj->Props.pFont);
 			xSize = WM_GetWindowSizeX(hObj);
 			TextWidth = GUI_GetStringDistX(pText);
-			switch (pObj->Props.Align & GUI_TA_HORIZONTAL) {
-				case GUI_TA_HCENTER:
+			switch (pObj->Props.Align & TEXTALIGN_HORIZONTAL) {
+				case TEXTALIGN_HCENTER:
 					xPos -= (xSize - TextWidth + 1) / 2;
 					break;
-				case GUI_TA_RIGHT:
+				case TEXTALIGN_RIGHT:
 					xPos -= xSize - TextWidth - (pObj->Props.Border + EDIT_XOFF);
 					break;
 				default:
@@ -162,7 +147,7 @@ void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
 				EDIT__SetCursorPos(pObj, i);
 			}
 			GUI_SetFont(pOldFont);
-			EDIT_Invalidate(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -373,10 +358,10 @@ EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 		pObj->XSizeCursor = 1;
 		pObj->MaxLen = (MaxLen == 0) ? 8 : MaxLen;
 		pObj->BufferSize = 0;
-		pObj->pText = NULL;
+		pObj->pText = nullptr;
 		if (_IncrementBuffer(pObj, pObj->MaxLen + 1) == 0) {
 			GUI_DEBUG_ERROROUT("EDIT_Create failed to alloc buffer");
-			EDIT_Delete(hObj);
+			WM_DeleteWindow(hObj);
 			hObj = 0;
 		}
 
@@ -451,7 +436,7 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 						}
 				}
 			}
-			EDIT_Invalidate(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -463,7 +448,7 @@ void EDIT_SetFont(EDIT_Handle hObj, const GUI_FONT  *pfont) {
 
 	if (pObj) {
 		pObj->Props.pFont = pfont;
-		EDIT_Invalidate(hObj);
+		WM_Invalidate(hObj);
 	}
 
 }
@@ -475,7 +460,7 @@ void EDIT_SetBkColor(EDIT_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	if (pObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
 			pObj->Props.aBkColor[Index] = color;
-			EDIT_Invalidate(hObj);
+			WM_Invalidate(hObj);
 		}
 	}
 
@@ -487,7 +472,7 @@ void EDIT_SetTextColor(EDIT_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	if (pObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aTextColor)) {
 			pObj->Props.aTextColor[Index] = color;
-			EDIT_Invalidate(hObj);
+			WM_Invalidate(hObj);
 		}
 	}
 }
@@ -522,7 +507,7 @@ void EDIT_SetText(EDIT_Handle hObj, const char *s) {
 			pObj->BufferSize = 0;
 			pObj->CursorPos = 0;
 		}
-		EDIT_Invalidate(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -587,7 +572,7 @@ void EDIT_SetMaxLen(EDIT_Handle  hObj, int MaxLen) {
 			}
 			_IncrementBuffer(pObj, MaxLen - pObj->BufferSize + 1);
 			pObj->MaxLen = MaxLen;
-			EDIT_Invalidate(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}
@@ -598,12 +583,12 @@ void EDIT_SetTextAlign(EDIT_Handle hObj, int Align) {
 		return;
 	if (pObj) {
 		pObj->Props.Align = Align;
-		EDIT_Invalidate(hObj);
+		WM_Invalidate(hObj);
 	}
 }
 
 EDIT_Handle EDIT_Create(int x0, int y0, int xsize, int ysize, int Id, int MaxLen, int Flags) {
-	return EDIT_CreateEx(x0, y0, xsize, ysize, NULL, Flags, 0, Id, MaxLen);
+	return EDIT_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, Id, MaxLen);
 }
 EDIT_Handle EDIT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, int MaxLen) {
 	return EDIT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id, MaxLen);
@@ -620,43 +605,6 @@ EDIT_Handle EDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HW
 	return hEdit;
 }
 
-void EDIT_SetDefaultFont(const GUI_FONT *pFont) {
-	EDIT_Obj::DefaultProps.pFont = pFont;
-}
-const GUI_FONT  *EDIT_GetDefaultFont(void) {
-	return EDIT_Obj::DefaultProps.pFont;
-}
-void EDIT_SetDefaultTextAlign(int Align) {
-	EDIT_Obj::DefaultProps.Align = Align;
-}
-int EDIT_GetDefaultTextAlign(void) {
-	return EDIT_Obj::DefaultProps.Align;
-}
-void EDIT_SetDefaultTextColor(unsigned int Index, RGB_COLOR Color) {
-	if (Index <= GUI_COUNTOF(EDIT_Obj::DefaultProps.aTextColor)) {
-		EDIT_Obj::DefaultProps.aTextColor[Index] = Color;
-	}
-}
-void EDIT_SetDefaultBkColor(unsigned int Index, RGB_COLOR Color) {
-	if (Index <= GUI_COUNTOF(EDIT_Obj::DefaultProps.aBkColor)) {
-		EDIT_Obj::DefaultProps.aBkColor[Index] = Color;
-	}
-}
-RGB_COLOR EDIT_GetDefaultTextColor(unsigned int Index) {
-	RGB_COLOR Color = 0;
-	if (Index <= GUI_COUNTOF(EDIT_Obj::DefaultProps.aTextColor)) {
-		Color = EDIT_Obj::DefaultProps.aTextColor[Index];
-	}
-	return Color;
-}
-RGB_COLOR EDIT_GetDefaultBkColor(unsigned int Index) {
-	RGB_COLOR Color = 0;
-	if (Index <= GUI_COUNTOF(EDIT_Obj::DefaultProps.aBkColor)) {
-		Color = EDIT_Obj::DefaultProps.aBkColor[Index];
-	}
-	return Color;
-}
-
 int EDIT_GetNumChars(EDIT_Handle hObj) {
 	if (hObj) {
 		EDIT_Obj *pObj = (EDIT_Obj *)hObj;
@@ -671,7 +619,7 @@ void EDIT_SetCursorAtChar(EDIT_Handle hObj, int Pos) {
 	if (hObj) {
 		EDIT_Obj *pObj = (EDIT_Obj *)hObj;
 		EDIT__SetCursorPos(pObj, Pos);
-		EDIT_Invalidate(hObj);
+		WM_Invalidate(hObj);
 	}
 }
 

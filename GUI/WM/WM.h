@@ -146,31 +146,37 @@ typedef struct {
 	int16_t Key, PressedCnt;
 } WM_KEY_INFO;
 
-typedef struct {
-	int16_t NumItems, v, PageSize;
-} WM_SCROLL_STATE;
+struct WM_SCROLL_STATE {
+	int16_t NumItems = 0, v = 0, PageSize = 0;
+	inline bool operator!=(const WM_SCROLL_STATE &other) const {
+		return NumItems != other.NumItems || v != other.v || PageSize != other.PageSize;
+	}
+	inline bool operator==(const WM_SCROLL_STATE &other) const {
+		return !(*this != other);
+	}
+};
 
-typedef struct {
+struct WM_DIALOG_STATUS {
 	int16_t Done;
 	int16_t ReturnValue;
-} WM_DIALOG_STATUS;
+};
 
-typedef struct {
+struct WM_PID_STATE_CHANGED_INFO {
 	int16_t x, y;
 	uint8_t State;
 	uint8_t StatePrev;
-} WM_PID_STATE_CHANGED_INFO;
+};
 
-typedef struct {
+struct WM_NOTIFY_INFO {
 	int Notification;
 	WM_HWIN hWinSrc;
-} WM_NOTIFY_INFO;
+};
 
 #define WM_UNATTACHED  ((WM_HMEM)-1)                        /* Do not attach to a window */
 
 typedef WM_PARAM WM_CALLBACK(WM_HWIN hWin, int MsgId, WM_PARAM Data);
 
-typedef struct {
+struct WM_Obj {
 	GUI_RECT Rect;        /* outer dimensions of window */
 	GUI_RECT InvalidRect; /* invalid rectangle */
 	WM_CALLBACK *cb;      /* ptr to notification callback */
@@ -179,7 +185,7 @@ typedef struct {
 	WM_HWIN hFirstChild;
 	WM_HWIN hNext;
 	uint16_t Status; /* Some status flags */
-} WM_Obj;
+};
 
 typedef void WM_tfForEach(WM_HWIN hWin, void *pData);
 

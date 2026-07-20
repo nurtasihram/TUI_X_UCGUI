@@ -4,25 +4,28 @@
 #include "WIDGET.h"
 #include "CHECKBOX.h"
 
-#define CHECKBOX_BKCOLOR0_DEFAULT RGB_GRAYL(0x80)           /* Inactive color */
-#define CHECKBOX_BKCOLOR1_DEFAULT RGB_WHITE          /* Active color */
-#define CHECKBOX_FGCOLOR0_DEFAULT RGB_GRAYL(0x10)
-#define CHECKBOX_FGCOLOR1_DEFAULT RGB_BLACK
-
 struct CHECKBOX_Obj : public WIDGET {
+	static const GUI_BITMAP abmCheck[2];
 	struct Properties {
-		const GUI_FONT  *pFont;
-		RGB_COLOR aBkColorBox[2]; /* Colors used to draw the box background */
-		RGB_COLOR BkColor;        /* Widget background color */
-		RGB_COLOR TextColor;
-		int16_t Align;
-		uint8_t Spacing;
-		const GUI_BITMAP *apBm[4];
-	} Props;
-	static Properties DefaultProps;
+		const GUI_FONT *pFont{ &GUI_Font13_1 };
+		const GUI_BITMAP *apBm[4]{
+			/* Inactive */	&abmCheck[0],
+			/* Active */	&abmCheck[1],
+			/* Inactive 3-State */	&abmCheck[2],
+			/* Active 3-State */	&abmCheck[1]
+		};
+		RGB_COLOR aBkColorBox[2]{
+			/* Inactive */	RGB_GRAYL(0x80),
+			/* Active */	RGB_WHITE
+		};
+		RGB_COLOR BkColor{ RGB_INVALID_COLOR };
+		RGB_COLOR TextColor{ RGB_BLACK };
+		TEXTALIGN Align{ TEXTALIGN_LEFT | TEXTALIGN_VCENTER };
+		uint8_t Spacing{ 4 };
+		uint8_t NumStates = 2;
+	} static DefaultProps;
+	Properties Props;
 	uint8_t NumStates;
 	uint8_t CurrentState;
 	char *pText;
 };
-
-extern const GUI_BITMAP   CHECKBOX__abmCheck[2];

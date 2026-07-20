@@ -78,7 +78,7 @@ static void _Invalidate1Abs(WM_HWIN hWin, const GUI_RECT *pRect) {
   When drawing, we have to start at the bottom window !
 */
 static void ResetNextDrawWin(void) {
-	NextDrawWin = NULL;
+	NextDrawWin = nullptr;
 }
 /*********************************************************************
 *
@@ -96,7 +96,7 @@ static WM_HWIN _GethDrawWin(void) {
 	return GUI_Context.hAWin;
 }
 static void _SetClipRectUserIntersect(const GUI_RECT *prSrc) {
-	if (GUI_Context.WM__pUserClipRect == NULL) {
+	if (GUI_Context.WM__pUserClipRect == nullptr) {
 		LCD_SetClipRectEx(prSrc);
 	}
 	else {
@@ -121,7 +121,7 @@ static void _SetClipRectUserIntersect(const GUI_RECT *prSrc) {
 *
 * Parameters
 *   hWin    Obvious
-*   pRect   Pointer to the rectangle to be clipped. May not be NULL.
+*   pRect   Pointer to the rectangle to be clipped. May not be nullptr.
 *           The parameter is IN/OUT.
 *           Note that the rectangle is clipped only if the return
 *           value indicates a valid rectangle remains.
@@ -441,7 +441,7 @@ void WM_InvalidateRect(WM_HWIN hWin, const GUI_RECT *pRect) {
   Invalidates an entire window.
 */
 void WM_Invalidate(WM_HWIN hWin) {
-	WM_InvalidateRect(hWin, NULL);
+	WM_InvalidateRect(hWin, nullptr);
 }
 /*********************************************************************
 *
@@ -470,7 +470,7 @@ WM_HWIN WM_CreateWindowAsChild(int x0, int y0, int width, int height
 			hParent = WM__ahDesktopWin;
 	}
 	if (hParent == WM_UNATTACHED)
-		hParent = NULL;
+		hParent = nullptr;
 	if (hParent) {
 		WM_Obj *pParent = (WM_Obj *)hParent;
 		x0 += pParent->Rect.x0;
@@ -671,10 +671,10 @@ static int _FindNext_IVR(void) {
 		/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
 		for (hParent = GUI_Context.hAWin; hParent; hParent = pParent->hParent) {
 			pParent = (WM_Obj *)hParent;
-			_Findy1(pParent->hNext, &r, NULL);
+			_Findy1(pParent->hNext, &r, nullptr);
 		}
 		/* Check all children */
-		_Findy1(pAWin->hFirstChild, &r, NULL);
+		_Findy1(pAWin->hFirstChild, &r, nullptr);
 	}
 	/*
 	  STEP 4
@@ -693,11 +693,11 @@ Find_x0:
 		hParent = GUI_Context.hAWin;
 	for (; hParent; hParent = pParent->hParent) {
 		pParent = (WM_Obj *)hParent;
-		if (_Findx0(pParent->hNext, &r, NULL))
+		if (_Findx0(pParent->hNext, &r, nullptr))
 			goto Find_x0;
 	}
 	/* Check all children */
-	if (_Findx0(pAWin->hFirstChild, &r, NULL))
+	if (_Findx0(pAWin->hFirstChild, &r, nullptr))
 		goto Find_x0;
 	/*
 	 STEP 5:
@@ -722,10 +722,10 @@ Find_x0:
 		hParent = GUI_Context.hAWin;
 	for (; hParent; hParent = pParent->hParent) {
 		pParent = (WM_Obj *)hParent;
-		_Findx1(pParent->hNext, &r, NULL);
+		_Findx1(pParent->hNext, &r, nullptr);
 	}
 	/* Check all children */
-	_Findx1(pAWin->hFirstChild, &r, NULL);
+	_Findx1(pAWin->hFirstChild, &r, nullptr);
 	/* We are done. Return the rectangle we found in the _ClipContext. */
 	if (_ClipContext.Cnt > 200)
 		return 0;  /* error !!! This should not happen !*/
@@ -866,12 +866,12 @@ void WM__ActivateClipRect(void) {
 
 void WM_SetDefault(void) {
 	GUI_SetDefault();
-	GUI_Context.WM__pUserClipRect = NULL;   /* No add. clipping */
+	GUI_Context.WM__pUserClipRect = nullptr;   /* No add. clipping */
 }
 static void _Paint1(WM_Obj *pWin) {
 	int Status = pWin->Status;
 	/* Send WM_PAINT if window is visible and a callback is defined */
-	if ((pWin->cb != NULL) && (Status & WM_SF_ISVIS)) {
+	if ((pWin->cb != nullptr) && (Status & WM_SF_ISVIS)) {
 		WM__PaintCallbackCnt++;
 		if (Status & WM_SF_LATE_CLIP) {
 			WM_SetDefault();
@@ -1045,43 +1045,41 @@ static void _cbPaintMemDev(void *p) {
 	0: No window has been drawn
 */
 static int _Paint(WM_Obj *pWin) {
+	if (!(pWin->Status & WM_SF_INVALID))
+		return 0;
 	int Ret = 0;
-	if (pWin->Status & WM_SF_INVALID) {
-		if (pWin->cb) {
-			if (_ClipAtParentBorders(pWin->InvalidRect, pWin)) {
-				WM_SelectWindow(pWin);
+	if (pWin->cb) {
+		if (_ClipAtParentBorders(pWin->InvalidRect, pWin)) {
+			WM_SelectWindow(pWin);
 #if GUI_SUPPORT_MEMDEV
-				if (pWin->Status & WM_SF_MEMDEV) {
-					int Flags;
-					GUI_RECT r = pWin->InvalidRect;
-					Flags = (pWin->Status & WM_SF_HASTRANS) ? GUI_MEMDEV_HASTRANS : GUI_MEMDEV_NOTRANS;
-					/*
-					 * Currently we treat a desktop window as transparent, because per default it does not repaint itself.
-					 */
-					if (pWin->hParent == 0) {
-						Flags = GUI_MEMDEV_HASTRANS;
-					}
-					GUI_MEMDEV_Draw(&r, _cbPaintMemDev, pWin, 0, Flags);
+			if (pWin->Status & WM_SF_MEMDEV) {
+				int Flags;
+				GUI_RECT r = pWin->InvalidRect;
+				Flags = (pWin->Status & WM_SF_HASTRANS) ? GUI_MEMDEV_HASTRANS : GUI_MEMDEV_NOTRANS;
+				/*
+					* Currently we treat a desktop window as transparent, because per default it does not repaint itself.
+					*/
+				if (pWin->hParent == 0) {
+					Flags = GUI_MEMDEV_HASTRANS;
 				}
-				else
-#endif
-				{
-					WM__PaintWinAndOverlays(pWin);
-					Ret = 1;    /* Something has been done */
-				}
+				GUI_MEMDEV_Draw(&r, _cbPaintMemDev, pWin, 0, Flags);
 			}
+			else
+#endif
+			WM__PaintWinAndOverlays(pWin);
+			Ret = 1;    /* Something has been done */
 		}
-		/* We purposly clear the invalid flag after painting so we can still query the invalid rectangle while painting */
-		pWin->Status &= ~WM_SF_INVALID; /* Clear invalid flag */
-		if (pWin->Status & WM_CF_MEMDEV_ON_REDRAW)
-			pWin->Status |= WM_CF_MEMDEV;
-		WM__NumInvalidWindows--;
 	}
+	/* We purposly clear the invalid flag after painting so we can still query the invalid rectangle while painting */
+	pWin->Status &= ~WM_SF_INVALID; /* Clear invalid flag */
+	if (pWin->Status & WM_CF_MEMDEV_ON_REDRAW)
+		pWin->Status |= WM_CF_MEMDEV;
+	WM__NumInvalidWindows--;
 	return Ret;      /* Nothing done */
 }
 static void _DrawNext(void) {
 	int UpdateRem = 1;
-	WM_Obj *iWin = (NextDrawWin == NULL) ? (WM_Obj *)WM__FirstWin : (WM_Obj *)NextDrawWin;
+	WM_Obj *iWin = (NextDrawWin == nullptr) ? (WM_Obj *)WM__FirstWin : (WM_Obj *)NextDrawWin;
 	GUI_CONTEXT ContextOld;
 	GUI_SaveContext(&ContextOld);
 	/* Make sure the next window to redraw is valid */
@@ -1126,7 +1124,7 @@ static WM_PARAM cbBackWin(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 		case WM_PAINT:
-			if (WM__aBkColor != GUI_INVALID_COLOR) {
+			if (WM__aBkColor != RGB_INVALID_COLOR) {
 				GUI_SetBkColor(WM__aBkColor);
 				GUI_Clear();
 			}
@@ -1200,7 +1198,7 @@ WM_PARAM WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			WM_SendMessage(WM_GetParent(hWin), WM_KEY, Data);
 			return 0;	
 		case WM_GET_BKCOLOR:
-			return GUI_INVALID_COLOR;
+			return RGB_INVALID_COLOR;
 		case WM_NOTIFY_ENABLE:
 			WM_Invalidate(hWin);
 			return 0;
@@ -1210,14 +1208,14 @@ WM_PARAM WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 }
 void WM_Init(void) {
 	if (!_IsInited) {
-		NextDrawWin = WM__FirstWin = NULL;
-		GUI_Context.WM__pUserClipRect = NULL;
+		NextDrawWin = WM__FirstWin = nullptr;
+		GUI_Context.WM__pUserClipRect = nullptr;
 		WM__NumWindows = WM__NumInvalidWindows = 0;
 		/* Make sure we have at least one window. This greatly simplifies the
 			drawing routines as they do not have to check if the window is valid.
 		*/
 		WM__ahDesktopWin = WM_CreateWindow(0, 0, GUI_XMAX, GUI_YMAX, WM_CF_SHOW, cbBackWin, 0);
-		WM__aBkColor = GUI_INVALID_COLOR;
+		WM__aBkColor = RGB_INVALID_COLOR;
 		WM_Invalidate(WM__ahDesktopWin); /* Required because a desktop window has no parent. */
 		/* Register the critical handles ... Note: This could be moved into the module setting the Window handle */
 		WM__AddCriticalHandle(&WM__CHWinModal);
@@ -1643,12 +1641,12 @@ void WM_ForEachDesc(WM_HWIN hWin, WM_tfForEach *pcb, void *pData) {
   Purpose:
 	Return the clients background color.
 	If a window does not define a background color, the default
-	procedure returns GUI_INVALID_COLOR
+	procedure returns RGB_INVALID_COLOR
 */
 RGB_COLOR WM_GetBkColor(WM_HWIN hObj) {
 	if (hObj) 
 		return (RGB_COLOR)WM_SendMessage(hObj, WM_GET_BKCOLOR, 0);
-	return GUI_INVALID_COLOR;
+	return RGB_INVALID_COLOR;
 }
 GUI_RECT WM_GetClientRect() {
 	WM_HWIN hWin;
@@ -2195,7 +2193,7 @@ void WM_SetAnchor(WM_HWIN hWin, uint16_t AnchorFlags) {
 	}
 }
 WM_CALLBACK *WM_SetCallback(WM_HWIN hWin, WM_CALLBACK *cb) {
-	WM_CALLBACK *r = NULL;
+	WM_CALLBACK *r = nullptr;
 	if (hWin) {
 		WM_Obj *pWin;
 		pWin = (WM_Obj *)hWin;
@@ -2208,7 +2206,7 @@ WM_CALLBACK *WM_SetCallback(WM_HWIN hWin, WM_CALLBACK *cb) {
 void WM_ReleaseCapture(void) {
 	if (WM__hCapture) {
 		WM_SendMessage(WM__hCapture, WM_CAPTURE_RELEASED, 0);
-		WM__hCapture = NULL;
+		WM__hCapture = nullptr;
 	}
 }
 void WM_SetCapture(WM_HWIN hObj, int AutoRelease) {
@@ -2588,12 +2586,6 @@ int WM_GetStayOnTop(WM_HWIN hWin) {
 	}
 	return Result;
 }
-static int Min(int v0, int v1) {
-	return (v0 < v1) ? v0 : v1;
-}
-static int Max(int v0, int v1) {
-	return (v0 > v1) ? v0 : v1;
-}
 /*********************************************************************
 *
 *       WM__SubRect
@@ -2602,10 +2594,10 @@ static int Max(int v0, int v1) {
   *pDest = *pr0- *pr1;
 */
 static void _SubRect(GUI_RECT *pDest, const GUI_RECT *pr0, const GUI_RECT *pr1) {
-	if ((pDest == NULL) || (pr0 == NULL))
+	if ((pDest == nullptr) || (pr0 == nullptr))
 		return;
 	*pDest = *pr0;
-	if (pr1 == NULL)
+	if (pr1 == nullptr)
 		return;
 	/* Check left/right sides */
 	if ((pr1->y0 <= pr0->y0)

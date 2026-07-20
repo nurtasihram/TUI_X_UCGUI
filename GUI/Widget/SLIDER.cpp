@@ -3,22 +3,21 @@
 #include "SLIDER.h"
 
 #define SLIDER_SUPPORT_TRANSPARENCY WM_SUPPORT_TRANSPARENCY
-/* Support for 3D effects */
-#define SLIDER_USE_3D 1
-/* Define colors */
-#define SLIDER_BKCOLOR0_DEFAULT RGB_GRAYL(0xc0)
-#define SLIDER_BKCOLOR1_DEFAULT RGB_WHITE
-#define SLIDER_COLOR0_DEFAULT RGB_GRAYL(0xc0)
-#define SLIDER_COLOR1_DEFAULT RGB_BLACK
+
 struct SLIDER_Obj : public WIDGET {
-	RGB_COLOR aBkColor[2];
-	RGB_COLOR aColor[2];
-	int Min, Max, v;
-	int Flags;
-	int NumTicks;
+	struct Properties {
+		RGB_COLOR BkColor{ RGB_GRAYL(0xC0) };
+		RGB_COLOR Color{ RGB_GRAYL(0xC0) };
+	} static DefaultProps;
+	Properties Props;
+	int16_t Min, Max, v;
+	int16_t NumTicks;
 	int16_t Width;
+	uint8_t Flags;
 };
-static RGB_COLOR _DefaultBkColor = SLIDER_BKCOLOR0_DEFAULT;
+
+SLIDER_Obj::Properties SLIDER_Obj::DefaultProps;
+
 static void _OnPaint(SLIDER_Obj *pObj) {
 	GUI_RECT r, rFocus, rSlider, rSlot;
 	int x0, xsize, i, Range, NumTicks;
@@ -33,16 +32,16 @@ static void _OnPaint(SLIDER_Obj *pObj) {
 	}
 	/* Fill with parents background color */
 #if !SLIDER_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent*/
-	if (pObj->aBkColor[0] == GUI_INVALID_COLOR) {
+	if (pObj->Props.BkColor == RGB_INVALID_COLOR) {
 		GUI_SetBkColor(WIDGET__GetBkColor(pObj));
 	}
 	else {
-		GUI_SetBkColor(pObj->aBkColor[0]);
+		GUI_SetBkColor(pObj->Props.BkColor);
 	}
 	GUI_Clear();
 #else
 	if (!WM_GetHasTrans(pObj)) {
-		GUI_SetBkColor(pObj->aBkColor[0]);
+		GUI_SetBkColor(pObj->Props.BkColor);
 		GUI_Clear();
 	}
 #endif
@@ -72,7 +71,7 @@ static void _OnPaint(SLIDER_Obj *pObj) {
 		}
 	}
 	/* Draw the slider itself */
-	GUI_SetColor(pObj->aColor[0]);
+	GUI_SetColor(pObj->Props.Color);
 	WIDGET__FillRect(pObj, rSlider);
 	GUI_SetColor(RGB_BLACK);
 	WIDGET__EFFECT_DrawUpRect(pObj, rSlider);
@@ -185,10 +184,7 @@ SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, InitState);
 		/* init member variables */
-		pObj->aBkColor[0] = _DefaultBkColor;
-		pObj->aBkColor[1] = SLIDER_BKCOLOR1_DEFAULT;
-		pObj->aColor[0] = SLIDER_COLOR0_DEFAULT;
-		pObj->aColor[1] = SLIDER_COLOR1_DEFAULT;
+		pObj->Props = SLIDER_Obj::DefaultProps;
 		pObj->Width = 8;
 		pObj->Max = 100;
 		pObj->Min = 0;
@@ -272,7 +268,7 @@ void SLIDER_SetNumTicks(SLIDER_Handle hObj, int NumTicks) {
 void SLIDER_SetBkColor(SLIDER_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		SLIDER_Obj *pObj = (SLIDER_Obj *)hObj;
-		pObj->aBkColor[0] = Color;
+		pObj->Props.BkColor = Color;
 #if SLIDER_SUPPORT_TRANSPARENCY
 		if (Color <= RGB_WHITE) {
 			WM_ClrHasTrans(hObj);
@@ -284,9 +280,6 @@ void SLIDER_SetBkColor(SLIDER_Handle hObj, RGB_COLOR Color) {
 		WM_Invalidate(hObj);
 
 	}
-}
-void SLIDER_SetDefaultBkColor(RGB_COLOR Color) {
-	_DefaultBkColor = Color;
 }
 int SLIDER_GetValue(SLIDER_Handle hObj) {
 	int r = 0;

@@ -1,20 +1,29 @@
 ﻿#pragma once
+
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 #include "WIDGET.h"
-/* For compatibility only ! */
+
 #define BUTTON_CF_HIDE   WM_CF_HIDE
 #define BUTTON_CF_SHOW   WM_CF_SHOW
 #define BUTTON_CF_MEMDEV WM_CF_MEMDEV
-#define BUTTON_CI_UNPRESSED 0
-#define BUTTON_CI_PRESSED   1
-#define BUTTON_CI_DISABLED  2
-#define BUTTON_BI_UNPRESSED 0
-#define BUTTON_BI_PRESSED   1
-#define BUTTON_BI_DISABLED  2
 #define BUTTON_STATE_FOCUS      WIDGET_STATE_FOCUS
 #define BUTTON_STATE_PRESSED    WIDGET_STATE_USER0
+#define BUTTON_STATE_HASFOCUS   0
+
 typedef WM_HMEM BUTTON_Handle;
+
+enum BUTTON_BI {
+	 BUTTON_BI_UNPRESSED = 0,
+	 BUTTON_BI_PRESSED,
+	 BUTTON_BI_DISABLED
+};
+enum BUTTON_CI {
+	 BUTTON_CI_UNPRESSED = 0,
+	 BUTTON_CI_PRESSED,
+	 BUTTON_CI_DISABLED
+};
+
 /************************************************************
 *
 *       Create function(s)
@@ -26,19 +35,7 @@ BUTTON_Handle BUTTON_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_HWI
 BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
 BUTTON_Handle BUTTON_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
                                     int WinFlags, int ExFlags, int Id);
-RGB_COLOR                    BUTTON_GetDefaultBkColor  (unsigned Index);
-const GUI_FONT  * BUTTON_GetDefaultFont     (void);
-int                          BUTTON_GetDefaultTextAlign(void);
-RGB_COLOR                    BUTTON_GetDefaultTextColor(unsigned Index);
-void                         BUTTON_SetDefaultBkColor  (RGB_COLOR Color, unsigned Index);
-void                         BUTTON_SetDefaultFont     (const GUI_FONT  * pFont);
-void                         BUTTON_SetDefaultTextAlign(int Align);
-void                         BUTTON_SetDefaultTextColor(RGB_COLOR Color, unsigned Index);
-#define BUTTON_EnableMemdev(hObj)  WM_EnableMemdev    (hObj)
-#define BUTTON_DisableMemdev(hObj) WM_DisableMemdev   (hObj)
-#define BUTTON_Delete(hObj)        WM_DeleteWindow    (hObj)
-#define BUTTON_Paint(hObj)         WM_Paint           (hObj)
-#define BUTTON_Invalidate(hObj)    WM_Invalidate(hObj)
+
 /*********************************************************************
 *
 *       The callback ...
@@ -65,4 +62,3 @@ void             BUTTON_SetTextAlign       (BUTTON_Handle hObj, int Align);
 void             BUTTON_SetTextColor       (BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color);
 void             BUTTON_SetSelfDrawEx      (BUTTON_Handle hObj, unsigned int Index, void (*pDraw)(void), int x, int y); /* Not to be doc. */
 void             BUTTON_SetSelfDraw        (BUTTON_Handle hObj, unsigned int Index, void (*pDraw)(void));               /* Not to be doc. */
-#define BUTTON_STATE_HASFOCUS 0

@@ -185,7 +185,7 @@ static void _DispString(MULTIEDIT_Obj *pObj, const char *pText, GUI_RECT *pRect)
 		else {
 			NumCharsLeft = NumCharsDisp - NumCharsPrompt;
 		}
-		GUI_DispStringInRectMax(pText, pRect, GUI_TA_LEFT, NumCharsPrompt);
+		GUI_DispStringInRectMax(pText, pRect, TEXTALIGN_LEFT, NumCharsPrompt);
 		x = pRect->x0 + _NumChars2XSize(pText, NumCharsPrompt);
 		if (NumCharsLeft) {
 			GUI_DispCharAt(MULTIEDIT_PASSWORD_CHAR, x, pRect->y0);
@@ -193,7 +193,7 @@ static void _DispString(MULTIEDIT_Obj *pObj, const char *pText, GUI_RECT *pRect)
 		}
 	}
 	else {
-		GUI_DispStringInRectMax(pText, pRect, GUI_TA_LEFT, NumCharsDisp);
+		GUI_DispStringInRectMax(pText, pRect, TEXTALIGN_LEFT, NumCharsDisp);
 	}
 }
 /*********************************************************************
@@ -1419,7 +1419,7 @@ MULTIEDIT_HANDLE MULTIEDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateI
 	MULTIEDIT_HANDLE  hThis;
 	GUI_USE_PARA(cb);
 	hThis = MULTIEDIT_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							   hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->Para, NULL);
+							   hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->Para, nullptr);
 	return hThis;
 }
 

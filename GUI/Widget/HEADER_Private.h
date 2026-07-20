@@ -5,21 +5,24 @@
 #include "WM.h"
 #include "GUI_ARRAY.h"
 
-typedef struct {
+struct HEADER_COLUMN {
 	int16_t Width;
-	int16_t Align;
+	TEXTALIGN Align;
 	WM_HMEM hDrawObj;
 	char acText[1];
-} HEADER_COLUMN;
+};
 
 struct HEADER_Obj : public WIDGET {
-	RGB_COLOR BkColor;
-	RGB_COLOR TextColor;
+	struct Properties {
+		const GUI_FONT *pFont{ &GUI_Font13_1 };
+		RGB_COLOR BkColor{ RGB_GRAYL(0xAA) };
+		RGB_COLOR TextColor{ RGB_BLACK };
+	} static DefaultProps;
+	Properties Props;
 	GUI_ARRAY Columns;
-	int16_t CapturePosX;
-	int16_t CaptureItem;
-	int16_t ScrollPos;
-	const GUI_FONT *pFont;
+	int16_t CapturePosX = -1;
+	int16_t CaptureItem = -1;
+	uint16_t ScrollPos = 0;
 };
 
 void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW_HANDLE hDrawObj);

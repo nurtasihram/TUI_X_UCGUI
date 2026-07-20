@@ -5,12 +5,20 @@
 
 struct BUTTON_Obj : public WIDGET {
 	struct Properties {
-		RGB_COLOR aBkColor[3];
-		RGB_COLOR aTextColor[3];
-		const GUI_FONT  *pFont;
-		int16_t Align;
-	} Props;
-	static Properties DefaultProps;
+		const GUI_FONT *pFont{ &GUI_Font13_1 };
+		RGB_COLOR aTextColor[3]{
+			/* Unpressed */	RGB_BLACK,
+			/* Pressed */	RGB_BLACK,
+			/* Disabled */	RGB_DARKGRAY
+		};
+		RGB_COLOR aBkColor[3]{
+			/* Unpressed */	RGB_GRAYL(0xD0),
+			/* Pressed */	RGB_WHITE,
+			/* Disabled */	RGB_LIGHTGRAY
+		};
+		TEXTALIGN Align{ TEXTALIGN_CENTER };
+	} static DefaultProps;
+	Properties Props;
 	char *pText;
 	WM_HMEM ahDrawObj[3];
 };

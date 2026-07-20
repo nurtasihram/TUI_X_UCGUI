@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "WM_Intern.h"  /* Window manager, including some internals, which speed things up */
 
 #include "SCROLLBAR.h"
@@ -19,30 +18,32 @@
 
 typedef struct {
 	WM_HWIN hWin;
-	int     Cmd;         /* WIDGET_ITEM_GET_XSIZE, WIDGET_ITEM_GET_YSIZE, WIDGET_ITEM_DRAW, */
-	int     ItemIndex;
-	int     x0, y0;
+	int Cmd;         /* WIDGET_ITEM_GET_XSIZE, WIDGET_ITEM_GET_YSIZE, WIDGET_ITEM_DRAW, */
+	int ItemIndex;
+	int x0, y0;
 } WIDGET_ITEM_DRAW_INFO;
 
 typedef int WIDGET_DRAW_ITEM_FUNC(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo);
 
-/*********************************************************************
-*
-*         Widget object
-*
-* The widget object is the base class for most widgets
-*/
-typedef struct {
-	void  (*pfDrawUp)(void);
-	void  (*pfDrawDown)(void);
-	void  (*pfDrawUpRect)  (GUI_RECT r);
-	void  (*pfDrawDownRect)(GUI_RECT r);
-	GUI_RECT  (*pfGetRect)();
+struct WIDGET_EFFECT {
+	void(*pfDrawUp)(void);
+	void(*pfDrawDown)(void);
+	void(*pfDrawUpRect)  (GUI_RECT r);
+	void(*pfDrawDownRect)(GUI_RECT r);
+	GUI_RECT(*pfGetRect)();
 	int EffectSize;
-} WIDGET_EFFECT;
+};
+
+extern const WIDGET_EFFECT
+	WIDGET_Effect_None,
+	WIDGET_Effect_Simple,
+	WIDGET_Effect_3D,
+	WIDGET_Effect_3D1L,
+	WIDGET_Effect_3D2L;
 
 struct WIDGET : public WM_Obj {
-	const WIDGET_EFFECT *pEffect;
+	static const WIDGET_EFFECT *DefaultEffect;
+	const WIDGET_EFFECT *pEffect = DefaultEffect;
 	int16_t Id;
 	uint16_t State;
 };
@@ -60,11 +61,11 @@ typedef struct GUI_DRAW GUI_DRAW;
 typedef void   GUI_DRAW_SELF_CB(void);
 
 /* Declare Object constants (member functions etc)  */
-typedef struct {
+struct GUI_DRAW_CONSTS {
 	void (*pfDraw)    (const GUI_DRAW *pObj, int x, int y);
 	int  (*pfGetXSize)(const GUI_DRAW *pObj);
 	int  (*pfGetYSize)(const GUI_DRAW *pObj);
-} GUI_DRAW_CONSTS;
+};
 
 /* Declare Object */
 struct GUI_DRAW {
@@ -86,24 +87,23 @@ int  GUI_DRAW__GetYSize(GUI_DRAW_HANDLE hDrawObj);
 WM_HMEM GUI_DRAW_BITMAP_Create(const GUI_BITMAP *pBitmap, int x, int y);
 WM_HMEM GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw, int x, int y);
 
-extern const WIDGET_EFFECT WIDGET_Effect_3D;
-extern const WIDGET_EFFECT WIDGET_Effect_3D1L;
-extern const WIDGET_EFFECT WIDGET_Effect_3D2L;
-extern const WIDGET_EFFECT WIDGET_Effect_None;
-extern const WIDGET_EFFECT WIDGET_Effect_Simple;
-
 void      WIDGET__DrawFocusRect(WIDGET *pWidget, GUI_RECT r, int Dist);
 void      WIDGET__DrawVLine(WIDGET *pWidget, int x, int y0, int y1);
+void      WIDGET__FillRect(WIDGET *pWidget, GUI_RECT r);
+
 void      WIDGET__EFFECT_DrawDownRect(WIDGET *pWidget, GUI_RECT r);
 void      WIDGET__EFFECT_DrawDown(WIDGET *pWidget);
 void      WIDGET__EFFECT_DrawUpRect(WIDGET *pWidget, GUI_RECT r);
-void      WIDGET__FillRect(WIDGET *pWidget, GUI_RECT r);
-int       WIDGET__GetWindowSizeX(WM_HWIN hWin);
+
 RGB_COLOR WIDGET__GetBkColor(WM_HWIN hObj);
+
+int       WIDGET__GetWindowSizeX(WM_HWIN hWin);
+
 int       WIDGET__GetXSize(const WIDGET *pWidget);
 int       WIDGET__GetYSize(const WIDGET *pWidget);
 GUI_RECT  WIDGET__GetClientRect(WIDGET *pWidget);
 GUI_RECT  WIDGET__GetInsideRect(WIDGET *pWidget);
+
 void      WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State);
 void      WIDGET__RotateRect90(WIDGET *pWidget, GUI_RECT *pDest, const GUI_RECT *pRect);
 void      WIDGET__SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE *pVState, const WM_SCROLL_STATE *pState);
@@ -112,17 +112,10 @@ void      WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_REC
 void  WIDGET_SetState(WM_HWIN hObj, int State);
 void  WIDGET_AndState(WM_HWIN hObj, int State);
 void  WIDGET_OrState(WM_HWIN hObj, int State);
-int   WIDGET_HandleActive(WM_HWIN hObj, int MsgId, WM_PARAM *Data);
 int   WIDGET_GetState(WM_HWIN hObj);
 int   WIDGET_SetWidth(WM_HWIN hObj, int Width);
-void  WIDGET_EFFECT_3D_DrawUp(void);
-void  WIDGET_SetDefaultEffect_3D(void);
-void  WIDGET_SetDefaultEffect_3D1L(void);
-void  WIDGET_SetDefaultEffect_3D2L(void);
-void  WIDGET_SetDefaultEffect_None(void);
-void  WIDGET_SetDefaultEffect_Simple(void);
-const WIDGET_EFFECT *WIDGET_SetDefaultEffect(const WIDGET_EFFECT *pEffect);
-void  WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT *pEffect);
-const WIDGET_EFFECT *WIDGET_GetDefaultEffect(void);
 int   WIDGET_SetWidth(WM_HWIN hObj, int Width);
 
+void  WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT *pEffect);
+
+int   WIDGET_HandleActive(WM_HWIN hObj, int MsgId, WM_PARAM *Data);

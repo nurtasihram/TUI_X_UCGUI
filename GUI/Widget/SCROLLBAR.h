@@ -8,20 +8,14 @@
 #define SCROLLBAR_CF_VERTICAL     WIDGET_CF_VERTICAL
 #define SCROLLBAR_CF_FOCUSSABLE   WIDGET_STATE_FOCUSSABLE
 
-/*********************************************************************
-*
-*                         Public Types
-*
-**********************************************************************
-*/
-
 typedef WM_HMEM SCROLLBAR_Handle;
+
 SCROLLBAR_Handle SCROLLBAR_Create        (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int WinFlags, int SpecialFlags);
 SCROLLBAR_Handle SCROLLBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
 SCROLLBAR_Handle SCROLLBAR_CreateAttached(WM_HWIN hParent, int SpecialFlags);
 SCROLLBAR_Handle SCROLLBAR_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
                                           int WinFlags, int ExFlags, int Id);
-/* Methods changing properties */
+
 void SCROLLBAR_AddValue    (SCROLLBAR_Handle hObj, int Add);
 void SCROLLBAR_Dec         (SCROLLBAR_Handle hObj);
 void SCROLLBAR_Inc         (SCROLLBAR_Handle hObj);
@@ -30,10 +24,4 @@ void SCROLLBAR_SetPageSize (SCROLLBAR_Handle hObj, int PageSize);
 void SCROLLBAR_SetValue    (SCROLLBAR_Handle hObj, int v);
 int  SCROLLBAR_SetWidth    (SCROLLBAR_Handle hObj, int Width);
 void SCROLLBAR_SetState    (SCROLLBAR_Handle hObj, const WM_SCROLL_STATE* pState);
-RGB_COLOR SCROLLBAR_GetDefaultBkColor(unsigned int Index); /* Not yet documented */
-RGB_COLOR SCROLLBAR_GetDefaultColor  (unsigned int Index); /* Not yet documented */
-int       SCROLLBAR_GetDefaultWidth  (void);
-RGB_COLOR SCROLLBAR_SetDefaultBkColor(RGB_COLOR Color, unsigned int Index); /* Not yet documented */
-RGB_COLOR SCROLLBAR_SetDefaultColor  (RGB_COLOR Color, unsigned int Index); /* Not yet documented */
-int       SCROLLBAR_SetDefaultWidth  (int DefaultWidth);
 int SCROLLBAR_GetValue(SCROLLBAR_Handle hObj);

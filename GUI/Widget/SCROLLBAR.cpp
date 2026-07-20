@@ -5,27 +5,12 @@
 #include "SCROLLBAR.h"
 #include "SCROLLBAR_Private.h"
 
-/* Support for 3D effects */
-#define SCROLLBAR_USE_3D 1
-/* Define colors */
-#define SCROLLBAR_BKCOLOR0_DEFAULT RGB_GRAYL(0x80)
-#define SCROLLBAR_BKCOLOR1_DEFAULT RGB_BLACK
-#define SCROLLBAR_COLOR0_DEFAULT RGB_GRAYL(0xc0)
-#define SCROLLBAR_COLOR1_DEFAULT RGB_BLACK
-#define SCROLLBAR_DEFAULT_WIDTH 11
-RGB_COLOR SCROLLBAR__aDefaultBkColor[2] = { SCROLLBAR_BKCOLOR0_DEFAULT, SCROLLBAR_BKCOLOR1_DEFAULT };
-RGB_COLOR SCROLLBAR__aDefaultColor[2] = { SCROLLBAR_COLOR0_DEFAULT, SCROLLBAR_COLOR1_DEFAULT };
-int16_t       SCROLLBAR__DefaultWidth = SCROLLBAR_DEFAULT_WIDTH;
-/*********************************************************************
-*
-*       _GetArrowSize
-*
-*/
+SCROLLBAR_Obj::Properties SCROLLBAR_Obj::DefaultProps;
+
 static int _GetArrowSize(SCROLLBAR_Obj *pObj) {
-	unsigned int r;
-	unsigned int xSize = WIDGET__GetXSize(pObj);
-	unsigned int ySize = WIDGET__GetYSize(pObj);
-	r = ySize / 2 + 5;
+	auto xSize = WIDGET__GetXSize(pObj);
+	auto ySize = WIDGET__GetYSize(pObj);
+	auto r = ySize / 2 + 5;
 	if (r > xSize - 5)
 		r = xSize - 5;
 	return r;
@@ -92,11 +77,11 @@ static void _CalcPositions(SCROLLBAR_Obj *pObj, SCROLLBAR_POSITIONS *pPos) {
 	r += GUI_POINT{-x0, -y0};
 	/* Convert real into virtual coordinates */
 	_WIDGET__RECT2VRECT(pObj, &r);
-	NumItems = pObj->NumItems;
+	NumItems = pObj->ScrollState.NumItems;
 	xSize = r.x1 - r.x0 + 1;
 	xSizeArrow = _GetArrowSize(pObj);
 	xSizeThumbArea = xSize - 2 * xSizeArrow;     /* Number of pixels available for thumb and movement */
-	ThumbSize = GUI__DivideRound(xSizeThumbArea * pObj->PageSize, NumItems);
+	ThumbSize = GUI__DivideRound(xSizeThumbArea * pObj->ScrollState.PageSize, NumItems);
 	if (ThumbSize < 4) {
 		ThumbSize = 4;
 	}
@@ -108,7 +93,7 @@ static void _CalcPositions(SCROLLBAR_Obj *pObj, SCROLLBAR_POSITIONS *pPos) {
 	pPos->x1_LeftArrow = xSizeArrow - 1;
 	pPos->x1_RightArrow = xSize - 1;
 	pPos->x0_RightArrow = xSize - xSizeArrow;
-	pPos->x0_Thumb = pPos->x1_LeftArrow + 1 + GUI__DivideRound(xSizeMoveable * pObj->v, NumItems - pObj->PageSize);
+	pPos->x0_Thumb = pPos->x1_LeftArrow + 1 + GUI__DivideRound(xSizeMoveable * pObj->ScrollState.v, NumItems - pObj->ScrollState.PageSize);
 	pPos->x1_Thumb = pPos->x0_Thumb + ThumbSize - 1;
 	pPos->xSizeMoveable = xSizeMoveable;
 	pPos->ThumbSize = ThumbSize;
@@ -140,18 +125,18 @@ static void _OnPaint(SCROLLBAR_Obj *pObj) {
 	/*
 	  Draw left Arrow
 	*/
-	GUI_SetColor(pObj->aColor[0]);
+	GUI_SetColor(pObj->Props.Color);
 	r = rClient;
 	r.x0 = Pos.x0_LeftArrow;
 	r.x1 = Pos.x1_LeftArrow;
 	WIDGET__FillRect(pObj, r);
-	GUI_SetColor(pObj->aBkColor[1]);
+	GUI_SetColor(pObj->Props.aBkColor[1]);
 	_DrawTriangle(pObj, r.x0 + ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, -1);
 	WIDGET__EFFECT_DrawUpRect(pObj, r);
 	/*
 	  Draw the thumb area which is not covered by the thumb
 	*/
-	GUI_SetColor(pObj->aBkColor[0]);
+	GUI_SetColor(pObj->Props.aBkColor[0]);
 	r.x0 = Pos.x1_LeftArrow + 1;
 	r.x1 = Pos.x0_Thumb - 1;
 	WIDGET__FillRect(pObj, r);
@@ -165,17 +150,17 @@ static void _OnPaint(SCROLLBAR_Obj *pObj) {
 	r = rClient;
 	r.x0 = Pos.x0_Thumb;
 	r.x1 = Pos.x1_Thumb;
-	GUI_SetColor(pObj->aColor[0]);
+	GUI_SetColor(pObj->Props.Color);
 	WIDGET__FillRect(pObj, r);
 	WIDGET__EFFECT_DrawUpRect(pObj, r);
 	/*
 	  Draw right Arrow
 	*/
-	GUI_SetColor(pObj->aColor[0]);
+	GUI_SetColor(pObj->Props.Color);
 	r.x0 = Pos.x0_RightArrow;
 	r.x1 = Pos.x1_RightArrow;
 	WIDGET__FillRect(pObj, r);
-	GUI_SetColor(pObj->aBkColor[1]);
+	GUI_SetColor(pObj->Props.aBkColor[1]);
 	_DrawTriangle(pObj, r.x1 - ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, 1);
 	WIDGET__EFFECT_DrawUpRect(pObj, r);
 	/*
@@ -184,7 +169,7 @@ static void _OnPaint(SCROLLBAR_Obj *pObj) {
 	if (Pos.x1_RightArrow != Pos.x1) {
 		r.x0 = Pos.x1_RightArrow + 1;
 		r.x1 = Pos.x1;
-		GUI_SetColor(pObj->aColor[0]);
+		GUI_SetColor(pObj->Props.Color);
 		WIDGET__FillRect(pObj, r);
 	}
 }
@@ -206,9 +191,9 @@ static void _OnTouch(SCROLLBAR_Obj *pObj, const GUI_PID_STATE *pState) {
 		if (pState->Pressed) {
 			int Range;
 			int x;
-			int Sel = pObj->v;
+			int Sel = pObj->ScrollState.v;
 			_CalcPositions(pObj, &Pos);
-			Range = pObj->NumItems - pObj->PageSize;
+			Range = pObj->ScrollState.NumItems - pObj->ScrollState.PageSize;
 			/* Swap mouse coordinates if necessary */
 			if (pObj->State & WIDGET_STATE_VERTICAL)
 				x = pState->y;
@@ -217,7 +202,7 @@ static void _OnTouch(SCROLLBAR_Obj *pObj, const GUI_PID_STATE *pState) {
 			if (x <= Pos.x1_LeftArrow) /* left arrow (line left) */
 				Sel--;
 			else if (x < Pos.x0_Thumb) /* left area  (page left) */
-				Sel -= pObj->PageSize;
+				Sel -= pObj->ScrollState.PageSize;
 			else if (x <= Pos.x1_Thumb) {      /* Thumb area */
 				if (Pos.xSizeMoveable > 0) {
 					x = x - Pos.ThumbSize / 2 - Pos.x1_LeftArrow - 1;
@@ -225,7 +210,7 @@ static void _OnTouch(SCROLLBAR_Obj *pObj, const GUI_PID_STATE *pState) {
 				}
 			}
 			else if (x < Pos.x0_RightArrow) /* right area (page right) */
-				Sel += pObj->PageSize;
+				Sel += pObj->ScrollState.PageSize;
 			else  if (x <= Pos.x1_RightArrow)
 				Sel++;
 			/* WM_SetFocus(hObj); */
@@ -255,12 +240,8 @@ static char _OnKey(SCROLLBAR_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	return 0;
 }
 static void _OnSetScrollState(SCROLLBAR_Obj *pObj, const WM_SCROLL_STATE *pState) {
-	if ((pState->NumItems != pObj->NumItems)
-		|| (pObj->PageSize != pState->PageSize)
-		|| (pObj->v != pState->v)) {
-		pObj->NumItems = pState->NumItems;
-		pObj->PageSize = pState->PageSize;
-		pObj->v = pState->v;
+	if (pObj->ScrollState != *pState) {
+		pObj->ScrollState = *pState;
 		WM_Invalidate(pObj);
 	}
 }
@@ -290,13 +271,9 @@ static WM_PARAM _SCROLLBAR_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 		case WM_SET_SCROLL_STATE:
 			_OnSetScrollState(pObj, (const WM_SCROLL_STATE *)Data);
 			return 0;
-		case WM_GET_SCROLL_STATE: {
-			WM_SCROLL_STATE *pState = (WM_SCROLL_STATE *)Data;
-			pState->NumItems = pObj->NumItems;
-			pState->PageSize = pObj->PageSize;
-			pState->v = pObj->v;
+		case WM_GET_SCROLL_STATE: 
+			*(WM_SCROLL_STATE *)Data = pObj->ScrollState;
 			break;
-		}
 	}
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
@@ -310,13 +287,13 @@ SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 	if ((xsize == 0) && (ysize == 0)) {
 		GUI_RECT Rect = WM_GetInsideRect(hParent);
 		if (ExFlags & SCROLLBAR_CF_VERTICAL) {
-			xsize = SCROLLBAR__DefaultWidth;
+			xsize = SCROLLBAR_Obj::DefaultWidth;
 			x0 = Rect.x1 + 1 - xsize;
 			y0 = Rect.y0;
 			ysize = Rect.y1 - Rect.y0 + 1;
 		}
 		else {
-			ysize = SCROLLBAR__DefaultWidth;
+			ysize = SCROLLBAR_Obj::DefaultWidth;
 			y0 = Rect.y1 + 1 - ysize;
 			x0 = Rect.x0;
 			xsize = Rect.x1 - Rect.x0 + 1;
@@ -342,13 +319,10 @@ SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, InitState);
 		/* init member variables */
-		pObj->aBkColor[0] = SCROLLBAR__aDefaultBkColor[0];
-		pObj->aBkColor[1] = SCROLLBAR__aDefaultBkColor[1];
-		pObj->aColor[0] = SCROLLBAR__aDefaultColor[0];
-		pObj->aColor[1] = SCROLLBAR__aDefaultColor[1];
-		pObj->NumItems = 100;
-		pObj->PageSize = 10;
-		pObj->v = 0;
+		pObj->Props = SCROLLBAR_Obj::DefaultProps;
+		pObj->ScrollState.NumItems = 100;
+		pObj->ScrollState.PageSize = 10;
+		pObj->ScrollState.v = 0;
 		SCROLLBAR__InvalidatePartner(hObj);
 	}
 	else {
@@ -366,7 +340,7 @@ void SCROLLBAR_AddValue(SCROLLBAR_Handle hObj, int Add) {
 	SCROLLBAR_Obj *pObj = (SCROLLBAR_Obj *)hObj;
 	if (hObj) {
 
-		SCROLLBAR_SetValue(pObj, pObj->v + Add);
+		SCROLLBAR_SetValue(pObj, pObj->ScrollState.v + Add);
 
 	}
 }
@@ -375,7 +349,7 @@ void SCROLLBAR_SetValue(SCROLLBAR_Handle hObj, int v) {
 	int Max;
 	if (hObj) {
 
-		Max = pObj->NumItems - pObj->PageSize;
+		Max = pObj->ScrollState.NumItems - pObj->ScrollState.PageSize;
 		if (Max < 0)
 			Max = 0;
 		/* Put in min/max range */
@@ -385,8 +359,8 @@ void SCROLLBAR_SetValue(SCROLLBAR_Handle hObj, int v) {
 		if (v > Max) {
 			v = Max;
 		}
-		if (pObj->v != v) {
-			pObj->v = v;
+		if (pObj->ScrollState.v != v) {
+			pObj->ScrollState.v = v;
 			WM_Invalidate(hObj);
 			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
 		}
@@ -397,8 +371,8 @@ void SCROLLBAR_SetNumItems(SCROLLBAR_Handle hObj, int NumItems) {
 	SCROLLBAR_Obj *pObj = (SCROLLBAR_Obj *)hObj;
 	if (hObj) {
 
-		if (pObj->NumItems != NumItems) {
-			pObj->NumItems = NumItems;
+		if (pObj->ScrollState.NumItems != NumItems) {
+			pObj->ScrollState.NumItems = NumItems;
 			WM_Invalidate(hObj);
 		}
 
@@ -407,12 +381,10 @@ void SCROLLBAR_SetNumItems(SCROLLBAR_Handle hObj, int NumItems) {
 void SCROLLBAR_SetPageSize(SCROLLBAR_Handle hObj, int PageSize) {
 	SCROLLBAR_Obj *pObj = (SCROLLBAR_Obj *)hObj;
 	if (hObj) {
-
-		if (pObj->PageSize != PageSize) {
-			pObj->PageSize = PageSize;
+		if (pObj->ScrollState.PageSize != PageSize) {
+			pObj->ScrollState.PageSize = PageSize;
 			WM_Invalidate(hObj);
 		}
-
 	}
 }
 void  SCROLLBAR_SetState(SCROLLBAR_Handle hObj, const WM_SCROLL_STATE *pState) {
@@ -450,46 +422,12 @@ SCROLLBAR_Handle SCROLLBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateI
 							   hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 	return hThis;
 }
-int       SCROLLBAR_GetDefaultWidth(void) { return SCROLLBAR__DefaultWidth; }
-RGB_COLOR SCROLLBAR_GetDefaultBkColor(unsigned int Index) {
-	if (Index < GUI_COUNTOF(SCROLLBAR__aDefaultBkColor)) {
-		return SCROLLBAR__aDefaultBkColor[Index];
-	}
-	return 0;
-}
-RGB_COLOR SCROLLBAR_GetDefaultColor(unsigned int Index) {
-	if (Index < GUI_COUNTOF(SCROLLBAR__aDefaultColor)) {
-		return SCROLLBAR__aDefaultColor[Index];
-	}
-	return 0;
-}
-int  SCROLLBAR_SetDefaultWidth(int DefaultWidth) {
-	int OldWidth = SCROLLBAR__DefaultWidth;
-	SCROLLBAR__DefaultWidth = DefaultWidth;
-	return OldWidth;
-}
-RGB_COLOR SCROLLBAR_SetDefaultBkColor(RGB_COLOR Color, unsigned int Index) {
-	RGB_COLOR OldColor = 0;
-	if (Index < GUI_COUNTOF(SCROLLBAR__aDefaultBkColor)) {
-		SCROLLBAR__aDefaultBkColor[Index] = Color;
-	}
-	return OldColor;
-}
-RGB_COLOR SCROLLBAR_SetDefaultColor(RGB_COLOR Color, unsigned int Index) {
-	RGB_COLOR OldColor = 0;
-	if (Index < GUI_COUNTOF(SCROLLBAR__aDefaultColor)) {
-		SCROLLBAR__aDefaultColor[Index] = Color;
-	}
-	return OldColor;
-}
 
 int SCROLLBAR_GetValue(SCROLLBAR_Handle hObj) {
 	int r = 0;
 	SCROLLBAR_Obj *pObj = (SCROLLBAR_Obj *)hObj;
 	if (hObj) {
-
-		r = pObj->v;
-
+		r = pObj->ScrollState.v;
 	}
 	return r;
 }
@@ -497,10 +435,8 @@ int SCROLLBAR_GetValue(SCROLLBAR_Handle hObj) {
 int SCROLLBAR_SetWidth(SCROLLBAR_Handle hObj, int Width) {
 	int r = 0;
 	if (hObj) {
-
 		r = WIDGET_SetWidth(hObj, Width);
 		SCROLLBAR__InvalidatePartner(hObj);     /* Invalidate the partner, since it is also affected */
-
 	}
 	return r;
 }

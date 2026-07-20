@@ -10,11 +10,7 @@ typedef WM_HMEM DROPDOWN_Handle;
 #define DROPDOWN_CI_UNSEL    0
 #define DROPDOWN_CI_SEL      1
 #define DROPDOWN_CI_SELFOCUS 2
-#define DROPDOWN_EnableMemdev(hObj)  WM_EnableMemdev(hObj)
-#define DROPDOWN_DisableMemdev(hObj) WM_DisableMemdev(hObj)
-#define DROPDOWN_Delete(hObj)        WM_DeleteWindow(hObj)
-#define DROPDOWN_Paint(hObj)         WM_Paint(hObj)
-#define DROPDOWN_Invalidate(hObj)    WM_Invalidate(hObj)
+
 DROPDOWN_Handle DROPDOWN_Create        (WM_HWIN hWinParent, int x0, int y0, int xsize, int ysize, int Flags);
 DROPDOWN_Handle DROPDOWN_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
 DROPDOWN_Handle DROPDOWN_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
@@ -39,6 +35,3 @@ void     DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width);
 void     DROPDOWN_SetTextAlign    (DROPDOWN_Handle hObj, int Align);
 void     DROPDOWN_SetTextColor    (DROPDOWN_Handle hObj, unsigned int index, RGB_COLOR color);
 void     DROPDOWN_SetTextHeight   (DROPDOWN_Handle hObj, unsigned TextHeight);
-const GUI_FONT  * DROPDOWN_GetDefaultFont(void);
-void            DROPDOWN_SetDefaultFont(const GUI_FONT* pFont);
-

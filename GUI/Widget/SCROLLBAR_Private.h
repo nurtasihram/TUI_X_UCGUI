@@ -4,26 +4,29 @@
 #include "WIDGET.h"
 #include "GUIDebug.h"
 
-extern RGB_COLOR SCROLLBAR__aDefaultBkColor[2];
-extern RGB_COLOR SCROLLBAR__aDefaultColor[2];
-extern int16_t SCROLLBAR__DefaultWidth;
-
 struct SCROLLBAR_Obj : public WIDGET {
-	RGB_COLOR aBkColor[2];
-	RGB_COLOR aColor[2];
-	int16_t NumItems, v, PageSize;
+	struct Properties {
+		RGB_COLOR aBkColor[2]{
+			RGB_GRAYL(0x80),
+			RGB_BLACK
+		};
+		RGB_COLOR Color{ RGB_GRAYL(0xC0) };
+	} static DefaultProps;
+	static const int16_t DefaultWidth = 12;
+	Properties Props;
+	WM_SCROLL_STATE ScrollState;
 };
 
-typedef struct {
-	int16_t x0_LeftArrow;
-	int16_t x1_LeftArrow;
-	int16_t x0_Thumb;
-	int16_t x1_Thumb;
-	int16_t x0_RightArrow;
-	int16_t x1_RightArrow;
-	int16_t x1;
-	int16_t xSizeMoveable;
-	int16_t ThumbSize;
-} SCROLLBAR_POSITIONS;
+struct SCROLLBAR_POSITIONS {
+	int16_t x0_LeftArrow = 0,
+			x1_LeftArrow = 0;
+	int16_t x0_RightArrow = 0,
+			x1_RightArrow = 0;
+	int16_t x0_Thumb = 0,
+			x1_Thumb = 0;
+	int16_t ThumbSize = 0;
+	int16_t xSizeMoveable = 0;
+	int16_t x1 = 0;
+};
 
 void SCROLLBAR__InvalidatePartner(SCROLLBAR_Handle hObj);

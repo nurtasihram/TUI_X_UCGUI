@@ -25,8 +25,8 @@ struct MENU_Obj : public WIDGET {
 		RGB_COLOR aBkColor[5];
 		uint8_t aBorder[4];
 		const GUI_FONT *pFont;
-	} Props;
-	static Properties DefaultProps;
+	} static DefaultProps;
+	Properties Props;
 	GUI_ARRAY   ItemArray;
 	WM_HWIN hOwner;
 	uint16_t Flags;

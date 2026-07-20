@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
+
 #define FRAMEWIN_CF_ACTIVE     (1<<3)
 #define FRAMEWIN_CF_MOVEABLE   (1<<4)
 #define FRAMEWIN_CF_RESIZEABLE (1<<5)
@@ -9,17 +10,15 @@
 #define FRAMEWIN_CF_MAXIMIZED  (1<<8)
 #define FRAMEWIN_BUTTON_RIGHT   (1<<0)
 #define FRAMEWIN_BUTTON_LEFT    (1<<1)
+
 typedef WM_HMEM FRAMEWIN_Handle;
 FRAMEWIN_Handle FRAMEWIN_Create        (const char* pTitle, WM_CALLBACK* cb, int Flags, int x0, int y0, int xsize, int ysize);
 FRAMEWIN_Handle FRAMEWIN_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, const char* pText, WM_CALLBACK* cb, int Flags);
 FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
 FRAMEWIN_Handle FRAMEWIN_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
                                         int WinFlags, int ExFlags, int Id, const char* pTitle, WM_CALLBACK* cb);
-#define FRAMEWIN_EnableMemdev(hObj)  WM_EnableMemdev(hObj)
-#define FRAMEWIN_DisableMemdev(hObj) WM_DisableMemdev(hObj)
-#define FRAMEWIN_Delete(hObj)        WM_DeleteWindow(hObj)
-#define FRAMEWIN_Paint(hObj)         WM_Paint(hObj)
-#define FRAMEWIN_Invalidate(hObj)    WM_Invalidate(hObj)
+
+#define WM_Invalidate(hObj)    WM_Invalidate(hObj)
 WM_HWIN FRAMEWIN_AddButton     (FRAMEWIN_Handle hObj, int Flags, int Off, int Id);
 WM_HWIN FRAMEWIN_AddCloseButton(FRAMEWIN_Handle hObj, int Flags, int Off);
 WM_HWIN FRAMEWIN_AddMaxButton  (FRAMEWIN_Handle hObj, int Flags, int Off);
@@ -45,21 +44,3 @@ int FRAMEWIN_GetTitleHeight (FRAMEWIN_Handle hObj);
 int FRAMEWIN_GetBorderSize  (FRAMEWIN_Handle hObj);
 int FRAMEWIN_IsMinimized    (FRAMEWIN_Handle hObj);
 int FRAMEWIN_IsMaximized    (FRAMEWIN_Handle hObj);
-RGB_COLOR       FRAMEWIN_GetDefaultBarColor   (unsigned Index);
-int             FRAMEWIN_GetDefaultBorderSize (void);
-int             FRAMEWIN_GetDefaultTitleHeight(void);
-RGB_COLOR       FRAMEWIN_GetDefaultClientColor(void);
-const GUI_FONT  * FRAMEWIN_GetDefaultFont       (void);
-RGB_COLOR       FRAMEWIN_GetDefaultTextColor  (unsigned Index);
-void            FRAMEWIN_SetDefaultBarColor   (unsigned Index, RGB_COLOR Color);
-void            FRAMEWIN_SetDefaultBorderSize (int DefaultBorderSize);
-void            FRAMEWIN_SetDefaultTitleHeight(int DefaultTitleHeight);
-void            FRAMEWIN_SetDefaultClientColor(RGB_COLOR Color);
-void            FRAMEWIN_SetDefaultFont       (const GUI_FONT  * pFont);
-void            FRAMEWIN_SetDefaultTextColor  (unsigned Index, RGB_COLOR Color);
-#define         FRAMEWIN_SetDefaultCaptionSize(Height)       FRAMEWIN_SetDefaultTitleHeight(Height)
-#define         FRAMEWIN_GetDefaultCaptionSize()             FRAMEWIN_GetDefaultTitleHeight()
-#define         FRAMEWIN_CreateButton(hObj, Flags, Off, Id)  FRAMEWIN_AddButton(hObj, Flags, Off, Id)
-#define         FRAMEWIN_CreateCloseButton(hObj, Flags, Off) FRAMEWIN_AddCloseButton(hObj, Flags, Off)
-#define         FRAMEWIN_CreateMaxButton(hObj, Flags, Off)   FRAMEWIN_AddMaxButton(hObj, Flags, Off)
-#define         FRAMEWIN_CreateMinButton(hObj, Flags, Off)   FRAMEWIN_AddMinButton(hObj, Flags, Off)

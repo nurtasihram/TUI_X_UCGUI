@@ -3,32 +3,15 @@
 #include "BUTTON.h"
 #include "BUTTON_Private.h"
 
-/* Define default fonts */
-#define BUTTON_FONT_DEFAULT &GUI_Font13_1
 #define BUTTON_USE_3D 1
-#define BUTTON_3D_MOVE_X 1
-#define BUTTON_3D_MOVE_Y 1
-/* Define colors */
-#define BUTTON_BKCOLOR0_DEFAULT   RGB_GRAYL(0xAA)
-#define BUTTON_BKCOLOR1_DEFAULT   RGB_WHITE
-#define BUTTON_BKCOLOR2_DEFAULT   RGB_LIGHTGRAY
-#define BUTTON_TEXTCOLOR0_DEFAULT RGB_BLACK
-#define BUTTON_TEXTCOLOR1_DEFAULT RGB_BLACK
-#define BUTTON_TEXTCOLOR2_DEFAULT RGB_DARKGRAY
+constexpr GUI_POINT BUTTON_3D_MOVE{ 1, 1 };
+
 #define BUTTON_REACT_ON_LEVEL 0
-#define BUTTON_ALIGN_DEFAULT GUI_TA_HCENTER | GUI_TA_VCENTER
-BUTTON_Obj::Properties BUTTON_Obj::DefaultProps {
-  BUTTON_BKCOLOR0_DEFAULT,
-  BUTTON_BKCOLOR1_DEFAULT,
-  BUTTON_BKCOLOR2_DEFAULT,
-  BUTTON_TEXTCOLOR0_DEFAULT,
-  BUTTON_TEXTCOLOR1_DEFAULT,
-  BUTTON_TEXTCOLOR2_DEFAULT,
-  BUTTON_FONT_DEFAULT,
-  BUTTON_ALIGN_DEFAULT
-};
+
+BUTTON_Obj::Properties BUTTON_Obj::DefaultProps;
+
 static void _OnPaint(BUTTON_Obj *pObj) {
-	const char *s = NULL;
+	const char *s = nullptr;
 	unsigned int Index;
 	int State, PressedState, ColorIndex;
 	GUI_RECT rClient, rInside;
@@ -74,23 +57,18 @@ static void _OnPaint(BUTTON_Obj *pObj) {
 	}
 	GUI_DRAW__Draw(pObj->ahDrawObj[Index], 0, 0);
 	/* Draw the actual button (background and text) */
-	{
-		GUI_RECT r;
-		r = rInside;
 #if BUTTON_USE_3D
-		if (PressedState) {
-			r += GUI_POINT{BUTTON_3D_MOVE_X, BUTTON_3D_MOVE_Y};
-		}
+	if (PressedState)
+		rInside += BUTTON_3D_MOVE;
 #endif
-		GUI_SetTextMode(DRAWMODE_TRANS);
-		GUI_DispStringInRect(s, &r, pObj->Props.Align);
-	}
+	GUI_SetTextMode(DRAWMODE_TRANS);
+	GUI_DispStringInRect(s, &rInside, pObj->Props.Align);
 	/* Draw focus */
 	if (State & BUTTON_STATE_FOCUS) {
 		GUI_SetColor(RGB_BLACK);
 		GUI_DrawFocusRect(rClient, 2);
 	}
-	WM_SetUserClipRect(NULL);
+	WM_SetUserClipRect(nullptr);
 }
 /*********************************************************************
 *
@@ -99,7 +77,7 @@ static void _OnPaint(BUTTON_Obj *pObj) {
 * Delete attached objects (if any)
 */
 static void _Delete(BUTTON_Obj *pObj) {
-	GUI_ALLOC_FreePtr((void **)pObj->pText);
+	GUI_ALLOC_FreePtr((void **)&pObj->pText);
 	GUI_ALLOC_FreePtr(&pObj->ahDrawObj[0]);
 	GUI_ALLOC_FreePtr(&pObj->ahDrawObj[1]);
 }
@@ -209,14 +187,14 @@ void BUTTON_SetText(BUTTON_Handle hObj, const char *s) {
 	if (hObj) {
 		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
 		if (GUI__SetText(&pObj->pText, s))
-			BUTTON_Invalidate(hObj);
+			WM_Invalidate(hObj);
 	}
 }
 void BUTTON_SetFont(BUTTON_Handle hObj, const GUI_FONT  *pfont) {
 	if (hObj) {
 		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
 		pObj->Props.pFont = pfont;
-		BUTTON_Invalidate(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -224,7 +202,7 @@ void BUTTON_SetBkColor(BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color) 
 	if (hObj && (Index <= 2)) {
 		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
 		pObj->Props.aBkColor[Index] = Color;
-		BUTTON_Invalidate(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -232,7 +210,7 @@ void BUTTON_SetTextColor(BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color
 	if (hObj && (Index <= 2)) {
 		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
 		pObj->Props.aTextColor[Index] = Color;
-		BUTTON_Invalidate(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -264,7 +242,7 @@ void BUTTON_SetBitmap(BUTTON_Handle hObj, unsigned int Index, const GUI_BITMAP *
 }
 
 BUTTON_Handle BUTTON_Create(int x0, int y0, int xsize, int ysize, int Id, int Flags) {
-	return BUTTON_CreateEx(x0, y0, xsize, ysize, NULL, Flags, 0, Id);
+	return BUTTON_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, Id);
 }
 BUTTON_Handle BUTTON_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags) {
 	return BUTTON_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id);
@@ -278,42 +256,6 @@ BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, W
 							hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 	BUTTON_SetText(hThis, pCreateInfo->pName);
 	return hThis;
-}
-void BUTTON_SetDefaultFont(const GUI_FONT  *pFont) {
-	BUTTON_Obj::DefaultProps.pFont = pFont;
-}
-void BUTTON_SetDefaultTextColor(RGB_COLOR Color, unsigned Index) {
-	if (Index < GUI_COUNTOF(BUTTON_Obj::DefaultProps.aTextColor)) {
-		BUTTON_Obj::DefaultProps.aTextColor[Index] = Color;
-	}
-}
-void BUTTON_SetDefaultBkColor(RGB_COLOR Color, unsigned Index) {
-	if (Index < GUI_COUNTOF(BUTTON_Obj::DefaultProps.aBkColor)) {
-		BUTTON_Obj::DefaultProps.aBkColor[Index] = Color;
-	}
-}
-void BUTTON_SetDefaultTextAlign(int Align) {
-	BUTTON_Obj::DefaultProps.Align = Align;
-}
-const GUI_FONT  *BUTTON_GetDefaultFont(void) {
-	return BUTTON_Obj::DefaultProps.pFont;
-}
-RGB_COLOR BUTTON_GetDefaultTextColor(unsigned Index) {
-	RGB_COLOR Color = GUI_INVALID_COLOR;
-	if (Index < GUI_COUNTOF(BUTTON_Obj::DefaultProps.aTextColor)) {
-		Color = BUTTON_Obj::DefaultProps.aTextColor[Index];
-	}
-	return Color;
-}
-RGB_COLOR BUTTON_GetDefaultBkColor(unsigned Index) {
-	RGB_COLOR Color = GUI_INVALID_COLOR;
-	if (Index < GUI_COUNTOF(BUTTON_Obj::DefaultProps.aBkColor)) {
-		Color = BUTTON_Obj::DefaultProps.aBkColor[Index];
-	}
-	return Color;
-}
-int BUTTON_GetDefaultTextAlign(void) {
-	return BUTTON_Obj::DefaultProps.Align;
 }
 RGB_COLOR BUTTON_GetBkColor(BUTTON_Handle hObj, unsigned int Index) {
 	RGB_COLOR Color = 0;
@@ -345,7 +287,7 @@ void BUTTON_GetText(BUTTON_Handle hObj, char *pBuffer, int MaxLen) {
 			*(pBuffer + Len) = 0;
 		}
 		else {
-			*pBuffer = 0;     /* Empty string */
+			*pBuffer = 0; /* Empty string */
 		}
 	}
 }
@@ -370,7 +312,7 @@ void BUTTON_SetTextAlign(BUTTON_Handle hObj, int Align) {
 	if (hObj) {
 		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
 		pObj->Props.Align = Align;
-		BUTTON_Invalidate(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -381,7 +323,7 @@ void BUTTON__SetDrawObj(BUTTON_Handle hObj, int Index, GUI_DRAW_HANDLE hDrawObj)
 		if ((unsigned int)Index <= GUI_COUNTOF(pObj->ahDrawObj)) {
 			GUI_ALLOC_FreePtr(&pObj->ahDrawObj[Index]);
 			pObj->ahDrawObj[Index] = hDrawObj;
-			BUTTON_Invalidate(hObj);
+			WM_Invalidate(hObj);
 		}
 
 	}

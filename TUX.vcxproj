@@ -219,7 +219,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\GUI\MemDev;$(ProjectDir)\GUI\Core;$(ProjectDir)\GUI\AntiAlias;$(ProjectDir)\GUI\Widget;$(ProjectDir)\GUI\WM;$(ProjectDir)\Config;$(ProjectDir)\SimDisp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
@@ -236,7 +236,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\GUI\MemDev;$(ProjectDir)\GUI\Core;$(ProjectDir)\GUI\AntiAlias;$(ProjectDir)\GUI\Widget;$(ProjectDir)\GUI\WM;$(ProjectDir)\Config;$(ProjectDir)\SimDisp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
@@ -253,7 +253,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\GUI\MemDev;$(ProjectDir)\GUI\Core;$(ProjectDir)\GUI\AntiAlias;$(ProjectDir)\GUI\Widget;$(ProjectDir)\GUI\WM;$(ProjectDir)\Config;$(ProjectDir)\SimDisp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
@@ -270,7 +270,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\GUI\MemDev;$(ProjectDir)\GUI\Core;$(ProjectDir)\GUI\AntiAlias;$(ProjectDir)\GUI\Widget;$(ProjectDir)\GUI\WM;$(ProjectDir)\Config;$(ProjectDir)\SimDisp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>

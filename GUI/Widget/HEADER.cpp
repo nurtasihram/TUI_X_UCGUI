@@ -4,31 +4,25 @@
 #include "HEADER_Private.h"
 
 #define HEADER_SUPPORT_DRAG 1
-#define HEADER_BORDER_V_DEFAULT 0
-#define HEADER_BORDER_H_DEFAULT 2
-/* Define default fonts */
-#define HEADER_FONT_DEFAULT &GUI_Font13_1
-/* Define colors */
-#define HEADER_BKCOLOR_DEFAULT RGB_GRAYL(0xAA)
-#define HEADER_TEXTCOLOR_DEFAULT RGB_BLACK
-/* Define cursors */
-#define HEADER_CURSOR_DEFAULT &GUI_CursorHeaderM
+
+HEADER_Obj::Properties HEADER_Obj::DefaultProps;
+
 /* Remember the old cursor */
-static const GUI_CURSOR  *_pOldCursor;
+static const GUI_CURSOR *_pOldCursor;
 /* Default values */
-static const GUI_CURSOR  *_pDefaultCursor = HEADER_CURSOR_DEFAULT;
-static RGB_COLOR          _DefaultBkColor = HEADER_BKCOLOR_DEFAULT;
-static RGB_COLOR          _DefaultTextColor = HEADER_TEXTCOLOR_DEFAULT;
-static int                _DefaultBorderH = HEADER_BORDER_H_DEFAULT;
-static int                _DefaultBorderV = HEADER_BORDER_V_DEFAULT;
-static const GUI_FONT  *_pDefaultFont = HEADER_FONT_DEFAULT;
+static const GUI_CURSOR *_pDefaultCursor = &GUI_CursorHeaderM;
+
+constexpr int16_t
+	_DefaultBorderH = 0,
+	_DefaultBorderV = 2;
+
 static void _OnPaint(HEADER_Obj *pObj) {
 	int xPos = -pObj->ScrollPos;
 	int NumItems = GUI_ARRAY_GetNumItems(&pObj->Columns);
 	int EffectSize = pObj->pEffect->EffectSize;
 	GUI_RECT Rect;
-	GUI_SetBkColor(pObj->BkColor);
-	GUI_SetFont(pObj->pFont);
+	GUI_SetBkColor(pObj->Props.BkColor);
+	GUI_SetFont(pObj->Props.pFont);
 	GUI_Clear();
 	for (int i = 0; i < NumItems; i++) {
 		HEADER_COLUMN *pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, i);
@@ -37,25 +31,25 @@ static void _OnPaint(HEADER_Obj *pObj) {
 		Rect.x1 = Rect.x0 + pColumn->Width;
 		if (pColumn->hDrawObj) {
 			int xOff = 0, yOff = 0;
-			switch (pColumn->Align & GUI_TA_HORIZONTAL) {
-				case GUI_TA_RIGHT:
+			switch (pColumn->Align & TEXTALIGN_HORIZONTAL) {
+				case TEXTALIGN_RIGHT:
 					xOff = (pColumn->Width - GUI_DRAW__GetXSize(pColumn->hDrawObj));
 					break;
-				case GUI_TA_HCENTER:
+				case TEXTALIGN_HCENTER:
 					xOff = (pColumn->Width - GUI_DRAW__GetXSize(pColumn->hDrawObj)) / 2;
 					break;
 			}
-			switch (pColumn->Align & GUI_TA_VERTICAL) {
-				case GUI_TA_BOTTOM:
+			switch (pColumn->Align & TEXTALIGN_VERTICAL) {
+				case TEXTALIGN_BOTTOM:
 					yOff = ((Rect.y1 - Rect.y0 + 1) - GUI_DRAW__GetYSize(pColumn->hDrawObj));
 					break;
-				case GUI_TA_VCENTER:
+				case TEXTALIGN_VCENTER:
 					yOff = ((Rect.y1 - Rect.y0 + 1) - GUI_DRAW__GetYSize(pColumn->hDrawObj)) / 2;
 					break;
 			}
 			WM_SetUserClipRect(&Rect);
 			GUI_DRAW__Draw(pColumn->hDrawObj, xPos + xOff, yOff);
-			WM_SetUserClipRect(NULL);
+			WM_SetUserClipRect(nullptr);
 		}
 		WIDGET__EFFECT_DrawUpRect(pObj, Rect);
 		xPos += Rect.x1 - Rect.x0;
@@ -63,7 +57,7 @@ static void _OnPaint(HEADER_Obj *pObj) {
 		Rect.x1 -= EffectSize + _DefaultBorderH;
 		Rect.y0 += EffectSize + _DefaultBorderV;
 		Rect.y1 -= EffectSize + _DefaultBorderV;
-		GUI_SetColor(pObj->TextColor);
+		GUI_SetColor(pObj->Props.TextColor);
 		GUI_DispStringInRect(pColumn->acText, &Rect, pColumn->Align);
 	}
 	Rect = WM_GetClientRect();
@@ -100,28 +94,25 @@ static void _FreeAttached(HEADER_Obj *pObj) {
 }
 #if (HEADER_SUPPORT_DRAG)
 static int _GetItemIndex(HEADER_Obj *pObj, int x, int y) {
-	int Item = -1;
 	if ((y >= 0) && (y < WM_GetWindowSizeY(pObj))) {
 		if (pObj) {
-			int Index, xPos = 0, NumColumns;
-			NumColumns = GUI_ARRAY_GetNumItems(&pObj->Columns);
-			for (Index = 0; Index < NumColumns; Index++) {
-				HEADER_COLUMN *pColumn;
-				pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
+			int Item = -1;
+			int xPos = 0;
+			for (int Index = 0, NumColumns = GUI_ARRAY_GetNumItems(&pObj->Columns); Index < NumColumns; Index++) {
+				HEADER_COLUMN *pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
 				xPos += pColumn->Width;
-				if ((xPos >= (x - 4)) && (xPos <= (x + 4))) {
+				if (xPos >= x - 4 && xPos <= x + 4) {
 					Item = Index;
-					if ((Index < (NumColumns - 1)) && (x < xPos)) {
+					if (Index < NumColumns - 1 && x < xPos) {
 						pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index + 1);
-						if (pColumn->Width == 0) {
-							break;
-						}
+						if (pColumn->Width == 0)
+							return Item;
 					}
 				}
 			}
 		}
 	}
-	return Item;
+	return -1;
 }
 #endif
 #if (HEADER_SUPPORT_DRAG)
@@ -222,10 +213,9 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 		y0 = Rect.y0;
 	}
 	if (ysize == 0) {
-		const WIDGET_EFFECT *pEffect = WIDGET_GetDefaultEffect();
-		ysize = GUI_GetYDistOfFont(_pDefaultFont);
+		ysize = GUI_GetYDistOfFont(HEADER_Obj::DefaultProps.pFont);
 		ysize += 2 * _DefaultBorderV;
-		ysize += 2 * (unsigned)pEffect->EffectSize;
+		ysize += 2 * WIDGET::DefaultEffect->EffectSize;
 	}
 	WinFlags |= WM_CF_ANCHOR_LEFT | WM_CF_ANCHOR_RIGHT;
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, &_HEADER_Callback,
@@ -237,9 +227,7 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, 0);
 		/* init member variables */
-		pObj->BkColor = _DefaultBkColor;
-		pObj->TextColor = _DefaultTextColor;
-		pObj->pFont = _pDefaultFont;
+		pObj->Props = HEADER_Obj::DefaultProps;
 		pObj->CapturePosX = -1;
 		pObj->CaptureItem = -1;
 		pObj->ScrollPos = 0;
@@ -249,46 +237,11 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 
 	return hObj;
 }
-const GUI_CURSOR  *HEADER_SetDefaultCursor(const GUI_CURSOR *pCursor) {
-	const GUI_CURSOR  *pOldCursor = _pDefaultCursor;
-	_pDefaultCursor = pCursor;
-	return pOldCursor;
-}
-RGB_COLOR HEADER_SetDefaultBkColor(RGB_COLOR Color) {
-	RGB_COLOR OldColor = _DefaultBkColor;
-	_DefaultBkColor = Color;
-	return OldColor;
-}
-RGB_COLOR HEADER_SetDefaultTextColor(RGB_COLOR Color) {
-	RGB_COLOR OldColor = _DefaultTextColor;
-	_DefaultTextColor = Color;
-	return OldColor;
-}
-int HEADER_SetDefaultBorderH(int Spacing) {
-	int OldSpacing = _DefaultBorderH;
-	_DefaultBorderH = Spacing;
-	return OldSpacing;
-}
-int HEADER_SetDefaultBorderV(int Spacing) {
-	int OldSpacing = _DefaultBorderV;
-	_DefaultBorderV = Spacing;
-	return OldSpacing;
-}
-const GUI_FONT  *HEADER_SetDefaultFont(const GUI_FONT  *pFont) {
-	const GUI_FONT  *pOldFont = _pDefaultFont;
-	_pDefaultFont = pFont;
-	return pOldFont;
-}
-const GUI_CURSOR  *HEADER_GetDefaultCursor(void) { return _pDefaultCursor; }
-RGB_COLOR          HEADER_GetDefaultBkColor(void) { return _DefaultBkColor; }
-RGB_COLOR          HEADER_GetDefaultTextColor(void) { return _DefaultTextColor; }
-int                HEADER_GetDefaultBorderH(void) { return _DefaultBorderH; }
-int                HEADER_GetDefaultBorderV(void) { return _DefaultBorderV; }
-const GUI_FONT  *HEADER_GetDefaultFont(void) { return _pDefaultFont; }
+
 void HEADER_SetFont(HEADER_Handle hObj, const GUI_FONT  *pFont) {
 	if (hObj) {
 		HEADER_Obj *pObj = (HEADER_Obj *)hObj;
-		pObj->pFont = pFont;
+		pObj->Props.pFont = pFont;
 		WM_Invalidate(hObj);
 	}
 }
@@ -302,7 +255,7 @@ void HEADER_SetHeight(HEADER_Handle hObj, int Height) {
 void HEADER_SetTextColor(HEADER_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		HEADER_Obj *pObj = (HEADER_Obj *)hObj;
-		pObj->TextColor = Color;
+		pObj->Props.TextColor = Color;
 		WM_Invalidate(hObj);
 
 	}
@@ -310,7 +263,7 @@ void HEADER_SetTextColor(HEADER_Handle hObj, RGB_COLOR Color) {
 void HEADER_SetBkColor(HEADER_Handle hObj, RGB_COLOR Color) {
 	if (hObj) {
 		HEADER_Obj *pObj = (HEADER_Obj *)hObj;
-		pObj->BkColor = Color;
+		pObj->Props.BkColor = Color;
 		WM_Invalidate(hObj);
 
 	}
@@ -343,7 +296,7 @@ void HEADER_AddItem(HEADER_Handle hObj, int Width, const char *s, int Align) {
 		HEADER_Obj *pObj = (HEADER_Obj *)hObj;
 		HEADER_COLUMN Column;
 		if (!Width) {
-			const GUI_FONT  *pFont = GUI_SetFont(pObj->pFont);
+			const GUI_FONT  *pFont = GUI_SetFont(pObj->Props.pFont);
 			Width = GUI_GetStringDistX(s) + 2 * (pObj->pEffect->EffectSize + _DefaultBorderH);
 			GUI_SetFont(pFont);
 		}

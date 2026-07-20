@@ -11,28 +11,7 @@
 #include "DROPDOWN.h"
 #include "DROPDOWN_Private.h"
 
-/* Define default fonts */
-#define DROPDOWN_FONT_DEFAULT &GUI_Font13_1
-/* Define colors */
-#define DROPDOWN_BKCOLOR0_DEFAULT RGB_WHITE     /* Not selected */
-#define DROPDOWN_BKCOLOR1_DEFAULT RGB_GRAY      /* Selected, no focus */
-#define DROPDOWN_BKCOLOR2_DEFAULT RGB_BLUE      /* Selected, focus */
-#define DROPDOWN_TEXTCOLOR0_DEFAULT RGB_BLACK   /* Not selected */
-#define DROPDOWN_TEXTCOLOR1_DEFAULT RGB_WHITE   /* Selected, no focus */
-#define DROPDOWN_TEXTCOLOR2_DEFAULT RGB_WHITE   /* Selected, focus */
-#define DROPDOWN_BORDER_DEFAULT 2
-#define DROPDOWN_ALIGN_DEFAULT GUI_TA_LEFT      /* Default text alignment */
-DROPDOWN_Obj::Properties DROPDOWN_Obj::DefaultProps {
-  DROPDOWN_FONT_DEFAULT,
-  DROPDOWN_BKCOLOR0_DEFAULT,
-  DROPDOWN_BKCOLOR1_DEFAULT,
-  DROPDOWN_BKCOLOR2_DEFAULT,
-  DROPDOWN_TEXTCOLOR0_DEFAULT,
-  DROPDOWN_TEXTCOLOR1_DEFAULT,
-  DROPDOWN_TEXTCOLOR2_DEFAULT,
-  DROPDOWN_BORDER_DEFAULT,
-  DROPDOWN_ALIGN_DEFAULT
-};
+DROPDOWN_Obj::Properties DROPDOWN_Obj::DefaultProps;
 
 /*********************************************************************
 *
@@ -64,7 +43,7 @@ static void _DrawTriangleDown(int x, int y, int Size) {
 	Pointer to the specified item
 */
 static const char *_GetpItem(DROPDOWN_Obj *pObj, int Index) {
-	const char *s = NULL;
+	const char *s = nullptr;
 	WM_HMEM h = _GethItem(pObj, Index);
 	if (h) {
 		s = (const char *)(h);
@@ -114,9 +93,9 @@ static void _OnPaint(DROPDOWN_Handle hObj) {
 	WIDGET__EFFECT_DrawDown(pObj);
 	/* Draw the outer text frames */
 	r.x1 -= InnerSize;     /* Spare square area to the right */
-	GUI_SetColor(pObj->Props.aBackColor[ColorIndex]);
+	GUI_SetColor(pObj->Props.aBkColor[ColorIndex]);
 	/* Draw the text */
-	GUI_SetBkColor(pObj->Props.aBackColor[ColorIndex]);
+	GUI_SetBkColor(pObj->Props.aBkColor[ColorIndex]);
 	GUI_FillRect(r);
 	r.x0 += TextBorderSize;
 	r.x1 -= TextBorderSize;
@@ -231,12 +210,11 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 		GUI_ARRAY_CREATE(&pObj->Handles);
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		pObj->Flags = ExFlags;
 		pObj->Props = DROPDOWN_Obj::DefaultProps;
+		pObj->Flags = ExFlags;
 		pObj->ScrollbarWidth = 0;
 		pObj->ySizeEx = ysize;
 		DROPDOWN__AdjustHeight(pObj);
-
 	}
 	return hObj;
 }
@@ -274,7 +252,7 @@ void DROPDOWN_Expand(DROPDOWN_Handle hObj) {
 		}
 		hLst = pObj->hListWin;
 		if (hLst == 0) {
-			hLst = LISTBOX_CreateAsChild(NULL, WM_GetDesktopWindow(), r.x0, r.y0
+			hLst = LISTBOX_CreateAsChild(nullptr, WM_GetDesktopWindow(), r.x0, r.y0
 										 , xSize, ySize, WM_CF_SHOW | WM_CF_STAYONTOP | WM_CF_ACTIVATE);
 			if (hLst) {
 				if (pObj->Flags & DROPDOWN_SF_AUTOSCROLLBAR) {
@@ -294,8 +272,8 @@ void DROPDOWN_Expand(DROPDOWN_Handle hObj) {
 				LISTBOX_DeleteItem(hLst, 0);
 			for (i = 0; i < NumItems; i++)
 				LISTBOX_AddString(hLst, _GetpItem(pObj, i));
-			for (i = 0; i < GUI_COUNTOF(pObj->Props.aBackColor); i++)
-				LISTBOX_SetBkColor(hLst, i, pObj->Props.aBackColor[i]);
+			for (i = 0; i < GUI_COUNTOF(pObj->Props.aBkColor); i++)
+				LISTBOX_SetBkColor(hLst, i, pObj->Props.aBkColor[i]);
 			for (i = 0; i < GUI_COUNTOF(pObj->Props.aTextColor); i++)
 				LISTBOX_SetTextColor(hLst, i, pObj->Props.aTextColor[i]);
 			LISTBOX_SetItemSpacing(hLst, pObj->ItemSpacing);
@@ -329,7 +307,7 @@ void DROPDOWN_AddString(DROPDOWN_Handle hObj, const char *s) {
 
 		pObj = (DROPDOWN_Obj *)hObj;
 		GUI_ARRAY_AddItem(&pObj->Handles, s, GUI__strlen(s) + 1);
-		DROPDOWN_Invalidate(hObj);
+		WM_Invalidate(hObj);
 
 	}
 }
@@ -353,7 +331,7 @@ void DROPDOWN_SetFont(DROPDOWN_Handle hObj, const GUI_FONT *pfont) {
 		OldHeight = GUI_GetYDistOfFont(pObj->Props.pFont);
 		pObj->Props.pFont = pfont;
 		DROPDOWN__AdjustHeight(pObj);
-		DROPDOWN_Invalidate(hObj);
+		WM_Invalidate(hObj);
 		if (pObj->hListWin) {
 			if (OldHeight != GUI_GetYDistOfFont(pObj->Props.pFont)) {
 				DROPDOWN_Collapse(hObj);
@@ -367,30 +345,26 @@ void DROPDOWN_SetFont(DROPDOWN_Handle hObj, const GUI_FONT *pfont) {
 void DROPDOWN_SetBkColor(DROPDOWN_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
-		if (Index < GUI_COUNTOF(pObj->Props.aBackColor)) {
-
+		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
 			pObj = (DROPDOWN_Obj *)hObj;
-			pObj->Props.aBackColor[Index] = color;
-			DROPDOWN_Invalidate(hObj);
+			pObj->Props.aBkColor[Index] = color;
+			WM_Invalidate(hObj);
 			if (pObj->hListWin) {
 				LISTBOX_SetBkColor(pObj->hListWin, Index, color);
 			}
-
 		}
 	}
 }
 void DROPDOWN_SetTextColor(DROPDOWN_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
-		if (Index < GUI_COUNTOF(pObj->Props.aBackColor)) {
-
+		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
 			pObj = (DROPDOWN_Obj *)hObj;
 			pObj->Props.aTextColor[Index] = color;
-			DROPDOWN_Invalidate(hObj);
+			WM_Invalidate(hObj);
 			if (pObj->hListWin) {
 				LISTBOX_SetTextColor(pObj->hListWin, Index, color);
 			}
-
 		}
 	}
 }
@@ -407,7 +381,7 @@ void DROPDOWN_SetSel(DROPDOWN_Handle hObj, int Sel) {
 		}
 		if (Sel != pObj->Sel) {
 			pObj->Sel = Sel;
-			DROPDOWN_Invalidate(hObj);
+			WM_Invalidate(hObj);
 			WM_NotifyParent(hObj, WM_NOTIFICATION_SEL_CHANGED);
 		}
 
@@ -447,12 +421,6 @@ void DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width) {
 		}
 
 	}
-}
-void DROPDOWN_SetDefaultFont(const GUI_FONT *pFont) {
-	DROPDOWN_Obj::DefaultProps.pFont = pFont;
-}
-const GUI_FONT *DROPDOWN_GetDefaultFont(void) {
-	return DROPDOWN_Obj::DefaultProps.pFont;
 }
 
 DROPDOWN_Handle DROPDOWN_Create(WM_HWIN hWinParent, int x0, int y0, int xsize, int ysize, int Flags) {
@@ -539,10 +507,8 @@ unsigned DROPDOWN_GetItemSpacing(DROPDOWN_Handle hObj) {
 void DROPDOWN_SetAutoScroll(DROPDOWN_Handle hObj, int OnOff) {
 	if (hObj) {
 		DROPDOWN_Obj *pObj;
-		char Flags;
-
 		pObj = (DROPDOWN_Obj *)hObj;
-		Flags = pObj->Flags & (~DROPDOWN_SF_AUTOSCROLLBAR);
+		char Flags  = pObj->Flags & (~DROPDOWN_SF_AUTOSCROLLBAR);
 		if (OnOff) {
 			Flags |= DROPDOWN_SF_AUTOSCROLLBAR;
 		}
@@ -552,29 +518,24 @@ void DROPDOWN_SetAutoScroll(DROPDOWN_Handle hObj, int OnOff) {
 				LISTBOX_SetAutoScrollV(pObj->hListWin, (Flags & DROPDOWN_SF_AUTOSCROLLBAR) ? 1 : 0);
 			}
 		}
-
 	}
 }
 
 void DROPDOWN_SetTextAlign(DROPDOWN_Handle hObj, int Align) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
-
 		pObj = (DROPDOWN_Obj *)hObj;
 		pObj->Props.Align = Align;
 		WM_Invalidate(hObj);
-
 	}
 }
 
 void DROPDOWN_SetTextHeight(DROPDOWN_Handle hObj, unsigned TextHeight) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
-
 		pObj = (DROPDOWN_Obj *)hObj;
 		pObj->TextHeight = TextHeight;
 		DROPDOWN__AdjustHeight(pObj);
 		WM_Invalidate(hObj);
-
 	}
 }

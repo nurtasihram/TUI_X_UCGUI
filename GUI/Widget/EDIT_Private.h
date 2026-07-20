@@ -6,13 +6,20 @@
 
 struct EDIT_Obj : public WIDGET {
 	struct Properties {
-		int16_t Align;
-		int16_t Border;
-		const GUI_FONT *pFont;
-		RGB_COLOR aTextColor[2];
-		RGB_COLOR aBkColor[2];
-	} Props;
-	static Properties DefaultProps;
+		const GUI_FONT *pFont{ &GUI_Font13_1 };
+		RGB_COLOR aTextColor[2]{
+			/* Disabled */	RGB_BLACK,
+			/* Enabled */	RGB_BLACK
+		};
+		RGB_COLOR aBkColor[2]{
+			/* Disabled */	RGB_GRAYL(0xC0),
+			/* Enabled */	RGB_WHITE
+		};
+		TEXTALIGN Align{ TEXTALIGN_LEFT | TEXTALIGN_VCENTER };
+		int8_t Border{ 1 };
+	} static DefaultProps;
+	Properties Props;
+	
 	char *pText;
 	int16_t MaxLen;
 	uint16_t BufferSize;

@@ -1,34 +1,23 @@
 #pragma once
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
-#define CHECKBOX_BI_INACTIV        0
-#define CHECKBOX_BI_ACTIV          1
-#define CHECKBOX_BI_INACTIV_3STATE 2
-#define CHECKBOX_BI_ACTIV_3STATE   3
-/*********************************************************************
-*
-*                         Public Types
-*
-**********************************************************************
-*/
+
+enum CHECKBOX_BI {
+	 CHECKBOX_BI_INACTIV = 0,
+	 CHECKBOX_BI_ACTIV,
+	 CHECKBOX_BI_INACTIV_3STATE,
+	 CHECKBOX_BI_ACTIV_3STATE
+};
+enum CHECKBOX_CI {
+	 CHECKBOX_CI_INACTIV = 0,
+	 CHECKBOX_CI_ACTIV
+};
+
 typedef WM_HMEM CHECKBOX_Handle;
 CHECKBOX_Handle CHECKBOX_Create        (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags);
 CHECKBOX_Handle CHECKBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
 CHECKBOX_Handle CHECKBOX_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
                                         int WinFlags, int ExFlags, int Id);
-int                          CHECKBOX_GetDefaultAlign    (void);
-RGB_COLOR                    CHECKBOX_GetDefaultBkColor  (void);
-const GUI_FONT  * CHECKBOX_GetDefaultFont     (void);
-int                          CHECKBOX_GetDefaultSpacing  (void);
-int                          CHECKBOX_GetDefaultTextAlign(void);
-RGB_COLOR                    CHECKBOX_GetDefaultTextColor(void);
-void                         CHECKBOX_SetDefaultAlign    (int Align);
-void                         CHECKBOX_SetDefaultBkColor  (RGB_COLOR Color);
-void                         CHECKBOX_SetDefaultFont     (const GUI_FONT  * pFont);
-void                         CHECKBOX_SetDefaultImage    (const GUI_BITMAP * pBitmap, unsigned int Index);
-void                         CHECKBOX_SetDefaultSpacing  (int Spacing);
-void                         CHECKBOX_SetDefaultTextAlign(int Align);
-void                         CHECKBOX_SetDefaultTextColor(RGB_COLOR Color);
 int  CHECKBOX_GetState    (CHECKBOX_Handle hObj);
 int  CHECKBOX_IsChecked   (CHECKBOX_Handle hObj);
 void CHECKBOX_SetBkColor  (CHECKBOX_Handle hObj, RGB_COLOR Color);
@@ -40,5 +29,3 @@ void CHECKBOX_SetState    (CHECKBOX_Handle hObj, unsigned State);
 void CHECKBOX_SetText     (CHECKBOX_Handle hObj, const char * pText);
 void CHECKBOX_SetTextAlign(CHECKBOX_Handle hObj, int Align);
 void CHECKBOX_SetTextColor(CHECKBOX_Handle hObj, RGB_COLOR Color);
-#define CHECKBOX_Check(hObj)   CHECKBOX_SetState(hObj, 1)
-#define CHECKBOX_Uncheck(hObj) CHECKBOX_SetState(hObj, 0)

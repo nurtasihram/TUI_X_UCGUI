@@ -3,12 +3,12 @@
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 #include "WIDGET.h"      /* Req. for Create indirect data structure */
 #include "GUIDebug.h" /* Req. for GUI_DEBUG_LEVEL */
-#define TEXT_CF_LEFT    GUI_TA_LEFT
-#define TEXT_CF_RIGHT   GUI_TA_RIGHT
-#define TEXT_CF_HCENTER GUI_TA_HCENTER
-#define TEXT_CF_VCENTER GUI_TA_VCENTER
-#define TEXT_CF_TOP     GUI_TA_TOP
-#define TEXT_CF_BOTTOM  GUI_TA_BOTTOM
+#define TEXT_CF_LEFT    TEXTALIGN_LEFT
+#define TEXT_CF_RIGHT   TEXTALIGN_RIGHT
+#define TEXT_CF_HCENTER TEXTALIGN_HCENTER
+#define TEXT_CF_VCENTER TEXTALIGN_VCENTER
+#define TEXT_CF_TOP     TEXTALIGN_TOP
+#define TEXT_CF_BOTTOM  TEXTALIGN_BOTTOM
 /*********************************************************************
 *
 *       Public Types
@@ -16,11 +16,7 @@
 **********************************************************************
 */
 typedef WM_HMEM TEXT_Handle;
-#define TEXT_EnableMemdev(hObj)  WM_EnableMemdev(hObj)
-#define TEXT_DisableMemdev(hObj) WM_DisableMemdev(hObj)
-#define TEXT_Delete(hObj)        WM_DeleteWindow(hObj)
-#define TEXT_Paint(hObj)         WM_Paint(hObj)
-#define TEXT_Invalidate(hObj)    WM_Invalidate(hObj)
+
 TEXT_Handle TEXT_Create        (int x0, int y0, int xsize, int ysize, int Id, int Flags, const char * s, int Align);
 TEXT_Handle TEXT_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, const char * s, int Align);
 TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
@@ -32,13 +28,10 @@ void TEXT_SetFont     (TEXT_Handle pObj, const GUI_FONT  * pFont);
 void TEXT_SetText     (TEXT_Handle pObj, const char* s);
 void TEXT_SetTextAlign(TEXT_Handle pObj, int Align);
 void TEXT_SetTextColor(TEXT_Handle pObj, RGB_COLOR Color);
-void            TEXT_SetDefaultFont(const GUI_FONT  * pFont);
-const GUI_FONT  * TEXT_GetDefaultFont(void);
-void            TEXT_SetDefaultTextColor(RGB_COLOR Color);
 struct TEXT_Obj : public WIDGET {
   char *pText;
   const GUI_FONT *pFont;
-  int16_t Align;
+  TEXTALIGN Align;
   RGB_COLOR TextColor;
   RGB_COLOR BkColor;
 };

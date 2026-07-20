@@ -73,7 +73,3 @@ WM_HWIN WINDOW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN
 	}
 	return hObj;
 }
-
-void WINDOW_SetDefaultBkColor(RGB_COLOR Color) {
-	WINDOW__DefaultBkColor = Color;
-}

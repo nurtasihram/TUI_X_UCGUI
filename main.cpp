@@ -52,13 +52,13 @@ const GUI_BITMAP bmSmilie1 = {
 	acSmilie1, &PalSmilie1 };
 
 static const GUI_ConstString _ListBox[] = {
-  "English", "Deutsch", NULL
+  "English", "Deutsch", nullptr
 };
 #define GUI_ID_MULTIEDIT0  GUI_ID_USER + 0x00
 #define GUI_ID_CHECK0      GUI_ID_USER + 0x01
 #define GUI_ID_CHECK1      GUI_ID_USER + 0x02
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
-	{ FRAMEWIN_CreateIndirect  , "Owner drawn list box" , 0                 , 50  , 50  , 220  , 165  , FRAMEWIN_CF_MOVEABLE       },
+	{ FRAMEWIN_CreateIndirect  , "Owner drawn list box" , 0                 , 50  , 50  , 220  , 175  , FRAMEWIN_CF_MOVEABLE       },
 	{ LISTBOX_CreateIndirect   , ""                     , GUI_ID_MULTIEDIT0 , 10  , 10  , 100  , 100  , 0                    , 100 },
 	{ CHECKBOX_CreateIndirect  , ""                     , GUI_ID_CHECK0     , 120 , 10  , 0    , 0                                 },
 	{ TEXT_CreateIndirect      , "Multi select"         , 0                 , 140 , 10  , 80   , 15   , TEXT_CF_LEFT               },
@@ -111,7 +111,7 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 			int ColorIndex = 0;
 			char acBuffer[100];
 			RGB_COLOR aColor[4] = { RGB_BLACK, RGB_WHITE, RGB_WHITE, RGB_GRAY };
-			RGB_COLOR aBkColor[4] = { RGB_WHITE, RGB_GRAY, RGB_BLUE, RGB_GRAYL(0xC0) };
+			RGB_COLOR aBkColor[4] = { RGB_WHITE, RGB_GRAY, RGB_DARKBLUE, RGB_GRAYL(0xC0) };
 			bool IsDisabled = LISTBOX_GetItemDisabled(pDrawItemInfo->hWin, pDrawItemInfo->ItemIndex);
 			bool IsSelected = LISTBOX_GetItemSel(hWin, Index);
 			int MultiSel = LISTBOX_GetMulti(hWin);
@@ -170,7 +170,7 @@ static WM_PARAM _cbMemDevPane(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			int MemDevOn = (hWin == _hMemDevPane);
 			if (Span > 0) {
 				int Phase = _MemDevPhase % (Span * 2);
-				XPos = (Phase > Span) ? (Span * 2 - Phase) : Phase;
+				XPos = Phase > Span ? Span * 2 - Phase : Phase;
 			}
 			GUI_SetBkColor(RGB_WHITE);
 			GUI_Clear();
@@ -231,7 +231,7 @@ static WM_PARAM _cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			LISTBOX_SetAutoScrollV(hListBox, 1);
 			LISTBOX_SetOwnerDraw(hListBox, _OwnerDraw);
 			hItem = WM_GetDialogItem(hWin, GUI_ID_CHECK1);
-			CHECKBOX_Check(hItem);
+			CHECKBOX_SetState(hItem, 1);
 			return 0;
 		case WM_KEY: {
 			const WM_KEY_INFO *pInfo = (const WM_KEY_INFO *)Data;
@@ -254,7 +254,7 @@ static WM_PARAM _cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			hItem = WM_GetDialogItem(hWin, Id);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SEL_CHANGED:
-					LISTBOX_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
+					WM_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
 					break;
 				case WM_NOTIFICATION_RELEASED: /* React only if released */
 					switch (Id) {
@@ -268,15 +268,15 @@ static WM_PARAM _cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 							_MultiSel = !_MultiSel;
 							LISTBOX_SetMulti(hListBox, _MultiSel);
 							WM_SetFocus(hListBox);
-							LISTBOX_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
+							WM_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
 							break;
 						case GUI_ID_CHECK1:
 							_OwnerDrawn = !_OwnerDrawn;
 							if (_OwnerDrawn)
 								LISTBOX_SetOwnerDraw(hListBox, _OwnerDraw);
 							else
-								LISTBOX_SetOwnerDraw(hListBox, NULL);
-							LISTBOX_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
+								LISTBOX_SetOwnerDraw(hListBox, nullptr);
+							WM_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
 							break;
 					}
 					break;
@@ -416,9 +416,9 @@ int main(void) {
 			GUI_Delay(40);
 		}
 		if (_hMemDevFrame)
-			FRAMEWIN_Delete(_hMemDevFrame);
+			WM_DeleteWindow(_hMemDevFrame);
 		if (_hNoMemDevFrame)
-			FRAMEWIN_Delete(_hNoMemDevFrame);
+			WM_DeleteWindow(_hNoMemDevFrame);
 		_hMemDevFrame = 0;
 		_hMemDevPane = 0;
 		_hNoMemDevFrame = 0;
@@ -457,9 +457,9 @@ const char *pRows[][5] = {
 void main(void) {
 	GUI_Init();
 	WM_HWIN hListView = LISTVIEW_Create(10, 110, 50, 70, 0, 0, WM_CF_SHOW, 0);
-	LISTVIEW_AddColumn(hListView, 0, "Col 1    ", GUI_TA_LEFT);
-	LISTVIEW_AddColumn(hListView, 0, "Col 2    ", GUI_TA_LEFT);
-	LISTVIEW_AddColumn(hListView, 0, "Col 3     ", GUI_TA_LEFT);
+	LISTVIEW_AddColumn(hListView, 0, "Col 1    ", TEXTALIGN_LEFT);
+	LISTVIEW_AddColumn(hListView, 0, "Col 2    ", TEXTALIGN_LEFT);
+	LISTVIEW_AddColumn(hListView, 0, "Col 3     ", TEXTALIGN_LEFT);
 	LISTVIEW_AddRow(hListView, pRows[0]);
 	LISTVIEW_AddRow(hListView, pRows[1]);/*
 	LISTVIEW_AddRow(hListView, pRows[2]);

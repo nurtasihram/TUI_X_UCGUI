@@ -1,6 +1,3 @@
-#include "GUI_Protected.h"
-#include "WM_Intern.h"
-
 #include "WIDGET.h"
 #include "MENU.h"
 #include "BUTTON.h"
@@ -8,59 +5,18 @@
 #include "FRAMEWIN.h"
 #include "FRAMEWIN_Private.h"
 
-/* Support for 3D effects */
-#define FRAMEWIN_CLIENTCOLOR_DEFAULT RGB_GRAYL(0xc0)
-/* Default for top frame size */
-#define FRAMEWIN_TITLEHEIGHT_DEFAULT 0
-/* Default for left/right/top/bottom frame size */
-#define FRAMEWIN_BORDER_DEFAULT 3
-/* Default for inner frame size */
-#define FRAMEWIN_IBORDER_DEFAULT 1
-/* Default font */
-#define FRAMEWIN_DEFAULT_FONT &GUI_Font8_1
-/* Default barcolor when framewin is active */
-#define FRAMEWIN_BARCOLOR_ACTIVE_DEFAULT RGB_BLUE
-/* Default barcolor when framewin is inactive */
-#define FRAMEWIN_BARCOLOR_INACTIVE_DEFAULT RGB_GRAYL(0x40)
-/* Default framecolor */
-#define FRAMEWIN_FRAMECOLOR_DEFAULT RGB_GRAYL(0xAA)
-/* Default textcolor when framewin is active */
-#define FRAMEWIN_TEXTCOLOR0_DEFAULT RGB_WHITE
-/* Default textcolor when framewin is inactive */
-#define FRAMEWIN_TEXTCOLOR1_DEFAULT RGB_WHITE
-FRAMEWIN_Obj::Properties FRAMEWIN_Obj::DefaultProps {
-  FRAMEWIN_DEFAULT_FONT,
-  FRAMEWIN_BARCOLOR_INACTIVE_DEFAULT,
-  FRAMEWIN_BARCOLOR_ACTIVE_DEFAULT,
-  FRAMEWIN_TEXTCOLOR0_DEFAULT,
-  FRAMEWIN_TEXTCOLOR1_DEFAULT,
-  FRAMEWIN_CLIENTCOLOR_DEFAULT,
-  FRAMEWIN_TITLEHEIGHT_DEFAULT,
-  FRAMEWIN_BORDER_DEFAULT,
-  FRAMEWIN_IBORDER_DEFAULT
-};
+FRAMEWIN_Obj::Properties FRAMEWIN_Obj::DefaultProps;
+
 static int16_t FRAMEWIN__MinVisibility = 5;
-static void _SetActive(FRAMEWIN_Handle hObj, int State) {
-	FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
-	if (State && !(pObj->Flags & FRAMEWIN_CF_ACTIVE)) {
-		pObj->Flags |= FRAMEWIN_CF_ACTIVE;
-		FRAMEWIN_Invalidate(hObj);
-	}
-	else if (!State && (pObj->Flags & FRAMEWIN_CF_ACTIVE)) {
-		pObj->Flags &= ~FRAMEWIN_CF_ACTIVE;
-		FRAMEWIN_Invalidate(hObj);
-	}
-}
+
 static void _OnTouch(FRAMEWIN_Obj *pObj, const GUI_PID_STATE *pState) {
 	if (pState) {  /* Something happened in our area (pressed or released) */
 		if (pState->Pressed) {
-			if (!(pObj->Flags & FRAMEWIN_CF_ACTIVE)) {
+			if (!(pObj->Flags & FRAMEWIN_CF_ACTIVE))
 				WM_SetFocus(pObj);
-			}
 			WM_BringToTop(pObj);
-			if (pObj->Flags & FRAMEWIN_CF_MOVEABLE) {
+			if (pObj->Flags & FRAMEWIN_CF_MOVEABLE)
 				WM_SetCaptureMove(pObj, pState, FRAMEWIN__MinVisibility);
-			}
 		}
 	}
 }
@@ -82,46 +38,43 @@ static int _OnKey(FRAMEWIN_Obj *pObj, const WM_KEY_INFO *pInfo) {
 */
 static void _OnPaint(FRAMEWIN_Obj *pObj) {
 	WM_HWIN hWin = WM_GetActiveWindow();
-	const char *pText = NULL;
-	int xsize = WM_GetWindowSizeX(hWin);
-	int ysize = WM_GetWindowSizeY(hWin);
-	int BorderSize = pObj->Props.BorderSize;
-	int y0, Index;
+	const char *pText = nullptr;
+	auto xsize = WM_GetWindowSizeX(hWin);
+	auto ysize = WM_GetWindowSizeY(hWin);
+	auto BorderSize = pObj->Props.BorderSize;
 	POSITIONS Pos;
-	GUI_RECT r, rText;
-	/* Perform computations */
 	FRAMEWIN__CalcPositions(pObj, &Pos);
-	Index = (pObj->Flags & FRAMEWIN_CF_ACTIVE) ? 1 : 0;
+	GUI_RECT r{
+		Pos.rClient.x0,
+		Pos.rTitleText.y0,
+		Pos.rClient.x1,
+		Pos.rTitleText.y1
+	};
+	/* Perform computations */
+	auto Index = (pObj->Flags & FRAMEWIN_CF_ACTIVE) ? 1 : 0;
 	if (pObj->pText)
 		pText = pObj->pText;
-	r.x0 = Pos.rClient.x0;
-	r.x1 = Pos.rClient.x1;
-	r.y0 = Pos.rTitleText.y0;
-	r.y1 = Pos.rTitleText.y1;
 	Pos.rTitleText.y0++;
 	Pos.rTitleText.x0++;
 	Pos.rTitleText.x1--;
 	GUI_SetFont(pObj->Props.pFont);
-	GUI__CalcTextRect(pText, &Pos.rTitleText, &rText, pObj->TextAlign);
-	y0 = Pos.TitleHeight + BorderSize;
-	/* Perform drawing operations */
-	WM_ITERATE_START(NULL) {
-		/* Draw Title */
-		GUI_SetBkColor(pObj->Props.aBarColor[Index]);
-		GUI_SetColor(pObj->Props.aTextColor[Index]);
-		WIDGET__FillStringInRect(pText, r, Pos.rTitleText, rText);
-		/* Draw Frame */
-		GUI_SetColor(FRAMEWIN_FRAMECOLOR_DEFAULT);
-		GUI_FillRect({ 0, 0, xsize - 1, BorderSize - 1 });
-		GUI_FillRect({ 0, 0, Pos.rClient.x0 - 1, ysize - 1 });
-		GUI_FillRect({ Pos.rClient.x1 + 1, 0, xsize - 1, ysize - 1 });
-		GUI_FillRect({ 0, Pos.rClient.y1 + 1, xsize - 1, ysize - 1 });
-		GUI_FillRect({ 0, y0, xsize - 1, y0 + pObj->Props.IBorderSize - 1});
-		/* Draw the 3D effect (if configured) */
-		if (pObj->Props.BorderSize >= 2) {
-			WIDGET_EFFECT_3D_DrawUp();  /* pObj->pEffect->pfDrawUp(); */
-		}
-	} WM_ITERATE_END();
+	GUI_RECT rText;
+	GUI__CalcTextRect(pText, &Pos.rTitleText, &rText, pObj->Props.Align);
+	auto y0 = Pos.TitleHeight + BorderSize;
+	/* Draw Title */
+	GUI_SetBkColor(pObj->Props.aBarColor[Index]);
+	GUI_SetColor(pObj->Props.aTextColor[Index]);
+	WIDGET__FillStringInRect(pText, r, Pos.rTitleText, rText);
+	/* Draw Frame */
+	GUI_SetColor(pObj->Props.FrameColor);
+	GUI_FillRect({ 0, 0, xsize - 1, BorderSize - 1 });
+	GUI_FillRect({ 0, 0, Pos.rClient.x0 - 1, ysize - 1 });
+	GUI_FillRect({ Pos.rClient.x1 + 1, 0, xsize - 1, ysize - 1 });
+	GUI_FillRect({ 0, Pos.rClient.y1 + 1, xsize - 1, ysize - 1 });
+	GUI_FillRect({ 0, y0, xsize - 1, y0 + pObj->Props.IBorderSize - 1});
+	/* Draw the 3D effect (if configured) */
+	if (pObj->Props.BorderSize >= 2)
+		WIDGET__EFFECT_DrawUpRect(pObj, WM_GetClientRect()); /* pObj->pEffect->pfDrawUp(); */
 }
 /*********************************************************************
 *
@@ -140,9 +93,9 @@ static void _OnPaint(FRAMEWIN_Obj *pObj) {
 static void _OnChildHasFocus(FRAMEWIN_Obj *pObj, const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
 	if (pInfo) {
 		if (WM__IsAncestorOrSelf(pInfo->hNew, pObj)) /* A child has received the focus, Framewindow needs to be activated */
-			_SetActive(pObj, 1);
+			FRAMEWIN_SetActive(pObj, 1);
 		else { /* A child has lost the focus, we need to deactivate */
-			_SetActive(pObj, 0);
+			FRAMEWIN_SetActive(pObj, 0);
 			/* Remember the child which had the focus so we can reactive this child */
 			if (WM__IsAncestor(pInfo->hOld, pObj))
 				pObj->hFocussedChild = pInfo->hOld;
@@ -231,7 +184,7 @@ static WM_PARAM _FRAMEWIN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 		case WM_DELETE:
 			GUI_DEBUG_LOG("FRAMEWIN: _FRAMEWIN_Callback(WM_DELETE)\n");
 			GUI_ALLOC_Free(pObj->pText);
-			pObj->pText = NULL;
+			pObj->pText = nullptr;
 			break;
 	}
 	/* Let widget handle the standard messages */
@@ -244,7 +197,7 @@ static WM_PARAM FRAMEWIN__cbClient(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	WM_CALLBACK *cb = pParent->cb;
 	switch (MsgId) {
 		case WM_PAINT:
-			if (pParent->Props.ClientColor != GUI_INVALID_COLOR) {
+			if (pParent->Props.ClientColor != RGB_INVALID_COLOR) {
 				GUI_SetBkColor(pParent->Props.ClientColor);
 				GUI_Clear();
 			}
@@ -356,7 +309,6 @@ FRAMEWIN_Handle FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS);
 		/* init member variables */
 		pObj->Props = FRAMEWIN_Obj::DefaultProps;
-		pObj->TextAlign = GUI_TA_LEFT;
 		pObj->cb = cb;
 		pObj->Flags = ExFlags;
 		pObj->hFocussedChild = 0;
@@ -376,46 +328,45 @@ FRAMEWIN_Handle FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 			WM_DisableMemdev(hObj);
 		}
 		FRAMEWIN_SetText(hObj, pTitle);
-
 	}
 	return hObj;
 }
 void FRAMEWIN_SetText(FRAMEWIN_Handle hObj, const char *s) {
 	if (hObj) {
 		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
-		if (GUI__SetText(&pObj->pText, s)) {
-			FRAMEWIN_Invalidate(hObj);
-		}
-
+		if (GUI__SetText(&pObj->pText, s))
+			WM_Invalidate(hObj);
 	}
 }
 void FRAMEWIN_SetTextAlign(FRAMEWIN_Handle hObj, int Align) {
 	if (hObj) {
 		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
-		if (pObj->TextAlign != Align) {
-			pObj->TextAlign = Align;
-			FRAMEWIN_Invalidate(hObj);
+		if (pObj->Props.Align != Align) {
+			pObj->Props.Align = Align;
+			WM_Invalidate(hObj);
 		}
-
 	}
 }
 void FRAMEWIN_SetMoveable(FRAMEWIN_Handle hObj, int State) {
 	if (hObj) {
 		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
-		if (State) {
+		if (State)
 			pObj->Flags |= FRAMEWIN_CF_MOVEABLE;
-		}
-		else {
+		else
 			pObj->Flags &= ~FRAMEWIN_CF_MOVEABLE;
-		}
-
 	}
 }
 void FRAMEWIN_SetActive(FRAMEWIN_Handle hObj, int State) {
 	if (hObj) {
-
-		_SetActive(hObj, State);
-
+		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		if (State && !(pObj->Flags & FRAMEWIN_CF_ACTIVE)) {
+			pObj->Flags |= FRAMEWIN_CF_ACTIVE;
+			WM_Invalidate(hObj);
+		}
+		else if (!State && (pObj->Flags & FRAMEWIN_CF_ACTIVE)) {
+			pObj->Flags &= ~FRAMEWIN_CF_ACTIVE;
+			WM_Invalidate(hObj);
+		}
 	}
 }
 
@@ -441,7 +392,7 @@ void FRAMEWIN_AddMenu(FRAMEWIN_Handle hObj, WM_HWIN hMenu) {
 			MENU_Attach(hMenu, hObj, x0, y0, xSize, 0, 0);
 			WM_SetAnchor(hMenu, WM_CF_ANCHOR_LEFT | WM_CF_ANCHOR_RIGHT);
 			FRAMEWIN__UpdatePositions(pObj);
-			FRAMEWIN_Invalidate(hObj);
+			WM_Invalidate(hObj);
 		}
 	}
 }
@@ -449,7 +400,7 @@ void FRAMEWIN_AddMenu(FRAMEWIN_Handle hObj, WM_HWIN hMenu) {
 
 FRAMEWIN_Handle FRAMEWIN_Create(const char *pText, WM_CALLBACK *cb, int Flags,
 								int x0, int y0, int xsize, int ysize) {
-	return FRAMEWIN_CreateEx(x0, y0, xsize, ysize, NULL, Flags, 0, 0, pText, cb);
+	return FRAMEWIN_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, 0, pText, cb);
 }
 FRAMEWIN_Handle FRAMEWIN_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 									   const char *pText, WM_CALLBACK *cb, int Flags) {
@@ -462,61 +413,13 @@ FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInf
 							 hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->pName, cb);
 	return hObj;
 }
-void FRAMEWIN_SetDefaultFont(const GUI_FONT  *pFont) {
-	FRAMEWIN_Obj::DefaultProps.pFont = pFont;
-}
-const GUI_FONT  *FRAMEWIN_GetDefaultFont(void) {
-	return FRAMEWIN_Obj::DefaultProps.pFont;
-}
-void FRAMEWIN_SetDefaultBarColor(unsigned Index, RGB_COLOR Color) {
-	if (Index < GUI_COUNTOF(FRAMEWIN_Obj::DefaultProps.aBarColor)) {
-		FRAMEWIN_Obj::DefaultProps.aBarColor[Index] = Color;
-	}
-}
-RGB_COLOR FRAMEWIN_GetDefaultBarColor(unsigned Index) {
-	RGB_COLOR Color = 0;
-	if (Index < GUI_COUNTOF(FRAMEWIN_Obj::DefaultProps.aBarColor)) {
-		Color = FRAMEWIN_Obj::DefaultProps.aBarColor[Index];
-	}
-	return Color;
-}
-void FRAMEWIN_SetDefaultClientColor(RGB_COLOR Color) {
-	FRAMEWIN_Obj::DefaultProps.ClientColor = Color;
-}
-RGB_COLOR FRAMEWIN_GetDefaultClientColor(void) {
-	return FRAMEWIN_Obj::DefaultProps.ClientColor;
-}
-void FRAMEWIN_SetDefaultTitleHeight(int Height) {
-	FRAMEWIN_Obj::DefaultProps.TitleHeight = Height;
-}
-int FRAMEWIN_GetDefaultTitleHeight(void) {
-	return FRAMEWIN_Obj::DefaultProps.TitleHeight;
-}
-void FRAMEWIN_SetDefaultBorderSize(int DefaultBorderSize) {
-	FRAMEWIN_Obj::DefaultProps.BorderSize = DefaultBorderSize;
-}
-int FRAMEWIN_GetDefaultBorderSize(void) {
-	return FRAMEWIN_Obj::DefaultProps.BorderSize;
-}
-void FRAMEWIN_SetDefaultTextColor(unsigned Index, RGB_COLOR Color) {
-	if (Index < GUI_COUNTOF(FRAMEWIN_Obj::DefaultProps.aTextColor)) {
-		FRAMEWIN_Obj::DefaultProps.aTextColor[Index] = Color;
-	}
-}
-RGB_COLOR FRAMEWIN_GetDefaultTextColor(unsigned Index) {
-	RGB_COLOR Color = 0;
-	if (Index < GUI_COUNTOF(FRAMEWIN_Obj::DefaultProps.aTextColor)) {
-		Color = FRAMEWIN_Obj::DefaultProps.aTextColor[Index];
-	}
-	return Color;
-}
 
 const GUI_FONT  *FRAMEWIN_GetFont(FRAMEWIN_Handle hObj) {
-	const GUI_FONT  *r = NULL;
+	const GUI_FONT  *r = nullptr;
 	if (hObj) {
 		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
 		r = pObj->Props.pFont;
-		FRAMEWIN_Invalidate(hObj);
+		WM_Invalidate(hObj);
 	}
 	return r;
 }
@@ -651,9 +554,8 @@ void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
 		int OldSize = pObj->Props.BorderSize;
 		int Diff = Size - OldSize;
 		for (auto pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
-			GUI_RECT r = pChild->Rect;
-			r += GUI_POINT{-pObj->Rect.x0, -pObj->Rect.y0};
-			if ((r.y0 == pObj->Props.BorderSize) && ((r.y1 - r.y0 + 1) == OldHeight)) {
+			GUI_RECT r = pChild->Rect + GUI_POINT{-pObj->Rect.x0, -pObj->Rect.y0};
+			if (r.y0 == pObj->Props.BorderSize  && r.y1 - r.y0 + 1 == OldHeight) {
 				if (pChild->Status & WM_SF_ANCHOR_RIGHT)
 					WM_MoveWindow(pChild, -Diff, Diff);
 				else
@@ -662,7 +564,7 @@ void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
 		}
 		pObj->Props.BorderSize = Size;
 		FRAMEWIN__UpdatePositions(pObj);
-		FRAMEWIN_Invalidate(hObj);
+		WM_Invalidate(hObj);
 	}
 }
 
@@ -671,7 +573,7 @@ void FRAMEWIN_SetBarColor(FRAMEWIN_Handle hObj, unsigned Index, RGB_COLOR Color)
 		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
 		if (Index < GUI_COUNTOF(pObj->Props.aBarColor)) {
 			pObj->Props.aBarColor[Index] = Color;
-			FRAMEWIN_Invalidate(hObj);
+			WM_Invalidate(hObj);
 		}
 	}
 }
@@ -680,7 +582,7 @@ void FRAMEWIN_SetTextColor(FRAMEWIN_Handle hObj, RGB_COLOR Color) {
 		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
 		for (int i = 0; i < GUI_COUNTOF(pObj->Props.aTextColor); i++)
 			pObj->Props.aTextColor[i] = Color;
-		FRAMEWIN_Invalidate(hObj);
+		WM_Invalidate(hObj);
 	}
 }
 void FRAMEWIN_SetTextColorEx(FRAMEWIN_Handle hObj, unsigned Index, RGB_COLOR Color) {
@@ -688,7 +590,7 @@ void FRAMEWIN_SetTextColorEx(FRAMEWIN_Handle hObj, unsigned Index, RGB_COLOR Col
 		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
 		if (Index < GUI_COUNTOF(pObj->Props.aTextColor)) {
 			pObj->Props.aTextColor[Index] = Color;
-			FRAMEWIN_Invalidate(hObj);
+			WM_Invalidate(hObj);
 		}
 	}
 }
@@ -697,7 +599,7 @@ void FRAMEWIN_SetClientColor(FRAMEWIN_Handle hObj, RGB_COLOR Color) {
 		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
 		if (pObj->Props.ClientColor != Color) {
 			pObj->Props.ClientColor = Color;
-			FRAMEWIN_Invalidate(pObj->hClient);
+			WM_Invalidate(pObj->hClient);
 		}
 	}
 }
@@ -709,7 +611,7 @@ void FRAMEWIN_SetFont(FRAMEWIN_Handle hObj, const GUI_FONT  *pFont) {
 		pObj->Props.pFont = pFont;
 		FRAMEWIN__UpdatePositions(pObj);
 		FRAMEWIN__UpdateButtons(pObj, OldHeight);
-		FRAMEWIN_Invalidate(hObj);
+		WM_Invalidate(hObj);
 	}
 }
 
@@ -859,7 +761,7 @@ static const GUI_CURSOR _ResizeCursorDU = {
 #endif
 #if GUI_SUPPORT_CURSOR
 static void _SetResizeCursor(int Mode) {
-	const GUI_CURSOR  *pNewCursor = NULL;
+	const GUI_CURSOR  *pNewCursor = nullptr;
 	if (Mode) {
 		int Direction;
 		Direction = Mode & (FRAMEWIN_RESIZE_X | FRAMEWIN_RESIZE_Y);
@@ -882,13 +784,13 @@ static void _SetResizeCursor(int Mode) {
 	if (pNewCursor) {
 		const GUI_CURSOR  *pOldCursor;
 		pOldCursor = GUI_CURSOR_Select(pNewCursor);
-		if (_pOldCursor == NULL) {
+		if (_pOldCursor == nullptr) {
 			_pOldCursor = pOldCursor;
 		}
 	}
 	else if (_pOldCursor) {
 		GUI_CURSOR_Select(_pOldCursor);
-		_pOldCursor = NULL;
+		_pOldCursor = nullptr;
 	}
 }
 #endif
@@ -900,28 +802,24 @@ static void _SetCapture(FRAMEWIN_Handle hWin, int x, int y, int Mode) {
 		_CaptureY = y;
 	}
 	if (Mode) {
-		if (WM_HasCaptured(hWin) == 0) {
+		if (!WM_HasCaptured(hWin))
 			WM_SetCapture(hWin, 0);
-		}
 #if GUI_SUPPORT_CURSOR
 		_SetResizeCursor(Mode);
 #endif
-		if (Mode & FRAMEWIN_MOUSEOVER) {
+		if (Mode & FRAMEWIN_MOUSEOVER)
 			Mode = 0;
-		}
-		_CaptureFlags = (Mode | FRAMEWIN_MOUSEOVER);
+		_CaptureFlags = Mode | FRAMEWIN_MOUSEOVER;
 	}
 }
 static void _ChangeWindowPosSize(FRAMEWIN_Handle hWin, int *px, int *py) {
 	int dx = 0, dy = 0;
 	GUI_RECT Rect = WM_GetClientRect(hWin);
 	/* Calculate new size of window */
-	if (_CaptureFlags & FRAMEWIN_RESIZE_X) {
-		dx = (_CaptureFlags & FRAMEWIN_REPOS_X) ? (_CaptureX - *px) : (*px - _CaptureX);
-	}
-	if (_CaptureFlags & FRAMEWIN_RESIZE_Y) {
-		dy = (_CaptureFlags & FRAMEWIN_REPOS_Y) ? (_CaptureY - *py) : (*py - _CaptureY);
-	}
+	if (_CaptureFlags & FRAMEWIN_RESIZE_X)
+		dx = (_CaptureFlags & FRAMEWIN_REPOS_X) ? _CaptureX - *px : *px - _CaptureX;
+	if (_CaptureFlags & FRAMEWIN_RESIZE_Y)
+		dy = (_CaptureFlags & FRAMEWIN_REPOS_Y) ? _CaptureY - *py : *py - _CaptureY;
 	/* Check the minimal size of window */
 	if ((Rect.x1 + dx + 1) < FRAMEWIN_MINSIZE_X) {
 		dx = FRAMEWIN_MINSIZE_X - Rect.x1 - 1;
@@ -1094,7 +992,7 @@ int FRAMEWIN_SetTitleHeight(FRAMEWIN_Handle hObj, int Height) {
 			pObj->Props.TitleHeight = Height;
 			FRAMEWIN__UpdatePositions(pObj);
 			FRAMEWIN__UpdateButtons(pObj, OldHeight);
-			FRAMEWIN_Invalidate(hObj);
+			WM_Invalidate(hObj);
 		}
 	}
 	return r;
@@ -1139,7 +1037,7 @@ void FRAMEWIN_SetTitleVis(FRAMEWIN_Handle hObj, int Show) {
 					WM_HideWindow(hObj);
 				}
 			}
-			FRAMEWIN_Invalidate(hObj);
+			WM_Invalidate(hObj);
 		}
 	}
 }
@@ -1161,7 +1059,7 @@ void FRAMEWIN__UpdateButtons(FRAMEWIN_Obj *pObj, int OldHeight) {
 		int xLeft, xRight, n;
 		n = 0;
 		do {
-			pLeft = pRight = NULL;
+			pLeft = pRight = nullptr;
 			xLeft = GUI_XMAX;
 			xRight = GUI_XMIN;
 			for (pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {

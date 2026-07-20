@@ -72,38 +72,39 @@ Note that we have chosen the values to be close to existing
 		*
 		*********************************
 */
+#pragma region Color definitions
+constexpr RGB_COLOR COLOR_RGB (uint8_t r, uint8_t g, uint8_t b) { return (b) | ((g) << 8) | ((r) << 16); }
+constexpr RGB_COLOR RGB_GRAYL (uint8_t a) { return COLOR_RGB(a,a,a); }
+constexpr RGB_COLOR RGB_BLUEL (uint8_t a) { return COLOR_RGB(0,0,a); }
+constexpr RGB_COLOR RGB_GREENL(uint8_t a) { return COLOR_RGB(0,a,0); }
+constexpr RGB_COLOR RGB_REDL  (uint8_t a) { return COLOR_RGB(a,0,0); }
+constexpr RGB_COLOR RGB_BLACK           = RGB_GRAYL(0x00);
+constexpr RGB_COLOR RGB_DARKGRAY        = RGB_GRAYL(0x40);
+constexpr RGB_COLOR RGB_GRAY            = RGB_GRAYL(0x80);
+constexpr RGB_COLOR RGB_LIGHTGRAY       = RGB_GRAYL(0xD3);
+constexpr RGB_COLOR RGB_WHITE           = RGB_GRAYL(0xFF);
+constexpr RGB_COLOR RGB_BLUE            = COLOR_RGB(0x00,0x00,0xFF);
+constexpr RGB_COLOR RGB_GREEN           = COLOR_RGB(0x00,0xFF,0x00);
+constexpr RGB_COLOR RGB_RED             = COLOR_RGB(0xFF,0x00,0x00);
+constexpr RGB_COLOR RGB_CYAN            = COLOR_RGB(0x00,0xFF,0xFF);
+constexpr RGB_COLOR RGB_MAGENTA         = COLOR_RGB(0xFF,0x00,0xFF);
+constexpr RGB_COLOR RGB_YELLOW          = COLOR_RGB(0xFF,0xFF,0x00);
+constexpr RGB_COLOR RGB_LIGHTBLUE       = COLOR_RGB(0x80,0x80,0xFF);
+constexpr RGB_COLOR RGB_LIGHTGREEN      = COLOR_RGB(0x80,0xFF,0x80);
+constexpr RGB_COLOR RGB_LIGHTRED        = COLOR_RGB(0xFF,0x80,0x80);
+constexpr RGB_COLOR RGB_LIGHTCYAN       = COLOR_RGB(0x80,0xFF,0xFF);
+constexpr RGB_COLOR RGB_LIGHTMAGENTA    = COLOR_RGB(0xFF,0x80,0xFF);
+constexpr RGB_COLOR RGB_LIGHTYELLOW     = COLOR_RGB(0xFF,0xFF,0x80);
+constexpr RGB_COLOR RGB_DARKBLUE        = COLOR_RGB(0x00,0x00,0x80);
+constexpr RGB_COLOR RGB_DARKGREEN       = COLOR_RGB(0x00,0x80,0x00);
+constexpr RGB_COLOR RGB_DARKRED         = COLOR_RGB(0x80,0x00,0x00);
+constexpr RGB_COLOR RGB_DARKCYAN        = COLOR_RGB(0x00,0x80,0x80);
+constexpr RGB_COLOR RGB_DARKMAGENTA     = COLOR_RGB(0x80,0x00,0x80);
+constexpr RGB_COLOR RGB_DARKYELLOW      = COLOR_RGB(0x80,0x80,0x00);
+constexpr RGB_COLOR RGB_BROWN           = COLOR_RGB(0xA5,0x2A,0x2A);
 
-#define COLOR_RGB(r,g,b)  ((b) | ((g) << 8) | ((r) << 16))
-#define RGB_GRAYL(a)      COLOR_RGB(a,a,a)
-#define RGB_BLUEL(a)      COLOR_RGB(0,0,a)
-#define RGB_GREENL(a)     COLOR_RGB(0,a,0)
-#define RGB_REDL(a)       COLOR_RGB(a,0,0)
-#define RGB_BLACK         RGB_GRAYL(0x00)
-#define RGB_DARKGRAY      RGB_GRAYL(0x40)
-#define RGB_GRAY          RGB_GRAYL(0x80)
-#define RGB_LIGHTGRAY     RGB_GRAYL(0xD3)
-#define RGB_WHITE         RGB_GRAYL(0xFF)
-#define RGB_BLUE          COLOR_RGB(0x00,0x00,0xFF)
-#define RGB_GREEN         COLOR_RGB(0x00,0xFF,0x00)
-#define RGB_RED           COLOR_RGB(0xFF,0x00,0x00)
-#define RGB_CYAN          COLOR_RGB(0x00,0xFF,0xFF)
-#define RGB_MAGENTA       COLOR_RGB(0xFF,0x00,0xFF)
-#define RGB_YELLOW        COLOR_RGB(0xFF,0xFF,0x00)
-#define RGB_LIGHTBLUE     COLOR_RGB(0xFF,0x80,0x80)
-#define RGB_LIGHTGREEN    COLOR_RGB(0x80,0xFF,0x80)
-#define RGB_LIGHTRED      COLOR_RGB(0x80,0x80,0xFF)
-#define RGB_LIGHTCYAN     COLOR_RGB(0xFF,0xFF,0x80)
-#define RGB_LIGHTMAGENTA  COLOR_RGB(0xFF,0x80,0xFF)
-#define RGB_LIGHTYELLOW   COLOR_RGB(0x80,0xFF,0xFF)
-#define RGB_DARKBLUE      COLOR_RGB(0x80,0x00,0x00)
-#define RGB_DARKGREEN     COLOR_RGB(0x00,0x80,0x80)
-#define RGB_DARKRED       COLOR_RGB(0x80,0x00,0x00)
-#define RGB_DARKCYAN      COLOR_RGB(0x80,0x80,0x00)
-#define RGB_DARKMAGENTA   COLOR_RGB(0x80,0x00,0x80)
-#define RGB_DARKYELLOW    COLOR_RGB(0x00,0x80,0x80)
-#define RGB_BROWN         COLOR_RGB(0x2A,0x2A,0xA5)
-
-#define GUI_INVALID_COLOR ~0      /* Invalid color - more than 24 bits */
+constexpr RGB_COLOR RGB_INVALID_COLOR   = ~0;      /* Invalid color - more than 24 bits */
+#pragma endregion
 
 /*      *********************************
 		*
@@ -133,18 +134,20 @@ extern const GUI_FONT GUI_Font8x8, GUI_Font8x9;
 extern const GUI_FONT GUI_Font6x8, GUI_Font6x9;
 
 /* Text alignment flags, horizontal */
-#define GUI_TA_HORIZONTAL  (3<<0)
-#define GUI_TA_LEFT        (0<<0)
-#define GUI_TA_RIGHT	     (1<<0)
-#define GUI_TA_CENTER	     (2<<0)
-#define GUI_TA_HCENTER	   GUI_TA_CENTER  /* easier to remember :-)  */
+#define TEXTALIGN_LEFT        (0<<0)
+#define TEXTALIGN_RIGHT       (1<<0)
+#define TEXTALIGN_CENTER      (2<<0)
+#define TEXTALIGN_HORIZONTAL  (3<<0)
+#define TEXTALIGN_HCENTER     TEXTALIGN_CENTER
 
 /* Text alignment flags, vertical */
-#define GUI_TA_VERTICAL   (3<<2)
-#define GUI_TA_TOP	      (0<<2)
-#define GUI_TA_BOTTOM	    (1<<2)
-#define GUI_TA_BASELINE   (2<<2)
-#define GUI_TA_VCENTER    (3<<2)
+#define TEXTALIGN_TOP        (0<<2)
+#define TEXTALIGN_BOTTOM     (1<<2)
+#define TEXTALIGN_BASELINE   (2<<2)
+#define TEXTALIGN_VCENTER    (3<<2)
+#define TEXTALIGN_VERTICAL   TEXTALIGN_VCENTER
+
+using TEXTALIGN = uint8_t;
 
 /*    *********************************
 	*
