@@ -360,6 +360,10 @@
     <ClInclude Include="GUI\Core\GUIType.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
+    <ClInclude Include="GUI\Widget\SLIDER_Private.h" />
+    <ClInclude Include="GUI\Widget\PROGBAR_Private.h" />
+    <ClInclude Include="GUI\Widget\TEXT_Private.h" />
+    <ClInclude Include="GUI\Widget\MULTIEDIT_Private.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="GUI_X\SimDisp.ico">
@@ -376,5 +380,6 @@
     <None Include="GUI\Core\Dots.inl">
       <Filter>GUI\Core</Filter>
     </None>
+    <None Include=".github\copilot-instructions.md" />
   </ItemGroup>
 </Project>

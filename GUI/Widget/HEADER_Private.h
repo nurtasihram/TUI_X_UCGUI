@@ -17,6 +17,9 @@ struct HEADER_Obj : public WIDGET {
 		PCFONT pFont{ &GUI_Font13_1 };
 		RGBC BkColor{ RGB_GRAYL(0xAA) };
 		RGBC TextColor{ RGB_BLACK };
+		PCCURSOR pCursor{ &GUI_CursorHeaderM };
+		int16_t BorderH{ 0 };
+		int16_t BorderV{ 2 };
 	} static DefaultProps;
 	Properties Props;
 	GUI_ARRAY Columns;

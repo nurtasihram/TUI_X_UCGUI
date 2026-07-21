@@ -1,20 +1,9 @@
 #include "GUI_Protected.h"
 
 #include "SLIDER.h"
+#include "SLIDER_Private.h"
 
 #define SLIDER_SUPPORT_TRANSPARENCY WM_SUPPORT_TRANSPARENCY
-
-struct SLIDER_Obj : public WIDGET {
-	struct Properties {
-		RGBC BkColor{ RGB_GRAYL(0xC0) };
-		RGBC Color{ RGB_GRAYL(0xC0) };
-	} static DefaultProps;
-	Properties Props;
-	int16_t Min, Max, v;
-	int16_t NumTicks;
-	int16_t Width;
-	uint8_t Flags;
-};
 
 SLIDER_Obj::Properties SLIDER_Obj::DefaultProps;
 

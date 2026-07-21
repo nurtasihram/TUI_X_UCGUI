@@ -30,10 +30,3 @@ void TEXT_SetFont     (TEXT_Handle pObj, PCFONT pFont);
 void TEXT_SetText     (TEXT_Handle pObj, const char* s);
 void TEXT_SetTextAlign(TEXT_Handle pObj, int Align);
 void TEXT_SetTextColor(TEXT_Handle pObj, RGBC Color);
-struct TEXT_Obj : public WIDGET {
-  char *pText;
-  PCFONT pFont;
-  TEXTALIGN Align;
-  RGBC TextColor;
-  RGBC BkColor;
-};

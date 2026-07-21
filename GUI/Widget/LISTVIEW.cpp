@@ -10,28 +10,9 @@
 #include "LISTVIEW.h"
 #include "LISTVIEW_Private.h"
 
-/* Define default fonts */
-#define LISTVIEW_FONT_DEFAULT &GUI_Font13_1
-/* Define colors */
-#define LISTVIEW_BKCOLOR0_DEFAULT RGB_WHITE     /* Not selected */
-#define LISTVIEW_BKCOLOR1_DEFAULT RGB_GRAY      /* Selected, no focus */
-#define LISTVIEW_BKCOLOR2_DEFAULT RGB_BLUE      /* Selected, focus */
-#define LISTVIEW_TEXTCOLOR0_DEFAULT RGB_BLACK   /* Not selected */
-#define LISTVIEW_TEXTCOLOR1_DEFAULT RGB_WHITE   /* Selected, no focus */
-#define LISTVIEW_TEXTCOLOR2_DEFAULT RGB_WHITE   /* Selected, focus */
-#define LISTVIEW_GRIDCOLOR_DEFAULT RGB_LIGHTGRAY
 /* Define default alignment */
 #define LISTVIEW_ALIGN_DEFAULT (TEXTALIGN_VCENTER | TEXTALIGN_HCENTER)
-LISTVIEW_Obj::Properties LISTVIEW_Obj::DefaultProps {
-  LISTVIEW_FONT_DEFAULT,
-  LISTVIEW_BKCOLOR0_DEFAULT,
-  LISTVIEW_BKCOLOR1_DEFAULT,
-  LISTVIEW_BKCOLOR2_DEFAULT,
-  LISTVIEW_TEXTCOLOR0_DEFAULT,
-  LISTVIEW_TEXTCOLOR1_DEFAULT,
-  LISTVIEW_TEXTCOLOR2_DEFAULT,
-  LISTVIEW_GRIDCOLOR_DEFAULT
-};
+LISTVIEW_Obj::Properties LISTVIEW_Obj::DefaultProps;
 unsigned LISTVIEW__GetRowDistY(LISTVIEW_Obj *pObj) {
 	unsigned RowDistY;
 	if (pObj->RowDistY) {

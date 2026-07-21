@@ -4,34 +4,8 @@
 #include "MULTIPAGE.h"
 #include "MULTIPAGE_Private.h"
 
-/* Define default fonts */
-#define MULTIPAGE_FONT_DEFAULT        &GUI_Font13_1
-#define MULTIPAGE_ALIGN_DEFAULT       (MULTIPAGE_ALIGN_LEFT | MULTIPAGE_ALIGN_TOP)
-/* Define colors */
-#define MULTIPAGE_NUMCOLORS 2
-#define MULTIPAGE_BKCOLOR0_DEFAULT    RGB_GRAYL(0xD0) /* disabled page */
-#define MULTIPAGE_BKCOLOR1_DEFAULT    RGB_GRAYL(0xC0) /* enabled page */
-#define MULTIPAGE_TEXTCOLOR0_DEFAULT  RGB_GRAYL(0x80) /* disabled page */
-#define MULTIPAGE_TEXTCOLOR1_DEFAULT  RGB_BLACK /* enabled page */
-typedef struct {
-	WM_Obj * hWin;
-	uint8_t      Status;
-	char    acText;
-} MULTIPAGE_PAGE;
-struct MULTIPAGE_Obj : public WIDGET {
-	WM_Obj *pClient;
-	GUI_ARRAY       Handles;
-	unsigned        Selection;
-	int             ScrollState;
-	unsigned        Align;
-	PCFONT Font;
-	RGBC       aBkColor[MULTIPAGE_NUMCOLORS];
-	RGBC       aTextColor[MULTIPAGE_NUMCOLORS];
-};
-PCFONT MULTIPAGE__pDefaultFont = MULTIPAGE_FONT_DEFAULT;
-unsigned                     MULTIPAGE__DefaultAlign = MULTIPAGE_ALIGN_DEFAULT;
-RGBC                    MULTIPAGE__DefaultBkColor[2] = { MULTIPAGE_BKCOLOR0_DEFAULT, MULTIPAGE_BKCOLOR1_DEFAULT };
-RGBC                    MULTIPAGE__DefaultTextColor[2] = { MULTIPAGE_TEXTCOLOR0_DEFAULT, MULTIPAGE_TEXTCOLOR1_DEFAULT };
+MULTIPAGE_Obj::Properties MULTIPAGE_Obj::DefaultProps;
+
 static void _AddScrollbar(MULTIPAGE_Obj *pObj, int x, int y, int w, int h) {
 	SCROLLBAR_Handle hScroll;
 	if ((hScroll = WM_GetScrollbarH(pObj)) == 0) {
@@ -104,11 +78,11 @@ static int _GetEnable(MULTIPAGE_Obj *pObj, unsigned Index) {
 */
 static void _CalcClientRect(MULTIPAGE_Obj *pObj, GUI_RECT *pRect) {
 	*pRect = WIDGET__GetInsideRect(pObj);
-	if (pObj->Align & MULTIPAGE_ALIGN_BOTTOM) {
-		pRect->y1 -= GUI_GetYSizeOfFont(pObj->Font) + 6;
+	if (pObj->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
+		pRect->y1 -= GUI_GetYSizeOfFont(pObj->Props.Font) + 6;
 	}
 	else {
-		pRect->y0 += GUI_GetYSizeOfFont(pObj->Font) + 6;
+		pRect->y0 += GUI_GetYSizeOfFont(pObj->Props.Font) + 6;
 	}
 }
 /*********************************************************************
@@ -119,11 +93,11 @@ static void _CalcClientRect(MULTIPAGE_Obj *pObj, GUI_RECT *pRect) {
 */
 static void _CalcBorderRect(MULTIPAGE_Obj *pObj, GUI_RECT *pRect) {
 	*pRect = WM_GetClientRect(pObj);
-	if (pObj->Align & MULTIPAGE_ALIGN_BOTTOM) {
-		pRect->y1 -= GUI_GetYSizeOfFont(pObj->Font) + 6;
+	if (pObj->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
+		pRect->y1 -= GUI_GetYSizeOfFont(pObj->Props.Font) + 6;
 	}
 	else {
-		pRect->y0 += GUI_GetYSizeOfFont(pObj->Font) + 6;
+		pRect->y0 += GUI_GetYSizeOfFont(pObj->Props.Font) + 6;
 	}
 }
 /*********************************************************************
@@ -136,7 +110,7 @@ static int _GetPageSizeX(MULTIPAGE_Obj *pObj, unsigned Index) {
 	int r = 0;
 	if ((int)Index < pObj->Handles.NumItems) {
 		MULTIPAGE_PAGE *pPage;
-		GUI_SetFont(pObj->Font);
+		GUI_SetFont(pObj->Props.Font);
 		pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
 		r = GUI_GetStringDistX(&pPage->acText) + 10;
 	}
@@ -167,10 +141,10 @@ static int _GetTextWidth(MULTIPAGE_Obj *pObj) {
 static void _GetTextRect(MULTIPAGE_Obj *pObj, GUI_RECT *pRect) {
 	GUI_RECT rBorder;
 	int Width, Height;
-	Height = GUI_GetYSizeOfFont(pObj->Font) + 6;
+	Height = GUI_GetYSizeOfFont(pObj->Props.Font) + 6;
 	_CalcBorderRect(pObj, &rBorder);
 	/* Calculate Y-Position of text item */
-	if (pObj->Align & MULTIPAGE_ALIGN_BOTTOM) {
+	if (pObj->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
 		pRect->y0 = rBorder.y1;
 	}
 	else {
@@ -185,7 +159,7 @@ static void _GetTextRect(MULTIPAGE_Obj *pObj, GUI_RECT *pRect) {
 		Width = _GetTextWidth(pObj);
 	}
 	/* Calculate X-Position of text item */
-	if (pObj->Align & MULTIPAGE_ALIGN_RIGHT) {
+	if (pObj->Props.Align & MULTIPAGE_ALIGN_RIGHT) {
 		pRect->x0 = rBorder.x1 - Width;
 		pRect->x1 = rBorder.x1;
 	}
@@ -203,9 +177,9 @@ static void _UpdatePositions(MULTIPAGE_Obj *pObj) {
 	if (Width > rBorder.x1) {
 		GUI_RECT rText;
 		int Size, x0, y0, NumItems = 0;
-		Size = ((GUI_GetYSizeOfFont(pObj->Font) + 6) * 3) >> 2;
-		x0 = (pObj->Align & MULTIPAGE_ALIGN_RIGHT) ? (rBorder.x0) : (rBorder.x1 - 2 * Size + 1);
-		y0 = (pObj->Align & MULTIPAGE_ALIGN_BOTTOM) ? (rBorder.y1) : (rBorder.y0 - Size + 1);
+		Size = ((GUI_GetYSizeOfFont(pObj->Props.Font) + 6) * 3) >> 2;
+		x0 = (pObj->Props.Align & MULTIPAGE_ALIGN_RIGHT) ? (rBorder.x0) : (rBorder.x1 - 2 * Size + 1);
+		y0 = (pObj->Props.Align & MULTIPAGE_ALIGN_BOTTOM) ? (rBorder.y1) : (rBorder.y0 - Size + 1);
 		/* A scrollbar is required so we add one to the multipage */
 		_AddScrollbar(pObj, x0, y0, 2 * Size, Size);
 		_GetTextRect(pObj, &rText);
@@ -233,7 +207,7 @@ static void _DrawTextItem(MULTIPAGE_Obj *pObj, const char *pText, unsigned Index
 	WIDGET__EFFECT_DrawUpRect(pObj, r);
 	r -= pObj->pEffect->EffectSize;
 	if (pObj->Selection == Index) {
-		if (pObj->Align & MULTIPAGE_ALIGN_BOTTOM) {
+		if (pObj->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
 			r.y0 -= pObj->pEffect->EffectSize + 1;
 			if (pObj->pEffect->EffectSize > 1) {
 				GUI_SetColor(RGB_WHITE);
@@ -252,10 +226,10 @@ static void _DrawTextItem(MULTIPAGE_Obj *pObj, const char *pText, unsigned Index
 			}
 		}
 	}
-	GUI_SetColor(pObj->aBkColor[ColorIndex]);
+	GUI_SetColor(pObj->Props.aBkColor[ColorIndex]);
 	WIDGET__FillRect(pObj, r);
-	GUI_SetBkColor(pObj->aBkColor[ColorIndex]);
-	GUI_SetColor(pObj->aTextColor[ColorIndex]);
+	GUI_SetBkColor(pObj->Props.aBkColor[ColorIndex]);
+	GUI_SetColor(pObj->Props.aTextColor[ColorIndex]);
 	GUI_DispStringAt(pText, r.x0 + 4, pRect->y0 + 3);
 }
 static void _OnPaint(MULTIPAGE_Obj *pObj) {
@@ -269,7 +243,7 @@ static void _OnPaint(MULTIPAGE_Obj *pObj) {
 		GUI_RECT rText, rClip;
 		int i, w = 0, x0 = 0;
 		if (pObj->State & MULTIPAGE_STATE_SCROLLMODE) {
-			if (pObj->Align & MULTIPAGE_ALIGN_RIGHT) {
+			if (pObj->Props.Align & MULTIPAGE_ALIGN_RIGHT) {
 				x0 = -_GetPagePosX(pObj, pObj->ScrollState);
 			}
 			else {
@@ -281,7 +255,7 @@ static void _OnPaint(MULTIPAGE_Obj *pObj) {
 		rClip.y0 = rText.y0 - 1;
 		rClip.y1 = rText.y1 + 1;
 		WM_SetUserClipRect(&rClip);
-		GUI_SetFont(pObj->Font);
+		GUI_SetFont(pObj->Props.Font);
 		for (i = 0; i < pObj->Handles.NumItems; i++) {
 			pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, i);
 			x0 += w;
@@ -391,7 +365,7 @@ static WM_PARAM _ClientCallback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pParent = (MULTIPAGE_Obj *)WM_GetParent(hObj);
 	switch (MsgId) {
 		case WM_PAINT:
-			GUI_SetBkColor(pParent->aBkColor[1]);
+			GUI_SetBkColor(pParent->Props.aBkColor[1]);
 			GUI_Clear();
 			return 0;
 		case WM_TOUCH:
@@ -423,12 +397,7 @@ MULTIPAGE_Handle MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
-		pObj->aBkColor[0] = MULTIPAGE__DefaultBkColor[0];
-		pObj->aBkColor[1] = MULTIPAGE__DefaultBkColor[1];
-		pObj->aTextColor[0] = MULTIPAGE__DefaultTextColor[0];
-		pObj->aTextColor[1] = MULTIPAGE__DefaultTextColor[1];
-		pObj->Font = MULTIPAGE__pDefaultFont;
-		pObj->Align = MULTIPAGE__DefaultAlign;
+		pObj->Props = MULTIPAGE_Obj::DefaultProps;
 		pObj->Selection = 0xffff;
 		pObj->ScrollState = 0;
 		pObj->State = 0;
@@ -580,7 +549,7 @@ void MULTIPAGE_SetBkColor(MULTIPAGE_Handle hObj, RGBC Color, unsigned Index) {
 	auto pObj = (MULTIPAGE_Obj *)hObj;
 	if (hObj && ((int)Index < MULTIPAGE_NUMCOLORS)) {
 		if (pObj) {
-			pObj->aBkColor[Index] = Color;
+			pObj->Props.aBkColor[Index] = Color;
 			WM_Invalidate(hObj);
 		}
 	}
@@ -589,7 +558,7 @@ void MULTIPAGE_SetTextColor(MULTIPAGE_Handle hObj, RGBC Color, unsigned Index) {
 	auto pObj = (MULTIPAGE_Obj *)hObj;
 	if (hObj && ((int)Index < MULTIPAGE_NUMCOLORS)) {
 		if (pObj) {
-			pObj->aTextColor[Index] = Color;
+			pObj->Props.aTextColor[Index] = Color;
 			WM_Invalidate(hObj);
 		}
 	}
@@ -598,7 +567,7 @@ void MULTIPAGE_SetFont(MULTIPAGE_Handle hObj, PCFONT pFont) {
 	auto pObj = (MULTIPAGE_Obj *)hObj;
 	if (hObj && pFont) {
 		if (pObj) {
-			pObj->Font = pFont;
+			pObj->Props.Font = pFont;
 			_UpdatePositions(pObj);
 		}
 	}
@@ -608,7 +577,7 @@ void MULTIPAGE_SetAlign(MULTIPAGE_Handle hObj, unsigned Align) {
 	GUI_RECT rClient;
 	if (hObj) {
 		if (pObj) {
-			pObj->Align = Align;
+			pObj->Props.Align = Align;
 				_CalcClientRect(pObj, &rClient);
 				WM_MoveTo(pObj->pClient, rClient.x0 + pObj->Rect.x0,
 						  rClient.y0 + pObj->Rect.y0);

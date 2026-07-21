@@ -1,27 +1,15 @@
-#include "GUI.h"
 #include "GUI_Protected.h"
 
 #include "RADIO.h"
 #include "RADIO_Private.h"
 
-/* Define default image inactiv */
-#define RADIO_IMAGE0_DEFAULT        &RADIO__abmRadio[0]
-/* Define default image activ */
-#define RADIO_IMAGE1_DEFAULT        &RADIO__abmRadio[1]
-/* Define default image check */
-#define RADIO_IMAGE_CHECK_DEFAULT   &RADIO__bmCheck
-/* Define default font */
-#define RADIO_FONT_DEFAULT          &GUI_Font13_1
-/* Define default text color */
-#define RADIO_DEFAULT_TEXT_COLOR    RGB_BLACK
+RADIO_Obj::Properties RADIO_Obj::DefaultProps;
+
 /* Define default background color */
 #define RADIO_DEFAULT_BKCOLOR       RGB_GRAYL(0xC0)
 #define RADIO_BORDER                  2
+
 tRADIO_SetValue *RADIO__pfHandleSetValue;
-RGBC         RADIO__DefaultTextColor = RADIO_DEFAULT_TEXT_COLOR;
-PCFONT RADIO__pDefaultFont = RADIO_FONT_DEFAULT;
-PCBITMAP RADIO__apDefaultImage[] = { RADIO_IMAGE0_DEFAULT, RADIO_IMAGE1_DEFAULT };
-PCBITMAP RADIO__pDefaultImageCheck = RADIO_IMAGE_CHECK_DEFAULT;
 
 static void _ResizeRect(GUI_RECT *pDest, const GUI_RECT *pSrc, int Diff) {
 	pDest->y0 = pSrc->y0 - Diff;
@@ -49,17 +37,17 @@ static void _OnPaint(RADIO_Obj *pObj) {
 	/* Init some data */
 	rFocus = WIDGET__GetClientRect(pObj);
 	HasFocus = (pObj->State & WIDGET_STATE_FOCUS) ? 1 : 0;
-	pBmRadio = pObj->apBmRadio[WM_IsEnabled(pObj)];
-	pBmCheck = pObj->pBmCheck;
+	pBmRadio = pObj->Props.apBmRadio[WM_IsEnabled(pObj)];
+	pBmCheck = pObj->Props.pBmCheck;
 	rFocus.x1 = pBmRadio->XSize + RADIO_BORDER * 2 - 1;
 	rFocus.y1 = pObj->Height + ((pObj->NumItems - 1) * pObj->Spacing) - 1;
 	/* Select font and text color */
-	GUI_SetColor(pObj->TextColor);
-	GUI_SetFont(pObj->pFont);
+	GUI_SetColor(pObj->Props.TextColor);
+	GUI_SetFont(pObj->Props.pFont);
 	GUI_SetTextMode(DRAWMODE_TRANS);
 	FontDistY = GUI_GetFontDistY();
-	CHeight = pObj->pFont->CHeight;
-	SpaceAbove = pObj->pFont->Baseline - CHeight;
+	CHeight = pObj->Props.pFont->CHeight;
+	SpaceAbove = pObj->Props.pFont->Baseline - CHeight;
 	Rect.x0 = pBmRadio->XSize + RADIO_BORDER * 2 + 2;
 	Rect.y0 = (CHeight <= pObj->Height) ? ((pObj->Height - CHeight) / 2) : 0;
 	Rect.y1 = Rect.y0 + CHeight - 1;
@@ -73,8 +61,8 @@ static void _OnPaint(RADIO_Obj *pObj) {
 	if (!WM_GetHasTrans(pObj))
 #endif
 	{
-		if (pObj->BkColor != RGB_INVALID_COLOR) {
-			GUI_SetBkColor(pObj->BkColor);
+		if (pObj->Props.BkColor != RGB_INVALID_COLOR) {
+			GUI_SetBkColor(pObj->Props.BkColor);
 		}
 		else {
 			GUI_SetBkColor(RADIO_DEFAULT_BKCOLOR);
@@ -198,14 +186,14 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj * hPare
 	RADIO_Handle hObj;
 	int Height, i;
 	/* Calculate helper variables */
-	Height = RADIO__apDefaultImage[0]->YSize + RADIO_BORDER * 2;
+	Height = RADIO_Obj::DefaultProps.apBmRadio[0]->YSize + RADIO_BORDER * 2;
 	Spacing = (Spacing <= 0) ? 20 : Spacing;
 	NumItems = (NumItems <= 0) ? 2 : NumItems;
 	if (ySize == 0) {
 		ySize = Height + ((NumItems - 1) * Spacing);
 	}
 	if (xSize == 0) {
-		xSize = RADIO__apDefaultImage[0]->XSize + RADIO_BORDER * 2;
+		xSize = RADIO_Obj::DefaultProps.apBmRadio[0]->XSize + RADIO_BORDER * 2;
 	}
 #if WM_SUPPORT_TRANSPARENCY
 	WinFlags |= WM_CF_HASTRANS;
@@ -223,12 +211,8 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj * hPare
 		ExFlags &= RADIO_TEXTPOS_LEFT;
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | ExFlags);
 		/* Init member variables */
-		pObj->apBmRadio[0] = RADIO__apDefaultImage[0];
-		pObj->apBmRadio[1] = RADIO__apDefaultImage[1];
-		pObj->pBmCheck = RADIO__pDefaultImageCheck;
-		pObj->pFont = RADIO__pDefaultFont;
-		pObj->TextColor = RADIO__DefaultTextColor;
-		pObj->BkColor = WM_GetBkColor(hParent);
+		pObj->Props = RADIO_Obj::DefaultProps;
+		pObj->Props.BkColor = WM_GetBkColor(hParent);
 		pObj->NumItems = NumItems;
 		pObj->Spacing = Spacing;
 		pObj->Height = Height;
@@ -293,8 +277,8 @@ RADIO_Handle RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_
 void RADIO_SetBkColor(RADIO_Handle hObj, RGBC Color) {
 	if (hObj) {
 		auto pObj = (RADIO_Obj *)hObj;
-		if (Color != pObj->BkColor) {
-			pObj->BkColor = Color;
+		if (Color != pObj->Props.BkColor) {
+			pObj->Props.BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
 			if (Color <= RGB_WHITE) {
 				WM_SetTransState(hObj, 0);
@@ -311,8 +295,8 @@ void RADIO_SetBkColor(RADIO_Handle hObj, RGBC Color) {
 void RADIO_SetFont(RADIO_Handle hObj, PCFONT pFont) {
 	if (hObj) {
 		auto pObj = (RADIO_Obj *)hObj;
-		if (pFont != pObj->pFont) {
-			pObj->pFont = pFont;
+		if (pFont != pObj->Props.pFont) {
+			pObj->Props.pFont = pFont;
 			if (GUI_ARRAY_GetNumItems(&pObj->TextArray))
 				WM_Invalidate(hObj);
 		}
@@ -419,10 +403,10 @@ void RADIO_SetImage(RADIO_Handle hObj, PCBITMAP pBitmap, unsigned int Index) {
 		switch (Index) {
 			case RADIO_BI_INACTIV:
 			case RADIO_BI_ACTIV:
-				pObj->apBmRadio[Index] = pBitmap;
+				pObj->Props.apBmRadio[Index] = pBitmap;
 				break;
 			case RADIO_BI_CHECK:
-				pObj->pBmCheck = pBitmap;
+				pObj->Props.pBmCheck = pBitmap;
 				break;
 		}
 		WM_Invalidate(hObj);
@@ -444,8 +428,8 @@ void RADIO_SetText(RADIO_Handle hObj, const char *pText, unsigned Index) {
 void RADIO_SetTextColor(RADIO_Handle hObj, RGBC Color) {
 	if (hObj) {
 		auto pObj = (RADIO_Obj *)hObj;
-		if (Color != pObj->TextColor) {
-			pObj->TextColor = Color;
+		if (Color != pObj->Props.TextColor) {
+			pObj->Props.TextColor = Color;
 			if (GUI_ARRAY_GetNumItems(&pObj->TextArray)) {
 				WM_Invalidate(hObj);
 			}

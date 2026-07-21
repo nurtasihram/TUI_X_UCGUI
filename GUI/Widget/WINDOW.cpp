@@ -1,14 +1,8 @@
 #include "DIALOG.h"
 
-#define WINDOW_BKCOLOR_DEFAULT RGB_GRAYL(0xC0)
+#include "WINDOW_Private.h"
 
-struct WINDOW_Obj : public WIDGET {
-	WM_CALLBACK *cb;
-	WM_Obj * hFocussedChild;
-	WM_DIALOG_STATUS *pDialogStatus;
-};
-
-auto WINDOW__DefaultBkColor = WINDOW_BKCOLOR_DEFAULT;
+WINDOW_Obj::Properties WINDOW_Obj::DefaultProps;
 
 static void _OnChildHasFocus(WINDOW_Obj *pObj, const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
 	if (pInfo)
@@ -52,11 +46,11 @@ static WM_PARAM _cb(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 			_OnKey(pObj, (const WM_KEY_INFO *)Data);
 			break;
 		case WM_PAINT:
-			GUI_SetBkColor(WINDOW__DefaultBkColor);
+			GUI_SetBkColor(pObj->Props.BkColor);
 			GUI_Clear();
 			return 0;
 		case WM_GET_BKCOLOR:
-			return WINDOW__DefaultBkColor;
+			return pObj->Props.BkColor;
 	}
 	if (cb)
 		return cb(hWin, MsgId, Data);
@@ -70,6 +64,7 @@ WM_Obj * WINDOW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj
 	if (hObj) {
 		auto pObj = (WINDOW_Obj *)hObj;
 		WIDGET__Init(pObj, pCreateInfo->Id, WIDGET_STATE_FOCUSSABLE);
+		pObj->Props = WINDOW_Obj::DefaultProps;
 		pObj->cb = cb;
 		pObj->hFocussedChild = 0;
 	}

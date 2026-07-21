@@ -21,10 +21,22 @@ typedef struct {
 
 struct MENU_Obj : public WIDGET {
 	struct Properties {
-		RGBC aTextColor[5];
-		RGBC aBkColor[5];
-		uint8_t aBorder[4];
-		PCFONT pFont;
+		RGBC aTextColor[5]{
+			RGB_BLACK,          /* enabled, not selected */
+			RGB_WHITE,          /* enabled, selected */
+			RGB_GRAYL(0x7C),    /* disabled, not selected */
+			RGB_LIGHTGRAY,      /* disabled, selected */
+			RGB_WHITE           /* active submenu */
+		};
+		RGBC aBkColor[5]{
+			RGB_LIGHTGRAY,
+			RGB_BLUEL(0x98),
+			RGB_LIGHTGRAY,
+			RGB_BLUEL(0x98),
+			RGB_GRAYL(0x7C)
+		};
+		uint8_t aBorder[4]{ 4, 4, 2, 2 }; /* Left, Right, Top, Bottom */
+		PCFONT pFont{ &GUI_Font13_1 };
 	} static DefaultProps;
 	Properties Props;
 	GUI_ARRAY   ItemArray;

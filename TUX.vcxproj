@@ -116,15 +116,19 @@
     <ClInclude Include="GUI\Widget\MENU_Private.h" />
     <ClInclude Include="GUI\Widget\MESSAGEBOX.h" />
     <ClInclude Include="GUI\Widget\MULTIEDIT.h" />
+    <ClInclude Include="GUI\Widget\MULTIEDIT_Private.h" />
     <ClInclude Include="GUI\Widget\MULTIPAGE.h" />
     <ClInclude Include="GUI\Widget\MULTIPAGE_Private.h" />
     <ClInclude Include="GUI\Widget\PROGBAR.h" />
+    <ClInclude Include="GUI\Widget\PROGBAR_Private.h" />
     <ClInclude Include="GUI\Widget\RADIO.h" />
     <ClInclude Include="GUI\Widget\RADIO_Private.h" />
     <ClInclude Include="GUI\Widget\SCROLLBAR.h" />
     <ClInclude Include="GUI\Widget\SCROLLBAR_Private.h" />
     <ClInclude Include="GUI\Widget\SLIDER.h" />
+    <ClInclude Include="GUI\Widget\SLIDER_Private.h" />
     <ClInclude Include="GUI\Widget\TEXT.h" />
+    <ClInclude Include="GUI\Widget\TEXT_Private.h" />
     <ClInclude Include="GUI\Widget\WIDGET.h" />
     <ClInclude Include="GUI\Widget\WINDOW_Private.h" />
     <ClInclude Include="GUI\WM\WM.h" />
@@ -139,6 +143,7 @@
     <ResourceCompile Include="GUI_X\SimDisp.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".github\copilot-instructions.md" />
     <None Include="GUI\Core\Dots.inl" />
     <None Include="test_cert.pfx" />
   </ItemGroup>

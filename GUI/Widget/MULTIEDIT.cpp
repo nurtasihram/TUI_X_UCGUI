@@ -1,59 +1,16 @@
 #include "WM_Intern.h"
 
 #include "MULTIEDIT.h"
+#include "MULTIEDIT_Private.h"
 
-/* Define default fonts */
-#define MULTIEDIT_FONT_DEFAULT &GUI_Font13_1
-/* Define colors */
-#define MULTIEDIT_BKCOLOR0_DEFAULT   RGB_WHITE
-#define MULTIEDIT_BKCOLOR1_DEFAULT   RGB_GRAYL(0xC0)
-#define MULTIEDIT_TEXTCOLOR0_DEFAULT RGB_BLACK
-#define MULTIEDIT_TEXTCOLOR1_DEFAULT RGB_BLACK
 /* Define character for password mode */
 #define MULTIEDIT_PASSWORD_CHAR   '*'
-#define NUM_DISP_MODES 2
 #define INVALID_NUMCHARS (1 << 0)
 #define INVALID_NUMLINES (1 << 1)
 #define INVALID_TEXTSIZE (1 << 2)
 #define INVALID_CURSORXY (1 << 3)
 #define INVALID_LINEPOSB (1 << 4)
-struct MULTIEDIT_Obj : public WIDGET {
-	RGBC aBkColor[NUM_DISP_MODES];
-	RGBC aColor[NUM_DISP_MODES];
-	WM_HMEM hText;
-	uint16_t MaxNumChars;         /* Maximum number of characters including the prompt */
-	uint16_t NumChars;            /* Number of characters (text and prompt) in object */
-	uint16_t NumCharsPrompt;      /* Number of prompt characters */
-	uint16_t NumLines;            /* Number of text lines needed to show all data */
-	uint16_t TextSizeX;           /* Size in X of text depending of wrapping mode */
-	uint16_t BufferSize;
-	uint16_t CursorLine;          /* Number of current cursor line */
-	uint16_t CursorPosChar;       /* Character offset number of cursor */
-	uint16_t CursorPosByte;       /* Byte offset number of cursor */
-	uint16_t CursorPosX;          /* Cursor position in X */
-	uint16_t CursorPosY;          /* Cursor position in Y */
-	uint16_t CacheLinePosByte;    /*  */
-	uint16_t CacheLineNumber;     /*  */
-	uint16_t CacheFirstVisibleLine;
-	uint16_t CacheFirstVisibleByte;
-	WM_SCROLL_STATE ScrollStateV;
-	WM_SCROLL_STATE ScrollStateH;
-	PCFONT pFont;
-	uint8_t Flags;
-	uint8_t InvalidFlags;         /* Flags to save validation status */
-	uint8_t EditMode;
-	uint8_t HBorder;
-	GUI_WRAPMODE WrapMode;
-};
-static RGBC _aDefaultBkColor[2] = {
-  MULTIEDIT_BKCOLOR0_DEFAULT,
-  MULTIEDIT_BKCOLOR1_DEFAULT,
-};
-static RGBC _aDefaultColor[2] = {
-  MULTIEDIT_TEXTCOLOR0_DEFAULT,
-  MULTIEDIT_TEXTCOLOR1_DEFAULT,
-};
-static PCFONT _pDefaultFont = MULTIEDIT_FONT_DEFAULT;
+MULTIEDIT_Obj::Properties MULTIEDIT_Obj::DefaultProps;
 #define MULTIEDIT_REALLOC_SIZE  16
 /*********************************************************************
 *
@@ -88,7 +45,7 @@ static int _GetNumChars(MULTIEDIT_Obj *pObj) {
 static int _GetXSize(MULTIEDIT_Obj *pObj) {
 	GUI_RECT Rect;
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
-	return Rect.x1 - Rect.x0 - (pObj->HBorder * 2) - 1;
+	return Rect.x1 - Rect.x0 - (pObj->Props.HBorder * 2) - 1;
 }
 static int _GetNumCharsInPrompt(const MULTIEDIT_Obj *pObj, const char  *pText) {
 	char *pString, *pEndPrompt;
@@ -273,7 +230,7 @@ static int _GetCursorLine(MULTIEDIT_Obj *pObj, const char *pText, int CursorPosC
 static void _GetCursorXY(MULTIEDIT_Obj *pObj, int *px, int *py) {
 	if (pObj->InvalidFlags & INVALID_CURSORXY) {
 		int CursorLine = 0, x = 0;
-		GUI_SetFont(pObj->pFont);
+		GUI_SetFont(pObj->Props.pFont);
 		if (pObj->hText) {
 			const char *pLine;
 			const char *pCursor;
@@ -313,7 +270,7 @@ static void _SetScrollState(WM_Obj * hObj) {
 static void _CalcScrollPos(MULTIEDIT_Obj *pObj) {
 	int xCursor, yCursor;
 	_GetCursorXY(pObj, &xCursor, &yCursor);
-	yCursor /= GUI_GetYDistOfFont(pObj->pFont);
+	yCursor /= GUI_GetYDistOfFont(pObj->Props.pFont);
 	WM_CheckScrollPos(&pObj->ScrollStateV, yCursor, 0, 0);       /* Vertical */
 	WM_CheckScrollPos(&pObj->ScrollStateH, xCursor, 30, 30);     /* Horizontal */
 	_SetScrollState(pObj);
@@ -330,7 +287,7 @@ static int _GetTextSizeX(MULTIEDIT_Obj *pObj) {
 		if (pObj->hText) {
 			int NumChars, xSizeLine;
 			char *pText, *pLine;
-			GUI_SetFont(pObj->pFont);
+			GUI_SetFont(pObj->Props.pFont);
 			pText = (char *)(pObj->hText);
 			do {
 				NumChars = _WrapGetNumCharsDisp(pObj, pText);
@@ -353,7 +310,7 @@ static int _GetTextSizeX(MULTIEDIT_Obj *pObj) {
 static int _GetNumVisLines(MULTIEDIT_Obj *pObj) {
 	GUI_RECT Rect;
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
-	return (Rect.y1 - Rect.y0 + 1) / GUI_GetYDistOfFont(pObj->pFont);
+	return (Rect.y1 - Rect.y0 + 1) / GUI_GetYDistOfFont(pObj->Props.pFont);
 }
 /*********************************************************************
 *
@@ -369,7 +326,7 @@ static int _GetNumLines(MULTIEDIT_Obj *pObj) {
 			char *pText;
 			uint16_t Char;
 			pText = (char *)(pObj->hText);
-			GUI_SetFont(pObj->pFont);
+			GUI_SetFont(pObj->Props.pFont);
 			do {
 				NumChars = _WrapGetNumCharsDisp(pObj, pText);
 				NumBytes = GUI_UC__NumChars2NumBytes(pText, NumChars);
@@ -608,7 +565,7 @@ static void _SetCursorXY(MULTIEDIT_Obj *pObj, int x, int y) {
 		int CursorLine, WrapChars;
 		int SizeX = 0;
 		uint16_t Char;
-		GUI_SetFont(pObj->pFont);
+		GUI_SetFont(pObj->Props.pFont);
 		CursorLine = y / GUI_GetFontDistY();
 		pLine = _GetpLine(pObj, CursorLine);
 		pText = (char *)(pObj->hText);
@@ -639,19 +596,19 @@ static void _SetCursorXY(MULTIEDIT_Obj *pObj, int x, int y) {
 static void _MoveCursorUp(MULTIEDIT_Obj *pObj) {
 	int xPos, yPos;
 	_GetCursorXY(pObj, &xPos, &yPos);
-	yPos -= GUI_GetYDistOfFont(pObj->pFont);
+	yPos -= GUI_GetYDistOfFont(pObj->Props.pFont);
 	_SetCursorXY(pObj, xPos, yPos);
 }
 static void _MoveCursorDown(MULTIEDIT_Obj *pObj) {
 	int xPos, yPos;
 	_GetCursorXY(pObj, &xPos, &yPos);
-	yPos += GUI_GetYDistOfFont(pObj->pFont);
+	yPos += GUI_GetYDistOfFont(pObj->Props.pFont);
 	_SetCursorXY(pObj, xPos, yPos);
 }
 static void _MoveCursor2NextLine(MULTIEDIT_Obj *pObj) {
 	int xPos, yPos;
 	_GetCursorXY(pObj, &xPos, &yPos);
-	yPos += GUI_GetYDistOfFont(pObj->pFont);
+	yPos += GUI_GetYDistOfFont(pObj->Props.pFont);
 	_SetCursorXY(pObj, 0, yPos);
 }
 static void _MoveCursor2LineEnd(MULTIEDIT_Obj *pObj) {
@@ -852,18 +809,18 @@ static void _MULTIEDIT_Paint(MULTIEDIT_Obj *pObj) {
 	GUI_RECT r, rClip;
 	const GUI_RECT *prOldClip;
 	/* Init some values */
-	GUI_SetFont(pObj->pFont);
+	GUI_SetFont(pObj->Props.pFont);
 	FontSizeY = GUI_GetFontDistY();
 	ScrollPosX = pObj->ScrollStateH.v;
 	ScrollPosY = pObj->ScrollStateV.v;
 	EffectSize = pObj->pEffect->EffectSize;
-	HBorder = pObj->HBorder;
+	HBorder = pObj->Props.HBorder;
 	xOff = EffectSize + HBorder - ScrollPosX;
 	yOff = EffectSize - ScrollPosY * FontSizeY;
 	ColorIndex = ((pObj->Flags & MULTIEDIT_SF_READONLY) ? 1 : 0);
 	/* Set colors and draw the background */
-	GUI_SetBkColor(pObj->aBkColor[ColorIndex]);
-	GUI_SetColor(pObj->aColor[ColorIndex]);
+	GUI_SetBkColor(pObj->Props.aBkColor[ColorIndex]);
+	GUI_SetColor(pObj->Props.aColor[ColorIndex]);
 	GUI_Clear();
 	/* Draw the text if necessary */
 	rClip.x0 = EffectSize + HBorder;
@@ -927,8 +884,8 @@ static void _OnTouch(MULTIEDIT_Obj *pObj, const GUI_PID_STATE *pState) {
 		if (pState->Pressed) {
 			int Effect, xPos, yPos;
 			Effect = pObj->pEffect->EffectSize;
-			xPos = pState->x + pObj->ScrollStateH.v - Effect - pObj->HBorder;
-			yPos = pState->y + pObj->ScrollStateV.v * GUI_GetYDistOfFont(pObj->pFont) - Effect;
+			xPos = pState->x + pObj->ScrollStateH.v - Effect - pObj->Props.HBorder;
+			yPos = pState->y + pObj->ScrollStateV.v * GUI_GetYDistOfFont(pObj->Props.pFont) - Effect;
 			_SetCursorXY(pObj, xPos, yPos);
 			_Invalidate(pObj);
 			Notification = WM_NOTIFICATION_CLICKED;
@@ -1118,20 +1075,14 @@ MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, &_MULTIEDIT_Callback,
 								  sizeof(MULTIEDIT_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		int i;
 		auto pObj = (MULTIEDIT_Obj *)hObj;
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
-		for (i = 0; i < NUM_DISP_MODES; i++) {
-			pObj->aBkColor[i] = _aDefaultBkColor[i];
-			pObj->aColor[i] = _aDefaultColor[i];
-		}
-		pObj->pFont = _pDefaultFont;
+		pObj->Props = MULTIEDIT_Obj::DefaultProps;
 		pObj->Flags = ExFlags;
 		pObj->CursorPosChar = 0;
 		pObj->CursorPosByte = 0;
-		pObj->HBorder = 1;
 		pObj->MaxNumChars = 0;
 		pObj->NumCharsPrompt = 0;
 		pObj->BufferSize = 0;
@@ -1268,8 +1219,8 @@ void MULTIEDIT_SetAutoScrollH(MULTIEDIT_HANDLE hObj, int OnOff) {
 void MULTIEDIT_SetHBorder(MULTIEDIT_HANDLE hObj, unsigned HBorder) {
 	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
-		if ((unsigned)pObj->HBorder != HBorder) {
-			pObj->HBorder = HBorder;
+		if ((unsigned)pObj->Props.HBorder != HBorder) {
+			pObj->Props.HBorder = HBorder;
 			_Invalidate(hObj);
 		}
 
@@ -1278,8 +1229,8 @@ void MULTIEDIT_SetHBorder(MULTIEDIT_HANDLE hObj, unsigned HBorder) {
 void MULTIEDIT_SetFont(MULTIEDIT_HANDLE hObj, PCFONT pFont) {
 	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
-		if (pObj->pFont != pFont) {
-			pObj->pFont = pFont;
+		if (pObj->Props.pFont != pFont) {
+			pObj->Props.pFont = pFont;
 			_InvalidateTextArea(hObj);
 			_InvalidateCursorXY(pObj);
 			_InvalidateNumLines(pObj);
@@ -1291,7 +1242,7 @@ void MULTIEDIT_SetFont(MULTIEDIT_HANDLE hObj, PCFONT pFont) {
 void MULTIEDIT_SetBkColor(MULTIEDIT_HANDLE hObj, unsigned Index, RGBC color) {
 	if (hObj && (Index < NUM_DISP_MODES)) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
-		pObj->aBkColor[Index] = color;
+		pObj->Props.aBkColor[Index] = color;
 		_InvalidateTextArea(hObj);
 
 	}
@@ -1307,7 +1258,7 @@ void MULTIEDIT_SetCursorOffset(MULTIEDIT_HANDLE hObj, int Offset) {
 void MULTIEDIT_SetTextColor(MULTIEDIT_HANDLE hObj, unsigned Index, RGBC color) {
 	if (hObj && (Index < NUM_DISP_MODES)) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
-		pObj->aColor[Index] = color;
+		pObj->Props.aColor[Index] = color;
 		WM_Invalidate(hObj);
 
 	}

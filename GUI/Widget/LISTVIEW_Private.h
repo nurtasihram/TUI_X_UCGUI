@@ -16,10 +16,18 @@ typedef struct {
 
 struct LISTVIEW_Obj : public WIDGET {
 	struct Properties {
-		PCFONT pFont;
-		RGBC aBkColor[3];
-		RGBC aTextColor[3];
-		RGBC GridColor;
+		PCFONT pFont{ &GUI_Font13_1 };
+		RGBC aBkColor[3]{
+			RGB_WHITE,   /* Not selected */
+			RGB_GRAY,    /* Selected, no focus */
+			RGB_BLUE     /* Selected, focus */
+		};
+		RGBC aTextColor[3]{
+			RGB_BLACK,   /* Not selected */
+			RGB_WHITE,   /* Selected, no focus */
+			RGB_WHITE    /* Selected, focus */
+		};
+		RGBC GridColor{ RGB_LIGHTGRAY };
 	} static DefaultProps;
 	Properties Props;
 	HEADER_Handle   hHeader;

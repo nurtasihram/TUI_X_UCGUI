@@ -9,12 +9,6 @@ HEADER_Obj::Properties HEADER_Obj::DefaultProps;
 
 /* Remember the old cursor */
 static PCCURSOR _pOldCursor;
-/* Default values */
-static PCCURSOR _pDefaultCursor = &GUI_CursorHeaderM;
-
-constexpr int16_t
-	_DefaultBorderH = 0,
-	_DefaultBorderV = 2;
 
 static void _OnPaint(HEADER_Obj *pObj) {
 	int xPos = -pObj->ScrollPos;
@@ -53,10 +47,10 @@ static void _OnPaint(HEADER_Obj *pObj) {
 		}
 		WIDGET__EFFECT_DrawUpRect(pObj, Rect);
 		xPos += Rect.x1 - Rect.x0;
-		Rect.x0 += EffectSize + _DefaultBorderH;
-		Rect.x1 -= EffectSize + _DefaultBorderH;
-		Rect.y0 += EffectSize + _DefaultBorderV;
-		Rect.y1 -= EffectSize + _DefaultBorderV;
+		Rect.x0 += EffectSize + pObj->Props.BorderH;
+		Rect.x1 -= EffectSize + pObj->Props.BorderH;
+		Rect.y0 += EffectSize + pObj->Props.BorderV;
+		Rect.y1 -= EffectSize + pObj->Props.BorderV;
 		GUI_SetColor(pObj->Props.TextColor);
 		GUI_DispStringInRect(pColumn->acText, &Rect, pColumn->Align);
 	}
@@ -128,7 +122,7 @@ static void _HandlePID(HEADER_Obj *pObj, int x, int y, int Pressed) {
 		WM_SetCapture(pObj, 1);
 #if GUI_SUPPORT_CURSOR
 		if (!_pOldCursor) {
-			_pOldCursor = GUI_CURSOR_Select(_pDefaultCursor);
+			_pOldCursor = GUI_CURSOR_Select(pObj->Props.pCursor);
 		}
 #endif
 	}
@@ -214,7 +208,7 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hPa
 	}
 	if (ysize == 0) {
 		ysize = GUI_GetYDistOfFont(HEADER_Obj::DefaultProps.pFont);
-		ysize += 2 * _DefaultBorderV;
+		ysize += 2 * HEADER_Obj::DefaultProps.BorderV;
 		ysize += 2 * WIDGET::DefaultEffect->EffectSize;
 	}
 	WinFlags |= WM_CF_ANCHOR_LEFT | WM_CF_ANCHOR_RIGHT;
@@ -297,7 +291,7 @@ void HEADER_AddItem(HEADER_Handle hObj, int Width, const char *s, int Align) {
 		HEADER_COLUMN Column;
 		if (!Width) {
 			PCFONT pFont = GUI_SetFont(pObj->Props.pFont);
-			Width = GUI_GetStringDistX(s) + 2 * (pObj->pEffect->EffectSize + _DefaultBorderH);
+			Width = GUI_GetStringDistX(s) + 2 * (pObj->pEffect->EffectSize + pObj->Props.BorderH);
 			GUI_SetFont(pFont);
 		}
 		Column.Width = Width;

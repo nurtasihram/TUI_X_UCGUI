@@ -6,47 +6,9 @@
 #include "MENU.h"
 #include "MENU_Private.h"
 
-/* Define default font */
-#define MENU_FONT_DEFAULT         &GUI_Font13_1
 /* Define default effect */
 #define MENU_EFFECT_DEFAULT       WIDGET_Effect_3D1L
-/* Define colors, index 0, enabled, not selected */
-#define MENU_TEXTCOLOR0_DEFAULT   RGB_BLACK
-#define MENU_BKCOLOR0_DEFAULT     RGB_LIGHTGRAY
-/* Define colors, index 1, enabled, selected */
-#define MENU_TEXTCOLOR1_DEFAULT   RGB_WHITE
-#define MENU_BKCOLOR1_DEFAULT     RGB_BLUEL(0x98)
-/* Define colors, index 2, disabled, not selected */
-#define MENU_TEXTCOLOR2_DEFAULT   RGB_GRAYL(0x7C)
-#define MENU_BKCOLOR2_DEFAULT     RGB_LIGHTGRAY
-/* Define colors, index 3, disabled, selected */
-#define MENU_TEXTCOLOR3_DEFAULT   RGB_LIGHTGRAY
-#define MENU_BKCOLOR3_DEFAULT     RGB_BLUEL(0x98)
-/* Define colors, index 4, active submenu */
-#define MENU_TEXTCOLOR4_DEFAULT   RGB_WHITE
-#define MENU_BKCOLOR4_DEFAULT     RGB_GRAYL(0x7C)
-/* Define borders */
-#define MENU_BORDER_LEFT_DEFAULT    4
-#define MENU_BORDER_RIGHT_DEFAULT   4
-#define MENU_BORDER_TOP_DEFAULT     2
-#define MENU_BORDER_BOTTOM_DEFAULT  2
-MENU_Obj::Properties MENU_Obj::DefaultProps {
-  MENU_TEXTCOLOR0_DEFAULT,
-  MENU_TEXTCOLOR1_DEFAULT,
-  MENU_TEXTCOLOR2_DEFAULT,
-  MENU_TEXTCOLOR3_DEFAULT,
-  MENU_TEXTCOLOR4_DEFAULT,
-  MENU_BKCOLOR0_DEFAULT,
-  MENU_BKCOLOR1_DEFAULT,
-  MENU_BKCOLOR2_DEFAULT,
-  MENU_BKCOLOR3_DEFAULT,
-  MENU_BKCOLOR4_DEFAULT,
-  MENU_BORDER_LEFT_DEFAULT,
-  MENU_BORDER_RIGHT_DEFAULT,
-  MENU_BORDER_TOP_DEFAULT,
-  MENU_BORDER_BOTTOM_DEFAULT,
-  MENU_FONT_DEFAULT
-};
+MENU_Obj::Properties MENU_Obj::DefaultProps;
 PCWIDGET_EFFECT MENU__pDefaultEffect = MENU_EFFECT_DEFAULT;
 
 static char _IsTopLevelMenu(MENU_Obj *pObj) {

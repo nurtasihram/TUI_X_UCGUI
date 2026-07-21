@@ -2,32 +2,29 @@
 #include "GUI_Protected.h"
 
 #include "TEXT.h"
+#include "TEXT_Private.h"
 
-/* Define default fonts */
-#define TEXT_FONT_DEFAULT &GUI_Font13_1
-#define TEXT_DEFAULT_TEXT_COLOR RGB_BLACK
-static PCFONT _pDefaultFont = TEXT_FONT_DEFAULT;
-static RGBC        _DefaultTextColor = TEXT_DEFAULT_TEXT_COLOR;
+TEXT_Obj::Properties TEXT_Obj::DefaultProps;
 static void _FreeAttached(TEXT_Obj *pObj) {
 	GUI_ALLOC_FreePtr((void **)&pObj->pText);
 }
 static void _OnPaint(TEXT_Obj *pObj) {
 	const char *s;
 	GUI_USE_PARA(pObj);
-	GUI_SetColor(pObj->TextColor);
-	GUI_SetFont(pObj->pFont);
+	GUI_SetColor(pObj->Props.TextColor);
+	GUI_SetFont(pObj->Props.pFont);
 	/* Fill with parents background color */
 #if !WM_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent*/
-	if (pObj->BkColor == RGB_INVALID_COLOR) {
-		GUI_SetBkColor(WIDGET__GetBkColor(hObj));
+	if (pObj->Props.BkColor == RGB_INVALID_COLOR) {
+		GUI_SetBkColor(WIDGET__GetBkColor(pObj));
 	}
 	else {
-		GUI_SetBkColor(pObj->BkColor);
+		GUI_SetBkColor(pObj->Props.BkColor);
 	}
 	GUI_Clear();
 #else
 	if (!WM_GetHasTrans(pObj)) {
-		GUI_SetBkColor(pObj->BkColor);
+		GUI_SetBkColor(pObj->Props.BkColor);
 		GUI_Clear();
 	}
 #endif
@@ -36,7 +33,7 @@ static void _OnPaint(TEXT_Obj *pObj) {
 		s = pObj->pText;
 		GUI_SetTextMode(DRAWMODE_TRANS);
 		auto r = WM_GetClientRect();
-		GUI_DispStringInRect(s, &r, pObj->Align);
+		GUI_DispStringInRect(s, &r, pObj->Props.Align);
 	}
 }
 static void _Delete(TEXT_Obj *pObj) {
@@ -74,14 +71,12 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, 0);
 		/* init member variables */
-		if (pText) 
+		pObj->Props = TEXT_Obj::DefaultProps;
+		pObj->Props.Align = ExFlags;
+		if (pText)
 			GUI__SetText(&pObj->pText, pText);
 		else
 			pObj->pText = nullptr;
-		pObj->Align = ExFlags;
-		pObj->pFont = _pDefaultFont;
-		pObj->BkColor = RGB_INVALID_COLOR;
-		pObj->TextColor = _DefaultTextColor;
 	}
 	else {
 	}
@@ -106,7 +101,7 @@ TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Ob
 void TEXT_SetBkColor(TEXT_Handle hObj, RGBC Color) {
 	if (hObj) {
 		auto pObj = (TEXT_Obj *)hObj;
-		pObj->BkColor = Color;
+		pObj->Props.BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
 		if (Color <= RGB_WHITE) {
 			WM_ClrHasTrans(hObj);
@@ -122,7 +117,7 @@ void TEXT_SetBkColor(TEXT_Handle hObj, RGBC Color) {
 void TEXT_SetFont(TEXT_Handle hObj, PCFONT pFont) {
 	if (hObj) {
 		auto pObj = (TEXT_Obj *)hObj;
-		pObj->pFont = pFont;
+		pObj->Props.pFont = pFont;
 		WM_Invalidate(hObj);
 	}
 }
@@ -139,7 +134,7 @@ void TEXT_SetText(TEXT_Handle hObj, const char *s) {
 void TEXT_SetTextAlign(TEXT_Handle hObj, int Align) {
 	if (hObj) {
 		auto pObj = (TEXT_Obj *)hObj;
-		pObj->Align = Align;
+		pObj->Props.Align = Align;
 		WM_Invalidate(hObj);
 
 	}
@@ -147,7 +142,7 @@ void TEXT_SetTextAlign(TEXT_Handle hObj, int Align) {
 void TEXT_SetTextColor(TEXT_Handle hObj, RGBC Color) {
 	if (hObj) {
 		auto pObj = (TEXT_Obj *)hObj;
-		pObj->TextColor = Color;
+		pObj->Props.TextColor = Color;
 		WM_Invalidate(hObj);
 
 	}
