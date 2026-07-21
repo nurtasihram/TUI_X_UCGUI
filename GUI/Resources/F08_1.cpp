@@ -966,15 +966,15 @@ const GUI_CHARINFO Font8_1_CharInfo[96] = {
   ,{   6,   6,  1, acFont8_1_255 } /* code 255 */
 };
 
-extern const GUI_FONT_PROP GUI_Font8ASCII_Prop;
-const GUI_FONT_PROP GUI_Font8_1_Prop = {
+extern const FONT_PROP GUI_Font8ASCII_Prop;
+const FONT_PROP GUI_Font8_1_Prop = {
    160                                         /* first character               */
   ,255                                         /* last character                */
   ,Font8_1_CharInfo                            /* address of first character    */
-  ,&GUI_Font8ASCII_Prop                        /* pointer to next GUI_FONT_PROP */
+  ,&GUI_Font8ASCII_Prop                        /* pointer to next FONT_PROP */
 };
 
-const GUI_FONT GUI_Font8_1 = {
+CFONT GUI_Font8_1 = {
    GUI_FONTTYPE_PROP              /* type of font    */
   ,8                              /* height of font  */
   ,8                              /* space of font y */

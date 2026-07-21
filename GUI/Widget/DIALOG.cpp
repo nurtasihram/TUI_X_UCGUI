@@ -5,12 +5,12 @@
 
 /* Define colors */
 #define DIALOG_BKCOLOR0_DEFAULT RGB_GRAYL(0xc0)
-static RGB_COLOR _BkColor = DIALOG_BKCOLOR0_DEFAULT;
-RGB_COLOR DIALOG_GetBkColor(void) {
+static RGBC _BkColor = DIALOG_BKCOLOR0_DEFAULT;
+RGBC DIALOG_GetBkColor(void) {
 	return _BkColor;
 }
-RGB_COLOR DIALOG_SetBkColor(RGB_COLOR BkColor) {
-	RGB_COLOR r;
+RGBC DIALOG_SetBkColor(RGBC BkColor) {
+	RGBC r;
 	r = _BkColor;
 	_BkColor = BkColor;
 	return r;

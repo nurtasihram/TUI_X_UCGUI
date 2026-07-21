@@ -6,11 +6,11 @@
 
 struct SCROLLBAR_Obj : public WIDGET {
 	struct Properties {
-		RGB_COLOR aBkColor[2]{
+		RGBC aBkColor[2]{
 			RGB_GRAYL(0x80),
 			RGB_BLACK
 		};
-		RGB_COLOR Color{ RGB_GRAYL(0xC0) };
+		RGBC Color{ RGB_GRAYL(0xC0) };
 	} static DefaultProps;
 	static const int16_t DefaultWidth = 12;
 	Properties Props;

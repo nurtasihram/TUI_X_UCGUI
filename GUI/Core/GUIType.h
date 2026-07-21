@@ -11,19 +11,21 @@ typedef struct {
 	void(*pfDraw)(int x0, int y0, int xsize, int ysize, const uint8_t  *pPixel, const GUI_LOGPALETTE  *pLogPal, int xMag, int yMag);
 } GUI_BITMAP_METHODS;
 
-typedef struct {
+struct GUI_BITMAP {
 	uint16_t XSize;
 	uint16_t YSize;
 	uint16_t BytesPerLine;
 	uint16_t BitsPerPixel;
 	const uint8_t  *pData;
 	const GUI_LOGPALETTE  *pPal;
-} GUI_BITMAP;
+};
+using CBITMAP = const GUI_BITMAP;
+using PCBITMAP = const GUI_BITMAP *;
 
-typedef struct {
+struct GUI_PID_STATE {
 	int16_t x, y;
 	uint8_t Pressed;
-} GUI_PID_STATE;
+};
 
 /*
 	  ****************************************
@@ -33,51 +35,38 @@ typedef struct {
 	  ****************************************
 */
 
+struct GUI_CHARINFO {
+	uint8_t XSize;
+	uint8_t XDist;
+	uint8_t BytesPerLine;
+	const uint8_t  *pData;
+};
+struct FONT_PROP {
+	uint16_t First, Last;
+	const GUI_CHARINFO *paCharInfo; /* address of first character    */
+	const FONT_PROP *pNext; /* pointer to next */
+};
+
 /* Translation list. Translates a character code into up to 2
    indices of images to display on top of each other;
    '? -> index('a'), index('?) */
-typedef struct {
-	int16_t c0;
-	int16_t c1;
-} GUI_FONT_TRANSLIST;
-
-typedef struct {
+struct FONT_TRANSLIST {
+	int16_t c0, c1;
+};
+struct FONT_TRANSINFO {
 	uint16_t FirstChar;
 	uint16_t LastChar;
-	const GUI_FONT_TRANSLIST  *pList;
-} GUI_FONT_TRANSINFO;
-
-typedef struct {
+	const FONT_TRANSLIST *pList;
+};
+struct FONT_MONO {
+	const uint8_t *pData;
+	const uint8_t *pTransData;
+	const FONT_TRANSINFO *pTrans;
+	uint16_t FirstChar, LastChar;
 	uint8_t XSize;
 	uint8_t XDist;
 	uint8_t BytesPerLine;
-	const uint8_t  *pData;
-} GUI_CHARINFO;
-
-typedef struct GUI_FONT_PROP {
-	uint16_t First;                                /* first character               */
-	uint16_t Last;                                 /* last character                */
-	const GUI_CHARINFO  *paCharInfo;            /* address of first character    */
-	const struct GUI_FONT_PROP  *pNext;        /* pointer to next */
-} GUI_FONT_PROP;
-
-typedef struct {
-	const uint8_t  *pData;
-	const uint8_t  *pTransData;
-	const GUI_FONT_TRANSINFO  *pTrans;
-	uint16_t FirstChar;
-	uint16_t LastChar;
-	uint8_t XSize;
-	uint8_t XDist;
-	uint8_t BytesPerLine;
-} GUI_FONT_MONO;
-
-typedef struct GUI_FONT_INFO {
-	uint16_t First;                        /* first character               */
-	uint16_t Last;                         /* last character                */
-	const GUI_CHARINFO *paCharInfo;    /* address of first character    */
-	const struct GUI_FONT_INFO *pNext; /* pointer to next */
-} GUI_FONT_INFO;
+};
 
 /*
 	  ****************************************
@@ -129,24 +118,25 @@ typedef struct {
 	  ****************************************
 
 The parameter to the methods called pFont should be of type
-GUI_FONT, but unfortunately a lot of compilers can not handle
+FONT, but unfortunately a lot of compilers can not handle
 forward declarations right ...
 So it ends up to be a void pointer.
 */
 
-typedef struct GUI_FONT GUI_FONT;
+struct FONT;
+using CFONT = const FONT;
+using PCFONT = const FONT *;
 
 typedef void GUI_DISPCHAR(uint16_t c);
 typedef int  GUI_GETCHARDISTX(uint16_t c);
-typedef void GUI_GETFONTINFO(const GUI_FONT  *pFont, GUI_FONTINFO *pfi);
-typedef char GUI_ISINFONT(const GUI_FONT  *pFont, uint16_t c);
+typedef void GUI_GETFONTINFO(PCFONT pFont, GUI_FONTINFO *pfi);
+typedef char GUI_ISINFONT(PCFONT pFont, uint16_t c);
 
 #define DECLARE_FONT(Type)                                     \
 void GUI##Type##_DispChar    (uint16_t c);                         \
 int  GUI##Type##_GetCharDistX(uint16_t c);                         \
-void GUI##Type##_GetFontInfo (const GUI_FONT  * pFont, GUI_FONTINFO * pfi); \
-char GUI##Type##_IsInFont    (const GUI_FONT  * pFont, uint16_t c)
-
+void GUI##Type##_GetFontInfo (PCFONT pFont, GUI_FONTINFO * pfi); \
+char GUI##Type##_IsInFont    (PCFONT pFont, uint16_t c)
 
 	/* MONO: Monospaced fonts */
 	DECLARE_FONT(MONO);
@@ -167,7 +157,7 @@ char GUI##Type##_IsInFont    (const GUI_FONT  * pFont, uint16_t c)
   (tGUI_ENC_APIList*)0
 
 
-struct GUI_FONT {
+struct FONT {
 	GUI_DISPCHAR *pfDispChar;
 	GUI_GETCHARDISTX *pfGetCharDistX;
 	GUI_GETFONTINFO *pfGetFontInfo;
@@ -176,21 +166,15 @@ struct GUI_FONT {
 	uint8_t YSize;
 	uint8_t YDist;
 	union {
-		const void           *pFontData;
-		const GUI_FONT_MONO  *pMono;
-		const GUI_FONT_PROP  *pProp;
+		const void *pVoid;
+		const FONT_MONO  *pMono;
+		const FONT_PROP  *pProp;
 	} p;
 	uint8_t Baseline;
 	uint8_t LHeight;     /* height of a small lower case character (a,x) */
 	uint8_t CHeight;     /* height of a small upper case character (A,X) */
 };
 
-/*
-	  *********************************
-	  *                               *
-	  *      Typedefs                 *
-	  *                               *
-	  *********************************
-*/
+
 
 typedef void *GUI_HMEM, *GUI_HWIN;

@@ -57,7 +57,7 @@ void      MENU_GetItemText      (MENU_Handle hObj, uint16_t ItemId, char* pBuffe
 unsigned  MENU_GetNumItems      (MENU_Handle hObj);
 void      MENU_DisableItem      (MENU_Handle hObj, uint16_t ItemId);
 void      MENU_EnableItem       (MENU_Handle hObj, uint16_t ItemId);
-void      MENU_SetTextColor     (MENU_Handle hObj, unsigned ColorIndex, RGB_COLOR Color);
-void      MENU_SetBkColor       (MENU_Handle hObj, unsigned ColorIndex, RGB_COLOR Color);
+void      MENU_SetTextColor     (MENU_Handle hObj, unsigned ColorIndex, RGBC Color);
+void      MENU_SetBkColor       (MENU_Handle hObj, unsigned ColorIndex, RGBC Color);
 void      MENU_SetBorderSize    (MENU_Handle hObj, unsigned BorderIndex, uint8_t BorderSize);
-void      MENU_SetFont          (MENU_Handle hObj, const GUI_FONT * pFont);
+void      MENU_SetFont          (MENU_Handle hObj, PCFONT pFont);

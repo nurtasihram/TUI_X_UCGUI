@@ -5,8 +5,8 @@
 #include "GUI_ARRAY.h"
 
 typedef struct {
-	RGB_COLOR aBkColor[3];
-	RGB_COLOR aTextColor[3];
+	RGBC aBkColor[3];
+	RGBC aTextColor[3];
 } LISTVIEW_ITEM_INFO;
 
 typedef struct {
@@ -16,10 +16,10 @@ typedef struct {
 
 struct LISTVIEW_Obj : public WIDGET {
 	struct Properties {
-		const GUI_FONT *pFont;
-		RGB_COLOR aBkColor[3];
-		RGB_COLOR aTextColor[3];
-		RGB_COLOR GridColor;
+		PCFONT pFont;
+		RGBC aBkColor[3];
+		RGBC aTextColor[3];
+		RGBC GridColor;
 	} static DefaultProps;
 	Properties Props;
 	HEADER_Handle   hHeader;

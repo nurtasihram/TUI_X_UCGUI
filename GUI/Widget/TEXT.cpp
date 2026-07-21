@@ -6,8 +6,8 @@
 /* Define default fonts */
 #define TEXT_FONT_DEFAULT &GUI_Font13_1
 #define TEXT_DEFAULT_TEXT_COLOR RGB_BLACK
-static const GUI_FONT  *_pDefaultFont = TEXT_FONT_DEFAULT;
-static RGB_COLOR        _DefaultTextColor = TEXT_DEFAULT_TEXT_COLOR;
+static PCFONT _pDefaultFont = TEXT_FONT_DEFAULT;
+static RGBC        _DefaultTextColor = TEXT_DEFAULT_TEXT_COLOR;
 static void _FreeAttached(TEXT_Obj *pObj) {
 	GUI_ALLOC_FreePtr((void **)&pObj->pText);
 }
@@ -44,7 +44,7 @@ static void _Delete(TEXT_Obj *pObj) {
 	_FreeAttached(pObj);
 }
 static WM_PARAM _TEXT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
-	TEXT_Obj *pObj = (TEXT_Obj *)hWin;
+	auto pObj = (TEXT_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 		return Data;
@@ -70,7 +70,7 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _TEXT_Callback,
 								  sizeof(TEXT_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		TEXT_Obj *pObj = (TEXT_Obj *)hObj;
+		auto pObj = (TEXT_Obj *)hObj;
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, 0);
 		/* init member variables */
@@ -103,9 +103,9 @@ TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HW
 	return hThis;
 }
 
-void TEXT_SetBkColor(TEXT_Handle hObj, RGB_COLOR Color) {
+void TEXT_SetBkColor(TEXT_Handle hObj, RGBC Color) {
 	if (hObj) {
-		TEXT_Obj *pObj = (TEXT_Obj *)hObj;
+		auto pObj = (TEXT_Obj *)hObj;
 		pObj->BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
 		if (Color <= RGB_WHITE) {
@@ -119,9 +119,9 @@ void TEXT_SetBkColor(TEXT_Handle hObj, RGB_COLOR Color) {
 	}
 }
 
-void TEXT_SetFont(TEXT_Handle hObj, const GUI_FONT  *pFont) {
+void TEXT_SetFont(TEXT_Handle hObj, PCFONT pFont) {
 	if (hObj) {
-		TEXT_Obj *pObj = (TEXT_Obj *)hObj;
+		auto pObj = (TEXT_Obj *)hObj;
 		pObj->pFont = pFont;
 		WM_Invalidate(hObj);
 	}
@@ -130,7 +130,7 @@ void TEXT_SetFont(TEXT_Handle hObj, const GUI_FONT  *pFont) {
 
 void TEXT_SetText(TEXT_Handle hObj, const char *s) {
 	if (hObj) {
-		TEXT_Obj *pObj = (TEXT_Obj *)hObj;
+		auto pObj = (TEXT_Obj *)hObj;
 		if (GUI__SetText(&pObj->pText, s))
 			WM_Invalidate(hObj);
 	}
@@ -138,15 +138,15 @@ void TEXT_SetText(TEXT_Handle hObj, const char *s) {
 
 void TEXT_SetTextAlign(TEXT_Handle hObj, int Align) {
 	if (hObj) {
-		TEXT_Obj *pObj = (TEXT_Obj *)hObj;
+		auto pObj = (TEXT_Obj *)hObj;
 		pObj->Align = Align;
 		WM_Invalidate(hObj);
 
 	}
 }
-void TEXT_SetTextColor(TEXT_Handle hObj, RGB_COLOR Color) {
+void TEXT_SetTextColor(TEXT_Handle hObj, RGBC Color) {
 	if (hObj) {
-		TEXT_Obj *pObj = (TEXT_Obj *)hObj;
+		auto pObj = (TEXT_Obj *)hObj;
 		pObj->TextColor = Color;
 		WM_Invalidate(hObj);
 

@@ -27,5 +27,5 @@ WM_HWIN GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidge
 void    GUI_SetDialogStatusPtr(WM_HWIN hDialog, WM_DIALOG_STATUS *pDialogStatus); /* not to documented */
 WM_DIALOG_STATUS *GUI_GetDialogStatusPtr(WM_HWIN hDialog);                       /* not to documented */
 void    GUI_EndDialog(WM_HWIN hWin, int r);
-RGB_COLOR DIALOG_GetBkColor(void);                                                /* obsolete */
-RGB_COLOR DIALOG_SetBkColor(RGB_COLOR BkColor);                                   /* obsolete */
+RGBC DIALOG_GetBkColor(void);                                                /* obsolete */
+RGBC DIALOG_SetBkColor(RGBC BkColor);                                   /* obsolete */

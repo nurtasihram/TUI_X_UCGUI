@@ -9,14 +9,14 @@
 
 struct DROPDOWN_Obj : public WIDGET {
 	struct Properties {
-		const GUI_FONT *pFont{ &GUI_Font13_1 };
-		RGB_COLOR aBkColor[4]{
+		PCFONT pFont{ &GUI_Font13_1 };
+		RGBC aBkColor[4]{
 			/* Unselect */			RGB_WHITE,
 			/* Selected */			RGB_GRAY,
 			/* Selected focussed */	RGB_DARKBLUE,
 			/* Disabled */			RGB_GRAYL(0xC0)
 		};
-		RGB_COLOR aTextColor[4]{
+		RGBC aTextColor[4]{
 			/* Unselect */			RGB_BLACK,
 			/* Selected */			RGB_WHITE,
 			/* Selected focussed */	RGB_WHITE,

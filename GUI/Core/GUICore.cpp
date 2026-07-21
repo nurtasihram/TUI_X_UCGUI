@@ -79,7 +79,7 @@ void GUI_RestoreContext(const GUI_CONTEXT *pContext) {
 GUI_DRAWMODE GUI_SetDrawMode(GUI_DRAWMODE dm) {
 	GUI_DRAWMODE OldDM = GUI_Context.DrawMode;
 	if ((GUI_Context.DrawMode ^ dm) & DRAWMODE_REV) {
-		RGB_COLOR temp = LCD_BKCOLORINDEX;
+		RGBC temp = LCD_BKCOLORINDEX;
 		LCD_BKCOLORINDEX = LCD_COLORINDEX;
 		LCD_COLORINDEX = temp;
 	}
@@ -101,17 +101,17 @@ int GUI_GetTextMode(void) {
 	return GUI_Context.TextMode;
 }
 
-void GUI_SetBkColor(RGB_COLOR color) {
+void GUI_SetBkColor(RGBC color) {
 	LCD_ACOLORINDEX[(GUI_Context.DrawMode & DRAWMODE_REV) ? 1 : 0] = color;
 }
-void GUI_SetColor(RGB_COLOR color) {
+void GUI_SetColor(RGBC color) {
 	LCD_ACOLORINDEX[(GUI_Context.DrawMode & DRAWMODE_REV) ? 0 : 1] = color;
 }
 
-RGB_COLOR GUI_GetBkColor(void) {
+RGBC GUI_GetBkColor(void) {
 	return LCD_BKCOLORINDEX;
 }
-RGB_COLOR GUI_GetColor(void) {
+RGBC GUI_GetColor(void) {
 	return LCD_COLORINDEX;
 }
 #pragma endregion
@@ -187,11 +187,11 @@ void GUI_DrawHLine(int y0, int x0, int x1) {
 	} WM_ITERATE_END();
 }
 
-void GUI_DrawBitmap(const GUI_BITMAP *pBitmap, int x0, int y0) {
+void GUI_DrawBitmap(PCBITMAP pBitmap, int x0, int y0) {
 	const GUI_LOGPALETTE *pPal = pBitmap->pPal;
 	GUI_DRAWMODE PrevDraw = GUI_SetDrawMode(0);  /* No Get... at this point */
 	GUI_SetDrawMode((pPal && pPal->HasTrans) ? (PrevDraw | DRAWMODE_TRANS) : PrevDraw & (~DRAWMODE_TRANS));
-	const RGB_COLOR *pTrans = pBitmap->pPal ? pBitmap->pPal->pPalEntries : nullptr;
+	const RGBC *pTrans = pBitmap->pPal ? pBitmap->pPal->pPalEntries : nullptr;
 	if (!pTrans) 
 		pTrans = (pBitmap->BitsPerPixel != 1) ? nullptr : &LCD_BKCOLORINDEX;
 	GUI_RECT r;
@@ -211,11 +211,11 @@ void GUI_DrawBitmap(const GUI_BITMAP *pBitmap, int x0, int y0) {
 #pragma endregion
 
 #pragma region Font&String
-const GUI_FONT *GUI_GetFont(void) {
+PCFONT GUI_GetFont(void) {
 	return GUI_Context.pAFont;
 }
-const GUI_FONT *GUI_SetFont(const GUI_FONT *pNewFont) {
-	const GUI_FONT *pOldFont = GUI_Context.pAFont;
+PCFONT GUI_SetFont(PCFONT pNewFont) {
+	PCFONT pOldFont = GUI_Context.pAFont;
 	if (pNewFont)
 		GUI_Context.pAFont = pNewFont;
 	return pOldFont;
@@ -348,17 +348,17 @@ int GUI_GetCharDistX(uint16_t c) {
 int GUI_GetStringDistX(const char *s) {
 	return GUI__GetLineDistX(s, GUI__strlen(s));
 }
-int GUI_GetYSizeOfFont(const GUI_FONT *pFont) {
+int GUI_GetYSizeOfFont(PCFONT pFont) {
 	return pFont->YSize;
 }
-int GUI_GetYDistOfFont(const GUI_FONT *pFont) {
+int GUI_GetYDistOfFont(PCFONT pFont) {
 	return pFont->YDist;
 }
 int GUI_GetFontSizeY(void) {
 	return GUI_Context.pAFont->YSize;
 }
 
-void GUI_GetFontInfo(const GUI_FONT *pFont, GUI_FONTINFO *pFontInfo) {
+void GUI_GetFontInfo(PCFONT pFont, GUI_FONTINFO *pFontInfo) {
 	if (pFont == nullptr) {
 		pFont = GUI_Context.pAFont;
 	}
@@ -368,7 +368,7 @@ void GUI_GetFontInfo(const GUI_FONT *pFont, GUI_FONTINFO *pFontInfo) {
 	pFont->pfGetFontInfo(pFont, pFontInfo);
 }
 
-char GUI_IsInFont(const GUI_FONT *pFont, uint16_t c) {
+char GUI_IsInFont(PCFONT pFont, uint16_t c) {
 	if (pFont == nullptr)
 		pFont = GUI_Context.pAFont;
 	return pFont->pfIsInFont(pFont, c);
@@ -383,7 +383,7 @@ void GUIMONO_DispChar(uint16_t c) {
 	int x = GUI_Context.DispPos.x;
 	int y = GUI_Context.DispPos.y;
 	/* do some checking if drawing is actually necessary ... */
-	const GUI_FONT_MONO *pMono = GUI_Context.pAFont->p.pMono;
+	auto pMono = GUI_Context.pAFont->p.pMono;
 	unsigned int FirstChar = pMono->FirstChar;
 	/* translate character into 2 characters to display : c0,c1 */
 	/* Check if regular character first. */
@@ -394,12 +394,12 @@ void GUIMONO_DispChar(uint16_t c) {
 	}
 	else {
 		/* Check if character is in translation table */
-		GUI_FONT_TRANSINFO const *pti = pMono->pTrans;
+		FONT_TRANSINFO const *pti = pMono->pTrans;
 		pd = pMono->pTransData;
 		if (pti) {
 			FirstChar = pti->FirstChar;
 			if ((c >= (uint16_t)FirstChar) && (c <= (uint16_t)pti->LastChar)) {
-				GUI_FONT_TRANSLIST const *ptl;
+				FONT_TRANSLIST const *ptl;
 				c -= pti->FirstChar;
 				ptl = pti->pList;
 				ptl += c;
@@ -460,19 +460,19 @@ void GUIMONO_DispChar(uint16_t c) {
 }
 
 int GUIMONO_GetCharDistX(uint16_t c) {
-	const GUI_FONT_MONO *pMono = GUI_Context.pAFont->p.pMono;
+	auto pMono = GUI_Context.pAFont->p.pMono;
 	GUI_USE_PARA(c);
 	return pMono->XDist;
 
 }
 
-void GUIMONO_GetFontInfo(const GUI_FONT *pFont, GUI_FONTINFO *pfi) {
+void GUIMONO_GetFontInfo(PCFONT pFont, GUI_FONTINFO *pfi) {
 	GUI_USE_PARA(pFont);
 	pfi->Flags = GUI_FONTINFO_FLAG_MONO;
 }
 
-char GUIMONO_IsInFont(const GUI_FONT *pFont, uint16_t c) {
-	const GUI_FONT_MONO *pMono = pFont->p.pMono;
+char GUIMONO_IsInFont(PCFONT pFont, uint16_t c) {
+	auto pMono = pFont->p.pMono;
 	unsigned int FirstChar = pMono->FirstChar;
 	/* Check if regular character first. */
 	if ((c >= (uint16_t)FirstChar) && (c <= (uint16_t)pMono->LastChar)) {
@@ -480,7 +480,7 @@ char GUIMONO_IsInFont(const GUI_FONT *pFont, uint16_t c) {
 	}
 	else {
 		/* Check if character is in translation table */
-		GUI_FONT_TRANSINFO const *pti = pMono->pTrans;
+		FONT_TRANSINFO const *pti = pMono->pTrans;
 		if (pti) {
 			if ((c >= pti->FirstChar) && (c <= pti->LastChar)) {
 				return 1;  /* Yes, we have it ! */
@@ -492,7 +492,7 @@ char GUIMONO_IsInFont(const GUI_FONT *pFont, uint16_t c) {
 #pragma endregion
 
 #pragma region Font PROP
-static const GUI_FONT_PROP *GUIPROP_FindChar(const GUI_FONT_PROP *pProp, uint16_t c) {
+static const FONT_PROP *GUIPROP_FindChar(const FONT_PROP *pProp, uint16_t c) {
 	for (; pProp; pProp = pProp->pNext) {
 		if ((c >= pProp->First) && (c <= pProp->Last))
 			break;
@@ -504,7 +504,7 @@ void GUIPROP_DispChar(uint16_t c) {
 	int BytesPerLine;
 
 	GUI_DRAWMODE DrawMode = GUI_Context.TextMode;
-	const GUI_FONT_PROP *pProp = GUIPROP_FindChar(GUI_Context.pAFont->p.pProp, c);
+	auto pProp = GUIPROP_FindChar(GUI_Context.pAFont->p.pProp, c);
 	if (pProp) {
 		GUI_DRAWMODE OldDrawMode;
 		const GUI_CHARINFO *pCharInfo = pProp->paCharInfo + (c - pProp->First);
@@ -522,7 +522,7 @@ void GUIPROP_DispChar(uint16_t c) {
 			int YDist = GUI_Context.pAFont->YDist;
 			int YSize = GUI_Context.pAFont->YSize;
 			if (DrawMode != DRAWMODE_TRANS) {
-				RGB_COLOR OldColor = GUI_GetColor();
+				RGBC OldColor = GUI_GetColor();
 				GUI_SetColor(GUI_GetBkColor());
 				LCD_FillRect(GUI_Context.DispPos.x,
 							 GUI_Context.DispPos.y + YSize,
@@ -537,17 +537,17 @@ void GUIPROP_DispChar(uint16_t c) {
 }
 
 int GUIPROP_GetCharDistX(uint16_t c) {
-	const GUI_FONT_PROP *pProp = GUIPROP_FindChar(GUI_Context.pAFont->p.pProp, c);
+	auto pProp = GUIPROP_FindChar(GUI_Context.pAFont->p.pProp, c);
 	return (pProp) ? (pProp->paCharInfo + (c - pProp->First))->XSize : 0;
 }
 
-void GUIPROP_GetFontInfo(const GUI_FONT *pFont, GUI_FONTINFO *pfi) {
+void GUIPROP_GetFontInfo(PCFONT pFont, GUI_FONTINFO *pfi) {
 	GUI_USE_PARA(pFont);
 	pfi->Flags = GUI_FONTINFO_FLAG_PROP;
 }
 
-char GUIPROP_IsInFont(const GUI_FONT *pFont, uint16_t c) {
-	const GUI_FONT_PROP *pProp = GUIPROP_FindChar(pFont->p.pProp, c);
+char GUIPROP_IsInFont(PCFONT pFont, uint16_t c) {
+	auto pProp = GUIPROP_FindChar(pFont->p.pProp, c);
 	return (pProp == nullptr) ? 0 : 1;
 }
 #pragma endregion
@@ -775,7 +775,7 @@ bool GUI__SetText(char **ppText, const char *s) {
 	}
 	if (!GUI__strcmp(*ppText, s)) 
 		return false;	
-	char *pNewText = (char *)GUI_ALLOC_AllocNoInit(GUI__strlen(s) + 1);
+	auto pNewText = (char *)GUI_ALLOC_AllocNoInit(GUI__strlen(s) + 1);
 	if (!pNewText) 
 		return false;
 	GUI__strcpy(pNewText, s);

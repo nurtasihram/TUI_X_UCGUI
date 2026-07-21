@@ -5,7 +5,7 @@
 #if GUI_SUPPORT_MEMDEV
 
 void GUI_MEMDEV__GetRect(GUI_RECT *pRect) {
-	GUI_MEMDEV *pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
+	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
 	pRect->x0 = pDev->x0;
 	pRect->y0 = pDev->y0;
 	pRect->x1 = pDev->x0 + pDev->XSize - 1;
@@ -15,7 +15,7 @@ void GUI_MEMDEV__GetRect(GUI_RECT *pRect) {
 void GUI_MEMDEV_Delete(GUI_MEMDEV_Handle hMemDev) {
 	/* Make sure memory device is not used */
 	if (hMemDev) {
-		GUI_MEMDEV *pDev = (GUI_MEMDEV *)hMemDev;
+		auto pDev = (GUI_MEMDEV *)hMemDev;
 		if (GUI_Context.hDevData == hMemDev)
 			GUI_SelectLCD();
 		/* Delete the associated usage device */
@@ -92,7 +92,7 @@ GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem) {
 	if (hMem == 0)
 		GUI_SelectLCD();
 	else {
-		GUI_MEMDEV *pDev = (GUI_MEMDEV *)hMem;
+		auto pDev = (GUI_MEMDEV *)hMem;
 		WM_Deactivate();
 		/* If LCD was selected Save cliprect */
 		if (GUI_Context.hDevData == 0)
@@ -105,7 +105,7 @@ GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem) {
 }
 
 void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y) {
-	GUI_MEMDEV *pDev = (GUI_MEMDEV *)hMem;
+	auto pDev = (GUI_MEMDEV *)hMem;
 	int YSize = pDev->YSize;
 	unsigned int BytesPerLine = pDev->BytesPerLine;
 	unsigned int BitsPerPixel = pDev->BitsPerPixel;
@@ -117,7 +117,7 @@ void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 	else {
 		BytesPerPixel = BitsPerPixel >> 3;
 	}
-	uint8_t *pData = (uint8_t *)(pDev + 1);
+	auto pData = (uint8_t *)(pDev + 1);
 	LCD_DrawBitmap(x, y, pDev->XSize, YSize, BitsPerPixel, BytesPerLine, pData, nullptr);
 }
 
@@ -125,7 +125,7 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 	if (hMem) {
 		GUI_RECT r;
 		GUI_MEMDEV_Handle hMemPrev = GUI_Context.hDevData;
-		GUI_MEMDEV *pDevData = (GUI_MEMDEV *)(hMem);  /* Convert to pointer */
+		auto pDevData = (GUI_MEMDEV *)(hMem);  /* Convert to pointer */
 		/* Make sure LCD is selected as device */
 		GUI_SelectLCD();  /* Activate LCD */
 		if (x == GUI_POS_AUTO) {
@@ -169,7 +169,7 @@ void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV_Handle hMem, int YSize) {
 		hMem = GUI_Context.hDevData;
 	if (!hMem)
 		return;
-	GUI_MEMDEV *pDevData = (GUI_MEMDEV *)(hMem);  /* Convert to pointer */
+	auto pDevData = (GUI_MEMDEV *)(hMem);  /* Convert to pointer */
 	if (pDevData->YSize > YSize)
 		pDevData->YSize = YSize;
 }
@@ -183,7 +183,7 @@ void GUI_MEMDEV_SetOrg(GUI_MEMDEV_Handle hMem, int x0, int y0) {
 	}
 
 	{
-		GUI_MEMDEV *pDev = (GUI_MEMDEV *)hMem;  /* Convert to pointer */
+		auto pDev = (GUI_MEMDEV *)hMem;  /* Convert to pointer */
 		pDev->y0 = y0;
 		pDev->x0 = x0;
 		LCD_SetClipRectMax();

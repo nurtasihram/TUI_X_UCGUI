@@ -73,37 +73,37 @@ Note that we have chosen the values to be close to existing
 		*********************************
 */
 #pragma region Color definitions
-constexpr RGB_COLOR COLOR_RGB (uint8_t r, uint8_t g, uint8_t b) { return (b) | ((g) << 8) | ((r) << 16); }
-constexpr RGB_COLOR RGB_GRAYL (uint8_t a) { return COLOR_RGB(a,a,a); }
-constexpr RGB_COLOR RGB_BLUEL (uint8_t a) { return COLOR_RGB(0,0,a); }
-constexpr RGB_COLOR RGB_GREENL(uint8_t a) { return COLOR_RGB(0,a,0); }
-constexpr RGB_COLOR RGB_REDL  (uint8_t a) { return COLOR_RGB(a,0,0); }
-constexpr RGB_COLOR RGB_BLACK           = RGB_GRAYL(0x00);
-constexpr RGB_COLOR RGB_DARKGRAY        = RGB_GRAYL(0x40);
-constexpr RGB_COLOR RGB_GRAY            = RGB_GRAYL(0x80);
-constexpr RGB_COLOR RGB_LIGHTGRAY       = RGB_GRAYL(0xD3);
-constexpr RGB_COLOR RGB_WHITE           = RGB_GRAYL(0xFF);
-constexpr RGB_COLOR RGB_BLUE            = COLOR_RGB(0x00,0x00,0xFF);
-constexpr RGB_COLOR RGB_GREEN           = COLOR_RGB(0x00,0xFF,0x00);
-constexpr RGB_COLOR RGB_RED             = COLOR_RGB(0xFF,0x00,0x00);
-constexpr RGB_COLOR RGB_CYAN            = COLOR_RGB(0x00,0xFF,0xFF);
-constexpr RGB_COLOR RGB_MAGENTA         = COLOR_RGB(0xFF,0x00,0xFF);
-constexpr RGB_COLOR RGB_YELLOW          = COLOR_RGB(0xFF,0xFF,0x00);
-constexpr RGB_COLOR RGB_LIGHTBLUE       = COLOR_RGB(0x80,0x80,0xFF);
-constexpr RGB_COLOR RGB_LIGHTGREEN      = COLOR_RGB(0x80,0xFF,0x80);
-constexpr RGB_COLOR RGB_LIGHTRED        = COLOR_RGB(0xFF,0x80,0x80);
-constexpr RGB_COLOR RGB_LIGHTCYAN       = COLOR_RGB(0x80,0xFF,0xFF);
-constexpr RGB_COLOR RGB_LIGHTMAGENTA    = COLOR_RGB(0xFF,0x80,0xFF);
-constexpr RGB_COLOR RGB_LIGHTYELLOW     = COLOR_RGB(0xFF,0xFF,0x80);
-constexpr RGB_COLOR RGB_DARKBLUE        = COLOR_RGB(0x00,0x00,0x80);
-constexpr RGB_COLOR RGB_DARKGREEN       = COLOR_RGB(0x00,0x80,0x00);
-constexpr RGB_COLOR RGB_DARKRED         = COLOR_RGB(0x80,0x00,0x00);
-constexpr RGB_COLOR RGB_DARKCYAN        = COLOR_RGB(0x00,0x80,0x80);
-constexpr RGB_COLOR RGB_DARKMAGENTA     = COLOR_RGB(0x80,0x00,0x80);
-constexpr RGB_COLOR RGB_DARKYELLOW      = COLOR_RGB(0x80,0x80,0x00);
-constexpr RGB_COLOR RGB_BROWN           = COLOR_RGB(0xA5,0x2A,0x2A);
+constexpr RGBC COLOR_RGB (uint8_t r, uint8_t g, uint8_t b) { return (b) | ((g) << 8) | ((r) << 16); }
+constexpr RGBC RGB_GRAYL (uint8_t a) { return COLOR_RGB(a,a,a); }
+constexpr RGBC RGB_BLUEL (uint8_t a) { return COLOR_RGB(0,0,a); }
+constexpr RGBC RGB_GREENL(uint8_t a) { return COLOR_RGB(0,a,0); }
+constexpr RGBC RGB_REDL  (uint8_t a) { return COLOR_RGB(a,0,0); }
+constexpr RGBC RGB_BLACK           = RGB_GRAYL(0x00);
+constexpr RGBC RGB_DARKGRAY        = RGB_GRAYL(0x40);
+constexpr RGBC RGB_GRAY            = RGB_GRAYL(0x80);
+constexpr RGBC RGB_LIGHTGRAY       = RGB_GRAYL(0xD3);
+constexpr RGBC RGB_WHITE           = RGB_GRAYL(0xFF);
+constexpr RGBC RGB_BLUE            = COLOR_RGB(0x00,0x00,0xFF);
+constexpr RGBC RGB_GREEN           = COLOR_RGB(0x00,0xFF,0x00);
+constexpr RGBC RGB_RED             = COLOR_RGB(0xFF,0x00,0x00);
+constexpr RGBC RGB_CYAN            = COLOR_RGB(0x00,0xFF,0xFF);
+constexpr RGBC RGB_MAGENTA         = COLOR_RGB(0xFF,0x00,0xFF);
+constexpr RGBC RGB_YELLOW          = COLOR_RGB(0xFF,0xFF,0x00);
+constexpr RGBC RGB_LIGHTBLUE       = COLOR_RGB(0x80,0x80,0xFF);
+constexpr RGBC RGB_LIGHTGREEN      = COLOR_RGB(0x80,0xFF,0x80);
+constexpr RGBC RGB_LIGHTRED        = COLOR_RGB(0xFF,0x80,0x80);
+constexpr RGBC RGB_LIGHTCYAN       = COLOR_RGB(0x80,0xFF,0xFF);
+constexpr RGBC RGB_LIGHTMAGENTA    = COLOR_RGB(0xFF,0x80,0xFF);
+constexpr RGBC RGB_LIGHTYELLOW     = COLOR_RGB(0xFF,0xFF,0x80);
+constexpr RGBC RGB_DARKBLUE        = COLOR_RGB(0x00,0x00,0x80);
+constexpr RGBC RGB_DARKGREEN       = COLOR_RGB(0x00,0x80,0x00);
+constexpr RGBC RGB_DARKRED         = COLOR_RGB(0x80,0x00,0x00);
+constexpr RGBC RGB_DARKCYAN        = COLOR_RGB(0x00,0x80,0x80);
+constexpr RGBC RGB_DARKMAGENTA     = COLOR_RGB(0x80,0x00,0x80);
+constexpr RGBC RGB_DARKYELLOW      = COLOR_RGB(0x80,0x80,0x00);
+constexpr RGBC RGB_BROWN           = COLOR_RGB(0xA5,0x2A,0x2A);
 
-constexpr RGB_COLOR RGB_INVALID_COLOR   = ~0;      /* Invalid color - more than 24 bits */
+constexpr RGBC RGB_INVALID_COLOR   = ~0;      /* Invalid color - more than 24 bits */
 #pragma endregion
 
 /*      *********************************
@@ -126,12 +126,12 @@ Note: The external declarations for the fonts are now also included in
 */
 
 /* Proportional fonts */
-extern const GUI_FONT GUI_Font8_ASCII, GUI_Font8_1;
-extern const GUI_FONT GUI_Font13_ASCII, GUI_Font13_1;
+extern CFONT GUI_Font8_ASCII, GUI_Font8_1;
+extern CFONT GUI_Font13_ASCII, GUI_Font13_1;
 
 /* Monospaced */
-extern const GUI_FONT GUI_Font8x8, GUI_Font8x9;
-extern const GUI_FONT GUI_Font6x8, GUI_Font6x9;
+extern CFONT GUI_Font8x8, GUI_Font8x9;
+extern CFONT GUI_Font6x8, GUI_Font6x9;
 
 /* Text alignment flags, horizontal */
 #define TEXTALIGN_LEFT        (0<<0)
@@ -177,11 +177,11 @@ typedef struct {
 	GUI_RECT ClipRect;
 	uint8_t DrawMode;
 	/* Variables in GUICHAR module */
-	const GUI_FONT *pAFont;
+	PCFONT pAFont;
 	const GUI_UC_ENC_APILIST *pUC_API; /* Unicode encoding API */
 	GUI_POINT DispPos;
 	int16_t TextMode, TextAlign;
-	//RGB_COLOR Color, BkColor; /* Required only when changing devices and for speed opt (caching) */
+	//RGBC Color, BkColor; /* Required only when changing devices and for speed opt (caching) */
 	/* Variables in WM module */
 	const GUI_RECT *WM__pUserClipRect;
 	GUI_HWIN hAWin;
@@ -204,10 +204,10 @@ int  GUI_RectsIntersect(const GUI_RECT *pr0, const GUI_RECT *pr1);
 
 int  GUI__DivideRound(int a, int b);
 
-RGB_COLOR GUI_GetBkColor(void);
-RGB_COLOR GUI_GetColor(void);
-void      GUI_SetBkColor(RGB_COLOR);
-void      GUI_SetColor(RGB_COLOR);
+RGBC GUI_GetBkColor(void);
+RGBC GUI_GetColor(void);
+void      GUI_SetBkColor(RGBC);
+void      GUI_SetColor(RGBC);
 
 int  GUI_BMP_Draw(const void *pFileData, int x0, int y0);
 int  GUI_BMP_GetXSize(const void *pFileData);
@@ -219,14 +219,14 @@ void GUI_DrawFocusRect(GUI_RECT r, int Dist);
 void GUI_DrawRect(GUI_RECT r);
 void GUI_FillRect(GUI_RECT r);
 
-void GUI_DrawBitmap(const GUI_BITMAP *pBM, int x0, int y0);
+void GUI_DrawBitmap(PCBITMAP pBM, int x0, int y0);
 
 void GUI_DrawHLine(int y0, int x0, int x1);
 void GUI_DrawVLine(int x0, int y0, int y1);
 void GUI_DrawPixel(int x, int y);
 
 struct GUI_CURSOR {
-	const GUI_BITMAP *pBitmap;
+	PCBITMAP pBitmap;
 	int xHot, yHot;
 };
 
@@ -249,12 +249,12 @@ extern const GUI_CURSOR GUI_CursorCrossM, GUI_CursorCrossMI;
 extern const GUI_CURSOR GUI_CursorCrossL, GUI_CursorCrossLI;
 extern const GUI_CURSOR GUI_CursorHeaderM, GUI_CursorHeaderMI;
 
-extern const GUI_BITMAP GUI_BitmapArrowS, GUI_BitmapArrowSI;
-extern const GUI_BITMAP GUI_BitmapArrowM, GUI_BitmapArrowMI;
-extern const GUI_BITMAP GUI_BitmapArrowL, GUI_BitmapArrowLI;
-extern const GUI_BITMAP GUI_BitmapCrossS, GUI_BitmapCrossSI;
-extern const GUI_BITMAP GUI_BitmapCrossM, GUI_BitmapCrossMI;
-extern const GUI_BITMAP GUI_BitmapCrossL, GUI_BitmapCrossLI;
+extern CBITMAP GUI_BitmapArrowS, GUI_BitmapArrowSI;
+extern CBITMAP GUI_BitmapArrowM, GUI_BitmapArrowMI;
+extern CBITMAP GUI_BitmapArrowL, GUI_BitmapArrowLI;
+extern CBITMAP GUI_BitmapCrossS, GUI_BitmapCrossSI;
+extern CBITMAP GUI_BitmapCrossM, GUI_BitmapCrossMI;
+extern CBITMAP GUI_BitmapCrossL, GUI_BitmapCrossLI;
 
 void  GUI_DispChar(uint16_t c);
 void  GUI_DispChars(uint16_t c, int Cnt);
@@ -266,20 +266,20 @@ void  GUI_DispStringInRect(const char *s, GUI_RECT *pRect, int Flags);
 void  GUI_DispStringInRectMax(const char *s, GUI_RECT *pRect, int TextAlign, int MaxLen); /* Not to be doc. */
 void  GUI_GetTextExtend(GUI_RECT *pRect, const char *s, int Len);
 int   GUI_GetYAdjust(void);
-const GUI_FONT *GUI_GetFont(void);
+PCFONT GUI_GetFont(void);
 int   GUI_GetCharDistX(uint16_t c);
 int   GUI_GetStringDistX(const char *s);
 int   GUI_GetFontDistY(void);
 int   GUI_GetFontSizeY(void);
-void  GUI_GetFontInfo(const GUI_FONT *pFont, GUI_FONTINFO *pfi);
-int   GUI_GetYSizeOfFont(const GUI_FONT *pFont);
-int   GUI_GetYDistOfFont(const GUI_FONT *pFont);
+void  GUI_GetFontInfo(PCFONT pFont, GUI_FONTINFO *pfi);
+int   GUI_GetYSizeOfFont(PCFONT pFont);
+int   GUI_GetYDistOfFont(PCFONT pFont);
 int   GUI_GetTextAlign(void);
 int   GUI_GetTextMode(void);
-char  GUI_IsInFont(const GUI_FONT *pFont, uint16_t c);
+char  GUI_IsInFont(PCFONT pFont, uint16_t c);
 void  GUI_SetTextAlign(int Align);
 void  GUI_SetTextMode(int Mode);
-const GUI_FONT *GUI_SetFont(const GUI_FONT *pNewFont);
+PCFONT GUI_SetFont(PCFONT pNewFont);
 void  GUI_GotoXY(int x, int y);
 void  GUI_DispNextLine(void);
 

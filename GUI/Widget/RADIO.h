@@ -22,12 +22,12 @@ RADIO_Handle RADIO_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN 
 void RADIO_AddValue     (RADIO_Handle hObj, int Add);
 void RADIO_Dec          (RADIO_Handle hObj);
 void RADIO_Inc          (RADIO_Handle hObj);
-void RADIO_SetBkColor   (RADIO_Handle hObj, RGB_COLOR Color);
-void RADIO_SetFont      (RADIO_Handle hObj, const GUI_FONT * pFont);
+void RADIO_SetBkColor   (RADIO_Handle hObj, RGBC Color);
+void RADIO_SetFont      (RADIO_Handle hObj, PCFONT pFont);
 void RADIO_SetGroupId   (RADIO_Handle hObj, uint8_t GroupId);
-void RADIO_SetImage     (RADIO_Handle hObj, const GUI_BITMAP * pBitmap, unsigned int Index);
+void RADIO_SetImage     (RADIO_Handle hObj, PCBITMAP pBitmap, unsigned int Index);
 void RADIO_SetText      (RADIO_Handle hObj, const char* pText, unsigned Index);
-void RADIO_SetTextColor (RADIO_Handle hObj, RGB_COLOR Color);
+void RADIO_SetTextColor (RADIO_Handle hObj, RGBC Color);
 void RADIO_SetValue     (RADIO_Handle hObj, int v);
 int RADIO_GetValue(RADIO_Handle hObj);
 

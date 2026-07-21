@@ -6,12 +6,12 @@
 
 struct EDIT_Obj : public WIDGET {
 	struct Properties {
-		const GUI_FONT *pFont{ &GUI_Font13_1 };
-		RGB_COLOR aTextColor[2]{
+		PCFONT pFont{ &GUI_Font13_1 };
+		RGBC aTextColor[2]{
 			/* Disabled */	RGB_BLACK,
 			/* Enabled */	RGB_BLACK
 		};
-		RGB_COLOR aBkColor[2]{
+		RGBC aBkColor[2]{
 			/* Disabled */	RGB_GRAYL(0xC0),
 			/* Enabled */	RGB_WHITE
 		};

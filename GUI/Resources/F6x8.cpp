@@ -2064,7 +2064,7 @@ const uint8_t GUI_acFont6x8[GUI_NOFCHARS][8] = {
 };
 
 
-const GUI_FONT_TRANSLIST GUI_F6x8_TL8859_1[112] = {
+const FONT_TRANSLIST GUI_F6x8_TL8859_1[112] = {
 /*
    The folowing are extensions to ISO 8859-1.
    Since ISO 8859-1 does not define any characters for the codes
@@ -2189,19 +2189,19 @@ const GUI_FONT_TRANSLIST GUI_F6x8_TL8859_1[112] = {
   {'y'-32,CODE_SUMLAUT},                /* 255, */
 };
 
-const GUI_FONT_TRANSINFO GUI_F6x8_TI8859_1 = {
+const FONT_TRANSINFO GUI_F6x8_TI8859_1 = {
   144,  /* First character for translation */
   255,  /* Last character for translation */
   &GUI_F6x8_TL8859_1[0]
 };
 
 
-const GUI_FONT_MONO GUI_F6x8_Mono = {
+const FONT_MONO GUI_F6x8_Mono = {
  GUI_acFont6x8[0],
  GUI_acFont6x8[0],
  &GUI_F6x8_TI8859_1,
  32, 126, 6, 6, 1
 };
 
-const GUI_FONT GUI_Font6x8 = { GUI_FONTTYPE_MONO, 8,8, {&GUI_F6x8_Mono}, 7, 5, 7 };
-const GUI_FONT GUI_Font6x9 = { GUI_FONTTYPE_MONO, 8,9, {&GUI_F6x8_Mono}, 7, 5, 7 };
+CFONT GUI_Font6x8 = { GUI_FONTTYPE_MONO, 8,8, {&GUI_F6x8_Mono}, 7, 5, 7 };
+CFONT GUI_Font6x9 = { GUI_FONTTYPE_MONO, 8,9, {&GUI_F6x8_Mono}, 7, 5, 7 };

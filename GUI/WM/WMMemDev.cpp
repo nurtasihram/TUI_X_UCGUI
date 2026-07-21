@@ -4,7 +4,7 @@ void WM_EnableMemdev(WM_HWIN hWin) {
 	GUI_USE_PARA(hWin);
 #if GUI_SUPPORT_MEMDEV
 	if (hWin) {
-		WM_Obj *pWin = (WM_Obj *)hWin;
+		auto pWin = (WM_Obj *)hWin;
 		pWin->Status |= (WM_SF_MEMDEV);
 	}
 #else
@@ -16,7 +16,7 @@ void WM_DisableMemdev(WM_HWIN hWin) {
 	GUI_USE_PARA(hWin);
 #if GUI_SUPPORT_MEMDEV
 	if (hWin) {
-		WM_Obj *pWin = (WM_Obj *)hWin;
+		auto pWin = (WM_Obj *)hWin;
 		pWin->Status &= ~(WM_SF_MEMDEV | WM_SF_MEMDEV_ON_REDRAW);
 	}
 #else

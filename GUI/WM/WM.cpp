@@ -11,7 +11,7 @@ WM_HWIN    WM__FirstWin;
 WM_CRITICAL_HANDLE *WM__pFirstCriticalHandle;
 
 WM_HWIN   WM__ahDesktopWin;   /* Desktop window handle */
-RGB_COLOR WM__aBkColor;       /* Desktop background color */
+RGBC WM__aBkColor;       /* Desktop background color */
 
 uint8_t                WM_IsActive;
 uint16_t               WM__CreateFlags;
@@ -131,7 +131,7 @@ static void _SetClipRectUserIntersect(const GUI_RECT *prSrc) {
 *   0: Nothing is visible (outside of ancestors, no desktop, hidden)
 */
 static bool _ClipAtParentBorders(GUI_RECT &r, WM_HWIN hWin) {
-	WM_Obj *pWin = (WM_Obj *)hWin;
+	auto pWin = (WM_Obj *)hWin;
 	/* Iterate up the window hierarchy.
 	   If the window is invisible, we are done.
 	   Clip at parent boarders.
@@ -257,7 +257,7 @@ void WM__DetachWindow(WM_HWIN hWin) {
 }
 static void _DeleteAllChildren(WM_HWIN hChild) {
 	while (hChild) {
-		WM_Obj *pChild = (WM_Obj *)hChild;
+		auto pChild = (WM_Obj *)hChild;
 		WM_HWIN hNext = pChild->hNext;
 		WM_DeleteWindow(hChild);
 		hChild = hNext;
@@ -472,7 +472,7 @@ WM_HWIN WM_CreateWindowAsChild(int x0, int y0, int width, int height
 	if (hParent == WM_UNATTACHED)
 		hParent = nullptr;
 	if (hParent) {
-		WM_Obj *pParent = (WM_Obj *)hParent;
+		auto pParent = (WM_Obj *)hParent;
 		x0 += pParent->Rect.x0;
 		y0 += pParent->Rect.y0;
 		if (width == 0)
@@ -910,7 +910,7 @@ static void _Paint1(WM_Obj *pWin) {
 #if WM_SUPPORT_TRANSPARENCY
 static int _Paint1Trans(WM_Obj *pWin) {
 	int xPrev, yPrev;
-	WM_Obj *pAWin = (WM_Obj *)GUI_Context.hAWin;
+	auto pAWin = (WM_Obj *)GUI_Context.hAWin;
 	/* Check if we need to do any drawing */
 	if (GUI_RectsIntersect(&pAWin->InvalidRect, &pWin->Rect)) {
 		/* Save old values */
@@ -975,7 +975,7 @@ static void _PaintTransChildren(WM_Obj *pWin) {
 */
 #if WM_SUPPORT_TRANSPARENCY
 static void _PaintTransTopSiblings(WM_Obj *pWin) {
-	WM_Obj *pParent = (WM_Obj *)pWin->hParent;
+	auto pParent = (WM_Obj *)pWin->hParent;
 	pWin = (WM_Obj *)pWin->hNext;
 	while (pParent) { /* Go hierarchy up to desktop window */
 		for (; pWin; pWin = (WM_Obj *)pWin->hNext) {
@@ -1030,7 +1030,7 @@ void WM__PaintWinAndOverlays(WM_Obj *pWin) {
 #if GUI_SUPPORT_MEMDEV
 static void _cbPaintMemDev(void *p) {
 	GUI_RECT Rect;
-	WM_Obj *pWin = (WM_Obj *)(GUI_Context.hAWin);
+	auto pWin = (WM_Obj *)(GUI_Context.hAWin);
 	Rect = pWin->InvalidRect;
 	pWin->InvalidRect = GUI_Context.ClipRect;
 	WM__PaintWinAndOverlays((WM_Obj *)p);
@@ -1153,20 +1153,20 @@ void WM_NotifyParent(WM_HWIN hWin, int Notification) {
 }
 WM_PARAM WM_SendMessage(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	if (hWin) {
-		WM_Obj *pWin = (WM_Obj *)hWin;
+		auto pWin = (WM_Obj *)hWin;
 		if (pWin->cb)
 			return pWin->cb(hWin, MsgId, Data);
 	}
 	return 0;
 }
 WM_PARAM WM__SendMessage(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
-	WM_Obj *pWin = (WM_Obj *)hWin;
+	auto pWin = (WM_Obj *)hWin;
 	if (pWin->cb)
 		return pWin->cb(hWin, MsgId, Data);
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
 void WM_SendMessageNoPara(WM_HWIN hWin, int MsgId) {
-	WM_Obj *pWin = (WM_Obj *)hWin;
+	auto pWin = (WM_Obj *)hWin;
 	if (pWin->cb)
 		pWin->cb(hWin, MsgId, 0);
 }
@@ -1186,7 +1186,7 @@ void WM__SendMsgNoData(WM_HWIN hWin, int MsgId) {
 *
 */
 WM_PARAM WM_DefaultProc(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
-	WM_Obj *pWin = (WM_Obj *)hWin;
+	auto pWin = (WM_Obj *)hWin;
 	/* Exec message */
 	switch (MsgId) {
 		case WM_GET_INSIDE_RECT: /* return client window in absolute (screen) coordinates */
@@ -1304,7 +1304,7 @@ bool WM__IsAncestor(WM_HWIN hChild, WM_HWIN hParent) {
 	bool r = false;
 	if (hChild && hParent) {
 		while (hChild) {
-			WM_Obj *pChild = (WM_Obj *)hChild;
+			auto pChild = (WM_Obj *)hChild;
 			if (pChild->hParent == hParent) {
 				r = true;
 				break;
@@ -1333,7 +1333,7 @@ bool WM__IsAncestorOrSelf(WM_HWIN hChild, WM_HWIN hParent) {
 bool WM__IsChild(WM_HWIN hWin, WM_HWIN hParent) {
 	bool r = false;
 	if (hWin) {
-		WM_Obj *pObj = (WM_Obj *)hWin;
+		auto pObj = (WM_Obj *)hWin;
 		if (pObj)
 			if (pObj->hParent == hParent)
 				r = true;
@@ -1463,8 +1463,8 @@ void WM_DetachWindow(WM_HWIN hWin) {
 }
 void WM_AttachWindow(WM_HWIN hWin, WM_HWIN hParent) {
 	if (hParent && (hParent != hWin)) {
-		WM_Obj *pWin = (WM_Obj *)hWin;
-		WM_Obj *pParent = (WM_Obj *)hParent;
+		auto pWin = (WM_Obj *)hWin;
+		auto pParent = (WM_Obj *)hParent;
 		if (pWin->hParent != hParent) {
 			WM_DetachWindow(hWin);
 			WM__InsertWindowIntoList(hWin, hParent);
@@ -1603,7 +1603,7 @@ void WM__RemoveCriticalHandle(WM_CRITICAL_HANDLE *pCriticalHandle) {
 static void _ShowInvalid(WM_HWIN hWin) {
 	GUI_CONTEXT Context = GUI_Context;
 	GUI_RECT rClient;
-	WM_Obj *pWin = (WM_Obj *)hWin;
+	auto pWin = (WM_Obj *)hWin;
 	rClient = pWin->InvalidRect + GUI_POINT{-pWin->Rect.x0, -pWin->Rect.y0};
 	WM_SelectWindow(hWin);
 	GUI_SetColor(RGB_GREEN);
@@ -1643,9 +1643,9 @@ void WM_ForEachDesc(WM_HWIN hWin, WM_tfForEach *pcb, void *pData) {
 	If a window does not define a background color, the default
 	procedure returns RGB_INVALID_COLOR
 */
-RGB_COLOR WM_GetBkColor(WM_HWIN hObj) {
+RGBC WM_GetBkColor(WM_HWIN hObj) {
 	if (hObj) 
-		return (RGB_COLOR)WM_SendMessage(hObj, WM_GET_BKCOLOR, 0);
+		return (RGBC)WM_SendMessage(hObj, WM_GET_BKCOLOR, 0);
 	return RGB_INVALID_COLOR;
 }
 GUI_RECT WM_GetClientRect() {
@@ -1711,7 +1711,7 @@ int WM_GetNumInvalidWindows(void) {
 WM_HWIN WM_GetDialogItem(WM_HWIN hWin, int Id) {
 	WM_HWIN hi;
 	WM_HWIN r = 0;
-	WM_Obj *pWin = (WM_Obj *)hWin;
+	auto pWin = (WM_Obj *)hWin;
 	hi = pWin->hFirstChild;
 	while (hi) {
 		/* This windows Id matching ? */
@@ -2019,7 +2019,7 @@ bool WM_IsFocussable(WM_HWIN hWin) {
 }
 bool WM_IsVisible(WM_HWIN hWin) {
 	if (hWin) {
-		WM_Obj *pWin = (WM_Obj *)hWin;
+		auto pWin = (WM_Obj *)hWin;
 		if (pWin->Status & WM_SF_ISVIS) 
 			return true;
 	}
@@ -2067,7 +2067,7 @@ void WM_MoveWindow(WM_HWIN hWin, int dx, int dy) {
 }
 void WM_MoveTo(WM_HWIN hWin, int x, int y) {
 	if (hWin) {
-		WM_Obj *pWin = (WM_Obj *)hWin;
+		auto pWin = (WM_Obj *)hWin;
 		x -= pWin->Rect.x0;
 		y -= pWin->Rect.y0;
 		WM_MoveWindow(hWin, x, y);
@@ -2089,7 +2089,7 @@ void WM_MoveChildTo(WM_HWIN hWin, int x, int y) {
 }
 void WM_Paint(WM_HWIN hWin) {
 	GUI_CONTEXT Context;
-	WM_Obj *pWin = (WM_Obj *)hWin;
+	auto pWin = (WM_Obj *)hWin;
 	WM_ASSERT_NOT_IN_PAINT();
 	if (hWin) {
 		GUI_SaveContext(&Context);
@@ -2149,7 +2149,7 @@ void WM_ResizeWindow(WM_HWIN hWin, int dx, int dy) {
 	   coordinate falls.
 */
 static WM_HWIN _Screen2hWin(WM_HWIN hWin, WM_HWIN hStop, int x, int y) {
-	WM_Obj *pWin = (WM_Obj *)hWin;
+	auto pWin = (WM_Obj *)hWin;
 	WM_HWIN hChild;
 	WM_HWIN hHit;
 	/* First check if the  coordinates are in the given window. If not, return 0 */
@@ -2157,7 +2157,7 @@ static WM_HWIN _Screen2hWin(WM_HWIN hWin, WM_HWIN hStop, int x, int y) {
 		return 0;
 	/* If the coordinates are in a child, search deeper ... */
 	for (hChild = pWin->hFirstChild; hChild && (hChild != hStop); ) {
-		WM_Obj *pChild = (WM_Obj *)hChild;
+		auto pChild = (WM_Obj *)hChild;
 		if ((hHit = _Screen2hWin(hChild, hStop, x, y)) != 0)
 			hWin = hHit;        /* Found a window */
 		hChild = pChild->hNext;
@@ -2245,8 +2245,8 @@ uint16_t WM_SetCreateFlags(uint16_t Flags) {
 	WM__CreateFlags = Flags;
 	return r;
 }
-RGB_COLOR WM_SetDesktopColor(RGB_COLOR Color) {
-	RGB_COLOR r;
+RGBC WM_SetDesktopColor(RGBC Color) {
+	RGBC r;
 	r = WM__aBkColor;
 	WM__aBkColor = Color;
 	WM_Invalidate(WM__ahDesktopWin);
@@ -2541,7 +2541,7 @@ void WM_InvalidateDescs(WM_HWIN hWin) {
 	if (hWin) {
 		WM_Invalidate(hWin);    /* Invalidate window itself */
 		for (hChild = WM_GetFirstChild(hWin); hChild;) {
-			WM_Obj *pChild = (WM_Obj *)hChild;
+			auto pChild = (WM_Obj *)hChild;
 			WM_InvalidateDescs(hChild);
 			hChild = pChild->hNext;
 		}

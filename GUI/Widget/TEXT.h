@@ -23,15 +23,15 @@ TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HW
 TEXT_Handle TEXT_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
                                 int WinFlags, int ExFlags, int Id, const char* pText);
 /* Methods changing properties */
-void TEXT_SetBkColor  (TEXT_Handle pObj, RGB_COLOR Color); /* Obsolete. Left in GUI for compatibility to older versions */
-void TEXT_SetFont     (TEXT_Handle pObj, const GUI_FONT  * pFont);
+void TEXT_SetBkColor  (TEXT_Handle pObj, RGBC Color); /* Obsolete. Left in GUI for compatibility to older versions */
+void TEXT_SetFont     (TEXT_Handle pObj, PCFONT pFont);
 void TEXT_SetText     (TEXT_Handle pObj, const char* s);
 void TEXT_SetTextAlign(TEXT_Handle pObj, int Align);
-void TEXT_SetTextColor(TEXT_Handle pObj, RGB_COLOR Color);
+void TEXT_SetTextColor(TEXT_Handle pObj, RGBC Color);
 struct TEXT_Obj : public WIDGET {
   char *pText;
-  const GUI_FONT *pFont;
+  PCFONT pFont;
   TEXTALIGN Align;
-  RGB_COLOR TextColor;
-  RGB_COLOR BkColor;
+  RGBC TextColor;
+  RGBC BkColor;
 };

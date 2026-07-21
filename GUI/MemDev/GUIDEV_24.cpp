@@ -4,19 +4,19 @@
 /* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
 
-#define PIXELINDEX RGB_COLOR
+#define PIXELINDEX RGBC
 
-static const RGB_COLOR aID[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+static const RGBC aID[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
 static PIXELINDEX *_XY2PTR(int x, int y) {
-	GUI_MEMDEV *pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
-	uint8_t *pData = (uint8_t *)(pDev + 1);
+	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
+	auto pData = (uint8_t *)(pDev + 1);
 	pData += (y - pDev->y0) * pDev->BytesPerLine;
 	return ((PIXELINDEX *)pData) + x - pDev->x0;
 }
 
 static void _DrawBitLine1BPP(int x, int y, const uint8_t  *p, int Diff, unsigned int xsize,
-							 const RGB_COLOR *pTrans, GUI_MEMDEV *pDev, PIXELINDEX *pDest) {
+							 const RGBC *pTrans, GUI_MEMDEV *pDev, PIXELINDEX *pDest) {
 	PIXELINDEX Index1;
 	unsigned pixels;
 	unsigned PixelCnt;
@@ -70,7 +70,7 @@ static void _DrawBitLine1BPP(int x, int y, const uint8_t  *p, int Diff, unsigned
 	}
 }
 static void _DrawBitLine2BPP(int x, int y, const uint8_t  *p, int Diff, int xsize,
-							 const RGB_COLOR *pTrans, PIXELINDEX *pDest) {
+							 const RGBC *pTrans, PIXELINDEX *pDest) {
 	uint8_t pixels;
 	uint8_t  PixelCnt;
 	PixelCnt = 4 - Diff;
@@ -112,7 +112,7 @@ static void _DrawBitLine2BPP(int x, int y, const uint8_t  *p, int Diff, int xsiz
 	}
 }
 static void _DrawBitLine4BPP(int x, int y, const uint8_t  *p, int Diff, int xsize,
-							 const RGB_COLOR *pTrans, PIXELINDEX *pDest) {
+							 const RGBC *pTrans, PIXELINDEX *pDest) {
 	uint8_t pixels;
 	uint8_t PixelCnt;
 	PixelCnt = 2 - Diff;
@@ -178,7 +178,7 @@ static void _DrawBitLine4BPP(int x, int y, const uint8_t  *p, int Diff, int xsiz
 	}
 }
 static void _DrawBitLine8BPP(int x, int y, const uint8_t  *pSrc, int xsize,
-							 const RGB_COLOR *pTrans, PIXELINDEX *pDest) {
+							 const RGBC *pTrans, PIXELINDEX *pDest) {
 	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
 		case 0:    /* Write mode */
 			do {
@@ -231,7 +231,7 @@ static void _DrawBitLine16BPP_DDB(int x, int y, const uint16_t *pSrc, int xsize,
 	}
 }
 
-static void _DrawBitLine24BPP_DDB(int x, int y, const RGB_COLOR *pSrc, int xsize, PIXELINDEX *pDest) {
+static void _DrawBitLine24BPP_DDB(int x, int y, const RGBC *pSrc, int xsize, PIXELINDEX *pDest) {
 	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
 		case 0: /* Write mode */
 			GUI__memcpy(pDest, pSrc, xsize * 4);  /* 4 bytes per pixel for 24-bit */
@@ -250,9 +250,9 @@ static void _DrawBitLine24BPP_DDB(int x, int y, const RGB_COLOR *pSrc, int xsize
 
 static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 						int BitsPerPixel, int BytesPerLine,
-						const uint8_t *pData, int Diff, const RGB_COLOR *pTrans) {
+						const uint8_t *pData, int Diff, const RGBC *pTrans) {
 	int i;
-	GUI_MEMDEV *pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
+	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
 	unsigned    BytesPerLineDest;
 	PIXELINDEX *pDest;
 	BytesPerLineDest = pDev->BytesPerLine;
@@ -261,7 +261,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 	/* handle 24 bpp bitmaps (native format) */
 	if (BitsPerPixel == 24) {
 		for (i = 0; i < ysize; i++) {
-			_DrawBitLine24BPP_DDB(x0, i + y0, (const RGB_COLOR *)pData, xsize, pDest);
+			_DrawBitLine24BPP_DDB(x0, i + y0, (const RGBC *)pData, xsize, pDest);
 			pData += BytesPerLine;
 			pDest = (PIXELINDEX *)((uint8_t *)pDest + BytesPerLineDest);
 		}
@@ -311,7 +311,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 static void _FillRect(int x0, int y0, int x1, int y1) {
 	unsigned BytesPerLine;
 	int Len;
-	GUI_MEMDEV *pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
+	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
 	PIXELINDEX *pData = _XY2PTR(x0, y0);
 	BytesPerLine = pDev->BytesPerLine;
 	Len = x1 - x0 + 1;
@@ -330,7 +330,7 @@ static void _DrawHLine(int x0, int y, int x1) {
 }
 
 static void _DrawVLine(int x, int y0, int y1) {
-	GUI_MEMDEV *pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
+	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
 	PIXELINDEX *pData = _XY2PTR(x, y0);
 	unsigned BytesPerLine = pDev->BytesPerLine;
 	unsigned NumPixels = y1 - y0 + 1;
@@ -340,13 +340,13 @@ static void _DrawVLine(int x, int y0, int y1) {
 	} while (--NumPixels);
 }
 
-static void _SetPixel(int x, int y, RGB_COLOR Index) {
-	GUI_MEMDEV *pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
+static void _SetPixel(int x, int y, RGBC Index) {
+	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
 	PIXELINDEX *pData = _XY2PTR(x, y);
 	*pData = Index;
 }
 
-static RGB_COLOR _GetPixel(int x, int y) {
+static RGBC _GetPixel(int x, int y) {
 	PIXELINDEX *pData = _XY2PTR(x, y);
 	return *pData;
 }

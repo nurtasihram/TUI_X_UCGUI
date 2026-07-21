@@ -8,7 +8,7 @@
 #define DRAWMODE_REV    (1<<2)
 
 typedef int GUI_DRAWMODE;
-typedef uint32_t RGB_COLOR;
+typedef uint32_t RGBC;
 
 inline auto Max(auto v0, auto v1) { return v0 > v1 ? v0 : v1; }
 inline auto Min(auto v0, auto v1) { return v0 < v1 ? v0 : v1; }
@@ -83,7 +83,7 @@ struct GUI_RECT {
 typedef struct {
 	int  NumEntries;
 	char HasTrans;
-	const RGB_COLOR *pPalEntries;
+	const RGBC *pPalEntries;
 } GUI_LOGPALETTE;
 
 /* This is used for the simulation only ! */
@@ -109,8 +109,8 @@ typedef struct {
 typedef void      tLCDDEV_DrawHLine(int x0, int y0, int x1);
 typedef void      tLCDDEV_DrawVLine(int x, int y0, int y1);
 typedef void      tLCDDEV_FillRect(int x0, int y0, int x1, int y1);
-typedef RGB_COLOR tLCDDEV_GetPixel(int x, int y);
-typedef void      tLCDDEV_SetPixel(int x, int y, RGB_COLOR Color);
+typedef RGBC tLCDDEV_GetPixel(int x, int y);
+typedef void      tLCDDEV_SetPixel(int x, int y, RGBC Color);
 typedef void      tLCDDEV_GetRect(GUI_RECT *pRect);
 
 typedef void tLCDDEV_DrawBitmap(int x0, int y0, int xsize, int ysize,
@@ -142,7 +142,7 @@ void LCD_SetClipRectEx(const GUI_RECT *pRect);
 void LCD_SetClipRectMax(void);
 
 void LCD_SetPixel(int x, int y, int Color);
-RGB_COLOR LCD_GetPixel(int x, int y);
+RGBC LCD_GetPixel(int x, int y);
 
 void LCD_FillRect(int x0, int y0, int x1, int y1);
 

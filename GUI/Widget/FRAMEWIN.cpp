@@ -104,7 +104,7 @@ static void _OnChildHasFocus(FRAMEWIN_Obj *pObj, const WM_NOTIFY_CHILD_HAS_FOCUS
 }
 static int _HandleResizeable(WM_HWIN hWin, int MsgId, WM_PARAM Data);
 static WM_PARAM _FRAMEWIN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
-	FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hWin;
+	auto pObj = (FRAMEWIN_Obj *)hWin;
 	if (pObj->Flags & FRAMEWIN_CF_RESIZEABLE) 
 		if (_HandleResizeable(hWin, MsgId, Data))
 			return 0;
@@ -193,7 +193,7 @@ static WM_PARAM _FRAMEWIN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
 static WM_PARAM FRAMEWIN__cbClient(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
-	FRAMEWIN_Obj *pParent = (FRAMEWIN_Obj *)WM_GetParent(hWin);
+	auto pParent = (FRAMEWIN_Obj *)WM_GetParent(hWin);
 	WM_CALLBACK *cb = pParent->cb;
 	switch (MsgId) {
 		case WM_PAINT:
@@ -303,7 +303,7 @@ FRAMEWIN_Handle FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _FRAMEWIN_Callback,
 								  sizeof(FRAMEWIN_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		POSITIONS Pos;
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS);
@@ -333,14 +333,14 @@ FRAMEWIN_Handle FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 }
 void FRAMEWIN_SetText(FRAMEWIN_Handle hObj, const char *s) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		if (GUI__SetText(&pObj->pText, s))
 			WM_Invalidate(hObj);
 	}
 }
 void FRAMEWIN_SetTextAlign(FRAMEWIN_Handle hObj, int Align) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		if (pObj->Props.Align != Align) {
 			pObj->Props.Align = Align;
 			WM_Invalidate(hObj);
@@ -349,7 +349,7 @@ void FRAMEWIN_SetTextAlign(FRAMEWIN_Handle hObj, int Align) {
 }
 void FRAMEWIN_SetMoveable(FRAMEWIN_Handle hObj, int State) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		if (State)
 			pObj->Flags |= FRAMEWIN_CF_MOVEABLE;
 		else
@@ -358,7 +358,7 @@ void FRAMEWIN_SetMoveable(FRAMEWIN_Handle hObj, int State) {
 }
 void FRAMEWIN_SetActive(FRAMEWIN_Handle hObj, int State) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		if (State && !(pObj->Flags & FRAMEWIN_CF_ACTIVE)) {
 			pObj->Flags |= FRAMEWIN_CF_ACTIVE;
 			WM_Invalidate(hObj);
@@ -372,7 +372,7 @@ void FRAMEWIN_SetActive(FRAMEWIN_Handle hObj, int State) {
 
 void FRAMEWIN_AddMenu(FRAMEWIN_Handle hObj, WM_HWIN hMenu) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		if (pObj) {
 			int TitleHeight, BorderSize, IBorderSize = 0;
 			int x0, y0, xSize;
@@ -414,10 +414,10 @@ FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInf
 	return hObj;
 }
 
-const GUI_FONT  *FRAMEWIN_GetFont(FRAMEWIN_Handle hObj) {
-	const GUI_FONT  *r = nullptr;
+PCFONT FRAMEWIN_GetFont(FRAMEWIN_Handle hObj) {
+	PCFONT r = nullptr;
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		r = pObj->Props.pFont;
 		WM_Invalidate(hObj);
 	}
@@ -428,7 +428,7 @@ int FRAMEWIN_GetTitleHeight(FRAMEWIN_Handle hObj) {
 	POSITIONS Pos;
 	/* Move client window accordingly */
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		FRAMEWIN__CalcPositions(pObj, &Pos);
 		r = pObj->Props.TitleHeight;
 		if (r == 0) {
@@ -441,7 +441,7 @@ int FRAMEWIN_GetBorderSize(FRAMEWIN_Handle hObj) {
 	int r = 0;
 	/* Move client window accordingly */
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		r = pObj->Props.BorderSize;
 	}
 	return r;
@@ -450,7 +450,7 @@ int FRAMEWIN_GetBorderSize(FRAMEWIN_Handle hObj) {
 int FRAMEWIN_IsMinimized(FRAMEWIN_Handle hObj) {
 	int r = 0;
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		r = (pObj->Flags & FRAMEWIN_CF_MINIMIZED) ? 1 : 0;
 	}
 	return r;
@@ -458,7 +458,7 @@ int FRAMEWIN_IsMinimized(FRAMEWIN_Handle hObj) {
 int FRAMEWIN_IsMaximized(FRAMEWIN_Handle hObj) {
 	int r = 0;
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		r = (pObj->Flags & FRAMEWIN_CF_MAXIMIZED) ? 1 : 0;
 	}
 	return r;
@@ -513,7 +513,7 @@ static void _MaximizeFramewin(FRAMEWIN_Obj *pObj) {
 	_RestoreMinimized(pObj);
 	/* When window is not maximized, maximize it */
 	if (!(pObj->Flags & FRAMEWIN_CF_MAXIMIZED)) {
-		WM_Obj *pParent = (WM_Obj *)pObj->hParent;
+		auto pParent = (WM_Obj *)pObj->hParent;
 		GUI_RECT r = pParent->Rect;
 		if (!pParent->hParent) {
 			r.x1 = LCD_GetXSize();
@@ -529,19 +529,19 @@ static void _MaximizeFramewin(FRAMEWIN_Obj *pObj) {
 }
 void FRAMEWIN_Minimize(FRAMEWIN_Handle hObj) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		_MinimizeFramewin(pObj);
 	}
 }
 void FRAMEWIN_Maximize(FRAMEWIN_Handle hObj) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		_MaximizeFramewin(pObj);
 	}
 }
 void FRAMEWIN_Restore(FRAMEWIN_Handle hObj) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		_RestoreMinimized(pObj);
 		_RestoreMaximized(pObj);
 	}
@@ -549,7 +549,7 @@ void FRAMEWIN_Restore(FRAMEWIN_Handle hObj) {
 
 void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		int OldHeight = FRAMEWIN__CalcTitleHeight(pObj);
 		int OldSize = pObj->Props.BorderSize;
 		int Diff = Size - OldSize;
@@ -568,35 +568,35 @@ void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
 	}
 }
 
-void FRAMEWIN_SetBarColor(FRAMEWIN_Handle hObj, unsigned Index, RGB_COLOR Color) {
+void FRAMEWIN_SetBarColor(FRAMEWIN_Handle hObj, unsigned Index, RGBC Color) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		if (Index < GUI_COUNTOF(pObj->Props.aBarColor)) {
 			pObj->Props.aBarColor[Index] = Color;
 			WM_Invalidate(hObj);
 		}
 	}
 }
-void FRAMEWIN_SetTextColor(FRAMEWIN_Handle hObj, RGB_COLOR Color) {
+void FRAMEWIN_SetTextColor(FRAMEWIN_Handle hObj, RGBC Color) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		for (int i = 0; i < GUI_COUNTOF(pObj->Props.aTextColor); i++)
 			pObj->Props.aTextColor[i] = Color;
 		WM_Invalidate(hObj);
 	}
 }
-void FRAMEWIN_SetTextColorEx(FRAMEWIN_Handle hObj, unsigned Index, RGB_COLOR Color) {
+void FRAMEWIN_SetTextColorEx(FRAMEWIN_Handle hObj, unsigned Index, RGBC Color) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		if (Index < GUI_COUNTOF(pObj->Props.aTextColor)) {
 			pObj->Props.aTextColor[Index] = Color;
 			WM_Invalidate(hObj);
 		}
 	}
 }
-void FRAMEWIN_SetClientColor(FRAMEWIN_Handle hObj, RGB_COLOR Color) {
+void FRAMEWIN_SetClientColor(FRAMEWIN_Handle hObj, RGBC Color) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		if (pObj->Props.ClientColor != Color) {
 			pObj->Props.ClientColor = Color;
 			WM_Invalidate(pObj->hClient);
@@ -604,9 +604,9 @@ void FRAMEWIN_SetClientColor(FRAMEWIN_Handle hObj, RGB_COLOR Color) {
 	}
 }
 
-void FRAMEWIN_SetFont(FRAMEWIN_Handle hObj, const GUI_FONT  *pFont) {
+void FRAMEWIN_SetFont(FRAMEWIN_Handle hObj, PCFONT pFont) {
 	if (hObj) {
-		FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+		auto pObj = (FRAMEWIN_Obj *)hObj;
 		int OldHeight = FRAMEWIN__CalcTitleHeight(pObj);
 		pObj->Props.pFont = pFont;
 		FRAMEWIN__UpdatePositions(pObj);
@@ -630,7 +630,7 @@ static int _CaptureFlags;
 static const GUI_CURSOR  *_pOldCursor;
 #endif
 #if GUI_SUPPORT_CURSOR
-static const RGB_COLOR _ColorsCursor[] = {
+static const RGBC _ColorsCursor[] = {
 	RGB_RED,RGB_BLACK,RGB_WHITE
 };
 static const GUI_LOGPALETTE _PalCursor = {
@@ -657,7 +657,7 @@ ________,________,________,________,________,
 ________,________,________,________,________,
 ________,________,________,________,________,
 };
-static const GUI_BITMAP _bmResizeCursorH = {
+static CBITMAP _bmResizeCursorH = {
  17,  /* XSize */
  17,  /* YSize */
  5,   /* BytesPerLine */
@@ -687,7 +687,7 @@ ________,____XXoo,ooooXX__,________,________,
 ________,______XX,ooXX____,________,________,
 ________,________,XX______,________,________,
 };
-static const GUI_BITMAP _bmResizeCursorV = {
+static CBITMAP _bmResizeCursorV = {
  17,  /* XSize */
  17,  /* YSize */
  5,   /* BytesPerLine */
@@ -717,7 +717,7 @@ ________,________,__XXXXXX,XXXXXX__,________,
 ________,________,________,________,________,
 ________,________,________,________,________,
 };
-static const GUI_BITMAP _bmResizeCursorDD = {
+static CBITMAP _bmResizeCursorDD = {
  17,  /* XSize */
  17,  /* YSize */
  5,   /* BytesPerLine */
@@ -747,7 +747,7 @@ ____XXXX,XXXXXXXX,________,________,________,
 ________,________,________,________,________,
 ________,________,________,________,________,
 };
-static const GUI_BITMAP _bmResizeCursorDU = {
+static CBITMAP _bmResizeCursorDU = {
  17,  /* XSize */
  17,  /* YSize */
  5,   /* BytesPerLine */
@@ -971,7 +971,7 @@ static int _HandleResizeable(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	return 0;
 }
 void FRAMEWIN_SetResizeable(FRAMEWIN_Handle hObj, int State) {
-	FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)hObj;
+	auto pObj = (FRAMEWIN_Obj *)hObj;
 	if (pObj) {
 		if (State)
 			pObj->Flags |= FRAMEWIN_CF_RESIZEABLE;
@@ -1168,7 +1168,7 @@ static void _DrawRestoreClose(void) {
 	} WM_ITERATE_END();
 }
 static void _DrawMax(void) {
-	FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)WM_GetParent(WM_GetActiveWindow());
+	auto pObj = (FRAMEWIN_Obj *)WM_GetParent(WM_GetActiveWindow());
 	if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED)
 		_DrawRestoreClose();
 	else
@@ -1201,7 +1201,7 @@ static void _DrawRestoreMin(void) {
 	} WM_ITERATE_END();
 }
 static void _DrawMin(void) {
-	FRAMEWIN_Obj *pObj = (FRAMEWIN_Obj *)WM_GetParent(WM_GetActiveWindow());
+	auto pObj = (FRAMEWIN_Obj *)WM_GetParent(WM_GetActiveWindow());
 	if (pObj->Flags & FRAMEWIN_CF_MINIMIZED)
 		_DrawRestoreMin();
 	else

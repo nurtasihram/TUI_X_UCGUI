@@ -35,8 +35,8 @@ GUI_RECT WIDGET__GetClientRect(WIDGET *pWidget) {
 		return ~WM_GetClientRect();
 	return WM_GetClientRect();
 }
-RGB_COLOR WIDGET__GetBkColor(WM_HWIN hObj) {
-	RGB_COLOR BkColor = WM_GetBkColor(WM_GetParent(hObj));
+RGBC WIDGET__GetBkColor(WM_HWIN hObj) {
+	RGBC BkColor = WM_GetBkColor(WM_GetParent(hObj));
 	if (BkColor == RGB_INVALID_COLOR) {
 		BkColor = DIALOG_GetBkColor();
 	}
@@ -71,26 +71,26 @@ int WIDGET__GetYSize(const WIDGET *pWidget) {
   Return width (or height in case of rotation) of window in pixels
 */
 int WIDGET__GetWindowSizeX(WM_HWIN hWin) {
-	WIDGET *pWidget = (WIDGET *)hWin;
+	auto pWidget = (WIDGET *)hWin;
 	if (pWidget->State & WIDGET_STATE_VERTICAL)
 		return WM_GetWindowSizeY(hWin);
 	return WM_GetWindowSizeX(hWin);
 }
 void WIDGET_SetState(WM_HWIN hObj, int State) {
-	WIDGET *pWidget = (WIDGET *)hObj;
+	auto pWidget = (WIDGET *)hObj;
 	if (State != pWidget->State) {
 		pWidget->State = State;
 		WM_Invalidate(hObj);
 	}
 }
 int WIDGET_GetState(WM_HWIN hObj) {
-	WIDGET *pWidget = (WIDGET *)hObj;
+	auto pWidget = (WIDGET *)hObj;
 	if (hObj)
 		return pWidget->State;
 	return 0;
 }
 void WIDGET_OrState(WM_HWIN hObj, int State) {
-	WIDGET *pWidget = (WIDGET *)hObj;
+	auto pWidget = (WIDGET *)hObj;
 	if (hObj) {
 		if (State != (pWidget->State & State)) {
 			pWidget->State |= State;
@@ -109,7 +109,7 @@ void WIDGET_OrState(WM_HWIN hObj, int State) {
 */
 void WIDGET_AndState(WM_HWIN hObj, int Mask) {
 	if (hObj) {
-		WIDGET *pWidget = (WIDGET *)hObj;
+		auto pWidget = (WIDGET *)hObj;
 		auto StateNew = pWidget->State & (~Mask);
 		if (pWidget->State != StateNew) {
 			pWidget->State = StateNew;
@@ -124,7 +124,7 @@ void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
 }
 int WIDGET_HandleActive(WM_HWIN hObj, int MsgId, WM_PARAM *Data) {
 	int Diff, Notification;
-	WIDGET *pWidget = (WIDGET *)hObj;
+	auto pWidget = (WIDGET *)hObj;
 	switch (MsgId) {
 		case WM_WIDGET_SET_EFFECT:
 			Diff = pWidget->pEffect->EffectSize;
@@ -275,7 +275,7 @@ void WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT *pEffect) {
 *   depending on if the widget is rotated.
 */
 int WIDGET_SetWidth(WM_HWIN hObj, int Width) {
-	WIDGET *pWidget = (WIDGET *)hObj;
+	auto pWidget = (WIDGET *)hObj;
 	if (hObj) {
 		if (pWidget->State & WIDGET_STATE_VERTICAL)
 			return WM_SetXSize(hObj, Width);

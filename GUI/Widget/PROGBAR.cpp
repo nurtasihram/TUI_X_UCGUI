@@ -5,12 +5,12 @@
 
 struct PROGBAR_Obj : public WIDGET {
 	struct Properties {
-		const GUI_FONT *pFont{ &GUI_Font13_1 };
-		RGB_COLOR aBkColor[2]{
+		PCFONT pFont{ &GUI_Font13_1 };
+		RGBC aBkColor[2]{
 			/* Active */	RGB_DARKBLUE,
 			/* Inactive */	RGB_GRAYL(0x55)
 		};
-		RGB_COLOR aTextColor[2]{
+		RGBC aTextColor[2]{
 			/* Active */	RGB_WHITE,
 			/* Inactive */	RGB_BLACK
 		};
@@ -124,7 +124,7 @@ static void _Delete(PROGBAR_Obj *pObj) {
 	_FreeText(pObj);
 }
 static WM_PARAM _PROGBAR_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
-	PROGBAR_Obj *pObj = (PROGBAR_Obj *)hWin;
+	auto pObj = (PROGBAR_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 		return Data;
@@ -145,7 +145,7 @@ PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _PROGBAR_Callback,
 								  sizeof(PROGBAR_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		PROGBAR_Obj *pObj = (PROGBAR_Obj *)hObj;
+		auto pObj = (PROGBAR_Obj *)hObj;
 
 		pObj = (PROGBAR_Obj *)(hObj);
 		/* init widget specific variables */
@@ -161,7 +161,7 @@ PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
 }
 void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
 	if (hObj) {
-		PROGBAR_Obj *pObj = (PROGBAR_Obj *)hObj;
+		auto pObj = (PROGBAR_Obj *)hObj;
 		/* Put v into legal range */
 		if (v < pObj->Min) {
 			v = pObj->Min;
@@ -183,7 +183,7 @@ void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
 			r.y0 = 0;
 			r.y1 = 4095;
 			if (pObj->pText) {
-				const GUI_FONT  *pOldFont;
+				PCFONT pOldFont;
 				char acBuffer[5];
 				GUI_RECT rText;
 				pOldFont = GUI_SetFont(pObj->Props.pFont);
@@ -202,8 +202,8 @@ void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
 
 	}
 }
-void PROGBAR_SetFont(PROGBAR_Handle hObj, const GUI_FONT  *pfont) {
-	PROGBAR_Obj *pObj = (PROGBAR_Obj *)hObj;
+void PROGBAR_SetFont(PROGBAR_Handle hObj, PCFONT pfont) {
+	auto pObj = (PROGBAR_Obj *)hObj;
 	if (hObj) {
 
 		pObj->Props.pFont = pfont;
@@ -211,8 +211,8 @@ void PROGBAR_SetFont(PROGBAR_Handle hObj, const GUI_FONT  *pfont) {
 
 	}
 }
-void PROGBAR_SetBarColor(PROGBAR_Handle hObj, unsigned int Index, RGB_COLOR color) {
-	PROGBAR_Obj *pObj = (PROGBAR_Obj *)hObj;
+void PROGBAR_SetBarColor(PROGBAR_Handle hObj, unsigned int Index, RGBC color) {
+	auto pObj = (PROGBAR_Obj *)hObj;
 	if (hObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
 			pObj->Props.aBkColor[Index] = color;
@@ -220,8 +220,8 @@ void PROGBAR_SetBarColor(PROGBAR_Handle hObj, unsigned int Index, RGB_COLOR colo
 		}
 	}
 }
-void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int Index, RGB_COLOR color) {
-	PROGBAR_Obj *pObj = (PROGBAR_Obj *)hObj;
+void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int Index, RGBC color) {
+	auto pObj = (PROGBAR_Obj *)hObj;
 	if (hObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aTextColor)) {
 			pObj->Props.aTextColor[Index] = color;
@@ -231,8 +231,8 @@ void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int Index, RGB_COLOR col
 }
 void PROGBAR_SetText(PROGBAR_Handle hObj, const char *s) {
 	if (hObj) {
-		PROGBAR_Obj *pObj = (PROGBAR_Obj *)hObj;
-		const GUI_FONT  *pOldFont;
+		auto pObj = (PROGBAR_Obj *)hObj;
+		PCFONT pOldFont;
 		GUI_RECT r1;
 		char acBuffer[5];
 
@@ -248,14 +248,14 @@ void PROGBAR_SetText(PROGBAR_Handle hObj, const char *s) {
 	}
 }
 void PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align) {
-	PROGBAR_Obj *pObj = (PROGBAR_Obj *)hObj;
+	auto pObj = (PROGBAR_Obj *)hObj;
 	if (hObj) {
 		pObj->Props.Align = Align;
 		WM_Invalidate(hObj);
 	}
 }
 void PROGBAR_SetTextPos(PROGBAR_Handle hObj, int XOff, int YOff) {
-	PROGBAR_Obj *pObj = (PROGBAR_Obj *)hObj;
+	auto pObj = (PROGBAR_Obj *)hObj;
 	if (hObj) {
 		pObj->XOff = XOff;
 		pObj->YOff = YOff;
@@ -263,7 +263,7 @@ void PROGBAR_SetTextPos(PROGBAR_Handle hObj, int XOff, int YOff) {
 	}
 }
 void PROGBAR_SetMinMax(PROGBAR_Handle hObj, int Min, int Max) {
-	PROGBAR_Obj *pObj = (PROGBAR_Obj *)hObj;
+	auto pObj = (PROGBAR_Obj *)hObj;
 	if (hObj) {
 		if (Max > Min) {
 			if (Max != pObj->Max || Min != pObj->Min) {

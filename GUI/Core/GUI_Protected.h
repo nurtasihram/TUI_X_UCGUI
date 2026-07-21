@@ -90,7 +90,7 @@ extern const GUI_LOGPALETTE GUI_CursorPalI;
 
 extern GUI_RECT  GUI_RectDispString; /* Used by LCD_Rotate...() and GUI_DispStringInRect() */
 
-int GUI_GetBitmapPixel(const GUI_BITMAP *pBMP, unsigned x, unsigned y);
+int GUI_GetBitmapPixel(PCBITMAP pBMP, unsigned x, unsigned y);
 
 #ifdef  GL_CORE_C
 #define GUI_EXTERN

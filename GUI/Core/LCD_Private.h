@@ -13,4 +13,4 @@ void LCD_DrawBitmap   (int x0, int y0,
                        int xsize, int ysize,
                        int BitsPerPixel, int BytesPerLine,
                        const uint8_t  * pPixel,
-                       const RGB_COLOR* pTrans);
+                       const RGBC* pTrans);

@@ -1,13 +1,13 @@
 #include "GUI_Private.h"
 
-static const RGB_COLOR _aColor[] = { RGB_RED, RGB_BLACK, RGB_WHITE };
+static const RGBC _aColor[] = { RGB_RED, RGB_BLACK, RGB_WHITE };
 const GUI_LOGPALETTE GUI_CursorPal = {
   3,	/* number of entries */
   1, 	/* Has transparency */
   &_aColor[0]
 };
 
-static const RGB_COLOR _aColorI[] = { RGB_RED, RGB_WHITE, RGB_BLACK };
+static const RGBC _aColorI[] = { RGB_RED, RGB_WHITE, RGB_BLACK };
 const GUI_LOGPALETTE GUI_CursorPalI = {
   3,	/* number of entries */
   1, 	/* Has transparency */
@@ -24,7 +24,7 @@ static const GUI_CURSOR *_pCursor = nullptr;
 static uint8_t _CursorDeActCnt = 0;
 static int16_t _x, _y; /* Position of hot spot */
 static GUI_RECT _ClipRect;
-const RGB_COLOR *aCursorPal = nullptr;
+const RGBC *aCursorPal = nullptr;
 
 static void _SetPixel(int x, int y, int Index) {
 	if ((y >= _ClipRect.y0) && (y <= _ClipRect.y1)) {
@@ -45,10 +45,10 @@ static int _GetPixel(int x, int y) {
 
 static void _Undraw(void) {
 	int x, y, xSize, ySize;
-	RGB_COLOR *pData;
+	RGBC *pData;
 	/* Save bitmap data */
 	if (_pBuffer) {
-		pData = (RGB_COLOR *)_pBuffer;
+		pData = (RGBC *)_pBuffer;
 		xSize = _Rect.x1 - _Rect.x0 + 1;
 		ySize = _Rect.y1 - _Rect.y0 + 1;
 		for (y = 0; y < ySize; y++) {
@@ -62,12 +62,12 @@ static void _Undraw(void) {
 
 static void _Draw(void) {
 	int x, y, xSize, ySize;
-	RGB_COLOR *pData;
-	const GUI_BITMAP *pBM;
+	RGBC *pData;
+	PCBITMAP pBM;
 	if (_pBuffer) {
 		/* Save bitmap data */
 		pBM = _pCursor->pBitmap;
-		pData = (RGB_COLOR *)_pBuffer;
+		pData = (RGBC *)_pBuffer;
 		xSize = _Rect.x1 - _Rect.x0 + 1;
 		ySize = _Rect.y1 - _Rect.y0 + 1;
 		for (y = 0; y < ySize; y++) {
@@ -144,14 +144,14 @@ void GUI_CURSOR_Deactivate(void) {
 
 const GUI_CURSOR *GUI_CURSOR_Select(const GUI_CURSOR *pCursor) {
 	int AllocSize;
-	const GUI_BITMAP *pBM;
+	PCBITMAP pBM;
 	const GUI_CURSOR *pOldCursor;
 	pOldCursor = _pCursor;
 	if (pCursor != _pCursor) {
 		pBM = pCursor->pBitmap;
 		aCursorPal = pBM->pPal->pPalEntries;
 		_Hide();
-		AllocSize = pBM->XSize * pBM->YSize * sizeof(RGB_COLOR);
+		AllocSize = pBM->XSize * pBM->YSize * sizeof(RGBC);
 		if (AllocSize != _AllocSize) {
 			GUI_ALLOC_Free(_pBuffer);
 			_pBuffer = 0;
@@ -169,14 +169,14 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
 	int x, xStart, xStep, xEnd, xOff, xOverlapMin, xOverlapMax;
 	int y, yStart, yStep, yEnd, yOff, yOverlapMin, yOverlapMax;
 	int xSize;
-	RGB_COLOR *pData;
+	RGBC *pData;
 	if (_pBuffer) {
 		if ((_x != xNewPos) | (_y != yNewPos)) {
 			if (_CursorOn) {
-				const GUI_BITMAP *pBM = _pCursor->pBitmap;
+				PCBITMAP pBM = _pCursor->pBitmap;
 				/* Save & set clip rect */
 				/* Compute helper variables */
-				pData = (RGB_COLOR *)_pBuffer;
+				pData = (RGBC *)_pBuffer;
 				xSize = _pCursor->pBitmap->XSize;
 				xOff = xNewPos - _x;
 				if (xOff > 0) {
@@ -218,8 +218,8 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
 					for (x = xStart; x != xEnd; x += xStep) {
 						char xyOverlaps, xyNewOverlaps;
 						int BitmapPixel;
-						RGB_COLOR Pixel;
-						RGB_COLOR *pSave = pData + x + y * xSize;
+						RGBC Pixel;
+						RGBC *pSave = pData + x + y * xSize;
 						int xNew = x + xOff;
 						BitmapPixel = GUI_GetBitmapPixel(pBM, x, y);
 						xyOverlaps = (x >= xOverlapMin) && (x <= xOverlapMax) && yOverlaps;

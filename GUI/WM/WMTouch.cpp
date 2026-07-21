@@ -16,7 +16,7 @@ static void _SendMessageIfEnabled(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 
 static void _SendTouchMessage(WM_HWIN hWin, int MsgId, GUI_PID_STATE *pState) {
 	if (pState) {
-		WM_Obj *pWin = (WM_Obj *)hWin;
+		auto pWin = (WM_Obj *)hWin;
 		pState->x -= pWin->Rect.x0;
 		pState->y -= pWin->Rect.y0;
 	}
@@ -66,7 +66,7 @@ int WM_HandlePID(void) {
 			 */
 			if ((WM_PID__StateLast.Pressed != StateNew.Pressed) && CHWin.hWin) {
 				WM_PID_STATE_CHANGED_INFO Info;
-				WM_Obj *pWin = (WM_Obj *)CHWin.hWin;
+				auto pWin = (WM_Obj *)CHWin.hWin;
 				Info.State = StateNew.Pressed;
 				Info.StatePrev = WM_PID__StateLast.Pressed;
 				Info.x = StateNew.x - pWin->Rect.x0;

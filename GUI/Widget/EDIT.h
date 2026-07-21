@@ -29,17 +29,17 @@ EDIT_Handle EDIT_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hP
 /* Methods changing properties */
 void EDIT_AddKey           (EDIT_Handle hObj, int Key);
 void EDIT_ClearCursor      (EDIT_Handle hObj);
-void EDIT_SetBkColor       (EDIT_Handle hObj, unsigned int Index, RGB_COLOR color);
+void EDIT_SetBkColor       (EDIT_Handle hObj, unsigned int Index, RGBC color);
 void EDIT_SetCursorAtChar  (EDIT_Handle hObj, int Pos);
 void EDIT_SetCursorAtPixel (EDIT_Handle hObj, int xPos);
-void EDIT_SetFont          (EDIT_Handle hObj, const GUI_FONT  * pfont);
+void EDIT_SetFont          (EDIT_Handle hObj, PCFONT pfont);
 int  EDIT_SetInsertMode    (EDIT_Handle hObj, int OnOff);
 void EDIT_SetMaxLen        (EDIT_Handle hObj, int MaxLen);
 void EDIT_SetpfAddKeyEx    (EDIT_Handle hObj, tEDIT_AddKeyEx * pfAddKeyEx);
 void EDIT_SetpfUpdateBuffer(EDIT_Handle hObj, tEDIT_UpdateBuffer * pfUpdateBuffer);
 void EDIT_SetText          (EDIT_Handle hObj, const char* s);
 void EDIT_SetTextAlign     (EDIT_Handle hObj, int Align);
-void EDIT_SetTextColor     (EDIT_Handle hObj, unsigned int Index, RGB_COLOR color);
+void EDIT_SetTextColor     (EDIT_Handle hObj, unsigned int Index, RGBC color);
 void EDIT_SetSel           (EDIT_Handle hObj, int FirstChar, int LastChar);
 
 /* Get/Set user input */

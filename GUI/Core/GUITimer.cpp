@@ -16,7 +16,7 @@ GUI_TIMER_HANDLE hFirstTimer;
 GUI_TIMER_HANDLE _hActiveTimer;
 
 static void _Unlink(GUI_TIMER_HANDLE hTimer) {
-	GUI_TIMER_Obj *pTimer = (GUI_TIMER_Obj *)hTimer;
+	auto pTimer = (GUI_TIMER_Obj *)hTimer;
 	GUI_TIMER_HANDLE hi;
 	GUI_TIMER_Obj *pi;
 	/* Check if it is the first element */
@@ -47,7 +47,7 @@ static void _Unlink(GUI_TIMER_HANDLE hTimer) {
 *	  The first element is the timer which expires first.
 */
 static void _Link(GUI_TIMER_HANDLE hNew) {
-	GUI_TIMER_Obj *pNew = (GUI_TIMER_Obj *)hNew;
+	auto pNew = (GUI_TIMER_Obj *)hNew;
 	GUI_TIMER_Obj *pTimer;
 	GUI_TIMER_Obj *pNext;
 	GUI_TIMER_HANDLE hNext;
@@ -56,7 +56,7 @@ static void _Link(GUI_TIMER_HANDLE hNew) {
 		pNew->hNext = 0;
 	}
 	else {
-		GUI_TIMER_Obj *pFirstTimer = (GUI_TIMER_Obj *)hFirstTimer;
+		auto pFirstTimer = (GUI_TIMER_Obj *)hFirstTimer;
 		/* Check if we have to make it the first element */
 		if ((pNew->t0 - pFirstTimer->t0) <= 0) {
 			pNew->hNext = hFirstTimer;
@@ -92,7 +92,7 @@ int GUI_TIMER_Exec(void) {
 	GUI_TIMER_TIME t = GUI_GetTime();
 	{
 		while (hFirstTimer) {
-			GUI_TIMER_Obj *pTimer = (GUI_TIMER_Obj *)hFirstTimer;
+			auto pTimer = (GUI_TIMER_Obj *)hFirstTimer;
 			if ((pTimer->t0 - t) <= 0) {
 				GUI_TIMER_MESSAGE tm;
 				tm.Time = t;
@@ -144,14 +144,14 @@ void GUI_TIMER_Delete(GUI_TIMER_HANDLE hObj) {
 
 void GUI_TIMER_SetPeriod(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Period) {
 	{
-		GUI_TIMER_Obj *pObj = (GUI_TIMER_Obj *)hObj;
+		auto pObj = (GUI_TIMER_Obj *)hObj;
 		pObj->Period = Period;
 	}
 }
 
 void GUI_TIMER_SetTime(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Time) {
 	{
-		GUI_TIMER_Obj *pObj = (GUI_TIMER_Obj *)hObj;
+		auto pObj = (GUI_TIMER_Obj *)hObj;
 		pObj->t0 = Time;
 	}
 }
@@ -159,7 +159,7 @@ void GUI_TIMER_SetTime(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Time) {
 //////
 void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, uintptr_t Context) {
 	{
-		GUI_TIMER_Obj *pObj = (GUI_TIMER_Obj *)hObj;
+		auto pObj = (GUI_TIMER_Obj *)hObj;
 		pObj->Context = Context;
 	}
 }
@@ -167,7 +167,7 @@ void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, uintptr_t Context) {
 
 void GUI_TIMER_SetDelay(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Delay) {
 	{
-		GUI_TIMER_Obj *pObj = (GUI_TIMER_Obj *)hObj;
+		auto pObj = (GUI_TIMER_Obj *)hObj;
 		pObj->t0 = Delay;
 		_Unlink(hObj);
 		_Link(hObj);

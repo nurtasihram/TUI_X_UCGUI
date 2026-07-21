@@ -18,10 +18,10 @@
 #define RADIO_DEFAULT_BKCOLOR       RGB_GRAYL(0xC0)
 #define RADIO_BORDER                  2
 tRADIO_SetValue *RADIO__pfHandleSetValue;
-RGB_COLOR         RADIO__DefaultTextColor = RADIO_DEFAULT_TEXT_COLOR;
-const GUI_FONT *RADIO__pDefaultFont = RADIO_FONT_DEFAULT;
-const GUI_BITMAP *RADIO__apDefaultImage[] = { RADIO_IMAGE0_DEFAULT, RADIO_IMAGE1_DEFAULT };
-const GUI_BITMAP *RADIO__pDefaultImageCheck = RADIO_IMAGE_CHECK_DEFAULT;
+RGBC         RADIO__DefaultTextColor = RADIO_DEFAULT_TEXT_COLOR;
+PCFONT RADIO__pDefaultFont = RADIO_FONT_DEFAULT;
+PCBITMAP RADIO__apDefaultImage[] = { RADIO_IMAGE0_DEFAULT, RADIO_IMAGE1_DEFAULT };
+PCBITMAP RADIO__pDefaultImageCheck = RADIO_IMAGE_CHECK_DEFAULT;
 
 static void _ResizeRect(GUI_RECT *pDest, const GUI_RECT *pSrc, int Diff) {
 	pDest->y0 = pSrc->y0 - Diff;
@@ -40,8 +40,8 @@ static void _ResizeRect(GUI_RECT *pDest, const GUI_RECT *pSrc, int Diff) {
 *   otherwise around the entire buttons.
 */
 static void _OnPaint(RADIO_Obj *pObj) {
-	const GUI_BITMAP *pBmRadio;
-	const GUI_BITMAP *pBmCheck;
+	PCBITMAP pBmRadio;
+	PCBITMAP pBmCheck;
 	const char *pText;
 	GUI_FONTINFO FontInfo;
 	GUI_RECT Rect, r, rFocus;
@@ -161,7 +161,7 @@ static char _OnKey(RADIO_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	return 0;
 }
 static WM_PARAM _RADIO_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
-	RADIO_Obj *pObj = (RADIO_Obj *)hWin;
+	auto pObj = (RADIO_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 		return Data;
@@ -216,7 +216,7 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParen
 	/* Create the window */
 	hObj = WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent, WinFlags, _RADIO_Callback, sizeof(RADIO_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		RADIO_Obj *pObj = (RADIO_Obj *)hObj;
+		auto pObj = (RADIO_Obj *)hObj;
 		/* Init sub-classes */
 		GUI_ARRAY_CREATE(&pObj->TextArray);
 		for (i = 0; i < NumItems; i++) {
@@ -243,7 +243,7 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParen
 }
 void RADIO_AddValue(RADIO_Handle hObj, int Add) {
 	if (hObj) {
-		RADIO_Obj *pObj = (RADIO_Obj *)hObj;
+		auto pObj = (RADIO_Obj *)hObj;
 		RADIO_SetValue(hObj, pObj->Sel + Add);
 
 	}
@@ -256,7 +256,7 @@ void RADIO_Inc(RADIO_Handle hObj) {
 }
 void RADIO_SetValue(RADIO_Handle hObj, int v) {
 	if (hObj) {
-		RADIO_Obj *pObj = (RADIO_Obj *)hObj;
+		auto pObj = (RADIO_Obj *)hObj;
 		if (pObj->GroupId && RADIO__pfHandleSetValue) {
 			(*RADIO__pfHandleSetValue)(pObj, v);
 		}
@@ -272,7 +272,7 @@ void RADIO_SetValue(RADIO_Handle hObj, int v) {
 int RADIO_GetValue(RADIO_Handle hObj) {
 	int r = 0;
 	if (hObj) {
-		RADIO_Obj *pObj = (RADIO_Obj *)hObj;
+		auto pObj = (RADIO_Obj *)hObj;
 		r = pObj->Sel;
 
 	}
@@ -293,9 +293,9 @@ RADIO_Handle RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_
 	return hThis;
 }
 
-void RADIO_SetBkColor(RADIO_Handle hObj, RGB_COLOR Color) {
+void RADIO_SetBkColor(RADIO_Handle hObj, RGBC Color) {
 	if (hObj) {
-		RADIO_Obj *pObj = (RADIO_Obj *)hObj;
+		auto pObj = (RADIO_Obj *)hObj;
 		if (Color != pObj->BkColor) {
 			pObj->BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
@@ -311,9 +311,9 @@ void RADIO_SetBkColor(RADIO_Handle hObj, RGB_COLOR Color) {
 
 	}
 }
-void RADIO_SetFont(RADIO_Handle hObj, const GUI_FONT *pFont) {
+void RADIO_SetFont(RADIO_Handle hObj, PCFONT pFont) {
 	if (hObj) {
-		RADIO_Obj *pObj = (RADIO_Obj *)hObj;
+		auto pObj = (RADIO_Obj *)hObj;
 		if (pFont != pObj->pFont) {
 			pObj->pFont = pFont;
 			if (GUI_ARRAY_GetNumItems(&pObj->TextArray))
@@ -323,7 +323,7 @@ void RADIO_SetFont(RADIO_Handle hObj, const GUI_FONT *pFont) {
 }
 
 static void _SetValue(RADIO_Handle hObj, int v) {
-	RADIO_Obj *pObj = (RADIO_Obj *)hObj;
+	auto pObj = (RADIO_Obj *)hObj;
 	RADIO__SetValue(pObj, v);
 }
 static int _IsInGroup(WM_HWIN hWin, uint8_t GroupId) {
@@ -379,7 +379,7 @@ static void _HandleSetValue(RADIO_Obj *pObj, int v) {
 
 void RADIO_SetGroupId(RADIO_Handle hObj, uint8_t NewGroupId) {
 	if (hObj) {
-		RADIO_Obj *pObj = (RADIO_Obj *)hObj;
+		auto pObj = (RADIO_Obj *)hObj;
 		uint8_t OldGroupId;
 		OldGroupId = pObj->GroupId;
 		if (NewGroupId != OldGroupId) {
@@ -416,9 +416,9 @@ void RADIO_SetGroupId(RADIO_Handle hObj, uint8_t NewGroupId) {
 }
 
 
-void RADIO_SetImage(RADIO_Handle hObj, const GUI_BITMAP *pBitmap, unsigned int Index) {
+void RADIO_SetImage(RADIO_Handle hObj, PCBITMAP pBitmap, unsigned int Index) {
 	if (hObj) {
-		RADIO_Obj *pObj = (RADIO_Obj *)hObj;
+		auto pObj = (RADIO_Obj *)hObj;
 		switch (Index) {
 			case RADIO_BI_INACTIV:
 			case RADIO_BI_ACTIV:
@@ -435,7 +435,7 @@ void RADIO_SetImage(RADIO_Handle hObj, const GUI_BITMAP *pBitmap, unsigned int I
 
 void RADIO_SetText(RADIO_Handle hObj, const char *pText, unsigned Index) {
 	if (hObj) {
-		RADIO_Obj *pObj = (RADIO_Obj *)hObj;
+		auto pObj = (RADIO_Obj *)hObj;
 		if (Index < (unsigned)pObj->NumItems) {
 			GUI_ARRAY_SetItem(&pObj->TextArray, Index, pText, pText ? (GUI__strlen(pText) + 1) : 0);
 			WM_Invalidate(hObj);
@@ -444,9 +444,9 @@ void RADIO_SetText(RADIO_Handle hObj, const char *pText, unsigned Index) {
 	}
 }
 
-void RADIO_SetTextColor(RADIO_Handle hObj, RGB_COLOR Color) {
+void RADIO_SetTextColor(RADIO_Handle hObj, RGBC Color) {
 	if (hObj) {
-		RADIO_Obj *pObj = (RADIO_Obj *)hObj;
+		auto pObj = (RADIO_Obj *)hObj;
 		if (Color != pObj->TextColor) {
 			pObj->TextColor = Color;
 			if (GUI_ARRAY_GetNumItems(&pObj->TextArray)) {
@@ -462,9 +462,9 @@ void RADIO_SetTextColor(RADIO_Handle hObj, RGB_COLOR Color) {
 
 
 /* Colors */
-static const RGB_COLOR _aColorDisabled[] = { RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
-static const RGB_COLOR _aColorEnabled[] = { RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
-static const RGB_COLOR _ColorsCheck[] = { RGB_WHITE, RGB_BLACK };
+static const RGBC _aColorDisabled[] = { RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
+static const RGBC _aColorEnabled[] = { RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
+static const RGBC _ColorsCheck[] = { RGB_WHITE, RGB_BLACK };
 /* Palettes */
 static const GUI_LOGPALETTE _PalRadioDisabled = {
   4,	/* number of entries */
@@ -504,12 +504,12 @@ static const uint8_t _acCheck[] = {
   __XXXX__________
 };
 /* Bitmaps */
-const GUI_BITMAP RADIO__abmRadio[] = {
+CBITMAP RADIO__abmRadio[] = {
   { 12, 12, 3, 2, _acRadio, &_PalRadioDisabled},
   { 12, 12, 3, 2, _acRadio, &_PalRadioEnabled}
 };
 
-const GUI_BITMAP RADIO__bmCheck = {
+CBITMAP RADIO__bmCheck = {
   4, /* XSize */
   4, /* YSize */
   1, /* BytesPerLine */

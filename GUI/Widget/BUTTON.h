@@ -11,7 +11,7 @@
 #define BUTTON_STATE_PRESSED    WIDGET_STATE_USER0
 #define BUTTON_STATE_HASFOCUS   0
 
-typedef WM_HMEM BUTTON_Handle;
+typedef WM_HWIN BUTTON_Handle;
 
 enum BUTTON_BI {
 	 BUTTON_BI_UNPRESSED = 0,
@@ -43,22 +43,22 @@ BUTTON_Handle BUTTON_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWI
 * Do not call it directly ! It is only to be used from within an
 * overwritten callback.
 */
-RGB_COLOR        BUTTON_GetBkColor         (BUTTON_Handle hObj, unsigned int Index);
-const GUI_FONT  * BUTTON_GetFont(BUTTON_Handle hObj);
+RGBC        BUTTON_GetBkColor         (BUTTON_Handle hObj, unsigned int Index);
+PCFONT BUTTON_GetFont(BUTTON_Handle hObj);
 void             BUTTON_GetText            (BUTTON_Handle hObj, char * pBuffer, int MaxLen);
-RGB_COLOR        BUTTON_GetTextColor       (BUTTON_Handle hObj, unsigned int Index);
+RGBC        BUTTON_GetTextColor       (BUTTON_Handle hObj, unsigned int Index);
 unsigned         BUTTON_IsPressed          (BUTTON_Handle hObj);
-void             BUTTON_SetBitmap          (BUTTON_Handle hObj, unsigned int Index, const GUI_BITMAP * pBitmap);
-void             BUTTON_SetBitmapEx        (BUTTON_Handle hObj, unsigned int Index, const GUI_BITMAP * pBitmap, int x, int y);
-void             BUTTON_SetBkColor         (BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color);
+void             BUTTON_SetBitmap          (BUTTON_Handle hObj, unsigned int Index, PCBITMAP pBitmap);
+void             BUTTON_SetBitmapEx        (BUTTON_Handle hObj, unsigned int Index, PCBITMAP pBitmap, int x, int y);
+void             BUTTON_SetBkColor         (BUTTON_Handle hObj, unsigned int Index, RGBC Color);
 void             BUTTON_SetBMP             (BUTTON_Handle hObj, unsigned int Index, const void * pBitmap);
 void             BUTTON_SetBMPEx           (BUTTON_Handle hObj, unsigned int Index, const void * pBitmap, int x, int y);
-void             BUTTON_SetFont            (BUTTON_Handle hObj, const GUI_FONT  * pfont);
+void             BUTTON_SetFont            (BUTTON_Handle hObj, PCFONT pfont);
 void             BUTTON_SetState           (BUTTON_Handle hObj, int State);                                    /* Not to be doc. */
 void             BUTTON_SetPressed         (BUTTON_Handle hObj, int State);
 void             BUTTON_SetFocussable      (BUTTON_Handle hObj, int State);
 void             BUTTON_SetText            (BUTTON_Handle hObj, const char* s);
 void             BUTTON_SetTextAlign       (BUTTON_Handle hObj, int Align);
-void             BUTTON_SetTextColor       (BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color);
+void             BUTTON_SetTextColor       (BUTTON_Handle hObj, unsigned int Index, RGBC Color);
 void             BUTTON_SetSelfDrawEx      (BUTTON_Handle hObj, unsigned int Index, void (*pDraw)(void), int x, int y); /* Not to be doc. */
 void             BUTTON_SetSelfDraw        (BUTTON_Handle hObj, unsigned int Index, void (*pDraw)(void));               /* Not to be doc. */

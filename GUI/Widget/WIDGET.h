@@ -76,16 +76,15 @@ struct GUI_DRAW {
 	} Data;
 	int16_t xOff, yOff;
 };
-typedef WM_HMEM GUI_DRAW_HANDLE;
 
 /* GUI_DRAW_ API */
-void GUI_DRAW__Draw(GUI_DRAW_HANDLE hDrawObj, int x, int y);
-int  GUI_DRAW__GetXSize(GUI_DRAW_HANDLE hDrawObj);
-int  GUI_DRAW__GetYSize(GUI_DRAW_HANDLE hDrawObj);
+void GUI_DRAW__Draw(GUI_DRAW *pDrawObj, int x, int y);
+int  GUI_DRAW__GetXSize(GUI_DRAW *pDrawObj);
+int  GUI_DRAW__GetYSize(GUI_DRAW *pDrawObj);
 
 /* GUI_DRAW_ Constructurs for different objects */
-WM_HMEM GUI_DRAW_BITMAP_Create(const GUI_BITMAP *pBitmap, int x, int y);
-WM_HMEM GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw, int x, int y);
+GUI_DRAW *GUI_DRAW_BITMAP_Create(PCBITMAP pBitmap, int x, int y);
+GUI_DRAW *GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw, int x, int y);
 
 void      WIDGET__DrawFocusRect(WIDGET *pWidget, GUI_RECT r, int Dist);
 void      WIDGET__DrawVLine(WIDGET *pWidget, int x, int y0, int y1);
@@ -95,7 +94,7 @@ void      WIDGET__EFFECT_DrawDownRect(WIDGET *pWidget, GUI_RECT r);
 void      WIDGET__EFFECT_DrawDown(WIDGET *pWidget);
 void      WIDGET__EFFECT_DrawUpRect(WIDGET *pWidget, GUI_RECT r);
 
-RGB_COLOR WIDGET__GetBkColor(WM_HWIN hObj);
+RGBC WIDGET__GetBkColor(WM_HWIN hObj);
 
 int       WIDGET__GetWindowSizeX(WM_HWIN hWin);
 

@@ -1526,14 +1526,14 @@ const GUI_CHARINFO GUI_Font13ASCII_CharInfo[95] = {
   ,{   8,   8,  1, acFont13ASCII_007E } /* code 007E */
 };
 
-extern const GUI_FONT_PROP GUI_Font13ASCII_Prop1 = {
+extern const FONT_PROP GUI_Font13ASCII_Prop1 = {
    32                           /* first character               */
   ,126                          /* last character                */
   ,&GUI_Font13ASCII_CharInfo[0] /* address of first character    */
-  ,(const GUI_FONT_PROP*)0      /* pointer to next GUI_FONT_PROP */
+  ,(const FONT_PROP*)0      /* pointer to next FONT_PROP */
 };
 
-const GUI_FONT GUI_Font13_ASCII = {
+CFONT GUI_Font13_ASCII = {
    GUI_FONTTYPE_PROP /* type of font    */
   ,13                /* height of font  */
   ,13                /* space of font y */

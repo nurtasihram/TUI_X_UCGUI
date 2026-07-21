@@ -12,10 +12,10 @@ Ayxandar Ayx;
 int LCD_GetXSize(void) { return LCD_XSIZE; }
 int LCD_GetYSize(void) { return LCD_YSIZE; }
 
-extern void LCD_L0_SetPixel(int x, int y, RGB_COLOR PixelIndex) {
+extern void LCD_L0_SetPixel(int x, int y, RGBC PixelIndex) {
 	Ayx.Dot({ x, y }, PixelIndex);
 }
-extern RGB_COLOR LCD_L0_GetPixel(int x, int y) {
+extern RGBC LCD_L0_GetPixel(int x, int y) {
 	return Ayx.Dot({ x, y });
 }
 

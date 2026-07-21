@@ -50,12 +50,12 @@ static void _OnPaint(BUTTON_Obj *pObj) {
 	   If we have to we will use the second one (Index 1) for the pressed state
 	*/
 	if (ColorIndex < 2) {
-		Index = (pObj->ahDrawObj[BUTTON_BI_PRESSED] && PressedState) ? BUTTON_BI_PRESSED : BUTTON_BI_UNPRESSED;
+		Index = (pObj->aDrawObj[BUTTON_BI_PRESSED] && PressedState) ? BUTTON_BI_PRESSED : BUTTON_BI_UNPRESSED;
 	}
 	else {
-		Index = pObj->ahDrawObj[BUTTON_BI_DISABLED] ? BUTTON_BI_DISABLED : BUTTON_BI_UNPRESSED;
+		Index = pObj->aDrawObj[BUTTON_BI_DISABLED] ? BUTTON_BI_DISABLED : BUTTON_BI_UNPRESSED;
 	}
-	GUI_DRAW__Draw(pObj->ahDrawObj[Index], 0, 0);
+	GUI_DRAW__Draw(pObj->aDrawObj[Index], 0, 0);
 	/* Draw the actual button (background and text) */
 #if BUTTON_USE_3D
 	if (PressedState)
@@ -78,8 +78,8 @@ static void _OnPaint(BUTTON_Obj *pObj) {
 */
 static void _Delete(BUTTON_Obj *pObj) {
 	GUI_ALLOC_FreePtr((void **)&pObj->pText);
-	GUI_ALLOC_FreePtr(&pObj->ahDrawObj[0]);
-	GUI_ALLOC_FreePtr(&pObj->ahDrawObj[1]);
+	GUI_ALLOC_FreePtr((void **)&pObj->aDrawObj[0]);
+	GUI_ALLOC_FreePtr((void **)&pObj->aDrawObj[1]);
 }
 static void _ButtonPressed(BUTTON_Obj *pObj) {
 	WIDGET_OrState(pObj, BUTTON_STATE_PRESSED);
@@ -138,7 +138,7 @@ static void _OnPidStateChange(BUTTON_Obj *pObj, const WM_PID_STATE_CHANGED_INFO 
 }
 #endif
 static WM_PARAM _BUTTON_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
-	BUTTON_Obj *pObj = (BUTTON_Obj *)hWin;
+	auto pObj = (BUTTON_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 		return Data;
@@ -172,7 +172,7 @@ BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _BUTTON_Callback,
 								  sizeof(BUTTON_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
+		auto pObj = (BUTTON_Obj *)hObj;
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
@@ -185,30 +185,30 @@ BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hPar
 }
 void BUTTON_SetText(BUTTON_Handle hObj, const char *s) {
 	if (hObj) {
-		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
+		auto pObj = (BUTTON_Obj *)hObj;
 		if (GUI__SetText(&pObj->pText, s))
 			WM_Invalidate(hObj);
 	}
 }
-void BUTTON_SetFont(BUTTON_Handle hObj, const GUI_FONT  *pfont) {
+void BUTTON_SetFont(BUTTON_Handle hObj, PCFONT pfont) {
 	if (hObj) {
-		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
+		auto pObj = (BUTTON_Obj *)hObj;
 		pObj->Props.pFont = pfont;
 		WM_Invalidate(hObj);
 
 	}
 }
-void BUTTON_SetBkColor(BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color) {
+void BUTTON_SetBkColor(BUTTON_Handle hObj, unsigned int Index, RGBC Color) {
 	if (hObj && (Index <= 2)) {
-		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
+		auto pObj = (BUTTON_Obj *)hObj;
 		pObj->Props.aBkColor[Index] = Color;
 		WM_Invalidate(hObj);
 
 	}
 }
-void BUTTON_SetTextColor(BUTTON_Handle hObj, unsigned int Index, RGB_COLOR Color) {
+void BUTTON_SetTextColor(BUTTON_Handle hObj, unsigned int Index, RGBC Color) {
 	if (hObj && (Index <= 2)) {
-		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
+		auto pObj = (BUTTON_Obj *)hObj;
 		pObj->Props.aTextColor[Index] = Color;
 		WM_Invalidate(hObj);
 
@@ -234,10 +234,10 @@ void BUTTON_SetFocussable(BUTTON_Handle hObj, int State) {
 	}
 }
 
-void BUTTON_SetBitmapEx(BUTTON_Handle hObj, unsigned int Index, const GUI_BITMAP *pBitmap, int x, int y) {
+void BUTTON_SetBitmapEx(BUTTON_Handle hObj, unsigned int Index, PCBITMAP pBitmap, int x, int y) {
 	BUTTON__SetDrawObj(hObj, Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
 }
-void BUTTON_SetBitmap(BUTTON_Handle hObj, unsigned int Index, const GUI_BITMAP *pBitmap) {
+void BUTTON_SetBitmap(BUTTON_Handle hObj, unsigned int Index, PCBITMAP pBitmap) {
 	BUTTON_SetBitmapEx(hObj, Index, pBitmap, 0, 0);
 }
 
@@ -257,19 +257,19 @@ BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, W
 	BUTTON_SetText(hThis, pCreateInfo->pName);
 	return hThis;
 }
-RGB_COLOR BUTTON_GetBkColor(BUTTON_Handle hObj, unsigned int Index) {
-	RGB_COLOR Color = 0;
+RGBC BUTTON_GetBkColor(BUTTON_Handle hObj, unsigned int Index) {
+	RGBC Color = 0;
 	if (hObj && (Index < 2)) {
-		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
+		auto pObj = (BUTTON_Obj *)hObj;
 		Color = pObj->Props.aBkColor[Index];
 
 	}
 	return Color;
 }
-const GUI_FONT  *BUTTON_GetFont(BUTTON_Handle hObj) {
-	const GUI_FONT  *pFont = 0;
+PCFONT BUTTON_GetFont(BUTTON_Handle hObj) {
+	PCFONT pFont = 0;
 	if (hObj) {
-		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
+		auto pObj = (BUTTON_Obj *)hObj;
 		pFont = pObj->Props.pFont;
 
 	}
@@ -277,7 +277,7 @@ const GUI_FONT  *BUTTON_GetFont(BUTTON_Handle hObj) {
 }
 void BUTTON_GetText(BUTTON_Handle hObj, char *pBuffer, int MaxLen) {
 	if (hObj) {
-		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
+		auto pObj = (BUTTON_Obj *)hObj;
 		if (pObj->pText) {
 			const char *pText = pObj->pText;
 			int Len = GUI__strlen(pText);
@@ -294,7 +294,7 @@ void BUTTON_GetText(BUTTON_Handle hObj, char *pBuffer, int MaxLen) {
 unsigned BUTTON_IsPressed(BUTTON_Handle hObj) {
 	unsigned r = 0;
 	if (hObj) {
-		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
+		auto pObj = (BUTTON_Obj *)hObj;
 		r = (pObj->State & BUTTON_STATE_PRESSED) ? 1 : 0;
 
 	}
@@ -310,19 +310,19 @@ void BUTTON_SetSelfDraw(BUTTON_Handle hObj, unsigned int Index, GUI_DRAW_SELF_CB
 
 void BUTTON_SetTextAlign(BUTTON_Handle hObj, int Align) {
 	if (hObj) {
-		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
+		auto pObj = (BUTTON_Obj *)hObj;
 		pObj->Props.Align = Align;
 		WM_Invalidate(hObj);
 
 	}
 }
 
-void BUTTON__SetDrawObj(BUTTON_Handle hObj, int Index, GUI_DRAW_HANDLE hDrawObj) {
+void BUTTON__SetDrawObj(BUTTON_Handle hObj, int Index, GUI_DRAW *pDrawObj) {
 	if (hObj) {
-		BUTTON_Obj *pObj = (BUTTON_Obj *)hObj;
-		if ((unsigned int)Index <= GUI_COUNTOF(pObj->ahDrawObj)) {
-			GUI_ALLOC_FreePtr(&pObj->ahDrawObj[Index]);
-			pObj->ahDrawObj[Index] = hDrawObj;
+		auto pObj = (BUTTON_Obj *)hObj;
+		if ((unsigned int)Index <= GUI_COUNTOF(pObj->aDrawObj)) {
+			GUI_ALLOC_FreePtr((void **)&pObj->aDrawObj[Index]);
+			pObj->aDrawObj[Index] = pDrawObj;
 			WM_Invalidate(hObj);
 		}
 

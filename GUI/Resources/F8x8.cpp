@@ -1875,7 +1875,7 @@ const uint8_t GUI_F8x8_acFont[][8] = {
 };
 
 
-const GUI_FONT_TRANSLIST GUI_F8x8_TransList[] = {
+const FONT_TRANSLIST GUI_F8x8_TransList[] = {
 /*
    The folowing are extensions to ISO 8859-1.
    Since ISO 8859-1 does not define any characters for the codes
@@ -2000,13 +2000,13 @@ const GUI_FONT_TRANSLIST GUI_F8x8_TransList[] = {
   {'y'-32,CODE_SUMLAUT},                /* 255, */
 };
 
-const GUI_FONT_TRANSINFO GUI_F8x8_TransInfo = {
+const FONT_TRANSINFO GUI_F8x8_TransInfo = {
   144                   /*  FirstChar  */
   ,255                  /*  LastChar   */
-  ,GUI_F8x8_TransList   /*  const GUI_FONT_TRANSLIST* pList */
+  ,GUI_F8x8_TransList   /*  const FONT_TRANSLIST* pList */
 };
 
-const GUI_FONT_MONO GUI_F8x8_Mono = {
+const FONT_MONO GUI_F8x8_Mono = {
  GUI_F8x8_acFont[0],
  GUI_F8x8_acFont[0],
  &GUI_F8x8_TransInfo,
@@ -2017,7 +2017,7 @@ const GUI_FONT_MONO GUI_F8x8_Mono = {
  1                      /* BytesPerLine */
 };
 
-const GUI_FONT GUI_Font8x8 = {
+CFONT GUI_Font8x8 = {
   GUI_FONTTYPE_MONO
   ,8
   ,8
@@ -2025,7 +2025,7 @@ const GUI_FONT GUI_Font8x8 = {
   , 7, 5, 7
 };
 
-const GUI_FONT GUI_Font8x9 = {
+CFONT GUI_Font8x9 = {
   GUI_FONTTYPE_MONO
   ,8
   ,9

@@ -174,7 +174,7 @@ WM_HMEM  GUI_ARRAY_SetItem(GUI_ARRAY *pThis, unsigned int Index, const void *pDa
 			 * Set the item (if needed)
 			 */
 			if (pData && hItem) {
-				char *pItem = (char *)(hItem);
+				auto pItem = (char *)(hItem);
 				GUI__memcpy(pItem, pData, Len);
 			}
 		}

@@ -6,25 +6,25 @@
 #include "GUI_ARRAY.h"
 
 
-extern const GUI_BITMAP RADIO__abmRadio[2];
-extern const GUI_BITMAP RADIO__bmCheck;
-extern const GUI_BITMAP *RADIO__apDefaultImage[2];
-extern const GUI_BITMAP *RADIO__pDefaultImageCheck;
-extern const GUI_FONT *RADIO__pDefaultFont;
-extern       RGB_COLOR RADIO__DefaultTextColor;
+extern CBITMAP RADIO__abmRadio[2];
+extern CBITMAP RADIO__bmCheck;
+extern PCBITMAP RADIO__apDefaultImage[2];
+extern PCBITMAP RADIO__pDefaultImageCheck;
+extern PCFONT RADIO__pDefaultFont;
+extern       RGBC RADIO__DefaultTextColor;
 
 struct RADIO_Obj : public WIDGET {
-	const GUI_BITMAP *apBmRadio[2];
-	const GUI_BITMAP *pBmCheck;
+	PCBITMAP apBmRadio[2];
+	PCBITMAP pBmCheck;
 	GUI_ARRAY TextArray;
 	int16_t Sel;                   /* current selection */
 	uint16_t Spacing;
 	uint16_t Height;
 	uint16_t NumItems;
 	uint8_t  GroupId;
-	RGB_COLOR BkColor;
-	RGB_COLOR TextColor;
-	const GUI_FONT *pFont;
+	RGBC BkColor;
+	RGBC TextColor;
+	PCFONT pFont;
 };
 
 typedef void tRADIO_SetValue(RADIO_Obj *pObj, int v);

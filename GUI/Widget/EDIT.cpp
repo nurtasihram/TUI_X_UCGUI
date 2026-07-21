@@ -14,8 +14,8 @@ static GUI_TIMER_HANDLE Timer1 = 0;	//houhh 20061018...
 static void _OnPaint(EDIT_Obj *pObj);
 void ShowCurrsor(GUI_TIMER_MESSAGE *TimeMsg) {
 	EDIT_Handle hObj = (EDIT_Handle)TimeMsg->Context;
-	EDIT_Obj *pObj = (EDIT_Obj *)hObj;
-	WM_Obj *pWin = (WM_Obj *)hObj;
+	auto pObj = (EDIT_Obj *)hObj;
+	auto pWin = (WM_Obj *)hObj;
 	WM_SelectWindow(hObj);
 	_OnPaint(pObj);
 	pObj->CurrsorShow++;
@@ -108,9 +108,9 @@ static void _Delete(EDIT_Obj *pObj) {
 }
 void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
 	if (hObj) {
-		EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+		auto pObj = (EDIT_Obj *)hObj;
 		if (pObj->pText) {
-			const GUI_FONT  *pOldFont;
+			PCFONT pOldFont;
 			int xSize, TextWidth, NumChars;
 			const char  *pText;
 			pText = pObj->pText;
@@ -160,7 +160,7 @@ void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
 */
 static int _IncrementBuffer(EDIT_Obj *pObj, unsigned AddBytes) {
 	int NewSize = pObj->BufferSize + AddBytes;
-	char *pNewStr = (char *)GUI_ALLOC_Realloc(pObj->pText, NewSize);
+	auto pNewStr = (char *)GUI_ALLOC_Realloc(pObj->pText, NewSize);
 	if (pNewStr) {
 		if (!(pObj->pText)) {
 			pNewStr[0] = 0;
@@ -317,7 +317,7 @@ static int _OnKey(EDIT_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	return 0;
 }
 static WM_PARAM EDIT__Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
-	EDIT_Obj *pObj = (EDIT_Obj *)hWin;
+	auto pObj = (EDIT_Obj *)hWin;
 	int IsEnabled = WM_IsEnabled(pObj);
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -348,7 +348,7 @@ EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WM_CF_SHOW | WinFlags, EDIT__Callback,
 								  sizeof(EDIT_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+		auto pObj = (EDIT_Obj *)hObj;
 
 		pObj = (EDIT_Obj *)(hObj);
 		/* init widget specific variables */
@@ -370,7 +370,7 @@ EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 }
 void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 	if (hObj) {
-		EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+		auto pObj = (EDIT_Obj *)hObj;
 		if (pObj) {
 			if (pObj->pfAddKeyEx) {
 				pObj->pfAddKeyEx(hObj, Key);
@@ -441,8 +441,8 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 
 	}
 }
-void EDIT_SetFont(EDIT_Handle hObj, const GUI_FONT  *pfont) {
-	EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+void EDIT_SetFont(EDIT_Handle hObj, PCFONT pfont) {
+	auto pObj = (EDIT_Obj *)hObj;
 	if (hObj == 0)
 		return;
 
@@ -452,8 +452,8 @@ void EDIT_SetFont(EDIT_Handle hObj, const GUI_FONT  *pfont) {
 	}
 
 }
-void EDIT_SetBkColor(EDIT_Handle hObj, unsigned int Index, RGB_COLOR color) {
-	EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+void EDIT_SetBkColor(EDIT_Handle hObj, unsigned int Index, RGBC color) {
+	auto pObj = (EDIT_Obj *)hObj;
 	if (hObj == 0)
 		return;
 
@@ -465,8 +465,8 @@ void EDIT_SetBkColor(EDIT_Handle hObj, unsigned int Index, RGB_COLOR color) {
 	}
 
 }
-void EDIT_SetTextColor(EDIT_Handle hObj, unsigned int Index, RGB_COLOR color) {
-	EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+void EDIT_SetTextColor(EDIT_Handle hObj, unsigned int Index, RGBC color) {
+	auto pObj = (EDIT_Obj *)hObj;
 	if (hObj == 0)
 		return;
 	if (pObj) {
@@ -478,7 +478,7 @@ void EDIT_SetTextColor(EDIT_Handle hObj, unsigned int Index, RGB_COLOR color) {
 }
 void EDIT_SetText(EDIT_Handle hObj, const char *s) {
 	if (hObj) {
-		EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+		auto pObj = (EDIT_Obj *)hObj;
 		if (s) {
 			int NumBytesNew, NumBytesOld = 0;
 			int NumCharsNew;
@@ -515,7 +515,7 @@ void EDIT_GetText(EDIT_Handle hObj, char *sDest, int MaxLen) {
 	if (sDest) {
 		*sDest = 0;
 		if (hObj) {
-			EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+			auto pObj = (EDIT_Obj *)hObj;
 			if (pObj->pText) {
 				char *pText = pObj->pText;
 				int NumChars = GUI__GetNumChars(pText);
@@ -529,7 +529,7 @@ void EDIT_GetText(EDIT_Handle hObj, char *sDest, int MaxLen) {
 	}
 }
 int32_t  EDIT_GetValue(EDIT_Handle hObj) {
-	EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+	auto pObj = (EDIT_Obj *)hObj;
 	int32_t r = 0;
 	if (hObj) {
 
@@ -539,7 +539,7 @@ int32_t  EDIT_GetValue(EDIT_Handle hObj) {
 	return r;
 }
 void EDIT_SetValue(EDIT_Handle hObj, int32_t Value) {
-	EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+	auto pObj = (EDIT_Obj *)hObj;
 	if (hObj) {
 		/* Put in min/max range */
 		if (Value < pObj->Min)
@@ -557,7 +557,7 @@ void EDIT_SetValue(EDIT_Handle hObj, int32_t Value) {
 }
 void EDIT_SetMaxLen(EDIT_Handle  hObj, int MaxLen) {
 	if (hObj) {
-		EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+		auto pObj = (EDIT_Obj *)hObj;
 		if (MaxLen != pObj->MaxLen) {
 			if (MaxLen < pObj->MaxLen) {
 				if (pObj->pText) {
@@ -578,7 +578,7 @@ void EDIT_SetMaxLen(EDIT_Handle  hObj, int MaxLen) {
 	}
 }
 void EDIT_SetTextAlign(EDIT_Handle hObj, int Align) {
-	EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+	auto pObj = (EDIT_Obj *)hObj;
 	if (hObj == 0)
 		return;
 	if (pObj) {
@@ -607,7 +607,7 @@ EDIT_Handle EDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HW
 
 int EDIT_GetNumChars(EDIT_Handle hObj) {
 	if (hObj) {
-		EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+		auto pObj = (EDIT_Obj *)hObj;
 		if (pObj->pText) {
 			return GUI__GetNumChars(pObj->pText);
 		}
@@ -617,7 +617,7 @@ int EDIT_GetNumChars(EDIT_Handle hObj) {
 
 void EDIT_SetCursorAtChar(EDIT_Handle hObj, int Pos) {
 	if (hObj) {
-		EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+		auto pObj = (EDIT_Obj *)hObj;
 		EDIT__SetCursorPos(pObj, Pos);
 		WM_Invalidate(hObj);
 	}
@@ -626,7 +626,7 @@ void EDIT_SetCursorAtChar(EDIT_Handle hObj, int Pos) {
 int EDIT_SetInsertMode(EDIT_Handle hObj, int OnOff) {
 	int PrevMode = 0;
 	if (hObj) {
-		EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+		auto pObj = (EDIT_Obj *)hObj;
 		PrevMode = pObj->EditMode;
 		pObj->EditMode = OnOff ? GUI_EDIT_MODE_INSERT : GUI_EDIT_MODE_OVERWRITE;
 	}
@@ -635,21 +635,21 @@ int EDIT_SetInsertMode(EDIT_Handle hObj, int OnOff) {
 
 void EDIT_SetpfAddKeyEx(EDIT_Handle hObj, tEDIT_AddKeyEx *pfAddKeyEx) {
 	if (hObj) {
-		EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+		auto pObj = (EDIT_Obj *)hObj;
 		pObj->pfAddKeyEx = pfAddKeyEx;
 	}
 }
 
 void EDIT_SetpfUpdateBuffer(EDIT_Handle hObj, tEDIT_UpdateBuffer *pfUpdateBuffer) {
 	if (hObj) {
-		EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+		auto pObj = (EDIT_Obj *)hObj;
 		pObj->pfUpdateBuffer = pfUpdateBuffer;
 	}
 }
 
 void EDIT_SetSel(EDIT_Handle hObj, int FirstChar, int LastChar) {
 	if (hObj) {
-		EDIT_Obj *pObj = (EDIT_Obj *)hObj;
+		auto pObj = (EDIT_Obj *)hObj;
 		if (FirstChar == -1) {
 			pObj->SelSize = 0;
 		}

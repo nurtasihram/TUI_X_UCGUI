@@ -1542,15 +1542,15 @@ const GUI_CHARINFO GUI_Font13_1_CharInfo[96] = {
   ,{   6,   6,  1, acFont13_1_00FF } /* code 00FF */
 };
 
-extern const GUI_FONT_PROP GUI_Font13ASCII_Prop1;
-const GUI_FONT_PROP GUI_Font13_1_Prop1 = {
+extern const FONT_PROP GUI_Font13ASCII_Prop1;
+const FONT_PROP GUI_Font13_1_Prop1 = {
    160                         /* first character               */
   ,255                         /* last character                */
   ,&GUI_Font13_1_CharInfo[0] /* address of first character    */
-  ,&GUI_Font13ASCII_Prop1                         /* pointer to next GUI_FONT_PROP */
+  ,&GUI_Font13ASCII_Prop1                         /* pointer to next FONT_PROP */
 };
 
-const GUI_FONT GUI_Font13_1 = {
+CFONT GUI_Font13_1 = {
    GUI_FONTTYPE_PROP /* type of font    */
   ,13                /* height of font  */
   ,13                /* space of font y */

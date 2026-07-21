@@ -1,8 +1,8 @@
 ﻿#include "GUI_Private.h"
 
 
-static void  _DrawBitLine1BPP(int x, int y, uint8_t const *p, int Diff, int xsize, const RGB_COLOR *pTrans) {
-	RGB_COLOR Index0 = pTrans[0], Index1 = pTrans[1];
+static void  _DrawBitLine1BPP(int x, int y, uint8_t const *p, int Diff, int xsize, const RGBC *pTrans) {
+	RGBC Index0 = pTrans[0], Index1 = pTrans[1];
 	x += Diff;
 	if (GUI_Context.DrawMode & DRAWMODE_TRANS)
 		do {
@@ -22,8 +22,8 @@ static void  _DrawBitLine1BPP(int x, int y, uint8_t const *p, int Diff, int xsiz
 		}
 	} while (--xsize);
 }
-static void  _DrawBitLine2BPP(int x, int y, uint8_t const *p, int Diff, int xsize, const RGB_COLOR *pTrans) {
-	RGB_COLOR Pixels = *p;
+static void  _DrawBitLine2BPP(int x, int y, uint8_t const *p, int Diff, int xsize, const RGBC *pTrans) {
+	RGBC Pixels = *p;
 	int CurrentPixel = Diff;
 	x += Diff;
 	if (GUI_Context.DrawMode & DRAWMODE_TRANS) {
@@ -32,7 +32,7 @@ static void  _DrawBitLine2BPP(int x, int y, uint8_t const *p, int Diff, int xsiz
 				int Shift = (3 - CurrentPixel) << 1;
 				int Index = (Pixels & (0xC0 >> (6 - Shift))) >> Shift;
 				if (Index) {
-					RGB_COLOR PixelIndex = *(pTrans + Index);
+					RGBC PixelIndex = *(pTrans + Index);
 					LCD_L0_SetPixel(x, y, PixelIndex);
 				}
 				x++;
@@ -58,7 +58,7 @@ static void  _DrawBitLine2BPP(int x, int y, uint8_t const *p, int Diff, int xsiz
 		do {
 			int Shift = (3 - CurrentPixel) << 1;
 			int Index = (Pixels & (0xC0 >> (6 - Shift))) >> Shift;
-			RGB_COLOR PixelIndex = *(pTrans + Index);
+			RGBC PixelIndex = *(pTrans + Index);
 			LCD_L0_SetPixel(x++, y, PixelIndex);
 			if (++CurrentPixel == 4) {
 				CurrentPixel = 0;
@@ -75,8 +75,8 @@ static void  _DrawBitLine2BPP(int x, int y, uint8_t const *p, int Diff, int xsiz
 		}
 	} while (--xsize);
 }
-static void  _DrawBitLine4BPP(int x, int y, uint8_t const *p, int Diff, int xsize, const RGB_COLOR *pTrans) {
-	RGB_COLOR Pixels = *p;
+static void  _DrawBitLine4BPP(int x, int y, uint8_t const *p, int Diff, int xsize, const RGBC *pTrans) {
+	RGBC Pixels = *p;
 	int CurrentPixel = Diff;
 	x += Diff;
 	if (GUI_Context.DrawMode & DRAWMODE_TRANS)
@@ -85,7 +85,7 @@ static void  _DrawBitLine4BPP(int x, int y, uint8_t const *p, int Diff, int xsiz
 				int Shift = (1 - CurrentPixel) << 2;
 				int Index = (Pixels & (0xF0 >> (4 - Shift))) >> Shift;
 				if (Index) {
-					RGB_COLOR PixelIndex = *(pTrans + Index);
+					RGBC PixelIndex = *(pTrans + Index);
 					LCD_L0_SetPixel(x, y, PixelIndex);
 				}
 				x++;
@@ -109,7 +109,7 @@ static void  _DrawBitLine4BPP(int x, int y, uint8_t const *p, int Diff, int xsiz
 		do {
 			int Shift = (1 - CurrentPixel) << 2;
 			int Index = (Pixels & (0xF0 >> (4 - Shift))) >> Shift;
-			RGB_COLOR PixelIndex = *(pTrans + Index);
+			RGBC PixelIndex = *(pTrans + Index);
 			LCD_L0_SetPixel(x++, y, PixelIndex);
 			if (++CurrentPixel == 2) {
 				CurrentPixel = 0;
@@ -128,8 +128,8 @@ static void  _DrawBitLine4BPP(int x, int y, uint8_t const *p, int Diff, int xsiz
 
 }
 
-static void  _DrawBitLine8BPP(int x, int y, uint8_t const *p, int xsize, const RGB_COLOR *pTrans) {
-	RGB_COLOR Pixel;
+static void  _DrawBitLine8BPP(int x, int y, uint8_t const *p, int xsize, const RGBC *pTrans) {
+	RGBC Pixel;
 	if (GUI_Context.DrawMode & DRAWMODE_TRANS) {
 		if (pTrans)
 			for (; xsize--; x++, p++) {
@@ -149,8 +149,8 @@ static void  _DrawBitLine8BPP(int x, int y, uint8_t const *p, int xsize, const R
 	else for (; xsize--; x++, p++)
 		LCD_L0_SetPixel(x, y, *p);
 }
-static void  DrawBitLine16BPP(int x, int y, uint16_t const *p, int xsize, const RGB_COLOR *pTrans) {
-	RGB_COLOR pixel;
+static void  DrawBitLine16BPP(int x, int y, uint16_t const *p, int xsize, const RGBC *pTrans) {
+	RGBC pixel;
 	if (GUI_Context.DrawMode & DRAWMODE_TRANS)
 		if (pTrans)
 			for (; xsize--; x++, p++) {
@@ -172,8 +172,8 @@ static void  DrawBitLine16BPP(int x, int y, uint16_t const *p, int xsize, const 
 		LCD_L0_SetPixel(x, y, *p);
 }
 
-static void _DrawBitLine24BPP(int x, int y, RGB_COLOR const *p, int xsize, const RGB_COLOR *pTrans) {
-	RGB_COLOR pixel;
+static void _DrawBitLine24BPP(int x, int y, RGBC const *p, int xsize, const RGBC *pTrans) {
+	RGBC pixel;
 	if (GUI_Context.DrawMode & DRAWMODE_TRANS)
 		for (; xsize--; x++, p++) {
 			pixel = *p;
@@ -189,7 +189,7 @@ void LCD_L0_DrawBitmap(int x0, int y0,
 					   int BitsPerPixel,
 					   int BytesPerLine,
 					   const uint8_t *pData, int Diff,
-					   const RGB_COLOR *pTrans) {
+					   const RGBC *pTrans) {
 	int y1 = y0 + ysize;
 	switch (BitsPerPixel) {
 		case 1:
@@ -214,7 +214,7 @@ void LCD_L0_DrawBitmap(int x0, int y0,
 			break;
 		case 24:
 			for (; y0 < y1; y0++, pData += BytesPerLine)
-				_DrawBitLine24BPP(x0, y0, (const RGB_COLOR *)pData, xsize, pTrans);
+				_DrawBitLine24BPP(x0, y0, (const RGBC *)pData, xsize, pTrans);
 			break;
 	}
 }

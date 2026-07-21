@@ -21,10 +21,10 @@ typedef struct {
 
 struct MENU_Obj : public WIDGET {
 	struct Properties {
-		RGB_COLOR aTextColor[5];
-		RGB_COLOR aBkColor[5];
+		RGBC aTextColor[5];
+		RGBC aBkColor[5];
 		uint8_t aBorder[4];
-		const GUI_FONT *pFont;
+		PCFONT pFont;
 	} static DefaultProps;
 	Properties Props;
 	GUI_ARRAY   ItemArray;

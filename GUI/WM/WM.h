@@ -142,9 +142,9 @@ The following is the list of windows messages.
 
 typedef uintptr_t WM_PARAM;
 
-typedef struct {
+struct WM_KEY_INFO {
 	int16_t Key, PressedCnt;
-} WM_KEY_INFO;
+};
 
 struct WM_SCROLL_STATE {
 	int16_t NumItems = 0, v = 0, PageSize = 0;
@@ -277,13 +277,13 @@ WM_HWIN WM_GetScrollbarV(WM_HWIN hWin);
 WM_HWIN WM_GetScrollbarH(WM_HWIN hWin);
 WM_HWIN WM_GetScrollPartner(WM_HWIN hWin);
 WM_HWIN WM_GetClientWindow(WM_HWIN hObj);
-RGB_COLOR WM_GetBkColor(WM_HWIN hObj);
+RGBC WM_GetBkColor(WM_HWIN hObj);
 
 /* Change Z-Order of windows */
 void WM_BringToBottom(WM_HWIN hWin);
 void WM_BringToTop(WM_HWIN hWin);
 
-RGB_COLOR WM_SetDesktopColor(RGB_COLOR Color);
+RGBC WM_SetDesktopColor(RGBC Color);
 
 /* Select window used for drawing operations */
 WM_HWIN WM_SelectWindow(WM_HWIN  hWin);

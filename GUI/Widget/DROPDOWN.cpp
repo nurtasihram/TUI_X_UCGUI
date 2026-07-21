@@ -58,7 +58,7 @@ static int _Tolower(int Key) {
 }
 static void _SelectByKey(DROPDOWN_Handle hObj, int Key) {
 	int i;
-	DROPDOWN_Obj *pObj = (DROPDOWN_Obj *)hObj;
+	auto pObj = (DROPDOWN_Obj *)hObj;
 	Key = _Tolower(Key);
 	for (i = 0; i < _GetNumItems(pObj); i++) {
 		char c = _Tolower(*_GetpItem(pObj, i));
@@ -148,7 +148,7 @@ static void DROPDOWN__AdjustHeight(DROPDOWN_Obj *pObj) {
 	WM_SetSize(pObj, WM__GetWindowSizeX(pObj), Height);
 }
 static WM_PARAM _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
-	DROPDOWN_Obj *pObj = (DROPDOWN_Obj *)hWin;
+	auto pObj = (DROPDOWN_Obj *)hWin;
 	char IsExpandedBeforeMsg = (pObj->hListWin && WM_IsVisible(pObj->hListWin)) ? 1 : 0;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -205,7 +205,7 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, -1, hParent, WinFlags, _DROPDOWN_Callback,
 								  sizeof(DROPDOWN_Obj) - sizeof(WM_Obj));
 	if (hObj) {
-		DROPDOWN_Obj *pObj = (DROPDOWN_Obj *)hObj;
+		auto pObj = (DROPDOWN_Obj *)hObj;
 		/* Init sub-classes */
 		GUI_ARRAY_CREATE(&pObj->Handles);
 		/* init widget specific variables */
@@ -322,7 +322,7 @@ int DROPDOWN_GetNumItems(DROPDOWN_Handle hObj) {
 	}
 	return r;
 }
-void DROPDOWN_SetFont(DROPDOWN_Handle hObj, const GUI_FONT *pfont) {
+void DROPDOWN_SetFont(DROPDOWN_Handle hObj, PCFONT pfont) {
 	int OldHeight;
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
@@ -342,7 +342,7 @@ void DROPDOWN_SetFont(DROPDOWN_Handle hObj, const GUI_FONT *pfont) {
 
 	}
 }
-void DROPDOWN_SetBkColor(DROPDOWN_Handle hObj, unsigned int Index, RGB_COLOR color) {
+void DROPDOWN_SetBkColor(DROPDOWN_Handle hObj, unsigned int Index, RGBC color) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
@@ -355,7 +355,7 @@ void DROPDOWN_SetBkColor(DROPDOWN_Handle hObj, unsigned int Index, RGB_COLOR col
 		}
 	}
 }
-void DROPDOWN_SetTextColor(DROPDOWN_Handle hObj, unsigned int Index, RGB_COLOR color) {
+void DROPDOWN_SetTextColor(DROPDOWN_Handle hObj, unsigned int Index, RGBC color) {
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
@@ -466,7 +466,7 @@ void DROPDOWN_InsertString(DROPDOWN_Handle hObj, const char *s, unsigned int Ind
 			WM_HMEM hItem;
 			hItem = GUI_ARRAY_InsertItem(&pObj->Handles, Index, GUI__strlen(s) + 1);
 			if (hItem) {
-				char *pBuffer = (char *)(hItem);
+				auto pBuffer = (char *)(hItem);
 				GUI__strcpy(pBuffer, s);
 			}
 			WM_Invalidate(hObj);
@@ -486,7 +486,7 @@ void DROPDOWN_InsertString(DROPDOWN_Handle hObj, const char *s, unsigned int Ind
 
 void DROPDOWN_SetItemSpacing(DROPDOWN_Handle hObj, unsigned Value) {
 	if (hObj) {
-		DROPDOWN_Obj *pObj = (DROPDOWN_Obj *)hObj;
+		auto pObj = (DROPDOWN_Obj *)hObj;
 		pObj->ItemSpacing = Value;
 		if (pObj->hListWin) {
 			LISTBOX_SetItemSpacing(pObj->hListWin, Value);
@@ -497,7 +497,7 @@ void DROPDOWN_SetItemSpacing(DROPDOWN_Handle hObj, unsigned Value) {
 unsigned DROPDOWN_GetItemSpacing(DROPDOWN_Handle hObj) {
 	unsigned Value = 0;
 	if (hObj) {
-		DROPDOWN_Obj *pObj = (DROPDOWN_Obj *)hObj;
+		auto pObj = (DROPDOWN_Obj *)hObj;
 		Value = pObj->ItemSpacing;
 
 	}

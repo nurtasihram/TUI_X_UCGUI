@@ -42,7 +42,7 @@ void LCD_SetPixel(int x, int y, int ColorIndex) {
 	LCDDEV_L0_SetPixel(x, y, ColorIndex);
 }
 
-RGB_COLOR LCD_GetPixel(int x, int y) {
+RGBC LCD_GetPixel(int x, int y) {
 	GUI_RECT r;
 	LCDDEV_L0_GetRect(&r);
 	if (x < r.x0) {
@@ -100,7 +100,7 @@ void LCD_FillRect(int x0, int y0, int x1, int y1) {
 
 void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize,
 					int BitsPerPixel, int BytesPerLine,
-					const uint8_t  *pPixel, const RGB_COLOR *pTrans) {
+					const uint8_t  *pPixel, const RGBC *pTrans) {
 	uint8_t  Data = 0;
 	int x1, y1, Diff;
 	/* Handle rotation if necessary */

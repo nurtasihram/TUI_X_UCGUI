@@ -1,6 +1,6 @@
 #include "GUI_Private.h"
 
-int GUI_GetBitmapPixel(const GUI_BITMAP  * pBMP, unsigned x, unsigned y) {
+int GUI_GetBitmapPixel(PCBITMAP pBMP, unsigned x, unsigned y) {
   unsigned Off, Value;
   switch (pBMP->BitsPerPixel) {
   case 1:

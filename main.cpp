@@ -7,7 +7,7 @@ static WM_HWIN _hMemDevFrame, _hMemDevPane;
 static WM_HWIN _hNoMemDevFrame, _hNoMemDevPane;
 static int _MemDevPhase;
 
-const RGB_COLOR ColorsSmilie0[] = { RGB_WHITE, RGB_BLACK, RGB_RED };
+const RGBC ColorsSmilie0[] = { RGB_WHITE, RGB_BLACK, RGB_RED };
 const GUI_LOGPALETTE PalSmilie0 = { 3, 1, &ColorsSmilie0[0] };
 const unsigned char acSmilie0[] = {
 ________,XXXXXXXX,XX______,________,
@@ -29,7 +29,7 @@ const GUI_BITMAP bmSmilie0 = {
 	/* BitsPerPixel */ 2,
 	acSmilie0, &PalSmilie0 };
 
-const RGB_COLOR ColorsSmilie1[] = { RGB_WHITE, RGB_BLACK, RGB_YELLOW };
+const RGBC ColorsSmilie1[] = { RGB_WHITE, RGB_BLACK, RGB_YELLOW };
 const GUI_LOGPALETTE PalSmilie1 = { 3, 1, &ColorsSmilie1[0] };
 const unsigned char acSmilie1[] = {
 ________,XXXXXXXX,XX______,________,
@@ -110,8 +110,8 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 		{
 			int ColorIndex = 0;
 			char acBuffer[100];
-			RGB_COLOR aColor[4] = { RGB_BLACK, RGB_WHITE, RGB_WHITE, RGB_GRAY };
-			RGB_COLOR aBkColor[4] = { RGB_WHITE, RGB_GRAY, RGB_DARKBLUE, RGB_GRAYL(0xC0) };
+			RGBC aColor[4] = { RGB_BLACK, RGB_WHITE, RGB_WHITE, RGB_GRAY };
+			RGBC aBkColor[4] = { RGB_WHITE, RGB_GRAY, RGB_DARKBLUE, RGB_GRAYL(0xC0) };
 			bool IsDisabled = LISTBOX_GetItemDisabled(pDrawItemInfo->hWin, pDrawItemInfo->ItemIndex);
 			bool IsSelected = LISTBOX_GetItemSel(hWin, Index);
 			int MultiSel = LISTBOX_GetMulti(hWin);

@@ -8,15 +8,15 @@
 struct HEADER_COLUMN {
 	int16_t Width;
 	TEXTALIGN Align;
-	WM_HMEM hDrawObj;
+	GUI_DRAW *pDrawObj;
 	char acText[1];
 };
 
 struct HEADER_Obj : public WIDGET {
 	struct Properties {
-		const GUI_FONT *pFont{ &GUI_Font13_1 };
-		RGB_COLOR BkColor{ RGB_GRAYL(0xAA) };
-		RGB_COLOR TextColor{ RGB_BLACK };
+		PCFONT pFont{ &GUI_Font13_1 };
+		RGBC BkColor{ RGB_GRAYL(0xAA) };
+		RGBC TextColor{ RGB_BLACK };
 	} static DefaultProps;
 	Properties Props;
 	GUI_ARRAY Columns;
@@ -25,4 +25,4 @@ struct HEADER_Obj : public WIDGET {
 	uint16_t ScrollPos = 0;
 };
 
-void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW_HANDLE hDrawObj);
+void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW *pDrawObj);
