@@ -1,6 +1,6 @@
 #pragma once
 
-enum BIT_BPP_1 : uint8_t {
+enum BITS_BPP1 : uint8_t {
 	 ________________ = 0x00,
 	 ______________XX = 0x01,
 	 ____________XX__ = 0x02,
@@ -258,10 +258,9 @@ enum BIT_BPP_1 : uint8_t {
 	 XXXXXXXXXXXXXX__ = 0xfe,
 	 XXXXXXXXXXXXXXXX = 0xff
 };
+using BM_BPP1 = const BITS_BPP1;
 
-// Soguz
-
-enum BIT_BPP_4 : uint8_t {
+enum BITS_BPP2 : uint8_t {
 	 ________ = 0x00,
 	 ______XX = 0x01,
 	 ______oo = 0x02,
@@ -519,3 +518,4 @@ enum BIT_BPP_4 : uint8_t {
 	 ddddddoo = 0xFE,
 	 dddddddd = 0xFF
 };
+using BM_BPP2 = const BITS_BPP2;

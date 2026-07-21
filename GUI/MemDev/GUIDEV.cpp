@@ -111,12 +111,10 @@ void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 	unsigned int BitsPerPixel = pDev->BitsPerPixel;
 	int BytesPerPixel;
 	/* Calculate BytesPerPixel correctly for 24-bit (uses 4 bytes per pixel) */
-	if (BitsPerPixel == 24) {
+	if (BitsPerPixel == 24)
 		BytesPerPixel = 4;
-	}
-	else {
+	else
 		BytesPerPixel = BitsPerPixel >> 3;
-	}
 	auto pData = (uint8_t *)(pDev + 1);
 	LCD_DrawBitmap(x, y, pDev->XSize, YSize, BitsPerPixel, BytesPerLine, pData, nullptr);
 }

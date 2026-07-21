@@ -77,14 +77,6 @@ Dynamic linkage pointers reduces configuration hassles.
 */
 typedef int  GUI_tfTimer(void);
 
-extern const uint8_t  GUI_Pixels_ArrowS[45];
-extern const uint8_t  GUI_Pixels_ArrowM[60];
-extern const uint8_t  GUI_Pixels_ArrowL[150];
-extern const uint8_t  GUI_Pixels_CrossS[33];
-extern const uint8_t  GUI_Pixels_CrossM[126];
-extern const uint8_t  GUI_Pixels_CrossL[248];
-extern const uint8_t  GUI_PixelsHeaderM[5 * 17];
-
 extern const GUI_LOGPALETTE GUI_CursorPal;
 extern const GUI_LOGPALETTE GUI_CursorPalI;
 

@@ -1,6 +1,6 @@
 #include "GUI_Protected.h"
 
-const uint8_t GUI_Pixels_CrossS[]{
+BM_BPP2 GUI_Pixels_CrossS[]{
 ________,XXXXXX__,________,
 ________,XXooXX__,________,
 ________,XXooXX__,________,

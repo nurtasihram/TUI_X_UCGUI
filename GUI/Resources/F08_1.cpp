@@ -1,6 +1,6 @@
 #include "GUI.h"
 
-const uint8_t acFont8_1_160[]{ /* code 160 */
+BM_BPP1 acFont8_1_160[]{ /* code 160 */
 	________________,
 	________________,
 	________________,
@@ -9,7 +9,7 @@ const uint8_t acFont8_1_160[]{ /* code 160 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont8_1_161[]{ /* code 161 */
+BM_BPP1 acFont8_1_161[]{ /* code 161 */
 	________________,
 	__XX____________,
 	________________,
@@ -18,7 +18,7 @@ const uint8_t acFont8_1_161[]{ /* code 161 */
 	__XX____________,
 	__XX____________,
 	__XX____________};
-const uint8_t acFont8_1_162[]{ /* code 162 */
+BM_BPP1 acFont8_1_162[]{ /* code 162 */
 	________________,
 	____XX__________,
 	__XXXXXX________,
@@ -27,7 +27,7 @@ const uint8_t acFont8_1_162[]{ /* code 162 */
 	XX__XX__XX______,
 	__XXXXXX________,
 	____XX__________};
-const uint8_t acFont8_1_163[]{ /* code 163 */
+BM_BPP1 acFont8_1_163[]{ /* code 163 */
 	____XXXX________,
 	__XX____________,
 	__XX____________,
@@ -36,7 +36,7 @@ const uint8_t acFont8_1_163[]{ /* code 163 */
 	__XX____XX______,
 	XX__XXXX________,
 	________________};
-const uint8_t acFont8_1_164[]{ /* code 164 */
+BM_BPP1 acFont8_1_164[]{ /* code 164 */
 	________________,
 	________________,
 	XX______XX______,
@@ -45,7 +45,7 @@ const uint8_t acFont8_1_164[]{ /* code 164 */
 	__XXXXXX________,
 	XX______XX______,
 	________________};
-const uint8_t acFont8_1_165[]{ /* code 165 */
+BM_BPP1 acFont8_1_165[]{ /* code 165 */
 	XX______XX______,
 	__XX__XX________,
 	XXXXXXXXXX______,
@@ -54,7 +54,7 @@ const uint8_t acFont8_1_165[]{ /* code 165 */
 	____XX__________,
 	____XX__________,
 	________________};
-const uint8_t acFont8_1_166[]{ /* code 166 */
+BM_BPP1 acFont8_1_166[]{ /* code 166 */
 	____XX__________,
 	____XX__________,
 	____XX__________,
@@ -63,7 +63,7 @@ const uint8_t acFont8_1_166[]{ /* code 166 */
 	____XX__________,
 	____XX__________,
 	________________};
-const uint8_t acFont8_1_167[]{ /* code 167 */
+BM_BPP1 acFont8_1_167[]{ /* code 167 */
 	____XXXX________,
 	__XX____XX______,
 	____XX__________,
@@ -72,7 +72,7 @@ const uint8_t acFont8_1_167[]{ /* code 167 */
 	XX____XX________,
 	__XXXX__________,
 	________________};
-const uint8_t acFont8_1_168[]{ /* code 168 */
+BM_BPP1 acFont8_1_168[]{ /* code 168 */
 	XX______XX______,
 	________________,
 	________________,
@@ -81,7 +81,7 @@ const uint8_t acFont8_1_168[]{ /* code 168 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont8_1_169[]{ /* code 169 */
+BM_BPP1 acFont8_1_169[]{ /* code 169 */
 	XXXXXXXXXX______,
 	XX______XX______,
 	XX__XX__XX______,
@@ -90,7 +90,7 @@ const uint8_t acFont8_1_169[]{ /* code 169 */
 	XX______XX______,
 	XXXXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_170[]{ /* code 170 */
+BM_BPP1 acFont8_1_170[]{ /* code 170 */
 	__XXXXXX________,
 	________XX______,
 	__XXXXXXXX______,
@@ -99,7 +99,7 @@ const uint8_t acFont8_1_170[]{ /* code 170 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont8_1_171[]{ /* code 171 */
+BM_BPP1 acFont8_1_171[]{ /* code 171 */
 	________________,
 	____XX__XX______,
 	__XX__XX________,
@@ -108,7 +108,7 @@ const uint8_t acFont8_1_171[]{ /* code 171 */
 	____XX__XX______,
 	________________,
 	________________};
-const uint8_t acFont8_1_172[]{ /* code 172 */
+BM_BPP1 acFont8_1_172[]{ /* code 172 */
 	________________,
 	________________,
 	________________,
@@ -117,7 +117,7 @@ const uint8_t acFont8_1_172[]{ /* code 172 */
 	________XX______,
 	________________,
 	________________};
-const uint8_t acFont8_1_173[]{ /* code 173 */
+BM_BPP1 acFont8_1_173[]{ /* code 173 */
 	________________,
 	________________,
 	________________,
@@ -126,7 +126,7 @@ const uint8_t acFont8_1_173[]{ /* code 173 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont8_1_174[]{ /* code 174 */
+BM_BPP1 acFont8_1_174[]{ /* code 174 */
 	XXXXXXXXXX______,
 	XX______XX______,
 	XX__XX__XX______,
@@ -135,7 +135,7 @@ const uint8_t acFont8_1_174[]{ /* code 174 */
 	XX__XX__XX______,
 	XXXXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_175[]{ /* code 175 */
+BM_BPP1 acFont8_1_175[]{ /* code 175 */
 	XXXXXXXXXX______,
 	________________,
 	________________,
@@ -144,7 +144,7 @@ const uint8_t acFont8_1_175[]{ /* code 175 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont8_1_176[]{ /* code 176 */
+BM_BPP1 acFont8_1_176[]{ /* code 176 */
 	____XX__________,
 	__XX__XX________,
 	____XX__________,
@@ -153,7 +153,7 @@ const uint8_t acFont8_1_176[]{ /* code 176 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont8_1_177[]{ /* code 177 */
+BM_BPP1 acFont8_1_177[]{ /* code 177 */
 	________________,
 	____XX__________,
 	__XXXXXX________,
@@ -162,7 +162,7 @@ const uint8_t acFont8_1_177[]{ /* code 177 */
 	__XXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont8_1_178[]{ /* code 178 */
+BM_BPP1 acFont8_1_178[]{ /* code 178 */
 	__XXXX__________,
 	XX____XX________,
 	____XX__________,
@@ -171,7 +171,7 @@ const uint8_t acFont8_1_178[]{ /* code 178 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont8_1_179[]{ /* code 179 */
+BM_BPP1 acFont8_1_179[]{ /* code 179 */
 	XXXXXX__________,
 	______XX________,
 	__XXXX__________,
@@ -180,7 +180,7 @@ const uint8_t acFont8_1_179[]{ /* code 179 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont8_1_180[]{ /* code 180 */
+BM_BPP1 acFont8_1_180[]{ /* code 180 */
 	______XXXX______,
 	____XX__________,
 	________________,
@@ -189,7 +189,7 @@ const uint8_t acFont8_1_180[]{ /* code 180 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont8_1_181[]{ /* code 181 */
+BM_BPP1 acFont8_1_181[]{ /* code 181 */
 	________________,
 	________________,
 	XX______XX______,
@@ -198,7 +198,7 @@ const uint8_t acFont8_1_181[]{ /* code 181 */
 	XXXX____XX______,
 	XX__XXXX________,
 	XX______________};
-const uint8_t acFont8_1_182[]{ /* code 182 */
+BM_BPP1 acFont8_1_182[]{ /* code 182 */
 	__XXXXXXXX______,
 	XX____XXXX______,
 	XX____XXXX______,
@@ -207,7 +207,7 @@ const uint8_t acFont8_1_182[]{ /* code 182 */
 	______XXXX______,
 	______XXXX______,
 	________________};
-const uint8_t acFont8_1_183[]{ /* code 183 */
+BM_BPP1 acFont8_1_183[]{ /* code 183 */
 	________________,
 	________________,
 	________________,
@@ -216,7 +216,7 @@ const uint8_t acFont8_1_183[]{ /* code 183 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont8_1_184[]{ /* code 184 */
+BM_BPP1 acFont8_1_184[]{ /* code 184 */
 	________________,
 	________________,
 	________________,
@@ -225,7 +225,7 @@ const uint8_t acFont8_1_184[]{ /* code 184 */
 	________________,
 	____XX__________,
 	__XXXX__________};
-const uint8_t acFont8_1_185[]{ /* code 185 */
+BM_BPP1 acFont8_1_185[]{ /* code 185 */
 	__XX____________,
 	XXXX____________,
 	__XX____________,
@@ -234,7 +234,7 @@ const uint8_t acFont8_1_185[]{ /* code 185 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont8_1_186[]{ /* code 186 */
+BM_BPP1 acFont8_1_186[]{ /* code 186 */
 	__XXXXXX________,
 	XX______XX______,
 	XX______XX______,
@@ -243,7 +243,7 @@ const uint8_t acFont8_1_186[]{ /* code 186 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont8_1_187[]{ /* code 187 */
+BM_BPP1 acFont8_1_187[]{ /* code 187 */
 	________________,
 	XX__XX__________,
 	__XX__XX________,
@@ -252,7 +252,7 @@ const uint8_t acFont8_1_187[]{ /* code 187 */
 	XX__XX__________,
 	________________,
 	________________};
-const uint8_t acFont8_1_188[]{ /* code 188 */
+BM_BPP1 acFont8_1_188[]{ /* code 188 */
 	XX______XX______,
 	XX____XX________,
 	XX__XX__________,
@@ -261,7 +261,7 @@ const uint8_t acFont8_1_188[]{ /* code 188 */
 	__XX__XX________,
 	__XXXXXXXX______,
 	______XX________};
-const uint8_t acFont8_1_189[]{ /* code 189 */
+BM_BPP1 acFont8_1_189[]{ /* code 189 */
 	XX______XX______,
 	XX____XX________,
 	XX__XX__________,
@@ -270,7 +270,7 @@ const uint8_t acFont8_1_189[]{ /* code 189 */
 	________XX______,
 	______XX________,
 	____XXXXXX______};
-const uint8_t acFont8_1_190[]{ /* code 190 */
+BM_BPP1 acFont8_1_190[]{ /* code 190 */
 	XXXX____________,
 	__XX____________,
 	XXXX____________,
@@ -279,7 +279,7 @@ const uint8_t acFont8_1_190[]{ /* code 190 */
 	____XX__XX______,
 	____XXXXXX______,
 	________XX______};
-const uint8_t acFont8_1_191[]{ /* code 191 */
+BM_BPP1 acFont8_1_191[]{ /* code 191 */
 	________________,
 	____XX__________,
 	________________,
@@ -288,7 +288,7 @@ const uint8_t acFont8_1_191[]{ /* code 191 */
 	__XX____________,
 	XX______XX______,
 	__XXXXXX________};
-const uint8_t acFont8_1_192[]{ /* code 192 */
+BM_BPP1 acFont8_1_192[]{ /* code 192 */
 	________________,
 	____XX__________,
 	______XX________,
@@ -297,7 +297,7 @@ const uint8_t acFont8_1_192[]{ /* code 192 */
 	__XXXXXXXXXX____,
 	XX__________XX__,
 	XX__________XX__};
-const uint8_t acFont8_1_193[]{ /* code 193 */
+BM_BPP1 acFont8_1_193[]{ /* code 193 */
 	________________,
 	________XX______,
 	______XX________,
@@ -306,7 +306,7 @@ const uint8_t acFont8_1_193[]{ /* code 193 */
 	__XXXXXXXXXX____,
 	XX__________XX__,
 	XX__________XX__};
-const uint8_t acFont8_1_194[]{ /* code 194 */
+BM_BPP1 acFont8_1_194[]{ /* code 194 */
 	________________,
 	______XX________,
 	____XX__XX______,
@@ -315,7 +315,7 @@ const uint8_t acFont8_1_194[]{ /* code 194 */
 	__XXXXXXXXXX____,
 	XX__________XX__,
 	XX__________XX__};
-const uint8_t acFont8_1_195[]{ /* code 195 */
+BM_BPP1 acFont8_1_195[]{ /* code 195 */
 	________________,
 	____XXXX____XX__,
 	__XX____XXXX____,
@@ -324,7 +324,7 @@ const uint8_t acFont8_1_195[]{ /* code 195 */
 	__XXXXXXXXXX____,
 	XX__________XX__,
 	XX__________XX__};
-const uint8_t acFont8_1_196[]{ /* code 196 */
+BM_BPP1 acFont8_1_196[]{ /* code 196 */
 	________________,
 	__XX______XX____,
 	______XX________,
@@ -333,7 +333,7 @@ const uint8_t acFont8_1_196[]{ /* code 196 */
 	__XXXXXXXXXX____,
 	XX__________XX__,
 	XX__________XX__};
-const uint8_t acFont8_1_197[]{ /* code 197 */
+BM_BPP1 acFont8_1_197[]{ /* code 197 */
 	________________,
 	____XXXXXX______,
 	____XX__XX______,
@@ -342,7 +342,7 @@ const uint8_t acFont8_1_197[]{ /* code 197 */
 	__XXXXXXXXXX____,
 	XX__________XX__,
 	XX__________XX__};
-const uint8_t acFont8_1_198[]{ /* code 198 */
+BM_BPP1 acFont8_1_198[]{ /* code 198 */
 	________________,
 	______XXXXXXXX__,
 	____XX__XX______,
@@ -351,7 +351,7 @@ const uint8_t acFont8_1_198[]{ /* code 198 */
 	__XXXXXXXX______,
 	XX______XX______,
 	XX______XXXXXX__};
-const uint8_t acFont8_1_199[]{ /* code 199 */
+BM_BPP1 acFont8_1_199[]{ /* code 199 */
 	________________,
 	__XXXXXXXX______,
 	XX________XX____,
@@ -360,7 +360,7 @@ const uint8_t acFont8_1_199[]{ /* code 199 */
 	XX________XX____,
 	__XXXXXXXXXX____,
 	________XX______};
-const uint8_t acFont8_1_200[]{ /* code 200 */
+BM_BPP1 acFont8_1_200[]{ /* code 200 */
 	__XX____________,
 	XXXXXXXXXX______,
 	XX______________,
@@ -369,7 +369,7 @@ const uint8_t acFont8_1_200[]{ /* code 200 */
 	XX______________,
 	XX______________,
 	XXXXXXXXXX______};
-const uint8_t acFont8_1_201[]{ /* code 201 */
+BM_BPP1 acFont8_1_201[]{ /* code 201 */
 	______XX________,
 	XXXXXXXXXX______,
 	XX______________,
@@ -378,7 +378,7 @@ const uint8_t acFont8_1_201[]{ /* code 201 */
 	XX______________,
 	XX______________,
 	XXXXXXXXXX______};
-const uint8_t acFont8_1_202[]{ /* code 202 */
+BM_BPP1 acFont8_1_202[]{ /* code 202 */
 	__XXXXXX________,
 	XXXXXXXXXX______,
 	XX______________,
@@ -387,7 +387,7 @@ const uint8_t acFont8_1_202[]{ /* code 202 */
 	XX______________,
 	XX______________,
 	XXXXXXXXXX______};
-const uint8_t acFont8_1_203[]{ /* code 203 */
+BM_BPP1 acFont8_1_203[]{ /* code 203 */
 	__XX__XX________,
 	XXXXXXXXXX______,
 	XX______________,
@@ -396,7 +396,7 @@ const uint8_t acFont8_1_203[]{ /* code 203 */
 	XX______________,
 	XX______________,
 	XXXXXXXXXX______};
-const uint8_t acFont8_1_204[]{ /* code 204 */
+BM_BPP1 acFont8_1_204[]{ /* code 204 */
 	________________,
 	XX______________,
 	__XX____________,
@@ -405,7 +405,7 @@ const uint8_t acFont8_1_204[]{ /* code 204 */
 	XX______________,
 	XX______________,
 	________________};
-const uint8_t acFont8_1_205[]{ /* code 205 */
+BM_BPP1 acFont8_1_205[]{ /* code 205 */
 	________________,
 	__XX____________,
 	XX______________,
@@ -414,7 +414,7 @@ const uint8_t acFont8_1_205[]{ /* code 205 */
 	XX______________,
 	XX______________,
 	________________};
-const uint8_t acFont8_1_206[]{ /* code 206 */
+BM_BPP1 acFont8_1_206[]{ /* code 206 */
 	________________,
 	__XX____________,
 	XX__XX__________,
@@ -423,7 +423,7 @@ const uint8_t acFont8_1_206[]{ /* code 206 */
 	__XX____________,
 	__XX____________,
 	________________};
-const uint8_t acFont8_1_207[]{ /* code 207 */
+BM_BPP1 acFont8_1_207[]{ /* code 207 */
 	________________,
 	XX__XX__________,
 	________________,
@@ -432,7 +432,7 @@ const uint8_t acFont8_1_207[]{ /* code 207 */
 	__XX____________,
 	__XX____________,
 	________________};
-const uint8_t acFont8_1_208[]{ /* code 208 */
+BM_BPP1 acFont8_1_208[]{ /* code 208 */
 	__XXXXXXXX______,
 	__XX______XX____,
 	__XX________XX__,
@@ -441,7 +441,7 @@ const uint8_t acFont8_1_208[]{ /* code 208 */
 	__XX______XX____,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_209[]{ /* code 209 */
+BM_BPP1 acFont8_1_209[]{ /* code 209 */
 	__XX__XX________,
 	XX________XX____,
 	XXXX______XX____,
@@ -450,7 +450,7 @@ const uint8_t acFont8_1_209[]{ /* code 209 */
 	XX______XXXX____,
 	XX________XX____,
 	________________};
-const uint8_t acFont8_1_210[]{ /* code 210 */
+BM_BPP1 acFont8_1_210[]{ /* code 210 */
 	__XX____________,
 	____XX__________,
 	__XXXXXXXX______,
@@ -459,7 +459,7 @@ const uint8_t acFont8_1_210[]{ /* code 210 */
 	XX________XX____,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_211[]{ /* code 211 */
+BM_BPP1 acFont8_1_211[]{ /* code 211 */
 	________XX______,
 	______XX________,
 	__XXXXXXXX______,
@@ -468,7 +468,7 @@ const uint8_t acFont8_1_211[]{ /* code 211 */
 	XX________XX____,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_212[]{ /* code 212 */
+BM_BPP1 acFont8_1_212[]{ /* code 212 */
 	____XX__________,
 	__XX__XX________,
 	__XXXXXXXX______,
@@ -477,7 +477,7 @@ const uint8_t acFont8_1_212[]{ /* code 212 */
 	XX________XX____,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_213[]{ /* code 213 */
+BM_BPP1 acFont8_1_213[]{ /* code 213 */
 	____XX__XX______,
 	__XX__XX________,
 	__XXXXXXXX______,
@@ -486,7 +486,7 @@ const uint8_t acFont8_1_213[]{ /* code 213 */
 	XX________XX____,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_214[]{ /* code 214 */
+BM_BPP1 acFont8_1_214[]{ /* code 214 */
 	__XX____XX______,
 	________________,
 	__XXXXXXXX______,
@@ -495,7 +495,7 @@ const uint8_t acFont8_1_214[]{ /* code 214 */
 	XX________XX____,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_215[]{ /* code 215 */
+BM_BPP1 acFont8_1_215[]{ /* code 215 */
 	________________,
 	XX______XX______,
 	__XX__XX________,
@@ -504,7 +504,7 @@ const uint8_t acFont8_1_215[]{ /* code 215 */
 	XX______XX______,
 	________________,
 	________________};
-const uint8_t acFont8_1_216[]{ /* code 216 */
+BM_BPP1 acFont8_1_216[]{ /* code 216 */
 	____XXXXXX__XX__,
 	__XX______XX____,
 	XX______XX__XX__,
@@ -513,7 +513,7 @@ const uint8_t acFont8_1_216[]{ /* code 216 */
 	__XX______XX____,
 	XX__XXXXXX______,
 	________________};
-const uint8_t acFont8_1_217[]{ /* code 217 */
+BM_BPP1 acFont8_1_217[]{ /* code 217 */
 	____XX__________,
 	______XX________,
 	XX________XX____,
@@ -522,7 +522,7 @@ const uint8_t acFont8_1_217[]{ /* code 217 */
 	XX________XX____,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_218[]{ /* code 218 */
+BM_BPP1 acFont8_1_218[]{ /* code 218 */
 	______XX________,
 	____XX__________,
 	XX________XX____,
@@ -531,7 +531,7 @@ const uint8_t acFont8_1_218[]{ /* code 218 */
 	XX________XX____,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_219[]{ /* code 219 */
+BM_BPP1 acFont8_1_219[]{ /* code 219 */
 	____XX__________,
 	__XX__XX________,
 	XX________XX____,
@@ -540,7 +540,7 @@ const uint8_t acFont8_1_219[]{ /* code 219 */
 	XX________XX____,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_220[]{ /* code 220 */
+BM_BPP1 acFont8_1_220[]{ /* code 220 */
 	__XX____XX______,
 	________________,
 	XX________XX____,
@@ -549,7 +549,7 @@ const uint8_t acFont8_1_220[]{ /* code 220 */
 	XX________XX____,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_221[]{ /* code 221 */
+BM_BPP1 acFont8_1_221[]{ /* code 221 */
 	______XX________,
 	XX__XX______XX__,
 	__XX______XX____,
@@ -558,7 +558,7 @@ const uint8_t acFont8_1_221[]{ /* code 221 */
 	______XX________,
 	______XX________,
 	________________};
-const uint8_t acFont8_1_222[]{ /* code 222 */
+BM_BPP1 acFont8_1_222[]{ /* code 222 */
 	________________,
 	XX______________,
 	XXXXXXXXXX______,
@@ -567,7 +567,7 @@ const uint8_t acFont8_1_222[]{ /* code 222 */
 	XXXXXXXXXX______,
 	XX______________,
 	________________};
-const uint8_t acFont8_1_223[]{ /* code 223 */
+BM_BPP1 acFont8_1_223[]{ /* code 223 */
 	________________,
 	__XXXXXX________,
 	XX______XX______,
@@ -576,7 +576,7 @@ const uint8_t acFont8_1_223[]{ /* code 223 */
 	XX__XX____XX____,
 	XX____XXXX______,
 	________________};
-const uint8_t acFont8_1_224[]{ /* code 224 */
+BM_BPP1 acFont8_1_224[]{ /* code 224 */
 	____XX__________,
 	______XX________,
 	__XXXXXX________,
@@ -585,7 +585,7 @@ const uint8_t acFont8_1_224[]{ /* code 224 */
 	XX______XX______,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_225[]{ /* code 225 */
+BM_BPP1 acFont8_1_225[]{ /* code 225 */
 	______XX________,
 	____XX__________,
 	__XXXXXX________,
@@ -594,7 +594,7 @@ const uint8_t acFont8_1_225[]{ /* code 225 */
 	XX______XX______,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_226[]{ /* code 226 */
+BM_BPP1 acFont8_1_226[]{ /* code 226 */
 	____XX__________,
 	__XX__XX________,
 	__XXXXXX________,
@@ -603,7 +603,7 @@ const uint8_t acFont8_1_226[]{ /* code 226 */
 	XX______XX______,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_227[]{ /* code 227 */
+BM_BPP1 acFont8_1_227[]{ /* code 227 */
 	____XX__XX______,
 	__XX__XX________,
 	__XXXXXX________,
@@ -612,7 +612,7 @@ const uint8_t acFont8_1_227[]{ /* code 227 */
 	XX______XX______,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_228[]{ /* code 228 */
+BM_BPP1 acFont8_1_228[]{ /* code 228 */
 	__XX__XX________,
 	________________,
 	__XXXXXX________,
@@ -621,7 +621,7 @@ const uint8_t acFont8_1_228[]{ /* code 228 */
 	XX______XX______,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_229[]{ /* code 229 */
+BM_BPP1 acFont8_1_229[]{ /* code 229 */
 	__XXXXXX________,
 	__XX__XX________,
 	__XXXXXX________,
@@ -630,7 +630,7 @@ const uint8_t acFont8_1_229[]{ /* code 229 */
 	XX______XX______,
 	__XXXXXXXX______,
 	________________};
-const uint8_t acFont8_1_230[]{ /* code 230 */
+BM_BPP1 acFont8_1_230[]{ /* code 230 */
 	________________,________________,
 	__XXXXXX__XXXXXX,________________,
 	________XX______,XX______________,
@@ -639,7 +639,7 @@ const uint8_t acFont8_1_230[]{ /* code 230 */
 	XX______XX______,XX______________,
 	__XXXXXX__XXXXXX,________________,
 	________________,________________};
-const uint8_t acFont8_1_231[]{ /* code 231 */
+BM_BPP1 acFont8_1_231[]{ /* code 231 */
 	________________,
 	________________,
 	__XXXXXX________,
@@ -648,7 +648,7 @@ const uint8_t acFont8_1_231[]{ /* code 231 */
 	XX______XX______,
 	__XXXXXX________,
 	______XX________};
-const uint8_t acFont8_1_232[]{ /* code 232 */
+BM_BPP1 acFont8_1_232[]{ /* code 232 */
 	__XX____________,
 	____XX__________,
 	__XXXXXX________,
@@ -657,7 +657,7 @@ const uint8_t acFont8_1_232[]{ /* code 232 */
 	XX______________,
 	__XXXXXX________,
 	________________};
-const uint8_t acFont8_1_233[]{ /* code 233 */
+BM_BPP1 acFont8_1_233[]{ /* code 233 */
 	______XX________,
 	____XX__________,
 	__XXXXXX________,
@@ -666,7 +666,7 @@ const uint8_t acFont8_1_233[]{ /* code 233 */
 	XX______________,
 	__XXXXXX________,
 	________________};
-const uint8_t acFont8_1_234[]{ /* code 234 */
+BM_BPP1 acFont8_1_234[]{ /* code 234 */
 	____XX__________,
 	__XX__XX________,
 	__XXXXXX________,
@@ -675,7 +675,7 @@ const uint8_t acFont8_1_234[]{ /* code 234 */
 	XX______________,
 	__XXXXXX________,
 	________________};
-const uint8_t acFont8_1_235[]{ /* code 235 */
+BM_BPP1 acFont8_1_235[]{ /* code 235 */
 	__XX__XX________,
 	________________,
 	__XXXXXX________,
@@ -684,7 +684,7 @@ const uint8_t acFont8_1_235[]{ /* code 235 */
 	XX______________,
 	__XXXXXX________,
 	________________};
-const uint8_t acFont8_1_236[]{ /* code 236 */
+BM_BPP1 acFont8_1_236[]{ /* code 236 */
 	XX______________,
 	__XX____________,
 	________________,
@@ -693,7 +693,7 @@ const uint8_t acFont8_1_236[]{ /* code 236 */
 	XX______________,
 	XX______________,
 	________________};
-const uint8_t acFont8_1_237[]{ /* code 237 */
+BM_BPP1 acFont8_1_237[]{ /* code 237 */
 	__XX____________,
 	XX______________,
 	________________,
@@ -702,7 +702,7 @@ const uint8_t acFont8_1_237[]{ /* code 237 */
 	XX______________,
 	XX______________,
 	________________};
-const uint8_t acFont8_1_238[]{ /* code 238 */
+BM_BPP1 acFont8_1_238[]{ /* code 238 */
 	__XX____________,
 	XX__XX__________,
 	________________,
@@ -711,7 +711,7 @@ const uint8_t acFont8_1_238[]{ /* code 238 */
 	__XX____________,
 	__XX____________,
 	________________};
-const uint8_t acFont8_1_239[]{ /* code 239 */
+BM_BPP1 acFont8_1_239[]{ /* code 239 */
 	XX__XX__________,
 	________________,
 	__XX____________,
@@ -720,7 +720,7 @@ const uint8_t acFont8_1_239[]{ /* code 239 */
 	__XX____________,
 	__XX____________,
 	________________};
-const uint8_t acFont8_1_240[]{ /* code 240 */
+BM_BPP1 acFont8_1_240[]{ /* code 240 */
 	________________,
 	____XXXXXX______,
 	__XX__XX________,
@@ -729,7 +729,7 @@ const uint8_t acFont8_1_240[]{ /* code 240 */
 	XX______XX______,
 	__XXXXXX________,
 	________________};
-const uint8_t acFont8_1_241[]{ /* code 241 */
+BM_BPP1 acFont8_1_241[]{ /* code 241 */
 	____XX__XX______,
 	__XX__XX________,
 	XXXXXXXX________,
@@ -738,7 +738,7 @@ const uint8_t acFont8_1_241[]{ /* code 241 */
 	XX______XX______,
 	XX______XX______,
 	________________};
-const uint8_t acFont8_1_242[]{ /* code 242 */
+BM_BPP1 acFont8_1_242[]{ /* code 242 */
 	__XX____________,
 	____XX__________,
 	__XXXXXX________,
@@ -747,7 +747,7 @@ const uint8_t acFont8_1_242[]{ /* code 242 */
 	XX______XX______,
 	__XXXXXX________,
 	________________};
-const uint8_t acFont8_1_243[]{ /* code 243 */
+BM_BPP1 acFont8_1_243[]{ /* code 243 */
 	______XX________,
 	____XX__________,
 	__XXXXXX________,
@@ -756,7 +756,7 @@ const uint8_t acFont8_1_243[]{ /* code 243 */
 	XX______XX______,
 	__XXXXXX________,
 	________________};
-const uint8_t acFont8_1_244[]{ /* code 244 */
+BM_BPP1 acFont8_1_244[]{ /* code 244 */
 	____XX__________,
 	__XX__XX________,
 	__XXXXXX________,
@@ -765,7 +765,7 @@ const uint8_t acFont8_1_244[]{ /* code 244 */
 	XX______XX______,
 	__XXXXXX________,
 	________________};
-const uint8_t acFont8_1_245[]{ /* code 245 */
+BM_BPP1 acFont8_1_245[]{ /* code 245 */
 	____XX__XX______,
 	__XX__XX________,
 	__XXXXXX________,
@@ -774,7 +774,7 @@ const uint8_t acFont8_1_245[]{ /* code 245 */
 	XX______XX______,
 	__XXXXXX________,
 	________________};
-const uint8_t acFont8_1_246[]{ /* code 246 */
+BM_BPP1 acFont8_1_246[]{ /* code 246 */
 	__XX__XX________,
 	________________,
 	__XXXXXX________,
@@ -783,7 +783,7 @@ const uint8_t acFont8_1_246[]{ /* code 246 */
 	XX______XX______,
 	__XXXXXX________,
 	________________};
-const uint8_t acFont8_1_247[]{ /* code 247 */
+BM_BPP1 acFont8_1_247[]{ /* code 247 */
 	________________,
 	____XX__________,
 	________________,
@@ -792,7 +792,7 @@ const uint8_t acFont8_1_247[]{ /* code 247 */
 	____XX__________,
 	________________,
 	________________};
-const uint8_t acFont8_1_248[]{ /* code 248 */
+BM_BPP1 acFont8_1_248[]{ /* code 248 */
 	________________,
 	________________,
 	__XXXX__XX______,
@@ -801,7 +801,7 @@ const uint8_t acFont8_1_248[]{ /* code 248 */
 	XXXX____XX______,
 	XX__XXXX________,
 	________________};
-const uint8_t acFont8_1_249[]{ /* code 249 */
+BM_BPP1 acFont8_1_249[]{ /* code 249 */
 	__XX____________,
 	____XX__________,
 	________________,
@@ -810,7 +810,7 @@ const uint8_t acFont8_1_249[]{ /* code 249 */
 	XX____XXXX______,
 	__XXXX__XX______,
 	________________};
-const uint8_t acFont8_1_250[]{ /* code 250 */
+BM_BPP1 acFont8_1_250[]{ /* code 250 */
 	______XX________,
 	____XX__________,
 	________________,
@@ -819,7 +819,7 @@ const uint8_t acFont8_1_250[]{ /* code 250 */
 	XX____XXXX______,
 	__XXXX__XX______,
 	________________};
-const uint8_t acFont8_1_251[]{ /* code 251 */
+BM_BPP1 acFont8_1_251[]{ /* code 251 */
 	____XX__________,
 	__XX__XX________,
 	________________,
@@ -828,7 +828,7 @@ const uint8_t acFont8_1_251[]{ /* code 251 */
 	XX____XXXX______,
 	__XXXX__XX______,
 	________________};
-const uint8_t acFont8_1_252[]{ /* code 252 */
+BM_BPP1 acFont8_1_252[]{ /* code 252 */
 	________________,
 	__XX__XX________,
 	________________,
@@ -837,7 +837,7 @@ const uint8_t acFont8_1_252[]{ /* code 252 */
 	XX____XXXX______,
 	__XXXX__XX______,
 	________________};
-const uint8_t acFont8_1_253[]{ /* code 253 */
+BM_BPP1 acFont8_1_253[]{ /* code 253 */
 	______XX________,
 	____XX__________,
 	XX______XX______,
@@ -846,7 +846,7 @@ const uint8_t acFont8_1_253[]{ /* code 253 */
 	____XX__________,
 	____XX__________,
 	__XX____________};
-const uint8_t acFont8_1_254[]{ /* code 254 */
+BM_BPP1 acFont8_1_254[]{ /* code 254 */
 	________________,
 	XX______________,
 	XXXXXXXX________,
@@ -855,7 +855,7 @@ const uint8_t acFont8_1_254[]{ /* code 254 */
 	XXXXXXXX________,
 	XX______________,
 	________________};
-const uint8_t acFont8_1_255[]{ /* code 255 */
+BM_BPP1 acFont8_1_255[]{ /* code 255 */
 	________________,
 	____XX__XX______,
 	__XX__XX________,
@@ -864,7 +864,6 @@ const uint8_t acFont8_1_255[]{ /* code 255 */
 	____XX__________,
 	____XX__________,
 	__XX____________};
-
 
 const FONT_PROP::CHARINFO Font8_1_CharInfo[]{
 	 {   3,   3,  1, acFont8_1_160 } /* code 160 */

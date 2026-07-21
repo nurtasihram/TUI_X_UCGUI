@@ -3,7 +3,7 @@
 
 /* Start of unicode area <Basic Latin> */
 
-const uint8_t acFont13ASCII_0020[]{ /* code 0020 */
+BM_BPP1 acFont13ASCII_0020[]{ /* code 0020 */
 	________________,
 	________________,
 	________________,
@@ -17,7 +17,7 @@ const uint8_t acFont13ASCII_0020[]{ /* code 0020 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0021[]{ /* code 0021 */
+BM_BPP1 acFont13ASCII_0021[]{ /* code 0021 */
 	________________,
 	________________,
 	________________,
@@ -31,7 +31,7 @@ const uint8_t acFont13ASCII_0021[]{ /* code 0021 */
 	__XX____________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0022[]{ /* code 0022 */
+BM_BPP1 acFont13ASCII_0022[]{ /* code 0022 */
 	________________,
 	________________,
 	XX__XX__________,
@@ -45,7 +45,7 @@ const uint8_t acFont13ASCII_0022[]{ /* code 0022 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0023[]{ /* code 0023 */
+BM_BPP1 acFont13ASCII_0023[]{ /* code 0023 */
 	________________,
 	________________,
 	________________,
@@ -59,7 +59,7 @@ const uint8_t acFont13ASCII_0023[]{ /* code 0023 */
 	__XX__XX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0024[]{ /* code 0024 */
+BM_BPP1 acFont13ASCII_0024[]{ /* code 0024 */
 	________________,
 	________________,
 	____XX__________,
@@ -73,7 +73,7 @@ const uint8_t acFont13ASCII_0024[]{ /* code 0024 */
 	XXXXXXXX________,
 	____XX__________,
 	____XX__________};
-const uint8_t acFont13ASCII_0025[]{ /* code 0025 */
+BM_BPP1 acFont13ASCII_0025[]{ /* code 0025 */
 	________________,________________,
 	________________,________________,
 	________________,________________,
@@ -87,7 +87,7 @@ const uint8_t acFont13ASCII_0025[]{ /* code 0025 */
 	______XX______XX,XX______________,
 	________________,________________,
 	________________,________________};
-const uint8_t acFont13ASCII_0026[]{ /* code 0026 */
+BM_BPP1 acFont13ASCII_0026[]{ /* code 0026 */
 	________________,
 	________________,
 	________________,
@@ -101,7 +101,7 @@ const uint8_t acFont13ASCII_0026[]{ /* code 0026 */
 	__XXXXXX____XX__,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0027[]{ /* code 0027 */
+BM_BPP1 acFont13ASCII_0027[]{ /* code 0027 */
 	________________,
 	________________,
 	XX______________,
@@ -115,7 +115,7 @@ const uint8_t acFont13ASCII_0027[]{ /* code 0027 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0028[]{ /* code 0028 */
+BM_BPP1 acFont13ASCII_0028[]{ /* code 0028 */
 	________________,
 	________________,
 	____XX__________,
@@ -129,7 +129,7 @@ const uint8_t acFont13ASCII_0028[]{ /* code 0028 */
 	__XX____________,
 	__XX____________,
 	____XX__________};
-const uint8_t acFont13ASCII_0029[]{ /* code 0029 */
+BM_BPP1 acFont13ASCII_0029[]{ /* code 0029 */
 	________________,
 	________________,
 	XX______________,
@@ -143,7 +143,7 @@ const uint8_t acFont13ASCII_0029[]{ /* code 0029 */
 	__XX____________,
 	__XX____________,
 	XX______________};
-const uint8_t acFont13ASCII_002A[]{ /* code 002A */
+BM_BPP1 acFont13ASCII_002A[]{ /* code 002A */
 	________________,
 	________________,
 	____XX__________,
@@ -157,7 +157,7 @@ const uint8_t acFont13ASCII_002A[]{ /* code 002A */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_002B[]{ /* code 002B */
+BM_BPP1 acFont13ASCII_002B[]{ /* code 002B */
 	________________,
 	________________,
 	________________,
@@ -171,7 +171,7 @@ const uint8_t acFont13ASCII_002B[]{ /* code 002B */
 	______XX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_002C[]{ /* code 002C */
+BM_BPP1 acFont13ASCII_002C[]{ /* code 002C */
 	________________,
 	________________,
 	________________,
@@ -185,7 +185,7 @@ const uint8_t acFont13ASCII_002C[]{ /* code 002C */
 	__XX____________,
 	__XX____________,
 	XX______________};
-const uint8_t acFont13ASCII_002D[]{ /* code 002D */
+BM_BPP1 acFont13ASCII_002D[]{ /* code 002D */
 	________________,
 	________________,
 	________________,
@@ -199,7 +199,7 @@ const uint8_t acFont13ASCII_002D[]{ /* code 002D */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_002E[]{ /* code 002E */
+BM_BPP1 acFont13ASCII_002E[]{ /* code 002E */
 	________________,
 	________________,
 	________________,
@@ -213,7 +213,7 @@ const uint8_t acFont13ASCII_002E[]{ /* code 002E */
 	__XX____________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_002F[]{ /* code 002F */
+BM_BPP1 acFont13ASCII_002F[]{ /* code 002F */
 	________________,
 	________________,
 	____XX__________,
@@ -227,7 +227,7 @@ const uint8_t acFont13ASCII_002F[]{ /* code 002F */
 	XX______________,
 	XX______________,
 	XX______________};
-const uint8_t acFont13ASCII_0030[]{ /* code 0030 */
+BM_BPP1 acFont13ASCII_0030[]{ /* code 0030 */
 	________________,
 	________________,
 	________________,
@@ -241,7 +241,7 @@ const uint8_t acFont13ASCII_0030[]{ /* code 0030 */
 	__XXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0031[]{ /* code 0031 */
+BM_BPP1 acFont13ASCII_0031[]{ /* code 0031 */
 	________________,
 	________________,
 	________________,
@@ -255,7 +255,7 @@ const uint8_t acFont13ASCII_0031[]{ /* code 0031 */
 	__XXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0032[]{ /* code 0032 */
+BM_BPP1 acFont13ASCII_0032[]{ /* code 0032 */
 	________________,
 	________________,
 	________________,
@@ -269,7 +269,7 @@ const uint8_t acFont13ASCII_0032[]{ /* code 0032 */
 	XXXXXXXXXX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0033[]{ /* code 0033 */
+BM_BPP1 acFont13ASCII_0033[]{ /* code 0033 */
 	________________,
 	________________,
 	________________,
@@ -283,7 +283,7 @@ const uint8_t acFont13ASCII_0033[]{ /* code 0033 */
 	__XXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0034[]{ /* code 0034 */
+BM_BPP1 acFont13ASCII_0034[]{ /* code 0034 */
 	________________,
 	________________,
 	________________,
@@ -297,7 +297,7 @@ const uint8_t acFont13ASCII_0034[]{ /* code 0034 */
 	______XX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0035[]{ /* code 0035 */
+BM_BPP1 acFont13ASCII_0035[]{ /* code 0035 */
 	________________,
 	________________,
 	________________,
@@ -311,7 +311,7 @@ const uint8_t acFont13ASCII_0035[]{ /* code 0035 */
 	__XXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0036[]{ /* code 0036 */
+BM_BPP1 acFont13ASCII_0036[]{ /* code 0036 */
 	________________,
 	________________,
 	________________,
@@ -325,7 +325,7 @@ const uint8_t acFont13ASCII_0036[]{ /* code 0036 */
 	__XXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0037[]{ /* code 0037 */
+BM_BPP1 acFont13ASCII_0037[]{ /* code 0037 */
 	________________,
 	________________,
 	________________,
@@ -339,7 +339,7 @@ const uint8_t acFont13ASCII_0037[]{ /* code 0037 */
 	__XX____________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0038[]{ /* code 0038 */
+BM_BPP1 acFont13ASCII_0038[]{ /* code 0038 */
 	________________,
 	________________,
 	________________,
@@ -353,7 +353,7 @@ const uint8_t acFont13ASCII_0038[]{ /* code 0038 */
 	__XXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0039[]{ /* code 0039 */
+BM_BPP1 acFont13ASCII_0039[]{ /* code 0039 */
 	________________,
 	________________,
 	________________,
@@ -367,7 +367,7 @@ const uint8_t acFont13ASCII_0039[]{ /* code 0039 */
 	__XXXX__________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_003A[]{ /* code 003A */
+BM_BPP1 acFont13ASCII_003A[]{ /* code 003A */
 	________________,
 	________________,
 	________________,
@@ -381,7 +381,7 @@ const uint8_t acFont13ASCII_003A[]{ /* code 003A */
 	__XX____________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_003B[]{ /* code 003B */
+BM_BPP1 acFont13ASCII_003B[]{ /* code 003B */
 	________________,
 	________________,
 	________________,
@@ -395,7 +395,7 @@ const uint8_t acFont13ASCII_003B[]{ /* code 003B */
 	__XX____________,
 	__XX____________,
 	XX______________};
-const uint8_t acFont13ASCII_003C[]{ /* code 003C */
+BM_BPP1 acFont13ASCII_003C[]{ /* code 003C */
 	________________,
 	________________,
 	________________,
@@ -409,7 +409,7 @@ const uint8_t acFont13ASCII_003C[]{ /* code 003C */
 	____________XX__,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_003D[]{ /* code 003D */
+BM_BPP1 acFont13ASCII_003D[]{ /* code 003D */
 	________________,
 	________________,
 	________________,
@@ -423,7 +423,7 @@ const uint8_t acFont13ASCII_003D[]{ /* code 003D */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_003E[]{ /* code 003E */
+BM_BPP1 acFont13ASCII_003E[]{ /* code 003E */
 	________________,
 	________________,
 	________________,
@@ -437,7 +437,7 @@ const uint8_t acFont13ASCII_003E[]{ /* code 003E */
 	__XX____________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_003F[]{ /* code 003F */
+BM_BPP1 acFont13ASCII_003F[]{ /* code 003F */
 	________________,
 	________________,
 	________________,
@@ -451,7 +451,7 @@ const uint8_t acFont13ASCII_003F[]{ /* code 003F */
 	__XX____________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0040[]{ /* code 0040 */
+BM_BPP1 acFont13ASCII_0040[]{ /* code 0040 */
 	________________,________________,
 	________________,________________,
 	________________,________________,
@@ -465,7 +465,7 @@ const uint8_t acFont13ASCII_0040[]{ /* code 0040 */
 	__XX____________,________________,
 	____XXXXXXXX____,________________,
 	________________,________________};
-const uint8_t acFont13ASCII_0041[]{ /* code 0041 */
+BM_BPP1 acFont13ASCII_0041[]{ /* code 0041 */
 	________________,
 	________________,
 	________________,
@@ -479,7 +479,7 @@ const uint8_t acFont13ASCII_0041[]{ /* code 0041 */
 	XX________XX____,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0042[]{ /* code 0042 */
+BM_BPP1 acFont13ASCII_0042[]{ /* code 0042 */
 	________________,
 	________________,
 	________________,
@@ -493,7 +493,7 @@ const uint8_t acFont13ASCII_0042[]{ /* code 0042 */
 	XXXXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0043[]{ /* code 0043 */
+BM_BPP1 acFont13ASCII_0043[]{ /* code 0043 */
 	________________,
 	________________,
 	________________,
@@ -507,7 +507,7 @@ const uint8_t acFont13ASCII_0043[]{ /* code 0043 */
 	____XXXXXXXX____,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0044[]{ /* code 0044 */
+BM_BPP1 acFont13ASCII_0044[]{ /* code 0044 */
 	________________,
 	________________,
 	________________,
@@ -521,7 +521,7 @@ const uint8_t acFont13ASCII_0044[]{ /* code 0044 */
 	XXXXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0045[]{ /* code 0045 */
+BM_BPP1 acFont13ASCII_0045[]{ /* code 0045 */
 	________________,
 	________________,
 	________________,
@@ -535,7 +535,7 @@ const uint8_t acFont13ASCII_0045[]{ /* code 0045 */
 	XXXXXXXXXX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0046[]{ /* code 0046 */
+BM_BPP1 acFont13ASCII_0046[]{ /* code 0046 */
 	________________,
 	________________,
 	________________,
@@ -549,7 +549,7 @@ const uint8_t acFont13ASCII_0046[]{ /* code 0046 */
 	XX______________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0047[]{ /* code 0047 */
+BM_BPP1 acFont13ASCII_0047[]{ /* code 0047 */
 	________________,
 	________________,
 	________________,
@@ -563,7 +563,7 @@ const uint8_t acFont13ASCII_0047[]{ /* code 0047 */
 	____XXXXXXXX____,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0048[]{ /* code 0048 */
+BM_BPP1 acFont13ASCII_0048[]{ /* code 0048 */
 	________________,
 	________________,
 	________________,
@@ -577,7 +577,7 @@ const uint8_t acFont13ASCII_0048[]{ /* code 0048 */
 	XX________XX____,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0049[]{ /* code 0049 */
+BM_BPP1 acFont13ASCII_0049[]{ /* code 0049 */
 	________________,
 	________________,
 	________________,
@@ -591,7 +591,7 @@ const uint8_t acFont13ASCII_0049[]{ /* code 0049 */
 	XXXXXX__________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_004A[]{ /* code 004A */
+BM_BPP1 acFont13ASCII_004A[]{ /* code 004A */
 	________________,
 	________________,
 	________________,
@@ -605,7 +605,7 @@ const uint8_t acFont13ASCII_004A[]{ /* code 004A */
 	XXXXXX__________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_004B[]{ /* code 004B */
+BM_BPP1 acFont13ASCII_004B[]{ /* code 004B */
 	________________,
 	________________,
 	________________,
@@ -619,7 +619,7 @@ const uint8_t acFont13ASCII_004B[]{ /* code 004B */
 	XX______XX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_004C[]{ /* code 004C */
+BM_BPP1 acFont13ASCII_004C[]{ /* code 004C */
 	________________,
 	________________,
 	________________,
@@ -633,7 +633,7 @@ const uint8_t acFont13ASCII_004C[]{ /* code 004C */
 	XXXXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_004D[]{ /* code 004D */
+BM_BPP1 acFont13ASCII_004D[]{ /* code 004D */
 	________________,
 	________________,
 	________________,
@@ -647,7 +647,7 @@ const uint8_t acFont13ASCII_004D[]{ /* code 004D */
 	XX__________XX__,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_004E[]{ /* code 004E */
+BM_BPP1 acFont13ASCII_004E[]{ /* code 004E */
 	________________,
 	________________,
 	________________,
@@ -661,7 +661,7 @@ const uint8_t acFont13ASCII_004E[]{ /* code 004E */
 	XX______XXXX____,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_004F[]{ /* code 004F */
+BM_BPP1 acFont13ASCII_004F[]{ /* code 004F */
 	________________,
 	________________,
 	________________,
@@ -675,7 +675,7 @@ const uint8_t acFont13ASCII_004F[]{ /* code 004F */
 	____XXXXXX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0050[]{ /* code 0050 */
+BM_BPP1 acFont13ASCII_0050[]{ /* code 0050 */
 	________________,
 	________________,
 	________________,
@@ -689,7 +689,7 @@ const uint8_t acFont13ASCII_0050[]{ /* code 0050 */
 	XX______________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0051[]{ /* code 0051 */
+BM_BPP1 acFont13ASCII_0051[]{ /* code 0051 */
 	________________,
 	________________,
 	________________,
@@ -703,7 +703,7 @@ const uint8_t acFont13ASCII_0051[]{ /* code 0051 */
 	____XXXXXX______,
 	________XX______,
 	__________XXXX__};
-const uint8_t acFont13ASCII_0052[]{ /* code 0052 */
+BM_BPP1 acFont13ASCII_0052[]{ /* code 0052 */
 	________________,
 	________________,
 	________________,
@@ -717,7 +717,7 @@ const uint8_t acFont13ASCII_0052[]{ /* code 0052 */
 	XX________XX____,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0053[]{ /* code 0053 */
+BM_BPP1 acFont13ASCII_0053[]{ /* code 0053 */
 	________________,
 	________________,
 	________________,
@@ -731,7 +731,7 @@ const uint8_t acFont13ASCII_0053[]{ /* code 0053 */
 	XXXXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0054[]{ /* code 0054 */
+BM_BPP1 acFont13ASCII_0054[]{ /* code 0054 */
 	________________,
 	________________,
 	________________,
@@ -745,7 +745,7 @@ const uint8_t acFont13ASCII_0054[]{ /* code 0054 */
 	____XX__________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0055[]{ /* code 0055 */
+BM_BPP1 acFont13ASCII_0055[]{ /* code 0055 */
 	________________,
 	________________,
 	________________,
@@ -759,7 +759,7 @@ const uint8_t acFont13ASCII_0055[]{ /* code 0055 */
 	__XXXXXXXX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0056[]{ /* code 0056 */
+BM_BPP1 acFont13ASCII_0056[]{ /* code 0056 */
 	________________,
 	________________,
 	________________,
@@ -773,7 +773,7 @@ const uint8_t acFont13ASCII_0056[]{ /* code 0056 */
 	____XX__________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0057[]{ /* code 0057 */
+BM_BPP1 acFont13ASCII_0057[]{ /* code 0057 */
 	________________,________________,
 	________________,________________,
 	________________,________________,
@@ -787,7 +787,7 @@ const uint8_t acFont13ASCII_0057[]{ /* code 0057 */
 	____XX______XX__,________________,
 	________________,________________,
 	________________,________________};
-const uint8_t acFont13ASCII_0058[]{ /* code 0058 */
+BM_BPP1 acFont13ASCII_0058[]{ /* code 0058 */
 	________________,
 	________________,
 	________________,
@@ -801,7 +801,7 @@ const uint8_t acFont13ASCII_0058[]{ /* code 0058 */
 	XX______XX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0059[]{ /* code 0059 */
+BM_BPP1 acFont13ASCII_0059[]{ /* code 0059 */
 	________________,
 	________________,
 	________________,
@@ -815,7 +815,7 @@ const uint8_t acFont13ASCII_0059[]{ /* code 0059 */
 	____XX__________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_005A[]{ /* code 005A */
+BM_BPP1 acFont13ASCII_005A[]{ /* code 005A */
 	________________,
 	________________,
 	________________,
@@ -829,7 +829,7 @@ const uint8_t acFont13ASCII_005A[]{ /* code 005A */
 	XXXXXXXXXX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_005B[]{ /* code 005B */
+BM_BPP1 acFont13ASCII_005B[]{ /* code 005B */
 	________________,
 	________________,
 	XXXXXX__________,
@@ -843,7 +843,7 @@ const uint8_t acFont13ASCII_005B[]{ /* code 005B */
 	XX______________,
 	XX______________,
 	XXXXXX__________};
-const uint8_t acFont13ASCII_005C[]{ /* code 005C */
+BM_BPP1 acFont13ASCII_005C[]{ /* code 005C */
 	________________,
 	________________,
 	XX______________,
@@ -857,7 +857,7 @@ const uint8_t acFont13ASCII_005C[]{ /* code 005C */
 	____XX__________,
 	____XX__________,
 	____XX__________};
-const uint8_t acFont13ASCII_005D[]{ /* code 005D */
+BM_BPP1 acFont13ASCII_005D[]{ /* code 005D */
 	________________,
 	________________,
 	XXXXXX__________,
@@ -871,7 +871,7 @@ const uint8_t acFont13ASCII_005D[]{ /* code 005D */
 	____XX__________,
 	____XX__________,
 	XXXXXX__________};
-const uint8_t acFont13ASCII_005E[]{ /* code 005E */
+BM_BPP1 acFont13ASCII_005E[]{ /* code 005E */
 	________________,
 	________________,
 	________________,
@@ -885,7 +885,7 @@ const uint8_t acFont13ASCII_005E[]{ /* code 005E */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_005F[]{ /* code 005F */
+BM_BPP1 acFont13ASCII_005F[]{ /* code 005F */
 	________________,
 	________________,
 	________________,
@@ -899,7 +899,7 @@ const uint8_t acFont13ASCII_005F[]{ /* code 005F */
 	________________,
 	________________,
 	XXXXXXXXXXXX____};
-const uint8_t acFont13ASCII_0060[]{ /* code 0060 */
+BM_BPP1 acFont13ASCII_0060[]{ /* code 0060 */
 	________________,
 	________________,
 	__XX____________,
@@ -913,7 +913,7 @@ const uint8_t acFont13ASCII_0060[]{ /* code 0060 */
 	________________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0061[]{ /* code 0061 */
+BM_BPP1 acFont13ASCII_0061[]{ /* code 0061 */
 	________________,
 	________________,
 	________________,
@@ -927,7 +927,7 @@ const uint8_t acFont13ASCII_0061[]{ /* code 0061 */
 	__XXXXXXXX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0062[]{ /* code 0062 */
+BM_BPP1 acFont13ASCII_0062[]{ /* code 0062 */
 	________________,
 	________________,
 	XX______________,
@@ -941,7 +941,7 @@ const uint8_t acFont13ASCII_0062[]{ /* code 0062 */
 	XXXXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0063[]{ /* code 0063 */
+BM_BPP1 acFont13ASCII_0063[]{ /* code 0063 */
 	________________,
 	________________,
 	________________,
@@ -955,7 +955,7 @@ const uint8_t acFont13ASCII_0063[]{ /* code 0063 */
 	__XXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0064[]{ /* code 0064 */
+BM_BPP1 acFont13ASCII_0064[]{ /* code 0064 */
 	________________,
 	________________,
 	________XX______,
@@ -969,7 +969,7 @@ const uint8_t acFont13ASCII_0064[]{ /* code 0064 */
 	__XXXXXXXX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0065[]{ /* code 0065 */
+BM_BPP1 acFont13ASCII_0065[]{ /* code 0065 */
 	________________,
 	________________,
 	________________,
@@ -983,7 +983,7 @@ const uint8_t acFont13ASCII_0065[]{ /* code 0065 */
 	__XXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0066[]{ /* code 0066 */
+BM_BPP1 acFont13ASCII_0066[]{ /* code 0066 */
 	________________,
 	________________,
 	__XXXX__________,
@@ -997,7 +997,7 @@ const uint8_t acFont13ASCII_0066[]{ /* code 0066 */
 	XX______________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0067[]{ /* code 0067 */
+BM_BPP1 acFont13ASCII_0067[]{ /* code 0067 */
 	________________,
 	________________,
 	________________,
@@ -1011,7 +1011,7 @@ const uint8_t acFont13ASCII_0067[]{ /* code 0067 */
 	__XXXXXXXX______,
 	________XX______,
 	__XXXXXX________};
-const uint8_t acFont13ASCII_0068[]{ /* code 0068 */
+BM_BPP1 acFont13ASCII_0068[]{ /* code 0068 */
 	________________,
 	________________,
 	XX______________,
@@ -1025,7 +1025,7 @@ const uint8_t acFont13ASCII_0068[]{ /* code 0068 */
 	XX______XX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0069[]{ /* code 0069 */
+BM_BPP1 acFont13ASCII_0069[]{ /* code 0069 */
 	________________,
 	________________,
 	________________,
@@ -1039,7 +1039,7 @@ const uint8_t acFont13ASCII_0069[]{ /* code 0069 */
 	XX______________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_006A[]{ /* code 006A */
+BM_BPP1 acFont13ASCII_006A[]{ /* code 006A */
 	________________,
 	________________,
 	________________,
@@ -1053,7 +1053,7 @@ const uint8_t acFont13ASCII_006A[]{ /* code 006A */
 	__XX____________,
 	__XX____________,
 	XX______________};
-const uint8_t acFont13ASCII_006B[]{ /* code 006B */
+BM_BPP1 acFont13ASCII_006B[]{ /* code 006B */
 	________________,
 	________________,
 	XX______________,
@@ -1067,7 +1067,7 @@ const uint8_t acFont13ASCII_006B[]{ /* code 006B */
 	XX______XX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_006C[]{ /* code 006C */
+BM_BPP1 acFont13ASCII_006C[]{ /* code 006C */
 	________________,
 	________________,
 	XX______________,
@@ -1081,7 +1081,7 @@ const uint8_t acFont13ASCII_006C[]{ /* code 006C */
 	XX______________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_006D[]{ /* code 006D */
+BM_BPP1 acFont13ASCII_006D[]{ /* code 006D */
 	________________,
 	________________,
 	________________,
@@ -1095,7 +1095,7 @@ const uint8_t acFont13ASCII_006D[]{ /* code 006D */
 	XX____XX____XX__,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_006E[]{ /* code 006E */
+BM_BPP1 acFont13ASCII_006E[]{ /* code 006E */
 	________________,
 	________________,
 	________________,
@@ -1109,7 +1109,7 @@ const uint8_t acFont13ASCII_006E[]{ /* code 006E */
 	XX______XX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_006F[]{ /* code 006F */
+BM_BPP1 acFont13ASCII_006F[]{ /* code 006F */
 	________________,
 	________________,
 	________________,
@@ -1123,7 +1123,7 @@ const uint8_t acFont13ASCII_006F[]{ /* code 006F */
 	__XXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0070[]{ /* code 0070 */
+BM_BPP1 acFont13ASCII_0070[]{ /* code 0070 */
 	________________,
 	________________,
 	________________,
@@ -1137,7 +1137,7 @@ const uint8_t acFont13ASCII_0070[]{ /* code 0070 */
 	XXXXXXXX________,
 	XX______________,
 	XX______________};
-const uint8_t acFont13ASCII_0071[]{ /* code 0071 */
+BM_BPP1 acFont13ASCII_0071[]{ /* code 0071 */
 	________________,
 	________________,
 	________________,
@@ -1151,7 +1151,7 @@ const uint8_t acFont13ASCII_0071[]{ /* code 0071 */
 	__XXXXXXXX______,
 	________XX______,
 	________XX______};
-const uint8_t acFont13ASCII_0072[]{ /* code 0072 */
+BM_BPP1 acFont13ASCII_0072[]{ /* code 0072 */
 	________________,
 	________________,
 	________________,
@@ -1165,7 +1165,7 @@ const uint8_t acFont13ASCII_0072[]{ /* code 0072 */
 	XX______________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0073[]{ /* code 0073 */
+BM_BPP1 acFont13ASCII_0073[]{ /* code 0073 */
 	________________,
 	________________,
 	________________,
@@ -1179,7 +1179,7 @@ const uint8_t acFont13ASCII_0073[]{ /* code 0073 */
 	XXXXXX__________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0074[]{ /* code 0074 */
+BM_BPP1 acFont13ASCII_0074[]{ /* code 0074 */
 	________________,
 	________________,
 	________________,
@@ -1193,7 +1193,7 @@ const uint8_t acFont13ASCII_0074[]{ /* code 0074 */
 	__XXXX__________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0075[]{ /* code 0075 */
+BM_BPP1 acFont13ASCII_0075[]{ /* code 0075 */
 	________________,
 	________________,
 	________________,
@@ -1207,7 +1207,7 @@ const uint8_t acFont13ASCII_0075[]{ /* code 0075 */
 	__XXXXXXXX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0076[]{ /* code 0076 */
+BM_BPP1 acFont13ASCII_0076[]{ /* code 0076 */
 	________________,
 	________________,
 	________________,
@@ -1221,7 +1221,7 @@ const uint8_t acFont13ASCII_0076[]{ /* code 0076 */
 	____XX__________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0077[]{ /* code 0077 */
+BM_BPP1 acFont13ASCII_0077[]{ /* code 0077 */
 	________________,
 	________________,
 	________________,
@@ -1235,7 +1235,7 @@ const uint8_t acFont13ASCII_0077[]{ /* code 0077 */
 	__XX______XX____,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0078[]{ /* code 0078 */
+BM_BPP1 acFont13ASCII_0078[]{ /* code 0078 */
 	________________,
 	________________,
 	________________,
@@ -1249,7 +1249,7 @@ const uint8_t acFont13ASCII_0078[]{ /* code 0078 */
 	XX______XX______,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_0079[]{ /* code 0079 */
+BM_BPP1 acFont13ASCII_0079[]{ /* code 0079 */
 	________________,
 	________________,
 	________________,
@@ -1263,7 +1263,7 @@ const uint8_t acFont13ASCII_0079[]{ /* code 0079 */
 	____XX__________,
 	__XX____________,
 	__XX____________};
-const uint8_t acFont13ASCII_007A[]{ /* code 007A */
+BM_BPP1 acFont13ASCII_007A[]{ /* code 007A */
 	________________,
 	________________,
 	________________,
@@ -1277,7 +1277,7 @@ const uint8_t acFont13ASCII_007A[]{ /* code 007A */
 	XXXXXXXX________,
 	________________,
 	________________};
-const uint8_t acFont13ASCII_007B[]{ /* code 007B */
+BM_BPP1 acFont13ASCII_007B[]{ /* code 007B */
 	________________,
 	________________,
 	______XX________,
@@ -1291,7 +1291,7 @@ const uint8_t acFont13ASCII_007B[]{ /* code 007B */
 	____XX__________,
 	____XX__________,
 	______XX________};
-const uint8_t acFont13ASCII_007C[]{ /* code 007C */
+BM_BPP1 acFont13ASCII_007C[]{ /* code 007C */
 	________________,
 	________________,
 	__XX____________,
@@ -1305,7 +1305,7 @@ const uint8_t acFont13ASCII_007C[]{ /* code 007C */
 	__XX____________,
 	__XX____________,
 	__XX____________};
-const uint8_t acFont13ASCII_007D[]{ /* code 007D */
+BM_BPP1 acFont13ASCII_007D[]{ /* code 007D */
 	________________,
 	________________,
 	XX______________,
@@ -1319,7 +1319,7 @@ const uint8_t acFont13ASCII_007D[]{ /* code 007D */
 	__XX____________,
 	__XX____________,
 	XX______________};
-const uint8_t acFont13ASCII_007E[]{ /* code 007E */
+BM_BPP1 acFont13ASCII_007E[]{ /* code 007E */
 	________________,
 	________________,
 	________________,

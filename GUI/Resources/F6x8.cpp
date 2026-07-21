@@ -100,7 +100,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 /*  !  */
  ,{
 	____XX__________,
@@ -111,8 +110,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	____XX__________,
 	________________}
-
-
 /*  "  */
  ,{
 	__XX____XX______,
@@ -123,7 +120,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 /* #  */
  ,{
 	__XX__XX________,
@@ -134,7 +130,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX__XX________,
 	__XX__XX________,
 	________________}
-
 /*  $  */
  ,{
 	____XX__________,
@@ -144,7 +139,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__XX______,
 	XXXXXXXX________,
 	____XX__________}
-
 /*  %  */
  ,{
 	XXXX____________,
@@ -155,7 +149,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX____XXXX______,
 	______XXXX______,
 	________________}
-
 /*  &  */
  ,{
 	__XXXX__________,
@@ -166,7 +159,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX____XX________,
 	__XXXX__XX______,
 	________________}
-
 /*  '  */
  ,{
 	__XXXX__________,
@@ -177,7 +169,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 /*  (  */
  ,{
 	______XX________,
@@ -188,7 +179,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	______XX________,
 	________________}
-
 /*  )  */
  ,{
 	__XX____________,
@@ -199,7 +189,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	__XX____________,
 	________________}
-
 /*  *  */
  ,{
 	________________,
@@ -210,7 +199,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX__XX________,
 	________________,
 	________________}
-
  ,{
 	________________,
 	____XX__________,
@@ -220,7 +208,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	________________,
 	________________}
-
  ,{
 	________________,
 	________________,
@@ -230,7 +217,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XXXX__________,
 	____XX__________,
 	__XX____________}
-
  ,{
 	________________,
 	________________,
@@ -240,7 +226,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
  ,{
 	________________,
 	________________,
@@ -250,7 +235,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XXXX__________,
 	__XXXX__________,
 	________________}
-
  ,{
 	________________,
 	________XX______,
@@ -260,7 +244,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______________,
 	________________,
 	________________}
-
 /* 0 */
  ,{
 	__XXXXXX________,
@@ -271,7 +254,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 /* 1 */
  ,{
 	____XX__________,
@@ -282,7 +264,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	__XXXXXX________,
 	________________}
-
 /* 2 */
  ,{
 	__XXXXXX________,
@@ -293,7 +274,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______________,
 	XXXXXXXXXX______,
 	________________}
-
 /* 3 */
  ,{
 	__XXXXXX________,
@@ -304,7 +284,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 /* 4 */
  ,{
 	______XX________,
@@ -315,7 +294,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	______XX________,
 	______XX________,
 	________________}
-
 /* 5 */
  ,{
 	XXXXXXXXXX______,
@@ -326,7 +304,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 /* 6 */
  ,{
 	____XXXX________,
@@ -337,7 +314,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 /* 7 */
  ,{
 	XXXXXXXXXX______,
@@ -348,7 +324,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX____________,
 	__XX____________,
 	________________}
-
 /* 8 */
  ,{
 	__XXXXXX________,
@@ -359,7 +334,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 /* 9 */
  ,{
 	__XXXXXX________,
@@ -370,7 +344,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	______XX________,
 	__XXXX__________,
 	________________}
-
 /* ':' 3a */
  ,{
 	________________,
@@ -381,7 +354,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XXXX__________,
 	________________,
 	________________}
-
 /* ';' 3b */
  ,{
 	________________,
@@ -393,7 +365,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	__XX____________}
 
-
 /* '<' 3c */
  ,{
 	______XX________,
@@ -404,7 +375,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	______XX________,
 	________________}
-
 /* '=' 3d */
  ,{
 	________________,
@@ -415,7 +385,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 /* '>' */
  ,{
 	XX______________,
@@ -426,7 +395,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX____________,
 	XX______________,
 	________________}
-
 /* '?' */
  ,{
 	__XXXXXX________,
@@ -437,7 +405,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	____XX__________,
 	________________}
-
 /* @ */
  ,{
 	__XXXXXX________,
@@ -448,7 +415,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX__XX__XX______,
 	__XXXXXX________,
 	________________}
-
 /* A */
  ,{
 	__XXXXXX________,
@@ -459,7 +425,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XX______XX______,
 	________________}
-
 /* B */
  ,{
 	XXXXXXXX________,
@@ -470,7 +435,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XXXXXXXX________,
 	________________}
-
 /* C */
  ,{
 	__XXXXXX________,
@@ -481,7 +445,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 /* D */
  ,{
 	XXXXXX__________,
@@ -492,7 +455,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX____XX________,
 	XXXXXX__________,
 	________________}
-
 /* E */
  ,{
 	XXXXXXXXXX______,
@@ -503,7 +465,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______________,
 	XXXXXXXXXX______,
 	________________}
-
 /* 1 */
  ,{
 	XXXXXXXXXX______,
@@ -514,7 +475,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______________,
 	XX______________,
 	________________}
-
 /* 1 */
  ,{
 	__XXXXXX________,
@@ -525,7 +485,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXXXX______,
 	________________}
-
 /* 1 */
  ,{
 	XX______XX______,
@@ -536,7 +495,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XX______XX______,
 	________________}
-
 /* I */
  ,{
 	__XXXXXX________,
@@ -547,7 +505,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	__XXXXXX________,
 	________________}
-
 /* J */
  ,{
 	____XXXXXX______,
@@ -558,7 +515,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX____XX________,
 	__XXXX__________,
 	________________}
-
 /* K */
  ,{
 	XX______XX______,
@@ -569,7 +525,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX____XX________,
 	XX______XX______,
 	________________}
-
 /* L */
  ,{
 	XX______________,
@@ -580,7 +535,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______________,
 	XXXXXXXXXX______,
 	________________}
-
 /* M */
  ,{
 	XX______XX______,
@@ -591,7 +545,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XX______XX______,
 	________________}
-
 /* N */
  ,{
 	XX______XX______,
@@ -602,7 +555,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XX______XX______,
 	________________}
-
 /* O */
  ,{
 	__XXXXXX________,
@@ -613,7 +565,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 /* P */
  ,{
 	XXXXXXXX________,
@@ -624,7 +575,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______________,
 	XX______________,
 	________________}
-
 /* Q */
  ,{
 	__XXXXXX________,
@@ -635,7 +585,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX____XX________,
 	__XXXX__XX______,
 	________________}
-
 /* R */
  ,{
 	XXXXXXXX________,
@@ -646,7 +595,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX____XX________,
 	XX______XX______,
 	________________}
-
 /* S */
  ,{
 	__XXXXXX________,
@@ -657,7 +605,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 /* T */
  ,{
 	XXXXXXXXXX______,
@@ -668,7 +615,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	____XX__________,
 	________________}
-
 /* U */
  ,{
 	XX______XX______,
@@ -679,7 +625,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 /* V */
  ,{
 	XX______XX______,
@@ -690,7 +635,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX__XX________,
 	____XX__________,
 	________________}
-
 /* W */
  ,{
 	XX______XX______,
@@ -701,7 +645,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX__XX__XX______,
 	__XX__XX________,
 	________________}
-
 /* X */
  ,{
 	XX______XX______,
@@ -712,7 +655,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XX______XX______,
 	________________}
-
 /* Y */
  ,{
 	XX______XX______,
@@ -723,7 +665,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	____XX__________,
 	________________}
-
 /* Z */
  ,{
 	XXXXXXXXXX______,
@@ -734,7 +675,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______________,
 	XXXXXXXXXX______,
 	________________}
-
 /* 5b */
  ,{
 	__XXXXXX________,
@@ -745,7 +685,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX____________,
 	__XXXXXX________,
 	________________}
-
 /* 5c */
  ,{
 	________________,
@@ -756,7 +695,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________XX______,
 	________________,
 	________________}
-
 /* 5d */
  ,{
 	__XXXXXX________,
@@ -767,7 +705,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	______XX________,
 	__XXXXXX________,
 	________________}
-
 /* 5e */
  ,{
 	____XX__________,
@@ -778,7 +715,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 /* 5f */
  ,{
 	________________,
@@ -789,7 +725,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	XXXXXXXXXX______}
-
 /* 60 */
  ,{
 	__XX____________,
@@ -800,7 +735,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 /* a */
  ,{
 	________________,
@@ -811,7 +745,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXXXX______,
 	________________}
-
 /* b */
  ,{
 	XX______________,
@@ -822,7 +755,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XXXXXXXX________,
 	________________}
-
 /* c */
  ,{
 	________________,
@@ -833,7 +765,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 /* d */
  ,{
 	________XX______,
@@ -844,7 +775,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXXXX______,
 	________________}
-
 /* e */
  ,{
 	________________,
@@ -855,7 +785,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______________,
 	__XXXXXX________,
 	________________}
-
 /* f */
  ,{
 	____XXXX________,
@@ -866,7 +795,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX____________,
 	__XX____________,
 	________________}
-
 /* g */
  ,{
 	________________,
@@ -877,7 +805,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XXXXXXXX______,
 	________XX______,
 	__XXXXXX________}
-
 /* h */
  ,{
 	XX______________,
@@ -888,7 +815,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XX______XX______,
 	________________}
-
 /* i */
  ,{
 	____XX__________,
@@ -899,7 +825,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	__XXXXXX________,
 	________________}
-
 /* j */
  ,{
 	______XX________,
@@ -910,7 +835,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	______XX________,
 	XX____XX________,
 	__XXXX__________}
-
 /* k */
  ,{
 	XX______________,
@@ -921,7 +845,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX__XX__________,
 	XX____XX________,
 	________________}
-
 /* l */
  ,{
 	__XXXX__________,
@@ -932,7 +855,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	__XXXXXX________,
 	________________}
-
 /* m */
  ,{
 	________________,
@@ -943,7 +865,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XX______XX______,
 	________________}
-
 /* n */
  ,{
 	________________,
@@ -954,7 +875,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XX______XX______,
 	________________}
-
 /* o */
  ,{
 	________________,
@@ -965,7 +885,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 /* p */
  ,{
 	________________,
@@ -976,7 +895,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XXXXXXXX________,
 	XX______________,
 	XX______________}
-
 /* q */
  ,{
 	________________,
@@ -987,7 +905,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XXXXXXXX______,
 	________XX______,
 	________XX______}
-
 /* r */
  ,{
 	________________,
@@ -998,7 +915,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______________,
 	XX______________,
 	________________}
-
 /* s */
  ,{
 	________________,
@@ -1009,7 +925,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________XX______,
 	XXXXXXXX________,
 	________________}
-
 /* t */
  ,{
 	__XX____________,
@@ -1020,7 +935,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX____XX______,
 	____XXXX________,
 	________________}
-
 /* u */
  ,{
 	________________,
@@ -1031,7 +945,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX____XXXX______,
 	__XXXX__XX______,
 	________________}
-
 /* v */
  ,{
 	________________,
@@ -1042,7 +955,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX__XX________,
 	____XX__________,
 	________________}
-
 /* w */
  ,{
 	________________,
@@ -1053,7 +965,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX__XX__XX______,
 	__XX__XX________,
 	________________}
-
 /* X */
  ,{
 	________________,
@@ -1064,7 +975,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX__XX________,
 	XX______XX______,
 	________________}
-
 /* y */
  ,{
 	________________,
@@ -1075,7 +985,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XXXXXXXX______,
 	________XX______,
 	__XXXXXX________}
-
 /* z */
  ,{
 	________________,
@@ -1086,7 +995,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX____________,
 	XXXXXXXXXX______,
 	________________}
-
 /* 0x7b */
  ,{
 	______XX________,
@@ -1097,7 +1005,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	______XX________,
 	________________}
-
 /* 0x7c */
  ,{
 	____XX__________,
@@ -1108,7 +1015,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	____XX__________,
 	________________}
-
 /* 0x7d */
  ,{
 	__XX____________,
@@ -1119,7 +1025,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	__XX____________,
 	________________}
-
 /* 0x7e */
  ,{
 	__XXXX__XX______,
@@ -1131,9 +1036,7 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________}
 
-
 /*  additional characters for European character set  */
-
 #if (GUI_NOFCHARS>95)
 /* small accent ague, 95*/
  ,{
@@ -1145,10 +1048,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>96)
-
 /* small accent grave, 96 */
  ,{
 	XXXX____________,
@@ -1159,10 +1060,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>97)
-
 /* small accent circonflex, 97 */
  ,{
 	__XXXXXX________,
@@ -1173,10 +1072,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>98)
-
 /* small umlaut, 98 */
  ,{
 	__XX__XX________,
@@ -1187,10 +1084,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>99)
-
 /* small tilde, 99 */
  ,{
 	__XXXX__XX______,
@@ -1201,10 +1096,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>100)
-
 /* i without dot, 100 */
  ,{
 	________________,
@@ -1215,10 +1108,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	__XXXXXX________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>101)
-
 /* sharps eg �? 101  */
  ,{
 	________________,
@@ -1229,10 +1120,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XX__XXXX________,
 	XX______________}
-
 #endif
 #if (GUI_NOFCHARS>102)
-
 /* capital A with ring, 102 */
  ,{
 	____XX__________,
@@ -1243,10 +1132,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XX______XX______,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>103)
-
 /* small a with ring, 103 */
  ,{
 	____XX__________,
@@ -1257,10 +1144,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXXXX______,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>104)
-
 /*  capital A diphtong, ligature, 104 */
  ,{
 	____XXXXXX______,
@@ -1271,10 +1156,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX__XX__________,
 	XX__XXXXXX______,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>105)
-
 /*  Icelandic eth, 105 */
  ,{
 	__XXXXXX________,
@@ -1285,10 +1168,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX____XX______,
 	__XXXXXX________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>106)
-
 /*  Icelandic Thorn, 106 */
  ,{
 	XXXXXX__________,
@@ -1299,10 +1180,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XXXXXX________,
 	__XX____________,
 	XXXXXX__________}
-
 #endif
 #if (GUI_NOFCHARS>107)
-
 /*  small a diphtong, ligature, 107 */
  ,{
 	________________,
@@ -1313,10 +1192,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX__XX__________,
 	__XX__XXXX______,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>108)
-
 /*  small Icelanic Eth, 108 */
  ,{
 	XX__XX__________,
@@ -1327,10 +1204,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>109)
-
 /*  small Icelandic Thorn, 109 */
  ,{
 	__XXXX__________,
@@ -1341,10 +1216,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	__XXXXXX________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>110)
-
 /*  Capital O with slash, 110 */
  ,{
 	__XXXXXX________,
@@ -1355,10 +1228,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>111)
-
 /*  small o with slash, 111 */
  ,{
 	________________,
@@ -1370,13 +1241,10 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XXXXXX________,
 	________________}
 
-
 /*  Capital letters  */
-
 
 #endif
 #if (GUI_NOFCHARS>112)
-
 /*  Little capital A, 112 */
  ,{
 	________________,
@@ -1387,10 +1255,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XX______XX______,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>113)
-
 /*  Little capital E, 113 */
  ,{
 	________________,
@@ -1401,10 +1267,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______________,
 	XXXXXXXXXX______,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>114)
-
 /*  Little capital I, 114 */
  ,{
 	________________,
@@ -1415,10 +1279,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	__XXXXXX________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>115)
-
 /*  Little capital O, 115 */
  ,{
 	________________,
@@ -1429,10 +1291,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>116)
-
 /*  Little capital U, 116 */
  ,{
 	________________,
@@ -1443,10 +1303,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>117)
-
 /*  Little capital N, 117 */
  ,{
 	________________,
@@ -1458,10 +1316,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	________________}
 
-
 #endif
 #if (GUI_NOFCHARS>118)
-
 /*  inverted exclamation, 118 */
  ,{
 	____XX__________,
@@ -1472,10 +1328,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	____XX__________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>119)
-
 /*  inverted question mark, 119 */
  ,{
 	____XX__________,
@@ -1486,10 +1340,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	__XXXXXX________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>120)
-
 /* capital accent ague, 120 */
  ,{
 	______XXXX______,
@@ -1500,10 +1352,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>121)
-
 /* capital accent grave, 121 */
  ,{
 	XXXX____________,
@@ -1514,10 +1364,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>122)
-
 /* capital accent circonflex, 122 */
  ,{
 	____XX__________,
@@ -1528,10 +1376,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>123)
-
 /* capital umlaut, 123 */
  ,{
 	__XX__XX________,
@@ -1542,10 +1388,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>124)
-
 /* capital tilde, 124 */
  ,{
 	__XXXX__XX______,
@@ -1556,10 +1400,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>125)
-
 /* cedilla, 125 */
  ,{
 	________________,
@@ -1570,11 +1412,8 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	____XX__________}
-
 #endif
-
 /*  additional characters for complete ISO 8859-1 character set  */
-
 #if (GUI_NOFCHARS>126)
 /* Non breaking space, ISO-Code: 160, internal code: 126  */
  ,{
@@ -1586,7 +1425,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>127)
 /* cent sign, ISO-Code: 162, internal code: 127  */
@@ -1599,7 +1437,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX__XX__XX______,
 	__XXXXXX________,
 	____XX__________}
-
 #endif
 #if (GUI_NOFCHARS>128)
 /* pound sterling, ISO-Code: 163, internal code: 128  */
@@ -1612,7 +1449,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX____XX______,
 	XX__XXXX________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>129)
 /* general currency sign, ISO-Code: 164, internal code: 129  */
@@ -1625,7 +1461,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XXXXXX________,
 	XX______XX______,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>130)
 /* yen sign, ISO-Code: 165, internal code: 130  */
@@ -1638,7 +1473,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	____XX__________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>131)
 /* broken vertical bar, ISO-Code: 166, internal code: 131  */
@@ -1651,7 +1485,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	____XX__________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>132)
 /* section sign, ISO-Code: 167, internal code: 132  */
@@ -1664,7 +1497,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX____XX________,
 	__XXXX__________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>133)
 /* umlaut (dieresis), ISO-Code: 168, internal code: 133  */
@@ -1677,7 +1509,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>134)
 /* copyright, ISO-Code: 169, internal code: 134  */
@@ -1690,7 +1521,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	XXXXXXXXXX______,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>135)
 /* feminine ordinal, ISO-Code: 170, internal code: 135  */
@@ -1703,7 +1533,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>136)
 /* left angle quote, ISO-Code: 171, internal code: 136  */
@@ -1716,7 +1545,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__XX______,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>137)
 /* not sign, ISO-Code: 172, internal code: 137  */
@@ -1729,7 +1557,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________XX______,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>138)
 /* soft hyphen, ISO-Code: 173, internal code: 138  */
@@ -1742,7 +1569,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>139)
 /* rgistered trademark, ISO-Code: 174, internal code: 139  */
@@ -1755,7 +1581,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX__XX__XX______,
 	XXXXXXXXXX______,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>140)
 /* macron accent, ISO-Code: 175, internal code: 140  */
@@ -1768,7 +1593,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>141)
 /* degree sign, ISO-Code: 176, internal code: 141  */
@@ -1781,7 +1605,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>142)
 /* plus or minus, ISO-Code: 177, internal code: 142  */
@@ -1794,7 +1617,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XXXXXX________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>143)
 /* superscript two, ISO-Code: 178, internal code: 143  */
@@ -1807,7 +1629,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>144)
 /* superscript three, ISO-Code: 179, internal code: 144  */
@@ -1820,7 +1641,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>145)
 /* acute accent, ISO-Code: 180, internal code: 145  */
@@ -1834,7 +1654,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________}
 
-
 #endif
 #if (GUI_NOFCHARS>146)
 /* micro sign, ISO-Code: 181, internal code: 146  */
@@ -1847,7 +1666,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XXXX____XX______,
 	XX__XXXX________,
 	XX______________}
-
 #endif
 #if (GUI_NOFCHARS>147)
 /* paragraph sign, ISO-Code: 182, internal code: 147  */
@@ -1860,7 +1678,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	______XXXX______,
 	______XXXX______,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>148)
 /* middle dot, ISO-Code: 183, internal code: 148  */
@@ -1873,7 +1690,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>149)
 /* superscript one, ISO-Code: 185, internal code: 149  */
@@ -1886,7 +1702,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>150)
 /* masculine ordinal, ISO-Code: 186, internal code: 150  */
@@ -1899,7 +1714,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>151)
 /* right angle quote, ISO-Code: 187, internal code: 151  */
@@ -1912,7 +1726,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX__XX__________,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>152)
 /* fraction one-fourth, ISO-Code: 188, internal code: 152  */
@@ -1925,7 +1738,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XX__XX________,
 	__XXXXXXXX______,
 	______XX________}
-
 #endif
 #if (GUI_NOFCHARS>153)
 /* fraction one-half, ISO-Code: 189, internal code: 153  */
@@ -1938,7 +1750,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________XX______,
 	______XX________,
 	____XXXXXX______}
-
 #endif
 #if (GUI_NOFCHARS>154)
 /* fraction three-fourth, ISO-Code: 190, internal code: 154  */
@@ -1951,7 +1762,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__XX______,
 	____XXXXXX______,
 	________XX______}
-
 #endif
 #if (GUI_NOFCHARS>155)
 /* multiply sign, ISO-Code: 215, internal code: 155  */
@@ -1964,7 +1774,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	XX______XX______,
 	________________,
 	________________}
-
 #endif
 #if (GUI_NOFCHARS>156)
 /* division sign, ISO-Code: 247, internal code: 156  */
@@ -1977,9 +1786,7 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	________________,
 	________________}
-
 #endif
-
 #if (GUI_NOFCHARS>157)
 /* left arrow, ISO-Code: ---, internal code: 157  */
  ,{
@@ -1992,7 +1799,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	______XX________,
 	________________}
 #endif
-
 #if (GUI_NOFCHARS>158)
 /* right arrow, ISO-Code: ---, internal code: 158  */
  ,{
@@ -2005,7 +1811,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	________________}
 #endif
-
 #if (GUI_NOFCHARS>159)
 /* up arrow, ISO-Code: ---, internal code: 159 */
  ,{
@@ -2018,7 +1823,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________}
 #endif
-
 #if (GUI_NOFCHARS>160)
 /* down arrow, ISO-Code: ---, internal code: 160  */
  ,{
@@ -2031,7 +1835,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________,
 	________________}
 #endif
-
 #if (GUI_NOFCHARS>161)
 /* ENTER character, ISO-Code: ---, internal code: 161  */
  ,{
@@ -2044,7 +1847,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	____XX__________,
 	________________}
 #endif
-
 #if (GUI_NOFCHARS>162)
 /* ENTER character, ISO-Code: ---, internal code: 162  */
  ,{

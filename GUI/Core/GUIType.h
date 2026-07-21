@@ -15,7 +15,7 @@ struct GUI_BITMAP {
 	uint16_t XSize, YSize;
 	uint16_t BytesPerLine;
 	uint16_t BitsPerPixel;
-	const uint8_t *pData;
+	const void *pData;
 	const GUI_LOGPALETTE *pPal;
 };
 using CBITMAP = const GUI_BITMAP;
@@ -78,8 +78,8 @@ using CFONT = const FONT;
 using PCFONT = const FONT *;
 
 struct FONT_MONO : FONT {
-	const uint8_t *pData;
-	const uint8_t *pTransData;
+	const void *pData;
+	const void *pTransData;
 	struct TRANSINFO {
 		uint16_t FirstChar, LastChar;
 		struct LIST {
@@ -94,8 +94,8 @@ struct FONT_MONO : FONT {
 			  uint8_t Baseline,
 			  uint8_t LHeight, uint8_t CHeight,
 			  /* For FONT_MONO */
-			  const uint8_t *pData,
-			  const uint8_t *pTransData,
+			  const void *pData,
+			  const void *pTransData,
 			  const TRANSINFO *pTrans,
 			  uint16_t FirstChar, uint16_t LastChar,
 			  uint8_t XSize, uint8_t XDist,
@@ -117,7 +117,7 @@ struct FONT_PROP : FONT {
 	struct CHARINFO {
 		uint8_t XSize, XDist;
 		uint8_t BytesPerLine;
-		const uint8_t *pData;
+		const void *pData;
 	} const *paCharInfo;
 	const FONT_PROP *pNext;
 

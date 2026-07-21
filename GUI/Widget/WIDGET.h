@@ -10,18 +10,20 @@
 #define WIDGET_STATE_USER0              (1<<8)    /* Freely available for derived widget */
 #define WIDGET_STATE_USER1              (1<<9)    /* Freely available for derived widget */
 #define WIDGET_STATE_USER2              (1<<10)   /* Freely available for derived widget */
+
 #define WIDGET_ITEM_DRAW                0
 #define WIDGET_ITEM_GET_XSIZE           1
 #define WIDGET_ITEM_GET_YSIZE           2
+
 #define WM_WIDGET_SET_EFFECT    WM_WIDGET + 0
 #define WIDGET_CF_VERTICAL      WIDGET_STATE_VERTICAL
 
-typedef struct {
+struct WIDGET_ITEM_DRAW_INFO {
 	WM_HWIN hWin;
 	int Cmd;         /* WIDGET_ITEM_GET_XSIZE, WIDGET_ITEM_GET_YSIZE, WIDGET_ITEM_DRAW, */
 	int ItemIndex;
 	int x0, y0;
-} WIDGET_ITEM_DRAW_INFO;
+};
 
 typedef int WIDGET_DRAW_ITEM_FUNC(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo);
 
@@ -50,8 +52,7 @@ extern PCWIDGET_EFFECT
 struct WIDGET : public WM_Obj {
 	static PCWIDGET_EFFECT DefaultEffect;
 	PCWIDGET_EFFECT pEffect = DefaultEffect;
-	int16_t Id;
-	uint16_t State;
+	uint16_t Id, State;
 };
 
 /*********************************************************************

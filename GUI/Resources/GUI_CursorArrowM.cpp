@@ -1,6 +1,6 @@
 #include "GUI_Protected.h"
 
-const uint8_t GUI_Pixels_ArrowM[]{
+BM_BPP2 GUI_Pixels_ArrowM[]{
 XX______,________,________,
 XXXX____,________,________,
 XXooXX__,________,________,

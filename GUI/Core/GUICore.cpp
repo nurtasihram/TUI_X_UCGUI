@@ -188,7 +188,7 @@ void GUI_DrawHLine(int y0, int x0, int x1) {
 }
 
 void GUI_DrawBitmap(PCBITMAP pBitmap, int x0, int y0) {
-	const GUI_LOGPALETTE *pPal = pBitmap->pPal;
+	auto pPal = pBitmap->pPal;
 	GUI_DRAWMODE PrevDraw = GUI_SetDrawMode(0);  /* No Get... at this point */
 	GUI_SetDrawMode((pPal && pPal->HasTrans) ? (PrevDraw | DRAWMODE_TRANS) : PrevDraw & (~DRAWMODE_TRANS));
 	const RGBC *pTrans = pBitmap->pPal ? pBitmap->pPal->pPalEntries : nullptr;
@@ -369,7 +369,7 @@ char GUI_IsInFont(PCFONT pFont, uint16_t c) {
 #pragma region Font MONO
 void FONT_MONO::DispChar(uint16_t c) const {
 	int c0, c1;
-	const uint8_t *pd;
+	const void *pd;
 	int x = GUI_Context.DispPos.x, y = GUI_Context.DispPos.y;
 	if (FirstChar <= c && c <= LastChar) {
 		pd = pData;
@@ -400,23 +400,15 @@ void FONT_MONO::DispChar(uint16_t c) const {
 			LCD_DrawBitmap(x, y,
 						   XSize, YSize,
 						   1, BytesPerLine,
-						   pd + c0 * BytesPerChar,
+						   (const uint8_t *)pd + c0 * BytesPerChar,
 						   &LCD_BKCOLORINDEX);
 			if (c1 != -1) {
 				GUI_SetDrawMode(DrawMode | DRAWMODE_TRANS);
 				LCD_DrawBitmap(x, y,
 							   XSize, YSize,
 							   1, BytesPerLine,
-							   pd + c1 * BytesPerChar,
+							   (const uint8_t *)pd + c1 * BytesPerChar,
 							   &LCD_BKCOLORINDEX);
-			}
-			/* Fill empty pixel lines */
-			if (YDist > YSize) {
-				if (DrawMode != DRAWMODE_TRANS) {
-					GUI_SetDrawMode(DrawMode ^ DRAWMODE_REV);  /* Reverse so we can fill with BkColor */
-					LCD_FillRect(x, y + YSize * YDist,
-								 x + XSize, y + YDist);
-				}
 			}
 			GUI_SetDrawMode(OldMode);
 		}
@@ -444,30 +436,16 @@ const FONT_PROP *FONT_PROP::FindChar(uint16_t c) const {
 	return nullptr;
 }
 void FONT_PROP::DispChar(uint16_t c) const {
-	auto pProp = FindChar(c);	
+	auto pProp = FindChar(c);
 	if (!pProp)
 		return;
-	auto DrawMode = GUI_Context.TextMode;
 	auto pCharInfo = pProp->paCharInfo + (c - pProp->First);
-	auto BytesPerLine = pCharInfo->BytesPerLine;
-	auto OldDrawMode = GUI_SetDrawMode(DrawMode);
+	auto OldDrawMode = GUI_SetDrawMode(GUI_Context.TextMode);
 	LCD_DrawBitmap(GUI_Context.DispPos.x, GUI_Context.DispPos.y,
 				   pCharInfo->XSize, YSize,
-				   1, BytesPerLine,
+				   1, pCharInfo->BytesPerLine,
 				   pCharInfo->pData,
 				   &LCD_BKCOLORINDEX);
-	/* Fill empty pixel lines */
-	if (YDist > YSize) {
-		if (DrawMode != DRAWMODE_TRANS) {
-			RGBC OldColor = GUI_GetColor();
-			GUI_SetColor(GUI_GetBkColor());
-			LCD_FillRect(GUI_Context.DispPos.x,
-						 GUI_Context.DispPos.y + YSize,
-						 GUI_Context.DispPos.x + pCharInfo->XSize,
-						 GUI_Context.DispPos.y + YDist);
-			GUI_SetColor(OldColor);
-		}
-	}
 	GUI_SetDrawMode(OldDrawMode); /* Restore draw mode */
 	GUI_Context.DispPos.x += pCharInfo->XDist;
 }
