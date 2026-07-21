@@ -4,7 +4,7 @@
 
 struct WINDOW_Obj : public WIDGET {
 	WM_CALLBACK *cb;
-	WM_HWIN hFocussedChild;
+	WM_Obj * hFocussedChild;
 	WM_DIALOG_STATUS *pDialogStatus;
 };
 
@@ -12,10 +12,10 @@ auto WINDOW__DefaultBkColor = WINDOW_BKCOLOR_DEFAULT;
 
 static void _OnChildHasFocus(WINDOW_Obj *pObj, const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
 	if (pInfo)
-		if (!WM__IsAncestorOrSelf(pInfo->hNew, pObj)) /* A child has received the focus, Framewindow needs to be activated */
+		if (!WM__IsAncestorOrSelf(pInfo->pNew, pObj)) /* A child has received the focus, Framewindow needs to be activated */
 			/* Remember the child which had the focus so we can reactive this child */
-			if (WM__IsAncestor(pInfo->hOld, pObj))
-				pObj->hFocussedChild = pInfo->hOld;
+			if (WM__IsAncestor(pInfo->pOld, pObj))
+				pObj->hFocussedChild = pInfo->pOld;
 }
 static void _OnKey(WINDOW_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	if (pInfo->PressedCnt > 0) {
@@ -26,7 +26,7 @@ static void _OnKey(WINDOW_Obj *pObj, const WM_KEY_INFO *pInfo) {
 		}
 	}
 }
-static WM_PARAM _cb(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cb(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (WINDOW_Obj *)hWin;
 	auto cb = pObj->cb;
 	switch (MsgId) {
@@ -62,8 +62,8 @@ static WM_PARAM _cb(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 		return cb(hWin, MsgId, Data);
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
-WM_HWIN WINDOW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	WM_HWIN hObj;
+WM_Obj * WINDOW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	WM_Obj * hObj;
 	hObj = WM_CreateWindowAsChild(
 		pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize, hWinParent,
 		pCreateInfo->Flags, _cb, sizeof(WINDOW_Obj) - sizeof(WM_Obj));

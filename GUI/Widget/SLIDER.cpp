@@ -143,7 +143,7 @@ static char _OnKey(SLIDER_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0;
 }
-static WM_PARAM _SLIDER_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _SLIDER_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (SLIDER_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -164,7 +164,7 @@ static WM_PARAM _SLIDER_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */
-SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
 							  int WinFlags, int ExFlags, int Id) {
 	SLIDER_Handle hObj;
 	/* Create the window */
@@ -290,10 +290,10 @@ int SLIDER_GetValue(SLIDER_Handle hObj) {
 	return r;
 }
 
-SLIDER_Handle SLIDER_Create(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int WinFlags, int SpecialFlags) {
+SLIDER_Handle SLIDER_Create(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int WinFlags, int SpecialFlags) {
 	return SLIDER_CreateEx(x0, y0, xsize, ysize, hParent, WinFlags, SpecialFlags, Id);
 }
-SLIDER_Handle SLIDER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+SLIDER_Handle SLIDER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	SLIDER_Handle  hThis;
 	GUI_USE_PARA(cb);
 	hThis = SLIDER_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,

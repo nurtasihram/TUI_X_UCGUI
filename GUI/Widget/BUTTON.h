@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
@@ -11,7 +11,7 @@
 #define BUTTON_STATE_PRESSED    WIDGET_STATE_USER0
 #define BUTTON_STATE_HASFOCUS   0
 
-typedef WM_HWIN BUTTON_Handle;
+typedef WM_Obj * BUTTON_Handle;
 
 enum BUTTON_BI {
 	 BUTTON_BI_UNPRESSED = 0,
@@ -31,9 +31,9 @@ enum BUTTON_CI {
          Some widgets may have multiple create functions
 */
 BUTTON_Handle BUTTON_Create        (int x0, int y0, int xsize, int ysize, int ID, int Flags);
-BUTTON_Handle BUTTON_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags);
-BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
-BUTTON_Handle BUTTON_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+BUTTON_Handle BUTTON_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags);
+BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+BUTTON_Handle BUTTON_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                     int WinFlags, int ExFlags, int Id);
 
 /*********************************************************************

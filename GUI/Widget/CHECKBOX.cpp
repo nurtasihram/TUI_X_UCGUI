@@ -116,7 +116,7 @@ static char _OnKey(CHECKBOX_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0;
 }
-static WM_PARAM _CHECKBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _CHECKBOX_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (CHECKBOX_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -137,7 +137,7 @@ static WM_PARAM _CHECKBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */
-CHECKBOX_Handle CHECKBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+CHECKBOX_Handle CHECKBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
 								  int WinFlags, int ExFlags, int Id) {
 	CHECKBOX_Handle hObj;
 	GUI_USE_PARA(ExFlags);
@@ -170,11 +170,11 @@ CHECKBOX_Handle CHECKBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN 
 	return hObj;
 }
 
-CHECKBOX_Handle CHECKBOX_Create(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags) {
+CHECKBOX_Handle CHECKBOX_Create(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags) {
 	return CHECKBOX_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id);
 }
 
-CHECKBOX_Handle CHECKBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+CHECKBOX_Handle CHECKBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	CHECKBOX_Handle  hThis;
 	GUI_USE_PARA(cb);
 	hThis = CHECKBOX_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,

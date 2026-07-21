@@ -14,7 +14,7 @@
 #define MULTIPAGE_TEXTCOLOR0_DEFAULT  RGB_GRAYL(0x80) /* disabled page */
 #define MULTIPAGE_TEXTCOLOR1_DEFAULT  RGB_BLACK /* enabled page */
 typedef struct {
-	WM_HWIN hWin;
+	WM_Obj * hWin;
 	uint8_t      Status;
 	char    acText;
 } MULTIPAGE_PAGE;
@@ -59,7 +59,7 @@ static void _DeleteScrollbar(MULTIPAGE_Obj *pObj) {
 	pObj->State &= ~MULTIPAGE_STATE_SCROLLMODE;
 }
 static void _ShowPage(MULTIPAGE_Obj *pObj, unsigned Index) {
-	WM_HWIN hWin = 0;
+	WM_Obj * hWin = 0;
 	WM_Obj *pClient = (pObj->pClient);
 	if ((int)Index < pObj->Handles.NumItems) {
 		MULTIPAGE_PAGE *pPage;
@@ -322,7 +322,7 @@ static void _OnTouch(MULTIPAGE_Obj *pObj, const GUI_PID_STATE *pState) {
 			int x = pState->x;
 			int y = pState->y;
 			if (!_ClickedOnMultipage(pObj, x, y)) {
-				WM_HWIN hBelow;
+				WM_Obj * hBelow;
 				x += WM_GetWindowOrgX(pObj);
 				y += WM_GetWindowOrgY(pObj);
 				hBelow = WM_Screen2hWinEx(pObj, x, y);
@@ -345,7 +345,7 @@ static void _OnTouch(MULTIPAGE_Obj *pObj, const GUI_PID_STATE *pState) {
 		Notification = WM_NOTIFICATION_MOVED_OUT;
 	WM_NotifyParent(pObj, Notification);
 }
-static WM_PARAM _Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (MULTIPAGE_Obj *)hWin;
 	int Handled = WIDGET_HandleActive(pObj, MsgId, &Data);
 	switch (MsgId) {
@@ -357,10 +357,10 @@ static WM_PARAM _Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		case WM_NOTIFY_PARENT: {
 			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
-			WM_HWIN hWinSrc = pInfo->hWinSrc;
+			WM_Obj * pWinSrc = pInfo->pWinSrc;
 			if (pInfo->Notification == WM_NOTIFICATION_VALUE_CHANGED) {
-				if (WM_GetId(hWinSrc) == GUI_ID_HSCROLL) {
-					pObj->ScrollState = SCROLLBAR_GetValue(hWinSrc);
+				if (WM_GetId(pWinSrc) == GUI_ID_HSCROLL) {
+					pObj->ScrollState = SCROLLBAR_GetValue(pWinSrc);
 					WM_Invalidate(pObj);
 				}
 			}
@@ -386,8 +386,8 @@ static WM_PARAM _Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	}
 	return 0;
 }
-static WM_PARAM _ClientCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
-	WM_HWIN hObj = hWin;
+static WM_PARAM _ClientCallback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
+	WM_Obj * hObj = hWin;
 	auto pParent = (MULTIPAGE_Obj *)WM_GetParent(hObj);
 	switch (MsgId) {
 		case WM_PAINT:
@@ -407,7 +407,7 @@ static WM_PARAM _ClientCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */
-MULTIPAGE_Handle MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+MULTIPAGE_Handle MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
 									int WinFlags, int ExFlags, int Id) {
 	MULTIPAGE_Handle hObj;
 	GUI_USE_PARA(ExFlags);
@@ -445,7 +445,7 @@ MULTIPAGE_Handle MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 	}
 	return hObj;
 }
-void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_HWIN hWin, const char *pText) {
+void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_Obj * hWin, const char *pText) {
 	auto pObj = (MULTIPAGE_Obj *)hObj;
 	GUI_USE_PARA(hWin);
 	if (hObj) {
@@ -491,7 +491,7 @@ void MULTIPAGE_DeletePage(MULTIPAGE_Handle hObj, unsigned Index, int Delete) {
 		auto pObj = (MULTIPAGE_Obj *)hObj;
 		if (pObj) {
 			if ((int)Index < pObj->Handles.NumItems) {
-				WM_HWIN hWin;
+				WM_Obj * hWin;
 				MULTIPAGE_PAGE *pPage;
 				pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
 				hWin = pPage->hWin;
@@ -624,8 +624,8 @@ int MULTIPAGE_GetSelection(MULTIPAGE_Handle hObj) {
 	}
 	return -1;
 }
-WM_HWIN MULTIPAGE_GetWindow(MULTIPAGE_Handle hObj, unsigned Index) {
-	WM_HWIN r = 0;
+WM_Obj * MULTIPAGE_GetWindow(MULTIPAGE_Handle hObj, unsigned Index) {
+	WM_Obj * r = 0;
 	if (hObj) {
 		auto pObj = (MULTIPAGE_Obj *)hObj;
 		if (pObj) {
@@ -651,11 +651,11 @@ int MULTIPAGE_IsPageEnabled(MULTIPAGE_Handle hObj, unsigned Index) {
 
 
 MULTIPAGE_Handle MULTIPAGE_Create(int x0, int y0, int xsize, int ysize,
-								  WM_HWIN hParent, int Id, int Flags, int ExFlags) {
+								  WM_Obj * hParent, int Id, int Flags, int ExFlags) {
 	return MULTIPAGE_CreateEx(x0, y0, xsize, ysize, hParent, Flags, ExFlags, Id);
 }
 MULTIPAGE_Handle MULTIPAGE_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo,
-										  WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+										  WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	MULTIPAGE_Handle  hThis;
 	GUI_USE_PARA(cb);
 	hThis = MULTIPAGE_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,

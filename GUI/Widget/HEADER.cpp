@@ -172,7 +172,7 @@ static void _OnTouch(HEADER_Obj *pObj, const GUI_PID_STATE *pState) {
 	WM_NotifyParent(pObj, Notification);
 }
 #endif
-static WM_PARAM _HEADER_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _HEADER_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (HEADER_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -197,10 +197,10 @@ static WM_PARAM _HEADER_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	}
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
-HEADER_Handle HEADER_Create(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, int ExFlags) {
+HEADER_Handle HEADER_Create(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, int ExFlags) {
 	return HEADER_CreateEx(x0, y0, xsize, ysize, hParent, Flags, ExFlags, Id);
 }
-HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
 							  int WinFlags, int ExFlags, int Id) {
 	HEADER_Handle hObj;
 	GUI_USE_PARA(ExFlags);
@@ -391,11 +391,11 @@ void HEADER_SetBitmap(HEADER_Handle hObj, unsigned Index, PCBITMAP pBitmap) {
 }
 
 
-HEADER_Handle HEADER_CreateAttached(WM_HWIN hParent, int Id, int SpecialFlags) {
+HEADER_Handle HEADER_CreateAttached(WM_Obj * hParent, int Id, int SpecialFlags) {
 	return HEADER_CreateEx(0, 0, 0, 0, hParent, WM_CF_SHOW, SpecialFlags, Id);
 }
 
-HEADER_Handle HEADER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+HEADER_Handle HEADER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	HEADER_Handle  hThis;
 	GUI_USE_PARA(cb);
 	hThis = HEADER_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,

@@ -1,10 +1,9 @@
 #include "WM_Intern.h"
 #include "GUIDebug.h"
-void WM_EnableMemdev(WM_HWIN hWin) {
-	GUI_USE_PARA(hWin);
+void WM_EnableMemdev(WM_Obj * pWin) {
+	GUI_USE_PARA(pWin);
 #if GUI_SUPPORT_MEMDEV
-	if (hWin) {
-		auto pWin = (WM_Obj *)hWin;
+	if (pWin) {
 		pWin->Status |= (WM_SF_MEMDEV);
 	}
 #else
@@ -12,11 +11,10 @@ void WM_EnableMemdev(WM_HWIN hWin) {
 #endif
 }
 
-void WM_DisableMemdev(WM_HWIN hWin) {
-	GUI_USE_PARA(hWin);
+void WM_DisableMemdev(WM_Obj * pWin) {
+	GUI_USE_PARA(pWin);
 #if GUI_SUPPORT_MEMDEV
-	if (hWin) {
-		auto pWin = (WM_Obj *)hWin;
+	if (pWin) {
 		pWin->Status &= ~(WM_SF_MEMDEV | WM_SF_MEMDEV_ON_REDRAW);
 	}
 #else

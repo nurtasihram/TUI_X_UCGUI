@@ -15,7 +15,6 @@ void GUI_Init(void) {
 #endif
 	LCD_L0_GetRect(&GUI_Context.ClipRect);
 	GUI_Context.pAFont = GUI_DEFAULT_FONT;
-	GUI_Context.hAWin = WM_GetDesktopWindow();
 	GUI_SetBkColor(GUI_DEFAULT_BKCOLOR);
 	GUI_SetColor(GUI_DEFAULT_COLOR);
 	GUI_Context.pUC_API = &GUI__API_TableNone;

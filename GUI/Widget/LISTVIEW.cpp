@@ -241,12 +241,12 @@ static void _SetSelFromPos(LISTVIEW_Obj *pObj, const GUI_PID_STATE *pState) {
 *   Notify owner of the window.
 *   If no owner is registered, the parent is considered owner.
 */
-static void _NotifyOwner(WM_HWIN hObj, int Notification) {
+static void _NotifyOwner(WM_Obj * hObj, int Notification) {
 	auto pObj = (LISTVIEW_Obj *)hObj;
-	WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
+	WM_Obj * hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
 	WM_NOTIFY_INFO Info;
 	Info.Notification = Notification;
-	Info.hWinSrc = hObj;
+	Info.pWinSrc = hObj;
 	WM_SendMessage(hOwner, WM_NOTIFY_PARENT, (WM_PARAM)&Info);
 }
 static void _OnTouch(LISTVIEW_Obj *pObj, const GUI_PID_STATE *pState) {
@@ -386,7 +386,7 @@ static void _FreeAttached(LISTVIEW_Obj *pObj) {
 	GUI_ARRAY_Delete(&pObj->AlignArray);
 	GUI_ARRAY_Delete(&pObj->RowArray);
 }
-static WM_PARAM _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _LISTVIEW_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (LISTVIEW_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -398,23 +398,23 @@ static WM_PARAM _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		case WM_NOTIFY_PARENT: {
 			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
-			WM_HWIN hWinSrc = pInfo->hWinSrc;
+			WM_Obj * pWinSrc = pInfo->pWinSrc;
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_CHILD_DELETED:
 					/* make sure we do not send any messages to the header child once it has been deleted */
-					if (hWinSrc == pObj->hHeader)
+					if (pWinSrc == pObj->hHeader)
 						pObj->hHeader = nullptr;
 					break;
 				case WM_NOTIFICATION_VALUE_CHANGED: {
 					WM_SCROLL_STATE ScrollState;
-					if (hWinSrc == WM_GetScrollbarV(pObj)) {
-						WM_GetScrollState(hWinSrc, &ScrollState);
+					if (pWinSrc == WM_GetScrollbarV(pObj)) {
+						WM_GetScrollState(pWinSrc, &ScrollState);
 						pObj->ScrollStateV.v = ScrollState.v;
 						LISTVIEW__InvalidateInsideArea(pObj);
 						_NotifyOwner(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
-					else if (hWinSrc == WM_GetScrollbarH(pObj)) {
-						WM_GetScrollState(hWinSrc, &ScrollState);
+					else if (pWinSrc == WM_GetScrollbarH(pObj)) {
+						WM_GetScrollState(pWinSrc, &ScrollState);
 						pObj->ScrollStateH.v = ScrollState.v;
 						LISTVIEW__UpdateScrollParas(pObj);
 						HEADER_SetScrollPos(pObj->hHeader, pObj->ScrollStateH.v);
@@ -446,7 +446,7 @@ static WM_PARAM _LISTVIEW_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */
-LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
 								  int WinFlags, int ExFlags, int Id) {
 	LISTVIEW_Handle hObj;
 	GUI_USE_PARA(ExFlags);
@@ -549,14 +549,14 @@ void LISTVIEW_AddRow(LISTVIEW_Handle hObj, const GUI_ConstString *ppText) {
 }
 
 
-LISTVIEW_Handle LISTVIEW_Create(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, int ExFlags) {
+LISTVIEW_Handle LISTVIEW_Create(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, int ExFlags) {
 	return LISTVIEW_CreateEx(x0, y0, xsize, ysize, hParent, Flags, ExFlags, Id);
 }
-LISTVIEW_Handle LISTVIEW_CreateAttached(WM_HWIN hParent, int Id, int SpecialFlags) {
+LISTVIEW_Handle LISTVIEW_CreateAttached(WM_Obj * hParent, int Id, int SpecialFlags) {
 	return LISTVIEW_CreateEx(0, 0, 0, 0, hParent, WM_CF_SHOW, SpecialFlags, Id);
 }
 
-LISTVIEW_Handle LISTVIEW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+LISTVIEW_Handle LISTVIEW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	LISTVIEW_Handle  hThis;
 	GUI_USE_PARA(cb);
 	hThis = LISTVIEW_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,

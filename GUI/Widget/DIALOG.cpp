@@ -15,21 +15,21 @@ RGBC DIALOG_SetBkColor(RGBC BkColor) {
 	_BkColor = BkColor;
 	return r;
 }
-void GUI_SetDialogStatusPtr(WM_HWIN hDialog, WM_DIALOG_STATUS *pDialogStatus) {
+void GUI_SetDialogStatusPtr(WM_Obj * hDialog, WM_DIALOG_STATUS *pDialogStatus) {
 	WM_SendMessage(hDialog, WM_HANDLE_DIALOG_STATUS, (WM_PARAM)pDialogStatus);
 }
-WM_DIALOG_STATUS *GUI_GetDialogStatusPtr(WM_HWIN hDialog) {
+WM_DIALOG_STATUS *GUI_GetDialogStatusPtr(WM_Obj * hDialog) {
 	return (WM_DIALOG_STATUS *)WM_SendMessage(hDialog, WM_HANDLE_DIALOG_STATUS, 0);
 }
-WM_HWIN GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidgets, WM_CALLBACK *cb, WM_HWIN hParent,
+WM_Obj * GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidgets, WM_CALLBACK *cb, WM_Obj * hParent,
 							int x0, int y0) {
-	WM_HWIN hDialog = paWidget->pfCreateIndirect(paWidget, hParent, x0, y0, cb);     /* Create parent window */
-	WM_HWIN hDialogClient = WM_GetClientWindow(hDialog);
+	WM_Obj * hDialog = paWidget->pfCreateIndirect(paWidget, hParent, x0, y0, cb);     /* Create parent window */
+	WM_Obj * hDialogClient = WM_GetClientWindow(hDialog);
 	WIDGET_OrState(hDialog, paWidget->Flags);
 	WM_ShowWindow(hDialog);
 	WM_ShowWindow(hDialogClient);
 	while (--NumWidgets > 0) {
-		WM_HWIN hChild;
+		WM_Obj * hChild;
 		paWidget++;
 		hChild = paWidget->pfCreateIndirect(paWidget, hDialogClient, 0, 0, 0);     /* Create child window */
 		WM_ShowWindow(hChild);
@@ -38,7 +38,7 @@ WM_HWIN GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidge
 	WM_SendMessageNoPara(hDialogClient, WM_INIT_DIALOG);
 	return hDialog;
 }
-void GUI_EndDialog(WM_HWIN hDialog, int r) {
+void GUI_EndDialog(WM_Obj * hDialog, int r) {
 	WM_DIALOG_STATUS *pStatus;
 	pStatus = GUI_GetDialogStatusPtr(hDialog);
 	if (pStatus) {
@@ -47,7 +47,7 @@ void GUI_EndDialog(WM_HWIN hDialog, int r) {
 	}
 	WM_DeleteWindow(hDialog);
 }
-int     GUI_ExecCreatedDialog(WM_HWIN hDialog) {
+int     GUI_ExecCreatedDialog(WM_Obj * hDialog) {
 	WM_DIALOG_STATUS DialogStatus = { 0 };
 	/* Let window know how to send feedback (close info & return value) */
 	GUI_SetDialogStatusPtr(hDialog, &DialogStatus);
@@ -66,8 +66,8 @@ int     GUI_ExecCreatedDialog(WM_HWIN hDialog) {
 *
 */
 int GUI_ExecDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget,
-					  int NumWidgets, WM_CALLBACK *cb, WM_HWIN hParent, int x0, int y0) {
-	WM_HWIN hDialog;
+					  int NumWidgets, WM_CALLBACK *cb, WM_Obj * hParent, int x0, int y0) {
+	WM_Obj * hDialog;
 	hDialog = GUI_CreateDialogBox(paWidget, NumWidgets, cb, hParent, x0, y0);
 	return GUI_ExecCreatedDialog(hDialog);
 }

@@ -176,7 +176,6 @@ typedef struct {
 	//RGBC Color, BkColor; /* Required only when changing devices and for speed opt (caching) */
 	/* Variables in WM module */
 	const GUI_RECT *WM__pUserClipRect;
-	GUI_HWIN hAWin;
 	int xOff, yOff;
 	/* Variables in MEMDEV module (with memory devices only) */
 #if GUI_SUPPORT_DEVICES

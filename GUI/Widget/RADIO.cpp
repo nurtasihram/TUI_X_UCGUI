@@ -157,7 +157,7 @@ static char _OnKey(RADIO_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0;
 }
-static WM_PARAM _RADIO_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _RADIO_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (RADIO_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -193,7 +193,7 @@ void RADIO__SetValue(RADIO_Obj *pObj, int v) {
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */
-RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParent,
+RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj * hParent,
 							int WinFlags, int ExFlags, int Id, int NumItems, int Spacing) {
 	RADIO_Handle hObj;
 	int Height, i;
@@ -276,11 +276,11 @@ int RADIO_GetValue(RADIO_Handle hObj) {
 	return r;
 }
 
-RADIO_Handle RADIO_Create(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, unsigned Para) {
+RADIO_Handle RADIO_Create(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, unsigned Para) {
 	return RADIO_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id, Para & 0xFF, (Para >> 8) & 0xFF);
 }
 
-RADIO_Handle RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+RADIO_Handle RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	RADIO_Handle  hThis;
 	int NumItems = (pCreateInfo->Para) & 0xFF;
 	int Spacing = (pCreateInfo->Para >> 8) & 0xFF;
@@ -323,12 +323,12 @@ static void _SetValue(RADIO_Handle hObj, int v) {
 	auto pObj = (RADIO_Obj *)hObj;
 	RADIO__SetValue(pObj, v);
 }
-static int _IsInGroup(WM_HWIN hWin, uint8_t GroupId) {
+static int _IsInGroup(WM_Obj * hWin, uint8_t GroupId) {
 	if (GroupId)
 		return WM_SendMessage(hWin, WM_GET_RADIOGROUP, 0) == GroupId;
 	return 0;
 }
-static WM_HWIN _GetPrevInGroup(WM_HWIN hWin, uint8_t GroupId) {
+static WM_Obj * _GetPrevInGroup(WM_Obj * hWin, uint8_t GroupId) {
 	for (hWin = WM_GetPrevSibling(hWin); hWin; hWin = WM_GetPrevSibling(hWin)) {
 		if (_IsInGroup(hWin, GroupId)) {
 			return hWin;
@@ -336,7 +336,7 @@ static WM_HWIN _GetPrevInGroup(WM_HWIN hWin, uint8_t GroupId) {
 	}
 	return 0;
 }
-static WM_HWIN _GetNextInGroup(WM_HWIN hWin, uint8_t GroupId) {
+static WM_Obj * _GetNextInGroup(WM_Obj * hWin, uint8_t GroupId) {
 	for (; hWin; hWin = WM_GetNextSibling(hWin))
 		if (_IsInGroup(hWin, GroupId))
 			return hWin;
@@ -345,13 +345,13 @@ static WM_HWIN _GetNextInGroup(WM_HWIN hWin, uint8_t GroupId) {
 static void _ClearSelection(RADIO_Handle hObj, uint8_t GroupId) {
 	for (auto pWin = (WM_Obj *)WM__GetFirstSibling(hObj); pWin; pWin = pWin->pNext) {
 		if (pWin != (WM_Obj *)hObj)
-			if (_IsInGroup((WM_HWIN)pWin, GroupId))
+			if (_IsInGroup(pWin, GroupId))
 				RADIO__SetValue((RADIO_Obj *)pWin, -1);
 	}
 }
 static void _HandleSetValue(RADIO_Obj *pObj, int v) {
 	if (v < 0) {
-		WM_HWIN hWin = _GetPrevInGroup(pObj, pObj->GroupId);
+		WM_Obj * hWin = _GetPrevInGroup(pObj, pObj->GroupId);
 		if (hWin) {
 			WM_SetFocus(hWin);
 			_SetValue(hWin, 0x7FFF);
@@ -359,7 +359,7 @@ static void _HandleSetValue(RADIO_Obj *pObj, int v) {
 		}
 	}
 	else if (v >= pObj->NumItems) {
-		WM_HWIN hWin = _GetNextInGroup(pObj->pNext, pObj->GroupId);
+		WM_Obj * hWin = _GetNextInGroup(pObj->pNext, pObj->GroupId);
 		if (hWin) {
 			WM_SetFocus(hWin);
 			_SetValue(hWin, 0);
@@ -380,7 +380,7 @@ void RADIO_SetGroupId(RADIO_Handle hObj, uint8_t NewGroupId) {
 		uint8_t OldGroupId;
 		OldGroupId = pObj->GroupId;
 		if (NewGroupId != OldGroupId) {
-			WM_HWIN hFirst;
+			WM_Obj * hFirst;
 			hFirst = WM__GetFirstSibling(hObj);
 			/* Set function pointer if necessary */
 			if (NewGroupId && (RADIO__pfHandleSetValue == nullptr)) {
@@ -389,7 +389,7 @@ void RADIO_SetGroupId(RADIO_Handle hObj, uint8_t NewGroupId) {
 			/* Pass our selection, if we have one, to another radio button in */
 			/* our old group. So the group have a valid selection when we leave it. */
 			if (OldGroupId && (pObj->Sel >= 0)) {
-				WM_HWIN hWin;
+				WM_Obj * hWin;
 				pObj->GroupId = 0; /* Leave group first, so _GetNextInGroup() could */
 				/* not find a handle to our own window. */
 				hWin = _GetNextInGroup(hFirst, OldGroupId);

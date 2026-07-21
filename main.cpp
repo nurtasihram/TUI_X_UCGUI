@@ -1,10 +1,12 @@
-﻿#include "GUI.h"
+#include "GUI.h"
 #include "DIALOG.h"
 #include "DROPDOWN.h"
 
 static bool _MultiSel = false, _OwnerDrawn = true;
-static WM_HWIN _hMemDevFrame, _hMemDevPane;
-static WM_HWIN _hNoMemDevFrame, _hNoMemDevPane;
+static WM_Obj *_hMemDevFrame;
+static WM_Obj *_hMemDevPane;
+static WM_Obj *_hNoMemDevFrame;
+static WM_Obj *_hNoMemDevPane;
 static int _MemDevPhase;
 
 const RGBC ColorsSmilie0[]{ RGB_WHITE, RGB_BLACK, RGB_RED };
@@ -70,12 +72,12 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[]{
 	{ BUTTON_CreateIndirect    , "Cancel"               , GUI_ID_CANCEL     , 120 , 90  , 80   , 20                                }
 };
 
-static int _GetItemSizeX(WM_HWIN hWin, int ItemIndex) {
+static int _GetItemSizeX(WM_Obj * hWin, int ItemIndex) {
 	char acBuffer[100];
 	LISTBOX_GetItemText(hWin, ItemIndex, acBuffer, sizeof(acBuffer));
 	return GUI_GetStringDistX(acBuffer) + bmSmilie0.XSize + 16;
 }
-static int _GetItemSizeY(WM_HWIN hWin, int ItemIndex) {
+static int _GetItemSizeY(WM_Obj * hWin, int ItemIndex) {
 	int DistY = GUI_GetFontDistY() + 1;
 	if (LISTBOX_GetMulti(hWin)) {
 		if (LISTBOX_GetItemSel(hWin, ItemIndex))
@@ -101,7 +103,7 @@ static int _GetItemSizeY(WM_HWIN hWin, int ItemIndex) {
 *   must call the default routine LISTBOX_OwnerDraw.
 */
 static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
-	WM_HWIN hWin = pDrawItemInfo->hWin;
+	WM_Obj * hWin = pDrawItemInfo->hWin;
 	int Index = pDrawItemInfo->ItemIndex;
 	switch (pDrawItemInfo->Cmd) {
 		case WIDGET_ITEM_GET_XSIZE:
@@ -160,7 +162,7 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 	return 0;
 }
 
-static WM_PARAM _cbMemDevPane(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbMemDevPane(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_PAINT:
 		{
@@ -197,9 +199,9 @@ static WM_PARAM _cbMemDevPane(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
 
-static WM_HWIN _CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMemDev, WM_HWIN *phPane) {
-	WM_HWIN hFrame;
-	WM_HWIN hClient;
+static WM_Obj * _CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMemDev, WM_Obj * *phPane) {
+	WM_Obj * hFrame;
+	WM_Obj * hClient;
 	int xSize;
 	int ySize;
 	int Flags;
@@ -215,8 +217,9 @@ static WM_HWIN _CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMem
 	return hFrame;
 }
 
-static WM_PARAM _cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
-	WM_HWIN hItem, hListBox = WM_GetDialogItem(hWin, GUI_ID_MULTIEDIT0);
+static WM_PARAM _cbCallback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
+	WM_Obj *hItem;
+	WM_Obj *hListBox = WM_GetDialogItem(hWin, GUI_ID_MULTIEDIT0);
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
 			LISTBOX_SetText(hListBox, _ListBox);
@@ -252,7 +255,7 @@ static WM_PARAM _cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		case WM_NOTIFY_PARENT: {
 			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
-			int Id = WM_GetId(pInfo->hWinSrc); /* Id of widget */
+			int Id = WM_GetId(pInfo->pWinSrc); /* Id of widget */
 			hItem = WM_GetDialogItem(hWin, Id);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SEL_CHANGED:
@@ -322,7 +325,7 @@ static void _AddMenuItem(MENU_Handle hMenu, MENU_Handle hSubmenu, const char *pT
 *
 **********************************************************************
 */
-static WM_HWIN _CreateMenu(WM_HWIN hParent) {
+static WM_Obj * _CreateMenu(WM_Obj * hParent) {
 	MENU_Handle hMenu;
 	MENU_Handle hMenuFile;
 	MENU_Handle hMenuEdit;
@@ -389,12 +392,12 @@ int main(void) {
 	GUI_CURSOR_Show();
 	WM_SetDesktopColor(RGB_GRAY);
 	for (;;) {
-		WM_HWIN hDialog = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
+		WM_Obj * hDialog = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
 		_CreateMenu(hDialog);
 		_MemDevPhase = 0;
 		_hMemDevFrame = _CreateMemDevFrame(280, 50, "MemDev ON", 1, &_hMemDevPane);
 		_hNoMemDevFrame = _CreateMemDevFrame(480, 50, "MemDev OFF", 0, &_hNoMemDevPane);
-		WM_HWIN hDrp = DROPDOWN_CreateEx(10, 110, 100, 80,
+		WM_Obj * hDrp = DROPDOWN_CreateEx(10, 110, 100, 80,
 										 WM_GetClientWindow(hDialog),
 										 WM_CF_SHOW, DROPDOWN_CF_AUTOSCROLLBAR, 0);
 		DROPDOWN_AddString(hDrp, "1");
@@ -458,7 +461,7 @@ const char *pRows[][5] = {
 
 void main(void) {
 	GUI_Init();
-	WM_HWIN hListView = LISTVIEW_Create(10, 110, 50, 70, 0, 0, WM_CF_SHOW, 0);
+	WM_Obj * hListView = LISTVIEW_Create(10, 110, 50, 70, 0, 0, WM_CF_SHOW, 0);
 	LISTVIEW_AddColumn(hListView, 0, "Col 1    ", TEXTALIGN_LEFT);
 	LISTVIEW_AddColumn(hListView, 0, "Col 2    ", TEXTALIGN_LEFT);
 	LISTVIEW_AddColumn(hListView, 0, "Col 3     ", TEXTALIGN_LEFT);

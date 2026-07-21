@@ -37,7 +37,7 @@ static int _OnKey(FRAMEWIN_Obj *pObj, const WM_KEY_INFO *pInfo) {
 *
 */
 static void _OnPaint(FRAMEWIN_Obj *pObj) {
-	WM_HWIN hWin = WM_GetActiveWindow();
+	WM_Obj * hWin = WM_GetActiveWindow();
 	const char *pText = nullptr;
 	auto xsize = WM_GetWindowSizeX(hWin);
 	auto ysize = WM_GetWindowSizeY(hWin);
@@ -92,18 +92,18 @@ static void _OnPaint(FRAMEWIN_Obj *pObj) {
 */
 static void _OnChildHasFocus(FRAMEWIN_Obj *pObj, const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
 	if (pInfo) {
-		if (WM__IsAncestorOrSelf(pInfo->hNew, pObj)) /* A child has received the focus, Framewindow needs to be activated */
+		if (WM__IsAncestorOrSelf(pInfo->pNew, pObj)) /* A child has received the focus, Framewindow needs to be activated */
 			FRAMEWIN_SetActive(pObj, 1);
 		else { /* A child has lost the focus, we need to deactivate */
 			FRAMEWIN_SetActive(pObj, 0);
 			/* Remember the child which had the focus so we can reactive this child */
-			if (WM__IsAncestor(pInfo->hOld, pObj))
-				pObj->hFocussedChild = pInfo->hOld;
+			if (WM__IsAncestor(pInfo->pOld, pObj))
+				pObj->hFocussedChild = pInfo->pOld;
 		}
 	}
 }
-static int _HandleResizeable(WM_HWIN hWin, int MsgId, WM_PARAM Data);
-static WM_PARAM _FRAMEWIN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static int _HandleResizeable(WM_Obj * hWin, int MsgId, WM_PARAM Data);
+static WM_PARAM _FRAMEWIN_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (FRAMEWIN_Obj *)hWin;
 	if (pObj->Flags & FRAMEWIN_CF_RESIZEABLE) 
 		if (_HandleResizeable(hWin, MsgId, Data))
@@ -134,7 +134,7 @@ static WM_PARAM _FRAMEWIN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 		case WM_NOTIFY_PARENT: {
 			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
 			if (pInfo->Notification == WM_NOTIFICATION_RELEASED) {
-				int Id = WM_GetId(pInfo->hWinSrc);
+				int Id = WM_GetId(pInfo->pWinSrc);
 				switch (Id) {
 					case GUI_ID_CLOSE:
 						WM_DeleteWindow(pObj);
@@ -192,7 +192,7 @@ static WM_PARAM _FRAMEWIN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 		return Data;
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
-static WM_PARAM FRAMEWIN__cbClient(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM FRAMEWIN__cbClient(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pParent = (FRAMEWIN_Obj *)WM_GetParent(hWin);
 	WM_CALLBACK *cb = pParent->cb;
 	switch (MsgId) {
@@ -295,7 +295,7 @@ void FRAMEWIN__UpdatePositions(FRAMEWIN_Obj *pObj) {
 			WM_MoveChildTo(pObj->hMenu, Pos.rClient.x0, Pos.rClient.y0 - Pos.MenuHeight);
 	}
 }
-FRAMEWIN_Handle FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+FRAMEWIN_Handle FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
 								  int WinFlags, int ExFlags, int Id, const char *pTitle, WM_CALLBACK *cb) {
 	FRAMEWIN_Handle hObj;
 	/* Create the window */
@@ -370,7 +370,7 @@ void FRAMEWIN_SetActive(FRAMEWIN_Handle hObj, int State) {
 	}
 }
 
-void FRAMEWIN_AddMenu(FRAMEWIN_Handle hObj, WM_HWIN hMenu) {
+void FRAMEWIN_AddMenu(FRAMEWIN_Handle hObj, WM_Obj * hMenu) {
 	if (hObj) {
 		auto pObj = (FRAMEWIN_Obj *)hObj;
 		if (pObj) {
@@ -402,11 +402,11 @@ FRAMEWIN_Handle FRAMEWIN_Create(const char *pText, WM_CALLBACK *cb, int Flags,
 								int x0, int y0, int xsize, int ysize) {
 	return FRAMEWIN_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, 0, pText, cb);
 }
-FRAMEWIN_Handle FRAMEWIN_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+FRAMEWIN_Handle FRAMEWIN_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
 									   const char *pText, WM_CALLBACK *cb, int Flags) {
 	return FRAMEWIN_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, 0, pText, cb);
 }
-FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent,
+FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent,
 										int x0, int y0, WM_CALLBACK *cb) {
 	FRAMEWIN_Handle hObj;
 	hObj = FRAMEWIN_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
@@ -914,7 +914,7 @@ static int _OnTouchResize(FRAMEWIN_Handle hWin, const GUI_PID_STATE *pState) {
 }
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 static int _ForwardMouseOverMsg(FRAMEWIN_Handle hWin, const GUI_PID_STATE *pState) {
-	WM_HWIN hBelow;
+	WM_Obj * hBelow;
 	GUI_PID_STATE StateBelow;
 	StateBelow.x = pState->x + WM_GetWindowOrgX(hWin);
 	StateBelow.y = pState->y + WM_GetWindowOrgY(hWin);
@@ -949,7 +949,7 @@ static int _OnMouseOver(FRAMEWIN_Handle hWin, const GUI_PID_STATE *pState) {
 	return 0;
 }
 #endif
-static int _HandleResizeable(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static int _HandleResizeable(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	if (WM_HasCaptured(hWin) && _CaptureFlags == 0)
 		return 0;
 	if (FRAMEWIN_IsMinimized(hWin) || FRAMEWIN_IsMaximized(hWin))
@@ -1093,8 +1093,8 @@ void FRAMEWIN__UpdateButtons(FRAMEWIN_Obj *pObj, int OldHeight) {
 	}
 }
 
-WM_HWIN FRAMEWIN_AddButton(FRAMEWIN_Handle hObj, int Flags, int Off, int Id) {
-	WM_HWIN r = 0;
+WM_Obj * FRAMEWIN_AddButton(FRAMEWIN_Handle hObj, int Flags, int Off, int Id) {
+	WM_Obj * r = 0;
 	if (hObj) {
 		FRAMEWIN_Obj *pObj;
 		POSITIONS Pos;
@@ -1131,8 +1131,8 @@ static void _DrawClose(void) {
 		}
 	} WM_ITERATE_END();
 }
-WM_HWIN FRAMEWIN_AddCloseButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
-	WM_HWIN hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_CLOSE);
+WM_Obj * FRAMEWIN_AddCloseButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
+	WM_Obj * hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_CLOSE);
 	BUTTON_SetSelfDraw(hButton, 0, &_DrawClose);
 	return hButton;
 }
@@ -1174,8 +1174,8 @@ static void _DrawMax(void) {
 	else
 		_PaintMax();
 }
-WM_HWIN FRAMEWIN_AddMaxButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
-	WM_HWIN hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_MAXIMIZE);
+WM_Obj * FRAMEWIN_AddMaxButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
+	WM_Obj * hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_MAXIMIZE);
 	BUTTON_SetSelfDraw(hButton, 0, &_DrawMax);
 	return hButton;
 }
@@ -1207,8 +1207,8 @@ static void _DrawMin(void) {
 	else
 		_PaintMin();
 }
-WM_HWIN FRAMEWIN_AddMinButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
-	WM_HWIN hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_MINIMIZE);
+WM_Obj * FRAMEWIN_AddMinButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
+	WM_Obj * hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_MINIMIZE);
 	BUTTON_SetSelfDraw(hButton, 0, &_DrawMin);
 	return hButton;
 }

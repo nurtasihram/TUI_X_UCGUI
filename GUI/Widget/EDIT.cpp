@@ -316,7 +316,7 @@ static int _OnKey(EDIT_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0;
 }
-static WM_PARAM EDIT__Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM EDIT__Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (EDIT_Obj *)hWin;
 	int IsEnabled = WM_IsEnabled(pObj);
 	/* Let widget handle the standard messages */
@@ -339,7 +339,7 @@ static WM_PARAM EDIT__Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	}
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
-EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int WinFlags, int ExFlags,
+EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int WinFlags, int ExFlags,
 						  int Id, int MaxLen) {
 	EDIT_Handle hObj;
 	GUI_USE_PARA(ExFlags);
@@ -590,11 +590,11 @@ void EDIT_SetTextAlign(EDIT_Handle hObj, int Align) {
 EDIT_Handle EDIT_Create(int x0, int y0, int xsize, int ysize, int Id, int MaxLen, int Flags) {
 	return EDIT_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, Id, MaxLen);
 }
-EDIT_Handle EDIT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, int MaxLen) {
+EDIT_Handle EDIT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, int MaxLen) {
 	return EDIT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id, MaxLen);
 }
 
-EDIT_Handle EDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+EDIT_Handle EDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	EDIT_Handle hEdit;
 	GUI_USE_PARA(cb);
 	hEdit = EDIT_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,

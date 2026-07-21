@@ -137,7 +137,7 @@ static void _OnPidStateChange(BUTTON_Obj *pObj, const WM_PID_STATE_CHANGED_INFO 
 			_ButtonReleased(pObj, WM_NOTIFICATION_RELEASED);
 }
 #endif
-static WM_PARAM _BUTTON_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _BUTTON_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (BUTTON_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -165,7 +165,7 @@ static WM_PARAM _BUTTON_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	}
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
-BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int WinFlags, int ExFlags, int Id) {
+BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int WinFlags, int ExFlags, int Id) {
 	BUTTON_Handle hObj;
 	GUI_USE_PARA(ExFlags);
 	/* Create the window */
@@ -244,11 +244,11 @@ void BUTTON_SetBitmap(BUTTON_Handle hObj, unsigned int Index, PCBITMAP pBitmap) 
 BUTTON_Handle BUTTON_Create(int x0, int y0, int xsize, int ysize, int Id, int Flags) {
 	return BUTTON_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, Id);
 }
-BUTTON_Handle BUTTON_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags) {
+BUTTON_Handle BUTTON_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags) {
 	return BUTTON_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id);
 }
 
-BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	BUTTON_Handle  hThis;
 	GUI_USE_PARA(cb);
 	hThis = BUTTON_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,

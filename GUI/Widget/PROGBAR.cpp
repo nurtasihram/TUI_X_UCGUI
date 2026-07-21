@@ -123,7 +123,7 @@ static void _OnPaint(PROGBAR_Obj *pObj) {
 static void _Delete(PROGBAR_Obj *pObj) {
 	_FreeText(pObj);
 }
-static WM_PARAM _PROGBAR_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _PROGBAR_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (PROGBAR_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -138,7 +138,7 @@ static WM_PARAM _PROGBAR_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	}
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
-PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
 								int WinFlags, int ExFlags, int Id) {
 	PROGBAR_Handle hObj;
 	GUI_USE_PARA(ExFlags);
@@ -278,11 +278,11 @@ void PROGBAR_SetMinMax(PROGBAR_Handle hObj, int Min, int Max) {
 PROGBAR_Handle PROGBAR_Create(int x0, int y0, int xsize, int ysize, int Flags) {
 	return PROGBAR_CreateEx(x0, y0, xsize, ysize, 0, Flags, 0, 0);
 }
-PROGBAR_Handle PROGBAR_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags) {
+PROGBAR_Handle PROGBAR_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags) {
 	return PROGBAR_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id);
 }
 
-PROGBAR_Handle  PROGBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+PROGBAR_Handle  PROGBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	PROGBAR_Handle  hThis;
 	GUI_USE_PARA(cb);
 	hThis = PROGBAR_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,

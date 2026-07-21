@@ -13,7 +13,7 @@
 #define MESSAGEBOX_YSIZEOK 20
 #define MESSAGEBOX_BKCOLOR RGB_WHITE
 
-static void _OnKey(WM_HWIN hWin, const WM_KEY_INFO *pInfo) {
+static void _OnKey(WM_Obj * hWin, const WM_KEY_INFO *pInfo) {
 	int Key = pInfo->Key;
 	if (pInfo->PressedCnt) {
 		switch (Key) {
@@ -26,7 +26,7 @@ static void _OnKey(WM_HWIN hWin, const WM_KEY_INFO *pInfo) {
 		}
 	}
 }
-static WM_PARAM _MESSAGEBOX_cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _MESSAGEBOX_cbCallback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
 			FRAMEWIN_SetClientColor(hWin, MESSAGEBOX_BKCOLOR);
@@ -36,8 +36,8 @@ static WM_PARAM _MESSAGEBOX_cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		case WM_NOTIFY_PARENT: {
 			auto pInfo = (const WM_NOTIFY_INFO *)Data;
-			auto hWinSrc = pInfo->hWinSrc;
-			int Id = WM_GetId(hWinSrc); /* Get control ID */
+			auto pWinSrc = pInfo->pWinSrc;
+			int Id = WM_GetId(pWinSrc); /* Get control ID */
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_RELEASED: /* React only if released */
 					if (Id == GUI_ID_OK)
@@ -49,7 +49,7 @@ static WM_PARAM _MESSAGEBOX_cbCallback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	}
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
-WM_HWIN MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags) {
+WM_Obj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags) {
 	GUI_WIDGET_CREATE_INFO _aDialogCreate[3];                                     /* 0: FrameWin, 1: Text, 2: Button */
 	int BorderSize = FRAMEWIN_Obj::DefaultProps.BorderSize;                       /* Default border size of frame window */
 	int xSizeFrame = MESSAGEBOX_XSIZEOK + 2 * BorderSize + MESSAGEBOX_BORDER * 2; /* XSize of frame window */
@@ -124,7 +124,7 @@ WM_HWIN MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags)
 	return GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _MESSAGEBOX_cbCallback, 0, 0, 0);
 }
 int GUI_MessageBox(const char *sMessage, const char *sCaption, int Flags) {
-	WM_HWIN hWin;
+	WM_Obj * hWin;
 	hWin = MESSAGEBOX_Create(sMessage, sCaption, Flags);
 	/* Exec dialog */
 	return GUI_ExecCreatedDialog(hWin);

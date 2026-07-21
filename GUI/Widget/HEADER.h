@@ -1,15 +1,15 @@
-﻿#pragma once
+#pragma once
 
 #include "GUI.h"
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 
-typedef WM_HMEM HEADER_Handle;
+typedef WM_Obj * HEADER_Handle;
 
-HEADER_Handle HEADER_Create        (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, int SpecialFlags);
-HEADER_Handle HEADER_CreateIndirect(const GUI_WIDGET_CREATE_INFO * pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK * cb);
-HEADER_Handle HEADER_CreateAttached(WM_HWIN hParent, int Id, int SpecialFlags);
-HEADER_Handle HEADER_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+HEADER_Handle HEADER_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, int SpecialFlags);
+HEADER_Handle HEADER_CreateIndirect(const GUI_WIDGET_CREATE_INFO * pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK * cb);
+HEADER_Handle HEADER_CreateAttached(WM_Obj * hParent, int Id, int SpecialFlags);
+HEADER_Handle HEADER_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                     int WinFlags, int ExFlags, int Id);
 
 void HEADER_AddItem            (HEADER_Handle hObj, int Width, const char * s, int Align);

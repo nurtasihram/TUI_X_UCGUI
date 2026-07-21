@@ -166,4 +166,4 @@ extern CBITMAP GUI_BitmapCrossM, GUI_BitmapCrossMI;
 extern CBITMAP GUI_BitmapCrossL, GUI_BitmapCrossLI;
 #pragma endregion
 
-typedef void *GUI_HMEM, *GUI_HWIN;
+typedef void *GUI_HMEM;

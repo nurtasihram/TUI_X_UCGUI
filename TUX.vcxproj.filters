@@ -54,9 +54,6 @@
     <ClCompile Include="GUI\WM\WMMemDev.cpp">
       <Filter>GUI\WM</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\WM\WMTouch.cpp">
-      <Filter>GUI\WM</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\LCDDriver\LCD9325.cpp">
       <Filter>GUI\LCDDriver</Filter>
     </ClCompile>

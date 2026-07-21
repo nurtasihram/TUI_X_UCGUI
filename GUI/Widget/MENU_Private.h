@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "WIDGET.h"
 #include "GUI_ARRAY.h"
@@ -28,7 +28,7 @@ struct MENU_Obj : public WIDGET {
 	} static DefaultProps;
 	Properties Props;
 	GUI_ARRAY   ItemArray;
-	WM_HWIN hOwner;
+	WM_Obj * hOwner;
 	uint16_t Flags;
 	char IsSubmenuActive;
 	uint16_t Width;
@@ -45,4 +45,4 @@ char      MENU__SetItem(MENU_Obj *pObj, unsigned Index, const MENU_ITEM_DATA *pI
 void      MENU__SetItemFlags(MENU_Obj *pObj, unsigned Index, uint16_t Mask, uint16_t Flags);
 void      MENU__InvalidateItem(MENU_Obj *pObj, unsigned Index);
 int       MENU__FindItem(MENU_Handle hObj, uint16_t ItemId, MENU_Handle *phMenu);
-int       MENU__SendMenuMessage(MENU_Handle hObj, WM_HWIN hDestWin, uint16_t MsgType, uint16_t ItemId);
+int       MENU__SendMenuMessage(MENU_Handle hObj, WM_Obj * hDestWin, uint16_t MsgType, uint16_t ItemId);

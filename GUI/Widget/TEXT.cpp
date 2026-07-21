@@ -43,7 +43,7 @@ static void _Delete(TEXT_Obj *pObj) {
 	/* Delete attached objects (if any) */
 	_FreeAttached(pObj);
 }
-static WM_PARAM _TEXT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _TEXT_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (TEXT_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -60,7 +60,7 @@ static WM_PARAM _TEXT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */
-TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
 						  int WinFlags, int ExFlags, int Id, const char *pText) {
 	TEXT_Handle hObj;
 	/* Create the window */
@@ -91,11 +91,11 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
 TEXT_Handle TEXT_Create(int x0, int y0, int xsize, int ysize, int Id, int Flags, const char *s, int Align) {
 	return TEXT_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, Align, Id, s);
 }
-TEXT_Handle TEXT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, const char *s, int Align) {
+TEXT_Handle TEXT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, const char *s, int Align) {
 	return TEXT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, Align, Id, s);
 }
 
-TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	TEXT_Handle  hThis;
 	GUI_USE_PARA(cb);
 	hThis = TEXT_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,

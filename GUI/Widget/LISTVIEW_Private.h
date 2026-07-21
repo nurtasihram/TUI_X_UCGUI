@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "WM.h"
 #include "LISTVIEW.h"
@@ -32,7 +32,7 @@ struct LISTVIEW_Obj : public WIDGET {
 	uint16_t        RBorder;
 	WM_SCROLL_STATE ScrollStateV;
 	WM_SCROLL_STATE ScrollStateH;
-	WM_HWIN         hOwner;
+	WM_Obj *         hOwner;
 };
 
 

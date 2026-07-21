@@ -19,7 +19,7 @@
 #define WIDGET_CF_VERTICAL      WIDGET_STATE_VERTICAL
 
 struct WIDGET_ITEM_DRAW_INFO {
-	WM_HWIN hWin;
+	WM_Obj * hWin;
 	int Cmd;         /* WIDGET_ITEM_GET_XSIZE, WIDGET_ITEM_GET_YSIZE, WIDGET_ITEM_DRAW, */
 	int ItemIndex;
 	int x0, y0;
@@ -101,9 +101,9 @@ void      WIDGET__EFFECT_DrawDownRect(WIDGET *pWidget, GUI_RECT r);
 void      WIDGET__EFFECT_DrawDown(WIDGET *pWidget);
 void      WIDGET__EFFECT_DrawUpRect(WIDGET *pWidget, GUI_RECT r);
 
-RGBC WIDGET__GetBkColor(WM_HWIN hObj);
+RGBC WIDGET__GetBkColor(WM_Obj * hObj);
 
-int       WIDGET__GetWindowSizeX(WM_HWIN hWin);
+int       WIDGET__GetWindowSizeX(WM_Obj * hWin);
 
 int       WIDGET__GetXSize(const WIDGET *pWidget);
 int       WIDGET__GetYSize(const WIDGET *pWidget);
@@ -112,16 +112,16 @@ GUI_RECT  WIDGET__GetInsideRect(WIDGET *pWidget);
 
 void      WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State);
 void      WIDGET__RotateRect90(WIDGET *pWidget, GUI_RECT *pDest, const GUI_RECT *pRect);
-void      WIDGET__SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE *pVState, const WM_SCROLL_STATE *pState);
+void      WIDGET__SetScrollState(WM_Obj * hWin, const WM_SCROLL_STATE *pVState, const WM_SCROLL_STATE *pState);
 void      WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_RECT TextRectMax, GUI_RECT TextRectAct);
 
-void  WIDGET_SetState(WM_HWIN hObj, int State);
-void  WIDGET_AndState(WM_HWIN hObj, int State);
-void  WIDGET_OrState(WM_HWIN hObj, int State);
-int   WIDGET_GetState(WM_HWIN hObj);
-int   WIDGET_SetWidth(WM_HWIN hObj, int Width);
-int   WIDGET_SetWidth(WM_HWIN hObj, int Width);
+void  WIDGET_SetState(WM_Obj * hObj, int State);
+void  WIDGET_AndState(WM_Obj * hObj, int State);
+void  WIDGET_OrState(WM_Obj * hObj, int State);
+int   WIDGET_GetState(WM_Obj * hObj);
+int   WIDGET_SetWidth(WM_Obj * hObj, int Width);
+int   WIDGET_SetWidth(WM_Obj * hObj, int Width);
 
-void  WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT *pEffect);
+void  WIDGET_SetEffect(WM_Obj * hObj, const WIDGET_EFFECT *pEffect);
 
-int   WIDGET_HandleActive(WM_HWIN hObj, int MsgId, WM_PARAM *Data);
+int   WIDGET_HandleActive(WM_Obj * hObj, int MsgId, WM_PARAM *Data);

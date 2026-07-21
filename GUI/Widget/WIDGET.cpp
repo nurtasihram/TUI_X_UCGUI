@@ -6,7 +6,7 @@
 
 PCWIDGET_EFFECT WIDGET::DefaultEffect = WIDGET_Effect_3D2L;
 
-static void _UpdateChildPostions(WM_HWIN hObj, int Diff) {
+static void _UpdateChildPostions(WM_Obj * hObj, int Diff) {
 	WM_Obj *pObj;
 	pObj = (WM_Obj *)(hObj);
 	WM__UpdateChildPositions(pObj, -Diff, -Diff, Diff, Diff);
@@ -34,7 +34,7 @@ GUI_RECT WIDGET__GetClientRect(WIDGET *pWidget) {
 		return ~WM_GetClientRect();
 	return WM_GetClientRect();
 }
-RGBC WIDGET__GetBkColor(WM_HWIN hObj) {
+RGBC WIDGET__GetBkColor(WM_Obj * hObj) {
 	RGBC BkColor = WM_GetBkColor(WM_GetParent(hObj));
 	if (BkColor == RGB_INVALID_COLOR) {
 		BkColor = DIALOG_GetBkColor();
@@ -69,26 +69,26 @@ int WIDGET__GetYSize(const WIDGET *pWidget) {
 *       WIDGET__GetWindowSizeX
   Return width (or height in case of rotation) of window in pixels
 */
-int WIDGET__GetWindowSizeX(WM_HWIN hWin) {
+int WIDGET__GetWindowSizeX(WM_Obj * hWin) {
 	auto pWidget = (WIDGET *)hWin;
 	if (pWidget->State & WIDGET_STATE_VERTICAL)
 		return WM_GetWindowSizeY(hWin);
 	return WM_GetWindowSizeX(hWin);
 }
-void WIDGET_SetState(WM_HWIN hObj, int State) {
+void WIDGET_SetState(WM_Obj * hObj, int State) {
 	auto pWidget = (WIDGET *)hObj;
 	if (State != pWidget->State) {
 		pWidget->State = State;
 		WM_Invalidate(hObj);
 	}
 }
-int WIDGET_GetState(WM_HWIN hObj) {
+int WIDGET_GetState(WM_Obj * hObj) {
 	auto pWidget = (WIDGET *)hObj;
 	if (hObj)
 		return pWidget->State;
 	return 0;
 }
-void WIDGET_OrState(WM_HWIN hObj, int State) {
+void WIDGET_OrState(WM_Obj * hObj, int State) {
 	auto pWidget = (WIDGET *)hObj;
 	if (hObj) {
 		if (State != (pWidget->State & State)) {
@@ -106,7 +106,7 @@ void WIDGET_OrState(WM_HWIN hObj, int State) {
   Example:
 	...(..., 3);   // Clears bit 0, 1 int the state member
 */
-void WIDGET_AndState(WM_HWIN hObj, int Mask) {
+void WIDGET_AndState(WM_Obj * hObj, int Mask) {
 	if (hObj) {
 		auto pWidget = (WIDGET *)hObj;
 		auto StateNew = pWidget->State & (~Mask);
@@ -121,7 +121,7 @@ void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
 	pWidget->State = State;
 	pWidget->Id = Id;
 }
-int WIDGET_HandleActive(WM_HWIN hObj, int MsgId, WM_PARAM *Data) {
+int WIDGET_HandleActive(WM_Obj * hObj, int MsgId, WM_PARAM *Data) {
 	int Diff, Notification;
 	auto pWidget = (WIDGET *)hObj;
 	switch (MsgId) {
@@ -179,7 +179,7 @@ int WIDGET_HandleActive(WM_HWIN hObj, int MsgId, WM_PARAM *Data) {
 	}
 	return 1; /* Message NOT handled */
 }
-void WIDGET__SetScrollState(WM_HWIN hWin, const WM_SCROLL_STATE *pVState, const WM_SCROLL_STATE *pHState) {
+void WIDGET__SetScrollState(WM_Obj * hWin, const WM_SCROLL_STATE *pVState, const WM_SCROLL_STATE *pHState) {
 	WM_SetScrollState(WM_GetDialogItem(hWin, GUI_ID_VSCROLL), pVState);
 	WM_SetScrollState(WM_GetDialogItem(hWin, GUI_ID_HSCROLL), pHState);
 }
@@ -261,7 +261,7 @@ void WIDGET__EFFECT_DrawUpRect(WIDGET *pWidget, GUI_RECT r) {
 		pWidget->pEffect->DrawUp(r);
 }
 
-void WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT *pEffect) {
+void WIDGET_SetEffect(WM_Obj * hObj, const WIDGET_EFFECT *pEffect) {
 	WM_SendMessage(hObj, WM_WIDGET_SET_EFFECT, (WM_PARAM)pEffect);
 }
 
@@ -273,7 +273,7 @@ void WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT *pEffect) {
 *   Set width of the given widget. Width can be X-Size or Y-Size,
 *   depending on if the widget is rotated.
 */
-int WIDGET_SetWidth(WM_HWIN hObj, int Width) {
+int WIDGET_SetWidth(WM_Obj * hObj, int Width) {
 	auto pWidget = (WIDGET *)hObj;
 	if (hObj) {
 		if (pWidget->State & WIDGET_STATE_VERTICAL)

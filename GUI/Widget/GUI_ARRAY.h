@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "WM_Intern.h"
 
 typedef enum {

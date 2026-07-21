@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "WIDGET.h"
 #include "HEADER.h"

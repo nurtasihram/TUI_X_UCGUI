@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "WM.h"
 #include "DIALOG.h"      /* Req. for Create indirect data structure */
@@ -8,12 +8,12 @@
 #define LISTVIEW_CI_SEL      1
 #define LISTVIEW_CI_SELFOCUS 2
 
-typedef WM_HMEM LISTVIEW_Handle;
+typedef WM_Obj * LISTVIEW_Handle;
 
-LISTVIEW_Handle LISTVIEW_Create        (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, int SpecialFlags);
-LISTVIEW_Handle LISTVIEW_CreateAttached(WM_HWIN hParent, int Id, int SpecialFlags);
-LISTVIEW_Handle LISTVIEW_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
-LISTVIEW_Handle LISTVIEW_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+LISTVIEW_Handle LISTVIEW_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, int SpecialFlags);
+LISTVIEW_Handle LISTVIEW_CreateAttached(WM_Obj * hParent, int Id, int SpecialFlags);
+LISTVIEW_Handle LISTVIEW_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+LISTVIEW_Handle LISTVIEW_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                         int WinFlags, int ExFlags, int Id);
 
 void             LISTVIEW_AddColumn     (LISTVIEW_Handle hObj, int Width, const char * s, int Align);

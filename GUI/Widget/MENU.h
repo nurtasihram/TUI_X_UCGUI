@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "WM.h"
 #include "WIDGET.h"
@@ -27,8 +27,8 @@
 #define MENU_ON_CLOSE             4   /* Internal message of menu widget (send to submenus) */
 #define MENU_IS_MENU              5   /* Internal message of menu widget. Owner must call   */
                                       /* WM_DefaultProc() when not handle the message.      */
-typedef WM_HMEM MENU_Handle;
-typedef WM_HMEM MENU_Handle;
+typedef WM_Obj * MENU_Handle;
+typedef WM_Obj * MENU_Handle;
 
 typedef struct {
   uint16_t MsgType;
@@ -42,12 +42,12 @@ typedef struct {
   MENU_Handle hSubmenu;
 } MENU_ITEM_DATA;
 
-MENU_Handle MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
-MENU_Handle MENU_CreateEx      (int x0, int y0, int xSize, int ySize, WM_HWIN hParent, int WinFlags, int ExFlags, int Id);
+MENU_Handle MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+MENU_Handle MENU_CreateEx      (int x0, int y0, int xSize, int ySize, WM_Obj * hParent, int WinFlags, int ExFlags, int Id);
 
-void      MENU_Attach           (MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int ySize, int Flags);
-void      MENU_Popup            (MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int ySize, int Flags);
-void      MENU_SetOwner         (MENU_Handle hObj, WM_HWIN hOwner);
+void      MENU_Attach           (MENU_Handle hObj, WM_Obj * hDestWin, int x, int y, int xSize, int ySize, int Flags);
+void      MENU_Popup            (MENU_Handle hObj, WM_Obj * hDestWin, int x, int y, int xSize, int ySize, int Flags);
+void      MENU_SetOwner         (MENU_Handle hObj, WM_Obj * hOwner);
 void      MENU_AddItem          (MENU_Handle hObj, const MENU_ITEM_DATA* pItemData);
 void      MENU_DeleteItem       (MENU_Handle hObj, uint16_t ItemId);
 void      MENU_InsertItem       (MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA* pItemData);

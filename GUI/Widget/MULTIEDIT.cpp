@@ -296,7 +296,7 @@ static void _GetCursorXY(MULTIEDIT_Obj *pObj, int *px, int *py) {
 static void _InvalidateCursorXY(MULTIEDIT_Obj *pObj) {
 	pObj->InvalidFlags |= INVALID_CURSORXY;
 }
-static void _SetScrollState(WM_HWIN hObj) {
+static void _SetScrollState(WM_Obj * hObj) {
 	auto pObj = (MULTIEDIT_Obj *)hObj;
 	WIDGET__SetScrollState(hObj, &pObj->ScrollStateV, &pObj->ScrollStateH);
 }
@@ -1041,7 +1041,7 @@ static int _OnKey(MULTIEDIT_Obj *pObj, const WM_KEY_INFO *pInfo) {
 		return 1; /* Key release is consumed (not sent to parent) */
 	return 0; /* Key release is not consumed (sent to parent) */
 }
-static WM_PARAM _MULTIEDIT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _MULTIEDIT_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (MULTIEDIT_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -1063,18 +1063,18 @@ static WM_PARAM _MULTIEDIT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		case WM_NOTIFY_PARENT: {
 			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
-			WM_HWIN hWinSrc = pInfo->hWinSrc;
+			WM_Obj * pWinSrc = pInfo->pWinSrc;
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED: {
 					WM_SCROLL_STATE ScrollState;
-					if (hWinSrc == WM_GetScrollbarV(pObj)) {
-						WM_GetScrollState(hWinSrc, &ScrollState);
+					if (pWinSrc == WM_GetScrollbarV(pObj)) {
+						WM_GetScrollState(pWinSrc, &ScrollState);
 						pObj->ScrollStateV.v = ScrollState.v;
 						WM_Invalidate(pObj);
 						WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
-					else if (hWinSrc == WM_GetScrollbarH(pObj)) {
-						WM_GetScrollState(hWinSrc, &ScrollState);
+					else if (pWinSrc == WM_GetScrollbarH(pObj)) {
+						WM_GetScrollState(pWinSrc, &ScrollState);
 						pObj->ScrollStateH.v = ScrollState.v;
 						WM_Invalidate(pObj);
 						WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
@@ -1105,7 +1105,7 @@ static WM_PARAM _MULTIEDIT_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */
-MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int WinFlags, int ExFlags,
+MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int WinFlags, int ExFlags,
 									int Id, int BufferSize, const char *pText) {
 	MULTIEDIT_HANDLE hObj;
 	/* Create the window */
@@ -1137,8 +1137,8 @@ MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWI
 		pObj->BufferSize = 0;
 		pObj->hText = 0;
 		if (BufferSize > 0) {
-			WM_HWIN hText;
-			if ((hText = GUI_ALLOC_AllocZero(BufferSize)) != 0) {
+			WM_HMEM hText;
+			if ((hText = (WM_HMEM)GUI_ALLOC_AllocZero(BufferSize)) != 0) {
 				pObj->BufferSize = BufferSize;
 				pObj->hText = hText;
 			}
@@ -1412,10 +1412,10 @@ int MULTIEDIT_GetTextSize(MULTIEDIT_HANDLE hObj) {
 	return r;
 }
 
-MULTIEDIT_HANDLE MULTIEDIT_Create(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, int ExFlags, const char *pText, int MaxLen) {
+MULTIEDIT_HANDLE MULTIEDIT_Create(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, int ExFlags, const char *pText, int MaxLen) {
 	return MULTIEDIT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, ExFlags, Id, MaxLen, pText);
 }
-MULTIEDIT_HANDLE MULTIEDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+MULTIEDIT_HANDLE MULTIEDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	MULTIEDIT_HANDLE  hThis;
 	GUI_USE_PARA(cb);
 	hThis = MULTIEDIT_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,

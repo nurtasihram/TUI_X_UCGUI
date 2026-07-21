@@ -388,7 +388,7 @@ static int _ForwardMouseOverMsg(MENU_Obj *pObj, int x, int y) {
 #if (GUI_SUPPORT_MOUSE)
 	if ((pObj->IsSubmenuActive == 0) && !(pObj->Flags & MENU_SF_POPUP)) {
 		if (_IsTopLevelMenu(pObj)) {
-			WM_HWIN hBelow;
+			WM_Obj * hBelow;
 			x += WM_GetWindowOrgX(pObj);
 			y += WM_GetWindowOrgY(pObj);
 			hBelow = WM_Screen2hWin(x, y);
@@ -487,7 +487,7 @@ static char _HandlePID(MENU_Obj *pObj, int x, int y, int Pressed) {
 }
 static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, int MsgId, const GUI_PID_STATE *pState) {
 	if (!_IsTopLevelMenu(pObj)) {
-		WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
+		WM_Obj * hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
 		if (hOwner) {
 			GUI_PID_STATE State;
 			if (pState) {
@@ -513,7 +513,7 @@ static WM_PARAM _OnMenu(MENU_Obj *pObj, WM_PARAM Data) {
 		case MENU_ON_INITMENU:
 		case MENU_ON_INITSUBMENU: {
 			/* Forward message to owner. */
-			WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
+			WM_Obj * hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
 			if (hOwner)
 				WM__SendMessage(hOwner, WM_MENU, Data);
 			break;
@@ -642,7 +642,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 	if (_HasEffect(pObj)) 
 		pObj->pEffect->DrawUp();
 }
-static WM_PARAM _MENU_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _MENU_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (MENU_Obj *)hWin;
 	if (MsgId != WM_PID_STATE_CHANGED)
 		/* Let widget handle the standard messages */
@@ -670,7 +670,7 @@ static WM_PARAM _MENU_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	}
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
-MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_HWIN hParent, int WinFlags, int ExFlags, int Id) {
+MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj * hParent, int WinFlags, int ExFlags, int Id) {
 	MENU_Handle hObj;
 	/* Create the window */
 	hObj = WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent, WM_CF_SHOW | WM_CF_STAYONTOP | WinFlags, &_MENU_Callback,
@@ -758,7 +758,7 @@ void MENU__SetItemFlags(MENU_Obj *pObj, unsigned Index, uint16_t Mask, uint16_t 
 	pItem->Flags &= ~Mask;
 	pItem->Flags |= Flags;
 }
-int MENU__SendMenuMessage(MENU_Handle hObj, WM_HWIN hDestWin, uint16_t MsgType, uint16_t ItemId) {
+int MENU__SendMenuMessage(MENU_Handle hObj, WM_Obj * hDestWin, uint16_t MsgType, uint16_t ItemId) {
 	if (!hDestWin)
 		hDestWin = WM_GetParent(hObj);
 	if (hDestWin) {
@@ -787,7 +787,7 @@ void MENU_AddItem(MENU_Handle hObj, const MENU_ITEM_DATA *pItemData) {
 
 	}
 }
-void MENU_SetOwner(MENU_Handle hObj, WM_HWIN hOwner) {
+void MENU_SetOwner(MENU_Handle hObj, WM_Obj * hOwner) {
 	if (hObj) {
 		auto pObj = (MENU_Obj *)hObj;
 		if (pObj) {
@@ -797,7 +797,7 @@ void MENU_SetOwner(MENU_Handle hObj, WM_HWIN hOwner) {
 	}
 }
 
-void MENU_Attach(MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int ySize, int Flags) {
+void MENU_Attach(MENU_Handle hObj, WM_Obj * hDestWin, int x, int y, int xSize, int ySize, int Flags) {
 	GUI_USE_PARA(Flags);
 	if (hObj) {
 		auto pObj = (MENU_Obj *)hObj;
@@ -811,7 +811,7 @@ void MENU_Attach(MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, in
 	}
 }
 
-MENU_Handle MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+MENU_Handle MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	MENU_Handle hMenu;
 	GUI_USE_PARA(cb);
 	hMenu = MENU_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
@@ -922,7 +922,7 @@ void MENU_InsertItem(MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pI
 	}
 }
 
-void MENU_Popup(MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int ySize, int Flags) {
+void MENU_Popup(MENU_Handle hObj, WM_Obj * hDestWin, int x, int y, int xSize, int ySize, int Flags) {
 	GUI_USE_PARA(Flags);
 	if (hObj && hDestWin) {
 		auto pObj = (MENU_Obj *)hObj;

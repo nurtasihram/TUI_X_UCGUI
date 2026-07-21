@@ -167,12 +167,12 @@ static unsigned _GetNumVisItems(LISTBOX_Obj *pObj) {
 *   Notify owner of the window.
 *   If no owner is registered, the parent is considered owner.
 */
-static void _NotifyOwner(WM_HWIN hObj, int Notification) {
+static void _NotifyOwner(WM_Obj * hObj, int Notification) {
 	auto pObj = (LISTBOX_Obj *)hObj;
-	WM_HWIN hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
+	WM_Obj * hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
 	WM_NOTIFY_INFO Info;
 	Info.Notification = Notification;
-	Info.hWinSrc = hObj;
+	Info.pWinSrc = hObj;
 	WM_SendMessage(hOwner, WM_NOTIFY_PARENT, (WM_PARAM)&Info);
 }
 int LISTBOX_OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
@@ -509,7 +509,7 @@ static int _OnKey(LISTBOX_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0; /* Key has not been consumed */
 }
-static WM_PARAM _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _LISTBOX_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (LISTBOX_Obj *)hWin;
 	/* In popup mode (hOwner set), bypass WIDGET_HandleActive for WM_PID_STATE_CHANGED.
 	 * WIDGET_HandleActive internally calls WM_SetFocus on press, which would steal
@@ -522,18 +522,18 @@ static WM_PARAM _LISTBOX_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_NOTIFY_PARENT: {
 			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
-			WM_HWIN hWinSrc = pInfo->hWinSrc;
+			WM_Obj * pWinSrc = pInfo->pWinSrc;
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED: {
 					WM_SCROLL_STATE ScrollState;
-					if (hWinSrc == WM_GetScrollbarV(pObj)) {
-						WM_GetScrollState(hWinSrc, &ScrollState);
+					if (pWinSrc == WM_GetScrollbarV(pObj)) {
+						WM_GetScrollState(pWinSrc, &ScrollState);
 						pObj->ScrollStateV.v = ScrollState.v;
 						LISTBOX__InvalidateInsideArea(pObj);
 						_NotifyOwner(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					}
-					else if (hWinSrc == WM_GetScrollbarH(pObj)) {
-						WM_GetScrollState(hWinSrc, &ScrollState);
+					else if (pWinSrc == WM_GetScrollbarH(pObj)) {
+						WM_GetScrollState(pWinSrc, &ScrollState);
 						pObj->ScrollStateH.v = ScrollState.v;
 						LISTBOX__InvalidateInsideArea(pObj);
 						_NotifyOwner(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
@@ -662,7 +662,7 @@ static int _AddKey(LISTBOX_Handle hObj, int Key) {
 	}
 	return 0;
 }
-LISTBOX_Handle LISTBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+LISTBOX_Handle LISTBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
 								int WinFlags, int ExFlags, int Id, const GUI_ConstString *ppText) {
 	LISTBOX_Handle hObj;
 	GUI_USE_PARA(ExFlags);
@@ -825,12 +825,12 @@ void LISTBOX_DecSel(LISTBOX_Handle hObj) {
 LISTBOX_Handle LISTBOX_Create(const GUI_ConstString *ppText, int x0, int y0, int xsize, int ysize, int Flags) {
 	return LISTBOX_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, 0, ppText);
 }
-LISTBOX_Handle LISTBOX_CreateAsChild(const GUI_ConstString *ppText, WM_HWIN hWinParent,
+LISTBOX_Handle LISTBOX_CreateAsChild(const GUI_ConstString *ppText, WM_Obj * hWinParent,
 									 int x0, int y0, int xsize, int ysize, int Flags) {
 	return LISTBOX_CreateEx(x0, y0, xsize, ysize, hWinParent, Flags, 0, 0, ppText);
 }
 
-LISTBOX_Handle LISTBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+LISTBOX_Handle LISTBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	LISTBOX_Handle hObj;
 	GUI_USE_PARA(cb);
 	hObj = LISTBOX_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
@@ -1153,7 +1153,7 @@ void LISTBOX_SetBkColor(LISTBOX_Handle hObj, unsigned Index, RGBC color) {
 	}
 }
 
-void LISTBOX_SetOwner(LISTBOX_Handle hObj, WM_HWIN hOwner) {
+void LISTBOX_SetOwner(LISTBOX_Handle hObj, WM_Obj * hOwner) {
 	if (hObj) {
 		auto pObj = (LISTBOX_Obj *)hObj;
 		pObj->hOwner = hOwner;

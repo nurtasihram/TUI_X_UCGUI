@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "LISTBOX.h"
 #include "WM.h"
@@ -35,7 +35,7 @@ struct LISTBOX_Obj : public WIDGET {
 	GUI_ARRAY ItemArray;
 	WIDGET_DRAW_ITEM_FUNC *pfDrawItem;
 	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
-	WM_HWIN hOwner;
+	WM_Obj * hOwner;
 	int16_t Sel; /* current selection */
 	uint8_t Flags;
 	uint8_t  ScrollbarWidth;

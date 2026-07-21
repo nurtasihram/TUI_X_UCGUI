@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 
@@ -11,19 +11,19 @@
 #define FRAMEWIN_BUTTON_RIGHT   (1<<0)
 #define FRAMEWIN_BUTTON_LEFT    (1<<1)
 
-typedef WM_HMEM FRAMEWIN_Handle;
+typedef WM_Obj * FRAMEWIN_Handle;
 FRAMEWIN_Handle FRAMEWIN_Create        (const char* pTitle, WM_CALLBACK* cb, int Flags, int x0, int y0, int xsize, int ysize);
-FRAMEWIN_Handle FRAMEWIN_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, const char* pText, WM_CALLBACK* cb, int Flags);
-FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
-FRAMEWIN_Handle FRAMEWIN_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+FRAMEWIN_Handle FRAMEWIN_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, const char* pText, WM_CALLBACK* cb, int Flags);
+FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+FRAMEWIN_Handle FRAMEWIN_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                         int WinFlags, int ExFlags, int Id, const char* pTitle, WM_CALLBACK* cb);
 
 #define WM_Invalidate(hObj)    WM_Invalidate(hObj)
-WM_HWIN FRAMEWIN_AddButton     (FRAMEWIN_Handle hObj, int Flags, int Off, int Id);
-WM_HWIN FRAMEWIN_AddCloseButton(FRAMEWIN_Handle hObj, int Flags, int Off);
-WM_HWIN FRAMEWIN_AddMaxButton  (FRAMEWIN_Handle hObj, int Flags, int Off);
-void    FRAMEWIN_AddMenu       (FRAMEWIN_Handle hObj, WM_HWIN hMenu);
-WM_HWIN FRAMEWIN_AddMinButton  (FRAMEWIN_Handle hObj, int Flags, int Off);
+WM_Obj * FRAMEWIN_AddButton     (FRAMEWIN_Handle hObj, int Flags, int Off, int Id);
+WM_Obj * FRAMEWIN_AddCloseButton(FRAMEWIN_Handle hObj, int Flags, int Off);
+WM_Obj * FRAMEWIN_AddMaxButton  (FRAMEWIN_Handle hObj, int Flags, int Off);
+void    FRAMEWIN_AddMenu       (FRAMEWIN_Handle hObj, WM_Obj * hMenu);
+WM_Obj * FRAMEWIN_AddMinButton  (FRAMEWIN_Handle hObj, int Flags, int Off);
 void    FRAMEWIN_Minimize      (FRAMEWIN_Handle hObj);
 void    FRAMEWIN_Maximize      (FRAMEWIN_Handle hObj);
 void    FRAMEWIN_Restore       (FRAMEWIN_Handle hObj);

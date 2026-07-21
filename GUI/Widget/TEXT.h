@@ -17,12 +17,12 @@
 *
 **********************************************************************
 */
-typedef WM_HMEM TEXT_Handle;
+typedef WM_Obj * TEXT_Handle;
 
 TEXT_Handle TEXT_Create        (int x0, int y0, int xsize, int ysize, int Id, int Flags, const char * s, int Align);
-TEXT_Handle TEXT_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags, const char * s, int Align);
-TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
-TEXT_Handle TEXT_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+TEXT_Handle TEXT_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, const char * s, int Align);
+TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+TEXT_Handle TEXT_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                 int WinFlags, int ExFlags, int Id, const char* pText);
 /* Methods changing properties */
 void TEXT_SetBkColor  (TEXT_Handle pObj, RGBC Color); /* Obsolete. Left in GUI for compatibility to older versions */

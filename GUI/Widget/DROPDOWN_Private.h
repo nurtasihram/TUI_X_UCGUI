@@ -31,7 +31,7 @@ struct DROPDOWN_Obj : public WIDGET {
 	int16_t     TextHeight;
 	GUI_ARRAY Handles;
 	WM_SCROLL_STATE ScrollState;
-	WM_HWIN hListWin;
+	WM_Obj * hListWin;
 	uint8_t      Flags;
 	uint16_t     ItemSpacing;
 	uint8_t     ScrollbarWidth;

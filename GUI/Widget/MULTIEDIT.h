@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "WM.h"
 #include "DIALOG.h"      /* Req. for Create indirect data structure */
 #define MULTIEDIT_CF_READONLY        (1 << 0)
@@ -13,14 +13,14 @@
 #define MULTIEDIT_SF_PASSWORD        MULTIEDIT_CF_PASSWORD
 #define MULTIEDIT_CI_EDIT     0
 #define MULTIEDIT_CI_READONLY 1
-typedef WM_HMEM MULTIEDIT_HANDLE;
-MULTIEDIT_HANDLE MULTIEDIT_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int WinFlags, int ExFlags,
+typedef WM_Obj * MULTIEDIT_HANDLE;
+MULTIEDIT_HANDLE MULTIEDIT_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int WinFlags, int ExFlags,
                                           int Id, int BufferSize, const char* pText);
-MULTIEDIT_HANDLE MULTIEDIT_Create        (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+MULTIEDIT_HANDLE MULTIEDIT_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                           int Id, int Flags, int ExFlags, const char* pText,
                                           int BufferSize);
 MULTIEDIT_HANDLE MULTIEDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo,
-                                          WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
+                                          WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
 int  MULTIEDIT_AddKey           (MULTIEDIT_HANDLE hObj, uint16_t Key);
 void MULTIEDIT_GetPrompt        (MULTIEDIT_HANDLE hObj, char* sDest, int MaxNumChars);
 int  MULTIEDIT_GetTextSize      (MULTIEDIT_HANDLE hObj);

@@ -77,7 +77,6 @@
     <ClCompile Include="GUI\Widget\WINDOW.cpp" />
     <ClCompile Include="GUI\WM\WM.cpp" />
     <ClCompile Include="GUI\WM\WMMemDev.cpp" />
-    <ClCompile Include="GUI\WM\WMTouch.cpp" />
     <ClCompile Include="GUI_X\GUI_X.cc" />
     <ClCompile Include="GUI_X\GUI_X_LCD.cc" />
     <ClCompile Include="main.cpp" />

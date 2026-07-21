@@ -47,7 +47,7 @@ static void _WIDGET__RECT2VRECT(const WIDGET *pWidget, GUI_RECT *pRect) {
 */
 static void _CalcPositions(SCROLLBAR_Obj *pObj, SCROLLBAR_POSITIONS *pPos) {
 	int xSizeArrow, xSize, xSizeMoveable, ThumbSize, NumItems, xSizeThumbArea;
-	WM_HWIN hWin;
+	WM_Obj * hWin;
 	GUI_RECT r, rSub;
 	int x0, y0;
 	r = pObj->Rect;
@@ -245,7 +245,7 @@ void SCROLLBAR__InvalidatePartner(SCROLLBAR_Handle hObj) {     /* Invalidate the
 	WM_Invalidate(WM_GetScrollPartner(hObj));
 	WM_SendMessageNoPara(WM_GetParent(hObj), WM_NOTIFY_CLIENTCHANGE);   /* Client area may have changed */
 }
-static WM_PARAM _SCROLLBAR_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _SCROLLBAR_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (SCROLLBAR_Obj *)hWin;
 	/* Let widget handle the standard messages */
 	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -275,7 +275,7 @@ static WM_PARAM _SCROLLBAR_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 }
 /* Note: the parameters to a create function may vary.
 		 Some widgets may have multiple create functions */
-SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
 									int WinFlags, int ExFlags, int Id) {
 	SCROLLBAR_Handle hObj;
 
@@ -392,10 +392,10 @@ void  SCROLLBAR_SetState(SCROLLBAR_Handle hObj, const WM_SCROLL_STATE *pState) {
 }
 
 
-SCROLLBAR_Handle SCROLLBAR_Create(int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int WinFlags, int SpecialFlags) {
+SCROLLBAR_Handle SCROLLBAR_Create(int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int WinFlags, int SpecialFlags) {
 	return SCROLLBAR_CreateEx(x0, y0, xsize, ysize, hParent, WinFlags, SpecialFlags, Id);
 }
-SCROLLBAR_Handle SCROLLBAR_CreateAttached(WM_HWIN hParent, int SpecialFlags) {
+SCROLLBAR_Handle SCROLLBAR_CreateAttached(WM_Obj * hParent, int SpecialFlags) {
 	SCROLLBAR_Handle  hThis;
 	int Id;
 	int WinFlags;
@@ -411,7 +411,7 @@ SCROLLBAR_Handle SCROLLBAR_CreateAttached(WM_HWIN hParent, int SpecialFlags) {
 	WM_NotifyParent(hThis, WM_NOTIFICATION_SCROLLBAR_ADDED);
 	return hThis;
 }
-SCROLLBAR_Handle SCROLLBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+SCROLLBAR_Handle SCROLLBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	SCROLLBAR_Handle  hThis;
 	GUI_USE_PARA(cb);
 	hThis = SCROLLBAR_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,

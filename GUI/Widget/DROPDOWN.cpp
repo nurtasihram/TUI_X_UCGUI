@@ -147,7 +147,7 @@ static void DROPDOWN__AdjustHeight(DROPDOWN_Obj *pObj) {
 	Height += pObj->pEffect->EffectSize + 2 * pObj->Props.TextBorderSize;
 	WM_SetSize(pObj, WM__GetWindowSizeX(pObj), Height);
 }
-static WM_PARAM _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _DROPDOWN_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (DROPDOWN_Obj *)hWin;
 	char IsExpandedBeforeMsg = (pObj->hListWin && WM_IsVisible(pObj->hListWin)) ? 1 : 0;
 	/* Let widget handle the standard messages */
@@ -161,7 +161,7 @@ static WM_PARAM _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 					WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					break;
 				case WM_NOTIFICATION_CLICKED: {
-					WM_HWIN hListWin = pInfo->hWinSrc;
+					WM_Obj * hListWin = pInfo->pWinSrc;
 					int Sel = LISTBOX_GetSel(hListWin);
 					DROPDOWN_SetSel(pObj, Sel);
 					break;
@@ -199,7 +199,7 @@ static WM_PARAM _DROPDOWN_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	}
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
-DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
 								  int WinFlags, int ExFlags, int Id) {
 	DROPDOWN_Handle hObj;
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, -1, hParent, WinFlags, _DROPDOWN_Callback,
@@ -224,7 +224,7 @@ void DROPDOWN_Collapse(DROPDOWN_Handle hObj) {
 
 		pObj = (DROPDOWN_Obj *)hObj;
 		if (pObj->hListWin) {
-			WM_HWIN hListWin = pObj->hListWin;
+			WM_Obj * hListWin = pObj->hListWin;
 			pObj->hListWin = 0;
 			WM_ReleaseCapture();
 			WM_DeleteWindow(hListWin);
@@ -234,7 +234,7 @@ void DROPDOWN_Collapse(DROPDOWN_Handle hObj) {
 }
 void DROPDOWN_Expand(DROPDOWN_Handle hObj) {
 	int xSize, ySize, i, NumItems;
-	WM_HWIN hLst;
+	WM_Obj * hLst;
 	GUI_RECT r;
 	DROPDOWN_Obj *pObj;
 	if (hObj) {
@@ -423,12 +423,12 @@ void DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width) {
 	}
 }
 
-DROPDOWN_Handle DROPDOWN_Create(WM_HWIN hWinParent, int x0, int y0, int xsize, int ysize, int Flags) {
+DROPDOWN_Handle DROPDOWN_Create(WM_Obj * hWinParent, int x0, int y0, int xsize, int ysize, int Flags) {
 	return DROPDOWN_CreateEx(x0, y0, xsize, ysize, hWinParent, Flags, 0, 0);
 }
 
 DROPDOWN_Handle DROPDOWN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo,
-										WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+										WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	DROPDOWN_Handle  hThis;
 	GUI_USE_PARA(cb);
 	hThis = DROPDOWN_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
@@ -8,12 +8,12 @@
 #define SCROLLBAR_CF_VERTICAL     WIDGET_CF_VERTICAL
 #define SCROLLBAR_CF_FOCUSSABLE   WIDGET_STATE_FOCUSSABLE
 
-typedef WM_HMEM SCROLLBAR_Handle;
+typedef WM_Obj * SCROLLBAR_Handle;
 
-SCROLLBAR_Handle SCROLLBAR_Create        (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int WinFlags, int SpecialFlags);
-SCROLLBAR_Handle SCROLLBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
-SCROLLBAR_Handle SCROLLBAR_CreateAttached(WM_HWIN hParent, int SpecialFlags);
-SCROLLBAR_Handle SCROLLBAR_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+SCROLLBAR_Handle SCROLLBAR_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int WinFlags, int SpecialFlags);
+SCROLLBAR_Handle SCROLLBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+SCROLLBAR_Handle SCROLLBAR_CreateAttached(WM_Obj * hParent, int SpecialFlags);
+SCROLLBAR_Handle SCROLLBAR_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                           int WinFlags, int ExFlags, int Id);
 
 void SCROLLBAR_AddValue    (SCROLLBAR_Handle hObj, int Add);

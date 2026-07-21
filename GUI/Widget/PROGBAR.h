@@ -1,14 +1,14 @@
-﻿#pragma once
+#pragma once
 
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 
-typedef WM_HMEM PROGBAR_Handle;
+typedef WM_Obj * PROGBAR_Handle;
 
 PROGBAR_Handle PROGBAR_Create        (int x0, int y0, int xsize, int ysize, int Flags);
-PROGBAR_Handle PROGBAR_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_HWIN hParent, int Id, int Flags);
-PROGBAR_Handle PROGBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
-PROGBAR_Handle PROGBAR_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+PROGBAR_Handle PROGBAR_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags);
+PROGBAR_Handle PROGBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+PROGBAR_Handle PROGBAR_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                       int WinFlags, int ExFlags, int Id);
 
                                       void PROGBAR_SetBarColor (PROGBAR_Handle hObj, unsigned int index, RGBC color);

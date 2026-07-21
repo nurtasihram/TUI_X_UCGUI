@@ -1,9 +1,9 @@
-﻿#pragma once
+#pragma once
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 
 
-typedef WM_HMEM DROPDOWN_Handle;
+typedef WM_Obj * DROPDOWN_Handle;
 
 #define DROPDOWN_CF_AUTOSCROLLBAR   (1 << 0)
 #define DROPDOWN_CF_UP              (1 << 1)
@@ -11,9 +11,9 @@ typedef WM_HMEM DROPDOWN_Handle;
 #define DROPDOWN_CI_SEL      1
 #define DROPDOWN_CI_SELFOCUS 2
 
-DROPDOWN_Handle DROPDOWN_Create        (WM_HWIN hWinParent, int x0, int y0, int xsize, int ysize, int Flags);
-DROPDOWN_Handle DROPDOWN_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_HWIN hWinParent, int x0, int y0, WM_CALLBACK* cb);
-DROPDOWN_Handle DROPDOWN_CreateEx      (int x0, int y0, int xsize, int ysize, WM_HWIN hParent,
+DROPDOWN_Handle DROPDOWN_Create        (WM_Obj * hWinParent, int x0, int y0, int xsize, int ysize, int Flags);
+DROPDOWN_Handle DROPDOWN_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+DROPDOWN_Handle DROPDOWN_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                         int WinFlags, int ExFlags, int Id);
 void     DROPDOWN_AddKey          (DROPDOWN_Handle hObj, int Key);
 void     DROPDOWN_AddString       (DROPDOWN_Handle hObj, const char* s);

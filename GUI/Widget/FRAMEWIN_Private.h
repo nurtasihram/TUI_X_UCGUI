@@ -25,12 +25,12 @@ struct FRAMEWIN_Obj : public WIDGET {
 	} static DefaultProps;
 	Properties Props;
 	WM_CALLBACK *cb;
-	WM_HWIN hClient;
-	WM_HWIN hMenu;
+	WM_Obj * hClient;
+	WM_Obj * hMenu;
 	char *pText;
 	GUI_RECT rRestore;
 	uint16_t Flags;
-	WM_HWIN hFocussedChild; /* Handle to focussed child .. default none (0) */
+	WM_Obj * hFocussedChild; /* Handle to focussed child .. default none (0) */
 	WM_DIALOG_STATUS *pDialogStatus;
 };
 
@@ -47,5 +47,5 @@ void            FRAMEWIN__UpdatePositions(FRAMEWIN_Obj *pObj);
 void            FRAMEWIN__UpdateButtons(FRAMEWIN_Obj *pObj, int OldHeight);
 PCFONT FRAMEWIN_GetFont(FRAMEWIN_Handle hObj);
 int             FRAMEWIN_GetTitleHeight(FRAMEWIN_Handle hObj);
-void            FRAMEWIN_MinButtonSetState(WM_HWIN hButton, int State);
-void            FRAMEWIN_MaxButtonSetState(WM_HWIN hButton, int State);
+void            FRAMEWIN_MinButtonSetState(WM_Obj * hButton, int State);
+void            FRAMEWIN_MaxButtonSetState(WM_Obj * hButton, int State);
