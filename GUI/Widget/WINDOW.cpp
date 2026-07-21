@@ -7,7 +7,9 @@ struct WINDOW_Obj : public WIDGET {
 	WM_HWIN hFocussedChild;
 	WM_DIALOG_STATUS *pDialogStatus;
 };
-RGBC WINDOW__DefaultBkColor = WINDOW_BKCOLOR_DEFAULT;
+
+auto WINDOW__DefaultBkColor = WINDOW_BKCOLOR_DEFAULT;
+
 static void _OnChildHasFocus(WINDOW_Obj *pObj, const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
 	if (pInfo)
 		if (!WM__IsAncestorOrSelf(pInfo->hNew, pObj)) /* A child has received the focus, Framewindow needs to be activated */
@@ -26,14 +28,14 @@ static void _OnKey(WINDOW_Obj *pObj, const WM_KEY_INFO *pInfo) {
 }
 static WM_PARAM _cb(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (WINDOW_Obj *)hWin;
-	WM_CALLBACK *cb = pObj->cb;
+	auto cb = pObj->cb;
 	switch (MsgId) {
 		case WM_HANDLE_DIALOG_STATUS:
 			if (Data) /* set pointer to Dialog status */
 				pObj->pDialogStatus = (WM_DIALOG_STATUS *)Data;
 			return (WM_PARAM)pObj->pDialogStatus;
 		case WM_SET_FOCUS:
-			if (Data) {   /* Focus received */
+			if (Data) { /* Focus received */
 				if (pObj->hFocussedChild && pObj->hFocussedChild != pObj)
 					WM_SetFocus(pObj->hFocussedChild);
 				else

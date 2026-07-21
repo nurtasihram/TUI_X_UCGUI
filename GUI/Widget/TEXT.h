@@ -1,8 +1,10 @@
 #pragma once
+
 #include "WM.h"
-#include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
-#include "WIDGET.h"      /* Req. for Create indirect data structure */
-#include "GUIDebug.h" /* Req. for GUI_DEBUG_LEVEL */
+#include "DIALOG_Intern.h" /* Req. for Create indirect data structure */
+#include "WIDGET.h"        /* Req. for Create indirect data structure */
+#include "GUIDebug.h"      /* Req. for GUI_DEBUG_LEVEL */
+
 #define TEXT_CF_LEFT    TEXTALIGN_LEFT
 #define TEXT_CF_RIGHT   TEXTALIGN_RIGHT
 #define TEXT_CF_HCENTER TEXTALIGN_HCENTER

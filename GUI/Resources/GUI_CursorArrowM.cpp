@@ -24,7 +24,7 @@ ________,______XX,XXXX____,
 };
 
 static CBITMAP _BitmapArrowM{
-	12, 29,              /* XSize, YSize */
+	12, 20,              /* XSize, YSize */
 	3,                   /* BytesPerLine */
 	2,                   /* BitsPerPixel */
 	GUI_Pixels_ArrowM,   /* Pointer to picture data (indices) */
@@ -33,7 +33,7 @@ static CBITMAP _BitmapArrowM{
 extern CCURSOR GUI_CursorArrowM{ &_BitmapArrowM, 0, 0 };
 
 static CBITMAP _BitmapArrowMI{
-	12, 29,              /* XSize, YSize */
+	12, 20,              /* XSize, YSize */
 	3,                   /* BytesPerLine */
 	2,                   /* BitsPerPixel */
 	GUI_Pixels_ArrowM,   /* Pointer to picture data (indices) */

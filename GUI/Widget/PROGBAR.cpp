@@ -150,7 +150,7 @@ PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_HWIN hP
 		pObj = (PROGBAR_Obj *)(hObj);
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, 0);
-		WIDGET_SetEffect(hObj, &WIDGET_Effect_None); /* Standard effect for progbar: None */
+		WIDGET_SetEffect(hObj, WIDGET_Effect_None); /* Standard effect for progbar: None */
 		/* init member variables */
 		pObj->Props = PROGBAR_Obj::DefaultProps;
 		pObj->Max = 100;

@@ -9,7 +9,7 @@
 /* Define default font */
 #define MENU_FONT_DEFAULT         &GUI_Font13_1
 /* Define default effect */
-#define MENU_EFFECT_DEFAULT       &WIDGET_Effect_3D1L
+#define MENU_EFFECT_DEFAULT       WIDGET_Effect_3D1L
 /* Define colors, index 0, enabled, not selected */
 #define MENU_TEXTCOLOR0_DEFAULT   RGB_BLACK
 #define MENU_BKCOLOR0_DEFAULT     RGB_LIGHTGRAY
@@ -47,7 +47,7 @@ MENU_Obj::Properties MENU_Obj::DefaultProps {
   MENU_BORDER_BOTTOM_DEFAULT,
   MENU_FONT_DEFAULT
 };
-const WIDGET_EFFECT *MENU__pDefaultEffect = MENU_EFFECT_DEFAULT;
+PCWIDGET_EFFECT MENU__pDefaultEffect = MENU_EFFECT_DEFAULT;
 
 static char _IsTopLevelMenu(MENU_Obj *pObj) {
 	if (MENU__SendMenuMessage(pObj, pObj->hOwner, MENU_IS_MENU, 0) == 0) {
@@ -639,9 +639,8 @@ static void _OnPaint(MENU_Obj *pObj) {
 		GUI_ClearRect({ EffectSize, FillRect.y1 + 1, r.x1, r.y1 });
 	}
 	/* Draw 3D effect (if configured) */
-	if (_HasEffect(pObj)) {
-		pObj->pEffect->pfDrawUp();
-	}
+	if (_HasEffect(pObj)) 
+		pObj->pEffect->DrawUp();
 }
 static WM_PARAM _MENU_Callback(WM_HWIN hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (MENU_Obj *)hWin;

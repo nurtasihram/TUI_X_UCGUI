@@ -26,15 +26,21 @@ typedef struct {
 typedef int WIDGET_DRAW_ITEM_FUNC(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo);
 
 struct WIDGET_EFFECT {
-	void(*pfDrawUp)(void);
-	void(*pfDrawDown)(void);
-	void(*pfDrawUpRect)  (GUI_RECT r);
-	void(*pfDrawDownRect)(GUI_RECT r);
-	GUI_RECT(*pfGetRect)();
-	int EffectSize;
-};
+	void DrawUp(void) const { DrawUp(WM_GetClientRect()); }
+	void DrawDown(void) const { DrawDown(WM_GetClientRect()); }
+	GUI_RECT GetRect() const { return WM_GetClientRect() - EffectSize; }
 
-extern const WIDGET_EFFECT
+	virtual void DrawUp(GUI_RECT r) const {}
+	virtual void DrawDown(GUI_RECT r) const {}
+
+	int EffectSize;
+
+	WIDGET_EFFECT(int EffectSize = 0) : EffectSize(EffectSize) {}
+};
+using CWIDGET_EFFECT = const WIDGET_EFFECT;
+using PCWIDGET_EFFECT = const WIDGET_EFFECT *;
+
+extern PCWIDGET_EFFECT
 	WIDGET_Effect_None,
 	WIDGET_Effect_Simple,
 	WIDGET_Effect_3D,
@@ -42,8 +48,8 @@ extern const WIDGET_EFFECT
 	WIDGET_Effect_3D2L;
 
 struct WIDGET : public WM_Obj {
-	static const WIDGET_EFFECT *DefaultEffect;
-	const WIDGET_EFFECT *pEffect = DefaultEffect;
+	static PCWIDGET_EFFECT DefaultEffect;
+	PCWIDGET_EFFECT pEffect = DefaultEffect;
 	int16_t Id;
 	uint16_t State;
 };

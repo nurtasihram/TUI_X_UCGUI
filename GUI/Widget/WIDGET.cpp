@@ -1,11 +1,10 @@
-
 #include "WIDGET.h"
 #include "GUIDebug.h"
 #include "GUI.h"
 #include "GUI_Protected.h"
 #include "WM_Intern.h"
 
-const WIDGET_EFFECT *WIDGET::DefaultEffect = &WIDGET_Effect_3D2L;
+PCWIDGET_EFFECT WIDGET::DefaultEffect = WIDGET_Effect_3D2L;
 
 static void _UpdateChildPostions(WM_HWIN hObj, int Diff) {
 	WM_Obj *pObj;
@@ -247,7 +246,7 @@ void WIDGET__EFFECT_DrawDownRect(WIDGET *pWidget, GUI_RECT r) {
 		r = Rect;
 	}
 	if (_EffectRequiresRedraw(pWidget, r))
-		pWidget->pEffect->pfDrawDownRect(r);
+		pWidget->pEffect->DrawDown(r);
 }
 void WIDGET__EFFECT_DrawDown(WIDGET *pWidget) {
 	WIDGET__EFFECT_DrawDownRect(pWidget, WM_GetClientRect());
@@ -259,7 +258,7 @@ void WIDGET__EFFECT_DrawUpRect(WIDGET *pWidget, GUI_RECT r) {
 		r = Rect;
 	}
 	if (_EffectRequiresRedraw(pWidget, r))
-		pWidget->pEffect->pfDrawUpRect(r);
+		pWidget->pEffect->DrawUp(r);
 }
 
 void WIDGET_SetEffect(WM_HWIN hObj, const WIDGET_EFFECT *pEffect) {

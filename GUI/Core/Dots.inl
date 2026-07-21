@@ -1,515 +1,521 @@
 #pragma once
 
-#define	________________	0x0
-#define	______________XX	0x1
-#define	____________XX__	0x2
-#define	____________XXXX	0x3
-#define	__________XX____	0x4
-#define	__________XX__XX	0x5
-#define	__________XXXX__	0x6
-#define	__________XXXXXX	0x7
-#define	________XX______	0x8
-#define	________XX____XX	0x9
-#define	________XX__XX__	0xa
-#define	________XX__XXXX	0xb
-#define	________XXXX____	0xc
-#define	________XXXX__XX	0xd
-#define	________XXXXXX__	0xe
-#define	________XXXXXXXX	0xf
-#define	______XX________	0x10
-#define	______XX______XX	0x11
-#define	______XX____XX__	0x12
-#define	______XX____XXXX	0x13
-#define	______XX__XX____	0x14
-#define	______XX__XX__XX	0x15
-#define	______XX__XXXX__	0x16
-#define	______XX__XXXXXX	0x17
-#define	______XXXX______	0x18
-#define	______XXXX____XX	0x19
-#define	______XXXX__XX__	0x1a
-#define	______XXXX__XXXX	0x1b
-#define	______XXXXXX____	0x1c
-#define	______XXXXXX__XX	0x1d
-#define	______XXXXXXXX__	0x1e
-#define	______XXXXXXXXXX	0x1f
-#define	____XX__________	0x20
-#define	____XX________XX	0x21
-#define	____XX______XX__	0x22
-#define	____XX______XXXX	0x23
-#define	____XX____XX____	0x24
-#define	____XX____XX__XX	0x25
-#define	____XX____XXXX__	0x26
-#define	____XX____XXXXXX	0x27
-#define	____XX__XX______	0x28
-#define	____XX__XX____XX	0x29
-#define	____XX__XX__XX__	0x2a
-#define	____XX__XX__XXXX	0x2b
-#define	____XX__XXXX____	0x2c
-#define	____XX__XXXX__XX	0x2d
-#define	____XX__XXXXXX__	0x2e
-#define	____XX__XXXXXXXX	0x2f
-#define	____XXXX________	0x30
-#define	____XXXX______XX	0x31
-#define	____XXXX____XX__	0x32
-#define	____XXXX____XXXX	0x33
-#define	____XXXX__XX____	0x34
-#define	____XXXX__XX__XX	0x35
-#define	____XXXX__XXXX__	0x36
-#define	____XXXX__XXXXXX	0x37
-#define	____XXXXXX______	0x38
-#define	____XXXXXX____XX	0x39
-#define	____XXXXXX__XX__	0x3a
-#define	____XXXXXX__XXXX	0x3b
-#define	____XXXXXXXX____	0x3c
-#define	____XXXXXXXX__XX	0x3d
-#define	____XXXXXXXXXX__	0x3e
-#define	____XXXXXXXXXXXX	0x3f
-#define	__XX____________	0x40
-#define	__XX__________XX	0x41
-#define	__XX________XX__	0x42
-#define	__XX________XXXX	0x43
-#define	__XX______XX____	0x44
-#define	__XX______XX__XX	0x45
-#define	__XX______XXXX__	0x46
-#define	__XX______XXXXXX	0x47
-#define	__XX____XX______	0x48
-#define	__XX____XX____XX	0x49
-#define	__XX____XX__XX__	0x4a
-#define	__XX____XX__XXXX	0x4b
-#define	__XX____XXXX____	0x4c
-#define	__XX____XXXX__XX	0x4d
-#define	__XX____XXXXXX__	0x4e
-#define	__XX____XXXXXXXX	0x4f
-#define	__XX__XX________	0x50
-#define	__XX__XX______XX	0x51
-#define	__XX__XX____XX__	0x52
-#define	__XX__XX____XXXX	0x53
-#define	__XX__XX__XX____	0x54
-#define	__XX__XX__XX__XX	0x55
-#define	__XX__XX__XXXX__	0x56
-#define	__XX__XX__XXXXXX	0x57
-#define	__XX__XXXX______	0x58
-#define	__XX__XXXX____XX	0x59
-#define	__XX__XXXX__XX__	0x5a
-#define	__XX__XXXX__XXXX	0x5b
-#define	__XX__XXXXXX____	0x5c
-#define	__XX__XXXXXX__XX	0x5d
-#define	__XX__XXXXXXXX__	0x5e
-#define	__XX__XXXXXXXXXX	0x5f
-#define	__XXXX__________	0x60
-#define	__XXXX________XX	0x61
-#define	__XXXX______XX__	0x62
-#define	__XXXX______XXXX	0x63
-#define	__XXXX____XX____	0x64
-#define	__XXXX____XX__XX	0x65
-#define	__XXXX____XXXX__	0x66
-#define	__XXXX____XXXXXX	0x67
-#define	__XXXX__XX______	0x68
-#define	__XXXX__XX____XX	0x69
-#define	__XXXX__XX__XX__	0x6a
-#define	__XXXX__XX__XXXX	0x6b
-#define	__XXXX__XXXX____	0x6c
-#define	__XXXX__XXXX__XX	0x6d
-#define	__XXXX__XXXXXX__	0x6e
-#define	__XXXX__XXXXXXXX	0x6f
-#define	__XXXXXX________	0x70
-#define	__XXXXXX______XX	0x71
-#define	__XXXXXX____XX__	0x72
-#define	__XXXXXX____XXXX	0x73
-#define	__XXXXXX__XX____	0x74
-#define	__XXXXXX__XX__XX	0x75
-#define	__XXXXXX__XXXX__	0x76
-#define	__XXXXXX__XXXXXX	0x77
-#define	__XXXXXXXX______	0x78
-#define	__XXXXXXXX____XX	0x79
-#define	__XXXXXXXX__XX__	0x7a
-#define	__XXXXXXXX__XXXX	0x7b
-#define	__XXXXXXXXXX____	0x7c
-#define	__XXXXXXXXXX__XX	0x7d
-#define	__XXXXXXXXXXXX__	0x7e
-#define	__XXXXXXXXXXXXXX	0x7f
-#define	XX______________	0x80
-#define	XX____________XX	0x81
-#define	XX__________XX__	0x82
-#define	XX__________XXXX	0x83
-#define	XX________XX____	0x84
-#define	XX________XX__XX	0x85
-#define	XX________XXXX__	0x86
-#define	XX________XXXXXX	0x87
-#define	XX______XX______	0x88
-#define	XX______XX____XX	0x89
-#define	XX______XX__XX__	0x8a
-#define	XX______XX__XXXX	0x8b
-#define	XX______XXXX____	0x8c
-#define	XX______XXXX__XX	0x8d
-#define	XX______XXXXXX__	0x8e
-#define	XX______XXXXXXXX	0x8f
-#define	XX____XX________	0x90
-#define	XX____XX______XX	0x91
-#define	XX____XX____XX__	0x92
-#define	XX____XX____XXXX	0x93
-#define	XX____XX__XX____	0x94
-#define	XX____XX__XX__XX	0x95
-#define	XX____XX__XXXX__	0x96
-#define	XX____XX__XXXXXX	0x97
-#define	XX____XXXX______	0x98
-#define	XX____XXXX____XX	0x99
-#define	XX____XXXX__XX__	0x9a
-#define XX____XXXX__XXXX	0x9b
-#define XX____XXXXXX____	0x9c
-#define XX____XXXXXX__XX	0x9d
-#define	XX____XXXXXXXX__	0x9e
-#define	XX____XXXXXXXXXX	0x9f
-#define	XX__XX__________	0xa0
-#define	XX__XX________XX	0xa1
-#define	XX__XX______XX__	0xa2
-#define	XX__XX______XXXX	0xa3
-#define	XX__XX____XX____	0xa4
-#define	XX__XX____XX__XX	0xa5
-#define	XX__XX____XXXX__	0xa6
-#define	XX__XX____XXXXXX	0xa7
-#define	XX__XX__XX______	0xa8
-#define	XX__XX__XX____XX	0xa9
-#define	XX__XX__XX__XX__	0xaa
-#define	XX__XX__XX__XXXX	0xab
-#define	XX__XX__XXXX____	0xac
-#define	XX__XX__XXXX__XX	0xad
-#define	XX__XX__XXXXXX__	0xae
-#define	XX__XX__XXXXXXXX	0xaf
-#define	XX__XXXX________	0xb0
-#define XX__XXXX______XX	0xb1
-#define	XX__XXXX____XX__	0xb2
-#define	XX__XXXX____XXXX	0xb3
-#define	XX__XXXX__XX____	0xb4
-#define	XX__XXXX__XX__XX	0xb5
-#define	XX__XXXX__XXXX__	0xb6
-#define	XX__XXXX__XXXXXX	0xb7
-#define	XX__XXXXXX______	0xb8
-#define	XX__XXXXXX____XX	0xb9
-#define	XX__XXXXXX__XX__	0xba
-#define	XX__XXXXXX__XXXX	0xbb
-#define	XX__XXXXXXXX____	0xbc
-#define	XX__XXXXXXXX__XX	0xbd
-#define	XX__XXXXXXXXXX__	0xbe
-#define	XX__XXXXXXXXXXXX	0xbf
-#define	XXXX____________	0xc0
-#define	XXXX__________XX	0xc1
-#define	XXXX________XX__	0xc2
-#define	XXXX________XXXX	0xc3
-#define	XXXX______XX____	0xc4
-#define	XXXX______XX__XX	0xc5
-#define	XXXX______XXXX__	0xc6
-#define	XXXX______XXXXXX	0xc7
-#define	XXXX____XX______	0xc8
-#define	XXXX____XX____XX	0xc9
-#define	XXXX____XX__XX__	0xca
-#define	XXXX____XX__XXXX	0xcb
-#define	XXXX____XXXX____	0xcc
-#define	XXXX____XXXX__XX	0xcd
-#define	XXXX____XXXXXX__	0xce
-#define XXXX____XXXXXXXX	0xcf
-#define	XXXX__XX________	0xd0
-#define	XXXX__XX______XX	0xd1
-#define	XXXX__XX____XX__	0xd2
-#define	XXXX__XX____XXXX	0xd3
-#define	XXXX__XX__XX____	0xd4
-#define	XXXX__XX__XX__XX	0xd5
-#define	XXXX__XX__XXXX__	0xd6
-#define	XXXX__XX__XXXXXX	0xd7
-#define	XXXX__XXXX______	0xd8
-#define	XXXX__XXXX____XX	0xd9
-#define	XXXX__XXXX__XX__	0xda
-#define	XXXX__XXXX__XXXX	0xdb
-#define	XXXX__XXXXXX____	0xdc
-#define	XXXX__XXXXXX__XX	0xdd
-#define	XXXX__XXXXXXXX__	0xde
-#define	XXXX__XXXXXXXXXX	0xdf
-#define	XXXXXX__________	0xe0
-#define	XXXXXX________XX	0xe1
-#define	XXXXXX______XX__	0xe2
-#define	XXXXXX______XXXX	0xe3
-#define	XXXXXX____XX____	0xe4
-#define	XXXXXX____XX__XX	0xe5
-#define	XXXXXX____XXXX__	0xe6
-#define	XXXXXX____XXXXXX	0xe7
-#define	XXXXXX__XX______	0xe8
-#define	XXXXXX__XX____XX	0xe9
-#define	XXXXXX__XX__XX__	0xea
-#define	XXXXXX__XX__XXXX	0xeb
-#define	XXXXXX__XXXX____	0xec
-#define	XXXXXX__XXXX__XX	0xed
-#define	XXXXXX__XXXXXX__	0xee
-#define	XXXXXX__XXXXXXXX	0xef
-#define	XXXXXXXX________	0xf0
-#define	XXXXXXXX______XX	0xf1
-#define	XXXXXXXX____XX__	0xf2
-#define	XXXXXXXX____XXXX	0xf3
-#define	XXXXXXXX__XX____	0xf4
-#define	XXXXXXXX__XX__XX	0xf5
-#define	XXXXXXXX__XXXX__	0xf6
-#define	XXXXXXXX__XXXXXX	0xf7
-#define	XXXXXXXXXX______	0xf8
-#define	XXXXXXXXXX____XX	0xf9
-#define	XXXXXXXXXX__XX__	0xfa
-#define	XXXXXXXXXX__XXXX	0xfb
-#define	XXXXXXXXXXXX____	0xfc
-#define	XXXXXXXXXXXX__XX	0xfd
-#define	XXXXXXXXXXXXXX__	0xfe
-#define	XXXXXXXXXXXXXXXX	0xff
+enum BIT_BPP_1 : uint8_t {
+	 ________________ = 0x00,
+	 ______________XX = 0x01,
+	 ____________XX__ = 0x02,
+	 ____________XXXX = 0x03,
+	 __________XX____ = 0x04,
+	 __________XX__XX = 0x05,
+	 __________XXXX__ = 0x06,
+	 __________XXXXXX = 0x07,
+	 ________XX______ = 0x08,
+	 ________XX____XX = 0x09,
+	 ________XX__XX__ = 0x0a,
+	 ________XX__XXXX = 0x0b,
+	 ________XXXX____ = 0x0c,
+	 ________XXXX__XX = 0x0d,
+	 ________XXXXXX__ = 0x0e,
+	 ________XXXXXXXX = 0x0f,
+	 ______XX________ = 0x10,
+	 ______XX______XX = 0x11,
+	 ______XX____XX__ = 0x12,
+	 ______XX____XXXX = 0x13,
+	 ______XX__XX____ = 0x14,
+	 ______XX__XX__XX = 0x15,
+	 ______XX__XXXX__ = 0x16,
+	 ______XX__XXXXXX = 0x17,
+	 ______XXXX______ = 0x18,
+	 ______XXXX____XX = 0x19,
+	 ______XXXX__XX__ = 0x1a,
+	 ______XXXX__XXXX = 0x1b,
+	 ______XXXXXX____ = 0x1c,
+	 ______XXXXXX__XX = 0x1d,
+	 ______XXXXXXXX__ = 0x1e,
+	 ______XXXXXXXXXX = 0x1f,
+	 ____XX__________ = 0x20,
+	 ____XX________XX = 0x21,
+	 ____XX______XX__ = 0x22,
+	 ____XX______XXXX = 0x23,
+	 ____XX____XX____ = 0x24,
+	 ____XX____XX__XX = 0x25,
+	 ____XX____XXXX__ = 0x26,
+	 ____XX____XXXXXX = 0x27,
+	 ____XX__XX______ = 0x28,
+	 ____XX__XX____XX = 0x29,
+	 ____XX__XX__XX__ = 0x2a,
+	 ____XX__XX__XXXX = 0x2b,
+	 ____XX__XXXX____ = 0x2c,
+	 ____XX__XXXX__XX = 0x2d,
+	 ____XX__XXXXXX__ = 0x2e,
+	 ____XX__XXXXXXXX = 0x2f,
+	 ____XXXX________ = 0x30,
+	 ____XXXX______XX = 0x31,
+	 ____XXXX____XX__ = 0x32,
+	 ____XXXX____XXXX = 0x33,
+	 ____XXXX__XX____ = 0x34,
+	 ____XXXX__XX__XX = 0x35,
+	 ____XXXX__XXXX__ = 0x36,
+	 ____XXXX__XXXXXX = 0x37,
+	 ____XXXXXX______ = 0x38,
+	 ____XXXXXX____XX = 0x39,
+	 ____XXXXXX__XX__ = 0x3a,
+	 ____XXXXXX__XXXX = 0x3b,
+	 ____XXXXXXXX____ = 0x3c,
+	 ____XXXXXXXX__XX = 0x3d,
+	 ____XXXXXXXXXX__ = 0x3e,
+	 ____XXXXXXXXXXXX = 0x3f,
+	 __XX____________ = 0x40,
+	 __XX__________XX = 0x41,
+	 __XX________XX__ = 0x42,
+	 __XX________XXXX = 0x43,
+	 __XX______XX____ = 0x44,
+	 __XX______XX__XX = 0x45,
+	 __XX______XXXX__ = 0x46,
+	 __XX______XXXXXX = 0x47,
+	 __XX____XX______ = 0x48,
+	 __XX____XX____XX = 0x49,
+	 __XX____XX__XX__ = 0x4a,
+	 __XX____XX__XXXX = 0x4b,
+	 __XX____XXXX____ = 0x4c,
+	 __XX____XXXX__XX = 0x4d,
+	 __XX____XXXXXX__ = 0x4e,
+	 __XX____XXXXXXXX = 0x4f,
+	 __XX__XX________ = 0x50,
+	 __XX__XX______XX = 0x51,
+	 __XX__XX____XX__ = 0x52,
+	 __XX__XX____XXXX = 0x53,
+	 __XX__XX__XX____ = 0x54,
+	 __XX__XX__XX__XX = 0x55,
+	 __XX__XX__XXXX__ = 0x56,
+	 __XX__XX__XXXXXX = 0x57,
+	 __XX__XXXX______ = 0x58,
+	 __XX__XXXX____XX = 0x59,
+	 __XX__XXXX__XX__ = 0x5a,
+	 __XX__XXXX__XXXX = 0x5b,
+	 __XX__XXXXXX____ = 0x5c,
+	 __XX__XXXXXX__XX = 0x5d,
+	 __XX__XXXXXXXX__ = 0x5e,
+	 __XX__XXXXXXXXXX = 0x5f,
+	 __XXXX__________ = 0x60,
+	 __XXXX________XX = 0x61,
+	 __XXXX______XX__ = 0x62,
+	 __XXXX______XXXX = 0x63,
+	 __XXXX____XX____ = 0x64,
+	 __XXXX____XX__XX = 0x65,
+	 __XXXX____XXXX__ = 0x66,
+	 __XXXX____XXXXXX = 0x67,
+	 __XXXX__XX______ = 0x68,
+	 __XXXX__XX____XX = 0x69,
+	 __XXXX__XX__XX__ = 0x6a,
+	 __XXXX__XX__XXXX = 0x6b,
+	 __XXXX__XXXX____ = 0x6c,
+	 __XXXX__XXXX__XX = 0x6d,
+	 __XXXX__XXXXXX__ = 0x6e,
+	 __XXXX__XXXXXXXX = 0x6f,
+	 __XXXXXX________ = 0x70,
+	 __XXXXXX______XX = 0x71,
+	 __XXXXXX____XX__ = 0x72,
+	 __XXXXXX____XXXX = 0x73,
+	 __XXXXXX__XX____ = 0x74,
+	 __XXXXXX__XX__XX = 0x75,
+	 __XXXXXX__XXXX__ = 0x76,
+	 __XXXXXX__XXXXXX = 0x77,
+	 __XXXXXXXX______ = 0x78,
+	 __XXXXXXXX____XX = 0x79,
+	 __XXXXXXXX__XX__ = 0x7a,
+	 __XXXXXXXX__XXXX = 0x7b,
+	 __XXXXXXXXXX____ = 0x7c,
+	 __XXXXXXXXXX__XX = 0x7d,
+	 __XXXXXXXXXXXX__ = 0x7e,
+	 __XXXXXXXXXXXXXX = 0x7f,
+	 XX______________ = 0x80,
+	 XX____________XX = 0x81,
+	 XX__________XX__ = 0x82,
+	 XX__________XXXX = 0x83,
+	 XX________XX____ = 0x84,
+	 XX________XX__XX = 0x85,
+	 XX________XXXX__ = 0x86,
+	 XX________XXXXXX = 0x87,
+	 XX______XX______ = 0x88,
+	 XX______XX____XX = 0x89,
+	 XX______XX__XX__ = 0x8a,
+	 XX______XX__XXXX = 0x8b,
+	 XX______XXXX____ = 0x8c,
+	 XX______XXXX__XX = 0x8d,
+	 XX______XXXXXX__ = 0x8e,
+	 XX______XXXXXXXX = 0x8f,
+	 XX____XX________ = 0x90,
+	 XX____XX______XX = 0x91,
+	 XX____XX____XX__ = 0x92,
+	 XX____XX____XXXX = 0x93,
+	 XX____XX__XX____ = 0x94,
+	 XX____XX__XX__XX = 0x95,
+	 XX____XX__XXXX__ = 0x96,
+	 XX____XX__XXXXXX = 0x97,
+	 XX____XXXX______ = 0x98,
+	 XX____XXXX____XX = 0x99,
+	 XX____XXXX__XX__ = 0x9a,
+	 XX____XXXX__XXXX = 0x9b,
+	 XX____XXXXXX____ = 0x9c,
+	 XX____XXXXXX__XX = 0x9d,
+	 XX____XXXXXXXX__ = 0x9e,
+	 XX____XXXXXXXXXX = 0x9f,
+	 XX__XX__________ = 0xa0,
+	 XX__XX________XX = 0xa1,
+	 XX__XX______XX__ = 0xa2,
+	 XX__XX______XXXX = 0xa3,
+	 XX__XX____XX____ = 0xa4,
+	 XX__XX____XX__XX = 0xa5,
+	 XX__XX____XXXX__ = 0xa6,
+	 XX__XX____XXXXXX = 0xa7,
+	 XX__XX__XX______ = 0xa8,
+	 XX__XX__XX____XX = 0xa9,
+	 XX__XX__XX__XX__ = 0xaa,
+	 XX__XX__XX__XXXX = 0xab,
+	 XX__XX__XXXX____ = 0xac,
+	 XX__XX__XXXX__XX = 0xad,
+	 XX__XX__XXXXXX__ = 0xae,
+	 XX__XX__XXXXXXXX = 0xaf,
+	 XX__XXXX________ = 0xb0,
+	 XX__XXXX______XX = 0xb1,
+	 XX__XXXX____XX__ = 0xb2,
+	 XX__XXXX____XXXX = 0xb3,
+	 XX__XXXX__XX____ = 0xb4,
+	 XX__XXXX__XX__XX = 0xb5,
+	 XX__XXXX__XXXX__ = 0xb6,
+	 XX__XXXX__XXXXXX = 0xb7,
+	 XX__XXXXXX______ = 0xb8,
+	 XX__XXXXXX____XX = 0xb9,
+	 XX__XXXXXX__XX__ = 0xba,
+	 XX__XXXXXX__XXXX = 0xbb,
+	 XX__XXXXXXXX____ = 0xbc,
+	 XX__XXXXXXXX__XX = 0xbd,
+	 XX__XXXXXXXXXX__ = 0xbe,
+	 XX__XXXXXXXXXXXX = 0xbf,
+	 XXXX____________ = 0xc0,
+	 XXXX__________XX = 0xc1,
+	 XXXX________XX__ = 0xc2,
+	 XXXX________XXXX = 0xc3,
+	 XXXX______XX____ = 0xc4,
+	 XXXX______XX__XX = 0xc5,
+	 XXXX______XXXX__ = 0xc6,
+	 XXXX______XXXXXX = 0xc7,
+	 XXXX____XX______ = 0xc8,
+	 XXXX____XX____XX = 0xc9,
+	 XXXX____XX__XX__ = 0xca,
+	 XXXX____XX__XXXX = 0xcb,
+	 XXXX____XXXX____ = 0xcc,
+	 XXXX____XXXX__XX = 0xcd,
+	 XXXX____XXXXXX__ = 0xce,
+	 XXXX____XXXXXXXX = 0xcf,
+	 XXXX__XX________ = 0xd0,
+	 XXXX__XX______XX = 0xd1,
+	 XXXX__XX____XX__ = 0xd2,
+	 XXXX__XX____XXXX = 0xd3,
+	 XXXX__XX__XX____ = 0xd4,
+	 XXXX__XX__XX__XX = 0xd5,
+	 XXXX__XX__XXXX__ = 0xd6,
+	 XXXX__XX__XXXXXX = 0xd7,
+	 XXXX__XXXX______ = 0xd8,
+	 XXXX__XXXX____XX = 0xd9,
+	 XXXX__XXXX__XX__ = 0xda,
+	 XXXX__XXXX__XXXX = 0xdb,
+	 XXXX__XXXXXX____ = 0xdc,
+	 XXXX__XXXXXX__XX = 0xdd,
+	 XXXX__XXXXXXXX__ = 0xde,
+	 XXXX__XXXXXXXXXX = 0xdf,
+	 XXXXXX__________ = 0xe0,
+	 XXXXXX________XX = 0xe1,
+	 XXXXXX______XX__ = 0xe2,
+	 XXXXXX______XXXX = 0xe3,
+	 XXXXXX____XX____ = 0xe4,
+	 XXXXXX____XX__XX = 0xe5,
+	 XXXXXX____XXXX__ = 0xe6,
+	 XXXXXX____XXXXXX = 0xe7,
+	 XXXXXX__XX______ = 0xe8,
+	 XXXXXX__XX____XX = 0xe9,
+	 XXXXXX__XX__XX__ = 0xea,
+	 XXXXXX__XX__XXXX = 0xeb,
+	 XXXXXX__XXXX____ = 0xec,
+	 XXXXXX__XXXX__XX = 0xed,
+	 XXXXXX__XXXXXX__ = 0xee,
+	 XXXXXX__XXXXXXXX = 0xef,
+	 XXXXXXXX________ = 0xf0,
+	 XXXXXXXX______XX = 0xf1,
+	 XXXXXXXX____XX__ = 0xf2,
+	 XXXXXXXX____XXXX = 0xf3,
+	 XXXXXXXX__XX____ = 0xf4,
+	 XXXXXXXX__XX__XX = 0xf5,
+	 XXXXXXXX__XXXX__ = 0xf6,
+	 XXXXXXXX__XXXXXX = 0xf7,
+	 XXXXXXXXXX______ = 0xf8,
+	 XXXXXXXXXX____XX = 0xf9,
+	 XXXXXXXXXX__XX__ = 0xfa,
+	 XXXXXXXXXX__XXXX = 0xfb,
+	 XXXXXXXXXXXX____ = 0xfc,
+	 XXXXXXXXXXXX__XX = 0xfd,
+	 XXXXXXXXXXXXXX__ = 0xfe,
+	 XXXXXXXXXXXXXXXX = 0xff
+};
 
-#define ________ 0x00
-#define ______XX 0x01
-#define ______oo 0x02
-#define ______dd 0x03
-#define ____XX__ 0x04
-#define ____XXXX 0x05
-#define ____XXoo 0x06
-#define ____XXdd 0x07
-#define ____oo__ 0x08
-#define ____ooXX 0x09
-#define ____oooo 0x0A
-#define ____oodd 0x0B
-#define ____dd__ 0x0C
-#define ____ddXX 0x0D
-#define ____ddoo 0x0E
-#define ____dddd 0x0F
-#define __XX____ 0x10
-#define __XX__XX 0x11
-#define __XX__oo 0x12
-#define __XX__dd 0x13
-#define __XXXX__ 0x14
-#define __XXXXXX 0x15
-#define __XXXXoo 0x16
-#define __XXXXdd 0x17
-#define __XXoo__ 0x18
-#define __XXooXX 0x19
-#define __XXoooo 0x1A
-#define __XXoodd 0x1B
-#define __XXdd__ 0x1C
-#define __XXddXX 0x1D
-#define __XXddoo 0x1E
-#define __XXdddd 0x1F
-#define __oo____ 0x20
-#define __oo__XX 0x21
-#define __oo__oo 0x22
-#define __oo__dd 0x23
-#define __ooXX__ 0x24
-#define __ooXXXX 0x25
-#define __ooXXoo 0x26
-#define __ooXXdd 0x27
-#define __oooo__ 0x28
-#define __ooooXX 0x29
-#define __oooooo 0x2A
-#define __oooodd 0x2B
-#define __oodd__ 0x2C
-#define __ooddXX 0x2D
-#define __ooddoo 0x2E
-#define __oodddd 0x2F
-#define __dd____ 0x30
-#define __dd__XX 0x31
-#define __dd__oo 0x32
-#define __dd__dd 0x33
-#define __ddXX__ 0x34
-#define __ddXXXX 0x35
-#define __ddXXoo 0x36
-#define __ddXXdd 0x37
-#define __ddoo__ 0x38
-#define __ddooXX 0x39
-#define __ddoooo 0x3A
-#define __ddoodd 0x3B
-#define __dddd__ 0x3C
-#define __ddddXX 0x3D
-#define __ddddoo 0x3E
-#define __dddddd 0x3F
-#define XX______ 0x40
-#define XX____XX 0x41
-#define XX____oo 0x42
-#define XX____dd 0x43
-#define XX__XX__ 0x44
-#define XX__XXXX 0x45
-#define XX__XXoo 0x46
-#define XX__XXdd 0x47
-#define XX__oo__ 0x48
-#define XX__ooXX 0x49
-#define XX__oooo 0x4A
-#define XX__oodd 0x4B
-#define XX__dd__ 0x4C
-#define XX__ddXX 0x4D
-#define XX__ddoo 0x4E
-#define XX__dddd 0x4F
-#define XXXX____ 0x50
-#define XXXX__XX 0x51
-#define XXXX__oo 0x52
-#define XXXX__dd 0x53
-#define XXXXXX__ 0x54
-#define XXXXXXXX 0x55
-#define XXXXXXoo 0x56
-#define XXXXXXdd 0x57
-#define XXXXoo__ 0x58
-#define XXXXooXX 0x59
-#define XXXXoooo 0x5A
-#define XXXXoodd 0x5B
-#define XXXXdd__ 0x5C
-#define XXXXddXX 0x5D
-#define XXXXddoo 0x5E
-#define XXXXdddd 0x5F
-#define XXoo____ 0x60
-#define XXoo__XX 0x61
-#define XXoo__oo 0x62
-#define XXoo__dd 0x63
-#define XXooXX__ 0x64
-#define XXooXXXX 0x65
-#define XXooXXoo 0x66
-#define XXooXXdd 0x67
-#define XXoooo__ 0x68
-#define XXooooXX 0x69
-#define XXoooooo 0x6A
-#define XXoooodd 0x6B
-#define XXoodd__ 0x6C
-#define XXooddXX 0x6D
-#define XXooddoo 0x6E
-#define XXoodddd 0x6F
-#define XXdd____ 0x70
-#define XXdd__XX 0x71
-#define XXdd__oo 0x72
-#define XXdd__dd 0x73
-#define XXddXX__ 0x74
-#define XXddXXXX 0x75
-#define XXddXXoo 0x76
-#define XXddXXdd 0x77
-#define XXddoo__ 0x78
-#define XXddooXX 0x79
-#define XXddoooo 0x7A
-#define XXddoodd 0x7B
-#define XXdddd__ 0x7C
-#define XXddddXX 0x7D
-#define XXddddoo 0x7E
-#define XXdddddd 0x7F
-#define oo______ 0x80
-#define oo____XX 0x81
-#define oo____oo 0x82
-#define oo____dd 0x83
-#define oo__XX__ 0x84
-#define oo__XXXX 0x85
-#define oo__XXoo 0x86
-#define oo__XXdd 0x87
-#define oo__oo__ 0x88
-#define oo__ooXX 0x89
-#define oo__oooo 0x8A
-#define oo__oodd 0x8B
-#define oo__dd__ 0x8C
-#define oo__ddXX 0x8D
-#define oo__ddoo 0x8E
-#define oo__dddd 0x8F
-#define ooXX____ 0x90
-#define ooXX__XX 0x91
-#define ooXX__oo 0x92
-#define ooXX__dd 0x93
-#define ooXXXX__ 0x94
-#define ooXXXXXX 0x95
-#define ooXXXXoo 0x96
-#define ooXXXXdd 0x97
-#define ooXXoo__ 0x98
-#define ooXXooXX 0x99
-#define ooXXoooo 0x9A
-#define ooXXoodd 0x9B
-#define ooXXdd__ 0x9C
-#define ooXXddXX 0x9D
-#define ooXXddoo 0x9E
-#define ooXXdddd 0x9F
-#define oooo____ 0xA0
-#define oooo__XX 0xA1
-#define oooo__oo 0xA2
-#define oooo__dd 0xA3
-#define ooooXX__ 0xA4
-#define ooooXXXX 0xA5
-#define ooooXXoo 0xA6
-#define ooooXXdd 0xA7
-#define oooooo__ 0xA8
-#define ooooooXX 0xA9
-#define oooooooo 0xAA
-#define oooooodd 0xAB
-#define oooodd__ 0xAC
-#define ooooddXX 0xAD
-#define ooooddoo 0xAE
-#define oooodddd 0xAF
-#define oodd____ 0xB0
-#define oodd__XX 0xB1
-#define oodd__oo 0xB2
-#define oodd__dd 0xB3
-#define ooddXX__ 0xB4
-#define ooddXXXX 0xB5
-#define ooddXXoo 0xB6
-#define ooddXXdd 0xB7
-#define ooddoo__ 0xB8
-#define ooddooXX 0xB9
-#define ooddoooo 0xBA
-#define ooddoodd 0xBB
-#define oodddd__ 0xBC
-#define ooddddXX 0xBD
-#define ooddddoo 0xBE
-#define oodddddd 0xBF
-#define dd______ 0xC0
-#define dd____XX 0xC1
-#define dd____oo 0xC2
-#define dd____dd 0xC3
-#define dd__XX__ 0xC4
-#define dd__XXXX 0xC5
-#define dd__XXoo 0xC6
-#define dd__XXdd 0xC7
-#define dd__oo__ 0xC8
-#define dd__ooXX 0xC9
-#define dd__oooo 0xCA
-#define dd__oodd 0xCB
-#define dd__dd__ 0xCC
-#define dd__ddXX 0xCD
-#define dd__ddoo 0xCE
-#define dd__dddd 0xCF
-#define ddXX____ 0xD0
-#define ddXX__XX 0xD1
-#define ddXX__oo 0xD2
-#define ddXX__dd 0xD3
-#define ddXXXX__ 0xD4
-#define ddXXXXXX 0xD5
-#define ddXXXXoo 0xD6
-#define ddXXXXdd 0xD7
-#define ddXXoo__ 0xD8
-#define ddXXooXX 0xD9
-#define ddXXoooo 0xDA
-#define ddXXoodd 0xDB
-#define ddXXdd__ 0xDC
-#define ddXXddXX 0xDD
-#define ddXXddoo 0xDE
-#define ddXXdddd 0xDF
-#define ddoo____ 0xE0
-#define ddoo__XX 0xE1
-#define ddoo__oo 0xE2
-#define ddoo__dd 0xE3
-#define ddooXX__ 0xE4
-#define ddooXXXX 0xE5
-#define ddooXXoo 0xE6
-#define ddooXXdd 0xE7
-#define ddoooo__ 0xE8
-#define ddooooXX 0xE9
-#define ddoooooo 0xEA
-#define ddoooodd 0xEB
-#define ddoodd__ 0xEC
-#define ddooddXX 0xED
-#define ddooddoo 0xEE
-#define ddoodddd 0xEF
-#define dddd____ 0xF0
-#define dddd__XX 0xF1
-#define dddd__oo 0xF2
-#define dddd__dd 0xF3
-#define ddddXX__ 0xF4
-#define ddddXXXX 0xF5
-#define ddddXXoo 0xF6
-#define ddddXXdd 0xF7
-#define ddddoo__ 0xF8
-#define ddddooXX 0xF9
-#define ddddoooo 0xFA
-#define ddddoodd 0xFB
-#define dddddd__ 0xFC
-#define ddddddXX 0xFD
-#define ddddddoo 0xFE
-#define dddddddd 0xFF
+// Soguz
+
+enum BIT_BPP_4 : uint8_t {
+	 ________ = 0x00,
+	 ______XX = 0x01,
+	 ______oo = 0x02,
+	 ______dd = 0x03,
+	 ____XX__ = 0x04,
+	 ____XXXX = 0x05,
+	 ____XXoo = 0x06,
+	 ____XXdd = 0x07,
+	 ____oo__ = 0x08,
+	 ____ooXX = 0x09,
+	 ____oooo = 0x0A,
+	 ____oodd = 0x0B,
+	 ____dd__ = 0x0C,
+	 ____ddXX = 0x0D,
+	 ____ddoo = 0x0E,
+	 ____dddd = 0x0F,
+	 __XX____ = 0x10,
+	 __XX__XX = 0x11,
+	 __XX__oo = 0x12,
+	 __XX__dd = 0x13,
+	 __XXXX__ = 0x14,
+	 __XXXXXX = 0x15,
+	 __XXXXoo = 0x16,
+	 __XXXXdd = 0x17,
+	 __XXoo__ = 0x18,
+	 __XXooXX = 0x19,
+	 __XXoooo = 0x1A,
+	 __XXoodd = 0x1B,
+	 __XXdd__ = 0x1C,
+	 __XXddXX = 0x1D,
+	 __XXddoo = 0x1E,
+	 __XXdddd = 0x1F,
+	 __oo____ = 0x20,
+	 __oo__XX = 0x21,
+	 __oo__oo = 0x22,
+	 __oo__dd = 0x23,
+	 __ooXX__ = 0x24,
+	 __ooXXXX = 0x25,
+	 __ooXXoo = 0x26,
+	 __ooXXdd = 0x27,
+	 __oooo__ = 0x28,
+	 __ooooXX = 0x29,
+	 __oooooo = 0x2A,
+	 __oooodd = 0x2B,
+	 __oodd__ = 0x2C,
+	 __ooddXX = 0x2D,
+	 __ooddoo = 0x2E,
+	 __oodddd = 0x2F,
+	 __dd____ = 0x30,
+	 __dd__XX = 0x31,
+	 __dd__oo = 0x32,
+	 __dd__dd = 0x33,
+	 __ddXX__ = 0x34,
+	 __ddXXXX = 0x35,
+	 __ddXXoo = 0x36,
+	 __ddXXdd = 0x37,
+	 __ddoo__ = 0x38,
+	 __ddooXX = 0x39,
+	 __ddoooo = 0x3A,
+	 __ddoodd = 0x3B,
+	 __dddd__ = 0x3C,
+	 __ddddXX = 0x3D,
+	 __ddddoo = 0x3E,
+	 __dddddd = 0x3F,
+	 XX______ = 0x40,
+	 XX____XX = 0x41,
+	 XX____oo = 0x42,
+	 XX____dd = 0x43,
+	 XX__XX__ = 0x44,
+	 XX__XXXX = 0x45,
+	 XX__XXoo = 0x46,
+	 XX__XXdd = 0x47,
+	 XX__oo__ = 0x48,
+	 XX__ooXX = 0x49,
+	 XX__oooo = 0x4A,
+	 XX__oodd = 0x4B,
+	 XX__dd__ = 0x4C,
+	 XX__ddXX = 0x4D,
+	 XX__ddoo = 0x4E,
+	 XX__dddd = 0x4F,
+	 XXXX____ = 0x50,
+	 XXXX__XX = 0x51,
+	 XXXX__oo = 0x52,
+	 XXXX__dd = 0x53,
+	 XXXXXX__ = 0x54,
+	 XXXXXXXX = 0x55,
+	 XXXXXXoo = 0x56,
+	 XXXXXXdd = 0x57,
+	 XXXXoo__ = 0x58,
+	 XXXXooXX = 0x59,
+	 XXXXoooo = 0x5A,
+	 XXXXoodd = 0x5B,
+	 XXXXdd__ = 0x5C,
+	 XXXXddXX = 0x5D,
+	 XXXXddoo = 0x5E,
+	 XXXXdddd = 0x5F,
+	 XXoo____ = 0x60,
+	 XXoo__XX = 0x61,
+	 XXoo__oo = 0x62,
+	 XXoo__dd = 0x63,
+	 XXooXX__ = 0x64,
+	 XXooXXXX = 0x65,
+	 XXooXXoo = 0x66,
+	 XXooXXdd = 0x67,
+	 XXoooo__ = 0x68,
+	 XXooooXX = 0x69,
+	 XXoooooo = 0x6A,
+	 XXoooodd = 0x6B,
+	 XXoodd__ = 0x6C,
+	 XXooddXX = 0x6D,
+	 XXooddoo = 0x6E,
+	 XXoodddd = 0x6F,
+	 XXdd____ = 0x70,
+	 XXdd__XX = 0x71,
+	 XXdd__oo = 0x72,
+	 XXdd__dd = 0x73,
+	 XXddXX__ = 0x74,
+	 XXddXXXX = 0x75,
+	 XXddXXoo = 0x76,
+	 XXddXXdd = 0x77,
+	 XXddoo__ = 0x78,
+	 XXddooXX = 0x79,
+	 XXddoooo = 0x7A,
+	 XXddoodd = 0x7B,
+	 XXdddd__ = 0x7C,
+	 XXddddXX = 0x7D,
+	 XXddddoo = 0x7E,
+	 XXdddddd = 0x7F,
+	 oo______ = 0x80,
+	 oo____XX = 0x81,
+	 oo____oo = 0x82,
+	 oo____dd = 0x83,
+	 oo__XX__ = 0x84,
+	 oo__XXXX = 0x85,
+	 oo__XXoo = 0x86,
+	 oo__XXdd = 0x87,
+	 oo__oo__ = 0x88,
+	 oo__ooXX = 0x89,
+	 oo__oooo = 0x8A,
+	 oo__oodd = 0x8B,
+	 oo__dd__ = 0x8C,
+	 oo__ddXX = 0x8D,
+	 oo__ddoo = 0x8E,
+	 oo__dddd = 0x8F,
+	 ooXX____ = 0x90,
+	 ooXX__XX = 0x91,
+	 ooXX__oo = 0x92,
+	 ooXX__dd = 0x93,
+	 ooXXXX__ = 0x94,
+	 ooXXXXXX = 0x95,
+	 ooXXXXoo = 0x96,
+	 ooXXXXdd = 0x97,
+	 ooXXoo__ = 0x98,
+	 ooXXooXX = 0x99,
+	 ooXXoooo = 0x9A,
+	 ooXXoodd = 0x9B,
+	 ooXXdd__ = 0x9C,
+	 ooXXddXX = 0x9D,
+	 ooXXddoo = 0x9E,
+	 ooXXdddd = 0x9F,
+	 oooo____ = 0xA0,
+	 oooo__XX = 0xA1,
+	 oooo__oo = 0xA2,
+	 oooo__dd = 0xA3,
+	 ooooXX__ = 0xA4,
+	 ooooXXXX = 0xA5,
+	 ooooXXoo = 0xA6,
+	 ooooXXdd = 0xA7,
+	 oooooo__ = 0xA8,
+	 ooooooXX = 0xA9,
+	 oooooooo = 0xAA,
+	 oooooodd = 0xAB,
+	 oooodd__ = 0xAC,
+	 ooooddXX = 0xAD,
+	 ooooddoo = 0xAE,
+	 oooodddd = 0xAF,
+	 oodd____ = 0xB0,
+	 oodd__XX = 0xB1,
+	 oodd__oo = 0xB2,
+	 oodd__dd = 0xB3,
+	 ooddXX__ = 0xB4,
+	 ooddXXXX = 0xB5,
+	 ooddXXoo = 0xB6,
+	 ooddXXdd = 0xB7,
+	 ooddoo__ = 0xB8,
+	 ooddooXX = 0xB9,
+	 ooddoooo = 0xBA,
+	 ooddoodd = 0xBB,
+	 oodddd__ = 0xBC,
+	 ooddddXX = 0xBD,
+	 ooddddoo = 0xBE,
+	 oodddddd = 0xBF,
+	 dd______ = 0xC0,
+	 dd____XX = 0xC1,
+	 dd____oo = 0xC2,
+	 dd____dd = 0xC3,
+	 dd__XX__ = 0xC4,
+	 dd__XXXX = 0xC5,
+	 dd__XXoo = 0xC6,
+	 dd__XXdd = 0xC7,
+	 dd__oo__ = 0xC8,
+	 dd__ooXX = 0xC9,
+	 dd__oooo = 0xCA,
+	 dd__oodd = 0xCB,
+	 dd__dd__ = 0xCC,
+	 dd__ddXX = 0xCD,
+	 dd__ddoo = 0xCE,
+	 dd__dddd = 0xCF,
+	 ddXX____ = 0xD0,
+	 ddXX__XX = 0xD1,
+	 ddXX__oo = 0xD2,
+	 ddXX__dd = 0xD3,
+	 ddXXXX__ = 0xD4,
+	 ddXXXXXX = 0xD5,
+	 ddXXXXoo = 0xD6,
+	 ddXXXXdd = 0xD7,
+	 ddXXoo__ = 0xD8,
+	 ddXXooXX = 0xD9,
+	 ddXXoooo = 0xDA,
+	 ddXXoodd = 0xDB,
+	 ddXXdd__ = 0xDC,
+	 ddXXddXX = 0xDD,
+	 ddXXddoo = 0xDE,
+	 ddXXdddd = 0xDF,
+	 ddoo____ = 0xE0,
+	 ddoo__XX = 0xE1,
+	 ddoo__oo = 0xE2,
+	 ddoo__dd = 0xE3,
+	 ddooXX__ = 0xE4,
+	 ddooXXXX = 0xE5,
+	 ddooXXoo = 0xE6,
+	 ddooXXdd = 0xE7,
+	 ddoooo__ = 0xE8,
+	 ddooooXX = 0xE9,
+	 ddoooooo = 0xEA,
+	 ddoooodd = 0xEB,
+	 ddoodd__ = 0xEC,
+	 ddooddXX = 0xED,
+	 ddooddoo = 0xEE,
+	 ddoodddd = 0xEF,
+	 dddd____ = 0xF0,
+	 dddd__XX = 0xF1,
+	 dddd__oo = 0xF2,
+	 dddd__dd = 0xF3,
+	 ddddXX__ = 0xF4,
+	 ddddXXXX = 0xF5,
+	 ddddXXoo = 0xF6,
+	 ddddXXdd = 0xF7,
+	 ddddoo__ = 0xF8,
+	 ddddooXX = 0xF9,
+	 ddddoooo = 0xFA,
+	 ddddoodd = 0xFB,
+	 dddddd__ = 0xFC,
+	 ddddddXX = 0xFD,
+	 ddddddoo = 0xFE,
+	 dddddddd = 0xFF
+};

@@ -132,19 +132,7 @@
     <ClCompile Include="GUI\Widget\WIDGET.cpp">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D1L.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D2L.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_None.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_Simple.cpp">
+    <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\WINDOW.cpp">

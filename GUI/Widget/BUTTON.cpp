@@ -29,7 +29,7 @@ static void _OnPaint(BUTTON_Obj *pObj) {
 	{
 		int EffectSize;
 		if ((PressedState) == 0) {
-			pObj->pEffect->pfDrawUp();  /* _WIDGET_EFFECT_3D_DrawUp(); */
+			const_cast<WIDGET_EFFECT *>(pObj->pEffect)->DrawUp();  /* _WIDGET_EFFECT_3D_DrawUp(); */
 			EffectSize = pObj->pEffect->EffectSize;
 		}
 		else {

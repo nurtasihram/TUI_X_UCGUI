@@ -73,11 +73,7 @@
     <ClCompile Include="GUI\Widget\SLIDER.cpp" />
     <ClCompile Include="GUI\Widget\TEXT.cpp" />
     <ClCompile Include="GUI\Widget\WIDGET.cpp" />
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D.cpp" />
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D1L.cpp" />
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_3D2L.cpp" />
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_None.cpp" />
-    <ClCompile Include="GUI\Widget\WIDGET_Effect_Simple.cpp" />
+    <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp" />
     <ClCompile Include="GUI\Widget\WINDOW.cpp" />
     <ClCompile Include="GUI\WM\WM.cpp" />
     <ClCompile Include="GUI\WM\WMMemDev.cpp" />
