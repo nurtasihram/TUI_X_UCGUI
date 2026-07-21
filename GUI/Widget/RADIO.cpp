@@ -43,7 +43,6 @@ static void _OnPaint(RADIO_Obj *pObj) {
 	PCBITMAP pBmRadio;
 	PCBITMAP pBmCheck;
 	const char *pText;
-	GUI_FONTINFO FontInfo;
 	GUI_RECT Rect, r, rFocus;
 	int i, y, HasFocus, FontDistY;
 	uint16_t SpaceAbove, CHeight, FocusBorder;
@@ -58,11 +57,9 @@ static void _OnPaint(RADIO_Obj *pObj) {
 	GUI_SetColor(pObj->TextColor);
 	GUI_SetFont(pObj->pFont);
 	GUI_SetTextMode(DRAWMODE_TRANS);
-	/* Get font infos */
-	GUI_GetFontInfo(pObj->pFont, &FontInfo);
 	FontDistY = GUI_GetFontDistY();
-	CHeight = FontInfo.CHeight;
-	SpaceAbove = FontInfo.Baseline - CHeight;
+	CHeight = pObj->pFont->CHeight;
+	SpaceAbove = pObj->pFont->Baseline - CHeight;
 	Rect.x0 = pBmRadio->XSize + RADIO_BORDER * 2 + 2;
 	Rect.y0 = (CHeight <= pObj->Height) ? ((pObj->Height - CHeight) / 2) : 0;
 	Rect.y1 = Rect.y0 + CHeight - 1;

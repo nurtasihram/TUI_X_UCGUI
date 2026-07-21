@@ -1,5 +1,3 @@
-
-
 #include "GUI_Protected.h"
 
 int GUI_GetTime(void) {

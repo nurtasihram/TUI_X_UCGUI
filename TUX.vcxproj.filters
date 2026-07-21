@@ -180,9 +180,6 @@
     <ClCompile Include="GUI\Core\GUI_X_MEM.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUICore.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUICurs.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -225,6 +222,9 @@
     </ClCompile>
     <ClCompile Include="GUI\Resources\F13_ASCII.cpp">
       <Filter>GUI\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUICore.cpp">
+      <Filter>GUI\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -363,9 +363,6 @@
     <ClInclude Include="GUI\Core\GUIDebug.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Core\GUIType.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Core\LCD.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
@@ -373,6 +370,9 @@
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\LCD_Protected.h">
+      <Filter>GUI\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Core\GUIType.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
   </ItemGroup>

@@ -125,14 +125,6 @@ Note: The external declarations for the fonts are now also included in
 		this file.
 */
 
-/* Proportional fonts */
-extern CFONT GUI_Font8_ASCII, GUI_Font8_1;
-extern CFONT GUI_Font13_ASCII, GUI_Font13_1;
-
-/* Monospaced */
-extern CFONT GUI_Font8x8, GUI_Font8x9;
-extern CFONT GUI_Font6x8, GUI_Font6x9;
-
 /* Text alignment flags, horizontal */
 #define TEXTALIGN_LEFT        (0<<0)
 #define TEXTALIGN_RIGHT       (1<<0)
@@ -206,8 +198,8 @@ int  GUI__DivideRound(int a, int b);
 
 RGBC GUI_GetBkColor(void);
 RGBC GUI_GetColor(void);
-void      GUI_SetBkColor(RGBC);
-void      GUI_SetColor(RGBC);
+void GUI_SetBkColor(RGBC);
+void GUI_SetColor(RGBC);
 
 int  GUI_BMP_Draw(const void *pFileData, int x0, int y0);
 int  GUI_BMP_GetXSize(const void *pFileData);
@@ -225,36 +217,16 @@ void GUI_DrawHLine(int y0, int x0, int x1);
 void GUI_DrawVLine(int x0, int y0, int y1);
 void GUI_DrawPixel(int x, int y);
 
-struct GUI_CURSOR {
-	PCBITMAP pBitmap;
-	int xHot, yHot;
-};
-
 #if GUI_SUPPORT_CURSOR
 void               GUI_CURSOR_Activate(void);
 void               GUI_CURSOR_Deactivate(void);
 void               GUI_CURSOR_SetPosition(int x, int y);
-const GUI_CURSOR * GUI_CURSOR_Select(const GUI_CURSOR *pCursor);
+PCCURSOR GUI_CURSOR_Select(PCCURSOR pCursor);
 void               GUI_CURSOR_Show(void);
 void               GUI_CURSOR_Hide(void);
 void               GUI_CURSOR__TempShow(void);
 bool               GUI_CURSOR__TempHide(const GUI_RECT *pRect);
 #endif
-
-extern const GUI_CURSOR GUI_CursorArrowS, GUI_CursorArrowSI;
-extern const GUI_CURSOR GUI_CursorArrowM, GUI_CursorArrowMI;
-extern const GUI_CURSOR GUI_CursorArrowL, GUI_CursorArrowLI;
-extern const GUI_CURSOR GUI_CursorCrossS, GUI_CursorCrossSI;
-extern const GUI_CURSOR GUI_CursorCrossM, GUI_CursorCrossMI;
-extern const GUI_CURSOR GUI_CursorCrossL, GUI_CursorCrossLI;
-extern const GUI_CURSOR GUI_CursorHeaderM, GUI_CursorHeaderMI;
-
-extern CBITMAP GUI_BitmapArrowS, GUI_BitmapArrowSI;
-extern CBITMAP GUI_BitmapArrowM, GUI_BitmapArrowMI;
-extern CBITMAP GUI_BitmapArrowL, GUI_BitmapArrowLI;
-extern CBITMAP GUI_BitmapCrossS, GUI_BitmapCrossSI;
-extern CBITMAP GUI_BitmapCrossM, GUI_BitmapCrossMI;
-extern CBITMAP GUI_BitmapCrossL, GUI_BitmapCrossLI;
 
 void  GUI_DispChar(uint16_t c);
 void  GUI_DispChars(uint16_t c, int Cnt);
@@ -271,7 +243,6 @@ int   GUI_GetCharDistX(uint16_t c);
 int   GUI_GetStringDistX(const char *s);
 int   GUI_GetFontDistY(void);
 int   GUI_GetFontSizeY(void);
-void  GUI_GetFontInfo(PCFONT pFont, GUI_FONTINFO *pfi);
 int   GUI_GetYSizeOfFont(PCFONT pFont);
 int   GUI_GetYDistOfFont(PCFONT pFont);
 int   GUI_GetTextAlign(void);
@@ -391,4 +362,3 @@ void GUI_TOUCH_StoreStateEx(const GUI_PID_STATE *pState);
 void GUI_TOUCH_StoreUnstable(int x, int y);
 
 #define GUI_DispString_UC  GUI_UC_DispString
-

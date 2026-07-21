@@ -8,9 +8,9 @@
 HEADER_Obj::Properties HEADER_Obj::DefaultProps;
 
 /* Remember the old cursor */
-static const GUI_CURSOR *_pOldCursor;
+static PCCURSOR _pOldCursor;
 /* Default values */
-static const GUI_CURSOR *_pDefaultCursor = &GUI_CursorHeaderM;
+static PCCURSOR _pDefaultCursor = &GUI_CursorHeaderM;
 
 constexpr int16_t
 	_DefaultBorderH = 0,

@@ -1,6 +1,6 @@
 #include "GUI_Protected.h"
 
-const uint8_t GUI_Pixels_ArrowM[60] = {
+const uint8_t GUI_Pixels_ArrowM[]{
 XX______,________,________,
 XXXX____,________,________,
 XXooXX__,________,________,
@@ -23,28 +23,20 @@ ________,____XXoo,ooooXX__,
 ________,______XX,XXXX____,
 };
 
-const GUI_BITMAP GUI_BitmapArrowM = {
- 12,                  /* XSize */
- 20,                  /* YSize */
- 3,                   /* BytesPerLine */
- 2,                   /* BitsPerPixel */
- GUI_Pixels_ArrowM,   /* Pointer to picture data (indices) */
- &GUI_CursorPal       /* Pointer to palette */
+static CBITMAP _BitmapArrowM{
+	12, 29,              /* XSize, YSize */
+	3,                   /* BytesPerLine */
+	2,                   /* BitsPerPixel */
+	GUI_Pixels_ArrowM,   /* Pointer to picture data (indices) */
+	&GUI_CursorPal       /* Pointer to palette */
 };
+extern CCURSOR GUI_CursorArrowM{ &_BitmapArrowM, 0, 0 };
 
-const GUI_CURSOR GUI_CursorArrowM = {
-  &GUI_BitmapArrowM, 0, 0
+static CBITMAP _BitmapArrowMI{
+	12, 29,              /* XSize, YSize */
+	3,                   /* BytesPerLine */
+	2,                   /* BitsPerPixel */
+	GUI_Pixels_ArrowM,   /* Pointer to picture data (indices) */
+	&GUI_CursorPalI      /* Pointer to palette */
 };
-
-const GUI_BITMAP GUI_BitmapArrowMI = {
- 12,                  /* XSize */
- 20,                  /* YSize */
- 3,                   /* BytesPerLine */
- 2,                   /* BitsPerPixel */
- GUI_Pixels_ArrowM,   /* Pointer to picture data (indices) */
- &GUI_CursorPalI      /* Pointer to palette */
-};
-
-const GUI_CURSOR GUI_CursorArrowMI = {
-  &GUI_BitmapArrowMI, 0, 0
-};
+extern CCURSOR GUI_CursorArrowMI{ &_BitmapArrowMI, 0, 0 };

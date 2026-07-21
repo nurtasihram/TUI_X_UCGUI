@@ -1,6 +1,6 @@
 #include "GUI_Protected.h"
 
-const uint8_t GUI_Pixels_CrossL[248] = {
+const uint8_t GUI_Pixels_CrossL[]{
 ________,________,________,____XXXX,XX______,________,________,________,
 ________,________,________,____XXoo,XX______,________,________,________,
 ________,________,________,____XXoo,XX______,________,________,________,
@@ -34,28 +34,20 @@ ________,________,________,____XXoo,XX______,________,________,________,
 ________,________,________,____XXXX,XX______,________,________,________,
 };
 
-const GUI_BITMAP GUI_BitmapCrossL = {
- 31,                  /* XSize */
- 31,                  /* YSize */
- 8,                   /* BytesPerLine */
- 2,                   /* BitsPerPixel */
- GUI_Pixels_CrossL,   /* Pointer to picture data (indices) */
- &GUI_CursorPal      /* Pointer to palette */
+static CBITMAP _BitmapCrossL{
+	31, 31,              /* XSize, YSize */
+	8,                   /* BytesPerLine */
+	2,                   /* BitsPerPixel */
+	GUI_Pixels_CrossL,   /* Pointer to picture data (indices) */
+	&GUI_CursorPal      /* Pointer to palette */
 };
+extern CCURSOR GUI_CursorCrossL{ &_BitmapCrossL, 15, 15 };
 
-const GUI_CURSOR GUI_CursorCrossL = {
-  &GUI_BitmapCrossL, 15, 15
+static CBITMAP _BitmapCrossLI{
+	31, 31,              /* XSize, YSize */
+	8,                    /* BytesPerLine */
+	2,                    /* BitsPerPixel */
+	GUI_Pixels_CrossL,    /* Pointer to picture data (indices) */
+	&GUI_CursorPalI       /* Pointer to palette */
 };
-
-const GUI_BITMAP GUI_BitmapCrossLI = {
- 31,                   /* XSize */
- 31,                   /* YSize */
- 8,                    /* BytesPerLine */
- 2,                    /* BitsPerPixel */
- GUI_Pixels_CrossL,    /* Pointer to picture data (indices) */
- &GUI_CursorPalI       /* Pointer to palette */
-};
-
-const GUI_CURSOR GUI_CursorCrossLI = {
-  &GUI_BitmapCrossLI, 15, 15
-};
+extern CCURSOR GUI_CursorCrossLI{ &_BitmapCrossLI, 15, 15 };

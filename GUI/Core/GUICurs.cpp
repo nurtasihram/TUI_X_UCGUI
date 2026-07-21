@@ -20,7 +20,7 @@ static int _AllocSize;
 static void *_pBuffer = nullptr;
 static GUI_RECT _Rect;
 static bool _CursorIsVis = false, _CursorOn = false;
-static const GUI_CURSOR *_pCursor = nullptr;
+static PCCURSOR _pCursor = nullptr;
 static uint8_t _CursorDeActCnt = 0;
 static int16_t _x, _y; /* Position of hot spot */
 static GUI_RECT _ClipRect;
@@ -142,10 +142,10 @@ void GUI_CURSOR_Deactivate(void) {
 		_Hide();
 }
 
-const GUI_CURSOR *GUI_CURSOR_Select(const GUI_CURSOR *pCursor) {
+PCCURSOR GUI_CURSOR_Select(PCCURSOR pCursor) {
 	int AllocSize;
 	PCBITMAP pBM;
-	const GUI_CURSOR *pOldCursor;
+	PCCURSOR pOldCursor;
 	pOldCursor = _pCursor;
 	if (pCursor != _pCursor) {
 		pBM = pCursor->pBitmap;

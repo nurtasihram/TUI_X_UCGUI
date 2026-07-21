@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GUI\Core\GUI_X_MEM.cpp" />
     <ClCompile Include="GUI\Core\GUICore.cpp" />
+    <ClCompile Include="GUI\Core\GUI_X_MEM.cpp" />
     <ClCompile Include="GUI\Core\GUICurs.cpp" />
     <ClCompile Include="GUI\Core\GUITime.cpp" />
     <ClCompile Include="GUI\Core\GUITimer.cpp" />

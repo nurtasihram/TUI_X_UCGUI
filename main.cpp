@@ -7,9 +7,9 @@ static WM_HWIN _hMemDevFrame, _hMemDevPane;
 static WM_HWIN _hNoMemDevFrame, _hNoMemDevPane;
 static int _MemDevPhase;
 
-const RGBC ColorsSmilie0[] = { RGB_WHITE, RGB_BLACK, RGB_RED };
-const GUI_LOGPALETTE PalSmilie0 = { 3, 1, &ColorsSmilie0[0] };
-const unsigned char acSmilie0[] = {
+const RGBC ColorsSmilie0[]{ RGB_WHITE, RGB_BLACK, RGB_RED };
+const GUI_LOGPALETTE PalSmilie0{ 3, 1, &ColorsSmilie0[0] };
+const uint8_t acSmilie0[]{
 ________,XXXXXXXX,XX______,________,
 ______XX,oooooooo,ooXX____,________,
 ____XXoo,oooooooo,ooooXX__,________,
@@ -23,15 +23,16 @@ __XXoooo,ooXXXXXX,ooooooXX,________,
 ____XXoo,XXoooooo,XXooXX__,________,
 ______XX,oooooooo,ooXX____,________,
 ________,XXXXXXXX,XX______,________ };
-const GUI_BITMAP bmSmilie0 = {
+CBITMAP bmSmilie0{
 	/* Size */ 13, 13,
 	/* BytesPerLine */ 4,
 	/* BitsPerPixel */ 2,
-	acSmilie0, &PalSmilie0 };
+	acSmilie0, &PalSmilie0
+};
 
-const RGBC ColorsSmilie1[] = { RGB_WHITE, RGB_BLACK, RGB_YELLOW };
-const GUI_LOGPALETTE PalSmilie1 = { 3, 1, &ColorsSmilie1[0] };
-const unsigned char acSmilie1[] = {
+const RGBC ColorsSmilie1[]{ RGB_WHITE, RGB_BLACK, RGB_YELLOW };
+const GUI_LOGPALETTE PalSmilie1{ 3, 1, &ColorsSmilie1[0] };
+const uint8_t acSmilie1[]{
 ________,XXXXXXXX,XX______,________,
 ______XX,oooooooo,ooXX____,________,
 ____XXoo,oooooooo,ooooXX__,________,
@@ -45,19 +46,20 @@ __XXoooo,XXoooooo,XXooooXX,________,
 ____XXoo,ooXXXXXX,ooooXX__,________,
 ______XX,oooooooo,ooXX____,________,
 ________,XXXXXXXX,XX______,________ };
-const GUI_BITMAP bmSmilie1 = {
+CBITMAP bmSmilie1{
 	/* Size */ 13, 13,
 	/* BytesPerLine */ 4,
 	/* BitsPerPixel */ 2,
-	acSmilie1, &PalSmilie1 };
+	acSmilie1, &PalSmilie1
+};
 
-static const GUI_ConstString _ListBox[] = {
+static const GUI_ConstString _ListBox[]{
   "English", "Deutsch", nullptr
 };
 #define GUI_ID_MULTIEDIT0  GUI_ID_USER + 0x00
 #define GUI_ID_CHECK0      GUI_ID_USER + 0x01
 #define GUI_ID_CHECK1      GUI_ID_USER + 0x02
-static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
+static const GUI_WIDGET_CREATE_INFO _aDialogCreate[]{
 	{ FRAMEWIN_CreateIndirect  , "Owner drawn list box" , 0                 , 50  , 50  , 220  , 175  , FRAMEWIN_CF_MOVEABLE       },
 	{ LISTBOX_CreateIndirect   , ""                     , GUI_ID_MULTIEDIT0 , 10  , 10  , 100  , 100  , 0                    , 100 },
 	{ CHECKBOX_CreateIndirect  , ""                     , GUI_ID_CHECK0     , 120 , 10  , 0    , 0                                 },

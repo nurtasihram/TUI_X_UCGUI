@@ -627,7 +627,7 @@ void FRAMEWIN_SetFont(FRAMEWIN_Handle hObj, PCFONT pFont) {
 static int _CaptureX, _CaptureY;
 static int _CaptureFlags;
 #if GUI_SUPPORT_CURSOR
-static const GUI_CURSOR  *_pOldCursor;
+static PCCURSOR _pOldCursor;
 #endif
 #if GUI_SUPPORT_CURSOR
 static const RGBC _ColorsCursor[] = {
@@ -665,7 +665,7 @@ static CBITMAP _bmResizeCursorH = {
  _acResizeCursorH,    /* Pointer to picture data (indices) */
  &_PalCursor          /* Pointer to palette */
 };
-static const GUI_CURSOR _ResizeCursorH = {
+static CCURSOR _ResizeCursorH = {
   &_bmResizeCursorH, 8, 8
 };
 static const uint8_t _acResizeCursorV[] = {
@@ -695,7 +695,7 @@ static CBITMAP _bmResizeCursorV = {
  _acResizeCursorV,    /* Pointer to picture data (indices) */
  &_PalCursor          /* Pointer to palette */
 };
-static const GUI_CURSOR _ResizeCursorV = {
+static CCURSOR _ResizeCursorV = {
   &_bmResizeCursorV, 8, 8
 };
 static const uint8_t _acResizeCursorDD[] = {
@@ -725,7 +725,7 @@ static CBITMAP _bmResizeCursorDD = {
  _acResizeCursorDD,   /* Pointer to picture data (indices) */
  &_PalCursor          /* Pointer to palette */
 };
-static const GUI_CURSOR _ResizeCursorDD = {
+static CCURSOR _ResizeCursorDD = {
   &_bmResizeCursorDD, 8, 8
 };
 static const uint8_t _acResizeCursorDU[] = {
@@ -755,13 +755,13 @@ static CBITMAP _bmResizeCursorDU = {
  _acResizeCursorDU,   /* Pointer to picture data (indices) */
  &_PalCursor          /* Pointer to palette */
 };
-static const GUI_CURSOR _ResizeCursorDU = {
+static CCURSOR _ResizeCursorDU = {
   &_bmResizeCursorDU, 8, 8
 };
 #endif
 #if GUI_SUPPORT_CURSOR
 static void _SetResizeCursor(int Mode) {
-	const GUI_CURSOR  *pNewCursor = nullptr;
+	PCCURSOR pNewCursor = nullptr;
 	if (Mode) {
 		int Direction;
 		Direction = Mode & (FRAMEWIN_RESIZE_X | FRAMEWIN_RESIZE_Y);
@@ -782,7 +782,7 @@ static void _SetResizeCursor(int Mode) {
 		}
 	}
 	if (pNewCursor) {
-		const GUI_CURSOR  *pOldCursor;
+		PCCURSOR pOldCursor;
 		pOldCursor = GUI_CURSOR_Select(pNewCursor);
 		if (_pOldCursor == nullptr) {
 			_pOldCursor = pOldCursor;

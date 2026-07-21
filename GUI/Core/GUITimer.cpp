@@ -1,7 +1,4 @@
-
-
 #include "GUI_Protected.h"
-
 
 typedef struct {
 	GUI_TIMER_CALLBACK *cb;
