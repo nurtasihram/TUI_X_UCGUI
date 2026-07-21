@@ -266,7 +266,7 @@ void FRAMEWIN__CalcPositions(FRAMEWIN_Obj *pObj, POSITIONS *pPos) {
 	pPos->rTitleText.y0 = BorderSize;
 	pPos->rTitleText.y1 = BorderSize + TitleHeight - 1;
 	/* Iterate over all children */
-	for (pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
+	for (pChild = pObj->pFirstChild; pChild; pChild = pChild->pNext) {
 		int x0 = pChild->Rect.x0 - pObj->Rect.x0;
 		int x1 = pChild->Rect.x1 - pObj->Rect.x0;
 		int y0 = pChild->Rect.y0 - pObj->Rect.y0;
@@ -466,7 +466,7 @@ int FRAMEWIN_IsMaximized(FRAMEWIN_Handle hObj) {
 
 static void _InvalidateButton(FRAMEWIN_Obj *pObj, int Id) {
 	WM_Obj *pChild;
-	for (pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext)
+	for (pChild = pObj->pFirstChild; pChild; pChild = pChild->pNext)
 		if (WM_GetId(pChild) == Id)
 			WM_Invalidate(pChild);
 }
@@ -513,9 +513,9 @@ static void _MaximizeFramewin(FRAMEWIN_Obj *pObj) {
 	_RestoreMinimized(pObj);
 	/* When window is not maximized, maximize it */
 	if (!(pObj->Flags & FRAMEWIN_CF_MAXIMIZED)) {
-		auto pParent = (WM_Obj *)pObj->hParent;
+		auto pParent = pObj->pParent;
 		GUI_RECT r = pParent->Rect;
-		if (!pParent->hParent) {
+		if (!pParent->pParent) {
 			r.x1 = LCD_GetXSize();
 			r.y1 = LCD_GetYSize();
 		}
@@ -553,7 +553,7 @@ void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
 		int OldHeight = FRAMEWIN__CalcTitleHeight(pObj);
 		int OldSize = pObj->Props.BorderSize;
 		int Diff = Size - OldSize;
-		for (auto pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
+		for (auto pChild = pObj->pFirstChild; pChild; pChild = pChild->pNext) {
 			GUI_RECT r = pChild->Rect + GUI_POINT{-pObj->Rect.x0, -pObj->Rect.y0};
 			if (r.y0 == pObj->Props.BorderSize  && r.y1 - r.y0 + 1 == OldHeight) {
 				if (pChild->Status & WM_SF_ANCHOR_RIGHT)
@@ -1001,7 +1001,7 @@ int FRAMEWIN_SetTitleHeight(FRAMEWIN_Handle hObj, int Height) {
 static void _ShowHideButtons(FRAMEWIN_Obj *pObj) {
 	WM_Obj *pChild;
 	int y0;
-	for (pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
+	for (pChild = pObj->pFirstChild; pChild; pChild = pChild->pNext) {
 		y0 = pChild->Rect.y0 - pObj->Rect.y0;
 		if ((y0 == pObj->Props.BorderSize) && (pChild != pObj->hClient)) {
 			if (pObj->State & FRAMEWIN_CF_TITLEVIS) {
@@ -1062,7 +1062,7 @@ void FRAMEWIN__UpdateButtons(FRAMEWIN_Obj *pObj, int OldHeight) {
 			pLeft = pRight = nullptr;
 			xLeft = GUI_XMAX;
 			xRight = GUI_XMIN;
-			for (pChild = (WM_Obj *)pObj->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
+			for (pChild = pObj->pFirstChild; pChild; pChild = pChild->pNext) {
 				r = pChild->Rect;
 				r += GUI_POINT{-pObj->Rect.x0, -pObj->Rect.y0};
 				if ((r.y0 == pObj->Props.BorderSize) && ((r.y1 - r.y0 + 1) == OldHeight)) {

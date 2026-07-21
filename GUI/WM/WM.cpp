@@ -137,11 +137,11 @@ static bool _ClipAtParentBorders(GUI_RECT &r, WM_HWIN hWin) {
 	   Clip at parent boarders.
 	   We are done with iterating if hWin has no parent.
 	*/
-	for (;; pWin = (WM_Obj *)pWin->hParent) {
+	for (;; pWin = pWin->pParent) {
 		if (!(pWin->Status & WM_SF_ISVIS))
 			return false; /* Invisible */
 		r &= pWin->Rect;  /* And clip on borders */
-		if (!pWin->hParent)
+		if (!pWin->pParent)
 			break; /* hWin is now the top level window which has no parent */
 		/* Go one level up (parent)*/
 	} /* Only way out is in the loop. Required for efficiency, no bug, even though some compilers may complain. */
@@ -169,22 +169,22 @@ void WM__InsertWindowIntoList(WM_HWIN hWin, WM_HWIN hParent) {
 	WM_Obj *pi;
 	if (hParent) {
 		pWin = (WM_Obj *)hWin;
-		pWin->hNext = 0;
-		pWin->hParent = hParent;
+		pWin->pNext = 0;
+		pWin->pParent = (WM_Obj *)hParent;
 		pParent = (WM_Obj *)hParent;
 		OnTop = pWin->Status & WM_CF_STAYONTOP;
-		hi = pParent->hFirstChild;
+		hi = pParent->pFirstChild;
 		/* Put it at beginning of the list if there is no child */
 		if (hi == 0) {   /* No child yet ... Makes things easy ! */
-			pParent->hFirstChild = hWin;
+			pParent->pFirstChild = (WM_Obj *)hWin;
 			return;                         /* Early out ... We are done */
 		}
 		/* Put it at beginning of the list if first child is a TOP window and new one is not */
 		pi = (WM_Obj *)hi;
 		if (!OnTop) {
 			if (pi->Status & WM_SF_STAYONTOP) {
-				pWin->hNext = hi;
-				pParent->hFirstChild = hWin;
+				pWin->pNext = (WM_Obj *)hi;
+				pParent->pFirstChild = (WM_Obj *)hWin;
 				return;                         /* Early out ... We are done */
 			}
 		}
@@ -192,15 +192,15 @@ void WM__InsertWindowIntoList(WM_HWIN hWin, WM_HWIN hParent) {
 		do {
 			WM_Obj *pNext;
 			WM_HWIN hNext;
-			if ((hNext = pi->hNext) == 0) {   /* End of sibling list ? */
-				pi->hNext = hWin;             /* Then modify this last element to point to new one and we are done */
+			if ((hNext = pi->pNext) == 0) {   /* End of sibling list ? */
+				pi->pNext = (WM_Obj *)hWin;             /* Then modify this last element to point to new one and we are done */
 				break;
 			}
 			pNext = (WM_Obj *)hNext;
 			if (!OnTop) {
 				if (pNext->Status & WM_SF_STAYONTOP) {
-					pi->hNext = hWin;
-					pWin->hNext = hNext;
+					pi->pNext = (WM_Obj *)hWin;
+					pWin->pNext = (WM_Obj *)hNext;
 					break;
 				}
 			}
@@ -215,22 +215,22 @@ void WM__RemoveWindowFromList(WM_HWIN hWin) {
 	WM_HWIN hi, hParent;
 	WM_Obj *pWin, *pParent, *pi;
 	pWin = (WM_Obj *)hWin;
-	hParent = pWin->hParent;
+	hParent = pWin->pParent;
 	if (hParent) {
 		pParent = (WM_Obj *)hParent;
-		hi = pParent->hFirstChild;
+		hi = pParent->pFirstChild;
 		if (hi == hWin) {
 			pi = (WM_Obj *)hi;
-			pParent->hFirstChild = pi->hNext;
+			pParent->pFirstChild = pi->pNext;
 		}
 		else {
 			while (hi) {
 				pi = (WM_Obj *)hi;
-				if (pi->hNext == hWin) {
-					pi->hNext = pWin->hNext;
+				if (pi->pNext == hWin) {
+					pi->pNext = pWin->pNext;
 					break;
 				}
-				hi = pi->hNext;
+				hi = pi->pNext;
 			}
 		}
 	}
@@ -247,18 +247,18 @@ void WM__DetachWindow(WM_HWIN hWin) {
 	WM_Obj *pWin;
 	WM_HWIN hParent;
 	pWin = (WM_Obj *)hWin;
-	hParent = pWin->hParent;
+	hParent = pWin->pParent;
 	if (hParent) {
 		WM__RemoveWindowFromList(hWin);
 		/* Clear area used by this window */
 		WM_InvalidateArea(&pWin->Rect);
-		pWin->hParent = 0;
+		pWin->pParent = 0;
 	}
 }
 static void _DeleteAllChildren(WM_HWIN hChild) {
 	while (hChild) {
 		auto pChild = (WM_Obj *)hChild;
-		WM_HWIN hNext = pChild->hNext;
+		WM_HWIN hNext = pChild->pNext;
 		WM_DeleteWindow(hChild);
 		hChild = hNext;
 	}
@@ -268,7 +268,7 @@ void WM__Client2Screen(const WM_Obj *pWin, GUI_RECT *pRect) {
 }
 bool WM_IsWindow(WM_HWIN hWin) {
 	WM_HWIN iWin;
-	for (iWin = WM__FirstWin; iWin; iWin = ((WM_Obj *)iWin)->hNextLin)
+	for (iWin = WM__FirstWin; iWin; iWin = ((WM_Obj *)iWin)->pNextLin)
 		if (iWin == hWin)
 			return true;
 	return false;
@@ -288,9 +288,9 @@ void WM__RemoveFromLinList(WM_HWIN hWin) {
 	WM_HWIN hNext;
 	for (hiWin = WM__FirstWin; hiWin; ) {
 		piWin = (WM_Obj *)hiWin;
-		hNext = piWin->hNextLin;
+		hNext = piWin->pNextLin;
 		if (hNext == hWin) {
-			piWin->hNextLin = ((WM_Obj *)hWin)->hNextLin;
+			piWin->pNextLin = ((WM_Obj *)hWin)->pNextLin;
 			break;
 		}
 		hiWin = hNext;
@@ -302,15 +302,15 @@ static void _AddToLinList(WM_HWIN hNew) {
 	if (WM__FirstWin) {
 		pFirst = (WM_Obj *)WM__FirstWin;
 		pNew = (WM_Obj *)hNew;
-		pNew->hNextLin = pFirst->hNextLin;
-		pFirst->hNextLin = hNew;
+		pNew->pNextLin = pFirst->pNextLin;
+		pFirst->pNextLin = (WM_Obj *)hNew;
 	}
 	else
 		WM__FirstWin = hNew;
 }
 static void _Findy1(WM_HWIN iWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 	WM_Obj *pWin;
-	for (; iWin; iWin = pWin->hNext) {
+	for (; iWin; iWin = pWin->pNext) {
 		int Status = (pWin = (WM_Obj *)iWin)->Status;
 		/* Check if this window affects us at all */
 		if (Status & WM_SF_ISVIS) {
@@ -331,7 +331,7 @@ static void _Findy1(WM_HWIN iWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 					/* Check all children*/
 					WM_HWIN hChild;
 					WM_Obj *pChild;
-					for (hChild = pWin->hFirstChild; hChild; hChild = pChild->hNext) {
+					for (hChild = pWin->pFirstChild; hChild; hChild = pChild->pNext) {
 						pChild = (WM_Obj *)hChild;
 						_Findy1(hChild, pRect, &rWinClipped);
 					}
@@ -343,7 +343,7 @@ static void _Findy1(WM_HWIN iWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 static int _Findx0(WM_HWIN hWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 	WM_Obj *pWin;
 	int r = 0;
-	for (; hWin; hWin = pWin->hNext) {
+	for (; hWin; hWin = pWin->pNext) {
 		pWin = (WM_Obj *)hWin; int Status = pWin->Status;
 		if (Status & WM_SF_ISVIS) {           /* If window is not visible, it can be safely ignored */
 			GUI_RECT rWinClipped;               /* Window rect, clipped to part inside of ancestors */
@@ -364,7 +364,7 @@ static int _Findx0(WM_HWIN hWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 					/* Check all children */
 					WM_HWIN hChild;
 					WM_Obj *pChild;
-					for (hChild = pWin->hFirstChild; hChild; hChild = pChild->hNext) {
+					for (hChild = pWin->pFirstChild; hChild; hChild = pChild->pNext) {
 						pChild = (WM_Obj *)hChild;
 						if (_Findx0(hChild, pRect, &rWinClipped)) {
 							r = 1;
@@ -378,7 +378,7 @@ static int _Findx0(WM_HWIN hWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 }
 static void _Findx1(WM_HWIN hWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 	WM_Obj *pWin;
-	for (; hWin; hWin = pWin->hNext) {
+	for (; hWin; hWin = pWin->pNext) {
 		pWin = (WM_Obj *)hWin; int Status = pWin->Status;
 		if (Status & WM_SF_ISVIS) { /* If window is not visible, it can be safely ignored */
 			GUI_RECT rWinClipped = pWin->Rect; /* Window rect, clipped to part inside of ancestors */
@@ -392,7 +392,7 @@ static void _Findx1(WM_HWIN hWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 					/* Check all children */
 					WM_HWIN hChild;
 					WM_Obj *pChild;
-					for (hChild = pWin->hFirstChild; hChild; hChild = pChild->hNext) {
+					for (hChild = pWin->pFirstChild; hChild; hChild = pChild->pNext) {
 						pChild = (WM_Obj *)hChild;
 						_Findx1(hChild, pRect, &rWinClipped);
 					}
@@ -453,7 +453,7 @@ void WM_Invalidate(WM_HWIN hWin) {
 void WM_InvalidateArea(const GUI_RECT *pRect) {
 	WM_HWIN hWin;
 	/* Iterate over all windows */
-	for (hWin = WM__FirstWin; hWin; hWin = ((WM_Obj *)hWin)->hNextLin) {
+	for (hWin = WM__FirstWin; hWin; hWin = ((WM_Obj *)hWin)->pNextLin) {
 		_Invalidate1Abs(hWin, pRect);
 	}
 }
@@ -544,7 +544,7 @@ void WM_DeleteWindow(WM_HWIN hWin) {
 		/* Inform parent */
 		WM_NotifyParent(hWin, WM_NOTIFICATION_CHILD_DELETED);
 		/* Delete all children */
-		_DeleteAllChildren(pWin->hFirstChild);
+		_DeleteAllChildren(pWin->pFirstChild);
 #if WM_SUPPORT_NOTIFY_VIS_CHANGED
 		WM__SendMsgNoData(hWin, WM_NOTIFY_VIS_CHANGED);             /* Notify window that visibility may have changed */
 #endif
@@ -669,12 +669,12 @@ static int _FindNext_IVR(void) {
 		r.x1 = _ClipContext.ClientRect.x1;
 		/* Iterate over all windows which are above */
 		/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
-		for (hParent = GUI_Context.hAWin; hParent; hParent = pParent->hParent) {
+		for (hParent = GUI_Context.hAWin; hParent; hParent = pParent->pParent) {
 			pParent = (WM_Obj *)hParent;
-			_Findy1(pParent->hNext, &r, nullptr);
+			_Findy1(pParent->pNext, &r, nullptr);
 		}
 		/* Check all children */
-		_Findy1(pAWin->hFirstChild, &r, nullptr);
+		_Findy1(pAWin->pFirstChild, &r, nullptr);
 	}
 	/*
 	  STEP 4
@@ -687,17 +687,17 @@ Find_x0:
 	/* Check all siblings above (siblings of window, siblings of parents, etc ...) */
 #if 0   /* This is a planned, but not yet released optimization */
 	if (Status & WM_SF_DONT_CLIP_SIBLINGS)
-		hParent = pAWin->hParent;
+		hParent = pAWin->pParent;
 	else
 #endif
 		hParent = GUI_Context.hAWin;
-	for (; hParent; hParent = pParent->hParent) {
+	for (; hParent; hParent = pParent->pParent) {
 		pParent = (WM_Obj *)hParent;
-		if (_Findx0(pParent->hNext, &r, nullptr))
+		if (_Findx0(pParent->pNext, &r, nullptr))
 			goto Find_x0;
 	}
 	/* Check all children */
-	if (_Findx0(pAWin->hFirstChild, &r, nullptr))
+	if (_Findx0(pAWin->pFirstChild, &r, nullptr))
 		goto Find_x0;
 	/*
 	 STEP 5:
@@ -716,16 +716,16 @@ Find_x0:
 	/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
 #if 0   /* This is a planned, but not yet released optimization */
 	if (Status & WM_SF_DONT_CLIP_SIBLINGS)
-		hParent = pAWin->hParent;
+		hParent = pAWin->pParent;
 	else
 #endif
 		hParent = GUI_Context.hAWin;
-	for (; hParent; hParent = pParent->hParent) {
+	for (; hParent; hParent = pParent->pParent) {
 		pParent = (WM_Obj *)hParent;
-		_Findx1(pParent->hNext, &r, nullptr);
+		_Findx1(pParent->pNext, &r, nullptr);
 	}
 	/* Check all children */
-	_Findx1(pAWin->hFirstChild, &r, nullptr);
+	_Findx1(pAWin->pFirstChild, &r, nullptr);
 	/* We are done. Return the rectangle we found in the _ClipContext. */
 	if (_ClipContext.Cnt > 200)
 		return 0;  /* error !!! This should not happen !*/
@@ -947,7 +947,7 @@ static int _Paint1Trans(WM_Obj *pWin) {
 static void _PaintTransChildren(WM_Obj *pWin) {
 	WM_Obj *pChild;
 	if (pWin->Status & WM_SF_ISVIS) {
-		for (pChild = (WM_Obj *)pWin->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
+		for (pChild = pWin->pFirstChild; pChild; pChild = pChild->pNext) {
 			if ((pChild->Status & (WM_SF_HASTRANS | WM_SF_ISVIS))   /* Transparent & visible ? */
 				== (WM_SF_HASTRANS | WM_SF_ISVIS)) {
 				/* Set invalid area of the window to draw */
@@ -975,18 +975,18 @@ static void _PaintTransChildren(WM_Obj *pWin) {
 */
 #if WM_SUPPORT_TRANSPARENCY
 static void _PaintTransTopSiblings(WM_Obj *pWin) {
-	auto pParent = (WM_Obj *)pWin->hParent;
-	pWin = (WM_Obj *)pWin->hNext;
+	auto pParent = pWin->pParent;
+	pWin = pWin->pNext;
 	while (pParent) { /* Go hierarchy up to desktop window */
-		for (; pWin; pWin = (WM_Obj *)pWin->hNext) {
+		for (; pWin; pWin = pWin->pNext) {
 			/* paint window if it is transparent & visible */
 			if ((pWin->Status & (WM_SF_HASTRANS | WM_SF_ISVIS)) == (WM_SF_HASTRANS | WM_SF_ISVIS))
 				_Paint1Trans(pWin);
 			/* paint transparent & visible children */
 			_PaintTransChildren(pWin);
 		}
-		pWin = (WM_Obj *)pParent->hNext;
-		pParent = (WM_Obj *)pParent->hParent;
+		pWin = pParent->pNext;
+		pParent = pParent->pParent;
 	}
 }
 #endif
@@ -1059,7 +1059,7 @@ static int _Paint(WM_Obj *pWin) {
 				/*
 					* Currently we treat a desktop window as transparent, because per default it does not repaint itself.
 					*/
-				if (pWin->hParent == 0) {
+				if (pWin->pParent == 0) {
 					Flags = GUI_MEMDEV_HASTRANS;
 				}
 				GUI_MEMDEV_Draw(&r, _cbPaintMemDev, pWin, 0, Flags);
@@ -1083,7 +1083,7 @@ static void _DrawNext(void) {
 	GUI_CONTEXT ContextOld;
 	GUI_SaveContext(&ContextOld);
 	/* Make sure the next window to redraw is valid */
-	for (; iWin && UpdateRem; iWin = (WM_Obj *)iWin->hNextLin)
+	for (; iWin && UpdateRem; iWin = iWin->pNextLin)
 		if (_Paint(iWin))
 			UpdateRem--;  /* Only the given number of windows at a time ... */
 	NextDrawWin = iWin;   /* Remember the window */
@@ -1230,7 +1230,7 @@ void WM__ForEachDesc(WM_HWIN hWin, WM_tfForEach *pcb, void *pData) {
 	WM_Obj *pChild;
 	WM_Obj *pWin;
 	pWin = (WM_Obj *)hWin;
-	for (hChild = pWin->hFirstChild; hChild; hChild = pChild->hNext) {
+	for (hChild = pWin->pFirstChild; hChild; hChild = pChild->pNext) {
 		pChild = (WM_Obj *)hChild;
 		pcb(hChild, pData);
 		WM_ForEachDesc(hChild, pcb, pData);
@@ -1246,7 +1246,7 @@ WM_HWIN WM__GetFirstSibling(WM_HWIN hWin) {
 	hWin = WM_GetParent(hWin);
 	if (hWin) {
 		pWin = (WM_Obj *)hWin;
-		return pWin->hFirstChild;
+		return pWin->pFirstChild;
 	}
 	return 0;
 }
@@ -1264,9 +1264,9 @@ WM_HWIN WM__GetFocussedChild(WM_HWIN hWin) {
 */
 WM_HWIN WM__GetLastSibling(WM_HWIN hWin) {
 	WM_Obj *pWin;
-	for (; hWin; hWin = pWin->hNext) {
+	for (; hWin; hWin = pWin->pNext) {
 		pWin = (WM_Obj *)hWin;
-		if (pWin->hNext == 0)
+		if (pWin->pNext == 0)
 			break;
 	}
 	return hWin;
@@ -1279,13 +1279,13 @@ WM_HWIN WM__GetLastSibling(WM_HWIN hWin) {
 WM_HWIN WM_GetPrevSibling(WM_HWIN hWin) {
 	WM_HWIN hi;
 	WM_Obj *pi;
-	for (hi = WM__GetFirstSibling(hWin); hi; hi = pi->hNext) {
+	for (hi = WM__GetFirstSibling(hWin); hi; hi = pi->pNext) {
 		if (hi == hWin) {
 			hi = 0; /* There is no previous sibling. Return 0 */
 			break;
 		}
 		pi = (WM_Obj *)hi;
-		if (pi->hNext == hWin)
+		if (pi->pNext == hWin)
 			break; /* We found the previous one ! */
 	}
 	return hi;
@@ -1305,11 +1305,11 @@ bool WM__IsAncestor(WM_HWIN hChild, WM_HWIN hParent) {
 	if (hChild && hParent) {
 		while (hChild) {
 			auto pChild = (WM_Obj *)hChild;
-			if (pChild->hParent == hParent) {
+			if (pChild->pParent == hParent) {
 				r = true;
 				break;
 			}
-			hChild = pChild->hParent;
+			hChild = pChild->pParent;
 		}
 	}
 	return r;
@@ -1335,7 +1335,7 @@ bool WM__IsChild(WM_HWIN hWin, WM_HWIN hParent) {
 	if (hWin) {
 		auto pObj = (WM_Obj *)hWin;
 		if (pObj)
-			if (pObj->hParent == hParent)
+			if (pObj->pParent == hParent)
 				r = true;
 	}
 	return r;
@@ -1355,7 +1355,7 @@ bool WM_IsEnabled(WM_HWIN hWin) {
 */
 static void _NotifyVisChanged(WM_HWIN hWin, GUI_RECT *pRect) {
 	WM_Obj *pWin;
-	for (hWin = WM_GetFirstChild(hWin); hWin; hWin = pWin->hNext) {
+	for (hWin = WM_GetFirstChild(hWin); hWin; hWin = pWin->pNext) {
 		pWin = (WM_Obj *)hWin;
 		if (pWin->Status & WM_SF_ISVIS) {
 			if (GUI_RectsIntersect(&pWin->Rect, pRect)) {
@@ -1376,7 +1376,7 @@ void WM__NotifyVisChanged(WM_HWIN hWin, GUI_RECT *pRect) {
 	WM_Obj *pWin;
 	WM_HWIN hParent;
 	pWin = (WM_Obj *)hWin;
-	hParent = pWin->hParent;
+	hParent = pWin->pParent;
 	if (hParent) {
 		_NotifyVisChanged(hParent, pRect);
 	}
@@ -1398,7 +1398,7 @@ void WM__UpdateChildPositions(WM_Obj *pObj, int dx0, int dy0, int dx1, int dy1) 
 	WM_HWIN hChild;
 	WM_Obj *pChild;
 	int dx, dy, dw, dh;
-	for (hChild = pObj->hFirstChild; hChild; hChild = pChild->hNext) {
+	for (hChild = pObj->pFirstChild; hChild; hChild = pChild->pNext) {
 		int Status;
 		GUI_RECT rOld, rNew;
 		pChild = (WM_Obj *)hChild;
@@ -1451,7 +1451,7 @@ void WM_DetachWindow(WM_HWIN hWin) {
 		WM_HWIN hParent;
 		WM_Obj *pWin;
 		pWin = (WM_Obj *)hWin;
-		hParent = pWin->hParent;
+		hParent = pWin->pParent;
 		if (hParent) {
 			WM_Obj *pParent;
 			WM__DetachWindow(hWin);
@@ -1465,7 +1465,7 @@ void WM_AttachWindow(WM_HWIN hWin, WM_HWIN hParent) {
 	if (hParent && (hParent != hWin)) {
 		auto pWin = (WM_Obj *)hWin;
 		auto pParent = (WM_Obj *)hParent;
-		if (pWin->hParent != hParent) {
+		if (pWin->pParent != hParent) {
 			WM_DetachWindow(hWin);
 			WM__InsertWindowIntoList(hWin, hParent);
 			WM_MoveWindow(hWin, pParent->Rect.x0, pParent->Rect.y0);    /* Convert parent coordinates -> screen coordinates */
@@ -1491,10 +1491,10 @@ void WM_BringToBottom(WM_HWIN hWin) {
 			pParent = (WM_Obj *)hParent;
 			/* unlink hWin */
 			pPrev = (WM_Obj *)hPrev;
-			pPrev->hNext = pWin->hNext;
+			pPrev->pNext = pWin->pNext;
 			/* Link from parent (making it the first child) */
-			pWin->hNext = pParent->hFirstChild;
-			pParent->hFirstChild = hWin;
+			pWin->pNext = pParent->pFirstChild;
+			pParent->pFirstChild = (WM_Obj *)hWin;
 			/* Send message in order to make sure top window will be drawn */
 			WM_InvalidateArea(&pWin->Rect);
 		}
@@ -1513,7 +1513,7 @@ void WM_BringToTop(WM_HWIN hWin) {
 	WM_Obj *pWin, *pNext;
 	if (hWin) {
 		pWin = (WM_Obj *)hWin;
-		hNext = pWin->hNext;
+		hNext = pWin->pNext;
 		/* Is window alread on top ? If so, we are done. (Not required, just an optimization) */
 		if (hNext == 0) {
 			return;
@@ -1525,7 +1525,7 @@ void WM_BringToTop(WM_HWIN hWin) {
 				return;
 			}
 		}
-		hParent = pWin->hParent;
+		hParent = pWin->pParent;
 		WM__RemoveWindowFromList(hWin);
 		WM__InsertWindowIntoList(hWin, hParent);
 		_InvalidateWindowAndDescs(hWin);
@@ -1712,7 +1712,7 @@ WM_HWIN WM_GetDialogItem(WM_HWIN hWin, int Id) {
 	WM_HWIN hi;
 	WM_HWIN r = 0;
 	auto pWin = (WM_Obj *)hWin;
-	hi = pWin->hFirstChild;
+	hi = pWin->pFirstChild;
 	while (hi) {
 		/* This windows Id matching ? */
 		if (WM_GetId(hi) == Id)
@@ -1720,13 +1720,13 @@ WM_HWIN WM_GetDialogItem(WM_HWIN hWin, int Id) {
 		/* Any child windows Id matching ? */
 		if ((r = WM_GetDialogItem(hi, Id)))
 			break;
-		hi = ((WM_Obj *)hi)->hNext;
+		hi = ((WM_Obj *)hi)->pNext;
 	}
 	return r;
 }
 WM_HWIN WM_GetFirstChild(WM_HWIN hWin) {
 	if (hWin) {
-		hWin = ((WM_Obj *)hWin)->hFirstChild;
+		hWin = ((WM_Obj *)hWin)->pFirstChild;
 	}
 	return hWin;
 }
@@ -1804,7 +1804,7 @@ int WM_GetInvalidRect(WM_HWIN hWin, GUI_RECT *pRect) {
 }
 WM_HWIN WM_GetNextSibling(WM_HWIN hWin) {
 	if (hWin) {
-		hWin = ((WM_Obj *)hWin)->hNext;
+		hWin = ((WM_Obj *)hWin)->pNext;
 	}
 	return hWin;
 }
@@ -1830,7 +1830,7 @@ int WM_GetOrgY(void) {
 }
 WM_HWIN WM_GetParent(WM_HWIN hWin) {
 	if (hWin) {
-		hWin = ((WM_Obj *)hWin)->hParent;
+		hWin = ((WM_Obj *)hWin)->pParent;
 	}
 	return hWin;
 }
@@ -1974,7 +1974,7 @@ static char _CompareRect(const GUI_RECT *pRect0, const GUI_RECT *pRect1) {
 }
 static char _WindowSiblingsOverlapRect(WM_HWIN iWin, GUI_RECT *pRect) {
 	WM_Obj *pWin;
-	for (; iWin; iWin = pWin->hNext) {
+	for (; iWin; iWin = pWin->pNext) {
 		int Status = (pWin = (WM_Obj *)iWin)->Status;
 		/* Check if this window affects us at all */
 		if (Status & WM_SF_ISVIS) {
@@ -1994,7 +1994,7 @@ static int _HasOverlap(WM_Obj *pWin, GUI_RECT *pRect) {
 	 window has an overlap.
 	 */
 	 /* Check all children */
-	if (_WindowSiblingsOverlapRect(pWin->hFirstChild, pRect)) {
+	if (_WindowSiblingsOverlapRect(pWin->pFirstChild, pRect)) {
 		return 1;
 	}
 	/* STEP 2:
@@ -2004,9 +2004,9 @@ static int _HasOverlap(WM_Obj *pWin, GUI_RECT *pRect) {
 	*/
 	/* Iterate over all windows which are above */
 	/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
-	for (hParent = pWin->hParent; hParent; hParent = pParent->hParent) {
+	for (hParent = pWin->pParent; hParent; hParent = pParent->pParent) {
 		pParent = (WM_Obj *)hParent;
-		if (_WindowSiblingsOverlapRect(pParent->hNext, pRect)) {
+		if (_WindowSiblingsOverlapRect(pParent->pNext, pRect)) {
 			return 1;
 		}
 	}
@@ -2040,11 +2040,11 @@ bool WM_IsVisible(WM_HWIN hWin) {
 */
 static void _MoveDescendents(WM_HWIN hWin, int dx, int dy) {
 	WM_Obj *pWin;
-	for (; hWin; hWin = pWin->hNext) {
+	for (; hWin; hWin = pWin->pNext) {
 		pWin = (WM_Obj *)hWin;
 		pWin->Rect += GUI_POINT{dx, dy};
 		pWin->InvalidRect += GUI_POINT{dx, dy};
-		_MoveDescendents(pWin->hFirstChild, dx, dy);  /* Children need to be moved along ...*/
+		_MoveDescendents(pWin->pFirstChild, dx, dy);  /* Children need to be moved along ...*/
 		WM__SendMsgNoData(hWin, WM_MOVE);
 	}
 }
@@ -2056,7 +2056,7 @@ void WM_MoveWindow(WM_HWIN hWin, int dx, int dy) {
 		r = pWin->Rect;
 		pWin->Rect += GUI_POINT{dx, dy};
 		pWin->InvalidRect += GUI_POINT{dx, dy};
-		_MoveDescendents(pWin->hFirstChild, dx, dy);  /* Children need to be moved along ...*/
+		_MoveDescendents(pWin->pFirstChild, dx, dy);  /* Children need to be moved along ...*/
 		/* Invalidate old and new area ... */
 		if (pWin->Status & WM_SF_ISVIS) {
 			WM_InvalidateArea(&pWin->Rect);     /* Invalidate new area */
@@ -2156,11 +2156,11 @@ static WM_HWIN _Screen2hWin(WM_HWIN hWin, WM_HWIN hStop, int x, int y) {
 	if (!WM__IsInWindow(pWin, x, y))
 		return 0;
 	/* If the coordinates are in a child, search deeper ... */
-	for (hChild = pWin->hFirstChild; hChild && (hChild != hStop); ) {
+	for (hChild = pWin->pFirstChild; hChild && (hChild != hStop); ) {
 		auto pChild = (WM_Obj *)hChild;
 		if ((hHit = _Screen2hWin(hChild, hStop, x, y)) != 0)
 			hWin = hHit;        /* Found a window */
-		hChild = pChild->hNext;
+		hChild = pChild->pNext;
 	}
 	return hWin; /* No Child affected ... The parent is the right one */
 }
@@ -2312,11 +2312,11 @@ static WM_HWIN _GetNextChild(WM_HWIN hParent, WM_HWIN hChild) {
 	WM_Obj *pObj;
 	if (hChild) {
 		pObj = (WM_Obj *)hChild;
-		hObj = pObj->hNext;
+		hObj = pObj->pNext;
 	}
 	if (!hObj) {
 		pObj = (WM_Obj *)hParent;
-		hObj = pObj->hFirstChild;
+		hObj = pObj->pFirstChild;
 	}
 	if (hObj != hChild) {
 		return hObj;
@@ -2543,7 +2543,7 @@ void WM_InvalidateDescs(WM_HWIN hWin) {
 		for (hChild = WM_GetFirstChild(hWin); hChild;) {
 			auto pChild = (WM_Obj *)hChild;
 			WM_InvalidateDescs(hChild);
-			hChild = pChild->hNext;
+			hChild = pChild->pNext;
 		}
 	}
 }

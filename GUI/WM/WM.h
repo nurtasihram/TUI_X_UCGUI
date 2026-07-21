@@ -44,9 +44,7 @@ The following is the list of windows messages.
 
 #define WM_PAINT                    0x000F  /* Repaint window (because content is (partially) invalid */
 
-#if GUI_SUPPORT_MOUSE
 #define WM_MOUSEOVER                16      /* Mouse has moved, no key pressed */
-#endif
 
 #define WM_PID_STATE_CHANGED        17      /* Pointer input device state has changed */
 
@@ -180,10 +178,10 @@ struct WM_Obj {
 	GUI_RECT Rect;        /* outer dimensions of window */
 	GUI_RECT InvalidRect; /* invalid rectangle */
 	WM_CALLBACK *cb;      /* ptr to notification callback */
-	WM_HWIN hNextLin;     /* Next window in linear list */
-	WM_HWIN hParent;
-	WM_HWIN hFirstChild;
-	WM_HWIN hNext;
+	WM_Obj *pNextLin;     /* Next window in linear list */
+	WM_Obj *pParent;
+	WM_Obj *pFirstChild;
+	WM_Obj *pNext;
 	uint16_t Status; /* Some status flags */
 };
 
@@ -336,4 +334,3 @@ int       WM_HandlePID(void);
 WM_HWIN   WM_Screen2hWin(int x, int y);
 WM_HWIN   WM_Screen2hWinEx(WM_HWIN hStop, int x, int y);
 void      WM_ForEachDesc(WM_HWIN hWin, WM_tfForEach *pcb, void *pData);
-

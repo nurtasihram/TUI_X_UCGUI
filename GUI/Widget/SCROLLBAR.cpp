@@ -56,7 +56,7 @@ static void _CalcPositions(SCROLLBAR_Obj *pObj, SCROLLBAR_POSITIONS *pPos) {
 	pPos->x1 = (pObj->State & WIDGET_STATE_VERTICAL) ? r.y1 : r.x1;
 	/* Subtract the rectangle of the other scrollbar (if existing and visible) */
 	if (pObj->Id == GUI_ID_HSCROLL) {
-		hWin = WM_GetScrollbarV(pObj->hParent);
+		hWin = WM_GetScrollbarV(pObj->pParent);
 		if (hWin) {
 			rSub = WM_GetWindowRect(hWin);
 			if (r.x1 == rSub.x1) {
@@ -65,7 +65,7 @@ static void _CalcPositions(SCROLLBAR_Obj *pObj, SCROLLBAR_POSITIONS *pPos) {
 		}
 	}
 	if (pObj->Id == GUI_ID_VSCROLL) {
-		hWin = WM_GetScrollbarH(pObj->hParent);
+		hWin = WM_GetScrollbarH(pObj->pParent);
 		if (hWin) {
 			rSub = WM_GetWindowRect(hWin);
 			if (r.y1 == rSub.y1) {

@@ -66,7 +66,7 @@ static void _ShowPage(MULTIPAGE_Obj *pObj, unsigned Index) {
 		pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
 		hWin = pPage->hWin;
 	}
-	for (auto pChild = (WM_Obj *)pClient->hFirstChild; pChild; pChild = (WM_Obj *)pChild->hNext) {
+	for (auto pChild = pClient->pFirstChild; pChild; pChild = pChild->pNext) {
 		if (pChild == hWin) {
 			WM_ShowWindow(pChild);
 			WM_SetFocus(pChild);
@@ -453,7 +453,7 @@ void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_HWIN hWin, const char *pText) {
 			/* If we get no handle we must find it. To do this, we search      */
 			/* all children until we found one that has not yet become a page. */
 			WM_Obj *pClient = pObj->pClient;
-			for (auto pChild = (WM_Obj *)pClient->hFirstChild; pChild && !hWin; pChild = (WM_Obj *)pChild->hNext) {
+			for (auto pChild = pClient->pFirstChild; pChild && !hWin; pChild = pChild->pNext) {
 				hWin = pChild;
 				for (int i = 0; i < pObj->Handles.NumItems; i++) {
 					auto pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, i);

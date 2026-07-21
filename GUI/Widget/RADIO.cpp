@@ -343,7 +343,7 @@ static WM_HWIN _GetNextInGroup(WM_HWIN hWin, uint8_t GroupId) {
 	return 0;
 }
 static void _ClearSelection(RADIO_Handle hObj, uint8_t GroupId) {
-	for (auto pWin = (WM_Obj *)WM__GetFirstSibling(hObj); pWin; pWin = (WM_Obj *)pWin->hNext) {
+	for (auto pWin = (WM_Obj *)WM__GetFirstSibling(hObj); pWin; pWin = pWin->pNext) {
 		if (pWin != (WM_Obj *)hObj)
 			if (_IsInGroup((WM_HWIN)pWin, GroupId))
 				RADIO__SetValue((RADIO_Obj *)pWin, -1);
@@ -359,7 +359,7 @@ static void _HandleSetValue(RADIO_Obj *pObj, int v) {
 		}
 	}
 	else if (v >= pObj->NumItems) {
-		WM_HWIN hWin = _GetNextInGroup(pObj->hNext, pObj->GroupId);
+		WM_HWIN hWin = _GetNextInGroup(pObj->pNext, pObj->GroupId);
 		if (hWin) {
 			WM_SetFocus(hWin);
 			_SetValue(hWin, 0);
