@@ -2,6 +2,9 @@
 
 #include "WIDGET.h"
 #include "GUI_ARRAY.h"
+#include "DIALOG_Intern.h"
+
+import TUX.Widget.Menu;
 
 #define MENU_SF_HORIZONTAL              MENU_CF_HORIZONTAL
 #define MENU_SF_VERTICAL                MENU_CF_VERTICAL
@@ -11,13 +14,13 @@
 #define MENU_SF_ACTIVE            (1<<6)  /* Internal flag only */
 #define MENU_SF_POPUP             (1<<7)  /* Internal flag only */
 
-typedef struct {
+struct MENU_ITEM {
 	MENU_Handle hSubmenu;
 	uint16_t Id;
 	uint16_t Flags;
 	uint16_t TextWidth;
 	char acText[1];
-} MENU_ITEM;
+};
 
 struct MENU_Obj : public WIDGET {
 	struct Properties {

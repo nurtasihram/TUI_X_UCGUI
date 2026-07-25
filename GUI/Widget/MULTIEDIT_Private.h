@@ -1,7 +1,9 @@
 #pragma once
 
-#include "MULTIEDIT.h"
 #include "WIDGET.h"
+#include "DIALOG_Intern.h" /* Req. for Create indirect data structure */
+
+import TUX.Widget.MultiEdit;
 
 #define NUM_DISP_MODES 2
 

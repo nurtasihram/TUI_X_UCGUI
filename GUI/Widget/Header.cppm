@@ -1,8 +1,11 @@
-#pragma once
+module;
 
-#include "GUI.h"
 #include "WM.h"
-#include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
+#include "DIALOG_Intern.h" /* Req. for Create indirect data structure */
+
+export module TUX.Widget.Header;
+
+export {
 
 typedef WM_Obj * HEADER_Handle;
 
@@ -29,3 +32,5 @@ void HEADER_SetItemText        (HEADER_Handle hObj, unsigned int Index, const ch
 void HEADER_SetItemWidth       (HEADER_Handle hObj, unsigned int Index, int Width);
 void HEADER_SetScrollPos       (HEADER_Handle hObj, int ScrollPos);
 void HEADER_SetTextColor       (HEADER_Handle hObj, RGBC Color);
+
+}

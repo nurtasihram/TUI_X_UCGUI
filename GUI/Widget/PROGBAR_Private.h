@@ -1,7 +1,9 @@
 #pragma once
 
-#include "PROGBAR.h"
 #include "WIDGET.h"
+#include "DIALOG_Intern.h"
+
+import TUX.Widget.ProgBar;
 
 struct PROGBAR_Obj : public WIDGET {
 	struct Properties {

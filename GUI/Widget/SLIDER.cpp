@@ -1,6 +1,5 @@
 #include "GUI_Protected.h"
 
-#include "SLIDER.h"
 #include "SLIDER_Private.h"
 
 #define SLIDER_SUPPORT_TRANSPARENCY WM_SUPPORT_TRANSPARENCY

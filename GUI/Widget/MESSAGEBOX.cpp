@@ -1,8 +1,6 @@
 #include <string.h>
 
 #include "GUI.h"
-#include "BUTTON.h"
-#include "FRAMEWIN.h"
 #include "FRAMEWIN_Private.h"
 #include "TEXT.h"
 #include "DIALOG.h"

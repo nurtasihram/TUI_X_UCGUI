@@ -1,7 +1,9 @@
 #pragma once
 
-#include "TEXT.h"
 #include "WIDGET.h"
+#include "DIALOG_Intern.h"
+
+import TUX.Widget.Text;
 
 struct TEXT_Obj : public WIDGET {
 	struct Properties {

@@ -1,7 +1,5 @@
-#include "GUIDebug.h"
 #include "GUI_Protected.h"
 
-#include "EDIT.h"
 #include "EDIT_Private.h"
 
 #define EDIT_BORDER_DEFAULT 1

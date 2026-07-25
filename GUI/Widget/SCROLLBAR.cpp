@@ -2,7 +2,6 @@
 
 #include "WM_Intern.h"
 
-#include "SCROLLBAR.h"
 #include "SCROLLBAR_Private.h"
 
 SCROLLBAR_Obj::Properties SCROLLBAR_Obj::DefaultProps;

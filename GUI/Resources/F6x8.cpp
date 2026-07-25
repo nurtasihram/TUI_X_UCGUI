@@ -1110,7 +1110,7 @@ const uint8_t GUI_acFont6x8[][8]{
 	________________}
 #endif
 #if (GUI_NOFCHARS>101)
-/* sharps eg �? 101  */
+/* sharps eg β 101  */
  ,{
 	________________,
 	__XXXX__________,

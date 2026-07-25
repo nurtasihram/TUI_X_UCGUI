@@ -1,7 +1,5 @@
 #include "GUI_Protected.h"
 
-#include "WIDGET.h"
-#include "PROGBAR.h"
 #include "PROGBAR_Private.h"
 
 PROGBAR_Obj::Properties PROGBAR_Obj::DefaultProps;

@@ -1,16 +1,19 @@
-#pragma once
+module;
+
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 
+export module TUX.Widget.DropDown;
+
+export {
+
+constexpr uint16_t DROPDOWN_CF_AUTOSCROLLBAR    = 1 << 0;
+constexpr uint16_t DROPDOWN_CF_UP               = 1 << 1;
+constexpr uint16_t DROPDOWN_CI_UNSEL     = 0;
+constexpr uint16_t DROPDOWN_CI_SEL       = 1;
+constexpr uint16_t DROPDOWN_CI_SELFOCUS  = 2;
 
 typedef WM_Obj * DROPDOWN_Handle;
-
-#define DROPDOWN_CF_AUTOSCROLLBAR   (1 << 0)
-#define DROPDOWN_CF_UP              (1 << 1)
-#define DROPDOWN_CI_UNSEL    0
-#define DROPDOWN_CI_SEL      1
-#define DROPDOWN_CI_SELFOCUS 2
-
 DROPDOWN_Handle DROPDOWN_Create        (WM_Obj * hWinParent, int x0, int y0, int xsize, int ysize, int Flags);
 DROPDOWN_Handle DROPDOWN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
 DROPDOWN_Handle DROPDOWN_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
@@ -21,7 +24,7 @@ void     DROPDOWN_Collapse        (DROPDOWN_Handle hObj);
 void     DROPDOWN_DecSel          (DROPDOWN_Handle hObj);
 void     DROPDOWN_DeleteItem      (DROPDOWN_Handle hObj, unsigned int Index);
 void     DROPDOWN_Expand          (DROPDOWN_Handle hObj);
-unsigned DROPDOWN_GetItemSpacing  (DROPDOWN_Handle hObj);
+uint16_t DROPDOWN_GetItemSpacing  (DROPDOWN_Handle hObj);
 int      DROPDOWN_GetNumItems     (DROPDOWN_Handle hObj);
 int      DROPDOWN_GetSel          (DROPDOWN_Handle hObj);
 void     DROPDOWN_IncSel          (DROPDOWN_Handle hObj);
@@ -35,3 +38,5 @@ void     DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width);
 void     DROPDOWN_SetTextAlign    (DROPDOWN_Handle hObj, int Align);
 void     DROPDOWN_SetTextColor    (DROPDOWN_Handle hObj, unsigned int index, RGBC color);
 void     DROPDOWN_SetTextHeight   (DROPDOWN_Handle hObj, unsigned TextHeight);
+
+}

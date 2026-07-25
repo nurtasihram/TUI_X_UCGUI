@@ -1,24 +1,26 @@
-#pragma once
-#include "WM.h"
+module;
+
+#include "WIDGET.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
-#define RADIO_BI_INACTIV 0
-#define RADIO_BI_ACTIV   1
-#define RADIO_BI_CHECK   2
-/*********************************************************************
-*
-*            Defaults for public configuration switches
-*
-**********************************************************************
-The following are defaults for config switches which affect the
-interface specified in this module
-*/
-#define RADIO_TEXTPOS_RIGHT       0
-#define RADIO_TEXTPOS_LEFT        WIDGET_STATE_USER0  /* Not implemented, TBD */
+
+export module TUX.Widget.Radio;
+
+export {
+
+enum RADIO_CI {
+	 RADIO_BI_INACTIV = 0,
+	 RADIO_BI_ACTIV   = 1,
+	 RADIO_BI_CHECK   = 2
+};
+
+constexpr uint16_t RADIO_TEXTPOS_RIGHT       = 0;
+constexpr uint16_t RADIO_TEXTPOS_LEFT        = WIDGET_STATE_USER0;/* Not implemented, TBD */
+
 typedef WM_Obj * RADIO_Handle;
 RADIO_Handle RADIO_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, unsigned Para);
 RADIO_Handle RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
 RADIO_Handle RADIO_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
-                                  int WinFlags, int ExFlags, int Id, int NumItems, int Spacing);
+								  int WinFlags, int ExFlags, int Id, int NumItems, int Spacing);
 void RADIO_AddValue     (RADIO_Handle hObj, int Add);
 void RADIO_Dec          (RADIO_Handle hObj);
 void RADIO_Inc          (RADIO_Handle hObj);
@@ -30,4 +32,6 @@ void RADIO_SetText      (RADIO_Handle hObj, const char *pText, unsigned Index);
 void RADIO_SetTextColor (RADIO_Handle hObj, RGBC Color);
 void RADIO_SetValue     (RADIO_Handle hObj, int v);
 int RADIO_GetValue(RADIO_Handle hObj);
+
+}
 

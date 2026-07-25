@@ -1,6 +1,5 @@
 #include "GUI_Protected.h"
 
-#include "RADIO.h"
 #include "RADIO_Private.h"
 
 RADIO_Obj::Properties RADIO_Obj::DefaultProps;

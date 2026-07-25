@@ -1011,7 +1011,7 @@ BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	____XXXXXXXX____,
 	________________}
- /* sharps eg �? 101  */
+ /* sharps eg β 101  */
  ,{
 	____XXXXXX______,
 	__XXXX__XXXX____,

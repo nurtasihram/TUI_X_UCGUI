@@ -4,11 +4,9 @@
 
 #include "WM_Intern.h"
 
-#include "LISTBOX.h"
+import TUX.Widget.ListBox;
+import TUX.Widget.ScrollBar;
 
-#include "SCROLLBAR.h"
-
-#include "DROPDOWN.h"
 #include "DROPDOWN_Private.h"
 
 DROPDOWN_Obj::Properties DROPDOWN_Obj::DefaultProps;
@@ -494,14 +492,12 @@ void DROPDOWN_SetItemSpacing(DROPDOWN_Handle hObj, unsigned Value) {
 
 	}
 }
-unsigned DROPDOWN_GetItemSpacing(DROPDOWN_Handle hObj) {
-	unsigned Value = 0;
+uint16_t DROPDOWN_GetItemSpacing(DROPDOWN_Handle hObj) {
 	if (hObj) {
 		auto pObj = (DROPDOWN_Obj *)hObj;
-		Value = pObj->ItemSpacing;
-
+		return pObj->ItemSpacing;
 	}
-	return Value;
+	return 0;
 }
 
 void DROPDOWN_SetAutoScroll(DROPDOWN_Handle hObj, int OnOff) {

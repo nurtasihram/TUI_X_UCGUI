@@ -1,8 +1,10 @@
 #pragma once
 
-#include "WM.h"
-#include "FRAMEWIN.h"
 #include "WIDGET.h"
+
+import TUX.Widget.Frame;
+import TUX.Widget.Button;
+import TUX.Widget.Menu;
 
 struct FRAMEWIN_Obj : public WIDGET {
 	struct Properties {

@@ -208,6 +208,54 @@
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="GUI\Widget\Button.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CheckBox.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\DropDown.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Edit.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FrameWin.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\ListBox.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MultiEdit.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MultiPage.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\ProgBar.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\ListView.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Header.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Menu.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Radio.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\ScrollBar.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Text.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Slider.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">
@@ -222,13 +270,7 @@
     <ClInclude Include="GUI_X\resource.h">
       <Filter>GUI_X</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Widget\BUTTON.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Widget\BUTTON_Private.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\CHECKBOX.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\CHECKBOX_Private.h">
@@ -240,13 +282,7 @@
     <ClInclude Include="GUI\Widget\DIALOG_Intern.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Widget\DROPDOWN.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Widget\DROPDOWN_Private.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\EDIT.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\EDIT_Private.h">
@@ -255,25 +291,13 @@
     <ClInclude Include="GUI\Widget\GUI_ARRAY.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Widget\HEADER.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Widget\HEADER_Private.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\LISTBOX.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\LISTBOX_Private.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Widget\LISTVIEW.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Widget\LISTVIEW_Private.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\MENU.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\MENU_Private.h">
@@ -282,43 +306,19 @@
     <ClInclude Include="GUI\Widget\MESSAGEBOX.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Widget\MULTIEDIT.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\MULTIPAGE.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Widget\MULTIPAGE_Private.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\PROGBAR.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\RADIO.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\RADIO_Private.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Widget\SCROLLBAR.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Widget\SCROLLBAR_Private.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\SLIDER.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\TEXT.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\WIDGET.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\WINDOW_Private.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\FRAMEWIN.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\FRAMEWIN_Private.h">

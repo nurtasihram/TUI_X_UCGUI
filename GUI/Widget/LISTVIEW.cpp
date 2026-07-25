@@ -1,18 +1,14 @@
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
-#include "GUI_ARRAY.h"
 
 #include "WM_Intern.h"
 
-#include "HEADER.h"
-#include "SCROLLBAR.h"
+import TUX.Widget.ScrollBar;
 
-#include "LISTVIEW.h"
 #include "LISTVIEW_Private.h"
 
-/* Define default alignment */
-#define LISTVIEW_ALIGN_DEFAULT (TEXTALIGN_VCENTER | TEXTALIGN_HCENTER)
 LISTVIEW_Obj::Properties LISTVIEW_Obj::DefaultProps;
+
 unsigned LISTVIEW__GetRowDistY(LISTVIEW_Obj *pObj) {
 	unsigned RowDistY;
 	if (pObj->RowDistY) {

@@ -1,19 +1,20 @@
 #pragma once
 
-#include "GUIDebug.h"
-#include "MULTIPAGE.h"
 #include "WIDGET.h"
+#include "DIALOG_Intern.h"
 #include "GUI_ARRAY.h"
+
+import TUX.Widget.MultiPage;
 
 #define MULTIPAGE_STATE_ENABLED     (1<<0)
 #define MULTIPAGE_STATE_SCROLLMODE  WIDGET_STATE_USER0
 #define MULTIPAGE_NUMCOLORS         2
 
-typedef struct {
-	WM_Obj * hWin;
-	uint8_t      Status;
+struct MULTIPAGE_PAGE {
+	WM_Obj *hWin;
+	uint8_t Status;
 	char    acText;
-} MULTIPAGE_PAGE;
+};
 
 struct MULTIPAGE_Obj : public WIDGET {
 	struct Properties {

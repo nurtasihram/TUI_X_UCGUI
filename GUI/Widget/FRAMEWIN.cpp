@@ -1,8 +1,5 @@
 #include "WIDGET.h"
-#include "MENU.h"
-#include "BUTTON.h"
 
-#include "FRAMEWIN.h"
 #include "FRAMEWIN_Private.h"
 
 FRAMEWIN_Obj::Properties FRAMEWIN_Obj::DefaultProps;
@@ -402,11 +399,12 @@ FRAMEWIN_Handle FRAMEWIN_Create(const char *pText, WM_CALLBACK *cb, int Flags,
 								int x0, int y0, int xsize, int ysize) {
 	return FRAMEWIN_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, 0, pText, cb);
 }
-FRAMEWIN_Handle FRAMEWIN_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
+#include "DIALOG_Intern.h" /* Req. for Create indirect data structure */
+FRAMEWIN_Handle FRAMEWIN_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
 									   const char *pText, WM_CALLBACK *cb, int Flags) {
 	return FRAMEWIN_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, 0, pText, cb);
 }
-FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent,
+FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent,
 										int x0, int y0, WM_CALLBACK *cb) {
 	FRAMEWIN_Handle hObj;
 	hObj = FRAMEWIN_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
@@ -447,22 +445,21 @@ int FRAMEWIN_GetBorderSize(FRAMEWIN_Handle hObj) {
 	return r;
 }
 
-int FRAMEWIN_IsMinimized(FRAMEWIN_Handle hObj) {
-	int r = 0;
+bool FRAMEWIN_IsMinimized(FRAMEWIN_Handle hObj) {
 	if (hObj) {
 		auto pObj = (FRAMEWIN_Obj *)hObj;
-		r = (pObj->Flags & FRAMEWIN_CF_MINIMIZED) ? 1 : 0;
+		return pObj->Flags & FRAMEWIN_CF_MINIMIZED;
 	}
-	return r;
+	return false;
 }
-int FRAMEWIN_IsMaximized(FRAMEWIN_Handle hObj) {
-	int r = 0;
+bool FRAMEWIN_IsMaximized(FRAMEWIN_Handle hObj) {
 	if (hObj) {
 		auto pObj = (FRAMEWIN_Obj *)hObj;
-		r = (pObj->Flags & FRAMEWIN_CF_MAXIMIZED) ? 1 : 0;
+		return pObj->Flags & FRAMEWIN_CF_MAXIMIZED;
 	}
-	return r;
+	return false;
 }
+
 
 static void _InvalidateButton(FRAMEWIN_Obj *pObj, int Id) {
 	WM_Obj *pChild;
@@ -1087,6 +1084,8 @@ void FRAMEWIN__UpdateButtons(FRAMEWIN_Obj *pObj, int OldHeight) {
 		} while (pLeft || pRight);
 	}
 }
+
+import TUX.Widget.Button;
 
 WM_Obj * FRAMEWIN_AddButton(FRAMEWIN_Handle hObj, int Flags, int Off, int Id) {
 	WM_Obj * r = 0;

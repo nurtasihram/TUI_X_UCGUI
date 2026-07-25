@@ -2,8 +2,6 @@
 
 #include "WM_Intern.h"  /*Window manager, including some internals, which speed things up */
 
-#include "SCROLLBAR.h"
-
 constexpr uint16_t WIDGET_STATE_FOCUS       = 1 << 0;
 constexpr uint16_t WIDGET_STATE_VERTICAL    = 1 << 3;
 constexpr uint16_t WIDGET_STATE_FOCUSSABLE  = 1 << 4;

@@ -1,9 +1,10 @@
 #pragma once
 
 #include "WIDGET.h"
-#include "HEADER.h"
-#include "WM.h"
 #include "GUI_ARRAY.h"
+#include "DIALOG_Intern.h"
+
+import TUX.Widget.Header;
 
 struct HEADER_COLUMN {
 	int16_t Width;

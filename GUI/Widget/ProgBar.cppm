@@ -1,10 +1,13 @@
-#pragma once
+module;
 
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 
-typedef WM_Obj * PROGBAR_Handle;
+export module TUX.Widget.ProgBar;
 
+export {
+
+typedef WM_Obj * PROGBAR_Handle;
 PROGBAR_Handle PROGBAR_Create        (int x0, int y0, int xsize, int ysize, int Flags);
 PROGBAR_Handle PROGBAR_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags);
 PROGBAR_Handle PROGBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
@@ -19,3 +22,5 @@ void PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align);
 void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int index, RGBC color);
 void PROGBAR_SetTextPos  (PROGBAR_Handle hObj, int XOff, int YOff);
 void PROGBAR_SetValue    (PROGBAR_Handle hObj, int v);
+
+}

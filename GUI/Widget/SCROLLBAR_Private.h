@@ -1,8 +1,10 @@
 #pragma once
 
-#include "SCROLLBAR.h"
 #include "WIDGET.h"
 #include "GUIDebug.h"
+#include "DIALOG_Intern.h"
+
+import TUX.Widget.ScrollBar;
 
 struct SCROLLBAR_Obj : public WIDGET {
 	struct Properties {

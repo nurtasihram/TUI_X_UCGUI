@@ -1,6 +1,4 @@
 #include "GUI_Protected.h"
-
-#include "BUTTON.h"
 #include "BUTTON_Private.h"
 
 #define BUTTON_USE_3D 1
@@ -291,14 +289,12 @@ void BUTTON_GetText(BUTTON_Handle hObj, char *pBuffer, int MaxLen) {
 		}
 	}
 }
-unsigned BUTTON_IsPressed(BUTTON_Handle hObj) {
-	unsigned r = 0;
+bool BUTTON_IsPressed(BUTTON_Handle hObj) {
 	if (hObj) {
 		auto pObj = (BUTTON_Obj *)hObj;
-		r = (pObj->State & BUTTON_STATE_PRESSED) ? 1 : 0;
-
+		return pObj->State & BUTTON_STATE_PRESSED;
 	}
-	return r;
+	return false;
 }
 
 void BUTTON_SetSelfDrawEx(BUTTON_Handle hObj, unsigned int Index, GUI_DRAW_SELF_CB *pDraw, int x, int y) {

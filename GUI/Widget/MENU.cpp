@@ -3,12 +3,13 @@
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
 
-#include "MENU.h"
 #include "MENU_Private.h"
 
 /* Define default effect */
-#define MENU_EFFECT_DEFAULT       WIDGET_Effect_3D1L
+#define MENU_EFFECT_DEFAULT WIDGET_Effect_3D1L
+
 MENU_Obj::Properties MENU_Obj::DefaultProps;
+
 PCWIDGET_EFFECT MENU__pDefaultEffect = MENU_EFFECT_DEFAULT;
 
 static char _IsTopLevelMenu(MENU_Obj *pObj) {
@@ -660,7 +661,6 @@ MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj * hParent
 		pObj->hOwner = 0;
 		pObj->IsSubmenuActive = 0;
 		WIDGET_SetEffect(hObj, MENU__pDefaultEffect);
-
 	}
 	else {
 	}

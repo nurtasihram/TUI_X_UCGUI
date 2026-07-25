@@ -1,15 +1,18 @@
-#pragma once
+module;
 
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 
-#define EDIT_CF_LEFT    TEXTALIGN_LEFT
-#define EDIT_CF_RIGHT   TEXTALIGN_RIGHT
-#define EDIT_CF_HCENTER TEXTALIGN_HCENTER
+export module TUX.Widget.Edit;
+ 
+export {
 
-#define EDIT_CF_VCENTER TEXTALIGN_VCENTER
-#define EDIT_CF_TOP     TEXTALIGN_TOP
-#define EDIT_CF_BOTTOM  TEXTALIGN_BOTTOM
+//constexpr uint16_t EDIT_CF_LEFT     = TEXTALIGN_LEFT;
+//constexpr uint16_t EDIT_CF_RIGHT    = TEXTALIGN_RIGHT;
+//constexpr uint16_t EDIT_CF_HCENTER  = TEXTALIGN_HCENTER;
+//constexpr uint16_t EDIT_CF_VCENTER  = TEXTALIGN_VCENTER;
+//constexpr uint16_t EDIT_CF_TOP      = TEXTALIGN_TOP;
+//constexpr uint16_t EDIT_CF_BOTTOM   = TEXTALIGN_BOTTOM;
 
 enum EDIT_CI {
 	 EDIT_CI_DISABLED = 0,
@@ -50,13 +53,11 @@ void  EDIT_SetValue     (EDIT_Handle hObj, int32_t Value);
 int   EDIT_GetNumChars  (EDIT_Handle hObj);
 
 /* Signed or normal mode */
-#define GUI_EDIT_NORMAL 0
-#define GUI_EDIT_SIGNED 1
+constexpr uint8_t GUI_EDIT_NORMAL = 0;
+constexpr uint8_t GUI_EDIT_SIGNED = 1;
 
 /* Edit modes */
-#define GUI_EDIT_MODE_INSERT    0
-#define GUI_EDIT_MODE_OVERWRITE 1
+constexpr uint8_t GUI_EDIT_MODE_INSERT    = 0;
+constexpr uint8_t GUI_EDIT_MODE_OVERWRITE = 1;
 
-/* Compatibility macros */
-#define EDIT_CI_DISABELD EDIT_CI_DISABLED
-#define EDIT_CI_ENABELD  EDIT_CI_ENABLED
+}

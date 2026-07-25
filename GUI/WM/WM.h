@@ -265,8 +265,8 @@ int  WM_SetXSize(WM_Obj *pWin, int xSize);
 int  WM_SetYSize(WM_Obj *pWin, int ySize);
 int  WM_CreateTimer(WM_Obj *pWin, int UserID, int Period, int Mode); /* not to be documented (may change in future version) */
 void WM_DeleteTimer(WM_Obj *pWin, int UserId); /* not to be documented (may change in future version) */
-int  WM_SetScrollbarH(WM_Obj *pWin, int OnOff); /* not to be documented (may change in future version) */
-int  WM_SetScrollbarV(WM_Obj *pWin, int OnOff); /* not to be documented (may change in future version) */
+bool WM_SetScrollbarH(WM_Obj *pWin, int OnOff); /* not to be documented (may change in future version) */
+bool WM_SetScrollbarV(WM_Obj *pWin, int OnOff); /* not to be documented (may change in future version) */
 
 /* Diagnostics */
 int WM_GetNumWindows(void);

@@ -1,6 +1,9 @@
 #include "GUI.h"
 #include "DIALOG.h"
-#include "DROPDOWN.h"
+#include "WIDGET.h"
+
+import TUX.Widget.CheckBox;
+import TUX.Widget.Menu;
 
 static bool _MultiSel = false, _OwnerDrawn = true;
 const RGBC ColorsSmilie0[]{ RGB_WHITE, RGB_BLACK, RGB_RED };
@@ -295,7 +298,7 @@ static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 #define ID_MENU_EDIT_PASTE  (GUI_ID_USER + 13)
 #define ID_MENU_EDIT_DELETE (GUI_ID_USER + 14)
 #define ID_MENU_HELP_ABOUT  (GUI_ID_USER + 15)
-#include "MENU.h"
+
 static void _AddMenuItem(MENU_Handle hMenu, MENU_Handle hSubmenu, const char *pText, uint16_t Id, uint16_t Flags) {
 	MENU_ITEM_DATA Item;
 	Item.pText = pText;

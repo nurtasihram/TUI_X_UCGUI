@@ -1,18 +1,21 @@
 #pragma once
 
-#include "WM.h"
-#include "LISTVIEW.h"
+#include "WIDGET.h"
 #include "GUI_ARRAY.h"
+#include "DIALOG_Intern.h"
 
-typedef struct {
+import TUX.Widget.Header;
+import TUX.Widget.ListView;
+
+struct LISTVIEW_ITEM_INFO {
 	RGBC aBkColor[3];
 	RGBC aTextColor[3];
-} LISTVIEW_ITEM_INFO;
+};
 
-typedef struct {
+struct LISTVIEW_ITEM {
 	WM_HMEM hItemInfo;
 	char acText[1];
-} LISTVIEW_ITEM;
+};
 
 struct LISTVIEW_Obj : public WIDGET {
 	struct Properties {

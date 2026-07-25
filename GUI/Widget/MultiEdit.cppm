@@ -1,18 +1,25 @@
-#pragma once
+module;
+
 #include "WM.h"
-#include "DIALOG.h"      /* Req. for Create indirect data structure */
-#define MULTIEDIT_CF_READONLY        (1 << 0)
-#define MULTIEDIT_CF_INSERT          (1 << 2)
-#define MULTIEDIT_CF_AUTOSCROLLBAR_V (1 << 3)
-#define MULTIEDIT_CF_AUTOSCROLLBAR_H (1 << 4)
-#define MULTIEDIT_CF_PASSWORD        (1 << 5)
-#define MULTIEDIT_SF_READONLY        MULTIEDIT_CF_READONLY
-#define MULTIEDIT_SF_INSERT          MULTIEDIT_CF_INSERT
-#define MULTIEDIT_SF_AUTOSCROLLBAR_V MULTIEDIT_CF_AUTOSCROLLBAR_V
-#define MULTIEDIT_SF_AUTOSCROLLBAR_H MULTIEDIT_CF_AUTOSCROLLBAR_H
-#define MULTIEDIT_SF_PASSWORD        MULTIEDIT_CF_PASSWORD
-#define MULTIEDIT_CI_EDIT     0
-#define MULTIEDIT_CI_READONLY 1
+#include "DIALOG_Intern.h" /* Req. for Create indirect data structure */
+
+export module TUX.Widget.MultiEdit;
+
+export {
+
+constexpr uint16_t MULTIEDIT_CF_READONLY         = 1 << 0;
+constexpr uint16_t MULTIEDIT_CF_INSERT           = 1 << 2;
+constexpr uint16_t MULTIEDIT_CF_AUTOSCROLLBAR_V  = 1 << 3;
+constexpr uint16_t MULTIEDIT_CF_AUTOSCROLLBAR_H  = 1 << 4;
+constexpr uint16_t MULTIEDIT_CF_PASSWORD         = 1 << 5;
+constexpr uint16_t MULTIEDIT_SF_READONLY         = MULTIEDIT_CF_READONLY;
+constexpr uint16_t MULTIEDIT_SF_INSERT           = MULTIEDIT_CF_INSERT;
+constexpr uint16_t MULTIEDIT_SF_AUTOSCROLLBAR_V  = MULTIEDIT_CF_AUTOSCROLLBAR_V;
+constexpr uint16_t MULTIEDIT_SF_AUTOSCROLLBAR_H  = MULTIEDIT_CF_AUTOSCROLLBAR_H;
+constexpr uint16_t MULTIEDIT_SF_PASSWORD         = MULTIEDIT_CF_PASSWORD;
+constexpr uint16_t MULTIEDIT_CI_EDIT      = 0;
+constexpr uint16_t MULTIEDIT_CI_READONLY  = 1;
+
 typedef WM_Obj * MULTIEDIT_HANDLE;
 MULTIEDIT_HANDLE MULTIEDIT_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int WinFlags, int ExFlags,
                                           int Id, int BufferSize, const char *pText);
@@ -21,6 +28,7 @@ MULTIEDIT_HANDLE MULTIEDIT_Create        (int x0, int y0, int xsize, int ysize, 
                                           int BufferSize);
 MULTIEDIT_HANDLE MULTIEDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo,
                                           WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
+
 int  MULTIEDIT_AddKey           (MULTIEDIT_HANDLE hObj, uint16_t Key);
 void MULTIEDIT_GetPrompt        (MULTIEDIT_HANDLE hObj, char *sDest, int MaxNumChars);
 int  MULTIEDIT_GetTextSize      (MULTIEDIT_HANDLE hObj);
@@ -44,5 +52,5 @@ void MULTIEDIT_SetTextColor     (MULTIEDIT_HANDLE hObj, unsigned Index, RGBC col
 void MULTIEDIT_SetWrapNone      (MULTIEDIT_HANDLE hObj);
 void MULTIEDIT_SetWrapChar      (MULTIEDIT_HANDLE hObj);
 void MULTIEDIT_SetWrapWord      (MULTIEDIT_HANDLE hObj);
-#define MULTIEDIT_SetMaxLen(hObj, MaxLen) MULTIEDIT_SetBufferSize(hObj, MaxLen)
-#define MULTIEDIT_GetStringSize           MULTIEDIT_GetTextSize
+
+}

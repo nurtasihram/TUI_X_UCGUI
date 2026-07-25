@@ -1,10 +1,10 @@
 #include "GUIDebug.h"
 #include "GUI_Protected.h"
 
-#include "TEXT.h"
 #include "TEXT_Private.h"
 
 TEXT_Obj::Properties TEXT_Obj::DefaultProps;
+
 static void _FreeAttached(TEXT_Obj *pObj) {
 	GUI_ALLOC_FreePtr((void **)&pObj->pText);
 }

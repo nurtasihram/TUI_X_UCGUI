@@ -1,7 +1,9 @@
 #pragma once
 
-#include "SLIDER.h"
 #include "WIDGET.h"
+#include "DIALOG_Intern.h"
+
+import TUX.Widget.Slider;
 
 struct SLIDER_Obj : public WIDGET {
 	struct Properties {

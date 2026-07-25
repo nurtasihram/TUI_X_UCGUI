@@ -1,6 +1,4 @@
 #include "GUI_Protected.h"
-
-#include "CHECKBOX.h"
 #include "CHECKBOX_Private.h"
 
 CHECKBOX_Obj::Properties CHECKBOX_Obj::DefaultProps;
@@ -191,8 +189,8 @@ int CHECKBOX_GetState(CHECKBOX_Handle hObj) {
 }
 
 
-int CHECKBOX_IsChecked(CHECKBOX_Handle hObj) {
-	return (CHECKBOX_GetState(hObj) == 1) ? 1 : 0;
+bool CHECKBOX_IsChecked(CHECKBOX_Handle hObj) {
+	return CHECKBOX_GetState(hObj) == 1;
 }
 
 void CHECKBOX_SetBkColor(CHECKBOX_Handle hObj, RGBC Color) {

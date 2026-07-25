@@ -1,7 +1,9 @@
 #pragma once
 
-#include "WM.h"
-#include "BUTTON.h"
+#include "WIDGET.h"
+#include "DIALOG_Intern.h"
+
+import TUX.Widget.Button;
 
 struct BUTTON_Obj : public WIDGET {
 	struct Properties {

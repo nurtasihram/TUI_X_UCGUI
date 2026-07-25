@@ -1,6 +1,5 @@
-#include "SCROLLBAR.h"
+import TUX.Widget.ScrollBar;
 
-#include "HEADER.h"
 #include "HEADER_Private.h"
 
 #define HEADER_SUPPORT_DRAG 1

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "WM.h"
 #include "WIDGET.h"
-#include "CHECKBOX.h"
+#include "DIALOG_Intern.h"
+
+import TUX.Widget.CheckBox;
 
 struct CHECKBOX_Obj : public WIDGET {
 	static CBITMAP abmCheck[2];

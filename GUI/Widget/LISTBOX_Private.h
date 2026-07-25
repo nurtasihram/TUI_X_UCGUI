@@ -1,9 +1,10 @@
 #pragma once
 
-#include "LISTBOX.h"
-#include "WM.h"
-#include "GUI_ARRAY.h"
 #include "WIDGET.h"
+#include "GUI_ARRAY.h"
+#include "DIALOG_Intern.h"
+
+import TUX.Widget.ListBox;
 
 #define LISTBOX_ITEM_SELECTED (1 << 0)
 #define LISTBOX_ITEM_DISABLED (1 << 1)
@@ -42,10 +43,10 @@ struct LISTBOX_Obj : public WIDGET {
 	uint16_t ItemSpacing;
 };
 
-unsigned LISTBOX__GetNumItems(LISTBOX_Obj *pObj);
+uint16_t LISTBOX__GetNumItems(LISTBOX_Obj *pObj);
 const char *LISTBOX__GetpString(LISTBOX_Obj *pObj, int Index);
 void LISTBOX__InvalidateInsideArea(LISTBOX_Handle hObj);
 void LISTBOX__InvalidateItem(LISTBOX_Obj *pObj, int Sel);
 void LISTBOX__InvalidateItemAndBelow(LISTBOX_Obj *pObj, int Sel);
-void LISTBOX__InvalidateItemSize(LISTBOX_Obj *pObj, unsigned Index);
+void LISTBOX__InvalidateItemSize(LISTBOX_Obj *pObj, uint16_t Index);
 void LISTBOX__SetScrollbarWidth(LISTBOX_Obj *pObj);

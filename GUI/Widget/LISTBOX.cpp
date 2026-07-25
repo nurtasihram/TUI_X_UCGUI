@@ -4,9 +4,8 @@
 
 #include "WM_Intern.h"
 
-#include "SCROLLBAR.h"
+import TUX.Widget.ScrollBar;
 
-#include "LISTBOX.h"
 #include "LISTBOX_Private.h"
 
 LISTBOX_Obj::Properties LISTBOX_Obj::DefaultProps;
@@ -32,7 +31,7 @@ static int _CallOwnerDraw(LISTBOX_Obj *pObj, int Cmd, int ItemIndex) {
 *  Returns:
 *    Number of items
 */
-unsigned LISTBOX__GetNumItems(LISTBOX_Obj *pObj) {
+uint16_t LISTBOX__GetNumItems(LISTBOX_Obj *pObj) {
 	return GUI_ARRAY_GetNumItems(&pObj->ItemArray);
 }
 /*********************************************************************
@@ -55,7 +54,7 @@ static int _GetYSize(LISTBOX_Handle hObj) {
 	WM_GetInsideRectExScrollbar(hObj, &Rect);
 	return (Rect.y1 - Rect.y0 + 1);
 }
-static int _GetItemSizeX(LISTBOX_Obj *pObj, unsigned Index) {
+static int _GetItemSizeX(LISTBOX_Obj *pObj, uint16_t Index) {
 	LISTBOX_ITEM *pItem;
 	int xSize = 0;
 	pItem = (LISTBOX_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
@@ -73,7 +72,7 @@ static int _GetItemSizeX(LISTBOX_Obj *pObj, unsigned Index) {
 	}
 	return xSize;
 }
-static int _GetItemSizeY(LISTBOX_Obj *pObj, unsigned Index) {
+static int _GetItemSizeY(LISTBOX_Obj *pObj, uint16_t Index) {
 	LISTBOX_ITEM *pItem;
 	int ySize = 0;
 	pItem = (LISTBOX_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
@@ -105,10 +104,10 @@ static int _GetContentsSizeX(LISTBOX_Handle hObj) {
 	}
 	return Result;
 }
-static int _GetItemPosY(LISTBOX_Obj *pObj, unsigned Index) {
+static int _GetItemPosY(LISTBOX_Obj *pObj, uint16_t Index) {
 	if (Index < LISTBOX__GetNumItems(pObj)) {
 		if ((int)Index >= pObj->ScrollStateV.v) {
-			unsigned i;
+			uint16_t i;
 			int PosY = 0;
 			for (i = pObj->ScrollStateV.v; i < Index; i++) {
 				PosY += _GetItemSizeY(pObj, i);
@@ -140,7 +139,7 @@ static int _IsPartiallyVis(LISTBOX_Obj *pObj) {
 *  Returns:
 *   Number of fully or partially visible items
 */
-static unsigned _GetNumVisItems(LISTBOX_Obj *pObj) {
+static uint16_t _GetNumVisItems(LISTBOX_Obj *pObj) {
 	int NumItems, r = 1;
 	NumItems = LISTBOX__GetNumItems(pObj);
 	if (NumItems > 1) {
@@ -285,7 +284,7 @@ static int _UpdateScrollPos(LISTBOX_Obj *pObj) {
 	WIDGET__SetScrollState(pObj, &pObj->ScrollStateV, &pObj->ScrollStateH);
 	return pObj->ScrollStateV.v - PrevScrollStateV;
 }
-void LISTBOX__InvalidateItemSize(LISTBOX_Obj *pObj, unsigned Index) {
+void LISTBOX__InvalidateItemSize(LISTBOX_Obj *pObj, uint16_t Index) {
 	LISTBOX_ITEM *pItem;
 	pItem = (LISTBOX_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
 	if (pItem) {
@@ -385,7 +384,7 @@ static int _IsAlphaNum(int Key) {
 	return 0;
 }
 static void _SelectByKey(LISTBOX_Handle hObj, int Key) {
-	unsigned i;
+	uint16_t i;
 	auto pObj = (LISTBOX_Obj *)hObj;
 	Key = _Tolower(Key);
 	for (i = 0; i < LISTBOX__GetNumItems(pObj); i++) {
@@ -733,7 +732,7 @@ void LISTBOX_AddString(LISTBOX_Handle hObj, const char *s) {
 
 		pObj = (LISTBOX_Obj *)hObj;
 		if (GUI_ARRAY_AddItem(&pObj->ItemArray, &Item, sizeof(LISTBOX_ITEM) + GUI__strlen(s)) == 0) {
-			unsigned ItemIndex = GUI_ARRAY_GetNumItems(&pObj->ItemArray) - 1;
+			uint16_t ItemIndex = GUI_ARRAY_GetNumItems(&pObj->ItemArray) - 1;
 			auto pItem = (LISTBOX_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, ItemIndex);
 			GUI__strcpy(pItem->acText, s);
 			LISTBOX__InvalidateItemSize(pObj, ItemIndex);
@@ -838,11 +837,11 @@ LISTBOX_Handle LISTBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo,
 	return hObj;
 }
 
-void LISTBOX_DeleteItem(LISTBOX_Handle hObj, unsigned int Index) {
+void LISTBOX_DeleteItem(LISTBOX_Handle hObj, uint16_t Index) {
 	if (hObj) {
 		int Sel;
 		LISTBOX_Obj *pObj;
-		unsigned int NumItems;
+		uint16_t NumItems;
 		pObj = (LISTBOX_Obj *)hObj;
 		NumItems = LISTBOX__GetNumItems(pObj);
 		if (Index < NumItems) {
@@ -892,9 +891,9 @@ PCFONT LISTBOX_GetFont(LISTBOX_Handle hObj) {
 	return pFont;
 }
 
-void LISTBOX_GetItemText(LISTBOX_Handle hObj, unsigned Index, char *pBuffer, int MaxSize) {
+void LISTBOX_GetItemText(LISTBOX_Handle hObj, uint16_t Index, char *pBuffer, int MaxSize) {
 	if (hObj) {
-		unsigned NumItems;
+		uint16_t NumItems;
 		auto pObj = (LISTBOX_Obj *)hObj;
 		NumItems = LISTBOX__GetNumItems(pObj);
 		if (Index < NumItems) {
@@ -912,20 +911,18 @@ void LISTBOX_GetItemText(LISTBOX_Handle hObj, unsigned Index, char *pBuffer, int
 	}
 }
 
-unsigned LISTBOX_GetNumItems(LISTBOX_Handle hObj) {
-	int r = 0;
+uint16_t LISTBOX_GetNumItems(LISTBOX_Handle hObj) {
 	if (hObj) {
 		auto pObj = (LISTBOX_Obj *)hObj;
-		r = LISTBOX__GetNumItems(pObj);
-
+		return LISTBOX__GetNumItems(pObj);
 	}
-	return r;
+	return 0;
 }
 
-void LISTBOX_InsertString(LISTBOX_Handle hObj, const char *s, unsigned int Index) {
+void LISTBOX_InsertString(LISTBOX_Handle hObj, const char *s, uint16_t Index) {
 	if (hObj && s) {
 		LISTBOX_Obj *pObj;
-		unsigned int NumItems;
+		uint16_t NumItems;
 
 		pObj = (LISTBOX_Obj *)hObj;
 		NumItems = LISTBOX__GetNumItems(pObj);
@@ -946,10 +943,10 @@ void LISTBOX_InsertString(LISTBOX_Handle hObj, const char *s, unsigned int Index
 	}
 }
 
-int LISTBOX_GetItemDisabled(LISTBOX_Handle hObj, unsigned Index) {
+int LISTBOX_GetItemDisabled(LISTBOX_Handle hObj, uint16_t Index) {
 	int Ret = 0;
 	if (hObj) {
-		unsigned NumItems;
+		uint16_t NumItems;
 		auto pObj = (LISTBOX_Obj *)hObj;
 		NumItems = LISTBOX__GetNumItems(pObj);
 		if (Index < NumItems) {
@@ -965,9 +962,9 @@ int LISTBOX_GetItemDisabled(LISTBOX_Handle hObj, unsigned Index) {
 	}
 	return Ret;
 }
-void LISTBOX_SetItemDisabled(LISTBOX_Handle hObj, unsigned Index, int OnOff) {
+void LISTBOX_SetItemDisabled(LISTBOX_Handle hObj, uint16_t Index, int OnOff) {
 	if (hObj) {
-		unsigned NumItems;
+		uint16_t NumItems;
 		auto pObj = (LISTBOX_Obj *)hObj;
 		NumItems = LISTBOX__GetNumItems(pObj);
 		if (Index < NumItems) {
@@ -992,7 +989,7 @@ void LISTBOX_SetItemDisabled(LISTBOX_Handle hObj, unsigned Index, int OnOff) {
 	}
 }
 
-void LISTBOX_SetItemSpacing(LISTBOX_Handle hObj, unsigned Value) {
+void LISTBOX_SetItemSpacing(LISTBOX_Handle hObj, uint16_t Value) {
 	if (hObj) {
 		auto pObj = (LISTBOX_Obj *)hObj;
 		pObj->ItemSpacing = Value;
@@ -1000,8 +997,8 @@ void LISTBOX_SetItemSpacing(LISTBOX_Handle hObj, unsigned Value) {
 
 	}
 }
-unsigned LISTBOX_GetItemSpacing(LISTBOX_Handle hObj) {
-	unsigned Value = 0;
+uint16_t LISTBOX_GetItemSpacing(LISTBOX_Handle hObj) {
+	uint16_t Value = 0;
 	if (hObj) {
 		auto pObj = (LISTBOX_Obj *)hObj;
 		Value = pObj->ItemSpacing;
@@ -1042,10 +1039,10 @@ int LISTBOX_GetMulti(LISTBOX_Handle hObj) {
 	}
 	return Multi;
 }
-int LISTBOX_GetItemSel(LISTBOX_Handle hObj, unsigned Index) {
+int LISTBOX_GetItemSel(LISTBOX_Handle hObj, uint16_t Index) {
 	int Ret = 0;
 	if (hObj) {
-		unsigned NumItems;
+		uint16_t NumItems;
 		auto pObj = (LISTBOX_Obj *)hObj;
 		NumItems = LISTBOX__GetNumItems(pObj);
 		if ((Index < NumItems) && (pObj->Flags & LISTBOX_SF_MULTISEL)) {
@@ -1061,9 +1058,9 @@ int LISTBOX_GetItemSel(LISTBOX_Handle hObj, unsigned Index) {
 	}
 	return Ret;
 }
-void LISTBOX_SetItemSel(LISTBOX_Handle hObj, unsigned Index, int OnOff) {
+void LISTBOX_SetItemSel(LISTBOX_Handle hObj, uint16_t Index, int OnOff) {
 	if (hObj) {
-		unsigned NumItems;
+		uint16_t NumItems;
 		auto pObj = (LISTBOX_Obj *)hObj;
 		NumItems = LISTBOX__GetNumItems(pObj);
 		if ((Index < NumItems) && (pObj->Flags & LISTBOX_SF_MULTISEL)) {
@@ -1140,10 +1137,10 @@ void LISTBOX_SetAutoScrollV(LISTBOX_Handle hObj, int State) {
 	}
 }
 
-void LISTBOX_SetBkColor(LISTBOX_Handle hObj, unsigned Index, RGBC color) {
+void LISTBOX_SetBkColor(LISTBOX_Handle hObj, uint16_t Index, RGBC color) {
 	LISTBOX_Obj *pObj;
 	if (hObj) {
-		if ((unsigned int)Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
+		if ((uint16_t)Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
 
 			pObj = (LISTBOX_Obj *)hObj;
 			pObj->Props.aBkColor[Index] = color;
@@ -1173,12 +1170,12 @@ void LISTBOX_SetOwnerDraw(LISTBOX_Handle hObj, WIDGET_DRAW_ITEM_FUNC *pfDrawItem
 	}
 }
 
-void LISTBOX_SetScrollbarWidth(LISTBOX_Handle hObj, unsigned Width) {
+void LISTBOX_SetScrollbarWidth(LISTBOX_Handle hObj, uint16_t Width) {
 	LISTBOX_Obj *pObj;
 	if (hObj) {
 
 		pObj = (LISTBOX_Obj *)hObj;
-		if (Width != (unsigned)pObj->ScrollbarWidth) {
+		if (Width != (uint16_t)pObj->ScrollbarWidth) {
 			pObj->ScrollbarWidth = Width;
 			LISTBOX__SetScrollbarWidth(pObj);
 			WM_Invalidate(hObj);
@@ -1187,12 +1184,11 @@ void LISTBOX_SetScrollbarWidth(LISTBOX_Handle hObj, unsigned Width) {
 	}
 }
 
-void LISTBOX_SetString(LISTBOX_Handle hObj, const char *s, unsigned int Index) {
+void LISTBOX_SetString(LISTBOX_Handle hObj, const char *s, uint16_t Index) {
 	if (hObj) {
 		auto pObj = (LISTBOX_Obj *)hObj;
-		if (Index < (unsigned int)LISTBOX__GetNumItems(pObj)) {
-			LISTBOX_ITEM *pItem;
-			pItem = (LISTBOX_ITEM *)GUI_ARRAY_ResizeItem(&pObj->ItemArray, Index, sizeof(LISTBOX_ITEM) + GUI__strlen(s));
+		if (Index < (uint16_t)LISTBOX__GetNumItems(pObj)) {
+			auto pItem  = (LISTBOX_ITEM *)GUI_ARRAY_ResizeItem(&pObj->ItemArray, Index, sizeof(LISTBOX_ITEM) + GUI__strlen(s));
 			if (pItem) {
 				GUI__strcpy(pItem->acText, s);
 				LISTBOX__InvalidateItemSize(pObj, Index);
@@ -1204,7 +1200,7 @@ void LISTBOX_SetString(LISTBOX_Handle hObj, const char *s, unsigned int Index) {
 	}
 }
 
-RGBC LISTBOX_SetTextColor(LISTBOX_Handle hObj, unsigned int Index, RGBC Color) {
+RGBC LISTBOX_SetTextColor(LISTBOX_Handle hObj, uint16_t Index, RGBC Color) {
 	RGBC r = RGB_INVALID_COLOR;
 	if (hObj) {
 		LISTBOX_Obj *pObj;

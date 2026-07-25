@@ -1,17 +1,20 @@
 #include "WM_Intern.h"
 
-#include "MULTIEDIT.h"
 #include "MULTIEDIT_Private.h"
 
 /* Define character for password mode */
 #define MULTIEDIT_PASSWORD_CHAR   '*'
+
 #define INVALID_NUMCHARS (1 << 0)
 #define INVALID_NUMLINES (1 << 1)
 #define INVALID_TEXTSIZE (1 << 2)
 #define INVALID_CURSORXY (1 << 3)
 #define INVALID_LINEPOSB (1 << 4)
-MULTIEDIT_Obj::Properties MULTIEDIT_Obj::DefaultProps;
+
 #define MULTIEDIT_REALLOC_SIZE  16
+
+MULTIEDIT_Obj::Properties MULTIEDIT_Obj::DefaultProps;
+
 /*********************************************************************
 *
 *       _InvalidateNumChars

@@ -1,8 +1,9 @@
 #include "GUI_Protected.h"
 #include "GUI_ARRAY.h"
 
-#include "MULTIPAGE.h"
 #include "MULTIPAGE_Private.h"
+
+import TUX.Widget.ScrollBar;
 
 MULTIPAGE_Obj::Properties MULTIPAGE_Obj::DefaultProps;
 

@@ -50,7 +50,9 @@
     <ClCompile Include="GUI\Resources\GUI_CursorCrossS.cpp" />
     <ClCompile Include="GUI\Resources\GUI_CursorHeaderM.cpp" />
     <ClCompile Include="GUI\Widget\BUTTON.cpp" />
+    <ClCompile Include="GUI\Widget\Button.cppm" />
     <ClCompile Include="GUI\Widget\CHECKBOX.cpp" />
+    <ClCompile Include="GUI\Widget\CheckBox.cppm" />
     <ClCompile Include="GUI\Widget\DIALOG.cpp" />
     <ClCompile Include="GUI\Widget\DROPDOWN.cpp" />
     <ClCompile Include="GUI\Widget\EDIT.cpp" />
@@ -92,41 +94,65 @@
     <ClInclude Include="GUI\Core\LCD.h" />
     <ClInclude Include="GUI\Core\LCD_Private.h" />
     <ClInclude Include="GUI\Core\LCD_Protected.h" />
-    <ClInclude Include="GUI\Widget\BUTTON.h" />
     <ClInclude Include="GUI\Widget\BUTTON_Private.h" />
-    <ClInclude Include="GUI\Widget\CHECKBOX.h" />
     <ClInclude Include="GUI\Widget\CHECKBOX_Private.h" />
     <ClInclude Include="GUI\Widget\DIALOG.h" />
     <ClInclude Include="GUI\Widget\DIALOG_Intern.h" />
-    <ClInclude Include="GUI\Widget\DROPDOWN.h" />
+    <ClCompile Include="GUI\Widget\DropDown.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\DROPDOWN_Private.h" />
-    <ClInclude Include="GUI\Widget\EDIT.h" />
+    <ClCompile Include="GUI\Widget\Edit.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\EDIT_Private.h" />
-    <ClInclude Include="GUI\Widget\FRAMEWIN.h" />
+    <ClCompile Include="GUI\Widget\FrameWin.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\FRAMEWIN_Private.h" />
     <ClInclude Include="GUI\Widget\GUI_ARRAY.h" />
-    <ClInclude Include="GUI\Widget\HEADER.h" />
+    <ClCompile Include="GUI\Widget\Header.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\HEADER_Private.h" />
-    <ClInclude Include="GUI\Widget\LISTBOX.h" />
+    <ClCompile Include="GUI\Widget\ListBox.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\LISTBOX_Private.h" />
-    <ClInclude Include="GUI\Widget\LISTVIEW.h" />
+    <ClCompile Include="GUI\Widget\ListView.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\LISTVIEW_Private.h" />
-    <ClInclude Include="GUI\Widget\MENU.h" />
+    <ClCompile Include="GUI\Widget\Menu.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\MENU_Private.h" />
     <ClInclude Include="GUI\Widget\MESSAGEBOX.h" />
-    <ClInclude Include="GUI\Widget\MULTIEDIT.h" />
+    <ClCompile Include="GUI\Widget\MultiEdit.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\MULTIEDIT_Private.h" />
-    <ClInclude Include="GUI\Widget\MULTIPAGE.h" />
+    <ClCompile Include="GUI\Widget\MultiPage.cppm" />
     <ClInclude Include="GUI\Widget\MULTIPAGE_Private.h" />
-    <ClInclude Include="GUI\Widget\PROGBAR.h" />
+    <ClCompile Include="GUI\Widget\ProgBar.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\PROGBAR_Private.h" />
-    <ClInclude Include="GUI\Widget\RADIO.h" />
+    <ClCompile Include="GUI\Widget\Radio.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\RADIO_Private.h" />
-    <ClInclude Include="GUI\Widget\SCROLLBAR.h" />
+    <ClCompile Include="GUI\Widget\ScrollBar.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\SCROLLBAR_Private.h" />
-    <ClInclude Include="GUI\Widget\SLIDER.h" />
+    <ClCompile Include="GUI\Widget\Slider.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\SLIDER_Private.h" />
-    <ClInclude Include="GUI\Widget\TEXT.h" />
+    <ClCompile Include="GUI\Widget\Text.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\TEXT_Private.h" />
     <ClInclude Include="GUI\Widget\WIDGET.h" />
     <ClInclude Include="GUI\Widget\WINDOW_Private.h" />

@@ -1,6 +1,5 @@
 #include "WM_Intern.h"
 #include "GUI_Protected.h"
-#include "SCROLLBAR.h"
 #include "GUIDebug.h"
 
 #define ASSIGN_IF_LESS(v0,v1) if (v1<v0) v0=v1
@@ -2237,13 +2236,10 @@ WM_Obj * WM_SetFocusOnPrevChild(WM_Obj * pParent) {
 void WM_SetId(WM_Obj * pObj, int Id) {
 	WM_SendMessage(pObj, WM_SET_ID, (WM_PARAM)Id);
 }
-/*********************************************************************
-*
-*       _SetScrollbar
-*
-* Return value: 1 if scrollbar was visible, 0 if not
-*/
-static int _SetScrollbar(WM_Obj * pWin, int OnOff, int Id, int Flags) {
+
+#pragma region ScrollBar
+import TUX.Widget.ScrollBar;
+static bool _SetScrollbar(WM_Obj * pWin, int OnOff, int Id, int Flags) {
 	auto pBar = WM_GetDialogItem(pWin, Id);
 	if (OnOff) {
 		if (!pBar)
@@ -2254,18 +2250,20 @@ static int _SetScrollbar(WM_Obj * pWin, int OnOff, int Id, int Flags) {
 		if (pBar)
 			WM_DeleteWindow(pBar);
 	}
-	return (pBar ? 1 : 0);
+	return pBar;
 }
-int WM_SetScrollbarV(WM_Obj * pWin, int OnOff) {
+bool WM_SetScrollbarV(WM_Obj * pWin, int OnOff) {
 	return _SetScrollbar(pWin, OnOff, GUI_ID_VSCROLL, SCROLLBAR_CF_VERTICAL);
 }
-int WM_SetScrollbarH(WM_Obj * pWin, int OnOff) {
+bool WM_SetScrollbarH(WM_Obj * pWin, int OnOff) {
 	return _SetScrollbar(pWin, OnOff, GUI_ID_HSCROLL, 0);
 }
 void WM_SetScrollState(WM_Obj * pWin, const WM_SCROLL_STATE *pState) {
 	if (pWin && pState)
 		WM_SendMessage(pWin, WM_SET_SCROLL_STATE, (WM_PARAM)pState);
 }
+#pragma endregion
+
 #define WM_DEBUG_LEVEL 1
 void WM_SetSize(WM_Obj * pWin, int xSize, int ySize) {
 	int dx, dy;

@@ -4,6 +4,8 @@
 #include "GUI_Protected.h"
 #include "WM_Intern.h"
 
+#include "DIALOG.h"
+
 PCWIDGET_EFFECT WIDGET::DefaultEffect = WIDGET_Effect_3D2L;
 
 static void _UpdateChildPostions(WM_Obj * hObj, int Diff) {
