@@ -10,7 +10,7 @@ import TUX.Widget.ListBox;
 import TUX.Array;
 
 export {
-
+  
 constexpr uint16_t DROPDOWN_CF_AUTOSCROLLBAR    = 1 << 0;
 constexpr uint16_t DROPDOWN_CF_UP               = 1 << 1;
 constexpr uint16_t DROPDOWN_CI_UNSEL     = 0;
@@ -42,7 +42,6 @@ void     DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width);
 void     DROPDOWN_SetTextAlign    (DROPDOWN_Handle hObj, int Align);
 void     DROPDOWN_SetTextColor    (DROPDOWN_Handle hObj, unsigned int index, RGBC color);
 void     DROPDOWN_SetTextHeight   (DROPDOWN_Handle hObj, unsigned TextHeight);
-
 }
 
 #define DROPDOWN_SF_AUTOSCROLLBAR DROPDOWN_CF_AUTOSCROLLBAR
@@ -285,8 +284,6 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *
 }
 void DROPDOWN_Collapse(DROPDOWN_Handle hObj) {
 	DROPDOWN_Obj *pObj;
-	if (hObj) {
-
 		pObj = (DROPDOWN_Obj *)hObj;
 		if (pObj->hListWin) {
 			auto hListWin = pObj->hListWin;
@@ -294,16 +291,12 @@ void DROPDOWN_Collapse(DROPDOWN_Handle hObj) {
 			WM_ReleaseCapture();
 			WM_DeleteWindow(hListWin);
 		}
-
-	}
 }
 void DROPDOWN_Expand(DROPDOWN_Handle hObj) {
 	int xSize, ySize, i, NumItems;
 	WM_Obj *hLst;
 	GUI_RECT r;
 	DROPDOWN_Obj *pObj;
-	if (hObj) {
-
 		pObj = (DROPDOWN_Obj *)hObj;
 		xSize = WM__GetWindowSizeX(pObj);
 		ySize = pObj->ySizeEx;
@@ -347,11 +340,8 @@ void DROPDOWN_Expand(DROPDOWN_Handle hObj) {
 			WM_NotifyParent(hObj, WM_NOTIFICATION_CLICKED);
 			WM_SetCapture(hLst, 0);
 		}
-	}
 }
 void DROPDOWN_AddKey(DROPDOWN_Handle hObj, int Key) {
-	if (hObj) {
-
 		switch (Key) {
 			case GUI_KEY_DOWN:
 				DROPDOWN_IncSel(hObj);
@@ -363,35 +353,26 @@ void DROPDOWN_AddKey(DROPDOWN_Handle hObj, int Key) {
 				_SelectByKey(hObj, Key);
 				break;
 		}
-
-	}
 }
 void DROPDOWN_AddString(DROPDOWN_Handle hObj, const char *s) {
 	DROPDOWN_Obj *pObj;
-	if (hObj && s) {
-
+	if (s) {
 		pObj = (DROPDOWN_Obj *)hObj;
 		GUI_ARRAY_AddItem(&pObj->Handles, s, GUI__strlen(s) + 1);
 		WM_Invalidate(hObj);
-
 	}
 }
 int DROPDOWN_GetNumItems(DROPDOWN_Handle hObj) {
 	DROPDOWN_Obj *pObj;
 	int r = 0;
-	if (hObj) {
-
 		pObj = (DROPDOWN_Obj *)hObj;
 		r = _GetNumItems(pObj);
 
-	}
 	return r;
 }
 void DROPDOWN_SetFont(DROPDOWN_Handle hObj, PCFONT pfont) {
 	int OldHeight;
 	DROPDOWN_Obj *pObj;
-	if (hObj) {
-
 		pObj = (DROPDOWN_Obj *)hObj;
 		OldHeight = GUI_GetYDistOfFont(pObj->Props.pFont);
 		pObj->Props.pFont = pfont;
@@ -404,40 +385,32 @@ void DROPDOWN_SetFont(DROPDOWN_Handle hObj, PCFONT pfont) {
 			}
 			LISTBOX_SetFont(pObj->hListWin, pfont);
 		}
-
-	}
 }
 void DROPDOWN_SetBkColor(DROPDOWN_Handle hObj, unsigned int Index, RGBC color) {
 	DROPDOWN_Obj *pObj;
-	if (hObj) {
-		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
-			pObj = (DROPDOWN_Obj *)hObj;
-			pObj->Props.aBkColor[Index] = color;
-			WM_Invalidate(hObj);
-			if (pObj->hListWin) {
-				LISTBOX_SetBkColor(pObj->hListWin, Index, color);
-			}
+	if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
+		pObj = (DROPDOWN_Obj *)hObj;
+		pObj->Props.aBkColor[Index] = color;
+		WM_Invalidate(hObj);
+		if (pObj->hListWin) {
+			LISTBOX_SetBkColor(pObj->hListWin, Index, color);
 		}
 	}
 }
 void DROPDOWN_SetTextColor(DROPDOWN_Handle hObj, unsigned int Index, RGBC color) {
 	DROPDOWN_Obj *pObj;
-	if (hObj) {
-		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
-			pObj = (DROPDOWN_Obj *)hObj;
-			pObj->Props.aTextColor[Index] = color;
-			WM_Invalidate(hObj);
-			if (pObj->hListWin) {
-				LISTBOX_SetTextColor(pObj->hListWin, Index, color);
-			}
+	if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
+		pObj = (DROPDOWN_Obj *)hObj;
+		pObj->Props.aTextColor[Index] = color;
+		WM_Invalidate(hObj);
+		if (pObj->hListWin) {
+			LISTBOX_SetTextColor(pObj->hListWin, Index, color);
 		}
 	}
 }
 void DROPDOWN_SetSel(DROPDOWN_Handle hObj, int Sel) {
 	int NumItems, MaxSel;
 	DROPDOWN_Obj *pObj;
-	if (hObj) {
-
 		pObj = (DROPDOWN_Obj *)hObj;
 		NumItems = _GetNumItems(pObj);
 		MaxSel = NumItems ? NumItems - 1 : 0;
@@ -449,8 +422,6 @@ void DROPDOWN_SetSel(DROPDOWN_Handle hObj, int Sel) {
 			WM_Invalidate(hObj);
 			WM_NotifyParent(hObj, WM_NOTIFICATION_SEL_CHANGED);
 		}
-
-	}
 }
 void DROPDOWN_IncSel(DROPDOWN_Handle hObj) {
 	int Sel = DROPDOWN_GetSel(hObj);
@@ -465,18 +436,13 @@ void DROPDOWN_DecSel(DROPDOWN_Handle hObj) {
 int  DROPDOWN_GetSel(DROPDOWN_Handle hObj) {
 	int r = 0;
 	DROPDOWN_Obj *pObj;
-	if (hObj) {
-
 		pObj = (DROPDOWN_Obj *)hObj;
 		r = pObj->Sel;
 
-	}
 	return r;
 }
 void DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width) {
 	DROPDOWN_Obj *pObj;
-	if (hObj) {
-
 		pObj = (DROPDOWN_Obj *)hObj;
 		if (Width != (unsigned)pObj->ScrollbarWidth) {
 			pObj->ScrollbarWidth = Width;
@@ -484,8 +450,6 @@ void DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width) {
 				LISTBOX_SetScrollbarWidth(pObj->hListWin, Width);
 			}
 		}
-
-	}
 }
 
 DROPDOWN_Handle DROPDOWN_Create(WM_Obj *hWinParent, int x0, int y0, int xsize, int ysize, int Flags) {
@@ -503,25 +467,21 @@ DROPDOWN_Handle DROPDOWN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInf
 }
 
 void DROPDOWN_DeleteItem(DROPDOWN_Handle hObj, unsigned int Index) {
-	if (hObj) {
 		DROPDOWN_Obj *pObj;
 		unsigned int NumItems;
 		NumItems = DROPDOWN_GetNumItems(hObj);
 		if (Index < NumItems) {
-
 			pObj = (DROPDOWN_Obj *)hObj;
 			GUI_ARRAY_DeleteItem(&pObj->Handles, Index);
 			WM_Invalidate(hObj);
 			if (pObj->hListWin) {
 				LISTBOX_DeleteItem(pObj->hListWin, Index);
 			}
-
 		}
-	}
 }
 
 void DROPDOWN_InsertString(DROPDOWN_Handle hObj, const char *s, unsigned int Index) {
-	if (hObj && s) {
+	if (s) {
 		DROPDOWN_Obj *pObj;
 		unsigned int NumItems;
 
@@ -545,60 +505,47 @@ void DROPDOWN_InsertString(DROPDOWN_Handle hObj, const char *s, unsigned int Ind
 				LISTBOX_AddString(pObj->hListWin, s);
 			}
 		}
-
 	}
 }
 
 void DROPDOWN_SetItemSpacing(DROPDOWN_Handle hObj, unsigned Value) {
-	if (hObj) {
 		auto pObj = (DROPDOWN_Obj *)hObj;
 		pObj->ItemSpacing = Value;
 		if (pObj->hListWin) {
 			LISTBOX_SetItemSpacing(pObj->hListWin, Value);
 		}
-
-	}
 }
 uint16_t DROPDOWN_GetItemSpacing(DROPDOWN_Handle hObj) {
-	if (hObj) {
-		auto pObj = (DROPDOWN_Obj *)hObj;
-		return pObj->ItemSpacing;
-	}
-	return 0;
+	auto pObj = (DROPDOWN_Obj *)hObj;
+	return pObj->ItemSpacing;
 }
 
 void DROPDOWN_SetAutoScroll(DROPDOWN_Handle hObj, int OnOff) {
-	if (hObj) {
-		DROPDOWN_Obj *pObj;
-		pObj = (DROPDOWN_Obj *)hObj;
-		char Flags = pObj->Flags & (~DROPDOWN_SF_AUTOSCROLLBAR);
-		if (OnOff) {
-			Flags |= DROPDOWN_SF_AUTOSCROLLBAR;
-		}
-		if (pObj->Flags != Flags) {
-			pObj->Flags = Flags;
-			if (pObj->hListWin) {
-				LISTBOX_SetAutoScrollV(pObj->hListWin, (Flags & DROPDOWN_SF_AUTOSCROLLBAR) ? 1 : 0);
-			}
+	DROPDOWN_Obj *pObj;
+	pObj = (DROPDOWN_Obj *)hObj;
+	char Flags = pObj->Flags & (~DROPDOWN_SF_AUTOSCROLLBAR);
+	if (OnOff) {
+		Flags |= DROPDOWN_SF_AUTOSCROLLBAR;
+	}
+	if (pObj->Flags != Flags) {
+		pObj->Flags = Flags;
+		if (pObj->hListWin) {
+			LISTBOX_SetAutoScrollV(pObj->hListWin, (Flags & DROPDOWN_SF_AUTOSCROLLBAR) ? 1 : 0);
 		}
 	}
 }
 
 void DROPDOWN_SetTextAlign(DROPDOWN_Handle hObj, int Align) {
 	DROPDOWN_Obj *pObj;
-	if (hObj) {
-		pObj = (DROPDOWN_Obj *)hObj;
-		pObj->Props.Align = Align;
-		WM_Invalidate(hObj);
-	}
+	pObj = (DROPDOWN_Obj *)hObj;
+	pObj->Props.Align = Align;
+	WM_Invalidate(hObj);
 }
 
 void DROPDOWN_SetTextHeight(DROPDOWN_Handle hObj, unsigned TextHeight) {
 	DROPDOWN_Obj *pObj;
-	if (hObj) {
-		pObj = (DROPDOWN_Obj *)hObj;
-		pObj->TextHeight = TextHeight;
-		DROPDOWN__AdjustHeight(pObj);
-		WM_Invalidate(hObj);
-	}
+	pObj = (DROPDOWN_Obj *)hObj;
+	pObj->TextHeight = TextHeight;
+	DROPDOWN__AdjustHeight(pObj);
+	WM_Invalidate(hObj);
 }

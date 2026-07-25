@@ -10,7 +10,6 @@ import TUX.Widget.ScrollBar;
 import TUX.Array;
 
 export {
-
 constexpr uint16_t MULTIPAGE_ALIGN_LEFT   = 0 << 0;
 constexpr uint16_t MULTIPAGE_ALIGN_RIGHT  = 1 << 0;
 constexpr uint16_t MULTIPAGE_ALIGN_TOP    = 0 << 2;
@@ -35,7 +34,6 @@ void    MULTIPAGE_SetAlign      (MULTIPAGE_Handle hObj, unsigned Align);
 int     MULTIPAGE_GetSelection  (MULTIPAGE_Handle hObj);
 WM_Obj *MULTIPAGE_GetWindow     (MULTIPAGE_Handle hObj, unsigned Index);
 int     MULTIPAGE_IsPageEnabled (MULTIPAGE_Handle hObj, unsigned Index);
-
 }
 
 #define MULTIPAGE_STATE_ENABLED     (1<<0)
@@ -469,7 +467,6 @@ MULTIPAGE_Handle MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj
 														 rClient.y1 - rClient.y0 + 1,
 														 hObj, Flags, &_ClientCallback, 0);
 		_UpdatePositions(pObj);
-
 	}
 	else {
 	}
@@ -478,7 +475,6 @@ MULTIPAGE_Handle MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj
 void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_Obj *hWin, const char *pText) {
 	auto pObj = (MULTIPAGE_Obj *)hObj;
 	GUI_USE_PARA(hWin);
-	if (hObj) {
 		if (!hWin) {
 			/* If we get no handle we must find it. To do this, we search      */
 			/* all children until we found one that has not yet become a page. */
@@ -513,169 +509,124 @@ void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_Obj *hWin, const char *pText) {
 			}
 			MULTIPAGE_SelectPage(pObj, pObj->Handles.NumItems - 1);
 		}
-
-	}
 }
 void MULTIPAGE_DeletePage(MULTIPAGE_Handle hObj, unsigned Index, int Delete) {
-	if (hObj) {
 		auto pObj = (MULTIPAGE_Obj *)hObj;
-		if (pObj) {
-			if ((int)Index < pObj->Handles.NumItems) {
-				WM_Obj *hWin;
-				MULTIPAGE_PAGE *pPage;
-				pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
-				hWin = pPage->hWin;
-				/* Remove the page from the multipage object */
-				if (Index == pObj->Selection) {
-					if (Index == ((unsigned)pObj->Handles.NumItems - 1)) {
-						_ShowPage(pObj, Index - 1);
-						pObj->Selection--;
-					}
-					else {
-						_ShowPage(pObj, Index + 1);
-					}
+		if ((int)Index < pObj->Handles.NumItems) {
+			WM_Obj *hWin;
+			MULTIPAGE_PAGE *pPage;
+			pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
+			hWin = pPage->hWin;
+			/* Remove the page from the multipage object */
+			if (Index == pObj->Selection) {
+				if (Index == ((unsigned)pObj->Handles.NumItems - 1)) {
+					_ShowPage(pObj, Index - 1);
+					pObj->Selection--;
 				}
 				else {
-					if (Index < pObj->Selection) {
-						pObj->Selection--;
-					}
-				}
-				GUI_ARRAY_DeleteItem(&pObj->Handles, Index);
-				_UpdatePositions(pObj);
-				/* Delete the window of the page */
-				if (Delete) {
-					WM_DeleteWindow(hWin);
+					_ShowPage(pObj, Index + 1);
 				}
 			}
+			else {
+				if (Index < pObj->Selection) {
+					pObj->Selection--;
+				}
+			}
+			GUI_ARRAY_DeleteItem(&pObj->Handles, Index);
+			_UpdatePositions(pObj);
+			/* Delete the window of the page */
+			if (Delete) {
+				WM_DeleteWindow(hWin);
+			}
 		}
-
-	}
 }
 void MULTIPAGE_SelectPage(MULTIPAGE_Handle hObj, unsigned Index) {
-	if (hObj) {
 		auto pObj = (MULTIPAGE_Obj *)hObj;
-		if (pObj) {
-			if ((int)Index < pObj->Handles.NumItems) {
-				if (Index != pObj->Selection && _GetEnable(pObj, Index)) {
-					_ShowPage(pObj, Index);
-					pObj->Selection = Index;
-					_UpdatePositions(pObj);
-				}
+		if ((int)Index < pObj->Handles.NumItems) {
+			if (Index != pObj->Selection && _GetEnable(pObj, Index)) {
+				_ShowPage(pObj, Index);
+				pObj->Selection = Index;
+				_UpdatePositions(pObj);
 			}
 		}
-
-	}
 }
 void MULTIPAGE_DisablePage(MULTIPAGE_Handle hObj, unsigned Index) {
-	if (hObj) {
 		auto pObj = (MULTIPAGE_Obj *)hObj;
-		if (pObj) {
-			_SetEnable(pObj, Index, 0);
-			WM_Invalidate(hObj);
-		}
-
-	}
+		_SetEnable(pObj, Index, 0);
+		WM_Invalidate(hObj);
 }
 void MULTIPAGE_EnablePage(MULTIPAGE_Handle hObj, unsigned Index) {
-	if (hObj) {
 		auto pObj = (MULTIPAGE_Obj *)hObj;
-		if (pObj) {
-			_SetEnable(pObj, Index, 1);
-			WM_Invalidate(hObj);
-		}
-
-	}
+		_SetEnable(pObj, Index, 1);
+		WM_Invalidate(hObj);
 }
 void MULTIPAGE_SetText(MULTIPAGE_Handle hObj, const char *pText, unsigned Index) {
 	auto pObj = (MULTIPAGE_Obj *)hObj;
-	if (hObj && pText) {
-		if (pObj) {
-			if ((int)Index < pObj->Handles.NumItems) {
-				MULTIPAGE_PAGE *pPage;
-				MULTIPAGE_PAGE Page;
+	if (pText) {
+		if ((int)Index < pObj->Handles.NumItems) {
+			MULTIPAGE_PAGE *pPage;
+			MULTIPAGE_PAGE Page;
+			pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
+			Page.hWin = pPage->hWin;
+			Page.Status = pPage->Status;
+			if (GUI_ARRAY_SetItem(&pObj->Handles, Index, &Page, sizeof(MULTIPAGE_PAGE) + GUI__strlen(pText))) {
 				pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
-				Page.hWin = pPage->hWin;
-				Page.Status = pPage->Status;
-				if (GUI_ARRAY_SetItem(&pObj->Handles, Index, &Page, sizeof(MULTIPAGE_PAGE) + GUI__strlen(pText))) {
-					pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
-					GUI__memcpy(&pPage->acText, pText, GUI__strlen(pText) + 1);
-					_UpdatePositions(pObj);
-				}
+				GUI__memcpy(&pPage->acText, pText, GUI__strlen(pText) + 1);
+				_UpdatePositions(pObj);
 			}
 		}
-
 	}
 }
 void MULTIPAGE_SetBkColor(MULTIPAGE_Handle hObj, RGBC Color, unsigned Index) {
 	auto pObj = (MULTIPAGE_Obj *)hObj;
-	if (hObj && ((int)Index < MULTIPAGE_NUMCOLORS)) {
-		if (pObj) {
-			pObj->Props.aBkColor[Index] = Color;
-			WM_Invalidate(hObj);
-		}
+	if (((int)Index < MULTIPAGE_NUMCOLORS)) {
+		pObj->Props.aBkColor[Index] = Color;
+		WM_Invalidate(hObj);
 	}
 }
 void MULTIPAGE_SetTextColor(MULTIPAGE_Handle hObj, RGBC Color, unsigned Index) {
 	auto pObj = (MULTIPAGE_Obj *)hObj;
-	if (hObj && ((int)Index < MULTIPAGE_NUMCOLORS)) {
-		if (pObj) {
-			pObj->Props.aTextColor[Index] = Color;
-			WM_Invalidate(hObj);
-		}
+	if (((int)Index < MULTIPAGE_NUMCOLORS)) {
+		pObj->Props.aTextColor[Index] = Color;
+		WM_Invalidate(hObj);
 	}
 }
 void MULTIPAGE_SetFont(MULTIPAGE_Handle hObj, PCFONT pFont) {
 	auto pObj = (MULTIPAGE_Obj *)hObj;
-	if (hObj && pFont) {
-		if (pObj) {
-			pObj->Props.Font = pFont;
-			_UpdatePositions(pObj);
-		}
+	if (pFont) {
+		pObj->Props.Font = pFont;
+		_UpdatePositions(pObj);
 	}
 }
 void MULTIPAGE_SetAlign(MULTIPAGE_Handle hObj, unsigned Align) {
 	auto pObj = (MULTIPAGE_Obj *)hObj;
 	GUI_RECT rClient;
-	if (hObj) {
-		if (pObj) {
-			pObj->Props.Align = Align;
-			_CalcClientRect(pObj, &rClient);
-			WM_MoveTo(pObj->pClient, rClient.x0 + pObj->Rect.x0,
-					  rClient.y0 + pObj->Rect.y0);
-			_UpdatePositions(pObj);
-		}
-	}
+		pObj->Props.Align = Align;
+		_CalcClientRect(pObj, &rClient);
+		WM_MoveTo(pObj->pClient, rClient.x0 + pObj->Rect.x0,
+				  rClient.y0 + pObj->Rect.y0);
+		_UpdatePositions(pObj);
 }
 int MULTIPAGE_GetSelection(MULTIPAGE_Handle hObj) {
-	if (hObj) {
-		auto pObj = (MULTIPAGE_Obj *)hObj;
-		if (pObj)
-			return pObj->Selection;
-	}
-	return -1;
+	auto pObj = (MULTIPAGE_Obj *)hObj;
+	return pObj->Selection;
 }
 WM_Obj *MULTIPAGE_GetWindow(MULTIPAGE_Handle hObj, unsigned Index) {
 	WM_Obj *r = 0;
-	if (hObj) {
 		auto pObj = (MULTIPAGE_Obj *)hObj;
-		if (pObj) {
-			if ((int)Index < pObj->Handles.NumItems) {
-				MULTIPAGE_PAGE *pPage;
-				pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
-				r = pPage->hWin;
-			}
+		if ((int)Index < pObj->Handles.NumItems) {
+			MULTIPAGE_PAGE *pPage;
+			pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
+			r = pPage->hWin;
 		}
-	}
+
 	return r;
 }
 int MULTIPAGE_IsPageEnabled(MULTIPAGE_Handle hObj, unsigned Index) {
 	int r = 0;
-	if (hObj) {
 		auto pObj = (MULTIPAGE_Obj *)hObj;
-		if (pObj) {
-			r = _GetEnable(pObj, Index);
-		}
-	}
+		r = _GetEnable(pObj, Index);
+
 	return r;
 }
 

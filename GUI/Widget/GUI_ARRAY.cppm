@@ -5,7 +5,6 @@ module;
 export module TUX.Array;
 
 export {
-
 struct GUI_ARRAY {
 	uint16_t NumItems;
 	WM_HMEM haHandle;   /* Handle to buffer holding handles */
@@ -24,7 +23,6 @@ void     GUI_ARRAY_DeleteItem(GUI_ARRAY *pThis, unsigned int Index);
 char     GUI_ARRAY_InsertBlankItem(GUI_ARRAY *pThis, unsigned int Index);
 WM_HMEM  GUI_ARRAY_InsertItem(GUI_ARRAY *pThis, unsigned int Index, int Len);
 void *GUI_ARRAY_ResizeItem(GUI_ARRAY *pThis, unsigned int Index, int Len);
-
 }
 
 unsigned int GUI_ARRAY_GetNumItems(const GUI_ARRAY *pThis) {
@@ -278,7 +276,6 @@ void GUI_ARRAY_DeleteItem(GUI_ARRAY *pThis, unsigned int Index) {
 			for (i = Index; i <= NumItems - 1; i++) {
 				*(pa + i) = *(pa + i + 1);
 			}
-
 		}
 	}
 }

@@ -256,8 +256,3 @@ int GUI_MEMDEV_Draw(GUI_RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, i
 }
 
 #endif /* GUI_SUPPORT_MEMDEV */
-
-
-
-
-

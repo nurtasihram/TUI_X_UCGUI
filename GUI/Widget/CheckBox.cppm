@@ -8,7 +8,6 @@ export module TUX.Widget.CheckBox;
 import TUX.Widget;
 
 export {
-
 enum CHECKBOX_BI {
 	 CHECKBOX_BI_INACTIV = 0,
 	 CHECKBOX_BI_ACTIV,
@@ -24,7 +23,7 @@ using CHECKBOX_Handle = WM_Obj *;
 CHECKBOX_Handle CHECKBOX_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags);
 CHECKBOX_Handle CHECKBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
 CHECKBOX_Handle CHECKBOX_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
-                                        int WinFlags, int ExFlags, int Id);
+										int WinFlags, int ExFlags, int Id);
 int  CHECKBOX_GetState    (CHECKBOX_Handle hObj);
 bool CHECKBOX_IsChecked   (CHECKBOX_Handle hObj);
 void CHECKBOX_SetBkColor  (CHECKBOX_Handle hObj, RGBC Color);
@@ -36,7 +35,6 @@ void CHECKBOX_SetState    (CHECKBOX_Handle hObj, unsigned State);
 void CHECKBOX_SetText     (CHECKBOX_Handle hObj, const char * pText);
 void CHECKBOX_SetTextAlign(CHECKBOX_Handle hObj, int Align);
 void CHECKBOX_SetTextColor(CHECKBOX_Handle hObj, RGBC Color);
-
 }
 
 struct CHECKBOX_Obj : public WIDGET {
@@ -243,9 +241,8 @@ CHECKBOX_Handle CHECKBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInf
 int CHECKBOX_GetState(CHECKBOX_Handle hObj) {
 	int Result = 0;
 	auto pObj = (CHECKBOX_Obj *)hObj;
-	if (hObj) {
-		Result = pObj->CurrentState;
-	}
+	Result = pObj->CurrentState;
+
 	return Result;
 }
 
@@ -255,39 +252,33 @@ bool CHECKBOX_IsChecked(CHECKBOX_Handle hObj) {
 }
 
 void CHECKBOX_SetBkColor(CHECKBOX_Handle hObj, RGBC Color) {
-	if (hObj) {
-		auto pObj = (CHECKBOX_Obj *)hObj;
-		if (Color != pObj->Props.BkColor) {
-			pObj->Props.BkColor = Color;
+	auto pObj = (CHECKBOX_Obj *)hObj;
+	if (Color != pObj->Props.BkColor) {
+		pObj->Props.BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
-			if (Color <= RGB_WHITE) {
-				WM_SetTransState(hObj, 0);
-			}
-			else {
-				WM_SetTransState(hObj, WM_CF_HASTRANS);
-			}
-#endif
-			WM_Invalidate(hObj);
+		if (Color <= RGB_WHITE) {
+			WM_SetTransState(hObj, 0);
 		}
+		else {
+			WM_SetTransState(hObj, WM_CF_HASTRANS);
+		}
+#endif
+		WM_Invalidate(hObj);
 	}
 }
 
 void CHECKBOX_SetFont(CHECKBOX_Handle hObj, PCFONT pFont) {
 	auto pObj = (CHECKBOX_Obj *)hObj;
-	if (hObj) {
-		if (pObj->Props.pFont != pFont) {
-			pObj->Props.pFont = pFont;
-			WM_Invalidate(hObj);
-		}
+	if (pObj->Props.pFont != pFont) {
+		pObj->Props.pFont = pFont;
+		WM_Invalidate(hObj);
 	}
 }
 
 void CHECKBOX_SetImage(CHECKBOX_Handle hObj, PCBITMAP pBitmap, unsigned int Index) {
-	if (hObj) {
-		auto pObj = (CHECKBOX_Obj *)hObj;
-		if (Index <= GUI_COUNTOF(pObj->Props.apBm)) {
-			pObj->Props.apBm[Index] = pBitmap;
-		}
+	auto pObj = (CHECKBOX_Obj *)hObj;
+	if (Index <= GUI_COUNTOF(pObj->Props.apBm)) {
+		pObj->Props.apBm[Index] = pBitmap;
 	}
 }
 
@@ -335,7 +326,7 @@ void CHECKBOX_SetNumStates(CHECKBOX_Handle hObj, unsigned NumStates) {
 		CHECKBOX_Obj::DefaultProps.apBm[2] = &_abmCheck[0];
 	if (!CHECKBOX_Obj::DefaultProps.apBm[3])
 		CHECKBOX_Obj::DefaultProps.apBm[3] = &_abmCheck[1];
-	if (hObj && (NumStates == 2 || NumStates == 3)) {
+	if ((NumStates == 2 || NumStates == 3)) {
 		pObj->Props.apBm[2] = CHECKBOX_Obj::DefaultProps.apBm[2];
 		pObj->Props.apBm[3] = CHECKBOX_Obj::DefaultProps.apBm[3];
 		pObj->NumStates = NumStates;
@@ -344,27 +335,23 @@ void CHECKBOX_SetNumStates(CHECKBOX_Handle hObj, unsigned NumStates) {
 
 void CHECKBOX_SetSpacing(CHECKBOX_Handle hObj, unsigned Spacing) {
 	auto pObj = (CHECKBOX_Obj *)hObj;
-	if (hObj) {
-		if ((unsigned)pObj->Props.Spacing != Spacing) {
-			pObj->Props.Spacing = Spacing;
-			WM_Invalidate(hObj);
-		}
+	if ((unsigned)pObj->Props.Spacing != Spacing) {
+		pObj->Props.Spacing = Spacing;
+		WM_Invalidate(hObj);
 	}
 }
 
 void CHECKBOX_SetState(CHECKBOX_Handle hObj, unsigned State) {
 	auto pObj = (CHECKBOX_Obj *)hObj;
-	if (hObj) {
-		if (State <= (unsigned)pObj->NumStates) {
-			pObj->CurrentState = State;
-			WM_Invalidate(hObj);
-		}
+	if (State <= (unsigned)pObj->NumStates) {
+		pObj->CurrentState = State;
+		WM_Invalidate(hObj);
 	}
 }
 
 void CHECKBOX_SetText(CHECKBOX_Handle hObj, const char *s) {
 	auto pObj = (CHECKBOX_Obj *)hObj;
-	if (hObj && s) {
+	if (s) {
 		if (GUI__SetText(&pObj->pText, s)) {
 			WM_Invalidate(hObj);
 		}
@@ -373,21 +360,17 @@ void CHECKBOX_SetText(CHECKBOX_Handle hObj, const char *s) {
 
 void CHECKBOX_SetTextAlign(CHECKBOX_Handle hObj, int Align) {
 	auto pObj = (CHECKBOX_Obj *)hObj;
-	if (hObj) {
-		if (pObj->Props.Align != Align) {
-			pObj->Props.Align = Align;
-			WM_Invalidate(hObj);
-		}
+	if (pObj->Props.Align != Align) {
+		pObj->Props.Align = Align;
+		WM_Invalidate(hObj);
 	}
 }
 
 void CHECKBOX_SetTextColor(CHECKBOX_Handle hObj, RGBC Color) {
-	if (hObj) {
-		auto pObj = (CHECKBOX_Obj *)hObj;
-		if (pObj->Props.TextColor != Color) {
-			pObj->Props.TextColor = Color;
-			WM_Invalidate(hObj);
-		}
+	auto pObj = (CHECKBOX_Obj *)hObj;
+	if (pObj->Props.TextColor != Color) {
+		pObj->Props.TextColor = Color;
+		WM_Invalidate(hObj);
 	}
 }
 
@@ -426,4 +409,3 @@ CBITMAP CHECKBOX_Obj::abmCheck[2] = {
   { 11, 11, 2, 1, _acCheck,  &_PalCheckDisabled},
   { 11, 11, 2, 1, _acCheck,  &_PalCheckEnabled }
 };
-

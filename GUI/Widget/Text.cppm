@@ -8,7 +8,6 @@ export module TUX.Widget.Text;
 import TUX.Widget;
 
 export {
-
 constexpr uint16_t TEXT_CF_LEFT    = TEXTALIGN_LEFT;
 constexpr uint16_t TEXT_CF_RIGHT   = TEXTALIGN_RIGHT;
 constexpr uint16_t TEXT_CF_HCENTER = TEXTALIGN_HCENTER;
@@ -29,7 +28,6 @@ void TEXT_SetFont     (TEXT_Handle pObj, PCFONT pFont);
 void TEXT_SetText     (TEXT_Handle pObj, const char *s);
 void TEXT_SetTextAlign(TEXT_Handle pObj, int Align);
 void TEXT_SetTextColor(TEXT_Handle pObj, RGBC Color);
-
 }
 
 struct TEXT_Obj : public WIDGET {
@@ -139,7 +137,6 @@ TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Ob
 }
 
 void TEXT_SetBkColor(TEXT_Handle hObj, RGBC Color) {
-	if (hObj) {
 		auto pObj = (TEXT_Obj *)hObj;
 		pObj->Props.BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
@@ -151,39 +148,28 @@ void TEXT_SetBkColor(TEXT_Handle hObj, RGBC Color) {
 		}
 #endif
 		WM_Invalidate(hObj);
-	}
 }
 
 void TEXT_SetFont(TEXT_Handle hObj, PCFONT pFont) {
-	if (hObj) {
 		auto pObj = (TEXT_Obj *)hObj;
 		pObj->Props.pFont = pFont;
 		WM_Invalidate(hObj);
-	}
 }
 
 
 void TEXT_SetText(TEXT_Handle hObj, const char *s) {
-	if (hObj) {
 		auto pObj = (TEXT_Obj *)hObj;
 		if (GUI__SetText(&pObj->pText, s))
 			WM_Invalidate(hObj);
-	}
 }
 
 void TEXT_SetTextAlign(TEXT_Handle hObj, int Align) {
-	if (hObj) {
 		auto pObj = (TEXT_Obj *)hObj;
 		pObj->Props.Align = Align;
 		WM_Invalidate(hObj);
-
-	}
 }
 void TEXT_SetTextColor(TEXT_Handle hObj, RGBC Color) {
-	if (hObj) {
 		auto pObj = (TEXT_Obj *)hObj;
 		pObj->Props.TextColor = Color;
 		WM_Invalidate(hObj);
-
-	}
 }

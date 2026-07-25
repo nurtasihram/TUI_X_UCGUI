@@ -8,7 +8,6 @@ export module TUX.Widget.Button;
 import TUX.Widget;
 
 export {
-
 constexpr uint16_t BUTTON_CF_HIDE    = WM_CF_HIDE;
 constexpr uint16_t BUTTON_CF_SHOW    = WM_CF_SHOW;
 constexpr uint16_t BUTTON_CF_MEMDEV  = WM_CF_MEMDEV;
@@ -60,7 +59,6 @@ void   BUTTON_SetTextAlign       (BUTTON_Handle hObj, int Align);
 void   BUTTON_SetTextColor       (BUTTON_Handle hObj, unsigned int Index, RGBC Color);
 void   BUTTON_SetSelfDrawEx      (BUTTON_Handle hObj, unsigned int Index, void (*pDraw)(void), int x, int y); /* Not to be doc. */
 void   BUTTON_SetSelfDraw        (BUTTON_Handle hObj, unsigned int Index, void (*pDraw)(void));               /* Not to be doc. */
-
 }
 
 #define BUTTON_REACT_ON_LEVEL 0
@@ -264,34 +262,27 @@ BUTTON_Handle BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hPa
 	return hObj;
 }
 void BUTTON_SetText(BUTTON_Handle hObj, const char *s) {
-	if (hObj) {
-		auto pObj = (BUTTON_Obj *)hObj;
-		if (GUI__SetText(&pObj->pText, s))
-			WM_Invalidate(hObj);
-	}
+	auto pObj = (BUTTON_Obj *)hObj;
+	if (GUI__SetText(&pObj->pText, s))
+		WM_Invalidate(hObj);
 }
 void BUTTON_SetFont(BUTTON_Handle hObj, PCFONT pfont) {
-	if (hObj) {
-		auto pObj = (BUTTON_Obj *)hObj;
-		pObj->Props.pFont = pfont;
-		WM_Invalidate(hObj);
-
-	}
+	auto pObj = (BUTTON_Obj *)hObj;
+	pObj->Props.pFont = pfont;
+	WM_Invalidate(hObj);
 }
 void BUTTON_SetBkColor(BUTTON_Handle hObj, unsigned int Index, RGBC Color) {
-	if (hObj && (Index <= 2)) {
+	if ((Index <= 2)) {
 		auto pObj = (BUTTON_Obj *)hObj;
 		pObj->Props.aBkColor[Index] = Color;
 		WM_Invalidate(hObj);
-
 	}
 }
 void BUTTON_SetTextColor(BUTTON_Handle hObj, unsigned int Index, RGBC Color) {
-	if (hObj && (Index <= 2)) {
+	if ((Index <= 2)) {
 		auto pObj = (BUTTON_Obj *)hObj;
 		pObj->Props.aTextColor[Index] = Color;
 		WM_Invalidate(hObj);
-
 	}
 }
 void BUTTON_SetState(BUTTON_Handle hObj, int State) {
@@ -332,56 +323,37 @@ BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, W
 }
 RGBC BUTTON_GetBkColor(BUTTON_Handle hObj, unsigned int Index) {
 	RGBC Color = 0;
-	if (hObj && (Index < 2)) {
+	if ((Index < 2)) {
 		auto pObj = (BUTTON_Obj *)hObj;
 		Color = pObj->Props.aBkColor[Index];
-
 	}
 	return Color;
 }
 PCFONT BUTTON_GetFont(BUTTON_Handle hObj) {
 	PCFONT pFont = 0;
-	if (hObj) {
-		auto pObj = (BUTTON_Obj *)hObj;
-		pFont = pObj->Props.pFont;
 
-	}
 	return pFont;
 }
 void BUTTON_GetText(BUTTON_Handle hObj, char *pBuffer, int MaxLen) {
-	if (hObj) {
-		auto pObj = (BUTTON_Obj *)hObj;
-		if (pObj->pText) {
-			auto pText = pObj->pText;
-			int Len = GUI__strlen(pText);
-			if (Len > (MaxLen - 1))
-				Len = MaxLen - 1;
-			GUI__memcpy((void *)pBuffer, (const void *)pText, Len);
-			*(pBuffer + Len) = 0;
-		}
-		else {
-			*pBuffer = 0; /* Empty string */
-		}
+	auto pObj = (BUTTON_Obj *)hObj;
+	if (pObj->pText) {
+		auto pText = pObj->pText;
+		int Len = GUI__strlen(pText);
+		if (Len > (MaxLen - 1))
+			Len = MaxLen - 1;
+		GUI__memcpy((void *)pBuffer, (const void *)pText, Len);
+		*(pBuffer + Len) = 0;
+	}
+	else {
+		*pBuffer = 0; /* Empty string */
 	}
 }
 bool BUTTON_IsPressed(BUTTON_Handle hObj) {
-	if (hObj) {
-		auto pObj = (BUTTON_Obj *)hObj;
-		return pObj->State & BUTTON_STATE_PRESSED;
-	}
-	return false;
+	auto pObj = (BUTTON_Obj *)hObj;
+	return pObj->State & BUTTON_STATE_PRESSED;
 }
 
 void BUTTON__SetDrawObj(BUTTON_Handle hObj, int Index, GUI_DRAW *pDrawObj) {
-	if (hObj) {
-		auto pObj = (BUTTON_Obj *)hObj;
-		if ((unsigned int)Index <= GUI_COUNTOF(pObj->aDrawObj)) {
-			GUI_ALLOC_FreePtr((void **)&pObj->aDrawObj[Index]);
-			pObj->aDrawObj[Index] = pDrawObj;
-			WM_Invalidate(hObj);
-		}
-
-	}
 }
 void BUTTON_SetBitmapEx(BUTTON_Handle hObj, unsigned int Index, PCBITMAP pBitmap, int x, int y) {
 	BUTTON__SetDrawObj(hObj, Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
@@ -397,11 +369,7 @@ void BUTTON_SetSelfDraw(BUTTON_Handle hObj, unsigned int Index, GUI_DRAW_SELF_CB
 }
 
 void BUTTON_SetTextAlign(BUTTON_Handle hObj, int Align) {
-	if (hObj) {
-		auto pObj = (BUTTON_Obj *)hObj;
-		pObj->Props.Align = Align;
-		WM_Invalidate(hObj);
-
-	}
+	auto pObj = (BUTTON_Obj *)hObj;
+	pObj->Props.Align = Align;
+	WM_Invalidate(hObj);
 }
-

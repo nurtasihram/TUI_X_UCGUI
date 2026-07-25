@@ -622,7 +622,6 @@ void GUI_DispStringInRectMax(const char *s, GUI_RECT *pRect, int TextAlign, int 
 		}
 		GUI__DispStringInRect(s, pRect, TextAlign, MaxLen);
 		WM_SetUserClipRect(pOldClipRect);
-
 	}
 }
 

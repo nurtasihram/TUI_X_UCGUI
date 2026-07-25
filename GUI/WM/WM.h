@@ -99,7 +99,7 @@ enum WM_MSGID : int {
 * The following is the list of notification codes send
 * with the WM_NOTIFY_PARENT message
 */
-enum WM_NOTIFICATION : int { 
+enum WM_NOTIFICATION : int {
 	 WM_NOTIFICATION_CLICKED           =  1,
 	 WM_NOTIFICATION_RELEASED          =  2,
 	 WM_NOTIFICATION_MOVED_OUT         =  3,

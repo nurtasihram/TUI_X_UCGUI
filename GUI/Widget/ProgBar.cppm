@@ -8,13 +8,12 @@ export module TUX.Widget.ProgBar;
 import TUX.Widget;
 
 export {
-
 typedef WM_Obj * PROGBAR_Handle;
 PROGBAR_Handle PROGBAR_Create        (int x0, int y0, int xsize, int ysize, int Flags);
 PROGBAR_Handle PROGBAR_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags);
 PROGBAR_Handle PROGBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
 PROGBAR_Handle PROGBAR_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
-                                      int WinFlags, int ExFlags, int Id);
+										  int WinFlags, int ExFlags, int Id);
 
 void PROGBAR_SetBarColor (PROGBAR_Handle hObj, unsigned int index, RGBC color);
 void PROGBAR_SetFont     (PROGBAR_Handle hObj, PCFONT pfont);
@@ -24,7 +23,6 @@ void PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align);
 void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int index, RGBC color);
 void PROGBAR_SetTextPos  (PROGBAR_Handle hObj, int XOff, int YOff);
 void PROGBAR_SetValue    (PROGBAR_Handle hObj, int v);
-
 }
 
 struct PROGBAR_Obj : public WIDGET {
@@ -180,12 +178,10 @@ PROGBAR_Handle PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hP
 		pObj->Props = PROGBAR_Obj::DefaultProps;
 		pObj->Max = 100;
 		pObj->Min = 0;
-
 	}
 	return hObj;
 }
 void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
-	if (hObj) {
 		auto pObj = (PROGBAR_Obj *)hObj;
 		/* Put v into legal range */
 		if (v < pObj->Min) {
@@ -224,38 +220,27 @@ void PROGBAR_SetValue(PROGBAR_Handle hObj, int v) {
 			}
 			WM_InvalidateRect(hObj, &r);
 		}
-
-	}
 }
 void PROGBAR_SetFont(PROGBAR_Handle hObj, PCFONT pfont) {
 	auto pObj = (PROGBAR_Obj *)hObj;
-	if (hObj) {
-
 		pObj->Props.pFont = pfont;
 		WM_Invalidate(hObj);
-
-	}
 }
 void PROGBAR_SetBarColor(PROGBAR_Handle hObj, unsigned int Index, RGBC color) {
 	auto pObj = (PROGBAR_Obj *)hObj;
-	if (hObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
 			pObj->Props.aBkColor[Index] = color;
 			WM_Invalidate(hObj);
 		}
-	}
 }
 void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int Index, RGBC color) {
 	auto pObj = (PROGBAR_Obj *)hObj;
-	if (hObj) {
 		if (Index < GUI_COUNTOF(pObj->Props.aTextColor)) {
 			pObj->Props.aTextColor[Index] = color;
 			WM_Invalidate(hObj);
 		}
-	}
 }
 void PROGBAR_SetText(PROGBAR_Handle hObj, const char *s) {
-	if (hObj) {
 		auto pObj = (PROGBAR_Obj *)hObj;
 		PCFONT pOldFont;
 		GUI_RECT r1;
@@ -270,26 +255,20 @@ void PROGBAR_SetText(PROGBAR_Handle hObj, const char *s) {
 			WM_InvalidateRect(hObj, &r1);
 		}
 		GUI_SetFont(pOldFont);
-	}
 }
 void PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align) {
 	auto pObj = (PROGBAR_Obj *)hObj;
-	if (hObj) {
 		pObj->Props.Align = Align;
 		WM_Invalidate(hObj);
-	}
 }
 void PROGBAR_SetTextPos(PROGBAR_Handle hObj, int XOff, int YOff) {
 	auto pObj = (PROGBAR_Obj *)hObj;
-	if (hObj) {
 		pObj->XOff = XOff;
 		pObj->YOff = YOff;
 		WM_Invalidate(hObj);
-	}
 }
 void PROGBAR_SetMinMax(PROGBAR_Handle hObj, int Min, int Max) {
 	auto pObj = (PROGBAR_Obj *)hObj;
-	if (hObj) {
 		if (Max > Min) {
 			if (Max != pObj->Max || Min != pObj->Min) {
 				pObj->Min = Min;
@@ -297,7 +276,6 @@ void PROGBAR_SetMinMax(PROGBAR_Handle hObj, int Min, int Max) {
 				WM_Invalidate(hObj);
 			}
 		}
-	}
 }
 
 PROGBAR_Handle PROGBAR_Create(int x0, int y0, int xsize, int ysize, int Flags) {

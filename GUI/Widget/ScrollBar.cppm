@@ -7,7 +7,6 @@ export module TUX.Widget.ScrollBar;
 import TUX.Widget;
 
 export {
-
 constexpr uint16_t SCROLLBAR_STATE_PRESSED    = WIDGET_STATE_USER0;
 constexpr uint16_t SCROLLBAR_CF_VERTICAL     = WIDGET_CF_VERTICAL;
 constexpr uint16_t SCROLLBAR_CF_FOCUSSABLE   = WIDGET_STATE_FOCUSSABLE;
@@ -28,7 +27,6 @@ void SCROLLBAR_SetValue    (SCROLLBAR_Handle hObj, int v);
 int  SCROLLBAR_SetWidth    (SCROLLBAR_Handle hObj, int Width);
 void SCROLLBAR_SetState    (SCROLLBAR_Handle hObj, const WM_SCROLL_STATE *pState);
 int SCROLLBAR_GetValue(SCROLLBAR_Handle hObj);
-
 }
 
 struct SCROLLBAR_Obj : public WIDGET {
@@ -385,61 +383,46 @@ void SCROLLBAR_Inc(SCROLLBAR_Handle hObj) {
 }
 void SCROLLBAR_AddValue(SCROLLBAR_Handle hObj, int Add) {
 	auto pObj = (SCROLLBAR_Obj *)hObj;
-	if (hObj) {
-
-		SCROLLBAR_SetValue(pObj, pObj->ScrollState.v + Add);
-
-	}
+	SCROLLBAR_SetValue(pObj, pObj->ScrollState.v + Add);
 }
 void SCROLLBAR_SetValue(SCROLLBAR_Handle hObj, int v) {
 	auto pObj = (SCROLLBAR_Obj *)hObj;
 	int Max;
-	if (hObj) {
 
-		Max = pObj->ScrollState.NumItems - pObj->ScrollState.PageSize;
-		if (Max < 0)
-			Max = 0;
-		/* Put in min/max range */
-		if (v < 0) {
-			v = 0;
-		}
-		if (v > Max) {
-			v = Max;
-		}
-		if (pObj->ScrollState.v != v) {
-			pObj->ScrollState.v = v;
-			WM_Invalidate(hObj);
-			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
-		}
-
+	Max = pObj->ScrollState.NumItems - pObj->ScrollState.PageSize;
+	if (Max < 0)
+		Max = 0;
+	/* Put in min/max range */
+	if (v < 0) {
+		v = 0;
+	}
+	if (v > Max) {
+		v = Max;
+	}
+	if (pObj->ScrollState.v != v) {
+		pObj->ScrollState.v = v;
+		WM_Invalidate(hObj);
+		WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
 	}
 }
 void SCROLLBAR_SetNumItems(SCROLLBAR_Handle hObj, int NumItems) {
 	auto pObj = (SCROLLBAR_Obj *)hObj;
-	if (hObj) {
-
-		if (pObj->ScrollState.NumItems != NumItems) {
-			pObj->ScrollState.NumItems = NumItems;
-			WM_Invalidate(hObj);
-		}
-
+	if (pObj->ScrollState.NumItems != NumItems) {
+		pObj->ScrollState.NumItems = NumItems;
+		WM_Invalidate(hObj);
 	}
 }
 void SCROLLBAR_SetPageSize(SCROLLBAR_Handle hObj, int PageSize) {
 	auto pObj = (SCROLLBAR_Obj *)hObj;
-	if (hObj) {
-		if (pObj->ScrollState.PageSize != PageSize) {
-			pObj->ScrollState.PageSize = PageSize;
-			WM_Invalidate(hObj);
-		}
+	if (pObj->ScrollState.PageSize != PageSize) {
+		pObj->ScrollState.PageSize = PageSize;
+		WM_Invalidate(hObj);
 	}
 }
 void  SCROLLBAR_SetState(SCROLLBAR_Handle hObj, const WM_SCROLL_STATE *pState) {
-	if (hObj) {
-		SCROLLBAR_SetPageSize(hObj, pState->PageSize);
-		SCROLLBAR_SetNumItems(hObj, pState->NumItems);
-		SCROLLBAR_SetValue(hObj, pState->v);
-	}
+	SCROLLBAR_SetPageSize(hObj, pState->PageSize);
+	SCROLLBAR_SetNumItems(hObj, pState->NumItems);
+	SCROLLBAR_SetValue(hObj, pState->v);
 }
 
 
@@ -473,17 +456,15 @@ SCROLLBAR_Handle SCROLLBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateI
 int SCROLLBAR_GetValue(SCROLLBAR_Handle hObj) {
 	int r = 0;
 	auto pObj = (SCROLLBAR_Obj *)hObj;
-	if (hObj) {
-		r = pObj->ScrollState.v;
-	}
+	r = pObj->ScrollState.v;
+
 	return r;
 }
 
 int SCROLLBAR_SetWidth(SCROLLBAR_Handle hObj, int Width) {
 	int r = 0;
-	if (hObj) {
-		r = WIDGET_SetWidth(hObj, Width);
-		SCROLLBAR__InvalidatePartner(hObj);     /* Invalidate the partner, since it is also affected */
-	}
+	r = WIDGET_SetWidth(hObj, Width);
+	SCROLLBAR__InvalidatePartner(hObj);     /* Invalidate the partner, since it is also affected */
+
 	return r;
 }

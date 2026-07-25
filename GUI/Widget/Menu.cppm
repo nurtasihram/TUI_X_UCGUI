@@ -11,7 +11,6 @@ import TUX.Widget;
 import TUX.Array;
 
 export {
-
 constexpr uint16_t MENU_CF_HORIZONTAL               = 0 << 0;
 constexpr uint16_t MENU_CF_VERTICAL                 = 1 << 0;
 constexpr uint16_t MENU_CF_OPEN_ON_POINTEROVER      = 1 << 1;
@@ -75,7 +74,6 @@ void      MENU_SetTextColor     (MENU_Handle hObj, unsigned ColorIndex, RGBC Col
 void      MENU_SetBkColor       (MENU_Handle hObj, unsigned ColorIndex, RGBC Color);
 void      MENU_SetBorderSize    (MENU_Handle hObj, unsigned BorderIndex, uint8_t BorderSize);
 void      MENU_SetFont          (MENU_Handle hObj, PCFONT pFont);
-
 }
 
 #define MENU_SF_HORIZONTAL              MENU_CF_HORIZONTAL
@@ -837,7 +835,8 @@ char MENU__SetItem(MENU_Obj *pObj, unsigned Index, const MENU_ITEM_DATA *pItemDa
 	if (GUI_ARRAY_SetItem(&pObj->ItemArray, Index, &Item, sizeof(MENU_ITEM) + GUI__strlen(pText)) != 0) {
 		auto pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
 		GUI__strcpy(pItem->acText, pText);
-		MENU_SetOwner(Item.hSubmenu, pObj);
+		if (Item.hSubmenu)
+			MENU_SetOwner(Item.hSubmenu, pObj);
 		return 1;
 	}
 	return 0;
@@ -848,44 +847,31 @@ void MENU__SetItemFlags(MENU_Obj *pObj, unsigned Index, uint16_t Mask, uint16_t 
 	pItem->Flags |= Flags;
 }
 void MENU_AddItem(MENU_Handle hObj, const MENU_ITEM_DATA *pItemData) {
-	if (hObj && pItemData) {
+	if (pItemData) {
 		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			if (GUI_ARRAY_AddItem(&pObj->ItemArray, nullptr, 0) == 0) {
-				unsigned Index;
-				Index = MENU__GetNumItems(pObj) - 1;
-				if (MENU__SetItem(pObj, Index, pItemData) == 0) {
-					GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
-				}
-				else {
-					MENU__ResizeMenu(pObj);
-				}
+		if (GUI_ARRAY_AddItem(&pObj->ItemArray, nullptr, 0) == 0) {
+			unsigned Index;
+			Index = MENU__GetNumItems(pObj) - 1;
+			if (MENU__SetItem(pObj, Index, pItemData) == 0) {
+				GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
+			}
+			else {
+				MENU__ResizeMenu(pObj);
 			}
 		}
-
 	}
 }
 void MENU_SetOwner(MENU_Handle hObj, WM_Obj *hOwner) {
-	if (hObj) {
 		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			pObj->hOwner = hOwner;
-		}
-
-	}
+		pObj->hOwner = hOwner;
 }
 void MENU_Attach(MENU_Handle hObj, WM_Obj *hDestWin, int x, int y, int xSize, int ySize, int Flags) {
 	GUI_USE_PARA(Flags);
-	if (hObj) {
 		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			pObj->Width = ((xSize > 0) ? xSize : 0);
-			pObj->Height = ((ySize > 0) ? ySize : 0);
-			WM_AttachWindowAt(hObj, hDestWin, x, y);
-			MENU__ResizeMenu(pObj);
-		}
-
-	}
+		pObj->Width = ((xSize > 0) ? xSize : 0);
+		pObj->Height = ((ySize > 0) ? ySize : 0);
+		WM_AttachWindowAt(hObj, hDestWin, x, y);
+		MENU__ResizeMenu(pObj);
 }
 MENU_Handle MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	MENU_Handle hMenu;
@@ -897,25 +883,23 @@ MENU_Handle MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Ob
 int MENU__FindItem(MENU_Handle hObj, uint16_t ItemId, MENU_Handle *phMenu) {
 	int ItemIndex = -1;
 	auto pObj = (MENU_Obj *)hObj;
-	if (pObj) {
-		MENU_ITEM *pItem;
-		unsigned NumItems, i;
-		NumItems = MENU__GetNumItems(pObj);
-		for (i = 0; (i < NumItems) && (ItemIndex < 0); i++) {
-			pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, i);
-			if (pItem->Id == ItemId) {
-				*phMenu = hObj;
-				ItemIndex = i;
-			}
-			else if (pItem->hSubmenu) {
-				ItemIndex = MENU__FindItem(pItem->hSubmenu, ItemId, phMenu);
-			}
+	MENU_ITEM *pItem;
+	unsigned NumItems, i;
+	NumItems = MENU__GetNumItems(pObj);
+	for (i = 0; (i < NumItems) && (ItemIndex < 0); i++) {
+		pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, i);
+		if (pItem->Id == ItemId) {
+			*phMenu = hObj;
+			ItemIndex = i;
+		}
+		else if (pItem->hSubmenu) {
+			ItemIndex = MENU__FindItem(pItem->hSubmenu, ItemId, phMenu);
 		}
 	}
+
 	return ItemIndex;
 }
 void MENU_DeleteItem(MENU_Handle hObj, uint16_t ItemId) {
-	if (hObj) {
 		int Index;
 
 		Index = MENU__FindItem(hObj, ItemId, &hObj);
@@ -924,11 +908,8 @@ void MENU_DeleteItem(MENU_Handle hObj, uint16_t ItemId) {
 			GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
 			MENU__ResizeMenu(pObj);
 		}
-
-	}
 }
 void MENU_DisableItem(MENU_Handle hObj, uint16_t ItemId) {
-	if (hObj) {
 		int Index;
 
 		Index = MENU__FindItem(hObj, ItemId, &hObj);
@@ -937,11 +918,8 @@ void MENU_DisableItem(MENU_Handle hObj, uint16_t ItemId) {
 			MENU__SetItemFlags(pObj, Index, MENU_IF_DISABLED, MENU_IF_DISABLED);
 			MENU__InvalidateItem(pObj, Index);
 		}
-
-	}
 }
 void MENU_EnableItem(MENU_Handle hObj, uint16_t ItemId) {
-	if (hObj) {
 		int Index;
 
 		Index = MENU__FindItem(hObj, ItemId, &hObj);
@@ -950,11 +928,9 @@ void MENU_EnableItem(MENU_Handle hObj, uint16_t ItemId) {
 			MENU__SetItemFlags(pObj, Index, MENU_IF_DISABLED, 0);
 			MENU__InvalidateItem(pObj, Index);
 		}
-
-	}
 }
 void MENU_GetItem(MENU_Handle hObj, uint16_t ItemId, MENU_ITEM_DATA *pItemData) {
-	if (hObj && pItemData) {
+	if (pItemData) {
 		int Index;
 
 		Index = MENU__FindItem(hObj, ItemId, &hObj);
@@ -966,11 +942,10 @@ void MENU_GetItem(MENU_Handle hObj, uint16_t ItemId, MENU_ITEM_DATA *pItemData) 
 			pItemData->hSubmenu = pItem->hSubmenu;
 			pItemData->pText = 0;
 		}
-
 	}
 }
 void MENU_GetItemText(MENU_Handle hObj, uint16_t ItemId, char *pBuffer, unsigned BufferSize) {
-	if (hObj && pBuffer) {
+	if (pBuffer) {
 		int Index = MENU__FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
 			auto pObj = (MENU_Obj *)hObj;
@@ -982,17 +957,13 @@ void MENU_GetItemText(MENU_Handle hObj, uint16_t ItemId, char *pBuffer, unsigned
 }
 unsigned MENU_GetNumItems(MENU_Handle hObj) {
 	unsigned r = 0;
-	if (hObj) {
 		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			r = MENU__GetNumItems(pObj);
-		}
+		r = MENU__GetNumItems(pObj);
 
-	}
 	return r;
 }
 void MENU_InsertItem(MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pItemData) {
-	if (hObj && pItemData) {
+	if (pItemData) {
 		int Index;
 
 		Index = MENU__FindItem(hObj, ItemId, &hObj);
@@ -1007,68 +978,50 @@ void MENU_InsertItem(MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pI
 				}
 			}
 		}
-
 	}
 }
 void MENU_Popup(MENU_Handle hObj, WM_Obj *hDestWin, int x, int y, int xSize, int ySize, int Flags) {
 	GUI_USE_PARA(Flags);
-	if (hObj && hDestWin) {
+	if (hDestWin) {
 		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			pObj->Flags |= MENU_SF_POPUP;
-			pObj->Width = ((xSize > 0) ? xSize : 0);
-			pObj->Height = ((ySize > 0) ? ySize : 0);
-			x += WM_GetWindowOrgX(hDestWin);
-			y += WM_GetWindowOrgY(hDestWin);
-			MENU_SetOwner(hObj, hDestWin);
-			WM_AttachWindowAt(hObj, WM_GetDesktopWindow(), x, y);
-			MENU__SendMenuMessage(hDestWin, hObj, MENU_ON_OPEN, 0);
-		}
+		pObj->Flags |= MENU_SF_POPUP;
+		pObj->Width = ((xSize > 0) ? xSize : 0);
+		pObj->Height = ((ySize > 0) ? ySize : 0);
+		x += WM_GetWindowOrgX(hDestWin);
+		y += WM_GetWindowOrgY(hDestWin);
+		MENU_SetOwner(hObj, hDestWin);
+		WM_AttachWindowAt(hObj, WM_GetDesktopWindow(), x, y);
+		MENU__SendMenuMessage(hDestWin, hObj, MENU_ON_OPEN, 0);
 	}
 }
 void MENU_SetBkColor(MENU_Handle hObj, unsigned ColorIndex, RGBC Color) {
-	if (hObj) {
 		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			if (ColorIndex < GUI_COUNTOF(pObj->Props.aBkColor)) {
-				if (Color != pObj->Props.aBkColor[ColorIndex]) {
-					pObj->Props.aBkColor[ColorIndex] = Color;
-					WM_Invalidate(hObj);
-				}
+		if (ColorIndex < GUI_COUNTOF(pObj->Props.aBkColor)) {
+			if (Color != pObj->Props.aBkColor[ColorIndex]) {
+				pObj->Props.aBkColor[ColorIndex] = Color;
+				WM_Invalidate(hObj);
 			}
 		}
-
-	}
 }
 void MENU_SetBorderSize(MENU_Handle hObj, unsigned BorderIndex, uint8_t BorderSize) {
-	if (hObj) {
 		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			if (BorderIndex < GUI_COUNTOF(pObj->Props.aBorder)) {
-				if (BorderSize != pObj->Props.aBorder[BorderIndex]) {
-					pObj->Props.aBorder[BorderIndex] = BorderSize;
-					MENU__ResizeMenu(pObj);
-				}
-			}
-		}
-
-	}
-}
-void MENU_SetFont(MENU_Handle hObj, PCFONT pFont) {
-	if (hObj) {
-		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			if (pFont != pObj->Props.pFont) {
-				pObj->Props.pFont = pFont;
-				MENU__RecalcTextWidthOfItems(pObj);
+		if (BorderIndex < GUI_COUNTOF(pObj->Props.aBorder)) {
+			if (BorderSize != pObj->Props.aBorder[BorderIndex]) {
+				pObj->Props.aBorder[BorderIndex] = BorderSize;
 				MENU__ResizeMenu(pObj);
 			}
 		}
-
-	}
+}
+void MENU_SetFont(MENU_Handle hObj, PCFONT pFont) {
+		auto pObj = (MENU_Obj *)hObj;
+		if (pFont != pObj->Props.pFont) {
+			pObj->Props.pFont = pFont;
+			MENU__RecalcTextWidthOfItems(pObj);
+			MENU__ResizeMenu(pObj);
+		}
 }
 void MENU_SetItem(MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pItemData) {
-	if (hObj && pItemData) {
+	if (pItemData) {
 		int Index;
 
 		Index = MENU__FindItem(hObj, ItemId, &hObj);
@@ -1078,20 +1031,14 @@ void MENU_SetItem(MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pItem
 				MENU__ResizeMenu(pObj);
 			}
 		}
-
 	}
 }
 void MENU_SetTextColor(MENU_Handle hObj, unsigned ColorIndex, RGBC Color) {
-	if (hObj) {
 		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			if (ColorIndex < GUI_COUNTOF(pObj->Props.aTextColor)) {
-				if (Color != pObj->Props.aTextColor[ColorIndex]) {
-					pObj->Props.aTextColor[ColorIndex] = Color;
-					WM_Invalidate(hObj);
-				}
+		if (ColorIndex < GUI_COUNTOF(pObj->Props.aTextColor)) {
+			if (Color != pObj->Props.aTextColor[ColorIndex]) {
+				pObj->Props.aTextColor[ColorIndex] = Color;
+				WM_Invalidate(hObj);
 			}
 		}
-
-	}
 }

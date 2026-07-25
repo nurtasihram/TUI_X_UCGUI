@@ -10,8 +10,7 @@ import TUX.Widget.ScrollBar;
 import TUX.Array;
 
 export {
-
-constexpr uint16_t LISTBOX_ALL_ITEMS  = -1;
+constexpr int LISTBOX_ALL_ITEMS  = -1;
 
 enum LISTBOX_CI {
 	 LISTBOX_CI_UNSEL = 0,
@@ -69,7 +68,6 @@ void   LISTBOX_SetText         (LISTBOX_Handle hObj, const GUI_ConstString *ppTe
 RGBC   LISTBOX_SetTextColor    (LISTBOX_Handle hObj, uint16_t Index, RGBC Color);
 int    LISTBOX_UpdateScrollers (LISTBOX_Handle hObj);
 void   WM_InvalidateItem  (LISTBOX_Handle hObj, int Index);
-
 }
 
 #define LISTBOX_ITEM_SELECTED (1 << 0)
@@ -780,12 +778,10 @@ LISTBOX_Handle LISTBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hP
 			LISTBOX_SetText(hObj, ppText);
 		}
 		LISTBOX_UpdateScrollers(hObj);
-
 	}
 	return hObj;
 }
 void WM_InvalidateItem(LISTBOX_Handle hObj, int Index) {
-	if (hObj) {
 		LISTBOX_Obj *pObj;
 		int NumItems;
 
@@ -806,8 +802,6 @@ void WM_InvalidateItem(LISTBOX_Handle hObj, int Index) {
 				LISTBOX__InvalidateItemAndBelow(pObj, Index);
 			}
 		}
-
-	}
 }
 /*********************************************************************
 *
@@ -818,15 +812,12 @@ void WM_InvalidateItem(LISTBOX_Handle hObj, int Index) {
 */
 int LISTBOX_AddKey(LISTBOX_Handle hObj, int Key) {
 	int r = 0;
-	if (hObj) {
-
 		r = _AddKey(hObj, Key);
 
-	}
 	return r;
 }
 void LISTBOX_AddString(LISTBOX_Handle hObj, const char *s) {
-	if (hObj && s) {
+	if (s) {
 		LISTBOX_Obj *pObj;
 		LISTBOX_ITEM Item = { 0, 0 };
 
@@ -839,11 +830,9 @@ void LISTBOX_AddString(LISTBOX_Handle hObj, const char *s) {
 			LISTBOX_UpdateScrollers(hObj);
 			LISTBOX__InvalidateItem(pObj, ItemIndex);
 		}
-
 	}
 }
 void LISTBOX_SetText(LISTBOX_Handle hObj, const GUI_ConstString *ppText) {
-	if (hObj) {
 		int i;
 		const char *s;
 
@@ -853,11 +842,8 @@ void LISTBOX_SetText(LISTBOX_Handle hObj, const GUI_ConstString *ppText) {
 			}
 		}
 		WM_InvalidateItem(hObj, LISTBOX_ALL_ITEMS);
-
-	}
 }
 void LISTBOX_SetSel(LISTBOX_Handle hObj, int NewSel) {
-	if (hObj) {
 		LISTBOX_Obj *pObj;
 		int MaxSel;
 
@@ -892,33 +878,20 @@ void LISTBOX_SetSel(LISTBOX_Handle hObj, int NewSel) {
 			}
 			_NotifyOwner(hObj, WM_NOTIFICATION_SEL_CHANGED);
 		}
-
-	}
 }
 int  LISTBOX_GetSel(LISTBOX_Handle hObj) {
 	int r = -1;
 	LISTBOX_Obj *pObj;
-	if (hObj) {
-
 		pObj = (LISTBOX_Obj *)hObj;
 		r = pObj->Sel;
 
-	}
 	return r;
 }
 void LISTBOX_IncSel(LISTBOX_Handle hObj) {
-	if (hObj) {
-
 		_MoveSel(hObj, 1);
-
-	}
 }
 void LISTBOX_DecSel(LISTBOX_Handle hObj) {
-	if (hObj) {
-
 		_MoveSel(hObj, -1);
-
-	}
 }
 
 LISTBOX_Handle LISTBOX_Create(const GUI_ConstString *ppText, int x0, int y0, int xsize, int ysize, int Flags) {
@@ -938,32 +911,30 @@ LISTBOX_Handle LISTBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo,
 }
 
 void LISTBOX_DeleteItem(LISTBOX_Handle hObj, uint16_t Index) {
-	if (hObj) {
-		int Sel;
-		LISTBOX_Obj *pObj;
-		uint16_t NumItems;
-		pObj = (LISTBOX_Obj *)hObj;
-		NumItems = LISTBOX__GetNumItems(pObj);
-		if (Index < NumItems) {
-			GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
-			/*
-			 * Update selection
-			 */
-			Sel = pObj->Sel;
-			if (Sel >= 0) {                     /* Valid selction ? */
-				if ((int)Index == Sel) {          /* Deleting selected item ? */
-					pObj->Sel = -1;                 /* Invalidate selection */
-				}
-				else if ((int)Index < Sel) {    /* Deleting item above selection ? */
-					pObj->Sel--;
-				}
+	int Sel;
+	LISTBOX_Obj *pObj;
+	uint16_t NumItems;
+	pObj = (LISTBOX_Obj *)hObj;
+	NumItems = LISTBOX__GetNumItems(pObj);
+	if (Index < NumItems) {
+		GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
+		/*
+		 * Update selection
+		 */
+		Sel = pObj->Sel;
+		if (Sel >= 0) {                     /* Valid selction ? */
+			if ((int)Index == Sel) {          /* Deleting selected item ? */
+				pObj->Sel = -1;                 /* Invalidate selection */
 			}
-			if (LISTBOX_UpdateScrollers(hObj)) {
-				LISTBOX__InvalidateInsideArea(hObj);
+			else if ((int)Index < Sel) {    /* Deleting item above selection ? */
+				pObj->Sel--;
 			}
-			else {
-				LISTBOX__InvalidateItemAndBelow(pObj, Index);
-			}
+		}
+		if (LISTBOX_UpdateScrollers(hObj)) {
+			LISTBOX__InvalidateInsideArea(hObj);
+		}
+		else {
+			LISTBOX__InvalidateItemAndBelow(pObj, Index);
 		}
 	}
 }
@@ -971,28 +942,20 @@ void LISTBOX_DeleteItem(LISTBOX_Handle hObj, uint16_t Index) {
 
 void LISTBOX_SetFont(LISTBOX_Handle hObj, PCFONT pFont) {
 	LISTBOX_Obj *pObj;
-	if (hObj) {
-
 		pObj = (LISTBOX_Obj *)hObj;
 		pObj->Props.pFont = pFont;
 		WM_InvalidateItem(hObj, LISTBOX_ALL_ITEMS);
-
-	}
 }
 PCFONT LISTBOX_GetFont(LISTBOX_Handle hObj) {
 	PCFONT pFont = nullptr;
 	LISTBOX_Obj *pObj;
-	if (hObj) {
-
 		pObj = (LISTBOX_Obj *)hObj;
 		pFont = pObj->Props.pFont;
 
-	}
 	return pFont;
 }
 
 void LISTBOX_GetItemText(LISTBOX_Handle hObj, uint16_t Index, char *pBuffer, int MaxSize) {
-	if (hObj) {
 		uint16_t NumItems;
 		auto pObj = (LISTBOX_Obj *)hObj;
 		NumItems = LISTBOX__GetNumItems(pObj);
@@ -1007,20 +970,15 @@ void LISTBOX_GetItemText(LISTBOX_Handle hObj, uint16_t Index, char *pBuffer, int
 			GUI__memcpy(pBuffer, pString, CopyLen);
 			pBuffer[CopyLen] = 0;
 		}
-
-	}
 }
 
 uint16_t LISTBOX_GetNumItems(LISTBOX_Handle hObj) {
-	if (hObj) {
-		auto pObj = (LISTBOX_Obj *)hObj;
-		return LISTBOX__GetNumItems(pObj);
-	}
-	return 0;
+	auto pObj = (LISTBOX_Obj *)hObj;
+	return LISTBOX__GetNumItems(pObj);
 }
 
 void LISTBOX_InsertString(LISTBOX_Handle hObj, const char *s, uint16_t Index) {
-	if (hObj && s) {
+	if (s) {
 		LISTBOX_Obj *pObj;
 		uint16_t NumItems;
 
@@ -1039,13 +997,11 @@ void LISTBOX_InsertString(LISTBOX_Handle hObj, const char *s, uint16_t Index) {
 		else {
 			LISTBOX_AddString(hObj, s);
 		}
-
 	}
 }
 
 int LISTBOX_GetItemDisabled(LISTBOX_Handle hObj, uint16_t Index) {
 	int Ret = 0;
-	if (hObj) {
 		uint16_t NumItems;
 		auto pObj = (LISTBOX_Obj *)hObj;
 		NumItems = LISTBOX__GetNumItems(pObj);
@@ -1059,11 +1015,9 @@ int LISTBOX_GetItemDisabled(LISTBOX_Handle hObj, uint16_t Index) {
 			}
 		}
 
-	}
 	return Ret;
 }
 void LISTBOX_SetItemDisabled(LISTBOX_Handle hObj, uint16_t Index, int OnOff) {
-	if (hObj) {
 		uint16_t NumItems;
 		auto pObj = (LISTBOX_Obj *)hObj;
 		NumItems = LISTBOX__GetNumItems(pObj);
@@ -1085,30 +1039,22 @@ void LISTBOX_SetItemDisabled(LISTBOX_Handle hObj, uint16_t Index, int OnOff) {
 				}
 			}
 		}
-
-	}
 }
 
 void LISTBOX_SetItemSpacing(LISTBOX_Handle hObj, uint16_t Value) {
-	if (hObj) {
 		auto pObj = (LISTBOX_Obj *)hObj;
 		pObj->ItemSpacing = Value;
 		WM_InvalidateItem(hObj, LISTBOX_ALL_ITEMS);
-
-	}
 }
 uint16_t LISTBOX_GetItemSpacing(LISTBOX_Handle hObj) {
 	uint16_t Value = 0;
-	if (hObj) {
 		auto pObj = (LISTBOX_Obj *)hObj;
 		Value = pObj->ItemSpacing;
 
-	}
 	return Value;
 }
 
 void LISTBOX_SetMulti(LISTBOX_Handle hObj, int Mode) {
-	if (hObj) {
 		auto pObj = (LISTBOX_Obj *)hObj;
 		if (Mode) {
 			if (!(pObj->Flags & LISTBOX_SF_MULTISEL)) {
@@ -1122,12 +1068,9 @@ void LISTBOX_SetMulti(LISTBOX_Handle hObj, int Mode) {
 				LISTBOX__InvalidateInsideArea(hObj);
 			}
 		}
-
-	}
 }
 int LISTBOX_GetMulti(LISTBOX_Handle hObj) {
 	int Multi = 0;
-	if (hObj) {
 		auto pObj = (LISTBOX_Obj *)hObj;
 		if (!(pObj->Flags & LISTBOX_SF_MULTISEL)) {
 			Multi = 0;
@@ -1136,12 +1079,10 @@ int LISTBOX_GetMulti(LISTBOX_Handle hObj) {
 			Multi = 1;
 		}
 
-	}
 	return Multi;
 }
 int LISTBOX_GetItemSel(LISTBOX_Handle hObj, uint16_t Index) {
 	int Ret = 0;
-	if (hObj) {
 		uint16_t NumItems;
 		auto pObj = (LISTBOX_Obj *)hObj;
 		NumItems = LISTBOX__GetNumItems(pObj);
@@ -1155,11 +1096,9 @@ int LISTBOX_GetItemSel(LISTBOX_Handle hObj, uint16_t Index) {
 			}
 		}
 
-	}
 	return Ret;
 }
 void LISTBOX_SetItemSel(LISTBOX_Handle hObj, uint16_t Index, int OnOff) {
-	if (hObj) {
 		uint16_t NumItems;
 		auto pObj = (LISTBOX_Obj *)hObj;
 		NumItems = LISTBOX__GetNumItems(pObj);
@@ -1181,29 +1120,21 @@ void LISTBOX_SetItemSel(LISTBOX_Handle hObj, uint16_t Index, int OnOff) {
 				}
 			}
 		}
-
-	}
 }
 
 void LISTBOX_SetScrollStepH(LISTBOX_Handle hObj, int Value) {
-	if (hObj) {
 		auto pObj = (LISTBOX_Obj *)hObj;
 		pObj->Props.ScrollStepH = Value;
-
-	}
 }
 int LISTBOX_GetScrollStepH(LISTBOX_Handle hObj) {
 	int Value = 0;
-	if (hObj) {
 		auto pObj = (LISTBOX_Obj *)hObj;
 		Value = pObj->Props.ScrollStepH;
 
-	}
 	return Value;
 }
 
 void LISTBOX_SetAutoScrollH(LISTBOX_Handle hObj, int State) {
-	if (hObj) {
 		LISTBOX_Obj *pObj;
 		char Flags;
 
@@ -1216,11 +1147,8 @@ void LISTBOX_SetAutoScrollH(LISTBOX_Handle hObj, int State) {
 			pObj->Flags = Flags;
 			LISTBOX_UpdateScrollers(hObj);
 		}
-
-	}
 }
 void LISTBOX_SetAutoScrollV(LISTBOX_Handle hObj, int State) {
-	if (hObj) {
 		LISTBOX_Obj *pObj;
 		char Flags;
 
@@ -1233,59 +1161,41 @@ void LISTBOX_SetAutoScrollV(LISTBOX_Handle hObj, int State) {
 			pObj->Flags = Flags;
 			LISTBOX_UpdateScrollers(hObj);
 		}
-
-	}
 }
 
 void LISTBOX_SetBkColor(LISTBOX_Handle hObj, uint16_t Index, RGBC color) {
 	LISTBOX_Obj *pObj;
-	if (hObj) {
 		if ((uint16_t)Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
-
 			pObj = (LISTBOX_Obj *)hObj;
 			pObj->Props.aBkColor[Index] = color;
 			LISTBOX__InvalidateInsideArea(hObj);
-
 		}
-	}
 }
 
 void LISTBOX_SetOwner(LISTBOX_Handle hObj, WM_Obj *hOwner) {
-	if (hObj) {
 		auto pObj = (LISTBOX_Obj *)hObj;
 		pObj->hOwner = hOwner;
 		LISTBOX__InvalidateInsideArea(hObj);
-
-	}
 }
 
 void LISTBOX_SetOwnerDraw(LISTBOX_Handle hObj, WIDGET_DRAW_ITEM_FUNC *pfDrawItem) {
 	LISTBOX_Obj *pObj;
-	if (hObj) {
-
 		pObj = (LISTBOX_Obj *)hObj;
 		pObj->pfDrawItem = pfDrawItem;
 		WM_InvalidateItem(hObj, LISTBOX_ALL_ITEMS);
-
-	}
 }
 
 void LISTBOX_SetScrollbarWidth(LISTBOX_Handle hObj, uint16_t Width) {
 	LISTBOX_Obj *pObj;
-	if (hObj) {
-
 		pObj = (LISTBOX_Obj *)hObj;
 		if (Width != (uint16_t)pObj->ScrollbarWidth) {
 			pObj->ScrollbarWidth = Width;
 			LISTBOX__SetScrollbarWidth(pObj);
 			WM_Invalidate(hObj);
 		}
-
-	}
 }
 
 void LISTBOX_SetString(LISTBOX_Handle hObj, const char *s, uint16_t Index) {
-	if (hObj) {
 		auto pObj = (LISTBOX_Obj *)hObj;
 		if (Index < (uint16_t)LISTBOX__GetNumItems(pObj)) {
 			auto pItem = (LISTBOX_ITEM *)GUI_ARRAY_ResizeItem(&pObj->ItemArray, Index, sizeof(LISTBOX_ITEM) + GUI__strlen(s));
@@ -1296,22 +1206,17 @@ void LISTBOX_SetString(LISTBOX_Handle hObj, const char *s, uint16_t Index) {
 				LISTBOX__InvalidateItem(pObj, Index);
 			}
 		}
-
-	}
 }
 
 RGBC LISTBOX_SetTextColor(LISTBOX_Handle hObj, uint16_t Index, RGBC Color) {
 	RGBC r = RGB_INVALID_COLOR;
-	if (hObj) {
 		LISTBOX_Obj *pObj;
 		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
-
 			pObj = (LISTBOX_Obj *)hObj;
 			pObj->Props.aTextColor[Index] = Color;
 			r = pObj->Props.aTextColor[Index];
 			LISTBOX__InvalidateInsideArea(hObj);
-
 		}
-	}
+
 	return r;
 }

@@ -106,7 +106,6 @@ static const GUI_UC_ENC_APILIST _API_Table = {
 };
 
 void GUI_UC_SetEncodeUTF8(void) {
-
   GUI_Context.pUC_API = &_API_Table;
 
 }

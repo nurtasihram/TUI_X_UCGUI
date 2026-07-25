@@ -7,7 +7,6 @@ export module TUX.Widget.Slider;
 import TUX.Widget;
 
 export {
-
 constexpr uint16_t SLIDER_STATE_PRESSED    = WIDGET_STATE_USER0;
 constexpr uint16_t SLIDER_CF_VERTICAL = WIDGET_CF_VERTICAL;
 
@@ -26,7 +25,6 @@ void SLIDER_SetValue    (SLIDER_Handle hObj, int v);
 void SLIDER_SetRange    (SLIDER_Handle hObj, int Min, int Max);
 void SLIDER_SetNumTicks (SLIDER_Handle hObj, int NumTicks);
 int  SLIDER_GetValue(SLIDER_Handle hObj);
-
 }
 
 struct SLIDER_Obj : public WIDGET {
@@ -222,36 +220,29 @@ SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hPar
 }
 void SLIDER_Dec(SLIDER_Handle hObj) {
 	auto pObj = (SLIDER_Obj *)hObj;
-	if (hObj) {
 		if (pObj->v > pObj->Min) {
 			pObj->v--;
 			WM_Invalidate(hObj);
 			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
 		}
-	}
 }
 void SLIDER_Inc(SLIDER_Handle hObj) {
 	auto pObj = (SLIDER_Obj *)hObj;
-	if (hObj) {
 		if (pObj->v < pObj->Max) {
 			pObj->v++;
 			WM_Invalidate(hObj);
 			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
 		}
-	}
 }
 void SLIDER_SetWidth(SLIDER_Handle hObj, int Width) {
 	auto pObj = (SLIDER_Obj *)hObj;
-	if (hObj) {
 		if (pObj->Width != Width) {
 			pObj->Width = Width;
 			WM_Invalidate(hObj);
 		}
-	}
 }
 void SLIDER_SetValue(SLIDER_Handle hObj, int v) {
 	auto pObj = (SLIDER_Obj *)hObj;
-	if (hObj) {
 		/* Put in min/max range */
 		if (v < pObj->Min)
 			v = pObj->Min;
@@ -262,10 +253,8 @@ void SLIDER_SetValue(SLIDER_Handle hObj, int v) {
 			WM_Invalidate(hObj);
 			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
 		}
-	}
 }
 void SLIDER_SetRange(SLIDER_Handle hObj, int Min, int Max) {
-	if (hObj) {
 		auto pObj = (SLIDER_Obj *)hObj;
 		if (Max < Min) {
 			Max = Min;
@@ -279,19 +268,15 @@ void SLIDER_SetRange(SLIDER_Handle hObj, int Min, int Max) {
 			pObj->v = Max;
 		}
 		WM_Invalidate(hObj);
-
-	}
 }
 void SLIDER_SetNumTicks(SLIDER_Handle hObj, int NumTicks) {
-	if (hObj && (NumTicks >= 0)) {
+	if ((NumTicks >= 0)) {
 		auto pObj = (SLIDER_Obj *)hObj;
 		pObj->NumTicks = NumTicks;
 		WM_Invalidate(hObj);
-
 	}
 }
 void SLIDER_SetBkColor(SLIDER_Handle hObj, RGBC Color) {
-	if (hObj) {
 		auto pObj = (SLIDER_Obj *)hObj;
 		pObj->Props.BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
@@ -303,15 +288,12 @@ void SLIDER_SetBkColor(SLIDER_Handle hObj, RGBC Color) {
 		}
 #endif
 		WM_Invalidate(hObj);
-
-	}
 }
 int SLIDER_GetValue(SLIDER_Handle hObj) {
 	int r = 0;
 	auto pObj = (SLIDER_Obj *)hObj;
-	if (hObj) {
 		r = pObj->v;
-	}
+
 	return r;
 }
 

@@ -364,5 +364,3 @@ const tLCDDEV_APIList GUI_MEMDEV__APIList24 = {
 };
 
 #endif /* GUI_SUPPORT_MEMDEV */
-
-

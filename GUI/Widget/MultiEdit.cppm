@@ -8,7 +8,6 @@ export module TUX.Widget.MultiEdit;
 import TUX.Widget;
 
 export {
-
 constexpr uint16_t MULTIEDIT_CF_READONLY         = 1 << 0;
 constexpr uint16_t MULTIEDIT_CF_INSERT           = 1 << 2;
 constexpr uint16_t MULTIEDIT_CF_AUTOSCROLLBAR_V  = 1 << 3;
@@ -54,7 +53,6 @@ void MULTIEDIT_SetTextColor     (MULTIEDIT_HANDLE hObj, unsigned Index, RGBC col
 void MULTIEDIT_SetWrapNone      (MULTIEDIT_HANDLE hObj);
 void MULTIEDIT_SetWrapChar      (MULTIEDIT_HANDLE hObj);
 void MULTIEDIT_SetWrapWord      (MULTIEDIT_HANDLE hObj);
-
 }
 
 #define NUM_DISP_MODES 2
@@ -539,7 +537,6 @@ static int _InvalidateCursorPos(MULTIEDIT_Obj *pObj) {
 	return Value;
 }
 static void _SetFlag(MULTIEDIT_HANDLE hObj, int OnOff, uint8_t Flag) {
-	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
 		if (OnOff) {
 			pObj->Flags |= Flag;
@@ -548,8 +545,6 @@ static void _SetFlag(MULTIEDIT_HANDLE hObj, int OnOff, uint8_t Flag) {
 			pObj->Flags &= ~Flag;
 		}
 		_InvalidateTextArea(hObj);
-
-	}
 }
 /*********************************************************************
 *
@@ -629,7 +624,6 @@ static void _SetCursorPos(MULTIEDIT_Obj *pObj, int CursorPosChar) {
 static int _SetWrapMode(MULTIEDIT_HANDLE hObj, GUI_WRAPMODE WrapMode) {
 	int r;
 	r = 0;
-	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
 		r = pObj->WrapMode;
 		if (pObj->WrapMode != WrapMode) {
@@ -643,7 +637,6 @@ static int _SetWrapMode(MULTIEDIT_HANDLE hObj, GUI_WRAPMODE WrapMode) {
 			_SetCursorPos(pObj, Position);
 		}
 
-	}
 	return r;
 }
 /*********************************************************************
@@ -1205,15 +1198,11 @@ MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj
 }
 int MULTIEDIT_AddKey(MULTIEDIT_HANDLE hObj, uint16_t Key) {
 	int r = 0;
-	if (hObj) {
-
 		r = _AddKey(hObj, Key);
 
-	}
 	return r;
 }
 void MULTIEDIT_SetText(MULTIEDIT_HANDLE hObj, const char *pNew) {
-	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
 		int NumCharsNew = 0, NumCharsOld = 0;
 		int NumBytesNew = 0, NumBytesOld = 0;
@@ -1246,41 +1235,29 @@ void MULTIEDIT_SetText(MULTIEDIT_HANDLE hObj, const char *pNew) {
 				_InvalidateTextSizeX(pObj);
 			}
 		}
-
-	}
 }
 void MULTIEDIT_GetText(MULTIEDIT_HANDLE hObj, char *sDest, int MaxLen) {
-	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
-		if (pObj) {
-			char *pText;
-			int Len;
-			pText = (char *)(pObj->hText);
-			pText += GUI_UC__NumChars2NumBytes(pText, pObj->NumCharsPrompt);
-			Len = GUI__strlen(pText);
-			if (Len > (MaxLen - 1)) {
-				Len = MaxLen - 1;
-			}
-			GUI__memcpy(sDest, pText, Len);
-			*(sDest + Len) = 0;
+		char *pText;
+		int Len;
+		pText = (char *)(pObj->hText);
+		pText += GUI_UC__NumChars2NumBytes(pText, pObj->NumCharsPrompt);
+		Len = GUI__strlen(pText);
+		if (Len > (MaxLen - 1)) {
+			Len = MaxLen - 1;
 		}
-
-	}
+		GUI__memcpy(sDest, pText, Len);
+		*(sDest + Len) = 0;
 }
 void MULTIEDIT_GetPrompt(MULTIEDIT_HANDLE hObj, char *sDest, int MaxLen) {
-	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
-		if (pObj) {
-			auto sSource = (char *)(pObj->hText);
-			int Len = GUI_UC__NumChars2NumBytes(sSource, pObj->NumCharsPrompt);
-			if (Len > (MaxLen - 1)) {
-				Len = MaxLen - 1;
-			}
-			GUI__memcpy(sDest, sSource, Len);
-			*(sDest + Len) = 0;
+		auto sSource = (char *)(pObj->hText);
+		int Len = GUI_UC__NumChars2NumBytes(sSource, pObj->NumCharsPrompt);
+		if (Len > (MaxLen - 1)) {
+			Len = MaxLen - 1;
 		}
-
-	}
+		GUI__memcpy(sDest, sSource, Len);
+		*(sDest + Len) = 0;
 }
 void MULTIEDIT_SetWrapWord(MULTIEDIT_HANDLE hObj) {
 	_SetWrapMode(hObj, GUI_WRAPMODE_WORD);
@@ -1298,14 +1275,11 @@ void MULTIEDIT_SetReadOnly(MULTIEDIT_HANDLE hObj, int OnOff) {
 	_SetFlag(hObj, OnOff, MULTIEDIT_SF_READONLY);
 }
 void MULTIEDIT_SetPasswordMode(MULTIEDIT_HANDLE hObj, int OnOff) {
-	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
 		_SetFlag(hObj, OnOff, MULTIEDIT_SF_PASSWORD);
 		_InvalidateCursorXY(pObj);
 		_InvalidateNumLines(pObj);
 		_InvalidateTextSizeX(pObj);
-
-	}
 }
 void MULTIEDIT_SetAutoScrollV(MULTIEDIT_HANDLE hObj, int OnOff) {
 	_SetFlag(hObj, OnOff, MULTIEDIT_SF_AUTOSCROLLBAR_V);
@@ -1314,17 +1288,13 @@ void MULTIEDIT_SetAutoScrollH(MULTIEDIT_HANDLE hObj, int OnOff) {
 	_SetFlag(hObj, OnOff, MULTIEDIT_SF_AUTOSCROLLBAR_H);
 }
 void MULTIEDIT_SetHBorder(MULTIEDIT_HANDLE hObj, unsigned HBorder) {
-	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
 		if ((unsigned)pObj->Props.HBorder != HBorder) {
 			pObj->Props.HBorder = HBorder;
 			_Invalidate(hObj);
 		}
-
-	}
 }
 void MULTIEDIT_SetFont(MULTIEDIT_HANDLE hObj, PCFONT pFont) {
-	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
 		if (pObj->Props.pFont != pFont) {
 			pObj->Props.pFont = pFont;
@@ -1333,35 +1303,27 @@ void MULTIEDIT_SetFont(MULTIEDIT_HANDLE hObj, PCFONT pFont) {
 			_InvalidateNumLines(pObj);
 			_InvalidateTextSizeX(pObj);
 		}
-
-	}
 }
 void MULTIEDIT_SetBkColor(MULTIEDIT_HANDLE hObj, unsigned Index, RGBC color) {
-	if (hObj && (Index < NUM_DISP_MODES)) {
+	if ((Index < NUM_DISP_MODES)) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
 		pObj->Props.aBkColor[Index] = color;
 		_InvalidateTextArea(hObj);
-
 	}
 }
 void MULTIEDIT_SetCursorOffset(MULTIEDIT_HANDLE hObj, int Offset) {
-	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
 		_SetCursorPos(pObj, Offset);
 		WM_Invalidate(hObj);
-
-	}
 }
 void MULTIEDIT_SetTextColor(MULTIEDIT_HANDLE hObj, unsigned Index, RGBC color) {
-	if (hObj && (Index < NUM_DISP_MODES)) {
+	if ((Index < NUM_DISP_MODES)) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
 		pObj->Props.aColor[Index] = color;
 		WM_Invalidate(hObj);
-
 	}
 }
 void MULTIEDIT_SetPrompt(MULTIEDIT_HANDLE hObj, const char *pPrompt) {
-	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
 		int NumCharsNew = 0, NumCharsOld = 0;
 		int NumBytesNew = 0, NumBytesOld = 0;
@@ -1390,31 +1352,26 @@ void MULTIEDIT_SetPrompt(MULTIEDIT_HANDLE hObj, const char *pPrompt) {
 				_InvalidateTextSizeX(pObj);
 			}
 		}
-
-	}
 }
 void MULTIEDIT_SetBufferSize(MULTIEDIT_HANDLE hObj, int BufferSize) {
-	if (hObj) {
-		auto pObj = (MULTIEDIT_Obj *)hObj;
-		auto pText = (char *)GUI_ALLOC_AllocZero(BufferSize);
-		if (!pText) {
-		}
-		else {
-			GUI_ALLOC_FreePtr(&pObj->hText);
-			pObj->hText = pText;
-			pObj->BufferSize = BufferSize;
-			pObj->NumCharsPrompt = 0;
-			_SetCursorPos(pObj, 0);
-			_InvalidateNumChars(pObj);
-			_InvalidateCursorXY(pObj);
-			_InvalidateNumLines(pObj);
-			_InvalidateTextSizeX(pObj);
-		}
-		_InvalidateTextArea(hObj);
+	auto pObj = (MULTIEDIT_Obj *)hObj;
+	auto pText = (char *)GUI_ALLOC_AllocZero(BufferSize);
+	if (!pText) {
 	}
+	else {
+		GUI_ALLOC_FreePtr(&pObj->hText);
+		pObj->hText = pText;
+		pObj->BufferSize = BufferSize;
+		pObj->NumCharsPrompt = 0;
+		_SetCursorPos(pObj, 0);
+		_InvalidateNumChars(pObj);
+		_InvalidateCursorXY(pObj);
+		_InvalidateNumLines(pObj);
+		_InvalidateTextSizeX(pObj);
+	}
+	_InvalidateTextArea(hObj);
 }
 void MULTIEDIT_SetMaxNumChars(MULTIEDIT_HANDLE hObj, unsigned MaxNumChars) {
-	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
 		pObj->MaxNumChars = MaxNumChars;
 		if (MaxNumChars < (unsigned)pObj->NumCharsPrompt) {
@@ -1433,8 +1390,6 @@ void MULTIEDIT_SetMaxNumChars(MULTIEDIT_HANDLE hObj, unsigned MaxNumChars) {
 				_InvalidateNumChars(pObj);
 			}
 		}
-
-	}
 }
 /*********************************************************************
 *
@@ -1447,7 +1402,6 @@ void MULTIEDIT_SetMaxNumChars(MULTIEDIT_HANDLE hObj, unsigned MaxNumChars) {
 */
 int MULTIEDIT_GetTextSize(MULTIEDIT_HANDLE hObj) {
 	int r = 0;
-	if (hObj) {
 		auto pObj = (MULTIEDIT_Obj *)hObj;
 		if (pObj->hText) {
 			const char *s;
@@ -1456,7 +1410,6 @@ int MULTIEDIT_GetTextSize(MULTIEDIT_HANDLE hObj) {
 			r = 1 + GUI__strlen(s);
 		}
 
-	}
 	return r;
 }
 
@@ -1470,4 +1423,3 @@ MULTIEDIT_HANDLE MULTIEDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateI
 							   hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->Para, nullptr);
 	return hThis;
 }
-

@@ -9,7 +9,7 @@ import TUX.Widget;
 import TUX.Array;
 
 export {
-
+   
 typedef WM_Obj * HEADER_Handle;
 
 HEADER_Handle HEADER_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, int SpecialFlags);
@@ -35,7 +35,6 @@ void HEADER_SetItemText        (HEADER_Handle hObj, unsigned int Index, const ch
 void HEADER_SetItemWidth       (HEADER_Handle hObj, unsigned int Index, int Width);
 void HEADER_SetScrollPos       (HEADER_Handle hObj, int ScrollPos);
 void HEADER_SetTextColor       (HEADER_Handle hObj, RGBC Color);
-
 }
 
 #define HEADER_SUPPORT_DRAG 1
@@ -147,19 +146,17 @@ static void _FreeAttached(HEADER_Obj *pObj) {
 #if (HEADER_SUPPORT_DRAG)
 static int _GetItemIndex(HEADER_Obj *pObj, int x, int y) {
 	if ((y >= 0) && (y < WM_GetWindowSizeY(pObj))) {
-		if (pObj) {
-			int Item = -1;
-			int xPos = 0;
-			for (int Index = 0, NumColumns = GUI_ARRAY_GetNumItems(&pObj->Columns); Index < NumColumns; Index++) {
-				auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
-				xPos += pColumn->Width;
-				if (xPos >= x - 4 && xPos <= x + 4) {
-					Item = Index;
-					if (Index < NumColumns - 1 && x < xPos) {
-						pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index + 1);
-						if (pColumn->Width == 0)
-							return Item;
-					}
+		int Item = -1;
+		int xPos = 0;
+		for (int Index = 0, NumColumns = GUI_ARRAY_GetNumItems(&pObj->Columns); Index < NumColumns; Index++) {
+			auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
+			xPos += pColumn->Width;
+			if (xPos >= x - 4 && xPos <= x + 4) {
+				Item = Index;
+				if (Index < NumColumns - 1 && x < xPos) {
+					pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index + 1);
+					if (pColumn->Width == 0)
+						return Item;
 				}
 			}
 		}
@@ -289,37 +286,26 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hPar
 }
 
 void HEADER_SetFont(HEADER_Handle hObj, PCFONT pFont) {
-	if (hObj) {
-		auto pObj = (HEADER_Obj *)hObj;
-		pObj->Props.pFont = pFont;
-		WM_Invalidate(hObj);
-	}
+	auto pObj = (HEADER_Obj *)hObj;
+	pObj->Props.pFont = pFont;
+	WM_Invalidate(hObj);
 }
 void HEADER_SetHeight(HEADER_Handle hObj, int Height) {
-	if (hObj) {
-		GUI_RECT Rect = WM_GetClientRect(hObj);
-		WM_SetSize(hObj, Rect.x1 - Rect.x0 + 1, Height);
-		WM_Invalidate(WM_GetParent(hObj));
-	}
+	GUI_RECT Rect = WM_GetClientRect(hObj);
+	WM_SetSize(hObj, Rect.x1 - Rect.x0 + 1, Height);
+	WM_Invalidate(WM_GetParent(hObj));
 }
 void HEADER_SetTextColor(HEADER_Handle hObj, RGBC Color) {
-	if (hObj) {
 		auto pObj = (HEADER_Obj *)hObj;
 		pObj->Props.TextColor = Color;
 		WM_Invalidate(hObj);
-
-	}
 }
 void HEADER_SetBkColor(HEADER_Handle hObj, RGBC Color) {
-	if (hObj) {
 		auto pObj = (HEADER_Obj *)hObj;
 		pObj->Props.BkColor = Color;
 		WM_Invalidate(hObj);
-
-	}
 }
 void HEADER_SetTextAlign(HEADER_Handle hObj, unsigned int Index, int Align) {
-	if (hObj) {
 		auto pObj = (HEADER_Obj *)hObj;
 		if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
 			HEADER_COLUMN *pColumn;
@@ -327,66 +313,57 @@ void HEADER_SetTextAlign(HEADER_Handle hObj, unsigned int Index, int Align) {
 			pColumn->Align = Align;
 			WM_Invalidate(hObj);
 		}
-
-	}
 }
 void HEADER_SetScrollPos(HEADER_Handle hObj, int ScrollPos) {
-	if (hObj && (ScrollPos >= 0)) {
+	if ((ScrollPos >= 0)) {
 		auto pObj = (HEADER_Obj *)hObj;
 		if (ScrollPos != pObj->ScrollPos) {
 			pObj->ScrollPos = ScrollPos;
 			WM_Invalidate(hObj);
 			WM_Invalidate(WM_GetParent(hObj));
 		}
-
 	}
 }
 void HEADER_AddItem(HEADER_Handle hObj, int Width, const char *s, int Align) {
-	if (hObj) {
-		auto pObj = (HEADER_Obj *)hObj;
-		HEADER_COLUMN Column;
-		if (!Width) {
-			PCFONT pFont = GUI_SetFont(pObj->Props.pFont);
-			Width = GUI_GetStringDistX(s) + 2 * (pObj->pEffect->EffectSize + pObj->Props.BorderH);
-			GUI_SetFont(pFont);
-		}
-		Column.Width = Width;
-		Column.Align = Align;
-		Column.pDrawObj = 0;
-		int Index = GUI_ARRAY_GetNumItems(&pObj->Columns);
-		if (GUI_ARRAY_AddItem(&pObj->Columns, &Column, sizeof(HEADER_COLUMN) + GUI__strlen(s) + 1) == 0) {
-			HEADER_COLUMN *pColumn;
-			pObj = (HEADER_Obj *)hObj;
-			pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
-			GUI__strcpy(pColumn->acText, s);
-			WM_Invalidate(hObj);
-			WM_Invalidate(WM_GetParent(hObj));
-		}
+	auto pObj = (HEADER_Obj *)hObj;
+	HEADER_COLUMN Column;
+	if (!Width) {
+		PCFONT pFont = GUI_SetFont(pObj->Props.pFont);
+		Width = GUI_GetStringDistX(s) + 2 * (pObj->pEffect->EffectSize + pObj->Props.BorderH);
+		GUI_SetFont(pFont);
+	}
+	Column.Width = Width;
+	Column.Align = Align;
+	Column.pDrawObj = 0;
+	int Index = GUI_ARRAY_GetNumItems(&pObj->Columns);
+	if (GUI_ARRAY_AddItem(&pObj->Columns, &Column, sizeof(HEADER_COLUMN) + GUI__strlen(s) + 1) == 0) {
+		HEADER_COLUMN *pColumn;
+		pObj = (HEADER_Obj *)hObj;
+		pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
+		GUI__strcpy(pColumn->acText, s);
+		WM_Invalidate(hObj);
+		WM_Invalidate(WM_GetParent(hObj));
 	}
 }
 void HEADER_DeleteItem(HEADER_Handle hObj, unsigned Index) {
-	if (hObj) {
-		auto pObj = (HEADER_Obj *)hObj;
-		if (Index < GUI_ARRAY_GetNumItems(&pObj->Columns)) {
-			GUI_ARRAY_DeleteItem(&pObj->Columns, Index);
-			WM_Invalidate(hObj);
-			WM_Invalidate(WM_GetParent(hObj));
-		}
+	auto pObj = (HEADER_Obj *)hObj;
+	if (Index < GUI_ARRAY_GetNumItems(&pObj->Columns)) {
+		GUI_ARRAY_DeleteItem(&pObj->Columns, Index);
+		WM_Invalidate(hObj);
+		WM_Invalidate(WM_GetParent(hObj));
 	}
 }
 void HEADER_SetItemText(HEADER_Handle hObj, unsigned int Index, const char *s) {
-	if (hObj) {
-		auto pObj = (HEADER_Obj *)hObj;
-		if (Index < GUI_ARRAY_GetNumItems(&pObj->Columns)) {
-			auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_ResizeItem(&pObj->Columns, Index, sizeof(HEADER_COLUMN) + GUI__strlen(s));
-			if (pColumn) {
-				GUI__strcpy(pColumn->acText, s);
-			}
+	auto pObj = (HEADER_Obj *)hObj;
+	if (Index < GUI_ARRAY_GetNumItems(&pObj->Columns)) {
+		auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_ResizeItem(&pObj->Columns, Index, sizeof(HEADER_COLUMN) + GUI__strlen(s));
+		if (pColumn) {
+			GUI__strcpy(pColumn->acText, s);
 		}
 	}
 }
 void HEADER_SetItemWidth(HEADER_Handle hObj, unsigned int Index, int Width) {
-	if (hObj && (Width >= 0)) {
+	if ((Width >= 0)) {
 		auto pObj = (HEADER_Obj *)hObj;
 		if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
 			auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
@@ -397,21 +374,18 @@ void HEADER_SetItemWidth(HEADER_Handle hObj, unsigned int Index, int Width) {
 				WM_Invalidate(WM_GetParent(hObj));
 			}
 		}
-
 	}
 }
 int HEADER_GetHeight(HEADER_Handle hObj) {
 	int Height = 0;
-	if (hObj) {
-		GUI_RECT Rect = WM_GetClientRect(hObj);
-		Rect -= Rect.LeftTop();
-		Height = Rect.y1 - Rect.y0 + 1;
-	}
+	GUI_RECT Rect = WM_GetClientRect(hObj);
+	Rect -= Rect.LeftTop();
+	Height = Rect.y1 - Rect.y0 + 1;
+
 	return Height;
 }
 int HEADER_GetItemWidth(HEADER_Handle hObj, unsigned int Index) {
 	int Width = 0;
-	if (hObj) {
 		auto pObj = (HEADER_Obj *)hObj;
 		if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
 			HEADER_COLUMN *pColumn;
@@ -419,28 +393,23 @@ int HEADER_GetItemWidth(HEADER_Handle hObj, unsigned int Index) {
 			Width = pColumn->Width;
 		}
 
-	}
 	return Width;
 }
 int  HEADER_GetNumItems(HEADER_Handle hObj) {
 	int NumCols = 0;
-	if (hObj) {
 		auto pObj = (HEADER_Obj *)hObj;
 		NumCols = GUI_ARRAY_GetNumItems(&pObj->Columns);
 
-	}
 	return NumCols;
 }
 
 void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW *pDrawObj) {
-	if (hObj) {
-		auto pObj = (HEADER_Obj *)hObj;
-		if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
-			auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
-			if (pColumn) {
-				GUI_ALLOC_FreePtr((void **)&pColumn->pDrawObj);
-				pColumn->pDrawObj = pDrawObj;
-			}
+	auto pObj = (HEADER_Obj *)hObj;
+	if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
+		auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
+		if (pColumn) {
+			GUI_ALLOC_FreePtr((void **)&pColumn->pDrawObj);
+			pColumn->pDrawObj = pDrawObj;
 		}
 	}
 }

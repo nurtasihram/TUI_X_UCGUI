@@ -9,7 +9,6 @@ import TUX.Widget;
 import TUX.Array;
 
 export {
-
 enum RADIO_CI {
 	 RADIO_BI_INACTIV = 0,
 	 RADIO_BI_ACTIV   = 1,
@@ -35,7 +34,6 @@ void RADIO_SetText      (RADIO_Handle hObj, const char *pText, unsigned Index);
 void RADIO_SetTextColor (RADIO_Handle hObj, RGBC Color);
 void RADIO_SetValue     (RADIO_Handle hObj, int v);
 int RADIO_GetValue(RADIO_Handle hObj);
-
 }
 
 /* Define default background color */
@@ -272,18 +270,14 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParen
 		pObj->NumItems = NumItems;
 		pObj->Spacing = Spacing;
 		pObj->Height = Height;
-
 	}
 	else {
 	}
 	return hObj;
 }
 void RADIO_AddValue(RADIO_Handle hObj, int Add) {
-	if (hObj) {
 		auto pObj = (RADIO_Obj *)hObj;
 		RADIO_SetValue(hObj, pObj->Sel + Add);
-
-	}
 }
 void RADIO_Dec(RADIO_Handle hObj) {
 	RADIO_AddValue(hObj, -1);
@@ -292,7 +286,6 @@ void RADIO_Inc(RADIO_Handle hObj) {
 	RADIO_AddValue(hObj, 1);
 }
 void RADIO_SetValue(RADIO_Handle hObj, int v) {
-	if (hObj) {
 		auto pObj = (RADIO_Obj *)hObj;
 		if (pObj->GroupId && RADIO__pfHandleSetValue) {
 			(*RADIO__pfHandleSetValue)(pObj, v);
@@ -303,16 +296,12 @@ void RADIO_SetValue(RADIO_Handle hObj, int v) {
 			}
 			RADIO__SetValue(pObj, v);
 		}
-
-	}
 }
 int RADIO_GetValue(RADIO_Handle hObj) {
 	int r = 0;
-	if (hObj) {
 		auto pObj = (RADIO_Obj *)hObj;
 		r = pObj->Sel;
 
-	}
 	return r;
 }
 
@@ -331,7 +320,6 @@ RADIO_Handle RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_
 }
 
 void RADIO_SetBkColor(RADIO_Handle hObj, RGBC Color) {
-	if (hObj) {
 		auto pObj = (RADIO_Obj *)hObj;
 		if (Color != pObj->Props.BkColor) {
 			pObj->Props.BkColor = Color;
@@ -345,18 +333,14 @@ void RADIO_SetBkColor(RADIO_Handle hObj, RGBC Color) {
 #endif
 			WM_Invalidate(hObj);
 		}
-
-	}
 }
 void RADIO_SetFont(RADIO_Handle hObj, PCFONT pFont) {
-	if (hObj) {
 		auto pObj = (RADIO_Obj *)hObj;
 		if (pFont != pObj->Props.pFont) {
 			pObj->Props.pFont = pFont;
 			if (GUI_ARRAY_GetNumItems(&pObj->TextArray))
 				WM_Invalidate(hObj);
 		}
-	}
 }
 
 static void _SetValue(RADIO_Handle hObj, int v) {
@@ -415,7 +399,6 @@ static void _HandleSetValue(RADIO_Obj *pObj, int v) {
 }
 
 void RADIO_SetGroupId(RADIO_Handle hObj, uint8_t NewGroupId) {
-	if (hObj) {
 		auto pObj = (RADIO_Obj *)hObj;
 		uint8_t OldGroupId;
 		OldGroupId = pObj->GroupId;
@@ -449,12 +432,10 @@ void RADIO_SetGroupId(RADIO_Handle hObj, uint8_t NewGroupId) {
 			/* Change the group */
 			pObj->GroupId = NewGroupId;
 		}
-	}
 }
 
 
 void RADIO_SetImage(RADIO_Handle hObj, PCBITMAP pBitmap, unsigned int Index) {
-	if (hObj) {
 		auto pObj = (RADIO_Obj *)hObj;
 		switch (Index) {
 			case RADIO_BI_INACTIV:
@@ -466,23 +447,17 @@ void RADIO_SetImage(RADIO_Handle hObj, PCBITMAP pBitmap, unsigned int Index) {
 				break;
 		}
 		WM_Invalidate(hObj);
-
-	}
 }
 
 void RADIO_SetText(RADIO_Handle hObj, const char *pText, unsigned Index) {
-	if (hObj) {
 		auto pObj = (RADIO_Obj *)hObj;
 		if (Index < (unsigned)pObj->NumItems) {
 			GUI_ARRAY_SetItem(&pObj->TextArray, Index, pText, pText ? (GUI__strlen(pText) + 1) : 0);
 			WM_Invalidate(hObj);
 		}
-
-	}
 }
 
 void RADIO_SetTextColor(RADIO_Handle hObj, RGBC Color) {
-	if (hObj) {
 		auto pObj = (RADIO_Obj *)hObj;
 		if (Color != pObj->Props.TextColor) {
 			pObj->Props.TextColor = Color;
@@ -490,8 +465,6 @@ void RADIO_SetTextColor(RADIO_Handle hObj, RGBC Color) {
 				WM_Invalidate(hObj);
 			}
 		}
-
-	}
 }
 
 #define RADIO_BKCOLOR0_DEFAULT RGB_GRAYL(0xc0)           /* Inactive color */

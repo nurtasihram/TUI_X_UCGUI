@@ -6,9 +6,9 @@ module;
 export module TUX.Widget.Edit;
 
 import TUX.Widget;
- 
-export {
 
+export {
+		
 enum EDIT_CI {
 	 EDIT_CI_DISABLED = 0,
 	 EDIT_CI_ENABLED
@@ -54,7 +54,6 @@ constexpr uint8_t GUI_EDIT_SIGNED = 1;
 /* Edit modes */
 constexpr uint8_t GUI_EDIT_MODE_INSERT    = 0;
 constexpr uint8_t GUI_EDIT_MODE_OVERWRITE = 1;
-
 }
 
 #define EDIT_XOFF 1
@@ -208,49 +207,46 @@ static void EDIT__SetCursorPos(EDIT_Obj *pObj, int CursorPos) {
 	}
 }
 void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
-	if (hObj) {
-		auto pObj = (EDIT_Obj *)hObj;
-		if (pObj->pText) {
-			PCFONT pOldFont;
-			int xSize, TextWidth, NumChars;
-			const char *pText;
-			pText = pObj->pText;
-			pOldFont = GUI_SetFont(pObj->Props.pFont);
-			xSize = WM_GetWindowSizeX(hObj);
-			TextWidth = GUI_GetStringDistX(pText);
-			switch (pObj->Props.Align & TEXTALIGN_HORIZONTAL) {
-				case TEXTALIGN_HCENTER:
-					xPos -= (xSize - TextWidth + 1) / 2;
-					break;
-				case TEXTALIGN_RIGHT:
-					xPos -= xSize - TextWidth - (pObj->Props.Border + EDIT_XOFF);
-					break;
-				default:
-					xPos -= (pObj->Props.Border + EDIT_XOFF) + pObj->pEffect->EffectSize;
-			}
-			NumChars = GUI__GetNumChars(pText);
-			if (xPos < 0) {
-				EDIT__SetCursorPos(pObj, 0);
-			}
-			else if (xPos > TextWidth) {
-				EDIT__SetCursorPos(pObj, NumChars);
-			}
-			else {
-				int i, x, xLenChar;
-				uint16_t Char;
-				for (i = 0, x = 0; (i < NumChars) && (x < xPos); i++) {
-					Char = GUI_UC__GetCharCodeInc(&pText);
-					xLenChar = GUI_GetCharDistX(Char);
-					if (xPos < (x + xLenChar))
-						break;
-					x += xLenChar;
-				}
-				EDIT__SetCursorPos(pObj, i);
-			}
-			GUI_SetFont(pOldFont);
-			WM_Invalidate(hObj);
+	auto pObj = (EDIT_Obj *)hObj;
+	if (pObj->pText) {
+		PCFONT pOldFont;
+		int xSize, TextWidth, NumChars;
+		const char *pText;
+		pText = pObj->pText;
+		pOldFont = GUI_SetFont(pObj->Props.pFont);
+		xSize = WM_GetWindowSizeX(hObj);
+		TextWidth = GUI_GetStringDistX(pText);
+		switch (pObj->Props.Align & TEXTALIGN_HORIZONTAL) {
+			case TEXTALIGN_HCENTER:
+				xPos -= (xSize - TextWidth + 1) / 2;
+				break;
+			case TEXTALIGN_RIGHT:
+				xPos -= xSize - TextWidth - (pObj->Props.Border + EDIT_XOFF);
+				break;
+			default:
+				xPos -= (pObj->Props.Border + EDIT_XOFF) + pObj->pEffect->EffectSize;
 		}
-
+		NumChars = GUI__GetNumChars(pText);
+		if (xPos < 0) {
+			EDIT__SetCursorPos(pObj, 0);
+		}
+		else if (xPos > TextWidth) {
+			EDIT__SetCursorPos(pObj, NumChars);
+		}
+		else {
+			int i, x, xLenChar;
+			uint16_t Char;
+			for (i = 0, x = 0; (i < NumChars) && (x < xPos); i++) {
+				Char = GUI_UC__GetCharCodeInc(&pText);
+				xLenChar = GUI_GetCharDistX(Char);
+				if (xPos < (x + xLenChar))
+					break;
+				x += xLenChar;
+			}
+			EDIT__SetCursorPos(pObj, i);
+		}
+		GUI_SetFont(pOldFont);
+		WM_Invalidate(hObj);
 	}
 }
 /*********************************************************************
@@ -443,227 +439,190 @@ EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
 			WM_DeleteWindow(hObj);
 			hObj = 0;
 		}
-
 	}
 	return hObj;
 }
 void EDIT_AddKey(EDIT_Handle hObj, int Key) {
-	if (hObj) {
-		auto pObj = (EDIT_Obj *)hObj;
-		if (pObj) {
-			if (pObj->pfAddKeyEx) {
-				pObj->pfAddKeyEx(hObj, Key);
-			}
-			else {
-				switch (Key) {
-					case GUI_KEY_UP:
-						if (pObj->pText) {
-							auto pText = pObj->pText;
-							uint16_t Char;
-							pText += GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
-							Char = GUI_UC_GetCharCode(pText);
-							if (Char < 0x7f) {
-								*pText = Char + 1;
-								WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
-							}
-						}
-						break;
-					case GUI_KEY_DOWN:
-						if (pObj->pText) {
-							auto pText = pObj->pText;
-							pText += GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
-							uint16_t Char = GUI_UC_GetCharCode(pText);
-							if (Char > 0x20) {
-								*pText = Char - 1;
-								WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
-							}
-						}
-						break;
-					case GUI_KEY_RIGHT:
-						EDIT__SetCursorPos(pObj, pObj->CursorPos + 1);
-						break;
-					case GUI_KEY_LEFT:
-						EDIT__SetCursorPos(pObj, pObj->CursorPos - 1);
-						break;
-					case GUI_KEY_BACKSPACE:
-						EDIT__SetCursorPos(pObj, pObj->CursorPos - 1);
-						_DeleteChar(pObj);
-						break;
-					case GUI_KEY_DELETE:
-						_DeleteChar(pObj);
-						break;
-					case GUI_KEY_INSERT:
-						if (pObj->EditMode == GUI_EDIT_MODE_OVERWRITE) {
-							pObj->EditMode = GUI_EDIT_MODE_INSERT;
-						}
-						else {
-							pObj->EditMode = GUI_EDIT_MODE_OVERWRITE;
-							EDIT__SetCursorPos(pObj, pObj->CursorPos);
-						}
-						break;
-					case GUI_KEY_ENTER:
-					case GUI_KEY_ESCAPE:
-						break;
-					default:
-						if (Key >= 0x20) {
-							if (pObj->EditMode != GUI_EDIT_MODE_INSERT) {
-								_DeleteChar(pObj);
-							}
-							if (_InsertChar(pObj, Key)) {
-								EDIT__SetCursorPos(pObj, pObj->CursorPos + 1);
-							}
-						}
-				}
-			}
-			WM_Invalidate(hObj);
-		}
-
+	auto pObj = (EDIT_Obj *)hObj;
+	if (pObj->pfAddKeyEx) {
+		pObj->pfAddKeyEx(hObj, Key);
 	}
+	else {
+		switch (Key) {
+			case GUI_KEY_UP:
+				if (pObj->pText) {
+					auto pText = pObj->pText;
+					uint16_t Char;
+					pText += GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
+					Char = GUI_UC_GetCharCode(pText);
+					if (Char < 0x7f) {
+						*pText = Char + 1;
+						WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
+					}
+				}
+				break;
+			case GUI_KEY_DOWN:
+				if (pObj->pText) {
+					auto pText = pObj->pText;
+					pText += GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
+					uint16_t Char = GUI_UC_GetCharCode(pText);
+					if (Char > 0x20) {
+						*pText = Char - 1;
+						WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
+					}
+				}
+				break;
+			case GUI_KEY_RIGHT:
+				EDIT__SetCursorPos(pObj, pObj->CursorPos + 1);
+				break;
+			case GUI_KEY_LEFT:
+				EDIT__SetCursorPos(pObj, pObj->CursorPos - 1);
+				break;
+			case GUI_KEY_BACKSPACE:
+				EDIT__SetCursorPos(pObj, pObj->CursorPos - 1);
+				_DeleteChar(pObj);
+				break;
+			case GUI_KEY_DELETE:
+				_DeleteChar(pObj);
+				break;
+			case GUI_KEY_INSERT:
+				if (pObj->EditMode == GUI_EDIT_MODE_OVERWRITE) {
+					pObj->EditMode = GUI_EDIT_MODE_INSERT;
+				}
+				else {
+					pObj->EditMode = GUI_EDIT_MODE_OVERWRITE;
+					EDIT__SetCursorPos(pObj, pObj->CursorPos);
+				}
+				break;
+			case GUI_KEY_ENTER:
+			case GUI_KEY_ESCAPE:
+				break;
+			default:
+				if (Key >= 0x20) {
+					if (pObj->EditMode != GUI_EDIT_MODE_INSERT) {
+						_DeleteChar(pObj);
+					}
+					if (_InsertChar(pObj, Key)) {
+						EDIT__SetCursorPos(pObj, pObj->CursorPos + 1);
+					}
+				}
+		}
+	}
+	WM_Invalidate(hObj);
 }
 void EDIT_SetFont(EDIT_Handle hObj, PCFONT pfont) {
 	auto pObj = (EDIT_Obj *)hObj;
-	if (hObj == 0)
-		return;
 
-	if (pObj) {
-		pObj->Props.pFont = pfont;
-		WM_Invalidate(hObj);
-	}
-
+	pObj->Props.pFont = pfont;
+	WM_Invalidate(hObj);
 }
 void EDIT_SetBkColor(EDIT_Handle hObj, unsigned int Index, RGBC color) {
 	auto pObj = (EDIT_Obj *)hObj;
-	if (hObj == 0)
-		return;
 
-	if (pObj) {
-		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
-			pObj->Props.aBkColor[Index] = color;
-			WM_Invalidate(hObj);
-		}
+	if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
+		pObj->Props.aBkColor[Index] = color;
+		WM_Invalidate(hObj);
 	}
-
 }
 void EDIT_SetTextColor(EDIT_Handle hObj, unsigned int Index, RGBC color) {
 	auto pObj = (EDIT_Obj *)hObj;
-	if (hObj == 0)
-		return;
-	if (pObj) {
-		if (Index < GUI_COUNTOF(pObj->Props.aTextColor)) {
-			pObj->Props.aTextColor[Index] = color;
-			WM_Invalidate(hObj);
-		}
+	if (Index < GUI_COUNTOF(pObj->Props.aTextColor)) {
+		pObj->Props.aTextColor[Index] = color;
+		WM_Invalidate(hObj);
 	}
 }
 void EDIT_SetText(EDIT_Handle hObj, const char *s) {
-	if (hObj) {
-		auto pObj = (EDIT_Obj *)hObj;
-		if (s) {
-			int NumBytesNew, NumBytesOld = 0;
-			int NumCharsNew;
-			if (pObj->pText) {
-				auto pText = pObj->pText;
-				NumBytesOld = GUI__strlen(pText) + 1;
-			}
-			NumCharsNew = GUI__GetNumChars(s);
-			if (NumCharsNew > pObj->MaxLen) {
-				NumCharsNew = pObj->MaxLen;
-			}
-			NumBytesNew = GUI_UC__NumChars2NumBytes(s, NumCharsNew) + 1;
-			if (_IsSpaceInBuffer(pObj, NumBytesNew - NumBytesOld)) {
-				auto pText = pObj->pText;
-				GUI__memcpy(pText, s, NumBytesNew);
-				pObj->CursorPos = NumBytesNew - 1;
-				if (pObj->CursorPos == pObj->MaxLen) {
-					if (pObj->EditMode == GUI_EDIT_MODE_OVERWRITE) {
-						pObj->CursorPos--;
-					}
+	auto pObj = (EDIT_Obj *)hObj;
+	if (s) {
+		int NumBytesNew, NumBytesOld = 0;
+		int NumCharsNew;
+		if (pObj->pText) {
+			auto pText = pObj->pText;
+			NumBytesOld = GUI__strlen(pText) + 1;
+		}
+		NumCharsNew = GUI__GetNumChars(s);
+		if (NumCharsNew > pObj->MaxLen) {
+			NumCharsNew = pObj->MaxLen;
+		}
+		NumBytesNew = GUI_UC__NumChars2NumBytes(s, NumCharsNew) + 1;
+		if (_IsSpaceInBuffer(pObj, NumBytesNew - NumBytesOld)) {
+			auto pText = pObj->pText;
+			GUI__memcpy(pText, s, NumBytesNew);
+			pObj->CursorPos = NumBytesNew - 1;
+			if (pObj->CursorPos == pObj->MaxLen) {
+				if (pObj->EditMode == GUI_EDIT_MODE_OVERWRITE) {
+					pObj->CursorPos--;
 				}
 			}
 		}
-		else {
-			GUI_ALLOC_FreePtr((void **)&pObj->pText);
-			pObj->BufferSize = 0;
-			pObj->CursorPos = 0;
-		}
-		WM_Invalidate(hObj);
-
 	}
+	else {
+		GUI_ALLOC_FreePtr((void **)&pObj->pText);
+		pObj->BufferSize = 0;
+		pObj->CursorPos = 0;
+	}
+	WM_Invalidate(hObj);
 }
 void EDIT_GetText(EDIT_Handle hObj, char *sDest, int MaxLen) {
 	if (sDest) {
 		*sDest = 0;
-		if (hObj) {
-			auto pObj = (EDIT_Obj *)hObj;
-			if (pObj->pText) {
-				auto pText = pObj->pText;
-				int NumChars = GUI__GetNumChars(pText);
-				if (NumChars > MaxLen)
-					NumChars = MaxLen;
-				int NumBytes = GUI_UC__NumChars2NumBytes(pText, NumChars);
-				GUI__memcpy(sDest, pText, NumBytes);
-				*(sDest + NumBytes) = 0;
-			}
+		auto pObj = (EDIT_Obj *)hObj;
+		if (pObj->pText) {
+			auto pText = pObj->pText;
+			int NumChars = GUI__GetNumChars(pText);
+			if (NumChars > MaxLen)
+				NumChars = MaxLen;
+			int NumBytes = GUI_UC__NumChars2NumBytes(pText, NumChars);
+			GUI__memcpy(sDest, pText, NumBytes);
+			*(sDest + NumBytes) = 0;
 		}
 	}
 }
 int32_t  EDIT_GetValue(EDIT_Handle hObj) {
 	auto pObj = (EDIT_Obj *)hObj;
 	int32_t r = 0;
-	if (hObj) {
+	r = pObj->CurrentValue;
 
-		r = pObj->CurrentValue;
-
-	}
 	return r;
 }
 void EDIT_SetValue(EDIT_Handle hObj, int32_t Value) {
 	auto pObj = (EDIT_Obj *)hObj;
-	if (hObj) {
-		/* Put in min/max range */
-		if (Value < pObj->Min)
-			Value = pObj->Min;
-		if (Value > pObj->Max)
-			Value = pObj->Max;
-		if (pObj->CurrentValue != (uint32_t)Value) {
-			pObj->CurrentValue = Value;
-			if (pObj->pfUpdateBuffer)
-				pObj->pfUpdateBuffer(hObj);
-			WM_Invalidate(hObj);
-			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
-		}
+	/* Put in min/max range */
+	if (Value < pObj->Min)
+		Value = pObj->Min;
+	if (Value > pObj->Max)
+		Value = pObj->Max;
+	if (pObj->CurrentValue != (uint32_t)Value) {
+		pObj->CurrentValue = Value;
+		if (pObj->pfUpdateBuffer)
+			pObj->pfUpdateBuffer(hObj);
+		WM_Invalidate(hObj);
+		WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
 	}
 }
 void EDIT_SetMaxLen(EDIT_Handle  hObj, int MaxLen) {
-	if (hObj) {
-		auto pObj = (EDIT_Obj *)hObj;
-		if (MaxLen != pObj->MaxLen) {
-			if (MaxLen < pObj->MaxLen) {
-				if (pObj->pText) {
-					auto pText = pObj->pText;
-					int NumChars = GUI__GetNumChars(pText);
-					if (NumChars > MaxLen) {
-						int NumBytes;
-						NumBytes = GUI_UC__NumChars2NumBytes(pText, MaxLen);
-						*(pText + NumBytes) = 0;
-					}
+	auto pObj = (EDIT_Obj *)hObj;
+	if (MaxLen != pObj->MaxLen) {
+		if (MaxLen < pObj->MaxLen) {
+			if (pObj->pText) {
+				auto pText = pObj->pText;
+				int NumChars = GUI__GetNumChars(pText);
+				if (NumChars > MaxLen) {
+					int NumBytes;
+					NumBytes = GUI_UC__NumChars2NumBytes(pText, MaxLen);
+					*(pText + NumBytes) = 0;
 				}
 			}
-			_IncrementBuffer(pObj, MaxLen - pObj->BufferSize + 1);
-			pObj->MaxLen = MaxLen;
-			WM_Invalidate(hObj);
 		}
-
+		_IncrementBuffer(pObj, MaxLen - pObj->BufferSize + 1);
+		pObj->MaxLen = MaxLen;
+		WM_Invalidate(hObj);
 	}
 }
 void EDIT_SetTextAlign(EDIT_Handle hObj, int Align) {
 	auto pObj = (EDIT_Obj *)hObj;
-	if (hObj == 0)
-		return;
-	if (pObj) {
-		pObj->Props.Align = Align;
-		WM_Invalidate(hObj);
-	}
+	pObj->Props.Align = Align;
+	WM_Invalidate(hObj);
 }
 
 EDIT_Handle EDIT_Create(int x0, int y0, int xsize, int ysize, int Id, int MaxLen, int Flags) {
@@ -685,66 +644,54 @@ EDIT_Handle EDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Ob
 }
 
 int EDIT_GetNumChars(EDIT_Handle hObj) {
-	if (hObj) {
-		auto pObj = (EDIT_Obj *)hObj;
-		if (pObj->pText) {
-			return GUI__GetNumChars(pObj->pText);
-		}
+	auto pObj = (EDIT_Obj *)hObj;
+	if (pObj->pText) {
+		return GUI__GetNumChars(pObj->pText);
 	}
+
 	return 0;
 }
 
 void EDIT_SetCursorAtChar(EDIT_Handle hObj, int Pos) {
-	if (hObj) {
-		auto pObj = (EDIT_Obj *)hObj;
-		EDIT__SetCursorPos(pObj, Pos);
-		WM_Invalidate(hObj);
-	}
+	auto pObj = (EDIT_Obj *)hObj;
+	EDIT__SetCursorPos(pObj, Pos);
+	WM_Invalidate(hObj);
 }
 
 int EDIT_SetInsertMode(EDIT_Handle hObj, int OnOff) {
 	int PrevMode = 0;
-	if (hObj) {
-		auto pObj = (EDIT_Obj *)hObj;
-		PrevMode = pObj->EditMode;
-		pObj->EditMode = OnOff ? GUI_EDIT_MODE_INSERT : GUI_EDIT_MODE_OVERWRITE;
-	}
+	auto pObj = (EDIT_Obj *)hObj;
+	PrevMode = pObj->EditMode;
+	pObj->EditMode = OnOff ? GUI_EDIT_MODE_INSERT : GUI_EDIT_MODE_OVERWRITE;
+
 	return PrevMode;
 }
 
 void EDIT_SetpfAddKeyEx(EDIT_Handle hObj, tEDIT_AddKeyEx *pfAddKeyEx) {
-	if (hObj) {
-		auto pObj = (EDIT_Obj *)hObj;
-		pObj->pfAddKeyEx = pfAddKeyEx;
-	}
+	auto pObj = (EDIT_Obj *)hObj;
+	pObj->pfAddKeyEx = pfAddKeyEx;
 }
 
 void EDIT_SetpfUpdateBuffer(EDIT_Handle hObj, tEDIT_UpdateBuffer *pfUpdateBuffer) {
-	if (hObj) {
-		auto pObj = (EDIT_Obj *)hObj;
-		pObj->pfUpdateBuffer = pfUpdateBuffer;
-	}
+	auto pObj = (EDIT_Obj *)hObj;
+	pObj->pfUpdateBuffer = pfUpdateBuffer;
 }
 
 void EDIT_SetSel(EDIT_Handle hObj, int FirstChar, int LastChar) {
-	if (hObj) {
-		auto pObj = (EDIT_Obj *)hObj;
-		if (FirstChar == -1) {
-			pObj->SelSize = 0;
+	auto pObj = (EDIT_Obj *)hObj;
+	if (FirstChar == -1) {
+		pObj->SelSize = 0;
+	}
+	else {
+		if (FirstChar > pObj->BufferSize - 1)
+			FirstChar = pObj->BufferSize - 1;
+		if (LastChar > pObj->BufferSize - 1)
+			LastChar = pObj->BufferSize - 1;
+		if (LastChar == -1)
+			LastChar = EDIT_GetNumChars(hObj);
+		if (LastChar >= FirstChar) {
+			pObj->CursorPos = FirstChar;
+			pObj->SelSize = LastChar - FirstChar + 1;
 		}
-		else {
-			if (FirstChar > pObj->BufferSize - 1)
-				FirstChar = pObj->BufferSize - 1;
-			if (LastChar > pObj->BufferSize - 1)
-				LastChar = pObj->BufferSize - 1;
-			if (LastChar == -1)
-				LastChar = EDIT_GetNumChars(hObj);
-			if (LastChar >= FirstChar) {
-				pObj->CursorPos = FirstChar;
-				pObj->SelSize = LastChar - FirstChar + 1;
-			}
-		}
-
 	}
 }
-

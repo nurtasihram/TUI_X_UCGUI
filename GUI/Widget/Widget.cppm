@@ -5,7 +5,6 @@ module;
 export module TUX.Widget;
 
 export {
-
 constexpr uint16_t WIDGET_STATE_FOCUS       = 1 << 0;
 constexpr uint16_t WIDGET_STATE_VERTICAL    = 1 << 3;
 constexpr uint16_t WIDGET_STATE_FOCUSSABLE  = 1 << 4;
@@ -112,7 +111,6 @@ int   WIDGET_SetWidth(WM_Obj *hObj, int Width);
 void  WIDGET_SetEffect(WM_Obj *hObj, const WIDGET_EFFECT *pEffect);
 
 bool  WIDGET_HandleActive(WM_Obj *hObj, int MsgId, WM_PARAM *Data);
-
 }
 
 PCWIDGET_EFFECT WIDGET::DefaultEffect = WIDGET_Effect_3D2L;
@@ -201,12 +199,10 @@ int WIDGET_GetState(WM_Obj *hObj) {
 }
 void WIDGET_OrState(WM_Obj *hObj, int State) {
 	auto pWidget = (WIDGET *)hObj;
-	if (hObj) {
 		if (State != (pWidget->State & State)) {
 			pWidget->State |= State;
 			WM_Invalidate(hObj);
 		}
-	}
 }
 /*********************************************************************
 *
@@ -218,14 +214,12 @@ void WIDGET_OrState(WM_Obj *hObj, int State) {
 	...(..., 3);   // Clears bit 0, 1 int the state member
 */
 void WIDGET_AndState(WM_Obj *hObj, int Mask) {
-	if (hObj) {
 		auto pWidget = (WIDGET *)hObj;
 		auto StateNew = pWidget->State & (~Mask);
 		if (pWidget->State != StateNew) {
 			pWidget->State = StateNew;
 			WM_Invalidate(hObj);
 		}
-	}
 }
 void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
 	pWidget->pEffect = WIDGET::DefaultEffect;
@@ -388,11 +382,9 @@ void WIDGET_SetEffect(WM_Obj *hObj, const WIDGET_EFFECT *pEffect) {
 */
 int WIDGET_SetWidth(WM_Obj *hObj, int Width) {
 	auto pWidget = (WIDGET *)hObj;
-	if (hObj) {
 		if (pWidget->State & WIDGET_STATE_VERTICAL)
 			return WM_SetXSize(hObj, Width);
 		return WM_SetYSize(hObj, Width);
-	}
 	return 0;
 }
 
@@ -466,10 +458,10 @@ static const GUI_DRAW_CONSTS _ConstObjData = {
 GUI_DRAW *GUI_DRAW_BITMAP_Create(PCBITMAP pBitmap, int x, int y) {
 	auto pObj = (GUI_DRAW *)GUI_ALLOC_AllocZero(sizeof(GUI_DRAW));
 	if (pObj) {
-		pObj->pConsts = &_ConstObjData;
-		pObj->Data.pData = (const void *)pBitmap;
-		pObj->xOff = x;
-		pObj->yOff = y;
+	pObj->pConsts = &_ConstObjData;
+	pObj->Data.pData = (const void *)pBitmap;
+	pObj->xOff = x;
+	pObj->yOff = y;
 	}
 	return pObj;
 }
@@ -496,10 +488,10 @@ static const GUI_DRAW_CONSTS _ConstObjDataSELF = {
 GUI_DRAW *GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw, int x, int y) {
 	auto pObj = (GUI_DRAW *)GUI_ALLOC_AllocZero(sizeof(GUI_DRAW));
 	if (pObj) {
-		pObj->pConsts = &_ConstObjDataSELF;
-		pObj->Data.pfDraw = pfDraw;
-		pObj->xOff = x;
-		pObj->yOff = y;
+	pObj->pConsts = &_ConstObjDataSELF;
+	pObj->Data.pfDraw = pfDraw;
+	pObj->xOff = x;
+	pObj->yOff = y;
 	}
 	return pObj;
 }
