@@ -28,6 +28,12 @@
     <Filter Include="GUI\Resources">
       <UniqueIdentifier>{74df757d-d386-40bb-96a2-291806a6522f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GUI\Widget\Leaf">
+      <UniqueIdentifier>{3ec6634f-5f00-440b-a2d5-1e5955e492f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\Widget\Container">
+      <UniqueIdentifier>{977dfe3b-0818-446e-935f-636ef6f4b4d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI_X\GUI_X_LCD.cc">
@@ -63,19 +69,7 @@
     <ClCompile Include="GUI\Resources\F6x8.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\BUTTON.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CHECKBOX.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\DIALOG.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\DROPDOWN.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\EDIT.cpp">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\GUI_ARRAY.cpp">
@@ -84,52 +78,13 @@
     <ClCompile Include="GUI\Widget\GUI_DRAW.cpp">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\HEADER.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTBOX.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\LISTVIEW.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MENU.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\MESSAGEBOX.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MULTIEDIT.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MULTIPAGE.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\PROGBAR.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\RADIO.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\SCROLLBAR.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\SLIDER.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\TEXT.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET.cpp">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\WINDOW.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FRAMEWIN.cpp">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_GetBitmapPixelIndex.cpp">
@@ -202,56 +157,56 @@
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="GUI\Widget\Button.cppm">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CheckBox.cppm">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\DropDown.cppm">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Edit.cppm">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\FrameWin.cppm">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\ListBox.cppm">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MultiEdit.cppm">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MultiPage.cppm">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\ProgBar.cppm">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\ListView.cppm">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\Header.cppm">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\Menu.cppm">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Radio.cppm">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\ScrollBar.cppm">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Text.cppm">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Slider.cppm">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\Widget.cppm">
       <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\CheckBox.cppm">
+      <Filter>GUI\Widget\Leaf</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Button.cppm">
+      <Filter>GUI\Widget\Leaf</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Header.cppm">
+      <Filter>GUI\Widget\Leaf</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Radio.cppm">
+      <Filter>GUI\Widget\Leaf</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Slider.cppm">
+      <Filter>GUI\Widget\Leaf</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\ProgBar.cppm">
+      <Filter>GUI\Widget\Leaf</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MultiEdit.cppm">
+      <Filter>GUI\Widget\Leaf</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Edit.cppm">
+      <Filter>GUI\Widget\Leaf</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Text.cppm">
+      <Filter>GUI\Widget\Leaf</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\ScrollBar.cppm">
+      <Filter>GUI\Widget\Leaf</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\FrameWin.cppm">
+      <Filter>GUI\Widget\Container</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\DropDown.cppm">
+      <Filter>GUI\Widget\Container</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\MultiPage.cppm">
+      <Filter>GUI\Widget\Container</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -277,9 +232,6 @@
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\MESSAGEBOX.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\FRAMEWIN_Private.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\GUI.h">

@@ -49,29 +49,12 @@
     <ClCompile Include="GUI\Resources\GUI_CursorCrossM.cpp" />
     <ClCompile Include="GUI\Resources\GUI_CursorCrossS.cpp" />
     <ClCompile Include="GUI\Resources\GUI_CursorHeaderM.cpp" />
-    <ClCompile Include="GUI\Widget\BUTTON.cpp" />
     <ClCompile Include="GUI\Widget\Button.cppm" />
-    <ClCompile Include="GUI\Widget\CHECKBOX.cpp" />
     <ClCompile Include="GUI\Widget\CheckBox.cppm" />
     <ClCompile Include="GUI\Widget\DIALOG.cpp" />
-    <ClCompile Include="GUI\Widget\DROPDOWN.cpp" />
-    <ClCompile Include="GUI\Widget\EDIT.cpp" />
-    <ClCompile Include="GUI\Widget\FRAMEWIN.cpp" />
     <ClCompile Include="GUI\Widget\GUI_ARRAY.cpp" />
     <ClCompile Include="GUI\Widget\GUI_DRAW.cpp" />
-    <ClCompile Include="GUI\Widget\HEADER.cpp" />
-    <ClCompile Include="GUI\Widget\LISTBOX.cpp" />
-    <ClCompile Include="GUI\Widget\LISTVIEW.cpp" />
-    <ClCompile Include="GUI\Widget\MENU.cpp" />
     <ClCompile Include="GUI\Widget\MESSAGEBOX.cpp" />
-    <ClCompile Include="GUI\Widget\MULTIEDIT.cpp" />
-    <ClCompile Include="GUI\Widget\MULTIPAGE.cpp" />
-    <ClCompile Include="GUI\Widget\PROGBAR.cpp" />
-    <ClCompile Include="GUI\Widget\RADIO.cpp" />
-    <ClCompile Include="GUI\Widget\SCROLLBAR.cpp" />
-    <ClCompile Include="GUI\Widget\SLIDER.cpp" />
-    <ClCompile Include="GUI\Widget\TEXT.cpp" />
-    <ClCompile Include="GUI\Widget\WIDGET.cpp" />
     <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp" />
     <ClCompile Include="GUI\Widget\WINDOW.cpp" />
     <ClCompile Include="GUI\WM\WM.cpp" />
@@ -103,7 +86,6 @@
     <ClCompile Include="GUI\Widget\FrameWin.cppm">
       <FileType>Document</FileType>
     </ClCompile>
-    <ClInclude Include="GUI\Widget\FRAMEWIN_Private.h" />
     <ClInclude Include="GUI\Widget\GUI_ARRAY.h" />
     <ClCompile Include="GUI\Widget\Header.cppm">
       <FileType>Document</FileType>

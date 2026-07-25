@@ -18,8 +18,8 @@ struct GUI_WIDGET_CREATE_INFO_struct {
 int     GUI_ExecDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidgets, WM_CALLBACK *cb, WM_Obj * hParent, int x0, int y0);
 int     GUI_ExecCreatedDialog(WM_Obj * hDialog);
 WM_Obj * GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidgets, WM_CALLBACK *cb, WM_Obj * hParent, int x0, int y0);
-void    GUI_SetDialogStatusPtr(WM_Obj * hDialog, WM_DIALOG_STATUS *pDialogStatus); /* not to documented */
-WM_DIALOG_STATUS *GUI_GetDialogStatusPtr(WM_Obj * hDialog);                       /* not to documented */
+void    GUI_SetDialogStatusPtr(WM_Obj * hDialog, WM_DIALOG_STATUS *pDialogStatus);
+WM_DIALOG_STATUS *GUI_GetDialogStatusPtr(WM_Obj * hDialog);
 void    GUI_EndDialog(WM_Obj * hWin, int r);
-RGBC DIALOG_GetBkColor(void);                                                /* obsolete */
-RGBC DIALOG_SetBkColor(RGBC BkColor);                                   /* obsolete */
+RGBC DIALOG_GetBkColor(void); /* obsolete */
+RGBC DIALOG_SetBkColor(RGBC BkColor); /* obsolete */
