@@ -316,14 +316,12 @@ void GUI_ARRAY_DeleteItem(GUI_ARRAY *pThis, unsigned int Index) {
 */
 void *GUI_ARRAY_ResizeItem(GUI_ARRAY *pThis, unsigned int Index, int Len) {
 	void *r = nullptr;
-	WM_HMEM hNew;
-	hNew = GUI_ALLOC_AllocZero(Len);
-	if (hNew) {
-		void *pOld = GUI_ARRAY_GetpItem(pThis, Index);
-		void *pNew = (hNew);
+	void *pNew = GUI_ALLOC_AllocZero(Len);
+	if (pNew) {
+		auto pOld = GUI_ARRAY_GetpItem(pThis, Index);
 		GUI__memcpy(pNew, pOld, Len);
-		if (GUI_ARRAY_SethItem(pThis, Index, hNew)) {
-			GUI_ALLOC_FreePtr(&hNew);    /* Free on error */
+		if (GUI_ARRAY_SethItem(pThis, Index, pNew)) {
+			GUI_ALLOC_FreePtr(&pNew); /* Free on error */
 		}
 		else {
 			r = pNew;

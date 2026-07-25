@@ -29,7 +29,6 @@
     <ClCompile Include="GUI\Core\GUI_OnKey.cpp" />
     <ClCompile Include="GUI\Core\GUI_PID.cpp" />
     <ClCompile Include="GUI\Core\GUI_UC.cpp" />
-    <ClCompile Include="GUI\Core\GUI_UC_DispString.cpp" />
     <ClCompile Include="GUI\Core\GUI_UC_EncodeNone.cpp" />
     <ClCompile Include="GUI\Core\GUI_UC_EncodeUTF8.cpp" />
     <ClCompile Include="GUI\Core\LCD.cpp" />
@@ -132,7 +131,6 @@
     <ClInclude Include="GUI\Widget\WIDGET.h" />
     <ClInclude Include="GUI\Widget\WINDOW_Private.h" />
     <ClInclude Include="GUI\WM\WM.h" />
-    <ClInclude Include="GUI\WM\WM_GUI.h" />
     <ClInclude Include="GUI\WM\WM_Intern.h" />
     <ClInclude Include="GUI_X\resource.h" />
   </ItemGroup>
@@ -143,7 +141,6 @@
     <ResourceCompile Include="GUI_X\SimDisp.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include=".github\copilot-instructions.md" />
     <None Include="GUI\Core\Dots.inl" />
     <None Include="test_cert.pfx" />
   </ItemGroup>

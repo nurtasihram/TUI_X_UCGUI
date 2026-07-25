@@ -121,23 +121,23 @@ void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
 	pWidget->State = State;
 	pWidget->Id = Id;
 }
-int WIDGET_HandleActive(WM_Obj * hObj, int MsgId, WM_PARAM *Data) {
-	int Diff, Notification;
+bool WIDGET_HandleActive(WM_Obj * hObj, int MsgId, WM_PARAM *Data) {
 	auto pWidget = (WIDGET *)hObj;
 	switch (MsgId) {
-		case WM_WIDGET_SET_EFFECT:
-			Diff = pWidget->pEffect->EffectSize;
+		case WM_WIDGET_SET_EFFECT: {
+			auto Diff = pWidget->pEffect->EffectSize;
 			pWidget->pEffect = (const WIDGET_EFFECT *)*Data;
 			Diff -= pWidget->pEffect->EffectSize;
 			_UpdateChildPostions(hObj, Diff);
 			WM_Invalidate(hObj);
-			return 0; /* Message handled -> Return */
+			return false; /* Message handled -> Return */
+		}
 		case WM_GET_ID:
 			*Data = pWidget->Id;
-			return 0; /* Message handled -> Return */
+			return false; /* Message handled -> Return */
 		case WM_PID_STATE_CHANGED:
 			if (pWidget->State & WIDGET_STATE_FOCUSSABLE) {
-				const WM_PID_STATE_CHANGED_INFO *pInfo = (const WM_PID_STATE_CHANGED_INFO *)*Data;
+				auto pInfo = (const WM_PID_STATE_CHANGED_INFO *)*Data;
 				if (pInfo->State)
 					WM_SetFocus(hObj);
 			}
@@ -146,19 +146,20 @@ int WIDGET_HandleActive(WM_Obj * hObj, int MsgId, WM_PARAM *Data) {
 			/* A descendent (child) has been touched or released.
 			   If it has been touched, we need to get to top.
 			 */
-			const GUI_PID_STATE *pState = (const GUI_PID_STATE *)*Data;
+			auto pState = (const GUI_PID_STATE *)*Data;
 			if (pState) { /* Message may not have a valid pointer (moved out) ! */
 				if (pState->Pressed) {
 					WM_BringToTop(hObj);
-					return 0; /* Message handled -> Return */
+					return false; /* Message handled -> Return */
 				}
 			}
 			break;
 		}
 		case WM_SET_ID:
 			pWidget->Id = (int16_t)*Data;
-			return 0; /* Message handled -> Return */
-		case WM_SET_FOCUS:
+			return false; /* Message handled -> Return */
+		case WM_SET_FOCUS: {
+			int Notification;
 			if (*Data) {
 				WIDGET_SetState(hObj, pWidget->State | WIDGET_STATE_FOCUS);
 				Notification = WM_NOTIFICATION_GOT_FOCUS;
@@ -169,15 +170,16 @@ int WIDGET_HandleActive(WM_Obj * hObj, int MsgId, WM_PARAM *Data) {
 			}
 			WM_NotifyParent(hObj, Notification);
 			*Data = 0;   /* Focus change accepted */
-			return 0;
+			return false;
+		}
 		case WM_GET_ACCEPT_FOCUS:
-			*Data = (pWidget->State & WIDGET_STATE_FOCUSSABLE) ? 1 : 0; /* Can handle focus */
-			return 0; /* Message handled */
+			*(bool *)Data = pWidget->State & WIDGET_STATE_FOCUSSABLE; /* Can handle focus */
+			return false; /* Message handled */
 		case WM_GET_INSIDE_RECT:
 			*(GUI_RECT *)*Data = WIDGET__GetInsideRect(pWidget);
-			return 0; /* Message handled */
+			return false; /* Message handled */
 	}
-	return 1; /* Message NOT handled */
+	return true; /* Message NOT handled */
 }
 void WIDGET__SetScrollState(WM_Obj * hWin, const WM_SCROLL_STATE *pVState, const WM_SCROLL_STATE *pHState) {
 	WM_SetScrollState(WM_GetDialogItem(hWin, GUI_ID_VSCROLL), pVState);
@@ -300,7 +302,7 @@ void WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_RECT Tex
 	GUI_RECT r = FillRect;
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	if (!GUI_RectsIntersect(&GUI_Context.ClipRect, &r))
+	if (!(r <= GUI_Context.ClipRect))
 		return;
 	if (pText) {
 		if (*pText) { /* Speed optimization, not required */

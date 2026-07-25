@@ -7,7 +7,7 @@
 #define DRAWMODE_TRANS  (1<<1)
 #define DRAWMODE_REV    (1<<2)
 
-typedef int GUI_DRAWMODE;
+typedef int DRAWMODE;
 typedef uint32_t RGBC;
 
 inline auto Max(auto v0, auto v1) { return v0 > v1 ? v0 : v1; }
@@ -73,8 +73,14 @@ struct GUI_RECT {
 		if (y1 < r.y1) y1 = r.y1;
 		return *this;
 	}
-	inline GUI_RECT operator|(const GUI_RECT &r) const 
+	inline GUI_RECT operator|(const GUI_RECT &r) const
 	{ return{ Min(x0, r.x0), Min(y0, r.y0), Max(x1, r.x1), Max(y1, r.y1) }; }
+
+	bool operator<=(const GUI_RECT &r) {
+		return
+			r.x0 <= x1 && r.y0 <= y1 &&
+			r.x1 >= x0 && r.y1 >= y0;
+	}
 
 	inline operator bool() const
 	{ return x0 <= x1 && y0 <= y1; }

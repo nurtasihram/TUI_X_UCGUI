@@ -37,7 +37,7 @@ static int _OnKey(FRAMEWIN_Obj *pObj, const WM_KEY_INFO *pInfo) {
 *
 */
 static void _OnPaint(FRAMEWIN_Obj *pObj) {
-	WM_Obj * hWin = WM_GetActiveWindow();
+	auto hWin = WM_GetActiveWindow();
 	const char *pText = nullptr;
 	auto xsize = WM_GetWindowSizeX(hWin);
 	auto ysize = WM_GetWindowSizeY(hWin);
@@ -132,7 +132,7 @@ static WM_PARAM _FRAMEWIN_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 		case WM_GET_CLIENT_WINDOW: /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
 			return (WM_PARAM)pObj->hClient;
 		case WM_NOTIFY_PARENT: {
-			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
 			if (pInfo->Notification == WM_NOTIFICATION_RELEASED) {
 				int Id = WM_GetId(pInfo->pWinSrc);
 				switch (Id) {
@@ -172,7 +172,7 @@ static WM_PARAM _FRAMEWIN_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 			   the framewindow will receive the focus.
 			 */
 			if (!(pObj->Flags & FRAMEWIN_CF_ACTIVE)) {
-				const GUI_PID_STATE *pState = (const GUI_PID_STATE *)Data;
+				auto pState = (const GUI_PID_STATE *)Data;
 				if (pState) /* Message may not have a valid pointer (moved out) ! */
 					if (pState->Pressed)
 						WM_SetFocus(pObj);
@@ -194,7 +194,7 @@ static WM_PARAM _FRAMEWIN_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 }
 static WM_PARAM FRAMEWIN__cbClient(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pParent = (FRAMEWIN_Obj *)WM_GetParent(hWin);
-	WM_CALLBACK *cb = pParent->cb;
+	auto cb = pParent->cb;
 	switch (MsgId) {
 		case WM_PAINT:
 			if (pParent->Props.ClientColor != RGB_INVALID_COLOR) {
@@ -554,7 +554,7 @@ void FRAMEWIN_SetBorderSize(FRAMEWIN_Handle hObj, unsigned Size) {
 		int OldSize = pObj->Props.BorderSize;
 		int Diff = Size - OldSize;
 		for (auto pChild = pObj->pFirstChild; pChild; pChild = pChild->pNext) {
-			GUI_RECT r = pChild->Rect + GUI_POINT{-pObj->Rect.x0, -pObj->Rect.y0};
+			auto r = pChild->Rect -pObj->Rect.LeftTop();
 			if (r.y0 == pObj->Props.BorderSize  && r.y1 - r.y0 + 1 == OldHeight) {
 				if (pChild->Status & WM_SF_ANCHOR_RIGHT)
 					WM_MoveWindow(pChild, -Diff, Diff);
@@ -1055,16 +1055,13 @@ void FRAMEWIN__UpdateButtons(FRAMEWIN_Obj *pObj, int OldHeight) {
 	int Diff = TitleHeight - OldHeight;
 	if (Diff) {
 		WM_Obj *pLeft, *pRight, *pChild;
-		GUI_RECT r;
-		int xLeft, xRight, n;
-		n = 0;
+		int xLeft, xRight, n = 0;
 		do {
 			pLeft = pRight = nullptr;
 			xLeft = GUI_XMAX;
 			xRight = GUI_XMIN;
 			for (pChild = pObj->pFirstChild; pChild; pChild = pChild->pNext) {
-				r = pChild->Rect;
-				r += GUI_POINT{-pObj->Rect.x0, -pObj->Rect.y0};
+				auto r = pChild->Rect -pObj->Rect.LeftTop();
 				if ((r.y0 == pObj->Props.BorderSize) && ((r.y1 - r.y0 + 1) == OldHeight)) {
 					if (pChild->Status & WM_SF_ANCHOR_RIGHT) {
 						if (r.x1 > xRight) {
@@ -1072,11 +1069,9 @@ void FRAMEWIN__UpdateButtons(FRAMEWIN_Obj *pObj, int OldHeight) {
 							xRight = r.x0;
 						}
 					}
-					else {
-						if (r.x0 < xLeft) {
-							pLeft = pChild;
-							xLeft = r.x0;
-						}
+					else if (r.x0 < xLeft) {
+						pLeft = pChild;
+						xLeft = r.x0;
 					}
 				}
 			}
@@ -1124,7 +1119,7 @@ static void _DrawClose(void) {
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
 	int Size = r.x1 - r.x0 - 2;
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 		for (int i = 2; i < Size; i++) {
 			LCD_DrawHLine(r.x0 + i, r.y0 + i, r.x0 + i + 1);
 			LCD_DrawHLine(r.x1 - i - 1, r.y0 + i, r.x1 - i);
@@ -1132,7 +1127,7 @@ static void _DrawClose(void) {
 	} WM_ITERATE_END();
 }
 WM_Obj * FRAMEWIN_AddCloseButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
-	WM_Obj * hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_CLOSE);
+	auto hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_CLOSE);
 	BUTTON_SetSelfDraw(hButton, 0, &_DrawClose);
 	return hButton;
 }
@@ -1141,7 +1136,7 @@ static void _PaintMax(void) {
 	auto r = WM_GetInsideRect();
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 		LCD_DrawHLine(r.x0 + 1, r.y0 + 1, r.x1 - 1);
 		LCD_DrawHLine(r.x0 + 1, r.y0 + 2, r.x1 - 1);
 		LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x1 - 1);
@@ -1154,7 +1149,7 @@ static void _DrawRestoreClose(void) {
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
 	int Size = ((r.x1 - r.x0 + 1) << 1) / 3;
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 		LCD_DrawHLine(r.x1 - Size, r.y0 + 1, r.x1 - 1);
 		LCD_DrawHLine(r.x1 - Size, r.y0 + 2, r.x1 - 1);
 		LCD_DrawHLine(r.x0 + Size, r.y0 + Size, r.x1 - 1);
@@ -1175,7 +1170,7 @@ static void _DrawMax(void) {
 		_PaintMax();
 }
 WM_Obj * FRAMEWIN_AddMaxButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
-	WM_Obj * hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_MAXIMIZE);
+	auto hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_MAXIMIZE);
 	BUTTON_SetSelfDraw(hButton, 0, &_DrawMax);
 	return hButton;
 }
@@ -1185,7 +1180,7 @@ static void _PaintMin(void) {
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
 	int Size = (r.x1 - r.x0 + 1) >> 1;
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 		for (int i = 1; i < Size; i++)
 			LCD_DrawHLine(r.x0 + i, r.y1 - i - (Size >> 1), r.x1 - i);
 	} WM_ITERATE_END();
@@ -1195,7 +1190,7 @@ static void _DrawRestoreMin(void) {
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
 	int Size = (r.x1 - r.x0 + 1) >> 1;
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 		for (int i = 1; i < Size; i++)
 			LCD_DrawHLine(r.x0 + i, r.y0 + i + (Size >> 1), r.x1 - i);
 	} WM_ITERATE_END();
@@ -1208,7 +1203,7 @@ static void _DrawMin(void) {
 		_PaintMin();
 }
 WM_Obj * FRAMEWIN_AddMinButton(FRAMEWIN_Handle hObj, int Flags, int Off) {
-	WM_Obj * hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_MINIMIZE);
+	auto hButton = FRAMEWIN_AddButton(hObj, Flags, Off, GUI_ID_MINIMIZE);
 	BUTTON_SetSelfDraw(hButton, 0, &_DrawMin);
 	return hButton;
 }

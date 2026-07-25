@@ -253,7 +253,7 @@ static void _DeleteAllChildren(WM_Obj * pFirstChild) {
 	}
 }
 void WM__Client2Screen(const WM_Obj *pWin, GUI_RECT *pRect) {
-	*pRect += GUI_POINT{pWin->Rect.x0, pWin->Rect.y0};
+	*pRect += pWin->Rect.LeftTop();
 }
 bool WM_IsWindow(WM_Obj * pWin) {
 	for (auto pCur = pWinFirst; pCur; pCur = pCur->pNextLin)
@@ -300,7 +300,7 @@ static void _Findy1(WM_Obj *pWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 		if (pParentRect)
 			rWinClipped &= *pParentRect;
 		/* Check if this window affects us at all */
-		if (!GUI_RectsIntersect(pRect, &rWinClipped))
+		if (!(rWinClipped <= *pRect))
 			continue;
 		if ((Status & WM_SF_HASTRANS) == 0) {
 			if (pWin->Rect.y0 > pRect->y0) {
@@ -325,7 +325,7 @@ static bool _Findx0(WM_Obj *pWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 		if (pParentRect)
 			rWinClipped &= *pParentRect;
 		/* Check if this window affects us at all */
-		if (!GUI_RectsIntersect(pRect, &rWinClipped))
+		if (!(rWinClipped <= *pRect))
 			continue;
 		if (!(Status & WM_SF_HASTRANS)) {
 			pRect->x0 = rWinClipped.x1 + 1;
@@ -348,7 +348,7 @@ static void _Findx1(WM_Obj *pWin, GUI_RECT *pRect, GUI_RECT *pParentRect) {
 		if (pParentRect)
 			rWinClipped &= *pParentRect;
 		/* Check if this window affects us at all */
-		if (!GUI_RectsIntersect(pRect, &rWinClipped))
+		if (!(rWinClipped <= *pRect))
 			continue;
 		if (!(Status & WM_SF_HASTRANS))
 			pRect->x1 = rWinClipped.x0 - 1;
@@ -532,8 +532,7 @@ WM_Obj * WM_SelectWindow(WM_Obj * pWin) {
 	/* Select new window */
 	pWinActive = pWin;
 	LCD_SetClipRectMax();             /* Drawing operations will clip ... If WM is deactivated, allow all */
-	GUI_Context.xOff = pWin->Rect.x0;
-	GUI_Context.yOff = pWin->Rect.y0;
+	GUI_Context.Off = pWin->Rect.LeftTop();
 	return pWinPrev;
 }
 WM_Obj * WM_GetActiveWindow(void) {
@@ -719,7 +718,7 @@ bool WM__GetNextIVR(void) {
 	WM__ActivateClipRect();
 	/* Hide cursor if necessary */
 #if GUI_SUPPORT_CURSOR
-	_CursorHidden = GUI_CURSOR__TempHide(&_ClipContext.CurRect);
+	_CursorHidden = GUI_CURSOR__TempHide(_ClipContext.CurRect);
 #endif
 	return true;
 }
@@ -733,9 +732,7 @@ bool WM__GetNextIVR(void) {
 	0 : There is no valid rectangle (nothing to do ...)
 	1 : There is a valid rectangle
 */
-bool WM__InitIVRSearch(const GUI_RECT *pMaxRect) {
-	GUI_RECT r;
-	WM_Obj *pAWin;
+bool WM__InitIVRSearch(GUI_RECT rcMax) {
 	/* If WM is not active -> nothing to do, leave cliprect alone */
 	if (!IsActive) {
 		WM__ActivateClipRect();
@@ -744,10 +741,11 @@ bool WM__InitIVRSearch(const GUI_RECT *pMaxRect) {
 	/* If we entered multiple times, leave Cliprect alone */
 	if (++_ClipContext.EntranceCnt > 1)
 		return true;
-	pAWin = pWinActive;
+	auto pAWin = pWinActive;
 	_ClipContext.Cnt = -1;
 	/* When using callback mechanism, it is legal to reduce drawing
 	   area to the invalid area ! */
+	GUI_RECT r;
 	if (WM__PaintCallbackCnt)
 		r = pAWin->InvalidRect;
 	else if (pAWin->Status & WM_SF_ISVIS) /* Not using callback mechanism, therefor allow entire rectangle */
@@ -757,12 +755,11 @@ bool WM__InitIVRSearch(const GUI_RECT *pMaxRect) {
 		return false;  /* window is not even visible ! */
 	}
 	/* If the drawing routine has specified a rectangle, use it to reduce the rectangle */
-	if (pMaxRect)
-		r &= *pMaxRect;
+	r &= rcMax;
 	/* If user has reduced the cliprect size, reduce the rectangle */
 	if (GUI_Context.WM__pUserClipRect) {
-		WM_Obj *pWin = pAWin;
-		GUI_RECT rUser = *(GUI_Context.WM__pUserClipRect);
+		auto pWin = pAWin;
+		auto rUser = *(GUI_Context.WM__pUserClipRect);
 #if WM_SUPPORT_TRANSPARENCY
 		if (WM__hATransWindow)
 			pWin = WM__hATransWindow;
@@ -819,7 +816,7 @@ static void _Paint1(WM_Obj *pWin) {
 			WM_SendMessage(pWin, WM_PAINT, (WM_PARAM)&pWin->InvalidRect);
 		}
 		else {
-			WM_ITERATE_START(&pWin->InvalidRect) {
+			WM_ITERATE_START(pWin->InvalidRect) {
 				WM_SetDefault();
 				WM_SendMessage(pWin, WM_PAINT, (WM_PARAM)&pWin->InvalidRect);
 			} WM_ITERATE_END();
@@ -850,24 +847,20 @@ static void _Paint1(WM_Obj *pWin) {
 */
 #if WM_SUPPORT_TRANSPARENCY
 static int _Paint1Trans(WM_Obj *pWin) {
-	int xPrev, yPrev;
 	auto pAWin = pWinActive;
 	/* Check if we need to do any drawing */
-	if (GUI_RectsIntersect(&pAWin->InvalidRect, &pWin->Rect)) {
+	if (pWin->Rect <= pAWin->InvalidRect) {
 		/* Save old values */
-		xPrev = GUI_Context.xOff;
-		yPrev = GUI_Context.yOff;
+		auto Prev = GUI_Context.Off;
 		/* Set values for the current (transparent) window, rather than the one below */
 		pWin->InvalidRect = pWin->Rect & pAWin->InvalidRect;
 		WM__hATransWindow = pWin;
-		GUI_Context.xOff = pWin->Rect.x0;
-		GUI_Context.yOff = pWin->Rect.y0;
+		GUI_Context.Off = pWin->Rect.LeftTop();
 		/* Do the actual drawing ... */
 		_Paint1(pWin);
 		/* Restore settings */
 		WM__hATransWindow = 0;
-		GUI_Context.xOff = xPrev;
-		GUI_Context.yOff = yPrev;
+		GUI_Context.Off = Prev;
 		return 1; /* Some drawing took place */
 	}
 	return 0; /* No invalid area, so nothing was drawn */
@@ -892,7 +885,7 @@ static void _PaintTransChildren(WM_Obj *pWin) {
 			if ((pChild->Status & (WM_SF_HASTRANS | WM_SF_ISVIS))   /* Transparent & visible ? */
 				== (WM_SF_HASTRANS | WM_SF_ISVIS)) {
 				/* Set invalid area of the window to draw */
-				if (GUI_RectsIntersect(&pChild->Rect, &pWin->InvalidRect)) {
+				if (pWin->InvalidRect <= pChild->Rect) {
 					GUI_RECT InvalidRectPrev = pWin->InvalidRect;
 					if (_Paint1Trans(pChild))
 						_PaintTransChildren(pChild);
@@ -1020,7 +1013,7 @@ static int _Paint(WM_Obj *pWin) {
 }
 static void _DrawNext(void) {
 	int UpdateRem = 1;
-	WM_Obj *iWin = (pWinNextDraw == nullptr) ? pWinFirst : pWinNextDraw;
+	auto iWin = pWinNextDraw ? pWinNextDraw : pWinFirst;
 	GUI_CONTEXT ContextOld;
 	GUI_SaveContext(&ContextOld);
 	/* Make sure the next window to redraw is valid */
@@ -1059,7 +1052,7 @@ int WM_Exec(void) {
 static WM_PARAM cbBackWin(WM_Obj * pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_KEY: {
-			const WM_KEY_INFO *pKeyInfo = (const WM_KEY_INFO *)Data;
+			auto pKeyInfo = (const WM_KEY_INFO *)Data;
 			if (pKeyInfo->PressedCnt == 1)
 				GUI_StoreKey(pKeyInfo->Key);
 			return 0;
@@ -1263,7 +1256,7 @@ bool WM_IsEnabled(WM_Obj * pWin) {
 static void _NotifyVisChanged(WM_Obj * pWin, GUI_RECT *pRect) {
 	for (auto pChild = WM_GetFirstChild(pWin); pChild; pChild = pChild->pNext) {
 		if (pChild->Status & WM_SF_ISVIS) {
-			if (GUI_RectsIntersect(&pChild->Rect, pRect)) {
+			if (*pRect <= pChild->Rect) {
 				WM__SendMsgNoData(pChild, WM_NOTIFY_VIS_CHANGED);             /* Notify window that visibility may have changed */
 				_NotifyVisChanged(pChild, pRect);
 			}
@@ -1284,7 +1277,7 @@ void WM__NotifyVisChanged(WM_Obj * pWin, GUI_RECT *pRect) {
 	}
 }
 void WM__Screen2Client(const WM_Obj *pWin, GUI_RECT *pRect) {
-	*pRect += GUI_POINT{-pWin->Rect.x0, -pWin->Rect.y0};
+	*pRect -= pWin->Rect.LeftTop();
 }
 #define WM_DEBUG_LEVEL 1
 /*********************************************************************
@@ -1482,9 +1475,8 @@ void WM__RemoveCriticalHandle(WM_CRITICAL_HANDLE *pCriticalHandle) {
 *   Debug code: shows invalid areas
 */
 static void _ShowInvalid(WM_Obj * pWin) {
-	GUI_CONTEXT Context = GUI_Context;
-	GUI_RECT rClient;
-	rClient = pWin->InvalidRect + GUI_POINT{-pWin->Rect.x0, -pWin->Rect.y0};
+	auto Context = GUI_Context;
+	auto rClient = pWin->InvalidRect - pWin->Rect.LeftTop();
 	WM_SelectWindow(pWin);
 	GUI_SetColor(RGB_GREEN);
 	GUI_SetBkColor(RGB_GREEN);
@@ -1641,14 +1633,14 @@ void WM_GetInsideRectExScrollbar(WM_Obj * pWin, GUI_RECT *pRect) {
 			rWin = WM_GetWindowRect(pWin);     /* The entire window in screen coordinates */
 			rInside = WM_GetInsideRect(pWin);
 			if (pBarV) {
-				rScrollbar = WM_GetWindowRect(pBarV) + GUI_POINT{-rWin.x0, -rWin.y0};
+				rScrollbar = WM_GetWindowRect(pBarV) - rWin.LeftTop();
 				WinFlags = WM_GetFlags(pBarV);
 				if ((WinFlags & WM_SF_ANCHOR_RIGHT) && (WinFlags & WM_SF_ISVIS)) {
 					rInside.x1 = rScrollbar.x0 - 1;
 				}
 			}
 			if (pBarH) {
-				rScrollbar = WM_GetWindowRect(pBarH) + GUI_POINT{-rWin.x0, -rWin.y0};
+				rScrollbar = WM_GetWindowRect(pBarH) - rWin.LeftTop();
 				WinFlags = WM_GetFlags(pBarH);
 				if ((WinFlags & WM_SF_ANCHOR_BOTTOM) && (WinFlags & WM_SF_ISVIS)) {
 					rInside.y1 = rScrollbar.y0 - 1;
@@ -1842,7 +1834,7 @@ static char _WindowSiblingsOverlapRect(WM_Obj * iWin, GUI_RECT *pRect) {
 		/* Check if this window affects us at all */
 		if (Status & WM_SF_ISVIS) {
 			/* Check if this window affects us at all */
-			if (GUI_RectsIntersect(pRect, &pWin->Rect)) {
+			if (pWin->Rect <= *pRect) {
 				return 1;
 			}
 		}
@@ -2078,7 +2070,7 @@ void WM_SetCaptureMove(WM_Obj * pWin, const GUI_PID_STATE *pState, int MinVisibi
 			/* make sure at least a part of the windows stays inside of its parent */
 			Rect = WM_GetWindowRect(pWin) + GUI_POINT{dx, dy};
 			RectParent = WM_GetWindowRect(WM_GetParent(pWin)) - MinVisibility;
-			if (GUI_RectsIntersect(&Rect, &RectParent))
+			if (RectParent <= Rect)
 				WM_MoveWindow(pWin, dx, dy);
 		}
 	}
@@ -2252,7 +2244,7 @@ void WM_SetId(WM_Obj * pObj, int Id) {
 * Return value: 1 if scrollbar was visible, 0 if not
 */
 static int _SetScrollbar(WM_Obj * pWin, int OnOff, int Id, int Flags) {
-	WM_Obj * pBar = WM_GetDialogItem(pWin, Id);
+	auto pBar = WM_GetDialogItem(pWin, Id);
 	if (OnOff) {
 		if (!pBar)
 			SCROLLBAR_CreateAttached(pWin, Flags);
@@ -2332,7 +2324,7 @@ void WM_SetTransState(WM_Obj * pWin, unsigned State) {
 #endif /* WM_SUPPORT_TRANSPARENCY */
 
 const GUI_RECT *WM_SetUserClipRect(const GUI_RECT *pRect) {
-	const GUI_RECT *pRectReturn = GUI_Context.WM__pUserClipRect;
+	auto pRectReturn = GUI_Context.WM__pUserClipRect;
 	GUI_Context.WM__pUserClipRect = pRect;
 	/* Activate it ... */
 	WM__ActivateClipRect();

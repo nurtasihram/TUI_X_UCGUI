@@ -12,11 +12,11 @@
 #define FRAMEWIN_BUTTON_LEFT    (1<<1)
 
 typedef WM_Obj * FRAMEWIN_Handle;
-FRAMEWIN_Handle FRAMEWIN_Create        (const char* pTitle, WM_CALLBACK* cb, int Flags, int x0, int y0, int xsize, int ysize);
-FRAMEWIN_Handle FRAMEWIN_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, const char* pText, WM_CALLBACK* cb, int Flags);
-FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+FRAMEWIN_Handle FRAMEWIN_Create        (const char *pTitle, WM_CALLBACK *cb, int Flags, int x0, int y0, int xsize, int ysize);
+FRAMEWIN_Handle FRAMEWIN_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, const char *pText, WM_CALLBACK *cb, int Flags);
+FRAMEWIN_Handle FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
 FRAMEWIN_Handle FRAMEWIN_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
-                                        int WinFlags, int ExFlags, int Id, const char* pTitle, WM_CALLBACK* cb);
+                                        int WinFlags, int ExFlags, int Id, const char *pTitle, WM_CALLBACK *cb);
 
 #define WM_Invalidate(hObj)    WM_Invalidate(hObj)
 WM_Obj * FRAMEWIN_AddButton     (FRAMEWIN_Handle hObj, int Flags, int Off, int Id);
@@ -34,7 +34,7 @@ void FRAMEWIN_SetClientColor (FRAMEWIN_Handle hObj, RGBC Color);
 void FRAMEWIN_SetFont        (FRAMEWIN_Handle hObj, PCFONT pFont);
 void FRAMEWIN_SetMoveable    (FRAMEWIN_Handle hObj, int State);
 void FRAMEWIN_SetResizeable  (FRAMEWIN_Handle hObj, int State);
-void FRAMEWIN_SetText        (FRAMEWIN_Handle hObj, const char* s);
+void FRAMEWIN_SetText        (FRAMEWIN_Handle hObj, const char *s);
 void FRAMEWIN_SetTextAlign   (FRAMEWIN_Handle hObj, int Align);
 void FRAMEWIN_SetTextColor   (FRAMEWIN_Handle hObj, RGBC Color);
 void FRAMEWIN_SetTextColorEx (FRAMEWIN_Handle hObj, unsigned Index, RGBC Color);

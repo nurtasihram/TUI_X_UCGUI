@@ -348,7 +348,7 @@ int HEADER_GetHeight(HEADER_Handle hObj) {
 	int Height = 0;
 	if (hObj) {
 		GUI_RECT Rect = WM_GetClientRect(hObj);
-		Rect += GUI_POINT{-Rect.x0, -Rect.y0};
+		Rect -= Rect.LeftTop();
 		Height = Rect.y1 - Rect.y0 + 1;
 	}
 	return Height;

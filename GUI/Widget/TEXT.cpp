@@ -14,7 +14,7 @@ static void _OnPaint(TEXT_Obj *pObj) {
 	GUI_SetColor(pObj->Props.TextColor);
 	GUI_SetFont(pObj->Props.pFont);
 	/* Fill with parents background color */
-#if !WM_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent*/
+#if !WM_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent */
 	if (pObj->Props.BkColor == RGB_INVALID_COLOR) {
 		GUI_SetBkColor(WIDGET__GetBkColor(pObj));
 	}

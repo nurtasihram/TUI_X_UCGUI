@@ -68,7 +68,7 @@ static void _OnPaint(LISTVIEW_Obj *pObj, const GUI_RECT *pClipRect) {
 	yPos = HEADER_GetHeight(pObj->hHeader) + EffectSize;
 	EndRow = pObj->ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
 	/* Calculate clipping rectangle */
-	ClipRect = *pClipRect + GUI_POINT{-pObj->Rect.x0, -pObj->Rect.y0};
+	ClipRect = *pClipRect -pObj->Rect.LeftTop();
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	ClipRect &= Rect;
 	/* Set drawing color, font and text mode */
@@ -224,7 +224,7 @@ static void _SetSelFromPos(LISTVIEW_Obj *pObj, const GUI_PID_STATE *pState) {
 */
 static void _NotifyOwner(WM_Obj * hObj, int Notification) {
 	auto pObj = (LISTVIEW_Obj *)hObj;
-	WM_Obj * hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
+	auto hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
 	WM_NOTIFY_INFO Info;
 	Info.Notification = Notification;
 	Info.pWinSrc = hObj;
@@ -378,8 +378,8 @@ static WM_PARAM _LISTVIEW_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 			LISTVIEW__UpdateScrollParas(pObj);
 			return 0;
 		case WM_NOTIFY_PARENT: {
-			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
-			WM_Obj * pWinSrc = pInfo->pWinSrc;
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pWinSrc = pInfo->pWinSrc;
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_CHILD_DELETED:
 					/* make sure we do not send any messages to the header child once it has been deleted */

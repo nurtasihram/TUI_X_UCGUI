@@ -279,7 +279,7 @@ void BUTTON_GetText(BUTTON_Handle hObj, char *pBuffer, int MaxLen) {
 	if (hObj) {
 		auto pObj = (BUTTON_Obj *)hObj;
 		if (pObj->pText) {
-			const char *pText = pObj->pText;
+			auto pText = pObj->pText;
 			int Len = GUI__strlen(pText);
 			if (Len > (MaxLen - 1))
 				Len = MaxLen - 1;

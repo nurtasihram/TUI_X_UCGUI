@@ -177,6 +177,6 @@ const tLCDDEV_APIList LCD_L0_APIList = {
 #endif
 };
 
-const tLCDDEV_APIList * /*const*/ LCD_aAPI[] = {
+const tLCDDEV_APIList * /*const */ LCD_aAPI[] = {
 	&LCD_L0_APIList
 };

@@ -18,7 +18,7 @@ uint16_t GUI_UC_GetCharCode(const char  * s) {
   return r;
 }
 
-int GUI_UC_Encode(char* s, uint16_t Char) {
+int GUI_UC_Encode(char *s, uint16_t Char) {
     int r;
     r = GUI_Context.pUC_API->pfEncode(s, Char);
     return r;

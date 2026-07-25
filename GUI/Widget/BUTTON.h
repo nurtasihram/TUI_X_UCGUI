@@ -32,7 +32,7 @@ enum BUTTON_CI {
 */
 BUTTON_Handle BUTTON_Create        (int x0, int y0, int xsize, int ysize, int ID, int Flags);
 BUTTON_Handle BUTTON_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags);
-BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+BUTTON_Handle BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
 BUTTON_Handle BUTTON_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                     int WinFlags, int ExFlags, int Id);
 
@@ -57,7 +57,7 @@ void             BUTTON_SetFont            (BUTTON_Handle hObj, PCFONT pfont);
 void             BUTTON_SetState           (BUTTON_Handle hObj, int State);                                    /* Not to be doc. */
 void             BUTTON_SetPressed         (BUTTON_Handle hObj, int State);
 void             BUTTON_SetFocussable      (BUTTON_Handle hObj, int State);
-void             BUTTON_SetText            (BUTTON_Handle hObj, const char* s);
+void             BUTTON_SetText            (BUTTON_Handle hObj, const char *s);
 void             BUTTON_SetTextAlign       (BUTTON_Handle hObj, int Align);
 void             BUTTON_SetTextColor       (BUTTON_Handle hObj, unsigned int Index, RGBC Color);
 void             BUTTON_SetSelfDrawEx      (BUTTON_Handle hObj, unsigned int Index, void (*pDraw)(void), int x, int y); /* Not to be doc. */

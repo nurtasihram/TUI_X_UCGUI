@@ -16,7 +16,7 @@ interface specified in this module
 #define RADIO_TEXTPOS_LEFT        WIDGET_STATE_USER0  /* Not implemented, TBD */
 typedef WM_Obj * RADIO_Handle;
 RADIO_Handle RADIO_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, unsigned Para);
-RADIO_Handle RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+RADIO_Handle RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
 RADIO_Handle RADIO_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                   int WinFlags, int ExFlags, int Id, int NumItems, int Spacing);
 void RADIO_AddValue     (RADIO_Handle hObj, int Add);
@@ -26,7 +26,7 @@ void RADIO_SetBkColor   (RADIO_Handle hObj, RGBC Color);
 void RADIO_SetFont      (RADIO_Handle hObj, PCFONT pFont);
 void RADIO_SetGroupId   (RADIO_Handle hObj, uint8_t GroupId);
 void RADIO_SetImage     (RADIO_Handle hObj, PCBITMAP pBitmap, unsigned int Index);
-void RADIO_SetText      (RADIO_Handle hObj, const char* pText, unsigned Index);
+void RADIO_SetText      (RADIO_Handle hObj, const char *pText, unsigned Index);
 void RADIO_SetTextColor (RADIO_Handle hObj, RGBC Color);
 void RADIO_SetValue     (RADIO_Handle hObj, int v);
 int RADIO_GetValue(RADIO_Handle hObj);

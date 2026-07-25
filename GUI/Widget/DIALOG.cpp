@@ -23,8 +23,8 @@ WM_DIALOG_STATUS *GUI_GetDialogStatusPtr(WM_Obj * hDialog) {
 }
 WM_Obj * GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidgets, WM_CALLBACK *cb, WM_Obj * hParent,
 							int x0, int y0) {
-	WM_Obj * hDialog = paWidget->pfCreateIndirect(paWidget, hParent, x0, y0, cb);     /* Create parent window */
-	WM_Obj * hDialogClient = WM_GetClientWindow(hDialog);
+	auto hDialog = paWidget->pfCreateIndirect(paWidget, hParent, x0, y0, cb);     /* Create parent window */
+	auto hDialogClient = WM_GetClientWindow(hDialog);
 	WIDGET_OrState(hDialog, paWidget->Flags);
 	WM_ShowWindow(hDialog);
 	WM_ShowWindow(hDialogClient);

@@ -110,10 +110,10 @@ void GUI_CURSOR__TempShow(void) {
 	}
 }
 
-bool GUI_CURSOR__TempHide(const GUI_RECT *pRect) {
+bool GUI_CURSOR__TempHide(GUI_RECT r) {
 	if (!_CursorIsVis)
 		return false; /* Cursor not visible -> nothing to do */
-	if (!pRect || GUI_RectsIntersect(pRect, &_Rect)) {
+	if (_Rect <= r) {
 		_Hide(); /* Cursor needs to be hidden */
 		return true;
 	}
@@ -219,7 +219,7 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
 						char xyOverlaps, xyNewOverlaps;
 						int BitmapPixel;
 						RGBC Pixel;
-						RGBC *pSave = pData + x + y * xSize;
+						auto pSave = pData + x + y * xSize;
 						int xNew = x + xOff;
 						BitmapPixel = GUI_GetBitmapPixel(pBM, x, y);
 						xyOverlaps = (x >= xOverlapMin) && (x <= xOverlapMax) && yOverlaps;

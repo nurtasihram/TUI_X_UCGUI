@@ -449,7 +449,7 @@ static char _HandlePID(MENU_Obj *pObj, int x, int y, int Pressed) {
 }
 static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, int MsgId, const GUI_PID_STATE *pState) {
 	if (!_IsTopLevelMenu(pObj)) {
-		WM_Obj * hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
+		auto hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
 		if (hOwner) {
 			GUI_PID_STATE State;
 			if (pState) {
@@ -463,7 +463,7 @@ static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, int MsgId, const GUI_PID_STATE
 	}
 }
 static WM_PARAM _OnMenu(MENU_Obj *pObj, WM_PARAM Data) {
-	const MENU_MSG_DATA *pData = (const MENU_MSG_DATA *)Data;
+	auto pData = (const MENU_MSG_DATA *)Data;
 	if (!pData) 
 		return 0;
 	switch (pData->MsgType) {
@@ -475,7 +475,7 @@ static WM_PARAM _OnMenu(MENU_Obj *pObj, WM_PARAM Data) {
 		case MENU_ON_INITMENU:
 		case MENU_ON_INITSUBMENU: {
 			/* Forward message to owner. */
-			WM_Obj * hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
+			auto hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(pObj);
 			if (hOwner)
 				WM__SendMessage(hOwner, WM_MENU, Data);
 			break;

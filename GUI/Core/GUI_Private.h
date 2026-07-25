@@ -28,12 +28,12 @@
 
 void LCD_L0_DrawBitmap    (int x0, int y0, int xsize, int ysize,
                            int BitsPerPixel, int BytesPerLine,
-                           const uint8_t  * pData, int Diff, const RGBC* pTrans);
+                           const uint8_t  * pData, int Diff, const RGBC *pTrans);
 
 #define GUI_POS_AUTO -4095   /* Position value for auto-pos */
 
 #if GUI_SUPPORT_MEMDEV
-  void*  GUI_MEMDEV__XY2PTR  (int x,int y);
-  void*  GUI_MEMDEV__XY2PTREx(GUI_MEMDEV* pDev, int x,int y);
+  void *GUI_MEMDEV__XY2PTR  (int x,int y);
+  void *GUI_MEMDEV__XY2PTREx(GUI_MEMDEV *pDev, int x,int y);
   void   GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem,int x, int y);
 #endif

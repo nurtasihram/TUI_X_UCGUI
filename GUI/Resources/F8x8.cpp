@@ -1761,7 +1761,7 @@ const FONT_MONO::TRANSINFO::LIST GUI_F8x8_TransList[]{
 
 const FONT_MONO::TRANSINFO GUI_F8x8_TransInfo{
 	144, 255,          /*  FirstChar, LastChar */
-	GUI_F8x8_TransList /*  const FONT_TRANSLIST* pList */
+	GUI_F8x8_TransList /*  const FONT_TRANSLIST *pList */
 };
 extern const FONT_MONO GUI_Font8x8{
 	8, 8, /* YSize, YDist */

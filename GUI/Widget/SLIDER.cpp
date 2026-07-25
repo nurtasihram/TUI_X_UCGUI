@@ -20,7 +20,7 @@ static void _OnPaint(SLIDER_Obj *pObj) {
 		Range = 1;
 	}
 	/* Fill with parents background color */
-#if !SLIDER_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent*/
+#if !SLIDER_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent */
 	if (pObj->Props.BkColor == RGB_INVALID_COLOR) {
 		GUI_SetBkColor(WIDGET__GetBkColor(pObj));
 	}

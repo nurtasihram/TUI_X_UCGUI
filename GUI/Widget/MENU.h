@@ -36,24 +36,24 @@ typedef struct {
 } MENU_MSG_DATA;
 
 typedef struct {
-  const char* pText;
+  const char *pText;
   uint16_t         Id;
   uint16_t         Flags;
   MENU_Handle hSubmenu;
 } MENU_ITEM_DATA;
 
-MENU_Handle MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+MENU_Handle MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
 MENU_Handle MENU_CreateEx      (int x0, int y0, int xSize, int ySize, WM_Obj * hParent, int WinFlags, int ExFlags, int Id);
 
 void      MENU_Attach           (MENU_Handle hObj, WM_Obj * hDestWin, int x, int y, int xSize, int ySize, int Flags);
 void      MENU_Popup            (MENU_Handle hObj, WM_Obj * hDestWin, int x, int y, int xSize, int ySize, int Flags);
 void      MENU_SetOwner         (MENU_Handle hObj, WM_Obj * hOwner);
-void      MENU_AddItem          (MENU_Handle hObj, const MENU_ITEM_DATA* pItemData);
+void      MENU_AddItem          (MENU_Handle hObj, const MENU_ITEM_DATA *pItemData);
 void      MENU_DeleteItem       (MENU_Handle hObj, uint16_t ItemId);
-void      MENU_InsertItem       (MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA* pItemData);
-void      MENU_SetItem          (MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA* pItemData);
-void      MENU_GetItem          (MENU_Handle hObj, uint16_t ItemId, MENU_ITEM_DATA* pItemData);
-void      MENU_GetItemText      (MENU_Handle hObj, uint16_t ItemId, char* pBuffer, unsigned BufferSize);
+void      MENU_InsertItem       (MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pItemData);
+void      MENU_SetItem          (MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pItemData);
+void      MENU_GetItem          (MENU_Handle hObj, uint16_t ItemId, MENU_ITEM_DATA *pItemData);
+void      MENU_GetItemText      (MENU_Handle hObj, uint16_t ItemId, char *pBuffer, unsigned BufferSize);
 unsigned  MENU_GetNumItems      (MENU_Handle hObj);
 void      MENU_DisableItem      (MENU_Handle hObj, uint16_t ItemId);
 void      MENU_EnableItem       (MENU_Handle hObj, uint16_t ItemId);

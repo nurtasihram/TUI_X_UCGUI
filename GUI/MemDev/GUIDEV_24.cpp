@@ -312,7 +312,7 @@ static void _FillRect(int x0, int y0, int x1, int y1) {
 	unsigned BytesPerLine;
 	int Len;
 	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
-	PIXELINDEX *pData = _XY2PTR(x0, y0);
+	auto pData = _XY2PTR(x0, y0);
 	BytesPerLine = pDev->BytesPerLine;
 	Len = x1 - x0 + 1;
 	/* Mark rectangle as modified */
@@ -331,7 +331,7 @@ static void _DrawHLine(int x0, int y, int x1) {
 
 static void _DrawVLine(int x, int y0, int y1) {
 	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
-	PIXELINDEX *pData = _XY2PTR(x, y0);
+	auto pData = _XY2PTR(x, y0);
 	unsigned BytesPerLine = pDev->BytesPerLine;
 	unsigned NumPixels = y1 - y0 + 1;
 	do {
@@ -342,12 +342,12 @@ static void _DrawVLine(int x, int y0, int y1) {
 
 static void _SetPixel(int x, int y, RGBC Index) {
 	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
-	PIXELINDEX *pData = _XY2PTR(x, y);
+	auto pData = _XY2PTR(x, y);
 	*pData = Index;
 }
 
 static RGBC _GetPixel(int x, int y) {
-	PIXELINDEX *pData = _XY2PTR(x, y);
+	auto pData = _XY2PTR(x, y);
 	return *pData;
 }
 

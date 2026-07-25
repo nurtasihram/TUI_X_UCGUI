@@ -42,7 +42,7 @@ static void _OnPaint(EDIT_Obj *pObj) {
 	GUI__CalcTextRect(pText, &rInside, &rText, pObj->Props.Align);
 	/* Calculate position and size of cursor */
 	if (pObj->State & WIDGET_STATE_FOCUS) {
-		const char  *p = pText;
+		auto p = pText;
 		CursorWidth = ((pObj->XSizeCursor > 0) ? (pObj->XSizeCursor) : (1));
 		if (pText) {
 			uint16_t Char;
@@ -78,7 +78,7 @@ static void _OnPaint(EDIT_Obj *pObj) {
 		}
 	}
 	/* WM loop */
-	WM_ITERATE_START(nullptr) {
+//	WM_ITERATE_START(nullptr) {
 		/* Set clipping rectangle */
 		WM_SetUserClipRect(&rFillRect);
 		/* Display text */
@@ -101,7 +101,7 @@ static void _OnPaint(EDIT_Obj *pObj) {
 		WM_SetUserClipRect(nullptr);
 		/* Draw the 3D effect (if configured) */
 		WIDGET__EFFECT_DrawDown(pObj);
-	} WM_ITERATE_END();
+//	} WM_ITERATE_END();
 }
 static void _Delete(EDIT_Obj *pObj) {
 	GUI_ALLOC_FreePtr((void **)&pObj->pText);
@@ -222,7 +222,7 @@ static int _IsCharsAvailable(EDIT_Obj *pObj, int CharsNeeded) {
 static void _DeleteChar(EDIT_Obj *pObj) {
 	if (pObj->pText) {
 		int CursorOffset;
-		char *pText = pObj->pText;
+		auto pText = pObj->pText;
 		CursorOffset = GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
 		if (CursorOffset < GUI__strlen(pText)) {
 			int NumBytes;
@@ -244,7 +244,7 @@ static int _InsertChar(EDIT_Obj *pObj, uint16_t Char) {
 		int BytesNeeded;
 		BytesNeeded = GUI_UC__CalcSizeOfChar(Char);
 		if (_IsSpaceInBuffer(pObj, BytesNeeded)) {
-			char *pText = pObj->pText;
+			auto pText = pObj->pText;
 			int CursorOffset = GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
 			pText += CursorOffset;
 			GUI__memmove(pText + BytesNeeded, pText, GUI__strlen(pText) + 1);
@@ -258,7 +258,7 @@ static int _InsertChar(EDIT_Obj *pObj, uint16_t Char) {
 uint16_t EDIT__GetCurrentChar(EDIT_Obj *pObj) {
 	uint16_t Char = 0;
 	if (pObj->pText) {
-		const char *pText = pObj->pText;
+		auto pText = pObj->pText;
 		pText += GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
 		Char = GUI_UC_GetCharCode(pText);
 	}
@@ -272,7 +272,7 @@ uint16_t EDIT__GetCurrentChar(EDIT_Obj *pObj) {
 */
 void EDIT__SetCursorPos(EDIT_Obj *pObj, int CursorPos) {
 	if (pObj->pText) {
-		char *pText = pObj->pText;
+		auto pText = pObj->pText;
 		int NumChars = GUI__GetNumChars(pText);
 		int Offset = (pObj->EditMode == GUI_EDIT_MODE_INSERT) ? 0 : 1;
 		if (CursorPos < 0)
@@ -379,7 +379,7 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 				switch (Key) {
 					case GUI_KEY_UP:
 						if (pObj->pText) {
-							char *pText = pObj->pText;
+							auto pText = pObj->pText;
 							uint16_t Char;
 							pText += GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
 							Char = GUI_UC_GetCharCode(pText);
@@ -391,7 +391,7 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 						break;
 					case GUI_KEY_DOWN:
 						if (pObj->pText) {
-							char *pText = pObj->pText;
+							auto pText = pObj->pText;
 							pText += GUI_UC__NumChars2NumBytes(pText, pObj->CursorPos);
 							uint16_t Char = GUI_UC_GetCharCode(pText);
 							if (Char > 0x20) {
@@ -483,7 +483,7 @@ void EDIT_SetText(EDIT_Handle hObj, const char *s) {
 			int NumBytesNew, NumBytesOld = 0;
 			int NumCharsNew;
 			if (pObj->pText) {
-				char *pText = pObj->pText;
+				auto pText = pObj->pText;
 				NumBytesOld = GUI__strlen(pText) + 1;
 			}
 			NumCharsNew = GUI__GetNumChars(s);
@@ -492,7 +492,7 @@ void EDIT_SetText(EDIT_Handle hObj, const char *s) {
 			}
 			NumBytesNew = GUI_UC__NumChars2NumBytes(s, NumCharsNew) + 1;
 			if (_IsSpaceInBuffer(pObj, NumBytesNew - NumBytesOld)) {
-				char *pText = pObj->pText;
+				auto pText = pObj->pText;
 				GUI__memcpy(pText, s, NumBytesNew);
 				pObj->CursorPos = NumBytesNew - 1;
 				if (pObj->CursorPos == pObj->MaxLen) {
@@ -517,7 +517,7 @@ void EDIT_GetText(EDIT_Handle hObj, char *sDest, int MaxLen) {
 		if (hObj) {
 			auto pObj = (EDIT_Obj *)hObj;
 			if (pObj->pText) {
-				char *pText = pObj->pText;
+				auto pText = pObj->pText;
 				int NumChars = GUI__GetNumChars(pText);
 				if (NumChars > MaxLen)
 					NumChars = MaxLen;
@@ -561,7 +561,7 @@ void EDIT_SetMaxLen(EDIT_Handle  hObj, int MaxLen) {
 		if (MaxLen != pObj->MaxLen) {
 			if (MaxLen < pObj->MaxLen) {
 				if (pObj->pText) {
-					char *pText = pObj->pText;
+					auto pText = pObj->pText;
 					int NumChars = GUI__GetNumChars(pText);
 					if (NumChars > MaxLen) {
 						int NumBytes;

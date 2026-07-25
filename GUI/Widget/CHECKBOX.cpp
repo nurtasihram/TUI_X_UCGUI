@@ -42,7 +42,7 @@ static void _OnPaint(CHECKBOX_Obj *pObj) {
 	if (pObj->pText) {
 		GUI_RECT RectText;
 		/* Draw the text */
-		const char *s = pObj->pText;
+		auto s = pObj->pText;
 		RectText = WM_GetClientRect();
 		RectText.x0 += RectBox.x1 + 1 + pObj->Props.Spacing;
 		GUI_SetTextMode(DRAWMODE_TRANS);

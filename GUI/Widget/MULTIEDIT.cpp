@@ -1019,8 +1019,8 @@ static WM_PARAM _MULTIEDIT_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 			_Invalidate(pObj);
 			return 0;
 		case WM_NOTIFY_PARENT: {
-			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
-			WM_Obj * pWinSrc = pInfo->pWinSrc;
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pWinSrc = pInfo->pWinSrc;
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED: {
 					WM_SCROLL_STATE ScrollState;

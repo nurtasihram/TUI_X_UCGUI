@@ -11,7 +11,7 @@
 */
 static uint16_t _GetCharCode(const char  * s) {
   uint16_t r;
-  uint8_t Char = *(const uint8_t*)s;
+  uint8_t Char = *(const uint8_t *)s;
   if ((Char & 0x80) == 0) {                /* Single byte (ASCII)  */
     r = Char;
   } else if ((Char & 0xe0) == 0xc0) {      /* Double byte sequence */

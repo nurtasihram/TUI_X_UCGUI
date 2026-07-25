@@ -153,9 +153,6 @@
     <ClCompile Include="GUI\Core\GUI_UC.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_UC_DispString.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_UC_EncodeNone.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -201,7 +198,6 @@
     <ClCompile Include="GUI\Resources\GUI_CursorArrowM.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="GUI\Resources\F08_ASCII.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
@@ -211,15 +207,13 @@
     <ClCompile Include="GUI\Core\GUICore.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">
       <Filter>Config</Filter>
     </ClInclude>
     <ClInclude Include="GUI\WM\WM.h">
-      <Filter>GUI\WM</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\WM\WM_GUI.h">
       <Filter>GUI\WM</Filter>
     </ClInclude>
     <ClInclude Include="GUI\WM\WM_Intern.h">
@@ -360,10 +354,18 @@
     <ClInclude Include="GUI\Core\GUIType.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Widget\SLIDER_Private.h" />
-    <ClInclude Include="GUI\Widget\PROGBAR_Private.h" />
-    <ClInclude Include="GUI\Widget\TEXT_Private.h" />
-    <ClInclude Include="GUI\Widget\MULTIEDIT_Private.h" />
+    <ClInclude Include="GUI\Widget\MULTIEDIT_Private.h">
+      <Filter>GUI\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Widget\PROGBAR_Private.h">
+      <Filter>GUI\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Widget\SLIDER_Private.h">
+      <Filter>GUI\Widget</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Widget\TEXT_Private.h">
+      <Filter>GUI\Widget</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="GUI_X\SimDisp.ico">
@@ -380,6 +382,5 @@
     <None Include="GUI\Core\Dots.inl">
       <Filter>GUI\Core</Filter>
     </None>
-    <None Include=".github\copilot-instructions.md" />
   </ItemGroup>
 </Project>

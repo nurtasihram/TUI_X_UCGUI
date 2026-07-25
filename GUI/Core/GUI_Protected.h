@@ -4,8 +4,6 @@
 #include "LCD_Protected.h"
 #include "GUIDebug.h"
 
-#include "WM_GUI.h"
-
 #ifndef GUI_DEFAULT_FONT
 #define GUI_DEFAULT_FONT    &GUI_Font6x8
 #endif
@@ -24,17 +22,16 @@
 
 typedef enum { GUI_WRAPMODE_NONE, GUI_WRAPMODE_WORD, GUI_WRAPMODE_CHAR } GUI_WRAPMODE;
 
-
 #if GUI_SUPPORT_MEMDEV
-typedef struct /*GUI_MEMDEV*/ {
+struct GUI_MEMDEV {
 	int16_t x0, y0, XSize, YSize;
 	int16_t BytesPerLine;
 	int16_t BitsPerPixel;
 	const tLCDDEV_APIList *pAPIList;
-} GUI_MEMDEV;
+};
 
-void         GUI_MEMDEV__CopyFromLCD(GUI_MEMDEV_Handle hMem);
-void         GUI_MEMDEV__GetRect(GUI_RECT *pRect);
+void GUI_MEMDEV__CopyFromLCD(GUI_MEMDEV_Handle hMem);
+void GUI_MEMDEV__GetRect(GUI_RECT *pRect);
 
 GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Flags
 											, const tLCDDEV_APIList *pMemDevAPI);
@@ -80,19 +77,9 @@ typedef int  GUI_tfTimer(void);
 extern const GUI_LOGPALETTE GUI_CursorPal;
 extern const GUI_LOGPALETTE GUI_CursorPalI;
 
-extern GUI_RECT  GUI_RectDispString; /* Used by LCD_Rotate...() and GUI_DispStringInRect() */
-
 int GUI_GetBitmapPixel(PCBITMAP pBMP, unsigned x, unsigned y);
 
-#ifdef  GL_CORE_C
-#define GUI_EXTERN
-#else
-#define GUI_EXTERN extern
-#endif
-
-GUI_EXTERN GUI_CONTEXT GUI_Context; /* Thread wide globals */
-GUI_EXTERN GUI_tfTimer *GUI_pfTimerExec;
+extern GUI_CONTEXT GUI_Context;
+extern GUI_tfTimer *GUI_pfTimerExec;
 
 extern const GUI_UC_ENC_APILIST GUI__API_TableNone;
-
-#undef GUI_EXTERN

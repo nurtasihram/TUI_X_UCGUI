@@ -21,12 +21,12 @@ typedef WM_Obj * TEXT_Handle;
 
 TEXT_Handle TEXT_Create        (int x0, int y0, int xsize, int ysize, int Id, int Flags, const char * s, int Align);
 TEXT_Handle TEXT_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, const char * s, int Align);
-TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
 TEXT_Handle TEXT_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
-                                int WinFlags, int ExFlags, int Id, const char* pText);
+                                int WinFlags, int ExFlags, int Id, const char *pText);
 /* Methods changing properties */
 void TEXT_SetBkColor  (TEXT_Handle pObj, RGBC Color); /* Obsolete. Left in GUI for compatibility to older versions */
 void TEXT_SetFont     (TEXT_Handle pObj, PCFONT pFont);
-void TEXT_SetText     (TEXT_Handle pObj, const char* s);
+void TEXT_SetText     (TEXT_Handle pObj, const char *s);
 void TEXT_SetTextAlign(TEXT_Handle pObj, int Align);
 void TEXT_SetTextColor(TEXT_Handle pObj, RGBC Color);

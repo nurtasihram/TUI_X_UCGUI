@@ -3,12 +3,6 @@
 #include "DROPDOWN.h"
 
 static bool _MultiSel = false, _OwnerDrawn = true;
-static WM_Obj *_hMemDevFrame;
-static WM_Obj *_hMemDevPane;
-static WM_Obj *_hNoMemDevFrame;
-static WM_Obj *_hNoMemDevPane;
-static int _MemDevPhase;
-
 const RGBC ColorsSmilie0[]{ RGB_WHITE, RGB_BLACK, RGB_RED };
 const GUI_LOGPALETTE PalSmilie0{ 3, 1, &ColorsSmilie0[0] };
 const uint8_t acSmilie0[]{
@@ -72,12 +66,12 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[]{
 	{ BUTTON_CreateIndirect    , "Cancel"               , GUI_ID_CANCEL     , 120 , 90  , 80   , 20                                }
 };
 
-static int _GetItemSizeX(WM_Obj * hWin, int ItemIndex) {
+static int _GetItemSizeX(WM_Obj *hWin, int ItemIndex) {
 	char acBuffer[100];
 	LISTBOX_GetItemText(hWin, ItemIndex, acBuffer, sizeof(acBuffer));
 	return GUI_GetStringDistX(acBuffer) + bmSmilie0.XSize + 16;
 }
-static int _GetItemSizeY(WM_Obj * hWin, int ItemIndex) {
+static int _GetItemSizeY(WM_Obj *hWin, int ItemIndex) {
 	int DistY = GUI_GetFontDistY() + 1;
 	if (LISTBOX_GetMulti(hWin)) {
 		if (LISTBOX_GetItemSel(hWin, ItemIndex))
@@ -88,22 +82,8 @@ static int _GetItemSizeY(WM_Obj * hWin, int ItemIndex) {
 	return DistY;
 }
 
-/*********************************************************************
-*
-*       _OwnerDraw
-*
-* Purpose:
-*   This is the owner draw function.
-*   It allows complete customization of how the items in the listbox are
-*   drawn. A command specifies what the function should do;
-*   The minimum is to react to the draw command (WIDGET_ITEM_DRAW);
-*   If the item x-size differs from the default, then this information
-*   needs to be returned in reaction to WIDGET_ITEM_GET_XSIZE.
-*   To insure compatibility with future version, all unhandled commands
-*   must call the default routine LISTBOX_OwnerDraw.
-*/
 static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
-	WM_Obj * hWin = pDrawItemInfo->hWin;
+	WM_Obj *hWin = pDrawItemInfo->hWin;
 	int Index = pDrawItemInfo->ItemIndex;
 	switch (pDrawItemInfo->Cmd) {
 		case WIDGET_ITEM_GET_XSIZE:
@@ -162,7 +142,14 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 	return 0;
 }
 
-static WM_PARAM _cbMemDevPane(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
+
+static WM_Obj *_hMemDevFrame;
+static WM_Obj *_hMemDevPane;
+static WM_Obj *_hNoMemDevFrame;
+static WM_Obj *_hNoMemDevPane;
+static int _MemDevPhase;
+
+static WM_PARAM _cbMemDevPane(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_PAINT:
 		{
@@ -179,18 +166,18 @@ static WM_PARAM _cbMemDevPane(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 			GUI_SetBkColor(RGB_WHITE);
 			GUI_Clear();
 			GUI_SetColor(RGB_DARKGRAY);
-			GUI_DrawRect({0, 0, xSize - 1, ySize - 1});
+			GUI_DrawRect({ 0, 0, xSize - 1, ySize - 1 });
 			GUI_SetColor(RGB_BLACK);
 			GUI_DispStringAt(MemDevOn ? "MemDev ON" : "MemDev OFF", 8, 8);
 			GUI_DispStringAt(MemDevOn ? "WM_CF_MEMDEV enabled" : "WM_CF_MEMDEV disabled", 8, 24);
 			GUI_SetColor(RGB_GRAY);
-			GUI_DrawRect({10, 48, xSize - 11, 72});
+			GUI_DrawRect({ 10, 48, xSize - 11, 72 });
 			GUI_SetColor(MemDevOn ? RGB_GREEN : RGB_RED);
-			GUI_FillRect({10 + XPos, 49, 10 + XPos + BarWidth, 71});
+			GUI_FillRect({ 10 + XPos, 49, 10 + XPos + BarWidth, 71 });
 			GUI_SetColor(RGB_BLUE);
-			GUI_FillRect({10, ySize - 40, xSize - 11, ySize - 25});
+			GUI_FillRect({ 10, ySize - 40, xSize - 11, ySize - 25 });
 			GUI_SetColor(RGB_YELLOW);
-			GUI_FillRect({10 + XPos / 2, ySize - 39, 35 + XPos / 2, ySize - 26});
+			GUI_FillRect({ 10 + XPos / 2, ySize - 39, 35 + XPos / 2, ySize - 26 });
 			GUI_SetColor(RGB_BLACK);
 			GUI_DispStringAt("Animated redraw area", 8, ySize - 18);
 			return 0;
@@ -199,9 +186,9 @@ static WM_PARAM _cbMemDevPane(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
 
-static WM_Obj * _CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMemDev, WM_Obj * *phPane) {
-	WM_Obj * hFrame;
-	WM_Obj * hClient;
+static WM_Obj *_CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMemDev, WM_Obj **phPane) {
+	WM_Obj *hFrame;
+	WM_Obj *hClient;
 	int xSize;
 	int ySize;
 	int Flags;
@@ -217,7 +204,7 @@ static WM_Obj * _CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMe
 	return hFrame;
 }
 
-static WM_PARAM _cbCallback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	WM_Obj *hItem;
 	WM_Obj *hListBox = WM_GetDialogItem(hWin, GUI_ID_MULTIEDIT0);
 	switch (MsgId) {
@@ -325,7 +312,7 @@ static void _AddMenuItem(MENU_Handle hMenu, MENU_Handle hSubmenu, const char *pT
 *
 **********************************************************************
 */
-static WM_Obj * _CreateMenu(WM_Obj * hParent) {
+static WM_Obj *_CreateMenu(WM_Obj *hParent) {
 	MENU_Handle hMenu;
 	MENU_Handle hMenuFile;
 	MENU_Handle hMenuEdit;
@@ -387,38 +374,30 @@ static WM_Obj * _CreateMenu(WM_Obj * hParent) {
 	return hMenu;
 }
 
+void _Create() {
+}
+
 int main(void) {
 	GUI_Init();
 	GUI_CURSOR_Show();
 	WM_SetDesktopColor(RGB_GRAY);
 	for (;;) {
-		WM_Obj * hDialog = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
+		WM_Obj *hDialog = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
 		_CreateMenu(hDialog);
 		_MemDevPhase = 0;
 		_hMemDevFrame = _CreateMemDevFrame(280, 50, "MemDev ON", 1, &_hMemDevPane);
 		_hNoMemDevFrame = _CreateMemDevFrame(480, 50, "MemDev OFF", 0, &_hNoMemDevPane);
-		WM_Obj * hDrp = DROPDOWN_CreateEx(10, 110, 100, 80,
-										 WM_GetClientWindow(hDialog),
-										 WM_CF_SHOW, DROPDOWN_CF_AUTOSCROLLBAR, 0);
-		DROPDOWN_AddString(hDrp, "1");
-		DROPDOWN_AddString(hDrp, "12");
-		DROPDOWN_AddString(hDrp, "123");
-		DROPDOWN_AddString(hDrp, "1234");
-		DROPDOWN_AddString(hDrp, "12345");
-		DROPDOWN_AddString(hDrp, "123456");
-		DROPDOWN_AddString(hDrp, "1234567");
-		DROPDOWN_AddString(hDrp, "12345678");
+
 		WM_DIALOG_STATUS DialogStatus = { 0 };
 		/* Let window know how to send feedback (close info & return value) */
 		GUI_SetDialogStatusPtr(hDialog, &DialogStatus);
 		while (!DialogStatus.Done) {
-			_MemDevPhase += 4;
+			_MemDevPhase = GUI_GetTime() / 20;
 			if (_hMemDevPane)
 				WM_Invalidate(_hMemDevPane);
 			if (_hNoMemDevPane)
 				WM_Invalidate(_hNoMemDevPane);
 			GUI_Exec();
-			GUI_Delay(40);
 		}
 		if (_hMemDevFrame)
 			WM_DeleteWindow(_hMemDevFrame);
@@ -431,48 +410,3 @@ int main(void) {
 	}
 	return 0;
 }
-
-#if 0
-#include "LISTVIEW.h"
-
-const char *pRows[][5] = {
-	{
-	"Row 1x1",
-	"Row 1x2",
-	"Row 1x3"
-	}, {
-	"Row 2x1",
-	"Row 2x2",
-	"Row 2x3"
-	}, {
-	"Row 3x1",
-	"Row 3x2",
-	"Row 3x3"
-	}, {
-	"Row 4x1",
-	"Row 4x2",
-	"Row 4x3"
-	}, {
-	"Row 5x1",
-	"Row 5x2",
-	"Row 5x3"
-	}
-};
-
-void main(void) {
-	GUI_Init();
-	WM_Obj * hListView = LISTVIEW_Create(10, 110, 50, 70, 0, 0, WM_CF_SHOW, 0);
-	LISTVIEW_AddColumn(hListView, 0, "Col 1    ", TEXTALIGN_LEFT);
-	LISTVIEW_AddColumn(hListView, 0, "Col 2    ", TEXTALIGN_LEFT);
-	LISTVIEW_AddColumn(hListView, 0, "Col 3     ", TEXTALIGN_LEFT);
-	LISTVIEW_AddRow(hListView, pRows[0]);
-	LISTVIEW_AddRow(hListView, pRows[1]);/*
-	LISTVIEW_AddRow(hListView, pRows[2]);
-	LISTVIEW_AddRow(hListView, pRows[3]);
-	LISTVIEW_AddRow(hListView, pRows[4]);*/
-	WM_SetScrollbarH(hListView, 1);
-	WM_SetScrollbarV(hListView, 1);
-	for (;;)
-		GUI_Exec();
-}
-#endif

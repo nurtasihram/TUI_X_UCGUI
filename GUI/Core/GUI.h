@@ -157,13 +157,10 @@ using TEXTALIGN = uint8_t;
 *
 *             GUI_CONTEXT
 *
-**********************************************************************
-
-This structure is public for one reason only:
-To allow the application to save and restore the context.
+* This structure is public for one reason only:
+* To allow the application to save and restore the context.
 */
-
-typedef struct {
+struct GUI_CONTEXT {
 	/* Variables in LCD module */
 	uint32_t aColor[2];
 	GUI_RECT ClipRect;
@@ -176,22 +173,20 @@ typedef struct {
 	//RGBC Color, BkColor; /* Required only when changing devices and for speed opt (caching) */
 	/* Variables in WM module */
 	const GUI_RECT *WM__pUserClipRect;
-	int xOff, yOff;
+	GUI_POINT Off;
 	/* Variables in MEMDEV module (with memory devices only) */
 #if GUI_SUPPORT_DEVICES
 	const tLCDDEV_APIList *pDeviceAPI;  /* function pointers only */
 	GUI_HMEM    hDevData;
 	GUI_RECT    ClipRectPrev;
 #endif
-} GUI_CONTEXT;
+};
 
 void         GUI_Init(void);
 void         GUI_SetDefault(void);
-GUI_DRAWMODE GUI_SetDrawMode(GUI_DRAWMODE dm);
+DRAWMODE GUI_SetDrawMode(DRAWMODE dm);
 void         GUI_SaveContext(GUI_CONTEXT *pContext);
 void         GUI_RestoreContext(const GUI_CONTEXT *pContext);
-
-int  GUI_RectsIntersect(const GUI_RECT *pr0, const GUI_RECT *pr1);
 
 int  GUI__DivideRound(int a, int b);
 
@@ -224,7 +219,7 @@ PCCURSOR GUI_CURSOR_Select(PCCURSOR pCursor);
 void               GUI_CURSOR_Show(void);
 void               GUI_CURSOR_Hide(void);
 void               GUI_CURSOR__TempShow(void);
-bool               GUI_CURSOR__TempHide(const GUI_RECT *pRect);
+bool               GUI_CURSOR__TempHide(GUI_RECT);
 #endif
 
 void  GUI_DispChar(uint16_t c);
@@ -323,7 +318,7 @@ typedef struct {
 } GUI_TIMER_MESSAGE;
 
 typedef void *GUI_TIMER_HANDLE;
-typedef void GUI_TIMER_CALLBACK(/*const*/ GUI_TIMER_MESSAGE *pTM);
+typedef void GUI_TIMER_CALLBACK(/*const */ GUI_TIMER_MESSAGE *pTM);
 
 GUI_TIMER_HANDLE GUI_TIMER_Create(GUI_TIMER_CALLBACK *cb, int Time, uint32_t Context, int Flags);
 void             GUI_TIMER_Delete(GUI_TIMER_HANDLE hObj);

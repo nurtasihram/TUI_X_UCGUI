@@ -169,7 +169,7 @@ static unsigned _GetNumVisItems(LISTBOX_Obj *pObj) {
 */
 static void _NotifyOwner(WM_Obj * hObj, int Notification) {
 	auto pObj = (LISTBOX_Obj *)hObj;
-	WM_Obj * hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
+	auto hOwner = pObj->hOwner ? pObj->hOwner : WM_GetParent(hObj);
 	WM_NOTIFY_INFO Info;
 	Info.Notification = Notification;
 	Info.pWinSrc = hObj;
@@ -389,7 +389,7 @@ static void _SelectByKey(LISTBOX_Handle hObj, int Key) {
 	auto pObj = (LISTBOX_Obj *)hObj;
 	Key = _Tolower(Key);
 	for (i = 0; i < LISTBOX__GetNumItems(pObj); i++) {
-		const char *s = LISTBOX__GetpString(pObj, i);
+		auto s = LISTBOX__GetpString(pObj, i);
 		if (_Tolower(*s) == Key) {
 			LISTBOX_SetSel(hObj, i);
 			break;
@@ -406,7 +406,7 @@ static void _OnPaint(LISTBOX_Obj *pObj, const GUI_RECT *pClipRect) {
 	NumItems = LISTBOX__GetNumItems(pObj);
 	GUI_SetFont(pObj->Props.pFont);
 	/* Calculate clipping rectangle */
-	ClipRect = *pClipRect + GUI_POINT{-pObj->Rect.x0, -pObj->Rect.y0};
+	ClipRect = *pClipRect - pObj->Rect.LeftTop();
 	WM_GetInsideRectExScrollbar(pObj, &RectInside);
 	ClipRect &= RectInside;
 	RectItem.x0 = ClipRect.x0;
@@ -521,8 +521,8 @@ static WM_PARAM _LISTBOX_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	}
 	switch (MsgId) {
 		case WM_NOTIFY_PARENT: {
-			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
-			WM_Obj * pWinSrc = pInfo->pWinSrc;
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pWinSrc = pInfo->pWinSrc;
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED: {
 					WM_SCROLL_STATE ScrollState;
@@ -550,7 +550,7 @@ static WM_PARAM _LISTBOX_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 			_OnPaint(pObj, (const GUI_RECT *)Data);
 			return 0;
 		case WM_PID_STATE_CHANGED: {
-			const WM_PID_STATE_CHANGED_INFO *pInfo = (const WM_PID_STATE_CHANGED_INFO *)Data;
+			auto pInfo = (const WM_PID_STATE_CHANGED_INFO *)Data;
 			if (pInfo->State) {
 				int Sel;
 				Sel = _GetItemFromPos(pObj, pInfo->x, pInfo->y);
@@ -563,7 +563,7 @@ static WM_PARAM _LISTBOX_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 		case WM_TOUCH: {
-			const GUI_PID_STATE *pState = (const GUI_PID_STATE *)Data;
+			auto pState = (const GUI_PID_STATE *)Data;
 			if (pObj->hOwner && pState) {
 				GUI_RECT r = WM_GetClientRect(pObj);
 				if (pState->x < 0 || pState->y < 0 || pState->x > r.x1 || pState->y > r.y1) {

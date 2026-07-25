@@ -15,7 +15,7 @@ enum CHECKBOX_CI {
 
 typedef WM_Obj * CHECKBOX_Handle;
 CHECKBOX_Handle CHECKBOX_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags);
-CHECKBOX_Handle CHECKBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+CHECKBOX_Handle CHECKBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
 CHECKBOX_Handle CHECKBOX_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                         int WinFlags, int ExFlags, int Id);
 int  CHECKBOX_GetState    (CHECKBOX_Handle hObj);

@@ -34,7 +34,7 @@ static void _DeleteScrollbar(MULTIPAGE_Obj *pObj) {
 }
 static void _ShowPage(MULTIPAGE_Obj *pObj, unsigned Index) {
 	WM_Obj * hWin = 0;
-	WM_Obj *pClient = (pObj->pClient);
+	auto pClient = pObj->pClient;
 	if ((int)Index < pObj->Handles.NumItems) {
 		MULTIPAGE_PAGE *pPage;
 		pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&pObj->Handles, Index);
@@ -321,7 +321,7 @@ static void _OnTouch(MULTIPAGE_Obj *pObj, const GUI_PID_STATE *pState) {
 }
 static WM_PARAM _Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (MULTIPAGE_Obj *)hWin;
-	int Handled = WIDGET_HandleActive(pObj, MsgId, &Data);
+	auto Handled = WIDGET_HandleActive(pObj, MsgId, &Data);
 	switch (MsgId) {
 		case WM_PAINT:
 			_OnPaint(pObj);
@@ -330,8 +330,8 @@ static WM_PARAM _Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
 			return 0;
 		case WM_NOTIFY_PARENT: {
-			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
-			WM_Obj * pWinSrc = pInfo->pWinSrc;
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pWinSrc = pInfo->pWinSrc;
 			if (pInfo->Notification == WM_NOTIFICATION_VALUE_CHANGED) {
 				if (WM_GetId(pWinSrc) == GUI_ID_HSCROLL) {
 					pObj->ScrollState = SCROLLBAR_GetValue(pWinSrc);
@@ -361,7 +361,7 @@ static WM_PARAM _Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	return 0;
 }
 static WM_PARAM _ClientCallback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
-	WM_Obj * hObj = hWin;
+	auto hObj = hWin;
 	auto pParent = (MULTIPAGE_Obj *)WM_GetParent(hObj);
 	switch (MsgId) {
 		case WM_PAINT:
@@ -421,7 +421,7 @@ void MULTIPAGE_AddPage(MULTIPAGE_Handle hObj, WM_Obj * hWin, const char *pText) 
 		if (!hWin) {
 			/* If we get no handle we must find it. To do this, we search      */
 			/* all children until we found one that has not yet become a page. */
-			WM_Obj *pClient = pObj->pClient;
+			auto pClient = pObj->pClient;
 			for (auto pChild = pClient->pFirstChild; pChild && !hWin; pChild = pChild->pNext) {
 				hWin = pChild;
 				for (int i = 0; i < pObj->Handles.NumItems; i++) {

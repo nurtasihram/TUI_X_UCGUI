@@ -79,7 +79,7 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
 }
 
 GUI_MEMDEV_Handle GUI_MEMDEV_CreateEx(int x0, int y0, int xSize, int ySize, int Flags) {
-	const tLCDDEV_APIList *pDeviceAPI = LCD_aAPI[0];
+	auto pDeviceAPI = LCD_aAPI[0];
 	return GUI_MEMDEV__CreateFixed(x0, y0, xSize, ySize, Flags, pDeviceAPI->pMemDevAPI);
 }
 
@@ -135,7 +135,7 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 		r.y1 = (r.y0 = y) + pDevData->YSize - 1;;
 		/* Do the drawing. Window manager has to be on */
 		WM_Activate();
-		WM_ITERATE_START(&r) {
+		WM_ITERATE_START(r) {
 			GUI_MEMDEV__WriteToActiveAt(hMem, x, y);
 		} WM_ITERATE_END();
 		/* Reactivate previously used device */

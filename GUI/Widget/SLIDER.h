@@ -10,7 +10,7 @@
 typedef WM_Obj * SLIDER_Handle;
 
 SLIDER_Handle SLIDER_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int WinFlags, int SpecialFlags);
-SLIDER_Handle SLIDER_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+SLIDER_Handle SLIDER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
 SLIDER_Handle SLIDER_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                     int WinFlags, int ExFlags, int Id);
 /* Methods changing properties */

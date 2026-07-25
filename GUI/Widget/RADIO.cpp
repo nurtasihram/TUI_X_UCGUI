@@ -335,7 +335,7 @@ static void _ClearSelection(RADIO_Handle hObj, uint8_t GroupId) {
 }
 static void _HandleSetValue(RADIO_Obj *pObj, int v) {
 	if (v < 0) {
-		WM_Obj * hWin = _GetPrevInGroup(pObj, pObj->GroupId);
+		auto hWin = _GetPrevInGroup(pObj, pObj->GroupId);
 		if (hWin) {
 			WM_SetFocus(hWin);
 			_SetValue(hWin, 0x7FFF);
@@ -343,7 +343,7 @@ static void _HandleSetValue(RADIO_Obj *pObj, int v) {
 		}
 	}
 	else if (v >= pObj->NumItems) {
-		WM_Obj * hWin = _GetNextInGroup(pObj->pNext, pObj->GroupId);
+		auto hWin = _GetNextInGroup(pObj->pNext, pObj->GroupId);
 		if (hWin) {
 			WM_SetFocus(hWin);
 			_SetValue(hWin, 0);

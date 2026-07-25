@@ -12,11 +12,11 @@ typedef WM_Obj * DROPDOWN_Handle;
 #define DROPDOWN_CI_SELFOCUS 2
 
 DROPDOWN_Handle DROPDOWN_Create        (WM_Obj * hWinParent, int x0, int y0, int xsize, int ysize, int Flags);
-DROPDOWN_Handle DROPDOWN_CreateIndirect(const GUI_WIDGET_CREATE_INFO* pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK* cb);
+DROPDOWN_Handle DROPDOWN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
 DROPDOWN_Handle DROPDOWN_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
                                         int WinFlags, int ExFlags, int Id);
 void     DROPDOWN_AddKey          (DROPDOWN_Handle hObj, int Key);
-void     DROPDOWN_AddString       (DROPDOWN_Handle hObj, const char* s);
+void     DROPDOWN_AddString       (DROPDOWN_Handle hObj, const char *s);
 void     DROPDOWN_Collapse        (DROPDOWN_Handle hObj);
 void     DROPDOWN_DecSel          (DROPDOWN_Handle hObj);
 void     DROPDOWN_DeleteItem      (DROPDOWN_Handle hObj, unsigned int Index);
@@ -25,7 +25,7 @@ unsigned DROPDOWN_GetItemSpacing  (DROPDOWN_Handle hObj);
 int      DROPDOWN_GetNumItems     (DROPDOWN_Handle hObj);
 int      DROPDOWN_GetSel          (DROPDOWN_Handle hObj);
 void     DROPDOWN_IncSel          (DROPDOWN_Handle hObj);
-void     DROPDOWN_InsertString    (DROPDOWN_Handle hObj, const char* s, unsigned int Index);
+void     DROPDOWN_InsertString    (DROPDOWN_Handle hObj, const char *s, unsigned int Index);
 void     DROPDOWN_SetAutoScroll   (DROPDOWN_Handle hObj, int OnOff);
 void     DROPDOWN_SetBkColor      (DROPDOWN_Handle hObj, unsigned int index, RGBC color);
 void     DROPDOWN_SetFont         (DROPDOWN_Handle hObj, PCFONT pfont);

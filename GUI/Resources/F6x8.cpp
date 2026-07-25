@@ -1038,7 +1038,7 @@ const uint8_t GUI_acFont6x8[][8]{
 
 /*  additional characters for European character set  */
 #if (GUI_NOFCHARS>95)
-/* small accent ague, 95*/
+/* small accent ague, 95 */
  ,{
 	______XXXX______,
 	____XX__________,

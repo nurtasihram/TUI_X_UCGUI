@@ -103,7 +103,7 @@ int GUI_TIMER_Exec(void) {
 				break;
 		}
 		/*
-			GUI_TIMER_Obj* pObj = (GUI_TIMER_Obj *)hObj;
+			auto pObj = (GUI_TIMER_Obj *)hObj;
 		pObj->t0 = Time;
 		*/
 	}

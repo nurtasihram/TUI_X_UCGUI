@@ -1,10 +1,10 @@
-#define  GL_CORE_C
-
 #include "GUI_Private.h"
 #include "GUIDebug.h"
 
-#include "WM_GUI.h"
 #include "WM.h"
+
+GUI_CONTEXT GUI_Context;
+GUI_tfTimer *GUI_pfTimerExec;
 
 void GUI_Init(void) {
 	GUI_X_Init();
@@ -75,8 +75,8 @@ void GUI_RestoreContext(const GUI_CONTEXT *pContext) {
 	GUI_Context = *pContext;
 }
 
-GUI_DRAWMODE GUI_SetDrawMode(GUI_DRAWMODE dm) {
-	GUI_DRAWMODE OldDM = GUI_Context.DrawMode;
+DRAWMODE GUI_SetDrawMode(DRAWMODE dm) {
+	DRAWMODE OldDM = GUI_Context.DrawMode;
 	if ((GUI_Context.DrawMode ^ dm) & DRAWMODE_REV) {
 		RGBC temp = LCD_BKCOLORINDEX;
 		LCD_BKCOLORINDEX = LCD_COLORINDEX;
@@ -117,10 +117,10 @@ RGBC GUI_GetColor(void) {
 
 #pragma region Draw
 void GUI_ClearRect(GUI_RECT r) {
-	GUI_DRAWMODE PrevDraw = GUI_SetDrawMode(DRAWMODE_REV);
+	DRAWMODE PrevDraw = GUI_SetDrawMode(DRAWMODE_REV);
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 		LCD_FillRect(r.x0, r.y0, r.x1, r.y1);
 	} WM_ITERATE_END();
 	GUI_SetDrawMode(PrevDraw);
@@ -133,14 +133,14 @@ void GUI_Clear(void) {
 void GUI_FillRect(GUI_RECT r) {
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 		LCD_FillRect(r.x0, r.y0, r.x1, r.y1);
 	} WM_ITERATE_END();
 }
 void GUI_DrawRect(GUI_RECT r) {
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 		LCD_DrawHLine(r.x0, r.y0, r.x1);
 		LCD_DrawHLine(r.x0, r.y1, r.x1);
 		LCD_DrawVLine(r.x0, r.y0 + 1, r.y1 - 1);
@@ -151,7 +151,7 @@ void GUI_DrawFocusRect(GUI_RECT r, int Dist) {
 	r -= Dist;
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 		for (int i = r.x0; i <= r.x1; i += 2) {
 			LCD_DrawPixel(i, r.y0);
 			LCD_DrawPixel(i, r.y1);
@@ -169,7 +169,7 @@ void GUI_DrawVLine(int x0, int y0, int y1) {
 	r.x1 = r.x0 = x0;
 	r.y0 = y0;
 	r.y1 = y1;
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 		LCD_DrawVLine(x0, y0, y1);
 	} WM_ITERATE_END();
 
@@ -181,23 +181,23 @@ void GUI_DrawHLine(int y0, int x0, int x1) {
 	r.x0 = x0;
 	r.x1 = x1;
 	r.y1 = r.y0 = y0;
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 		LCD_DrawHLine(x0, y0, x1);
 	} WM_ITERATE_END();
 }
 
 void GUI_DrawBitmap(PCBITMAP pBitmap, int x0, int y0) {
 	auto pPal = pBitmap->pPal;
-	GUI_DRAWMODE PrevDraw = GUI_SetDrawMode(0);  /* No Get... at this point */
+	DRAWMODE PrevDraw = GUI_SetDrawMode(0);  /* No Get... at this point */
 	GUI_SetDrawMode((pPal && pPal->HasTrans) ? (PrevDraw | DRAWMODE_TRANS) : PrevDraw & (~DRAWMODE_TRANS));
-	const RGBC *pTrans = pBitmap->pPal ? pBitmap->pPal->pPalEntries : nullptr;
+	auto pTrans = pBitmap->pPal ? pBitmap->pPal->pPalEntries : nullptr;
 	if (!pTrans) 
 		pTrans = (pBitmap->BitsPerPixel != 1) ? nullptr : &LCD_BKCOLORINDEX;
 	GUI_RECT r;
 	WM_ADDORG(x0, y0);
 	r.x1 = (r.x0 = x0) + pBitmap->XSize - 1;
 	r.y1 = (r.y0 = y0) + pBitmap->YSize - 1;
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 	LCD_DrawBitmap(x0, y0
 					, pBitmap->XSize, pBitmap->YSize
 					, pBitmap->BitsPerPixel
@@ -270,7 +270,7 @@ void GUI__CalcTextRect(const char *pText, const GUI_RECT *pTextRectIn, GUI_RECT 
 				xPos = pTextRectIn->x0;
 		}
 
-		/* Calculate Y-pos of text*/
+		/* Calculate Y-pos of text */
 		TextHeight = GUI_GetFontDistY();
 		switch (TextAlign & TEXTALIGN_VERTICAL) {
 			case TEXTALIGN_VCENTER:
@@ -463,7 +463,7 @@ bool FONT_PROP::IsInFont(uint16_t c) const {
 
 static void _DispLine(const char *s, int MaxNumChars, const GUI_RECT *pRect) {
 	/* Check if we have anything to do at all ... */
-	if (!GUI_RectsIntersect(&GUI_Context.ClipRect, pRect))
+	if (!(*pRect <= GUI_Context.ClipRect))
 		return;
 	if (GUI_Context.pAFont->pafEncode)
 		GUI_Context.pAFont->pafEncode->pfDispLine(s, MaxNumChars);
@@ -475,7 +475,7 @@ void GUI__DispLine(const char *s, int MaxNumChars, const GUI_RECT *pr) {
 	r = *pr;
 	WM_ADDORG(r.x0, r.y0);
 	WM_ADDORG(r.x1, r.y1);
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 		GUI_Context.DispPos.x = r.x0;
 		GUI_Context.DispPos.y = r.y0;
 		/* Do the actual drawing via routine call. */
@@ -544,7 +544,7 @@ void GUI__DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign, int Ma
 	GUI_RECT r;
 	GUI_RECT rLine;
 	int y = 0;
-	const char *sOrg = s;
+	auto sOrg = s;
 	int FontYSize;
 	int xLine = 0;
 	int LineLen;
@@ -637,7 +637,7 @@ void GUI_DispChar(uint16_t c) {
 	WM_ADDORG(GUI_Context.DispPos.x, GUI_Context.DispPos.y);
 	r.x1 = (r.x0 = GUI_Context.DispPos.x) + GUI_GetCharDistX(c) - 1;
 	r.y1 = (r.y0 = GUI_Context.DispPos.y) + GUI_GetFontSizeY() - 1;
-	WM_ITERATE_START(&r) {
+	WM_ITERATE_START(r) {
 		GL_DispChar(c);
 	} WM_ITERATE_END();
 	if (c != '\n') {
@@ -713,7 +713,7 @@ int GUI__strlen(const char *s) {
 	return r;
 }
 int GUI__strcpy(char *sDest, const char *sSrc) {
-	char *s = sDest;
+	auto s = sDest;
 	while ((*s++ = *sSrc++) != 0) {}
 	return (int)(s - sDest - 1);
 }
@@ -727,7 +727,7 @@ int GUI__strcpy(char *sDest, const char *sSrc) {
 * b) Return 1 if end of string, otherwise 0
 */
 int GUI__HandleEOLine(const char **ps) {
-	const char *s = *ps;
+	auto s = *ps;
 	char c = *s++;
 	if (c == 0) {
 		return 1;
@@ -862,21 +862,6 @@ int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, GUI_WRAPMODE Wr
 	return NumBytes;
 }
 #pragma endregion
-#pragma endregion
-
-#pragma region Rect operators
-int GUI_RectsIntersect(const GUI_RECT *pr0, const GUI_RECT *pr1) {
-	if (pr0->y0 <= pr1->y1) {
-		if (pr1->y0 <= pr0->y1) {
-			if (pr0->x0 <= pr1->x1) {
-				if (pr1->x0 <= pr0->x1) {
-					return 1;
-				}
-			}
-		}
-	}
-	return 0;
-}
 #pragma endregion
 
 /*********************************************************************

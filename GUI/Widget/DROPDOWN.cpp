@@ -155,13 +155,13 @@ static WM_PARAM _DROPDOWN_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 		return Data;
 	switch (MsgId) {
 		case WM_NOTIFY_PARENT: {
-			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SCROLL_CHANGED:
 					WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 					break;
 				case WM_NOTIFICATION_CLICKED: {
-					WM_Obj * hListWin = pInfo->pWinSrc;
+					auto hListWin = pInfo->pWinSrc;
 					int Sel = LISTBOX_GetSel(hListWin);
 					DROPDOWN_SetSel(pObj, Sel);
 					break;
@@ -178,7 +178,7 @@ static WM_PARAM _DROPDOWN_Callback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 		}
 		case WM_PID_STATE_CHANGED:
 			if (IsExpandedBeforeMsg == 0) {    /* Make sure we do not react a second time */
-				const WM_PID_STATE_CHANGED_INFO *pInfo = (const WM_PID_STATE_CHANGED_INFO *)Data;
+				auto pInfo = (const WM_PID_STATE_CHANGED_INFO *)Data;
 				if (pInfo->State)
 					DROPDOWN_Expand(pObj);
 			}
@@ -224,7 +224,7 @@ void DROPDOWN_Collapse(DROPDOWN_Handle hObj) {
 
 		pObj = (DROPDOWN_Obj *)hObj;
 		if (pObj->hListWin) {
-			WM_Obj * hListWin = pObj->hListWin;
+			auto hListWin = pObj->hListWin;
 			pObj->hListWin = 0;
 			WM_ReleaseCapture();
 			WM_DeleteWindow(hListWin);
