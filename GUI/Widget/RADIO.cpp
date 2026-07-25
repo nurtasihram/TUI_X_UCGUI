@@ -1,14 +1,39 @@
-#include "GUI_Protected.h"
-
-#include "RADIO_Private.h"
-
-RADIO_Obj::Properties RADIO_Obj::DefaultProps;
+#include "DIALOG_Intern.h"
+#include "GUI_ARRAY.h"
 
 /* Define default background color */
 #define RADIO_DEFAULT_BKCOLOR       RGB_GRAYL(0xC0)
 #define RADIO_BORDER                  2
 
-tRADIO_SetValue *RADIO__pfHandleSetValue;
+import TUX.Widget;
+import TUX.Widget.Radio;
+
+extern CBITMAP RADIO__abmRadio[2];
+extern CBITMAP RADIO__bmCheck;
+
+struct RADIO_Obj : public WIDGET {
+	struct Properties {
+		PCFONT pFont{ &GUI_Font13_1 };
+		RGBC TextColor{ RGB_BLACK };
+		RGBC BkColor{ RGB_INVALID_COLOR };
+		PCBITMAP apBmRadio[2]{ &RADIO__abmRadio[0], &RADIO__abmRadio[1] };
+		PCBITMAP pBmCheck{ &RADIO__bmCheck };
+	} static DefaultProps;
+	Properties Props;
+	GUI_ARRAY TextArray;
+	int16_t Sel;                   /* current selection */
+	uint16_t Spacing;
+	uint16_t Height;
+	uint16_t NumItems;
+	uint8_t  GroupId;
+};
+
+
+void RADIO__SetValue(RADIO_Obj *pObj, int v);
+
+RADIO_Obj::Properties RADIO_Obj::DefaultProps;
+
+void (*RADIO__pfHandleSetValue)(RADIO_Obj *pObj, int v);
 
 static void _ResizeRect(GUI_RECT *pDest, const GUI_RECT *pSrc, int Diff) {
 	pDest->y0 = pSrc->y0 - Diff;

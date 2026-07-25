@@ -1,7 +1,18 @@
-#include "GUIDebug.h"
-#include "GUI_Protected.h"
+#include "DIALOG_Intern.h"
 
-#include "TEXT_Private.h"
+import TUX.Widget;
+import TUX.Widget.Text;
+
+struct TEXT_Obj : public WIDGET {
+	struct Properties {
+		PCFONT pFont{ &GUI_Font13_1 };
+		TEXTALIGN Align{ 0 };
+		RGBC TextColor{ RGB_BLACK };
+		RGBC BkColor{ RGB_INVALID_COLOR };
+	} static DefaultProps;
+	Properties Props;
+	char *pText;
+};
 
 TEXT_Obj::Properties TEXT_Obj::DefaultProps;
 

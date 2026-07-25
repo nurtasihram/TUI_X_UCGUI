@@ -1,8 +1,33 @@
-import TUX.Widget.ScrollBar;
-
-#include "HEADER_Private.h"
+#include "DIALOG_Intern.h"
+#include "GUI_ARRAY.h"
 
 #define HEADER_SUPPORT_DRAG 1
+
+import TUX.Widget;
+import TUX.Widget.Header;
+
+struct HEADER_COLUMN {
+	int16_t Width;
+	TEXTALIGN Align;
+	GUI_DRAW *pDrawObj;
+	char acText[1];
+};
+
+struct HEADER_Obj : public WIDGET {
+	struct Properties {
+		PCFONT pFont{ &GUI_Font13_1 };
+		RGBC BkColor{ RGB_GRAYL(0xAA) };
+		RGBC TextColor{ RGB_BLACK };
+		PCCURSOR pCursor{ &GUI_CursorHeaderM };
+		int16_t BorderH{ 0 };
+		int16_t BorderV{ 2 };
+	} static DefaultProps;
+	Properties Props;
+	GUI_ARRAY Columns;
+	int16_t CapturePosX = -1;
+	int16_t CaptureItem = -1;
+	uint16_t ScrollPos = 0;
+};
 
 HEADER_Obj::Properties HEADER_Obj::DefaultProps;
 
@@ -375,27 +400,6 @@ int  HEADER_GetNumItems(HEADER_Handle hObj) {
 	return NumCols;
 }
 
-void HEADER_SetBitmapEx(HEADER_Handle hObj, unsigned Index, PCBITMAP pBitmap, int x, int y) {
-	HEADER__SetDrawObj(hObj, Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
-	WM_Invalidate(hObj);
-}
-void HEADER_SetBitmap(HEADER_Handle hObj, unsigned Index, PCBITMAP pBitmap) {
-	HEADER_SetBitmapEx(hObj, Index, pBitmap, 0, 0);
-}
-
-
-HEADER_Handle HEADER_CreateAttached(WM_Obj * hParent, int Id, int SpecialFlags) {
-	return HEADER_CreateEx(0, 0, 0, 0, hParent, WM_CF_SHOW, SpecialFlags, Id);
-}
-
-HEADER_Handle HEADER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	HEADER_Handle  hThis;
-	GUI_USE_PARA(cb);
-	hThis = HEADER_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							hWinParent, pCreateInfo->Flags, 0, pCreateInfo->Id);
-	return hThis;
-}
-
 void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW *pDrawObj) {
 	if (hObj) {
 		auto pObj = (HEADER_Obj *)hObj;
@@ -407,4 +411,23 @@ void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW *pDrawObj) 
 			}
 		}
 	}
+}
+void HEADER_SetBitmapEx(HEADER_Handle hObj, unsigned Index, PCBITMAP pBitmap, int x, int y) {
+	HEADER__SetDrawObj(hObj, Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
+	WM_Invalidate(hObj);
+}
+void HEADER_SetBitmap(HEADER_Handle hObj, unsigned Index, PCBITMAP pBitmap) {
+	HEADER_SetBitmapEx(hObj, Index, pBitmap, 0, 0);
+}
+
+HEADER_Handle HEADER_CreateAttached(WM_Obj * hParent, int Id, int SpecialFlags) {
+	return HEADER_CreateEx(0, 0, 0, 0, hParent, WM_CF_SHOW, SpecialFlags, Id);
+}
+
+HEADER_Handle HEADER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	HEADER_Handle  hThis;
+	GUI_USE_PARA(cb);
+	hThis = HEADER_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+							hWinParent, pCreateInfo->Flags, 0, pCreateInfo->Id);
+	return hThis;
 }

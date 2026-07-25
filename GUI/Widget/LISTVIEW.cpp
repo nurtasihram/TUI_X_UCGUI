@@ -1,11 +1,49 @@
-#include "GUIDebug.h"
-#include "GUI_Protected.h"
+#include "DIALOG_Intern.h"
+#include "GUI_ARRAY.h"
 
-#include "WM_Intern.h"
-
+import TUX.Widget;
+import TUX.Widget.ListView;
+import TUX.Widget.Header;
 import TUX.Widget.ScrollBar;
 
-#include "LISTVIEW_Private.h"
+struct LISTVIEW_ITEM_INFO {
+	RGBC aBkColor[3];
+	RGBC aTextColor[3];
+};
+
+struct LISTVIEW_ITEM {
+	WM_HMEM hItemInfo;
+	char acText[1];
+};
+
+struct LISTVIEW_Obj : public WIDGET {
+	struct Properties {
+		PCFONT pFont{ &GUI_Font13_1 };
+		RGBC aBkColor[3]{
+			RGB_WHITE,   /* Not selected */
+			RGB_GRAY,    /* Selected, no focus */
+			RGB_BLUE     /* Selected, focus */
+		};
+		RGBC aTextColor[3]{
+			RGB_BLACK,   /* Not selected */
+			RGB_WHITE,   /* Selected, no focus */
+			RGB_WHITE    /* Selected, focus */
+		};
+		RGBC GridColor{ RGB_LIGHTGRAY };
+	} static DefaultProps;
+	Properties Props;
+	HEADER_Handle   hHeader;
+	GUI_ARRAY       RowArray;         /* One entry per line. Every entry is a handle of GUI_ARRAY of strings */
+	GUI_ARRAY       AlignArray;       /* One entry per column */
+	int16_t         Sel;
+	int16_t         ShowGrid;
+	uint16_t        RowDistY;
+	uint16_t        LBorder;
+	uint16_t        RBorder;
+	WM_SCROLL_STATE ScrollStateV;
+	WM_SCROLL_STATE ScrollStateH;
+	WM_Obj *hOwner;
+};
 
 LISTVIEW_Obj::Properties LISTVIEW_Obj::DefaultProps;
 

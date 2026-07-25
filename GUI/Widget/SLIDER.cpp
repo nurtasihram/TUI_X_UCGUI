@@ -1,8 +1,19 @@
-#include "GUI_Protected.h"
+#include "DIALOG_Intern.h"
 
-#include "SLIDER_Private.h"
+import TUX.Widget;
+import TUX.Widget.Slider;
 
-#define SLIDER_SUPPORT_TRANSPARENCY WM_SUPPORT_TRANSPARENCY
+struct SLIDER_Obj : public WIDGET {
+	struct Properties {
+		RGBC BkColor{ RGB_GRAYL(0xC0) };
+		RGBC Color{ RGB_GRAYL(0xC0) };
+	} static DefaultProps;
+	Properties Props;
+	int16_t Min, Max, v;
+	int16_t NumTicks;
+	int16_t Width;
+	uint8_t Flags;
+};
 
 SLIDER_Obj::Properties SLIDER_Obj::DefaultProps;
 
@@ -19,7 +30,7 @@ static void _OnPaint(SLIDER_Obj *pObj) {
 		Range = 1;
 	}
 	/* Fill with parents background color */
-#if !SLIDER_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent */
+#if !WM_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent */
 	if (pObj->Props.BkColor == RGB_INVALID_COLOR) {
 		GUI_SetBkColor(WIDGET__GetBkColor(pObj));
 	}
@@ -157,7 +168,7 @@ SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj * hPa
 	SLIDER_Handle hObj;
 	/* Create the window */
 
-#if SLIDER_SUPPORT_TRANSPARENCY
+#if WM_SUPPORT_TRANSPARENCY
 	WinFlags |= WM_CF_HASTRANS;
 #endif
 	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _SLIDER_Callback, sizeof(SLIDER_Obj) - sizeof(WM_Obj));
@@ -257,7 +268,7 @@ void SLIDER_SetBkColor(SLIDER_Handle hObj, RGBC Color) {
 	if (hObj) {
 		auto pObj = (SLIDER_Obj *)hObj;
 		pObj->Props.BkColor = Color;
-#if SLIDER_SUPPORT_TRANSPARENCY
+#if WM_SUPPORT_TRANSPARENCY
 		if (Color <= RGB_WHITE) {
 			WM_ClrHasTrans(hObj);
 		}

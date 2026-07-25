@@ -1,12 +1,46 @@
-#include "GUIDebug.h"
-#include "GUI_Protected.h"
+#include "DIALOG_Intern.h"
 #include "GUI_ARRAY.h"
 
-#include "WM_Intern.h"
+#define LISTBOX_ITEM_SELECTED (1 << 0)
+#define LISTBOX_ITEM_DISABLED (1 << 1)
 
+import TUX.Widget;
+import TUX.Widget.ListBox;
 import TUX.Widget.ScrollBar;
 
-#include "LISTBOX_Private.h"
+struct LISTBOX_ITEM {
+	uint16_t xSize, ySize;
+	uint8_t Status;
+	char acText[1];
+};
+
+struct LISTBOX_Obj : public WIDGET {
+	struct Properties {
+		PCFONT pFont{ &GUI_Font13_1 };
+		RGBC aBkColor[4]{
+			/* Unselect */			RGB_WHITE,
+			/* Selected */			RGB_GRAY,
+			/* Selected focussed */	RGB_DARKBLUE,
+			/* Disabled */			RGB_GRAYL(0xC0)
+		};
+		RGBC aTextColor[4]{
+			/* Unselect */			RGB_BLACK,
+			/* Selected */			RGB_WHITE,
+			/* Selected focussed */	RGB_WHITE,
+			/* Disabled */			RGB_GRAY
+		};
+		uint8_t ScrollStepH{ 10 };
+	} static DefaultProps;
+	Properties Props;
+	GUI_ARRAY ItemArray;
+	WIDGET_DRAW_ITEM_FUNC *pfDrawItem;
+	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
+	WM_Obj *hOwner;
+	int16_t Sel; /* current selection */
+	uint8_t Flags;
+	uint8_t  ScrollbarWidth;
+	uint16_t ItemSpacing;
+};
 
 LISTBOX_Obj::Properties LISTBOX_Obj::DefaultProps;
 

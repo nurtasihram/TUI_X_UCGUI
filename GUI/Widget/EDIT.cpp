@@ -1,9 +1,42 @@
-#include "GUI_Protected.h"
+#include "DIALOG_Intern.h"
 
-#include "EDIT_Private.h"
-
-#define EDIT_BORDER_DEFAULT 1
 #define EDIT_XOFF 1
+#define EDIT_REALLOC_SIZE 16
+
+import TUX.Widget;
+import TUX.Widget.Edit;
+
+struct EDIT_Obj : public WIDGET {
+	struct Properties {
+		PCFONT pFont{ &GUI_Font13_1 };
+		RGBC aTextColor[2]{
+			/* Disabled */	RGB_BLACK,
+			/* Enabled */	RGB_BLACK
+		};
+		RGBC aBkColor[2]{
+			/* Disabled */	RGB_GRAYL(0xC0),
+			/* Enabled */	RGB_WHITE
+		};
+		TEXTALIGN Align{ TEXTALIGN_LEFT | TEXTALIGN_VCENTER };
+		int8_t Border{ 1 };
+	} static DefaultProps;
+	Properties Props;
+
+	char *pText;
+	int16_t MaxLen;
+	uint16_t BufferSize;
+	int32_t Min, Max;            /* Min max values as normalized floats (integers) */
+	uint8_t NumDecs;              /* Number of decimals */
+	uint32_t CurrentValue;        /* Current value */
+	int16_t CursorPos;           /* Cursor position. 0 means left most */
+	uint16_t SelSize;        /* Number of selected characters */
+	uint8_t EditMode;             /* Insert or overwrite mode */
+	uint8_t XSizeCursor;          /* Size of cursor when working in insert mode */
+	uint8_t Flags;
+	tEDIT_AddKeyEx *pfAddKeyEx;     /* Handle key input */
+	tEDIT_UpdateBuffer *pfUpdateBuffer;  /* Update textbuffer */
+	int CurrsorShow;	//houhh 20061022...
+};
 
 EDIT_Obj::Properties EDIT_Obj::DefaultProps;
 
@@ -103,6 +136,22 @@ static void _OnPaint(EDIT_Obj *pObj) {
 }
 static void _Delete(EDIT_Obj *pObj) {
 	GUI_ALLOC_FreePtr((void **)&pObj->pText);
+}
+static void EDIT__SetCursorPos(EDIT_Obj *pObj, int CursorPos) {
+	if (pObj->pText) {
+		auto pText = pObj->pText;
+		int NumChars = GUI__GetNumChars(pText);
+		int Offset = (pObj->EditMode == GUI_EDIT_MODE_INSERT) ? 0 : 1;
+		if (CursorPos < 0)
+			CursorPos = 0;
+		if (CursorPos > NumChars)
+			CursorPos = NumChars;
+		if (CursorPos > pObj->MaxLen - Offset)
+			CursorPos = pObj->MaxLen - Offset;
+		if (pObj->CursorPos != CursorPos)
+			pObj->CursorPos = CursorPos;
+		pObj->SelSize = 0;
+	}
 }
 void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
 	if (hObj) {
@@ -261,28 +310,6 @@ uint16_t EDIT__GetCurrentChar(EDIT_Obj *pObj) {
 		Char = GUI_UC_GetCharCode(pText);
 	}
 	return Char;
-}
-/*********************************************************************
-*
-*       EDIT__SetCursorPos
-*
-* Sets a new cursor position.
-*/
-void EDIT__SetCursorPos(EDIT_Obj *pObj, int CursorPos) {
-	if (pObj->pText) {
-		auto pText = pObj->pText;
-		int NumChars = GUI__GetNumChars(pText);
-		int Offset = (pObj->EditMode == GUI_EDIT_MODE_INSERT) ? 0 : 1;
-		if (CursorPos < 0)
-			CursorPos = 0;
-		if (CursorPos > NumChars)
-			CursorPos = NumChars;
-		if (CursorPos > pObj->MaxLen - Offset)
-			CursorPos = pObj->MaxLen - Offset;
-		if (pObj->CursorPos != CursorPos)
-			pObj->CursorPos = CursorPos;
-		pObj->SelSize = 0;
-	}
 }
 static void _OnTouch(EDIT_Obj *pObj, const GUI_PID_STATE *pState) {
 	GUI_USE_PARA(pObj);

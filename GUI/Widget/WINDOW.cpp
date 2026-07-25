@@ -1,6 +1,18 @@
-#include "DIALOG.h"
+#include "DIALOG_Intern.h"
 
-#include "WINDOW_Private.h"
+import TUX.Widget;
+
+#define WINDOW_BKCOLOR_DEFAULT RGB_GRAYL(0xC0)
+
+struct WINDOW_Obj : public WIDGET {
+	struct Properties {
+		RGBC BkColor{ WINDOW_BKCOLOR_DEFAULT };
+	} static DefaultProps;
+	Properties Props;
+	WM_CALLBACK *cb;
+	WM_Obj *hFocussedChild;
+	WM_DIALOG_STATUS *pDialogStatus;
+};
 
 WINDOW_Obj::Properties WINDOW_Obj::DefaultProps;
 

@@ -1,6 +1,8 @@
 #pragma once
 
-#include "WM.h"
+#include "GUIDebug.h"
+#include "GUI_Protected.h"
+#include "WM_Intern.h"
 
 typedef struct  GUI_WIDGET_CREATE_INFO_struct GUI_WIDGET_CREATE_INFO;
 typedef WM_Obj * GUI_WIDGET_CREATE_FUNC(const GUI_WIDGET_CREATE_INFO *pCreate, WM_Obj * hWin, int x0, int y0, WM_CALLBACK *cb);

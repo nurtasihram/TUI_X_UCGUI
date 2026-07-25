@@ -1,9 +1,55 @@
 #include <string.h>
 
-#include "GUIDebug.h"
-#include "GUI_Protected.h"
+#include "DIALOG_Intern.h"
+#include "GUI_ARRAY.h"
 
-#include "MENU_Private.h"
+import TUX.Widget;
+import TUX.Widget.Menu;
+
+#define MENU_SF_HORIZONTAL              MENU_CF_HORIZONTAL
+#define MENU_SF_VERTICAL                MENU_CF_VERTICAL
+#define MENU_SF_OPEN_ON_POINTEROVER     MENU_CF_OPEN_ON_POINTEROVER
+#define MENU_SF_CLOSE_ON_SECOND_CLICK   MENU_CF_CLOSE_ON_SECOND_CLICK
+#define MENU_SF_HIDE_DISABLED_SEL       MENU_CF_HIDE_DISABLED_SEL
+#define MENU_SF_ACTIVE            (1<<6)  /* Internal flag only */
+#define MENU_SF_POPUP             (1<<7)  /* Internal flag only */
+
+struct MENU_ITEM {
+	MENU_Handle hSubmenu;
+	uint16_t Id;
+	uint16_t Flags;
+	uint16_t TextWidth;
+	char acText[1];
+};
+
+struct MENU_Obj : public WIDGET {
+	struct Properties {
+		RGBC aTextColor[5]{
+			RGB_BLACK,          /* enabled, not selected */
+			RGB_WHITE,          /* enabled, selected */
+			RGB_GRAYL(0x7C),    /* disabled, not selected */
+			RGB_LIGHTGRAY,      /* disabled, selected */
+			RGB_WHITE           /* active submenu */
+		};
+		RGBC aBkColor[5]{
+			RGB_LIGHTGRAY,
+			RGB_BLUEL(0x98),
+			RGB_LIGHTGRAY,
+			RGB_BLUEL(0x98),
+			RGB_GRAYL(0x7C)
+		};
+		uint8_t aBorder[4]{ 4, 4, 2, 2 }; /* Left, Right, Top, Bottom */
+		PCFONT pFont{ &GUI_Font13_1 };
+	} static DefaultProps;
+	Properties Props;
+	GUI_ARRAY   ItemArray;
+	WM_Obj *hOwner;
+	uint16_t Flags;
+	char IsSubmenuActive;
+	uint16_t Width;
+	uint16_t Height;
+	uint16_t Sel;
+};
 
 /* Define default effect */
 #define MENU_EFFECT_DEFAULT WIDGET_Effect_3D1L
@@ -12,6 +58,22 @@ MENU_Obj::Properties MENU_Obj::DefaultProps;
 
 PCWIDGET_EFFECT MENU__pDefaultEffect = MENU_EFFECT_DEFAULT;
 
+void MENU__InvalidateItem(MENU_Obj *pObj, unsigned Index) {
+	GUI_USE_PARA(pObj);
+	GUI_USE_PARA(Index);
+	WM_Invalidate(pObj);  /* Can be optimized, no need to invalidate all items */
+}
+int MENU__SendMenuMessage(MENU_Handle hObj, WM_Obj *hDestWin, uint16_t MsgType, uint16_t ItemId) {
+	if (!hDestWin)
+		hDestWin = WM_GetParent(hObj);
+	if (hDestWin) {
+		MENU_MSG_DATA MsgData;
+		MsgData.MsgType = MsgType;
+		MsgData.ItemId = ItemId;
+		return (int)WM__SendMessage(hDestWin, WM_MENU, (WM_PARAM)&MsgData);
+	}
+	return 0;
+}
 static char _IsTopLevelMenu(MENU_Obj *pObj) {
 	if (MENU__SendMenuMessage(pObj, pObj->hOwner, MENU_IS_MENU, 0) == 0) {
 		return 1;
@@ -76,6 +138,9 @@ static int _GetItemHeight(MENU_Obj *pObj, unsigned Index) {
 		ItemHeight += pObj->Props.aBorder[MENU_BI_TOP] + pObj->Props.aBorder[MENU_BI_BOTTOM];
 	}
 	return ItemHeight;
+}
+unsigned MENU__GetNumItems(MENU_Obj *pObj) {
+	return GUI_ARRAY_GetNumItems(&pObj->ItemArray);
 }
 static int _CalcMenuSizeX(MENU_Obj *pObj) {
 	unsigned i, NumItems = MENU__GetNumItems(pObj);
@@ -463,6 +528,13 @@ static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, int MsgId, const GUI_PID_STATE
 		}
 	}
 }
+void MENU__ResizeMenu(MENU_Obj *pObj) {
+	int xSize, ySize;
+	xSize = _CalcWindowSizeX(pObj);
+	ySize = _CalcWindowSizeY(pObj);
+	WM_SetSize(pObj, xSize, ySize);
+	WM_Invalidate(pObj);
+}
 static WM_PARAM _OnMenu(MENU_Obj *pObj, WM_PARAM Data) {
 	auto pData = (const MENU_MSG_DATA *)Data;
 	if (!pData) 
@@ -666,14 +738,6 @@ MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj * hParent
 	}
 	return hObj;
 }
-unsigned MENU__GetNumItems(MENU_Obj *pObj) {
-	return GUI_ARRAY_GetNumItems(&pObj->ItemArray);
-}
-void MENU__InvalidateItem(MENU_Obj *pObj, unsigned Index) {
-	GUI_USE_PARA(pObj);
-	GUI_USE_PARA(Index);
-	WM_Invalidate(pObj);  /* Can be optimized, no need to invalidate all items */
-}
 void MENU__RecalcTextWidthOfItems(MENU_Obj *pObj) {
 	PCFONT pOldFont;
 	MENU_ITEM *pItem;
@@ -685,13 +749,6 @@ void MENU__RecalcTextWidthOfItems(MENU_Obj *pObj) {
 		pItem->TextWidth = GUI_GetStringDistX(pItem->acText);
 	}
 	GUI_SetFont(pOldFont);
-}
-void MENU__ResizeMenu(MENU_Obj *pObj) {
-	int xSize, ySize;
-	xSize = _CalcWindowSizeX(pObj);
-	ySize = _CalcWindowSizeY(pObj);
-	WM_SetSize(pObj, xSize, ySize);
-	WM_Invalidate(pObj);
 }
 char MENU__SetItem(MENU_Obj *pObj, unsigned Index, const MENU_ITEM_DATA *pItemData) {
 	MENU_ITEM Item = { 0 };
@@ -720,17 +777,6 @@ void MENU__SetItemFlags(MENU_Obj *pObj, unsigned Index, uint16_t Mask, uint16_t 
 	pItem->Flags &= ~Mask;
 	pItem->Flags |= Flags;
 }
-int MENU__SendMenuMessage(MENU_Handle hObj, WM_Obj * hDestWin, uint16_t MsgType, uint16_t ItemId) {
-	if (!hDestWin)
-		hDestWin = WM_GetParent(hObj);
-	if (hDestWin) {
-		MENU_MSG_DATA MsgData;
-		MsgData.MsgType = MsgType;
-		MsgData.ItemId = ItemId;
-		return (int)WM__SendMessage(hDestWin, WM_MENU, (WM_PARAM)&MsgData);
-	}
-	return 0;
-}
 void MENU_AddItem(MENU_Handle hObj, const MENU_ITEM_DATA *pItemData) {
 	if (hObj && pItemData) {
 		auto pObj = (MENU_Obj *)hObj;
@@ -758,7 +804,6 @@ void MENU_SetOwner(MENU_Handle hObj, WM_Obj * hOwner) {
 
 	}
 }
-
 void MENU_Attach(MENU_Handle hObj, WM_Obj * hDestWin, int x, int y, int xSize, int ySize, int Flags) {
 	GUI_USE_PARA(Flags);
 	if (hObj) {
@@ -772,7 +817,6 @@ void MENU_Attach(MENU_Handle hObj, WM_Obj * hDestWin, int x, int y, int xSize, i
 
 	}
 }
-
 MENU_Handle MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	MENU_Handle hMenu;
 	GUI_USE_PARA(cb);
@@ -780,201 +824,6 @@ MENU_Handle MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Ob
 						  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 	return hMenu;
 }
-
-void MENU_DeleteItem(MENU_Handle hObj, uint16_t ItemId) {
-	if (hObj) {
-		int Index;
-
-		Index = MENU__FindItem(hObj, ItemId, &hObj);
-		if (Index >= 0) {
-			auto pObj = (MENU_Obj *)hObj;
-			GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
-			MENU__ResizeMenu(pObj);
-		}
-
-	}
-}
-
-void MENU_DisableItem(MENU_Handle hObj, uint16_t ItemId) {
-	if (hObj) {
-		int Index;
-
-		Index = MENU__FindItem(hObj, ItemId, &hObj);
-		if (Index >= 0) {
-			auto pObj = (MENU_Obj *)hObj;
-			MENU__SetItemFlags(pObj, Index, MENU_IF_DISABLED, MENU_IF_DISABLED);
-			MENU__InvalidateItem(pObj, Index);
-		}
-
-	}
-}
-
-void MENU_EnableItem(MENU_Handle hObj, uint16_t ItemId) {
-	if (hObj) {
-		int Index;
-
-		Index = MENU__FindItem(hObj, ItemId, &hObj);
-		if (Index >= 0) {
-			auto pObj = (MENU_Obj *)hObj;
-			MENU__SetItemFlags(pObj, Index, MENU_IF_DISABLED, 0);
-			MENU__InvalidateItem(pObj, Index);
-		}
-
-	}
-}
-
-void MENU_GetItem(MENU_Handle hObj, uint16_t ItemId, MENU_ITEM_DATA *pItemData) {
-	if (hObj && pItemData) {
-		int Index;
-
-		Index = MENU__FindItem(hObj, ItemId, &hObj);
-		if (Index >= 0) {
-			auto pObj = (MENU_Obj *)hObj;
-			auto pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
-			pItemData->Flags = pItem->Flags;
-			pItemData->Id = pItem->Id;
-			pItemData->hSubmenu = pItem->hSubmenu;
-			pItemData->pText = 0;
-		}
-
-	}
-}
-
-void MENU_GetItemText(MENU_Handle hObj, uint16_t ItemId, char *pBuffer, unsigned BufferSize) {
-	if (hObj && pBuffer) {
-		int Index = MENU__FindItem(hObj, ItemId, &hObj);
-		if (Index >= 0) {
-			auto pObj = (MENU_Obj *)hObj;
-			auto pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
-			strncpy(pBuffer, pItem->acText, BufferSize);
-			pBuffer[BufferSize - 1] = 0;
-		}
-	}
-}
-
-unsigned MENU_GetNumItems(MENU_Handle hObj) {
-	unsigned r = 0;
-	if (hObj) {
-		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			r = MENU__GetNumItems(pObj);
-		}
-
-	}
-	return r;
-}
-
-void MENU_InsertItem(MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pItemData) {
-	if (hObj && pItemData) {
-		int Index;
-
-		Index = MENU__FindItem(hObj, ItemId, &hObj);
-		if (Index >= 0) {
-			auto pObj = (MENU_Obj *)hObj;
-			if (GUI_ARRAY_InsertBlankItem(&pObj->ItemArray, Index) != 0) {
-				if (MENU__SetItem(pObj, Index, pItemData) == 0) {
-					GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
-				}
-				else {
-					MENU__ResizeMenu(pObj);
-				}
-			}
-		}
-
-	}
-}
-
-void MENU_Popup(MENU_Handle hObj, WM_Obj * hDestWin, int x, int y, int xSize, int ySize, int Flags) {
-	GUI_USE_PARA(Flags);
-	if (hObj && hDestWin) {
-		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			pObj->Flags |= MENU_SF_POPUP;
-			pObj->Width = ((xSize > 0) ? xSize : 0);
-			pObj->Height = ((ySize > 0) ? ySize : 0);
-			x += WM_GetWindowOrgX(hDestWin);
-			y += WM_GetWindowOrgY(hDestWin);
-			MENU_SetOwner(hObj, hDestWin);
-			WM_AttachWindowAt(hObj, WM_GetDesktopWindow(), x, y);
-			MENU__SendMenuMessage(hDestWin, hObj, MENU_ON_OPEN, 0);
-		}
-	}
-}
-
-void MENU_SetBkColor(MENU_Handle hObj, unsigned ColorIndex, RGBC Color) {
-	if (hObj) {
-		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			if (ColorIndex < GUI_COUNTOF(pObj->Props.aBkColor)) {
-				if (Color != pObj->Props.aBkColor[ColorIndex]) {
-					pObj->Props.aBkColor[ColorIndex] = Color;
-					WM_Invalidate(hObj);
-				}
-			}
-		}
-
-	}
-}
-
-void MENU_SetBorderSize(MENU_Handle hObj, unsigned BorderIndex, uint8_t BorderSize) {
-	if (hObj) {
-		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			if (BorderIndex < GUI_COUNTOF(pObj->Props.aBorder)) {
-				if (BorderSize != pObj->Props.aBorder[BorderIndex]) {
-					pObj->Props.aBorder[BorderIndex] = BorderSize;
-					MENU__ResizeMenu(pObj);
-				}
-			}
-		}
-
-	}
-}
-
-void MENU_SetFont(MENU_Handle hObj, PCFONT pFont) {
-	if (hObj) {
-		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			if (pFont != pObj->Props.pFont) {
-				pObj->Props.pFont = pFont;
-				MENU__RecalcTextWidthOfItems(pObj);
-				MENU__ResizeMenu(pObj);
-			}
-		}
-
-	}
-}
-
-void MENU_SetItem(MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pItemData) {
-	if (hObj && pItemData) {
-		int Index;
-
-		Index = MENU__FindItem(hObj, ItemId, &hObj);
-		if (Index >= 0) {
-			auto pObj = (MENU_Obj *)hObj;
-			if (MENU__SetItem(pObj, Index, pItemData) != 0) {
-				MENU__ResizeMenu(pObj);
-			}
-		}
-
-	}
-}
-
-void MENU_SetTextColor(MENU_Handle hObj, unsigned ColorIndex, RGBC Color) {
-	if (hObj) {
-		auto pObj = (MENU_Obj *)hObj;
-		if (pObj) {
-			if (ColorIndex < GUI_COUNTOF(pObj->Props.aTextColor)) {
-				if (Color != pObj->Props.aTextColor[ColorIndex]) {
-					pObj->Props.aTextColor[ColorIndex] = Color;
-					WM_Invalidate(hObj);
-				}
-			}
-		}
-
-	}
-}
-
 int MENU__FindItem(MENU_Handle hObj, uint16_t ItemId, MENU_Handle *phMenu) {
 	int ItemIndex = -1;
 	auto pObj = (MENU_Obj *)hObj;
@@ -994,4 +843,185 @@ int MENU__FindItem(MENU_Handle hObj, uint16_t ItemId, MENU_Handle *phMenu) {
 		}
 	}
 	return ItemIndex;
+}
+void MENU_DeleteItem(MENU_Handle hObj, uint16_t ItemId) {
+	if (hObj) {
+		int Index;
+
+		Index = MENU__FindItem(hObj, ItemId, &hObj);
+		if (Index >= 0) {
+			auto pObj = (MENU_Obj *)hObj;
+			GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
+			MENU__ResizeMenu(pObj);
+		}
+
+	}
+}
+void MENU_DisableItem(MENU_Handle hObj, uint16_t ItemId) {
+	if (hObj) {
+		int Index;
+
+		Index = MENU__FindItem(hObj, ItemId, &hObj);
+		if (Index >= 0) {
+			auto pObj = (MENU_Obj *)hObj;
+			MENU__SetItemFlags(pObj, Index, MENU_IF_DISABLED, MENU_IF_DISABLED);
+			MENU__InvalidateItem(pObj, Index);
+		}
+
+	}
+}
+void MENU_EnableItem(MENU_Handle hObj, uint16_t ItemId) {
+	if (hObj) {
+		int Index;
+
+		Index = MENU__FindItem(hObj, ItemId, &hObj);
+		if (Index >= 0) {
+			auto pObj = (MENU_Obj *)hObj;
+			MENU__SetItemFlags(pObj, Index, MENU_IF_DISABLED, 0);
+			MENU__InvalidateItem(pObj, Index);
+		}
+
+	}
+}
+void MENU_GetItem(MENU_Handle hObj, uint16_t ItemId, MENU_ITEM_DATA *pItemData) {
+	if (hObj && pItemData) {
+		int Index;
+
+		Index = MENU__FindItem(hObj, ItemId, &hObj);
+		if (Index >= 0) {
+			auto pObj = (MENU_Obj *)hObj;
+			auto pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
+			pItemData->Flags = pItem->Flags;
+			pItemData->Id = pItem->Id;
+			pItemData->hSubmenu = pItem->hSubmenu;
+			pItemData->pText = 0;
+		}
+
+	}
+}
+void MENU_GetItemText(MENU_Handle hObj, uint16_t ItemId, char *pBuffer, unsigned BufferSize) {
+	if (hObj && pBuffer) {
+		int Index = MENU__FindItem(hObj, ItemId, &hObj);
+		if (Index >= 0) {
+			auto pObj = (MENU_Obj *)hObj;
+			auto pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
+			strncpy(pBuffer, pItem->acText, BufferSize);
+			pBuffer[BufferSize - 1] = 0;
+		}
+	}
+}
+unsigned MENU_GetNumItems(MENU_Handle hObj) {
+	unsigned r = 0;
+	if (hObj) {
+		auto pObj = (MENU_Obj *)hObj;
+		if (pObj) {
+			r = MENU__GetNumItems(pObj);
+		}
+
+	}
+	return r;
+}
+void MENU_InsertItem(MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pItemData) {
+	if (hObj && pItemData) {
+		int Index;
+
+		Index = MENU__FindItem(hObj, ItemId, &hObj);
+		if (Index >= 0) {
+			auto pObj = (MENU_Obj *)hObj;
+			if (GUI_ARRAY_InsertBlankItem(&pObj->ItemArray, Index) != 0) {
+				if (MENU__SetItem(pObj, Index, pItemData) == 0) {
+					GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
+				}
+				else {
+					MENU__ResizeMenu(pObj);
+				}
+			}
+		}
+
+	}
+}
+void MENU_Popup(MENU_Handle hObj, WM_Obj * hDestWin, int x, int y, int xSize, int ySize, int Flags) {
+	GUI_USE_PARA(Flags);
+	if (hObj && hDestWin) {
+		auto pObj = (MENU_Obj *)hObj;
+		if (pObj) {
+			pObj->Flags |= MENU_SF_POPUP;
+			pObj->Width = ((xSize > 0) ? xSize : 0);
+			pObj->Height = ((ySize > 0) ? ySize : 0);
+			x += WM_GetWindowOrgX(hDestWin);
+			y += WM_GetWindowOrgY(hDestWin);
+			MENU_SetOwner(hObj, hDestWin);
+			WM_AttachWindowAt(hObj, WM_GetDesktopWindow(), x, y);
+			MENU__SendMenuMessage(hDestWin, hObj, MENU_ON_OPEN, 0);
+		}
+	}
+}
+void MENU_SetBkColor(MENU_Handle hObj, unsigned ColorIndex, RGBC Color) {
+	if (hObj) {
+		auto pObj = (MENU_Obj *)hObj;
+		if (pObj) {
+			if (ColorIndex < GUI_COUNTOF(pObj->Props.aBkColor)) {
+				if (Color != pObj->Props.aBkColor[ColorIndex]) {
+					pObj->Props.aBkColor[ColorIndex] = Color;
+					WM_Invalidate(hObj);
+				}
+			}
+		}
+
+	}
+}
+void MENU_SetBorderSize(MENU_Handle hObj, unsigned BorderIndex, uint8_t BorderSize) {
+	if (hObj) {
+		auto pObj = (MENU_Obj *)hObj;
+		if (pObj) {
+			if (BorderIndex < GUI_COUNTOF(pObj->Props.aBorder)) {
+				if (BorderSize != pObj->Props.aBorder[BorderIndex]) {
+					pObj->Props.aBorder[BorderIndex] = BorderSize;
+					MENU__ResizeMenu(pObj);
+				}
+			}
+		}
+
+	}
+}
+void MENU_SetFont(MENU_Handle hObj, PCFONT pFont) {
+	if (hObj) {
+		auto pObj = (MENU_Obj *)hObj;
+		if (pObj) {
+			if (pFont != pObj->Props.pFont) {
+				pObj->Props.pFont = pFont;
+				MENU__RecalcTextWidthOfItems(pObj);
+				MENU__ResizeMenu(pObj);
+			}
+		}
+
+	}
+}
+void MENU_SetItem(MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pItemData) {
+	if (hObj && pItemData) {
+		int Index;
+
+		Index = MENU__FindItem(hObj, ItemId, &hObj);
+		if (Index >= 0) {
+			auto pObj = (MENU_Obj *)hObj;
+			if (MENU__SetItem(pObj, Index, pItemData) != 0) {
+				MENU__ResizeMenu(pObj);
+			}
+		}
+
+	}
+}
+void MENU_SetTextColor(MENU_Handle hObj, unsigned ColorIndex, RGBC Color) {
+	if (hObj) {
+		auto pObj = (MENU_Obj *)hObj;
+		if (pObj) {
+			if (ColorIndex < GUI_COUNTOF(pObj->Props.aTextColor)) {
+				if (Color != pObj->Props.aTextColor[ColorIndex]) {
+					pObj->Props.aTextColor[ColorIndex] = Color;
+					WM_Invalidate(hObj);
+				}
+			}
+		}
+
+	}
 }

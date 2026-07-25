@@ -1,11 +1,32 @@
-#include "GUI_Protected.h"
-#include "WM_Intern.h"
-#include "BUTTON_Private.h"
-
-#define BUTTON_USE_3D 1
-constexpr GUI_POINT BUTTON_3D_MOVE{ 1, 1 };
+#include "DIALOG_Intern.h"
 
 #define BUTTON_REACT_ON_LEVEL 0
+#define BUTTON_USE_3D 1
+
+constexpr GUI_POINT BUTTON_3D_MOVE{ 1, 1 };
+
+import TUX.Widget;
+import TUX.Widget.Button;
+
+struct BUTTON_Obj : public WIDGET {
+	struct Properties {
+		PCFONT pFont{ &GUI_Font13_1 };
+		RGBC aTextColor[3]{
+			/* Unpressed */	RGB_BLACK,
+			/* Pressed */	RGB_BLACK,
+			/* Disabled */	RGB_DARKGRAY
+		};
+		RGBC aBkColor[3]{
+			/* Unpressed */	RGB_GRAYL(0xD0),
+			/* Pressed */	RGB_WHITE,
+			/* Disabled */	RGB_LIGHTGRAY
+		};
+		TEXTALIGN Align{ TEXTALIGN_CENTER };
+	} static DefaultProps;
+	Properties Props;
+	char *pText;
+	GUI_DRAW *aDrawObj[3];
+};
 
 BUTTON_Obj::Properties BUTTON_Obj::DefaultProps;
 
@@ -233,13 +254,6 @@ void BUTTON_SetFocussable(BUTTON_Handle hObj, int State) {
 	}
 }
 
-void BUTTON_SetBitmapEx(BUTTON_Handle hObj, unsigned int Index, PCBITMAP pBitmap, int x, int y) {
-	BUTTON__SetDrawObj(hObj, Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
-}
-void BUTTON_SetBitmap(BUTTON_Handle hObj, unsigned int Index, PCBITMAP pBitmap) {
-	BUTTON_SetBitmapEx(hObj, Index, pBitmap, 0, 0);
-}
-
 BUTTON_Handle BUTTON_Create(int x0, int y0, int xsize, int ysize, int Id, int Flags) {
 	return BUTTON_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, Id);
 }
@@ -298,6 +312,23 @@ bool BUTTON_IsPressed(BUTTON_Handle hObj) {
 	return false;
 }
 
+void BUTTON__SetDrawObj(BUTTON_Handle hObj, int Index, GUI_DRAW *pDrawObj) {
+	if (hObj) {
+		auto pObj = (BUTTON_Obj *)hObj;
+		if ((unsigned int)Index <= GUI_COUNTOF(pObj->aDrawObj)) {
+			GUI_ALLOC_FreePtr((void **)&pObj->aDrawObj[Index]);
+			pObj->aDrawObj[Index] = pDrawObj;
+			WM_Invalidate(hObj);
+		}
+
+	}
+}
+void BUTTON_SetBitmapEx(BUTTON_Handle hObj, unsigned int Index, PCBITMAP pBitmap, int x, int y) {
+	BUTTON__SetDrawObj(hObj, Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
+}
+void BUTTON_SetBitmap(BUTTON_Handle hObj, unsigned int Index, PCBITMAP pBitmap) {
+	BUTTON_SetBitmapEx(hObj, Index, pBitmap, 0, 0);
+}
 void BUTTON_SetSelfDrawEx(BUTTON_Handle hObj, unsigned int Index, GUI_DRAW_SELF_CB *pDraw, int x, int y) {
 	BUTTON__SetDrawObj(hObj, Index, GUI_DRAW_SELF_Create(pDraw, x, y));
 }
@@ -310,18 +341,6 @@ void BUTTON_SetTextAlign(BUTTON_Handle hObj, int Align) {
 		auto pObj = (BUTTON_Obj *)hObj;
 		pObj->Props.Align = Align;
 		WM_Invalidate(hObj);
-
-	}
-}
-
-void BUTTON__SetDrawObj(BUTTON_Handle hObj, int Index, GUI_DRAW *pDrawObj) {
-	if (hObj) {
-		auto pObj = (BUTTON_Obj *)hObj;
-		if ((unsigned int)Index <= GUI_COUNTOF(pObj->aDrawObj)) {
-			GUI_ALLOC_FreePtr((void **)&pObj->aDrawObj[Index]);
-			pObj->aDrawObj[Index] = pDrawObj;
-			WM_Invalidate(hObj);
-		}
 
 	}
 }

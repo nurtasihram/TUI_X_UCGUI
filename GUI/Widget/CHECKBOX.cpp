@@ -1,13 +1,39 @@
-#include "GUI_Protected.h"
-#include "CHECKBOX_Private.h"
+#include "DIALOG_Intern.h"
+
+import TUX.Widget;
+import TUX.Widget.CheckBox;
+
+struct CHECKBOX_Obj : public WIDGET {
+	static CBITMAP abmCheck[2];
+	struct Properties {
+		PCFONT pFont{ &GUI_Font13_1 };
+		PCBITMAP apBm[4]{
+			/* Inactive */	&abmCheck[0],
+			/* Active */	&abmCheck[1],
+			/* Inactive 3-State */	&abmCheck[2],
+			/* Active 3-State */	&abmCheck[1]
+		};
+		RGBC aBkColorBox[2]{
+			/* Inactive */	RGB_GRAYL(0x80),
+			/* Active */	RGB_WHITE
+		};
+		RGBC BkColor{ RGB_INVALID_COLOR };
+		RGBC TextColor{ RGB_BLACK };
+		TEXTALIGN Align{ TEXTALIGN_LEFT | TEXTALIGN_VCENTER };
+		uint8_t Spacing{ 4 };
+		uint8_t NumStates = 2;
+	} static DefaultProps;
+	Properties Props;
+	uint8_t NumStates;
+	uint8_t CurrentState;
+	char *pText;
+};
 
 CHECKBOX_Obj::Properties CHECKBOX_Obj::DefaultProps;
 
 static void _OnPaint(CHECKBOX_Obj *pObj) {
-	GUI_RECT RectBox;
-	int ColorIndex, EffectSize;
-	EffectSize = pObj->pEffect->EffectSize;
-	ColorIndex = WM_IsEnabled(pObj);
+	int ColorIndex = WM_IsEnabled(pObj),
+		EffectSize = pObj->pEffect->EffectSize;
 	/* Clear inside ... Just in case      */
 	/* Fill with parents background color */
 #if WM_SUPPORT_TRANSPARENCY
@@ -23,16 +49,15 @@ static void _OnPaint(CHECKBOX_Obj *pObj) {
 		GUI_Clear();
 	}
 	/* Get size from bitmap */
+	GUI_RECT RectBox;
 	RectBox.x1 = pObj->Props.apBm[0]->XSize - 1 + 2 * EffectSize;
 	RectBox.y1 = pObj->Props.apBm[0]->YSize - 1 + 2 * EffectSize;
 	WM_SetUserClipRect(&RectBox);
 	/* Clear inside  ... Just in case */
 	GUI_SetBkColor(pObj->Props.aBkColorBox[ColorIndex]);
 	GUI_Clear();
-	if (pObj->CurrentState) {
-		int Index = (pObj->CurrentState - 1) * 2 + ColorIndex;
-		GUI_DrawBitmap(pObj->Props.apBm[Index], EffectSize, EffectSize);
-	}
+	if (pObj->CurrentState)
+		GUI_DrawBitmap(pObj->Props.apBm[(pObj->CurrentState - 1) * 2 + ColorIndex], EffectSize, EffectSize);
 	/* Draw the effect arround the box */
 	WIDGET__EFFECT_DrawDownRect(pObj, RectBox);
 	WM_SetUserClipRect(nullptr);
@@ -173,7 +198,7 @@ CHECKBOX_Handle CHECKBOX_Create(int x0, int y0, int xsize, int ysize, WM_Obj * h
 }
 
 CHECKBOX_Handle CHECKBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	CHECKBOX_Handle  hThis;
+	CHECKBOX_Handle hThis;
 	GUI_USE_PARA(cb);
 	hThis = CHECKBOX_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
 							  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
