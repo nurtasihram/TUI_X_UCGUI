@@ -5,6 +5,8 @@ module;
 
 export module TUX.Widget.Header;
 
+import TUX.Widget;
+
 export {
 
 typedef WM_Obj * HEADER_Handle;

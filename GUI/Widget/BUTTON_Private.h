@@ -1,8 +1,10 @@
 #pragma once
 
-#include "WIDGET.h"
 #include "DIALOG_Intern.h"
 
+#include "WM_Intern.h"
+
+import TUX.Widget;
 import TUX.Widget.Button;
 
 struct BUTTON_Obj : public WIDGET {

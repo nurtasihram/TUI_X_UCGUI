@@ -1,8 +1,7 @@
 #include <string.h>
 
-#include "GUI.h"
+#include "GUI_Protected.h"
 #include "FRAMEWIN_Private.h"
-#include "TEXT.h"
 #include "DIALOG.h"
 #include "MESSAGEBOX.h"
 

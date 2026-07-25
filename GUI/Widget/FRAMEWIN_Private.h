@@ -1,7 +1,9 @@
 #pragma once
 
-#include "WIDGET.h"
 
+#include "WM_Intern.h"
+
+import TUX.Widget;
 import TUX.Widget.Frame;
 import TUX.Widget.Button;
 import TUX.Widget.Menu;

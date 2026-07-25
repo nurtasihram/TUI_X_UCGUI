@@ -1,11 +1,13 @@
 #pragma once
 
-#include "WIDGET.h"
 #include "DIALOG_Intern.h"
 #include "GUI_ARRAY.h"
 
 #define DROPDOWN_SF_AUTOSCROLLBAR DROPDOWN_CF_AUTOSCROLLBAR
 
+#include "WM_Intern.h"
+
+import TUX.Widget;
 import TUX.Widget.DropDown;
 
 struct DROPDOWN_Obj : public WIDGET {

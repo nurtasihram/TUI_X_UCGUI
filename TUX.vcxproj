@@ -59,8 +59,6 @@
     <ClCompile Include="GUI\Widget\FRAMEWIN.cpp" />
     <ClCompile Include="GUI\Widget\GUI_ARRAY.cpp" />
     <ClCompile Include="GUI\Widget\GUI_DRAW.cpp" />
-    <ClCompile Include="GUI\Widget\GUI_DRAW_BITMAP.cpp" />
-    <ClCompile Include="GUI\Widget\GUI_DRAW_Self.cpp" />
     <ClCompile Include="GUI\Widget\HEADER.cpp" />
     <ClCompile Include="GUI\Widget\LISTBOX.cpp" />
     <ClCompile Include="GUI\Widget\LISTVIEW.cpp" />
@@ -154,7 +152,9 @@
       <FileType>Document</FileType>
     </ClCompile>
     <ClInclude Include="GUI\Widget\TEXT_Private.h" />
-    <ClInclude Include="GUI\Widget\WIDGET.h" />
+    <ClCompile Include="GUI\Widget\Widget.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="GUI\Widget\WINDOW_Private.h" />
     <ClInclude Include="GUI\WM\WM.h" />
     <ClInclude Include="GUI\WM\WM_Intern.h" />

@@ -5,6 +5,8 @@ module;
 
 export module TUX.Widget.CheckBox;
 
+import TUX.Widget;
+
 export {
 
 enum CHECKBOX_BI {

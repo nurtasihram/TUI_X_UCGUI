@@ -1,9 +1,10 @@
 module;
 
-#include "WIDGET.h"
 #include "DIALOG_Intern.h" /* Req. for Create indirect data structure */
 
 export module TUX.Widget.ScrollBar;
+
+import TUX.Widget;
 
 export {
 

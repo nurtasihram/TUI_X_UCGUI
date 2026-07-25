@@ -1,9 +1,11 @@
 #pragma once
 
-#include "WIDGET.h"
 #include "GUIDebug.h"
 #include "DIALOG_Intern.h"
 
+#include "WM_Intern.h"
+
+import TUX.Widget;
 import TUX.Widget.ScrollBar;
 
 struct SCROLLBAR_Obj : public WIDGET {

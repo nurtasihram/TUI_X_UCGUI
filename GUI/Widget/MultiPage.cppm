@@ -5,6 +5,8 @@ module;
 
 export module TUX.Widget.MultiPage;
 
+import TUX.Widget;
+
 export {
 
 constexpr uint16_t MULTIPAGE_ALIGN_LEFT   = 0 << 0;

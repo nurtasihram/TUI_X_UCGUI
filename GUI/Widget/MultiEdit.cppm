@@ -5,6 +5,8 @@ module;
 
 export module TUX.Widget.MultiEdit;
 
+import TUX.Widget;
+
 export {
 
 constexpr uint16_t MULTIEDIT_CF_READONLY         = 1 << 0;

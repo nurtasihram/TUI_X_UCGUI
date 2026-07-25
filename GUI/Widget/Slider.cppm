@@ -1,9 +1,10 @@
 module;
 
-#include "WIDGET.h"      /* Req. for Create indirect data structure */
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 
 export module TUX.Widget.Slider;
+
+import TUX.Widget;
 
 export {
 

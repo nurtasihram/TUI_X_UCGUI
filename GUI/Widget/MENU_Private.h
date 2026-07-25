@@ -1,9 +1,11 @@
 #pragma once
 
-#include "WIDGET.h"
 #include "GUI_ARRAY.h"
 #include "DIALOG_Intern.h"
 
+#include "WM_Intern.h"
+
+import TUX.Widget;
 import TUX.Widget.Menu;
 
 #define MENU_SF_HORIZONTAL              MENU_CF_HORIZONTAL

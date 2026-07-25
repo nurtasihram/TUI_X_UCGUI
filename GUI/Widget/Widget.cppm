@@ -1,6 +1,10 @@
-#pragma once
+module;
 
 #include "WM_Intern.h"  /*Window manager, including some internals, which speed things up */
+
+export module TUX.Widget;
+
+export {
 
 constexpr uint16_t WIDGET_STATE_FOCUS       = 1 << 0;
 constexpr uint16_t WIDGET_STATE_VERTICAL    = 1 << 3;
@@ -108,3 +112,5 @@ int   WIDGET_SetWidth(WM_Obj *hObj, int Width);
 void  WIDGET_SetEffect(WM_Obj *hObj, const WIDGET_EFFECT *pEffect);
 
 bool  WIDGET_HandleActive(WM_Obj *hObj, int MsgId, WM_PARAM *Data);
+
+}

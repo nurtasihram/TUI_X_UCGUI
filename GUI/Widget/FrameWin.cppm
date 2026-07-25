@@ -4,6 +4,8 @@ module;
 
 export module TUX.Widget.Frame;
 
+import TUX.Widget;
+
 export {
 
 constexpr uint16_t FRAMEWIN_CF_ACTIVE     = 1 << 3;

@@ -1,10 +1,11 @@
 module;
 
-#include "WIDGET.h"        /* Req. for Create indirect data structure */
 #include "GUIDebug.h"      /* Req. for GUI_DEBUG_LEVEL */
 #include "DIALOG_Intern.h" /* Req. for Create indirect data structure */
 
 export module TUX.Widget.Text;
+
+import TUX.Widget;
 
 export {
 

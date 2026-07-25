@@ -5,6 +5,8 @@ module;
 
 export module TUX.Widget.DropDown;
 
+import TUX.Widget;
+
 export {
 
 constexpr uint16_t DROPDOWN_CF_AUTOSCROLLBAR    = 1 << 0;

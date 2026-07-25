@@ -5,6 +5,8 @@ module;
 
 export module TUX.Widget.ListView;
 
+import TUX.Widget;
+
 import TUX.Widget.Header;
 
 export {

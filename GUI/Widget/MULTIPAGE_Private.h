@@ -1,9 +1,11 @@
 #pragma once
 
-#include "WIDGET.h"
 #include "DIALOG_Intern.h"
 #include "GUI_ARRAY.h"
 
+#include "WM_Intern.h"
+
+import TUX.Widget;
 import TUX.Widget.MultiPage;
 
 #define MULTIPAGE_STATE_ENABLED     (1<<0)

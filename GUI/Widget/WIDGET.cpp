@@ -1,10 +1,11 @@
-#include "WIDGET.h"
 #include "GUIDebug.h"
 #include "GUI.h"
 #include "GUI_Protected.h"
 #include "WM_Intern.h"
 
 #include "DIALOG.h"
+
+import TUX.Widget;
 
 PCWIDGET_EFFECT WIDGET::DefaultEffect = WIDGET_Effect_3D2L;
 

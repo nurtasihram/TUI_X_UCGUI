@@ -1,10 +1,11 @@
 module;
 
 #include "WM.h"
-#include "WIDGET.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 
 export module TUX.Widget.Menu;
+
+import TUX.Widget;
 
 export {
 

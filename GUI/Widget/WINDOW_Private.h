@@ -1,7 +1,10 @@
 #pragma once
 
-#include "WM.h"
-#include "WIDGET.h"
+#include "DIALOG_Intern.h"
+#include "GUI_Protected.h"
+#include "WM_Intern.h"
+
+import TUX.Widget;
 
 #define WINDOW_BKCOLOR_DEFAULT RGB_GRAYL(0xC0)
 

@@ -2,9 +2,10 @@ module;
 
 #include "WM.h"
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
-#include "WIDGET.h"
 
 export module TUX.Widget.Button;
+
+import TUX.Widget;
 
 export {
 

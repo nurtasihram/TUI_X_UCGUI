@@ -1,4 +1,6 @@
-#include "WIDGET.h"
+#include "GUI_Protected.h"
+
+import TUX.Widget;
 
 struct WIDGET_EFFECT_Simple : public WIDGET_EFFECT {
 	void DrawUp(GUI_RECT r) const override {

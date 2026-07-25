@@ -1,4 +1,5 @@
 #include "GUI_Protected.h"
+#include "WM_Intern.h"
 #include "BUTTON_Private.h"
 
 #define BUTTON_USE_3D 1

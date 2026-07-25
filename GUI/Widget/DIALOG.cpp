@@ -1,7 +1,7 @@
-
 #include "DIALOG.h"
-#include "WIDGET.h"
 #include "WM_Intern.h"
+
+import TUX.Widget;
 
 /* Define colors */
 #define DIALOG_BKCOLOR0_DEFAULT RGB_GRAYL(0xc0)

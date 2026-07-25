@@ -1,9 +1,11 @@
 #pragma once
 
-#include "WIDGET.h"
 #include "DIALOG_Intern.h"
 #include "GUI_ARRAY.h"
 
+#include "WM_Intern.h"
+
+import TUX.Widget;
 import TUX.Widget.Radio;
 
 extern CBITMAP RADIO__abmRadio[2];

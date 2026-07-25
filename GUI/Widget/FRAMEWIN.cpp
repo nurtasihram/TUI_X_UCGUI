@@ -1,4 +1,3 @@
-#include "WIDGET.h"
 
 #include "FRAMEWIN_Private.h"
 

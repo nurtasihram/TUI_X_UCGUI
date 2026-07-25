@@ -1,7 +1,7 @@
 #include "GUI.h"
 #include "DIALOG.h"
-#include "WIDGET.h"
 
+import TUX.Widget;
 import TUX.Widget.CheckBox;
 import TUX.Widget.Menu;
 

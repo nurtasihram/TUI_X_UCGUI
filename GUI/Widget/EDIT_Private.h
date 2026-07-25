@@ -1,10 +1,12 @@
 #pragma once
 
-#include "WIDGET.h"
 #include "DIALOG_Intern.h"
 
 #define EDIT_REALLOC_SIZE  16
 
+#include "WM_Intern.h"
+
+import TUX.Widget;
 import TUX.Widget.Edit;
 
 struct EDIT_Obj : public WIDGET {

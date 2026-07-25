@@ -5,6 +5,8 @@ module;
 
 export module TUX.Widget.ProgBar;
 
+import TUX.Widget;
+
 export {
 
 typedef WM_Obj * PROGBAR_Handle;

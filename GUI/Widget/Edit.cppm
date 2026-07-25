@@ -4,6 +4,8 @@ module;
 #include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
 
 export module TUX.Widget.Edit;
+
+import TUX.Widget;
  
 export {
 
