@@ -1,11 +1,12 @@
 module;
 
 #include "DIALOG_Intern.h"
-#include "GUI_ARRAY.h"
 
 export module TUX.Widget.Header;
 
 import TUX.Widget;
+
+import TUX.Array;
 
 export {
 
@@ -273,8 +274,6 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hPar
 								  sizeof(HEADER_Obj) - sizeof(WM_Obj));
 	if (hObj) {
 		auto pObj = (HEADER_Obj *)hObj;
-		/* Init sub-classes */
-		GUI_ARRAY_CREATE(&pObj->Columns);
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, 0);
 		/* init member variables */

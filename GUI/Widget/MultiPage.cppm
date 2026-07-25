@@ -1,12 +1,13 @@
 module;
 
 #include "DIALOG_Intern.h"
-#include "GUI_ARRAY.h"
 
 export module TUX.Widget.MultiPage;
 
 import TUX.Widget;
 import TUX.Widget.ScrollBar;
+
+import TUX.Array;
 
 export {
 
@@ -454,8 +455,6 @@ MULTIPAGE_Handle MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj
 		auto pObj = (MULTIPAGE_Obj *)hObj;
 		GUI_RECT rClient;
 		int Flags;
-		/* Init sub-classes */
-		GUI_ARRAY_CREATE(&pObj->Handles);
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */

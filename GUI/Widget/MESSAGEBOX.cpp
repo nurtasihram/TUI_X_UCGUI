@@ -1,7 +1,7 @@
 #include <string.h>
 
 #include "GUI_Protected.h"
-#include "FRAMEWIN_Private.h"
+//#include "FRAMEWIN_Private.h"
 #include "DIALOG.h"
 #include "MESSAGEBOX.h"
 
@@ -48,7 +48,7 @@ static WM_PARAM _MESSAGEBOX_cbCallback(WM_Obj * hWin, int MsgId, WM_PARAM Data) 
 }
 WM_Obj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags) {
 	GUI_WIDGET_CREATE_INFO _aDialogCreate[3];                                     /* 0: FrameWin, 1: Text, 2: Button */
-	int BorderSize = FRAMEWIN_Obj::DefaultProps.BorderSize;                       /* Default border size of frame window */
+	int BorderSize = 12; //FRAMEWIN_Obj::DefaultProps.BorderSize;                       /* Default border size of frame window */
 	int xSizeFrame = MESSAGEBOX_XSIZEOK + 2 * BorderSize + MESSAGEBOX_BORDER * 2; /* XSize of frame window */
 	int ySizeFrame;                                                               /* YSize of frame window */
 	int x0, y0;                                                                   /* Position of frame window */
@@ -67,7 +67,7 @@ WM_Obj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags
 	if (xSizeFrame < (xSizeMessage + 4 + MESSAGEBOX_BORDER * 2)) {
 		xSizeFrame = xSizeMessage + 4 + MESSAGEBOX_BORDER * 2;
 	}
-	ySizeCaption = GUI_GetYSizeOfFont(FRAMEWIN_Obj::DefaultProps.pFont);
+	ySizeCaption = GUI_GetYSizeOfFont(GUI_DEFAULT_FONT);//FRAMEWIN_Obj::DefaultProps.pFont);
 	ySizeFrame = ySizeMessage +            /* size of message */
 		MESSAGEBOX_YSIZEOK +      /* size of button */
 		ySizeCaption +            /* caption size */

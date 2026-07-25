@@ -1,8 +1,33 @@
+module;
 
-#include "GUI_ARRAY.h"
+#include "WM_Intern.h"
+
+export module TUX.Array;
+
+export {
+
+struct GUI_ARRAY {
+	uint16_t NumItems;
+	WM_HMEM haHandle;   /* Handle to buffer holding handles */
+};
+
+int      GUI_ARRAY_AddItem(GUI_ARRAY *pThis, const void *pNew, int Len);
+void     GUI_ARRAY_Delete(GUI_ARRAY *pThis);
+WM_HMEM  GUI_ARRAY_GethItem(const GUI_ARRAY *pThis, unsigned int Index);
+unsigned GUI_ARRAY_GetNumItems(const GUI_ARRAY *pThis);
+void *GUI_ARRAY_GetpItem(const GUI_ARRAY *pThis, unsigned int Index);
+
+/* Optional methods */
+int      GUI_ARRAY_SethItem(GUI_ARRAY *pThis, unsigned int Index, WM_HMEM hItem);
+WM_HMEM  GUI_ARRAY_SetItem(GUI_ARRAY *pThis, unsigned int Index, const void *pData, int Len);
+void     GUI_ARRAY_DeleteItem(GUI_ARRAY *pThis, unsigned int Index);
+char     GUI_ARRAY_InsertBlankItem(GUI_ARRAY *pThis, unsigned int Index);
+WM_HMEM  GUI_ARRAY_InsertItem(GUI_ARRAY *pThis, unsigned int Index, int Len);
+void *GUI_ARRAY_ResizeItem(GUI_ARRAY *pThis, unsigned int Index, int Len);
+
+}
 
 unsigned int GUI_ARRAY_GetNumItems(const GUI_ARRAY *pThis) {
-	GUI_ARRAY_CHECK(pThis);    /* Sanity checks at higher debug levels only */
 	return pThis->NumItems;
 }
 
@@ -26,7 +51,6 @@ int GUI_ARRAY_AddItem(GUI_ARRAY *pThis, const void *pNew, int Len) {
 	WM_HMEM hNewBuffer;
 	WM_HMEM *pNewBuffer;
 	int r = 0;
-	GUI_ARRAY_CHECK(pThis);    /* Sanity checks at higher debug levels only */
 
 	/* Alloc memory for new item */
 	if (Len) {
@@ -69,7 +93,6 @@ void GUI_ARRAY_Delete(GUI_ARRAY *pThis) {
 	int i;
 	WM_HMEM ha;
 	WM_HMEM *pa;
-	GUI_ARRAY_CHECK(pThis);    /* Sanity checks at higher debug levels only */
 	ha = pThis->haHandle;
 	if (ha) {
 		pa = (WM_HMEM *)(ha);
@@ -81,9 +104,6 @@ void GUI_ARRAY_Delete(GUI_ARRAY *pThis) {
 		GUI_ALLOC_FreePtr(&pThis->haHandle);
 		pThis->NumItems = 0;                    /* For safety, in case the array is used after it has been deleted */
 	}
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-	pThis->InitState = GUI_ARRAY_STATE_DELETED;
-#endif
 }
 /*********************************************************************
 *
@@ -108,7 +128,6 @@ int GUI_ARRAY_SethItem(GUI_ARRAY *pThis, unsigned int Index, WM_HMEM hItem) {
 	WM_HMEM ha;
 	WM_HMEM *pa;
 	int r = 1;
-	GUI_ARRAY_CHECK(pThis);    /* Sanity checks at higher debug levels only */
 	if (Index < (unsigned)pThis->NumItems) {
 		ha = pThis->haHandle;
 		if (ha) {
@@ -142,7 +161,6 @@ int GUI_ARRAY_SethItem(GUI_ARRAY *pThis, unsigned int Index, WM_HMEM hItem) {
 */
 WM_HMEM  GUI_ARRAY_SetItem(GUI_ARRAY *pThis, unsigned int Index, const void *pData, int Len) {
 	WM_HMEM hItem = 0;
-	GUI_ARRAY_CHECK(pThis);    /* Sanity checks at higher debug levels only */
 	if (Index < (unsigned)pThis->NumItems) {
 		WM_HMEM ha;
 		ha = pThis->haHandle;
@@ -156,9 +174,9 @@ WM_HMEM  GUI_ARRAY_SetItem(GUI_ARRAY *pThis, unsigned int Index, const void *pDa
 			 * new item has a different size.
 			 */
 			if (hItem) {
-//				if (GUI_ ALLOC_GetSize(hItem) != Len) {
-					hItem = 0;
-//				}
+				//				if (GUI_ ALLOC_GetSize(hItem) != Len) {
+				hItem = 0;
+				//				}
 			}
 			/*
 			 * Allocate a new buffer and free the old one (if needed).
@@ -195,7 +213,6 @@ WM_HMEM  GUI_ARRAY_SetItem(GUI_ARRAY *pThis, unsigned int Index, const void *pDa
 */
 WM_HMEM GUI_ARRAY_GethItem(const GUI_ARRAY *pThis, unsigned int Index) {
 	WM_HMEM h = 0;
-	GUI_ARRAY_CHECK(pThis);    /* Sanity checks at higher debug levels only */
 	if (Index < (unsigned)pThis->NumItems) {
 		WM_HMEM  ha;
 		WM_HMEM *pa;
@@ -225,48 +242,12 @@ WM_HMEM GUI_ARRAY_GethItem(const GUI_ARRAY *pThis, unsigned int Index) {
 void *GUI_ARRAY_GetpItem(const GUI_ARRAY *pThis, unsigned int Index) {
 	void *p = nullptr;
 	WM_HMEM h;
-	GUI_ARRAY_CHECK(pThis);    /* Sanity checks at higher debug levels only */
 	h = GUI_ARRAY_GethItem(pThis, Index);
 	if (h) {
 		p = (h);
 	}
 	return p;
 }
-/*********************************************************************
-*
-*       Debug support
-*
-**********************************************************************
-*
-* Purpose:
-*   The routines below are required only at higher debug levels
-*/
-#if GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL
-/*********************************************************************
-*
-*       GUI_ARRAY_Create
-*
-* Purpose:
-*/
-void GUI_ARRAY_Create(GUI_ARRAY *pThis) {
-	pThis->InitState = GUI_ARRAY_STATE_CREATED;
-}
-/*********************************************************************
-*
-*       GUI_ARRAY_Check
-*
-* Purpose:
-*/
-void GUI_ARRAY_Check(const GUI_ARRAY *pThis) {
-	if (pThis->InitState == GUI_ARRAY_STATE_DELETED) {
-	}
-	else if (pThis->InitState == GUI_ARRAY_STATE_NOT_CREATED) {
-	}
-	else if (pThis->InitState != GUI_ARRAY_STATE_CREATED) {
-	}
-}
-#endif /* GUI_DEBUG_LEVEL >= GUI_DEBUG_LEVEL_CHECK_ALL */
-
 
 /*********************************************************************
 *
@@ -353,8 +334,6 @@ void *GUI_ARRAY_ResizeItem(GUI_ARRAY *pThis, unsigned int Index, int Len) {
 *       (Increment by 1)
 */
 char GUI_ARRAY_InsertBlankItem(GUI_ARRAY *pThis, unsigned int Index) {
-	GUI_ARRAY_CHECK(pThis);    /* Sanity checks at higher debug levels only */
-
 	if (Index >= (unsigned)pThis->NumItems) {
 	}
 	else {

@@ -1,11 +1,12 @@
 module;
 
 #include "DIALOG_Intern.h"
-#include "GUI_ARRAY.h"
 
 export module TUX.Widget.Radio;
 
 import TUX.Widget;
+
+import TUX.Array;
 
 export {
 
@@ -259,8 +260,6 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParen
 	hObj = WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent, WinFlags, _RADIO_Callback, sizeof(RADIO_Obj) - sizeof(WM_Obj));
 	if (hObj) {
 		auto pObj = (RADIO_Obj *)hObj;
-		/* Init sub-classes */
-		GUI_ARRAY_CREATE(&pObj->TextArray);
 		for (i = 0; i < NumItems; i++) {
 			GUI_ARRAY_AddItem(&pObj->TextArray, nullptr, 0);
 		}

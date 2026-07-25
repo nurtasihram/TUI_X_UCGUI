@@ -1,13 +1,14 @@
 module;
 
 #include "DIALOG_Intern.h"
-#include "GUI_ARRAY.h"
 
 export module TUX.Widget.ListView;
 
 import TUX.Widget;
 import TUX.Widget.Header;
 import TUX.Widget.ScrollBar;
+
+import TUX.Array;
 
 export {
 
@@ -525,9 +526,6 @@ LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *
 								  sizeof(LISTVIEW_Obj) - sizeof(WM_Obj));
 	if (hObj) {
 		auto pObj = (LISTVIEW_Obj *)hObj;
-		/* Init sub-classes */
-		GUI_ARRAY_CREATE(&pObj->RowArray);
-		GUI_ARRAY_CREATE(&pObj->AlignArray);
 		/* Init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* Init member variables */
@@ -589,7 +587,6 @@ void LISTVIEW_AddRow(LISTVIEW_Handle hObj, const GUI_ConstString *ppText) {
 			int i, NumColumns, NumBytes;
 			GUI_ARRAY *pRow;
 			const char *s;
-			GUI_ARRAY_CREATE((GUI_ARRAY *)GUI_ARRAY_GetpItem(&pObj->RowArray, NumRows));  /* For higher debug levels only */
 			/* Add columns for the new row */
 			NumColumns = HEADER_GetNumItems(pObj->hHeader);
 			for (i = 0; i < NumColumns; i++) {

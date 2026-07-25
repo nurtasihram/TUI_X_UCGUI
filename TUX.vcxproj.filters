@@ -72,12 +72,6 @@
     <ClCompile Include="GUI\Widget\DIALOG.cpp">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\GUI_ARRAY.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\GUI_DRAW.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\MESSAGEBOX.cpp">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
@@ -208,6 +202,9 @@
     <ClCompile Include="GUI\Widget\MultiPage.cppm">
       <Filter>GUI\Widget\Container</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\Widget\GUI_ARRAY.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">
@@ -226,9 +223,6 @@
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\DIALOG_Intern.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\GUI_ARRAY.h">
       <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Widget\MESSAGEBOX.h">

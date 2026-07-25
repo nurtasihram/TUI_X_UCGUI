@@ -52,8 +52,6 @@
     <ClCompile Include="GUI\Widget\Button.cppm" />
     <ClCompile Include="GUI\Widget\CheckBox.cppm" />
     <ClCompile Include="GUI\Widget\DIALOG.cpp" />
-    <ClCompile Include="GUI\Widget\GUI_ARRAY.cpp" />
-    <ClCompile Include="GUI\Widget\GUI_DRAW.cpp" />
     <ClCompile Include="GUI\Widget\MESSAGEBOX.cpp" />
     <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp" />
     <ClCompile Include="GUI\Widget\WINDOW.cpp" />
@@ -86,7 +84,9 @@
     <ClCompile Include="GUI\Widget\FrameWin.cppm">
       <FileType>Document</FileType>
     </ClCompile>
-    <ClInclude Include="GUI\Widget\GUI_ARRAY.h" />
+    <ClCompile Include="GUI\Widget\GUI_ARRAY.cppm">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClCompile Include="GUI\Widget\Header.cppm">
       <FileType>Document</FileType>
     </ClCompile>

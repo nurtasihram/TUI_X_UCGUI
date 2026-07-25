@@ -2,12 +2,12 @@ module;
 
 #include "DIALOG_Intern.h"
 
-#include "GUI_ARRAY.h"
-
 export module TUX.Widget.DropDown;
 
 import TUX.Widget;
 import TUX.Widget.ListBox;
+
+import TUX.Array;
 
 export {
 
@@ -273,8 +273,6 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *
 								  sizeof(DROPDOWN_Obj) - sizeof(WM_Obj));
 	if (hObj) {
 		auto pObj = (DROPDOWN_Obj *)hObj;
-		/* Init sub-classes */
-		GUI_ARRAY_CREATE(&pObj->Handles);
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		pObj->Props = DROPDOWN_Obj::DefaultProps;

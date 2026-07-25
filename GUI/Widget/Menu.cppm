@@ -3,11 +3,12 @@ module;
 #include <string.h>
 
 #include "DIALOG_Intern.h"
-#include "GUI_ARRAY.h"
 
 export module TUX.Widget.Menu;
 
 import TUX.Widget;
+
+import TUX.Array;
 
 export {
 
@@ -785,8 +786,6 @@ MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParent,
 		MENU_Obj *pObj;
 
 		pObj = (MENU_Obj *)(hObj);
-		/* Init sub-classes */
-		GUI_ARRAY_CREATE(&pObj->ItemArray);
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
