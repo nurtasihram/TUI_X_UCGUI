@@ -7,6 +7,19 @@ export module TUX.Widget.MultiEdit;
 
 import TUX.Widget;
 
+#define NUM_DISP_MODES 2
+
+/* Define character for password mode */
+#define MULTIEDIT_PASSWORD_CHAR   '*'
+
+#define INVALID_NUMCHARS (1 << 0)
+#define INVALID_NUMLINES (1 << 1)
+#define INVALID_TEXTSIZE (1 << 2)
+#define INVALID_CURSORXY (1 << 3)
+#define INVALID_LINEPOSB (1 << 4)
+
+#define MULTIEDIT_REALLOC_SIZE  16
+
 export {
 constexpr uint16_t MULTIEDIT_CF_READONLY         = 1 << 0;
 constexpr uint16_t MULTIEDIT_CF_INSERT           = 1 << 2;
@@ -53,20 +66,6 @@ void MULTIEDIT_SetTextColor     (MULTIEDIT_HANDLE hObj, unsigned Index, RGBC col
 void MULTIEDIT_SetWrapNone      (MULTIEDIT_HANDLE hObj);
 void MULTIEDIT_SetWrapChar      (MULTIEDIT_HANDLE hObj);
 void MULTIEDIT_SetWrapWord      (MULTIEDIT_HANDLE hObj);
-}
-
-#define NUM_DISP_MODES 2
-
-/* Define character for password mode */
-#define MULTIEDIT_PASSWORD_CHAR   '*'
-
-#define INVALID_NUMCHARS (1 << 0)
-#define INVALID_NUMLINES (1 << 1)
-#define INVALID_TEXTSIZE (1 << 2)
-#define INVALID_CURSORXY (1 << 3)
-#define INVALID_LINEPOSB (1 << 4)
-
-#define MULTIEDIT_REALLOC_SIZE  16
 
 struct MULTIEDIT_Obj : public WIDGET {
 	struct Properties {
@@ -107,22 +106,11 @@ struct MULTIEDIT_Obj : public WIDGET {
 };
 
 MULTIEDIT_Obj::Properties MULTIEDIT_Obj::DefaultProps;
+}
 
-/*********************************************************************
-*
-*       _InvalidateNumChars
-*
-* Invalidates the number of characters including the prompt
-*/
 static void _InvalidateNumChars(MULTIEDIT_Obj *pObj) {
 	pObj->InvalidFlags |= INVALID_NUMCHARS;
 }
-/*********************************************************************
-*
-*       _GetNumChars
-*
-* Calculates (if needed) and returns the number of characters including the prompt
-*/
 static int _GetNumChars(MULTIEDIT_Obj *pObj) {
 	if (pObj->InvalidFlags & INVALID_NUMCHARS) {
 		char *pText;
@@ -132,12 +120,6 @@ static int _GetNumChars(MULTIEDIT_Obj *pObj) {
 	}
 	return pObj->NumChars;
 }
-/*********************************************************************
-*
-*       _GetXSize
-*
-* Returns the x size for displaying text.
-*/
 static int _GetXSize(MULTIEDIT_Obj *pObj) {
 	GUI_RECT Rect;
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
@@ -249,13 +231,6 @@ static void _DispString(MULTIEDIT_Obj *pObj, const char *pText, GUI_RECT *pRect)
 		GUI_DispStringInRectMax(pText, pRect, TEXTALIGN_LEFT, NumCharsDisp);
 	}
 }
-/*********************************************************************
-*
-*       _GetpLine
-*
-* Returns a pointer to the beginning of the line with the
-* given line number.
-*/
 static char *_GetpLine(MULTIEDIT_Obj *pObj, unsigned LineNumber) {
 	char *pText, *pLine;
 	pText = (char *)(pObj->hText);
@@ -279,25 +254,12 @@ static char *_GetpLine(MULTIEDIT_Obj *pObj, unsigned LineNumber) {
 	}
 	return pText + pObj->CacheLinePosByte;
 }
-/*********************************************************************
-*
-*       _ClearCache
-*
-* Clears the cached position of the linenumber and the first byte
-* of the line which holds the cursor.
-*/
 static void _ClearCache(MULTIEDIT_Obj *pObj) {
 	pObj->CacheLineNumber = 0;
 	pObj->CacheLinePosByte = 0;
 	pObj->CacheFirstVisibleByte = 0;
 	pObj->CacheFirstVisibleLine = 0;
 }
-/*********************************************************************
-*
-*       _GetCursorLine
-*
-* Returns the line number of the cursor position.
-*/
 static int _GetCursorLine(MULTIEDIT_Obj *pObj, const char *pText, int CursorPosChar) {
 	const char *pCursor;
 	const char *pEndLine;
@@ -353,16 +315,6 @@ static void _SetScrollState(WM_Obj *hObj) {
 	auto pObj = (MULTIEDIT_Obj *)hObj;
 	WIDGET__SetScrollState(hObj, &pObj->ScrollStateV, &pObj->ScrollStateH);
 }
-/*********************************************************************
-*
-*       _CalcScrollPos
-*
-* Purpose:
-*   Find out if the current position of the cursor is still in the
-*   visible area. If it is not, the scroll position is updated.
-*   Needs to be called every time the cursor is move, wrap, font or
-*   window size are changed.
-*/
 static void _CalcScrollPos(MULTIEDIT_Obj *pObj) {
 	int xCursor, yCursor;
 	_GetCursorXY(pObj, &xCursor, &yCursor);
@@ -371,12 +323,6 @@ static void _CalcScrollPos(MULTIEDIT_Obj *pObj) {
 	WM_CheckScrollPos(&pObj->ScrollStateH, xCursor, 30, 30);     /* Horizontal */
 	_SetScrollState(pObj);
 }
-/*********************************************************************
-*
-*       _GetTextSizeX
-*
-* Returns the width of the displayed text.
-*/
 static int _GetTextSizeX(MULTIEDIT_Obj *pObj) {
 	if (pObj->InvalidFlags & INVALID_TEXTSIZE) {
 		pObj->TextSizeX = 0;
@@ -408,12 +354,6 @@ static int _GetNumVisLines(MULTIEDIT_Obj *pObj) {
 	WM_GetInsideRectExScrollbar(pObj, &Rect);
 	return (Rect.y1 - Rect.y0 + 1) / GUI_GetYDistOfFont(pObj->Props.pFont);
 }
-/*********************************************************************
-*
-*       _GetNumLines
-*
-* Calculates (if needed) and returns the number of lines
-*/
 static int _GetNumLines(MULTIEDIT_Obj *pObj) {
 	if (pObj->InvalidFlags & INVALID_NUMLINES) {
 		int NumLines = 0;
@@ -438,31 +378,12 @@ static int _GetNumLines(MULTIEDIT_Obj *pObj) {
 	}
 	return pObj->NumLines;
 }
-/*********************************************************************
-*
-*       _InvalidateNumLines
-*
-* Invalidates the number of lines
-*/
 static void _InvalidateNumLines(MULTIEDIT_Obj *pObj) {
 	pObj->InvalidFlags |= INVALID_NUMLINES;
 }
-/*********************************************************************
-*
-*       _InvalidateTextSizeX
-*
-* Calculates the TextSizeX
-*/
 static void _InvalidateTextSizeX(MULTIEDIT_Obj *pObj) {
 	pObj->InvalidFlags |= INVALID_TEXTSIZE;
 }
-/*********************************************************************
-*
-*       _CalcScrollParas
-*
-* Purpose:
-*   Calculate page size ,number of items & position
-*/
 static void _CalcScrollParas(MULTIEDIT_HANDLE hObj) {
 	auto pObj = (MULTIEDIT_Obj *)hObj;
 	/* Calc vertical scroll parameters */
@@ -484,16 +405,6 @@ static void _ManageAutoScrollV(MULTIEDIT_Obj *pObj) {
 		}
 	}
 }
-/*********************************************************************
-*
-*       _ManageScrollers
-*
-* Function:
-* If autoscroll mode is enabled, add or remove the horizonatal and
-* vertical scrollbars as required.
-* Caution: This routine should not be called as reaction to a message
-* From the child, as this could lead to a recursion problem
-*/
 static void _ManageScrollers(MULTIEDIT_HANDLE hObj) {
 	auto pObj = (MULTIEDIT_Obj *)hObj;
 	/* 1. Step: Check if vertical scrollbar is required */
@@ -512,24 +423,12 @@ static void _Invalidate(MULTIEDIT_HANDLE hObj) {
 	_ManageScrollers(hObj);
 	WM_Invalidate(hObj);
 }
-/*********************************************************************
-*
-*       _InvalidateTextArea
-*
-* Invalidates the text area only
-*/
 static void _InvalidateTextArea(MULTIEDIT_HANDLE hObj) {
 	GUI_RECT rInsideRect;
 	_ManageScrollers(hObj);
 	WM_GetInsideRectExScrollbar(hObj, &rInsideRect);
 	WM_InvalidateRect(hObj, &rInsideRect);
 }
-/*********************************************************************
-*
-*       _InvalidateCursorPos
-*
-* Sets the position of the cursor to an invalid value
-*/
 static int _InvalidateCursorPos(MULTIEDIT_Obj *pObj) {
 	int Value;
 	Value = pObj->CursorPosChar;
@@ -546,19 +445,6 @@ static void _SetFlag(MULTIEDIT_HANDLE hObj, int OnOff, uint8_t Flag) {
 		}
 		_InvalidateTextArea(hObj);
 }
-/*********************************************************************
-*
-*       _CalcNextValidCursorPos
-*
-* Purpose:
-*   Calculates the next valid cursor position of the desired position.
-*
-* Parameters:
-*   pObj          : Obvious
-*   CursorPosChar : New character position of the cursor
-*   pCursorPosByte: Pointer to save the cursorposition in bytes. Used to abolish further calculations. Could be 0.
-*   pCursorLine   : Pointer to save the line number of the cursor. Used to abolish further calculations. Could be 0.
-*/
 static int _CalcNextValidCursorPos(MULTIEDIT_Obj *pObj, int CursorPosChar, int *pCursorPosByte, int *pCursorLine) {
 	if (pObj->hText) {
 		char *pNextLine, *pCursor, *pText;
@@ -602,12 +488,6 @@ static int _CalcNextValidCursorPos(MULTIEDIT_Obj *pObj, int CursorPosChar, int *
 	}
 	return 0;
 }
-/*********************************************************************
-*
-*       _SetCursorPos
-*
-* Sets a new cursor position.
-*/
 static void _SetCursorPos(MULTIEDIT_Obj *pObj, int CursorPosChar) {
 	int CursorPosByte, CursorLine;
 	CursorPosChar = _CalcNextValidCursorPos(pObj, CursorPosChar, &CursorPosByte, &CursorLine);
@@ -639,12 +519,6 @@ static int _SetWrapMode(MULTIEDIT_HANDLE hObj, GUI_WRAPMODE WrapMode) {
 
 	return r;
 }
-/*********************************************************************
-*
-*       _SetCursorXY
-*
-* Sets the cursor position from window coordinates.
-*/
 static void _SetCursorXY(MULTIEDIT_Obj *pObj, int x, int y) {
 	int CursorPosChar = 0;
 	if ((x < 0) || (y < 0)) {
@@ -738,13 +612,6 @@ static int _IsOverwriteAtThisChar(MULTIEDIT_Obj *pObj) {
 	}
 	return r;
 }
-/*********************************************************************
-*
-*       _GetCursorSizeX
-*
-* Returns the width of the cursor to be draw according to the
-* insert mode flag and the cursor position.
-*/
 static int _GetCursorSizeX(MULTIEDIT_Obj *pObj) {
 	if (_IsOverwriteAtThisChar(pObj)) {
 		const char *pText;
@@ -756,12 +623,6 @@ static int _GetCursorSizeX(MULTIEDIT_Obj *pObj) {
 		return 2;
 	}
 }
-/*********************************************************************
-*
-*       _IncrementBuffer
-*
-* Increments the buffer size by AddBytes.
-*/
 static int _IncrementBuffer(MULTIEDIT_Obj *pObj, unsigned AddBytes) {
 	WM_HMEM hNew;
 	int NewSize;
@@ -779,17 +640,6 @@ static int _IncrementBuffer(MULTIEDIT_Obj *pObj, unsigned AddBytes) {
 	}
 	return 0;
 }
-/*********************************************************************
-*
-*       _IsSpaceInBuffer
-*
-* Checks the available space in the buffer. If there is not enough
-* space left this function attempts to get more.
-*
-* Returns:
-*  1 = requested space is available
-*  0 = failed to get enough space
-*/
 static int _IsSpaceInBuffer(MULTIEDIT_Obj *pObj, int BytesNeeded) {
 	int NumBytes = 0;
 	if (pObj->hText) {
@@ -803,16 +653,6 @@ static int _IsSpaceInBuffer(MULTIEDIT_Obj *pObj, int BytesNeeded) {
 	}
 	return 1;
 }
-/*********************************************************************
-*
-*       _IsCharsAvailable
-*
-* Checks weither the maximum number of characters is reached or not.
-*
-* Returns:
-*  1 = requested number of chars is available
-*  0 = maximum number of chars have reached
-*/
 static int _IsCharsAvailable(MULTIEDIT_Obj *pObj, int CharsNeeded) {
 	if ((CharsNeeded > 0) && (pObj->MaxNumChars > 0)) {
 		int NumChars = 0;
@@ -825,13 +665,6 @@ static int _IsCharsAvailable(MULTIEDIT_Obj *pObj, int CharsNeeded) {
 	}
 	return 1;
 }
-/*********************************************************************
-*
-*       _DeleteChar
-*
-* Deletes a character at the current cursor position and moves
-* all bytes after the cursor position.
-*/
 static void _DeleteChar(MULTIEDIT_Obj *pObj) {
 	if (pObj->hText) {
 		int CursorOffset;
@@ -865,12 +698,6 @@ static void _DeleteChar(MULTIEDIT_Obj *pObj) {
 		}
 	}
 }
-/*********************************************************************
-*
-*       _InsertChar
-*
-* Create space at the current cursor position and inserts a character.
-*/
 static int _InsertChar(MULTIEDIT_Obj *pObj, uint16_t Char) {
 	if (_IsCharsAvailable(pObj, 1)) {
 		int BytesNeeded;
@@ -987,13 +814,6 @@ static void _OnTouch(MULTIEDIT_Obj *pObj, const GUI_PID_STATE *pState) {
 		Notification = WM_NOTIFICATION_MOVED_OUT;
 	WM_NotifyParent(pObj, Notification);
 }
-/*********************************************************************
-*
-*       _AddKey
-*
-* Returns: 1 if Key has been consumed
-*          0 else
-*/
 static int _AddKey(MULTIEDIT_HANDLE hObj, uint16_t Key) {
 	int r = 0;               /* Key has not been consumed */
 	auto pObj = (MULTIEDIT_Obj *)hObj;
@@ -1088,6 +908,7 @@ static int _OnKey(MULTIEDIT_Obj *pObj, const WM_KEY_INFO *pInfo) {
 		return 1; /* Key release is consumed (not sent to parent) */
 	return 0; /* Key release is not consumed (sent to parent) */
 }
+
 static WM_PARAM _MULTIEDIT_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (MULTIEDIT_Obj *)hWin;
 	/* Let widget handle the standard messages */
@@ -1150,8 +971,7 @@ static WM_PARAM _MULTIEDIT_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	}
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
-/* Note: the parameters to a create function may vary.
-		 Some widgets may have multiple create functions */
+
 MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int WinFlags, int ExFlags,
 									int Id, int BufferSize, const char *pText) {
 	MULTIEDIT_HANDLE hObj;
@@ -1196,6 +1016,17 @@ MULTIEDIT_HANDLE MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj
 
 	return hObj;
 }
+MULTIEDIT_HANDLE MULTIEDIT_Create(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int Flags, int ExFlags, const char *pText, int MaxLen) {
+	return MULTIEDIT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, ExFlags, Id, MaxLen, pText);
+}
+MULTIEDIT_HANDLE MULTIEDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	MULTIEDIT_HANDLE  hThis;
+	GUI_USE_PARA(cb);
+	hThis = MULTIEDIT_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+							   hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->Para, nullptr);
+	return hThis;
+}
+
 int MULTIEDIT_AddKey(MULTIEDIT_HANDLE hObj, uint16_t Key) {
 	int r = 0;
 		r = _AddKey(hObj, Key);
@@ -1391,15 +1222,6 @@ void MULTIEDIT_SetMaxNumChars(MULTIEDIT_HANDLE hObj, unsigned MaxNumChars) {
 			}
 		}
 }
-/*********************************************************************
-*
-*       MULTIEDIT_GetTextSize
-*
-* Purpose:
-*   Returns the number of bytes required to store the text.
-*   It is typically used when allocating a buffer to pass to
-*   MULTIEDIT_GetText().
-*/
 int MULTIEDIT_GetTextSize(MULTIEDIT_HANDLE hObj) {
 	int r = 0;
 		auto pObj = (MULTIEDIT_Obj *)hObj;
@@ -1411,15 +1233,4 @@ int MULTIEDIT_GetTextSize(MULTIEDIT_HANDLE hObj) {
 		}
 
 	return r;
-}
-
-MULTIEDIT_HANDLE MULTIEDIT_Create(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int Flags, int ExFlags, const char *pText, int MaxLen) {
-	return MULTIEDIT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, ExFlags, Id, MaxLen, pText);
-}
-MULTIEDIT_HANDLE MULTIEDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	MULTIEDIT_HANDLE  hThis;
-	GUI_USE_PARA(cb);
-	hThis = MULTIEDIT_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							   hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->Para, nullptr);
-	return hThis;
 }

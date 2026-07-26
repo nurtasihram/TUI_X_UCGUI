@@ -8,6 +8,11 @@ import TUX.Widget;
 
 import TUX.Array;
 
+#define HEADER_SUPPORT_DRAG 1
+
+/* Remember the old cursor */
+static PCCURSOR _pOldCursor;
+
 export {
    
 typedef WM_Obj * HEADER_Handle;
@@ -35,9 +40,6 @@ void HEADER_SetItemText        (HEADER_Handle hObj, unsigned int Index, const ch
 void HEADER_SetItemWidth       (HEADER_Handle hObj, unsigned int Index, int Width);
 void HEADER_SetScrollPos       (HEADER_Handle hObj, int ScrollPos);
 void HEADER_SetTextColor       (HEADER_Handle hObj, RGBC Color);
-}
-
-#define HEADER_SUPPORT_DRAG 1
 
 struct HEADER_COLUMN {
 	int16_t Width;
@@ -63,9 +65,7 @@ struct HEADER_Obj : public WIDGET {
 };
 
 HEADER_Obj::Properties HEADER_Obj::DefaultProps;
-
-/* Remember the old cursor */
-static PCCURSOR _pOldCursor;
+}
 
 static void _OnPaint(HEADER_Obj *pObj) {
 	int xPos = -pObj->ScrollPos;
@@ -124,12 +124,6 @@ static void _RestoreOldCursor(void) {
 		_pOldCursor = 0;
 	}
 }
-/*********************************************************************
-*
-*       _FreeAttached
-*
-* Delete attached objects (if any)
-*/
 static void _FreeAttached(HEADER_Obj *pObj) {
 	int i, NumItems;
 	NumItems = GUI_ARRAY_GetNumItems(&pObj->Columns);
@@ -146,25 +140,21 @@ static void _FreeAttached(HEADER_Obj *pObj) {
 #if (HEADER_SUPPORT_DRAG)
 static int _GetItemIndex(HEADER_Obj *pObj, int x, int y) {
 	if ((y >= 0) && (y < WM_GetWindowSizeY(pObj))) {
-		int Item = -1;
-		int xPos = 0;
-		for (int Index = 0, NumColumns = GUI_ARRAY_GetNumItems(&pObj->Columns); Index < NumColumns; Index++) {
+		int xPos = pObj->pEffect->EffectSize;
+		for (int Index = 0, NumColumns = GUI_ARRAY_GetNumItems(&pObj->Columns); Index < NumColumns; ++Index) {
 			auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
 			xPos += pColumn->Width;
-			if (xPos >= x - 4 && xPos <= x + 4) {
-				Item = Index;
-				if (Index < NumColumns - 1 && x < xPos) {
-					pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index + 1);
-					if (pColumn->Width == 0)
-						return Item;
+			if (x - 4 <= xPos && xPos <= x + 4) {
+				if (Index < NumColumns && x < xPos) {
+					pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
+					if (pColumn->Width)
+						return Index;
 				}
 			}
 		}
 	}
 	return -1;
 }
-#endif
-#if (HEADER_SUPPORT_DRAG)
 static void _HandlePID(HEADER_Obj *pObj, int x, int y, int Pressed) {
 	int Hit = _GetItemIndex(pObj, x, y);
 	/* set capture position () */
@@ -201,14 +191,6 @@ static void _HandlePID(HEADER_Obj *pObj, int x, int y, int Pressed) {
 		}
 	}
 }
-#endif
-#if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
-static void _OnMouseOver(HEADER_Obj *pObj, const GUI_PID_STATE *pState) {
-	if (pState)
-		_HandlePID(pObj, pState->x + pObj->ScrollPos, pState->y, -1);
-}
-#endif
-#if (HEADER_SUPPORT_DRAG)
 static void _OnTouch(HEADER_Obj *pObj, const GUI_PID_STATE *pState) {
 	int Notification;
 	if (pState) {  /* Something happened in our area (pressed or released) */
@@ -219,6 +201,12 @@ static void _OnTouch(HEADER_Obj *pObj, const GUI_PID_STATE *pState) {
 	else
 		Notification = WM_NOTIFICATION_MOVED_OUT;
 	WM_NotifyParent(pObj, Notification);
+}
+#endif
+#if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
+static void _OnMouseOver(HEADER_Obj *pObj, const GUI_PID_STATE *pState) {
+	if (pState)
+		_HandlePID(pObj, pState->x + pObj->ScrollPos, pState->y, -1);
 }
 #endif
 static WM_PARAM _HEADER_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
@@ -403,7 +391,7 @@ int  HEADER_GetNumItems(HEADER_Handle hObj) {
 	return NumCols;
 }
 
-void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW *pDrawObj) {
+void _SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW *pDrawObj) {
 	auto pObj = (HEADER_Obj *)hObj;
 	if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
 		auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
@@ -414,7 +402,7 @@ void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW *pDrawObj) 
 	}
 }
 void HEADER_SetBitmapEx(HEADER_Handle hObj, unsigned Index, PCBITMAP pBitmap, int x, int y) {
-	HEADER__SetDrawObj(hObj, Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
+	_SetDrawObj(hObj, Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
 	WM_Invalidate(hObj);
 }
 void HEADER_SetBitmap(HEADER_Handle hObj, unsigned Index, PCBITMAP pBitmap) {

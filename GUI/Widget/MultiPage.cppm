@@ -9,6 +9,10 @@ import TUX.Widget.ScrollBar;
 
 import TUX.Array;
 
+#define MULTIPAGE_STATE_ENABLED     (1<<0)
+#define MULTIPAGE_STATE_SCROLLMODE  WIDGET_STATE_USER0
+#define MULTIPAGE_NUMCOLORS         2
+
 export {
 constexpr uint16_t MULTIPAGE_ALIGN_LEFT   = 0 << 0;
 constexpr uint16_t MULTIPAGE_ALIGN_RIGHT  = 1 << 0;
@@ -34,11 +38,6 @@ void    MULTIPAGE_SetAlign      (MULTIPAGE_Handle hObj, unsigned Align);
 int     MULTIPAGE_GetSelection  (MULTIPAGE_Handle hObj);
 WM_Obj *MULTIPAGE_GetWindow     (MULTIPAGE_Handle hObj, unsigned Index);
 int     MULTIPAGE_IsPageEnabled (MULTIPAGE_Handle hObj, unsigned Index);
-}
-
-#define MULTIPAGE_STATE_ENABLED     (1<<0)
-#define MULTIPAGE_STATE_SCROLLMODE  WIDGET_STATE_USER0
-#define MULTIPAGE_NUMCOLORS         2
 
 struct MULTIPAGE_PAGE {
 	WM_Obj *hWin;
@@ -66,6 +65,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 };
 
 MULTIPAGE_Obj::Properties MULTIPAGE_Obj::DefaultProps;
+}
 
 static void _AddScrollbar(MULTIPAGE_Obj *pObj, int x, int y, int w, int h) {
 	SCROLLBAR_Handle hScroll;

@@ -10,6 +10,17 @@ import TUX.Widget;
 
 import TUX.Array;
 
+#define MENU_SF_HORIZONTAL              MENU_CF_HORIZONTAL
+#define MENU_SF_VERTICAL                MENU_CF_VERTICAL
+#define MENU_SF_OPEN_ON_POINTEROVER     MENU_CF_OPEN_ON_POINTEROVER
+#define MENU_SF_CLOSE_ON_SECOND_CLICK   MENU_CF_CLOSE_ON_SECOND_CLICK
+#define MENU_SF_HIDE_DISABLED_SEL       MENU_CF_HIDE_DISABLED_SEL
+#define MENU_SF_ACTIVE            (1<<6)  /* Internal flag only */
+#define MENU_SF_POPUP             (1<<7)  /* Internal flag only */
+
+/* Define default effect */
+#define MENU_EFFECT_DEFAULT WIDGET_Effect_3D1L
+
 export {
 constexpr uint16_t MENU_CF_HORIZONTAL               = 0 << 0;
 constexpr uint16_t MENU_CF_VERTICAL                 = 1 << 0;
@@ -74,15 +85,6 @@ void      MENU_SetTextColor     (MENU_Handle hObj, unsigned ColorIndex, RGBC Col
 void      MENU_SetBkColor       (MENU_Handle hObj, unsigned ColorIndex, RGBC Color);
 void      MENU_SetBorderSize    (MENU_Handle hObj, unsigned BorderIndex, uint8_t BorderSize);
 void      MENU_SetFont          (MENU_Handle hObj, PCFONT pFont);
-}
-
-#define MENU_SF_HORIZONTAL              MENU_CF_HORIZONTAL
-#define MENU_SF_VERTICAL                MENU_CF_VERTICAL
-#define MENU_SF_OPEN_ON_POINTEROVER     MENU_CF_OPEN_ON_POINTEROVER
-#define MENU_SF_CLOSE_ON_SECOND_CLICK   MENU_CF_CLOSE_ON_SECOND_CLICK
-#define MENU_SF_HIDE_DISABLED_SEL       MENU_CF_HIDE_DISABLED_SEL
-#define MENU_SF_ACTIVE            (1<<6)  /* Internal flag only */
-#define MENU_SF_POPUP             (1<<7)  /* Internal flag only */
 
 struct MENU_ITEM {
 	MENU_Handle hSubmenu;
@@ -121,19 +123,17 @@ struct MENU_Obj : public WIDGET {
 	uint16_t Sel;
 };
 
-/* Define default effect */
-#define MENU_EFFECT_DEFAULT WIDGET_Effect_3D1L
-
 MENU_Obj::Properties MENU_Obj::DefaultProps;
+}
 
 PCWIDGET_EFFECT MENU__pDefaultEffect = MENU_EFFECT_DEFAULT;
 
-void MENU__InvalidateItem(MENU_Obj *pObj, unsigned Index) {
+void _InvalidateItem(MENU_Obj *pObj, unsigned Index) {
 	GUI_USE_PARA(pObj);
 	GUI_USE_PARA(Index);
 	WM_Invalidate(pObj);  /* Can be optimized, no need to invalidate all items */
 }
-int MENU__SendMenuMessage(MENU_Handle hObj, WM_Obj *hDestWin, uint16_t MsgType, uint16_t ItemId) {
+int _SendMenuMessage(MENU_Handle hObj, WM_Obj *hDestWin, uint16_t MsgType, uint16_t ItemId) {
 	if (!hDestWin)
 		hDestWin = WM_GetParent(hObj);
 	if (hDestWin) {
@@ -145,7 +145,7 @@ int MENU__SendMenuMessage(MENU_Handle hObj, WM_Obj *hDestWin, uint16_t MsgType, 
 	return 0;
 }
 static char _IsTopLevelMenu(MENU_Obj *pObj) {
-	if (MENU__SendMenuMessage(pObj, pObj->hOwner, MENU_IS_MENU, 0) == 0) {
+	if (_SendMenuMessage(pObj, pObj->hOwner, MENU_IS_MENU, 0) == 0) {
 		return 1;
 	}
 	return 0;
@@ -209,11 +209,11 @@ static int _GetItemHeight(MENU_Obj *pObj, unsigned Index) {
 	}
 	return ItemHeight;
 }
-unsigned MENU__GetNumItems(MENU_Obj *pObj) {
+unsigned _GetNumItems(MENU_Obj *pObj) {
 	return GUI_ARRAY_GetNumItems(&pObj->ItemArray);
 }
 static int _CalcMenuSizeX(MENU_Obj *pObj) {
-	unsigned i, NumItems = MENU__GetNumItems(pObj);
+	unsigned i, NumItems = _GetNumItems(pObj);
 	int xSize = 0;
 	if (pObj->Flags & MENU_SF_VERTICAL) {
 		int ItemWidth;
@@ -233,7 +233,7 @@ static int _CalcMenuSizeX(MENU_Obj *pObj) {
 	return xSize;
 }
 static int _CalcMenuSizeY(MENU_Obj *pObj) {
-	unsigned i, NumItems = MENU__GetNumItems(pObj);
+	unsigned i, NumItems = _GetNumItems(pObj);
 	int ySize = 0;
 	if (pObj->Flags & MENU_SF_VERTICAL) {
 		for (i = 0; i < NumItems; i++) {
@@ -266,17 +266,6 @@ static int _CalcWindowSizeY(MENU_Obj *pObj) {
 	}
 	return ySize;
 }
-/*********************************************************************
-*
-*       _GetItemFromPos
-*
-* Return value:
-*   Zero based index of item at given position or -1.
-*
-* NOTE:
-*   This function has to ensure that index is always less than the
-*   maximum number of items.
-*/
 static int _GetItemFromPos(MENU_Obj *pObj, int x, int y) {
 	int xSize, ySize, EffectSize, r = -1;
 	ySize = _CalcMenuSizeY(pObj);
@@ -293,7 +282,7 @@ static int _GetItemFromPos(MENU_Obj *pObj, int x, int y) {
 	xSize -= (EffectSize << 1);
 	ySize -= (EffectSize << 1);
 	if ((x >= 0) && (y >= 0) && (x < xSize) && (y < ySize)) {
-		unsigned i, NumItems = MENU__GetNumItems(pObj);
+		unsigned i, NumItems = _GetNumItems(pObj);
 		if (pObj->Flags & MENU_SF_VERTICAL) {
 			int yPos = 0;
 			for (i = 0; i < NumItems; i++) {
@@ -356,7 +345,7 @@ static void _CloseSubmenu(MENU_Obj *pObj) {
 		if (pObj->IsSubmenuActive) {
 			auto pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, pObj->Sel);
 			/* Inform submenu about its deactivation and detach it */
-			MENU__SendMenuMessage(pObj, pItem->hSubmenu, MENU_ON_CLOSE, 0);
+			_SendMenuMessage(pObj, pItem->hSubmenu, MENU_ON_CLOSE, 0);
 			WM_DetachWindow(pItem->hSubmenu);
 			pObj->IsSubmenuActive = 0;
 			/*
@@ -366,7 +355,7 @@ static void _CloseSubmenu(MENU_Obj *pObj) {
 			 */
 			_SetCapture(pObj);
 			/* Invalidate menu item. This is needed because the appearance may have changed */
-			MENU__InvalidateItem(pObj, pObj->Sel);
+			_InvalidateItem(pObj, pObj->Sel);
 		}
 	}
 }
@@ -400,19 +389,19 @@ static void _OpenSubmenu(MENU_Obj *pObj, unsigned Index) {
 				 */
 				if (PrevActiveSubmenu == 0) {
 					if (_IsTopLevelMenu(pObj)) {
-						MENU__SendMenuMessage(pObj, pObj->hOwner, MENU_ON_INITMENU, 0);
+						_SendMenuMessage(pObj, pObj->hOwner, MENU_ON_INITMENU, 0);
 					}
 				}
 				/* Notify owner window when a submenu opens, so it can initialize the menu items. */
-				MENU__SendMenuMessage(pObj, pObj->hOwner, MENU_ON_INITSUBMENU, pItem->Id);
+				_SendMenuMessage(pObj, pObj->hOwner, MENU_ON_INITSUBMENU, pItem->Id);
 				/* Set active menu as owner of submenu. */
 				MENU_SetOwner(pItem->hSubmenu, pObj);
 				/* Attach submenu and inform it about its activation. */
 				WM_AttachWindowAt(pItem->hSubmenu, WM_GetDesktopWindow(), x, y);
-				MENU__SendMenuMessage(pObj, pItem->hSubmenu, MENU_ON_OPEN, 0);
+				_SendMenuMessage(pObj, pItem->hSubmenu, MENU_ON_OPEN, 0);
 				pObj->IsSubmenuActive = 1;
 				/* Invalidate menu item. This is needed because the appearance may have changed. */
-				MENU__InvalidateItem(pObj, Index);
+				_InvalidateItem(pObj, Index);
 			}
 		}
 	}
@@ -426,8 +415,8 @@ static void _ClosePopup(MENU_Obj *pObj) {
 }
 static void _SetSelection(MENU_Obj *pObj, int Index) {
 	if (Index != pObj->Sel) {
-		MENU__InvalidateItem(pObj, pObj->Sel); /* Invalidate previous selection */
-		MENU__InvalidateItem(pObj, Index);     /* Invalidate new selection */
+		_InvalidateItem(pObj, pObj->Sel); /* Invalidate previous selection */
+		_InvalidateItem(pObj, Index);     /* Invalidate new selection */
 		pObj->Sel = Index;
 	}
 }
@@ -451,7 +440,7 @@ static void _ActivateItem(MENU_Obj *pObj, unsigned Index) {
 		if ((pItem->Flags & (MENU_IF_DISABLED | MENU_IF_SEPARATOR)) == 0) {
 			_ClosePopup(pObj);
 			/* Send item select message to owner. */
-			MENU__SendMenuMessage(pObj, pObj->hOwner, MENU_ON_ITEMSELECT, pItem->Id);
+			_SendMenuMessage(pObj, pObj->hOwner, MENU_ON_ITEMSELECT, pItem->Id);
 		}
 	}
 }
@@ -505,14 +494,6 @@ static int _ForwardMouseOverMsg(MENU_Obj *pObj, int x, int y) {
 #endif
 	return 0;
 }
-/*********************************************************************
-*
-*       _HandlePID
-*
-* Return values:
-*   1 = We need to forward PID message to owner.
-*   0 = We do not need to inform owner.
-*/
 static char _HandlePID(MENU_Obj *pObj, int x, int y, int Pressed) {
 	GUI_PID_STATE PrevState;
 	char XYInWidget = 0;
@@ -598,7 +579,7 @@ static void _ForwardPIDMsgToOwner(MENU_Obj *pObj, int MsgId, const GUI_PID_STATE
 		}
 	}
 }
-void MENU__ResizeMenu(MENU_Obj *pObj) {
+void _ResizeMenu(MENU_Obj *pObj) {
 	int xSize, ySize;
 	xSize = _CalcWindowSizeX(pObj);
 	ySize = _CalcWindowSizeY(pObj);
@@ -628,7 +609,7 @@ static WM_PARAM _OnMenu(MENU_Obj *pObj, WM_PARAM Data) {
 			pObj->IsSubmenuActive = 0;
 			pObj->Flags |= MENU_SF_ACTIVE | MENU_SF_OPEN_ON_POINTEROVER;
 			_SetCapture(pObj);
-			MENU__ResizeMenu(pObj);
+			_ResizeMenu(pObj);
 			break;
 		case MENU_ON_CLOSE:
 			_CloseSubmenu(pObj);
@@ -682,7 +663,7 @@ static void _OnPaint(MENU_Obj *pObj) {
 	uint8_t BorderTop = pObj->Props.aBorder[MENU_BI_TOP];
 	int FontHeight = GUI_GetYDistOfFont(pObj->Props.pFont);
 	int EffectSize = _GetEffectSize(pObj);
-	NumItems = MENU__GetNumItems(pObj);
+	NumItems = _GetNumItems(pObj);
 	FillRect = WM_GetClientRect(pObj);
 	FillRect -= EffectSize;
 	GUI_SetFont(pObj->Props.pFont);
@@ -775,6 +756,7 @@ static WM_PARAM _MENU_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	}
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
+
 MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParent, int WinFlags, int ExFlags, int Id) {
 	MENU_Handle hObj;
 	/* Create the window */
@@ -806,11 +788,12 @@ MENU_Handle MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParent,
 	}
 	return hObj;
 }
-void MENU__RecalcTextWidthOfItems(MENU_Obj *pObj) {
+
+void _RecalcTextWidthOfItems(MENU_Obj *pObj) {
 	PCFONT pOldFont;
 	MENU_ITEM *pItem;
 	unsigned i, NumItems;
-	NumItems = MENU__GetNumItems(pObj);
+	NumItems = _GetNumItems(pObj);
 	pOldFont = GUI_SetFont(pObj->Props.pFont);
 	for (i = 0; i < NumItems; i++) {
 		pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, i);
@@ -818,7 +801,7 @@ void MENU__RecalcTextWidthOfItems(MENU_Obj *pObj) {
 	}
 	GUI_SetFont(pOldFont);
 }
-char MENU__SetItem(MENU_Obj *pObj, unsigned Index, const MENU_ITEM_DATA *pItemData) {
+char _SetItem(MENU_Obj *pObj, unsigned Index, const MENU_ITEM_DATA *pItemData) {
 	MENU_ITEM Item = { 0 };
 	const char *pText;
 	pText = pItemData->pText;
@@ -841,7 +824,7 @@ char MENU__SetItem(MENU_Obj *pObj, unsigned Index, const MENU_ITEM_DATA *pItemDa
 	}
 	return 0;
 }
-void MENU__SetItemFlags(MENU_Obj *pObj, unsigned Index, uint16_t Mask, uint16_t Flags) {
+void _SetItemFlags(MENU_Obj *pObj, unsigned Index, uint16_t Mask, uint16_t Flags) {
 	auto pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
 	pItem->Flags &= ~Mask;
 	pItem->Flags |= Flags;
@@ -851,12 +834,12 @@ void MENU_AddItem(MENU_Handle hObj, const MENU_ITEM_DATA *pItemData) {
 		auto pObj = (MENU_Obj *)hObj;
 		if (GUI_ARRAY_AddItem(&pObj->ItemArray, nullptr, 0) == 0) {
 			unsigned Index;
-			Index = MENU__GetNumItems(pObj) - 1;
-			if (MENU__SetItem(pObj, Index, pItemData) == 0) {
+			Index = _GetNumItems(pObj) - 1;
+			if (_SetItem(pObj, Index, pItemData) == 0) {
 				GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
 			}
 			else {
-				MENU__ResizeMenu(pObj);
+				_ResizeMenu(pObj);
 			}
 		}
 	}
@@ -871,8 +854,9 @@ void MENU_Attach(MENU_Handle hObj, WM_Obj *hDestWin, int x, int y, int xSize, in
 		pObj->Width = ((xSize > 0) ? xSize : 0);
 		pObj->Height = ((ySize > 0) ? ySize : 0);
 		WM_AttachWindowAt(hObj, hDestWin, x, y);
-		MENU__ResizeMenu(pObj);
+		_ResizeMenu(pObj);
 }
+
 MENU_Handle MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	MENU_Handle hMenu;
 	GUI_USE_PARA(cb);
@@ -880,12 +864,12 @@ MENU_Handle MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Ob
 						  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 	return hMenu;
 }
-int MENU__FindItem(MENU_Handle hObj, uint16_t ItemId, MENU_Handle *phMenu) {
+int _FindItem(MENU_Handle hObj, uint16_t ItemId, MENU_Handle *phMenu) {
 	int ItemIndex = -1;
 	auto pObj = (MENU_Obj *)hObj;
 	MENU_ITEM *pItem;
 	unsigned NumItems, i;
-	NumItems = MENU__GetNumItems(pObj);
+	NumItems = _GetNumItems(pObj);
 	for (i = 0; (i < NumItems) && (ItemIndex < 0); i++) {
 		pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, i);
 		if (pItem->Id == ItemId) {
@@ -893,7 +877,7 @@ int MENU__FindItem(MENU_Handle hObj, uint16_t ItemId, MENU_Handle *phMenu) {
 			ItemIndex = i;
 		}
 		else if (pItem->hSubmenu) {
-			ItemIndex = MENU__FindItem(pItem->hSubmenu, ItemId, phMenu);
+			ItemIndex = _FindItem(pItem->hSubmenu, ItemId, phMenu);
 		}
 	}
 
@@ -902,38 +886,38 @@ int MENU__FindItem(MENU_Handle hObj, uint16_t ItemId, MENU_Handle *phMenu) {
 void MENU_DeleteItem(MENU_Handle hObj, uint16_t ItemId) {
 		int Index;
 
-		Index = MENU__FindItem(hObj, ItemId, &hObj);
+		Index = _FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
 			auto pObj = (MENU_Obj *)hObj;
 			GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
-			MENU__ResizeMenu(pObj);
+			_ResizeMenu(pObj);
 		}
 }
 void MENU_DisableItem(MENU_Handle hObj, uint16_t ItemId) {
 		int Index;
 
-		Index = MENU__FindItem(hObj, ItemId, &hObj);
+		Index = _FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
 			auto pObj = (MENU_Obj *)hObj;
-			MENU__SetItemFlags(pObj, Index, MENU_IF_DISABLED, MENU_IF_DISABLED);
-			MENU__InvalidateItem(pObj, Index);
+			_SetItemFlags(pObj, Index, MENU_IF_DISABLED, MENU_IF_DISABLED);
+			_InvalidateItem(pObj, Index);
 		}
 }
 void MENU_EnableItem(MENU_Handle hObj, uint16_t ItemId) {
 		int Index;
 
-		Index = MENU__FindItem(hObj, ItemId, &hObj);
+		Index = _FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
 			auto pObj = (MENU_Obj *)hObj;
-			MENU__SetItemFlags(pObj, Index, MENU_IF_DISABLED, 0);
-			MENU__InvalidateItem(pObj, Index);
+			_SetItemFlags(pObj, Index, MENU_IF_DISABLED, 0);
+			_InvalidateItem(pObj, Index);
 		}
 }
 void MENU_GetItem(MENU_Handle hObj, uint16_t ItemId, MENU_ITEM_DATA *pItemData) {
 	if (pItemData) {
 		int Index;
 
-		Index = MENU__FindItem(hObj, ItemId, &hObj);
+		Index = _FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
 			auto pObj = (MENU_Obj *)hObj;
 			auto pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
@@ -946,7 +930,7 @@ void MENU_GetItem(MENU_Handle hObj, uint16_t ItemId, MENU_ITEM_DATA *pItemData) 
 }
 void MENU_GetItemText(MENU_Handle hObj, uint16_t ItemId, char *pBuffer, unsigned BufferSize) {
 	if (pBuffer) {
-		int Index = MENU__FindItem(hObj, ItemId, &hObj);
+		int Index = _FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
 			auto pObj = (MENU_Obj *)hObj;
 			auto pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&pObj->ItemArray, Index);
@@ -958,7 +942,7 @@ void MENU_GetItemText(MENU_Handle hObj, uint16_t ItemId, char *pBuffer, unsigned
 unsigned MENU_GetNumItems(MENU_Handle hObj) {
 	unsigned r = 0;
 		auto pObj = (MENU_Obj *)hObj;
-		r = MENU__GetNumItems(pObj);
+		r = _GetNumItems(pObj);
 
 	return r;
 }
@@ -966,15 +950,15 @@ void MENU_InsertItem(MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pI
 	if (pItemData) {
 		int Index;
 
-		Index = MENU__FindItem(hObj, ItemId, &hObj);
+		Index = _FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
 			auto pObj = (MENU_Obj *)hObj;
 			if (GUI_ARRAY_InsertBlankItem(&pObj->ItemArray, Index) != 0) {
-				if (MENU__SetItem(pObj, Index, pItemData) == 0) {
+				if (_SetItem(pObj, Index, pItemData) == 0) {
 					GUI_ARRAY_DeleteItem(&pObj->ItemArray, Index);
 				}
 				else {
-					MENU__ResizeMenu(pObj);
+					_ResizeMenu(pObj);
 				}
 			}
 		}
@@ -991,7 +975,7 @@ void MENU_Popup(MENU_Handle hObj, WM_Obj *hDestWin, int x, int y, int xSize, int
 		y += WM_GetWindowOrgY(hDestWin);
 		MENU_SetOwner(hObj, hDestWin);
 		WM_AttachWindowAt(hObj, WM_GetDesktopWindow(), x, y);
-		MENU__SendMenuMessage(hDestWin, hObj, MENU_ON_OPEN, 0);
+		_SendMenuMessage(hDestWin, hObj, MENU_ON_OPEN, 0);
 	}
 }
 void MENU_SetBkColor(MENU_Handle hObj, unsigned ColorIndex, RGBC Color) {
@@ -1008,7 +992,7 @@ void MENU_SetBorderSize(MENU_Handle hObj, unsigned BorderIndex, uint8_t BorderSi
 		if (BorderIndex < GUI_COUNTOF(pObj->Props.aBorder)) {
 			if (BorderSize != pObj->Props.aBorder[BorderIndex]) {
 				pObj->Props.aBorder[BorderIndex] = BorderSize;
-				MENU__ResizeMenu(pObj);
+				_ResizeMenu(pObj);
 			}
 		}
 }
@@ -1016,19 +1000,19 @@ void MENU_SetFont(MENU_Handle hObj, PCFONT pFont) {
 		auto pObj = (MENU_Obj *)hObj;
 		if (pFont != pObj->Props.pFont) {
 			pObj->Props.pFont = pFont;
-			MENU__RecalcTextWidthOfItems(pObj);
-			MENU__ResizeMenu(pObj);
+			_RecalcTextWidthOfItems(pObj);
+			_ResizeMenu(pObj);
 		}
 }
 void MENU_SetItem(MENU_Handle hObj, uint16_t ItemId, const MENU_ITEM_DATA *pItemData) {
 	if (pItemData) {
 		int Index;
 
-		Index = MENU__FindItem(hObj, ItemId, &hObj);
+		Index = _FindItem(hObj, ItemId, &hObj);
 		if (Index >= 0) {
 			auto pObj = (MENU_Obj *)hObj;
-			if (MENU__SetItem(pObj, Index, pItemData) != 0) {
-				MENU__ResizeMenu(pObj);
+			if (_SetItem(pObj, Index, pItemData) != 0) {
+				_ResizeMenu(pObj);
 			}
 		}
 	}

@@ -9,6 +9,8 @@ import TUX.Widget.ListBox;
 
 import TUX.Array;
 
+#define DROPDOWN_SF_AUTOSCROLLBAR DROPDOWN_CF_AUTOSCROLLBAR
+
 export {
   
 constexpr uint16_t DROPDOWN_CF_AUTOSCROLLBAR    = 1 << 0;
@@ -42,9 +44,6 @@ void     DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width);
 void     DROPDOWN_SetTextAlign    (DROPDOWN_Handle hObj, int Align);
 void     DROPDOWN_SetTextColor    (DROPDOWN_Handle hObj, unsigned int index, RGBC color);
 void     DROPDOWN_SetTextHeight   (DROPDOWN_Handle hObj, unsigned TextHeight);
-}
-
-#define DROPDOWN_SF_AUTOSCROLLBAR DROPDOWN_CF_AUTOSCROLLBAR
 
 struct DROPDOWN_Obj : public WIDGET {
 	struct Properties {
@@ -78,6 +77,7 @@ struct DROPDOWN_Obj : public WIDGET {
 };
 
 DROPDOWN_Obj::Properties DROPDOWN_Obj::DefaultProps;
+}
 
 /*********************************************************************
 *
@@ -204,7 +204,7 @@ static int _OnKey(DROPDOWN_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0;
 }
-static void DROPDOWN__AdjustHeight(DROPDOWN_Obj *pObj) {
+static void _AdjustHeight(DROPDOWN_Obj *pObj) {
 	int Height;
 	Height = pObj->TextHeight;
 	if (!Height) {
@@ -278,7 +278,7 @@ DROPDOWN_Handle DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *
 		pObj->Flags = ExFlags;
 		pObj->ScrollbarWidth = 0;
 		pObj->ySizeEx = ysize;
-		DROPDOWN__AdjustHeight(pObj);
+		_AdjustHeight(pObj);
 	}
 	return hObj;
 }
@@ -376,7 +376,7 @@ void DROPDOWN_SetFont(DROPDOWN_Handle hObj, PCFONT pfont) {
 		pObj = (DROPDOWN_Obj *)hObj;
 		OldHeight = GUI_GetYDistOfFont(pObj->Props.pFont);
 		pObj->Props.pFont = pfont;
-		DROPDOWN__AdjustHeight(pObj);
+		_AdjustHeight(pObj);
 		WM_Invalidate(hObj);
 		if (pObj->hListWin) {
 			if (OldHeight != GUI_GetYDistOfFont(pObj->Props.pFont)) {
@@ -546,6 +546,6 @@ void DROPDOWN_SetTextHeight(DROPDOWN_Handle hObj, unsigned TextHeight) {
 	DROPDOWN_Obj *pObj;
 	pObj = (DROPDOWN_Obj *)hObj;
 	pObj->TextHeight = TextHeight;
-	DROPDOWN__AdjustHeight(pObj);
+	_AdjustHeight(pObj);
 	WM_Invalidate(hObj);
 }

@@ -28,7 +28,6 @@ void TEXT_SetFont     (TEXT_Handle pObj, PCFONT pFont);
 void TEXT_SetText     (TEXT_Handle pObj, const char *s);
 void TEXT_SetTextAlign(TEXT_Handle pObj, int Align);
 void TEXT_SetTextColor(TEXT_Handle pObj, RGBC Color);
-}
 
 struct TEXT_Obj : public WIDGET {
 	struct Properties {
@@ -39,45 +38,46 @@ struct TEXT_Obj : public WIDGET {
 	} static DefaultProps;
 	Properties Props;
 	char *pText;
+
+	void _FreeAttached() {
+		GUI_ALLOC_FreePtr((void **)&pText);
+	}
+	void _OnPaint() {
+		const char *s;
+		GUI_SetColor(Props.TextColor);
+		GUI_SetFont(Props.pFont);
+		/* Fill with parents background color */
+#if !WM_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent */
+		if (Props.BkColor == RGB_INVALID_COLOR) {
+			GUI_SetBkColor(WIDGET__GetBkColor(this));
+		}
+		else {
+			GUI_SetBkColor(Props.BkColor);
+		}
+		GUI_Clear();
+#else
+		if (!WM_GetHasTrans(this)) {
+			GUI_SetBkColor(Props.BkColor);
+			GUI_Clear();
+		}
+#endif
+		/* Show the text */
+		if (pText) {
+			s = pText;
+			GUI_SetTextMode(DRAWMODE_TRANS);
+			auto r = WM_GetClientRect();
+			GUI_DispStringInRect(s, &r, Props.Align);
+		}
+	}
+	void _Delete() {
+		/* Delete attached objects (if any) */
+		_FreeAttached();
+	}
 };
 
 TEXT_Obj::Properties TEXT_Obj::DefaultProps;
+}
 
-static void _FreeAttached(TEXT_Obj *pObj) {
-	GUI_ALLOC_FreePtr((void **)&pObj->pText);
-}
-static void _OnPaint(TEXT_Obj *pObj) {
-	const char *s;
-	GUI_USE_PARA(pObj);
-	GUI_SetColor(pObj->Props.TextColor);
-	GUI_SetFont(pObj->Props.pFont);
-	/* Fill with parents background color */
-#if !WM_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent */
-	if (pObj->Props.BkColor == RGB_INVALID_COLOR) {
-		GUI_SetBkColor(WIDGET__GetBkColor(pObj));
-	}
-	else {
-		GUI_SetBkColor(pObj->Props.BkColor);
-	}
-	GUI_Clear();
-#else
-	if (!WM_GetHasTrans(pObj)) {
-		GUI_SetBkColor(pObj->Props.BkColor);
-		GUI_Clear();
-	}
-#endif
-	/* Show the text */
-	if (pObj->pText) {
-		s = pObj->pText;
-		GUI_SetTextMode(DRAWMODE_TRANS);
-		auto r = WM_GetClientRect();
-		GUI_DispStringInRect(s, &r, pObj->Props.Align);
-	}
-}
-static void _Delete(TEXT_Obj *pObj) {
-	/* Delete attached objects (if any) */
-	_FreeAttached(pObj);
-}
 static WM_PARAM _TEXT_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (TEXT_Obj *)hWin;
 	/* Let widget handle the standard messages */
@@ -85,16 +85,15 @@ static WM_PARAM _TEXT_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 		return Data;
 	switch (MsgId) {
 		case WM_PAINT:
-			_OnPaint(pObj);
+			pObj->_OnPaint();
 			return 0;
 		case WM_DELETE:
-			_Delete(pObj);
+			pObj->_Delete();
 			return 0;
 	}
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
-/* Note: the parameters to a create function may vary.
-		 Some widgets may have multiple create functions */
+
 TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
 						  int WinFlags, int ExFlags, int Id, const char *pText) {
 	TEXT_Handle hObj;
@@ -120,14 +119,12 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
 	}
 	return hObj;
 }
-
 TEXT_Handle TEXT_Create(int x0, int y0, int xsize, int ysize, int Id, int Flags, const char *s, int Align) {
 	return TEXT_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, Align, Id, s);
 }
 TEXT_Handle TEXT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int Flags, const char *s, int Align) {
 	return TEXT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, Align, Id, s);
 }
-
 TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	TEXT_Handle  hThis;
 	GUI_USE_PARA(cb);
@@ -149,20 +146,16 @@ void TEXT_SetBkColor(TEXT_Handle hObj, RGBC Color) {
 #endif
 		WM_Invalidate(hObj);
 }
-
 void TEXT_SetFont(TEXT_Handle hObj, PCFONT pFont) {
 		auto pObj = (TEXT_Obj *)hObj;
 		pObj->Props.pFont = pFont;
 		WM_Invalidate(hObj);
 }
-
-
 void TEXT_SetText(TEXT_Handle hObj, const char *s) {
 		auto pObj = (TEXT_Obj *)hObj;
 		if (GUI__SetText(&pObj->pText, s))
 			WM_Invalidate(hObj);
 }
-
 void TEXT_SetTextAlign(TEXT_Handle hObj, int Align) {
 		auto pObj = (TEXT_Obj *)hObj;
 		pObj->Props.Align = Align;

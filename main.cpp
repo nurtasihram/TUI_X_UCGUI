@@ -1,9 +1,12 @@
+#include <stdio.h>
+
 #include "GUI.h"
 #include "DIALOG.h"
 
 import TUX.Widget;
 import TUX.Widget.CheckBox;
 import TUX.Widget.Menu;
+import TUX.Widget.ListView;
 
 static bool _MultiSel = false, _OwnerDrawn = true;
 const RGBC ColorsSmilie0[]{ RGB_WHITE, RGB_BLACK, RGB_RED };
@@ -208,7 +211,7 @@ static WM_Obj *_CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMem
 }
 
 static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-	WM_Obj *hItem;
+	CHECKBOX_Obj *pItem;
 	WM_Obj *hListBox = WM_GetDialogItem(hWin, GUI_ID_MULTIEDIT0);
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
@@ -225,8 +228,8 @@ static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			LISTBOX_SetAutoScrollH(hListBox, 1);
 			LISTBOX_SetAutoScrollV(hListBox, 1);
 			LISTBOX_SetOwnerDraw(hListBox, _OwnerDraw);
-			hItem = WM_GetDialogItem(hWin, GUI_ID_CHECK1);
-			CHECKBOX_SetState(hItem, 1);
+			pItem = (CHECKBOX_Obj *)WM_GetDialogItem(hWin, GUI_ID_CHECK1);
+			pItem->SetState(1);
 			return 0;
 		case WM_KEY: {
 			const WM_KEY_INFO *pInfo = (const WM_KEY_INFO *)Data;
@@ -246,7 +249,7 @@ static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 		case WM_NOTIFY_PARENT: {
 			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
 			int Id = WM_GetId(pInfo->pWinSrc); /* Id of widget */
-			hItem = WM_GetDialogItem(hWin, Id);
+			pItem = (CHECKBOX_Obj *)WM_GetDialogItem(hWin, Id);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SEL_CHANGED:
 					WM_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
@@ -380,10 +383,114 @@ static WM_Obj *_CreateMenu(WM_Obj *hParent) {
 void _Create() {
 }
 
+/*********************************************************************
+*
+*       _TestListView
+*
+*       Demonstrates ListView widget
+*
+**********************************************************************
+*/
+
+#define ID_LISTVIEW_TEST    (GUI_ID_USER + 100)
+
+static const GUI_WIDGET_CREATE_INFO _aListViewDialogCreate[] = {
+	{ FRAMEWIN_CreateIndirect  , "ListView Test"      , 0                 , 50  , 50  , 320 , 240 , FRAMEWIN_CF_MOVEABLE       },
+	{ LISTVIEW_CreateIndirect  , ""                   , ID_LISTVIEW_TEST  , 10  , 10  , 290 , 160 , 0                          },
+	{ BUTTON_CreateIndirect    , "Add Row"            , GUI_ID_USER + 101 , 10  , 180 , 80  , 25                             },
+	{ BUTTON_CreateIndirect    , "Delete Row"         , GUI_ID_USER + 102 , 100 , 180 , 80  , 25                             },
+	{ BUTTON_CreateIndirect    , "Close"              , GUI_ID_CANCEL     , 190 , 180 , 80  , 25                             }
+};
+
+static WM_PARAM _cbListViewTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+	switch (MsgId) {
+		case WM_INIT_DIALOG:
+		{
+			LISTVIEW_Handle hListView = WM_GetDialogItem(hWin, ID_LISTVIEW_TEST);
+			// Add columns
+			LISTVIEW_AddColumn(hListView, 80, "Name", TEXTALIGN_LEFT);
+			LISTVIEW_AddColumn(hListView, 60, "Age", TEXTALIGN_RIGHT);
+			LISTVIEW_AddColumn(hListView, 120, "City", TEXTALIGN_LEFT);
+			// Add rows
+			const char *row1[] = { "Alice", "25", "New York", nullptr };
+			const char *row2[] = { "Bob", "30", "London", nullptr };
+			const char *row3[] = { "Charlie", "35", "Tokyo", nullptr };
+			LISTVIEW_AddRow(hListView, row1);
+			LISTVIEW_AddRow(hListView, row2);
+			LISTVIEW_AddRow(hListView, row3);
+			// Set grid visible
+			LISTVIEW_SetGridVis(hListView, 1);
+			// Set colors
+			LISTVIEW_SetBkColor(hListView, LISTVIEW_CI_UNSEL, RGB_WHITE);
+			LISTVIEW_SetBkColor(hListView, LISTVIEW_CI_SEL, RGB_GRAY);
+			LISTVIEW_SetBkColor(hListView, LISTVIEW_CI_SELFOCUS, RGB_BLUE);
+			LISTVIEW_SetTextColor(hListView, LISTVIEW_CI_UNSEL, RGB_BLACK);
+			LISTVIEW_SetTextColor(hListView, LISTVIEW_CI_SEL, RGB_WHITE);
+			LISTVIEW_SetTextColor(hListView, LISTVIEW_CI_SELFOCUS, RGB_WHITE);
+			break;
+		}
+		case WM_NOTIFY_PARENT:
+		{
+			auto pInfo = (WM_NOTIFY_INFO *)Data;
+			int Id = WM_GetId(pInfo->pWinSrc);
+			LISTVIEW_Handle hListView = WM_GetDialogItem(hWin, ID_LISTVIEW_TEST);
+			switch (pInfo->Notification) {
+				case WM_NOTIFICATION_RELEASED:
+					switch (Id) {
+						case GUI_ID_USER + 101: // Add Row
+						{
+							static int rowCount = 1;
+							char name[32], age[32];
+							sprintf(name, "User %d", rowCount);
+							sprintf(age, "%d", 20 + rowCount);
+							const char *newRow[] = { name, age, "Paris", nullptr };
+							LISTVIEW_AddRow(hListView, newRow);
+							rowCount++;
+							break;
+						}
+						case GUI_ID_USER + 102: // Delete Row
+						{
+							int sel = LISTVIEW_GetSel(hListView);
+							if (sel >= 0) {
+								LISTVIEW_DeleteRow(hListView, sel);
+							}
+							break;
+						}
+						case GUI_ID_CANCEL:
+							GUI_EndDialog(hWin, 0);
+							break;
+					}
+					break;
+				case WM_NOTIFICATION_SEL_CHANGED:
+					if (Id == ID_LISTVIEW_TEST) {
+						int sel = LISTVIEW_GetSel(hListView);
+						// Can add code to respond to selection change
+					}
+					break;
+			}
+			return 0;
+		}
+	}
+	return WM_DefaultProc(hWin, MsgId, Data);
+}
+
+void _TestListView() {
+	WM_Obj *hDialog = GUI_CreateDialogBox(_aListViewDialogCreate, GUI_COUNTOF(_aListViewDialogCreate), &_cbListViewTest, 0, 0, 0);
+	WM_DIALOG_STATUS DialogStatus = { 0 };
+	GUI_SetDialogStatusPtr(hDialog, &DialogStatus);
+	while (!DialogStatus.Done) {
+		GUI_Exec();
+	}
+}
+
 int main(void) {
 	GUI_Init();
 	GUI_CURSOR_Show();
 	WM_SetDesktopColor(RGB_GRAY);
+
+	// Test ListView widget
+	_TestListView();
+
 	for (;;) {
 		WM_Obj *hDialog = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
 		_CreateMenu(hDialog);

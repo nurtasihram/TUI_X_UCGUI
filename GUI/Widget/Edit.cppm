@@ -7,6 +7,9 @@ export module TUX.Widget.Edit;
 
 import TUX.Widget;
 
+#define EDIT_XOFF 1
+#define EDIT_REALLOC_SIZE 16
+
 export {
 		
 enum EDIT_CI {
@@ -54,10 +57,6 @@ constexpr uint8_t GUI_EDIT_SIGNED = 1;
 /* Edit modes */
 constexpr uint8_t GUI_EDIT_MODE_INSERT    = 0;
 constexpr uint8_t GUI_EDIT_MODE_OVERWRITE = 1;
-}
-
-#define EDIT_XOFF 1
-#define EDIT_REALLOC_SIZE 16
 
 struct EDIT_Obj : public WIDGET {
 	struct Properties {
@@ -92,6 +91,7 @@ struct EDIT_Obj : public WIDGET {
 };
 
 EDIT_Obj::Properties EDIT_Obj::DefaultProps;
+}
 
 ///////////houhh 20061018...
 static GUI_TIMER_HANDLE Timer1 = 0;	//houhh 20061018...
@@ -190,7 +190,7 @@ static void _OnPaint(EDIT_Obj *pObj) {
 static void _Delete(EDIT_Obj *pObj) {
 	GUI_ALLOC_FreePtr((void **)&pObj->pText);
 }
-static void EDIT__SetCursorPos(EDIT_Obj *pObj, int CursorPos) {
+static void _SetCursorPos(EDIT_Obj *pObj, int CursorPos) {
 	if (pObj->pText) {
 		auto pText = pObj->pText;
 		int NumChars = GUI__GetNumChars(pText);
@@ -228,10 +228,10 @@ void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
 		}
 		NumChars = GUI__GetNumChars(pText);
 		if (xPos < 0) {
-			EDIT__SetCursorPos(pObj, 0);
+			_SetCursorPos(pObj, 0);
 		}
 		else if (xPos > TextWidth) {
-			EDIT__SetCursorPos(pObj, NumChars);
+			_SetCursorPos(pObj, NumChars);
 		}
 		else {
 			int i, x, xLenChar;
@@ -243,18 +243,12 @@ void EDIT_SetCursorAtPixel(EDIT_Handle hObj, int xPos) {
 					break;
 				x += xLenChar;
 			}
-			EDIT__SetCursorPos(pObj, i);
+			_SetCursorPos(pObj, i);
 		}
 		GUI_SetFont(pOldFont);
 		WM_Invalidate(hObj);
 	}
 }
-/*********************************************************************
-*
-*       _IncrementBuffer
-*
-* Increments the buffer size by AddBytes.
-*/
 static int _IncrementBuffer(EDIT_Obj *pObj, unsigned AddBytes) {
 	int NewSize = pObj->BufferSize + AddBytes;
 	auto pNewStr = (char *)GUI_ALLOC_Realloc(pObj->pText, NewSize);
@@ -268,17 +262,6 @@ static int _IncrementBuffer(EDIT_Obj *pObj, unsigned AddBytes) {
 	}
 	return 0;
 }
-/*********************************************************************
-*
-*       _IsSpaceInBuffer
-*
-* Checks the available space in the buffer. If there is not enough
-* space left this function attempts to get more.
-*
-* Returns:
-*  1 = requested space is available
-*  0 = failed to get enough space
-*/
 static int _IsSpaceInBuffer(EDIT_Obj *pObj, int BytesNeeded) {
 	int NumBytes = 0;
 	if (pObj->pText)
@@ -289,16 +272,6 @@ static int _IsSpaceInBuffer(EDIT_Obj *pObj, int BytesNeeded) {
 			return 0;
 	return 1;
 }
-/*********************************************************************
-*
-*       _IsCharsAvailable
-*
-* Checks weither the maximum number of characters is reached or not.
-*
-* Returns:
-*  1 = requested number of chars is available
-*  0 = maximum number of chars have reached
-*/
 static int _IsCharsAvailable(EDIT_Obj *pObj, int CharsNeeded) {
 	if (CharsNeeded > 0 && pObj->MaxLen > 0) {
 		int NumChars = 0;
@@ -309,13 +282,6 @@ static int _IsCharsAvailable(EDIT_Obj *pObj, int CharsNeeded) {
 	}
 	return 1;
 }
-/*********************************************************************
-*
-*       _DeleteChar
-*
-* Deletes a character at the current cursor position and moves
-* all bytes after the cursor position.
-*/
 static void _DeleteChar(EDIT_Obj *pObj) {
 	if (pObj->pText) {
 		int CursorOffset;
@@ -330,12 +296,6 @@ static void _DeleteChar(EDIT_Obj *pObj) {
 		}
 	}
 }
-/*********************************************************************
-*
-*       _InsertChar
-*
-* Create space at the current cursor position and inserts a character.
-*/
 static int _InsertChar(EDIT_Obj *pObj, uint16_t Char) {
 	if (_IsCharsAvailable(pObj, 1)) {
 		int BytesNeeded;
@@ -352,7 +312,7 @@ static int _InsertChar(EDIT_Obj *pObj, uint16_t Char) {
 	}
 	return 0;
 }
-uint16_t EDIT__GetCurrentChar(EDIT_Obj *pObj) {
+uint16_t _GetCurrentChar(EDIT_Obj *pObj) {
 	uint16_t Char = 0;
 	if (pObj->pText) {
 		auto pText = pObj->pText;
@@ -366,12 +326,12 @@ static void _OnTouch(EDIT_Obj *pObj, const GUI_PID_STATE *pState) {
 	if (pState) {  /* Something happened in our area (pressed or released) */
 		static int StartPress = 0;	//houhh 20061023...
 		if (pState->Pressed) {
-			GUI_DEBUG_LOG("EDIT__Callback(WM_TOUCH, Pressed, Handle %d)\n", 1);
+			GUI_DEBUG_LOG("_Callback(WM_TOUCH, Pressed, Handle %d)\n", 1);
 			EDIT_SetCursorAtPixel(pObj, pState->x);
 			StartPress = pObj->CursorPos;	//houhh 20061023...
 		}
 		else {
-			GUI_DEBUG_LOG("EDIT__Callback(WM_TOUCH, Released, Handle %d)\n", 1);
+			GUI_DEBUG_LOG("_Callback(WM_TOUCH, Released, Handle %d)\n", 1);
 		}
 	}
 	else {
@@ -391,7 +351,8 @@ static int _OnKey(EDIT_Obj *pObj, const WM_KEY_INFO *pInfo) {
 	}
 	return 0;
 }
-static WM_PARAM EDIT__Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+
+static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (EDIT_Obj *)hWin;
 	int IsEnabled = WM_IsEnabled(pObj);
 	/* Let widget handle the standard messages */
@@ -414,13 +375,14 @@ static WM_PARAM EDIT__Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	}
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
+
 EDIT_Handle EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int WinFlags, int ExFlags,
 						  int Id, int MaxLen) {
 	EDIT_Handle hObj;
 	GUI_USE_PARA(ExFlags);
 	/* Alloc memory for obj */
 	WinFlags |= WM_CF_LATE_CLIP;    /* Always use late clipping since widget is optimized for it. */
-	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WM_CF_SHOW | WinFlags, EDIT__Callback,
+	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WM_CF_SHOW | WinFlags, _Callback,
 								  sizeof(EDIT_Obj) - sizeof(WM_Obj));
 	if (hObj) {
 		auto pObj = (EDIT_Obj *)hObj;
@@ -473,13 +435,13 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 				}
 				break;
 			case GUI_KEY_RIGHT:
-				EDIT__SetCursorPos(pObj, pObj->CursorPos + 1);
+				_SetCursorPos(pObj, pObj->CursorPos + 1);
 				break;
 			case GUI_KEY_LEFT:
-				EDIT__SetCursorPos(pObj, pObj->CursorPos - 1);
+				_SetCursorPos(pObj, pObj->CursorPos - 1);
 				break;
 			case GUI_KEY_BACKSPACE:
-				EDIT__SetCursorPos(pObj, pObj->CursorPos - 1);
+				_SetCursorPos(pObj, pObj->CursorPos - 1);
 				_DeleteChar(pObj);
 				break;
 			case GUI_KEY_DELETE:
@@ -491,7 +453,7 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 				}
 				else {
 					pObj->EditMode = GUI_EDIT_MODE_OVERWRITE;
-					EDIT__SetCursorPos(pObj, pObj->CursorPos);
+					_SetCursorPos(pObj, pObj->CursorPos);
 				}
 				break;
 			case GUI_KEY_ENTER:
@@ -503,7 +465,7 @@ void EDIT_AddKey(EDIT_Handle hObj, int Key) {
 						_DeleteChar(pObj);
 					}
 					if (_InsertChar(pObj, Key)) {
-						EDIT__SetCursorPos(pObj, pObj->CursorPos + 1);
+						_SetCursorPos(pObj, pObj->CursorPos + 1);
 					}
 				}
 		}
@@ -578,7 +540,7 @@ void EDIT_GetText(EDIT_Handle hObj, char *sDest, int MaxLen) {
 		}
 	}
 }
-int32_t  EDIT_GetValue(EDIT_Handle hObj) {
+int32_t EDIT_GetValue(EDIT_Handle hObj) {
 	auto pObj = (EDIT_Obj *)hObj;
 	int32_t r = 0;
 	r = pObj->CurrentValue;
@@ -654,7 +616,7 @@ int EDIT_GetNumChars(EDIT_Handle hObj) {
 
 void EDIT_SetCursorAtChar(EDIT_Handle hObj, int Pos) {
 	auto pObj = (EDIT_Obj *)hObj;
-	EDIT__SetCursorPos(pObj, Pos);
+	_SetCursorPos(pObj, Pos);
 	WM_Invalidate(hObj);
 }
 

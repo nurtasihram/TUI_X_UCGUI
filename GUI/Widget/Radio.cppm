@@ -8,6 +8,13 @@ import TUX.Widget;
 
 import TUX.Array;
 
+/* Define default background color */
+#define RADIO_DEFAULT_BKCOLOR       RGB_GRAYL(0xC0)
+#define RADIO_BORDER                  2
+
+extern CBITMAP _abmRadio[2];
+extern CBITMAP _bmCheck;
+
 export {
 enum RADIO_CI {
 	 RADIO_BI_INACTIV = 0,
@@ -33,23 +40,15 @@ void RADIO_SetImage     (RADIO_Handle hObj, PCBITMAP pBitmap, unsigned int Index
 void RADIO_SetText      (RADIO_Handle hObj, const char *pText, unsigned Index);
 void RADIO_SetTextColor (RADIO_Handle hObj, RGBC Color);
 void RADIO_SetValue     (RADIO_Handle hObj, int v);
-int RADIO_GetValue(RADIO_Handle hObj);
-}
-
-/* Define default background color */
-#define RADIO_DEFAULT_BKCOLOR       RGB_GRAYL(0xC0)
-#define RADIO_BORDER                  2
-
-extern CBITMAP RADIO__abmRadio[2];
-extern CBITMAP RADIO__bmCheck;
+int  RADIO_GetValue(RADIO_Handle hObj);
 
 struct RADIO_Obj : public WIDGET {
 	struct Properties {
 		PCFONT pFont{ &GUI_Font13_1 };
 		RGBC TextColor{ RGB_BLACK };
 		RGBC BkColor{ RGB_INVALID_COLOR };
-		PCBITMAP apBmRadio[2]{ &RADIO__abmRadio[0], &RADIO__abmRadio[1] };
-		PCBITMAP pBmCheck{ &RADIO__bmCheck };
+		PCBITMAP apBmRadio[2]{ &_abmRadio[0], &_abmRadio[1] };
+		PCBITMAP pBmCheck{ &_bmCheck };
 	} static DefaultProps;
 	Properties Props;
 	GUI_ARRAY TextArray;
@@ -58,149 +57,139 @@ struct RADIO_Obj : public WIDGET {
 	uint16_t Height;
 	uint16_t NumItems;
 	uint8_t  GroupId;
-};
 
-
-void RADIO__SetValue(RADIO_Obj *pObj, int v);
-
-RADIO_Obj::Properties RADIO_Obj::DefaultProps;
-
-void (*RADIO__pfHandleSetValue)(RADIO_Obj *pObj, int v);
-
-static void _ResizeRect(GUI_RECT *pDest, const GUI_RECT *pSrc, int Diff) {
-	pDest->y0 = pSrc->y0 - Diff;
-	pDest->y1 = pSrc->y1 + Diff;
-	pDest->x0 = pSrc->x0 - Diff;
-	pDest->x1 = pSrc->x1 + Diff;
-}
-/*********************************************************************
-*
-*       _OnPaint
-*
-* Purpose:
-*   Paints the RADIO button.
-*   The button can actually consist of multiple buttons (NumItems).
-*   The focus rectangle will be drawn on top of the text if any text is set,
-*   otherwise around the entire buttons.
-*/
-static void _OnPaint(RADIO_Obj *pObj) {
-	PCBITMAP pBmRadio;
-	PCBITMAP pBmCheck;
-	const char *pText;
-	GUI_RECT Rect, r, rFocus;
-	int i, y, HasFocus, FontDistY;
-	uint16_t SpaceAbove, CHeight, FocusBorder;
-	/* Init some data */
-	rFocus = WIDGET__GetClientRect(pObj);
-	HasFocus = (pObj->State & WIDGET_STATE_FOCUS) ? 1 : 0;
-	pBmRadio = pObj->Props.apBmRadio[WM_IsEnabled(pObj)];
-	pBmCheck = pObj->Props.pBmCheck;
-	rFocus.x1 = pBmRadio->XSize + RADIO_BORDER * 2 - 1;
-	rFocus.y1 = pObj->Height + ((pObj->NumItems - 1) * pObj->Spacing) - 1;
-	/* Select font and text color */
-	GUI_SetColor(pObj->Props.TextColor);
-	GUI_SetFont(pObj->Props.pFont);
-	GUI_SetTextMode(DRAWMODE_TRANS);
-	FontDistY = GUI_GetFontDistY();
-	CHeight = pObj->Props.pFont->CHeight;
-	SpaceAbove = pObj->Props.pFont->Baseline - CHeight;
-	Rect.x0 = pBmRadio->XSize + RADIO_BORDER * 2 + 2;
-	Rect.y0 = (CHeight <= pObj->Height) ? ((pObj->Height - CHeight) / 2) : 0;
-	Rect.y1 = Rect.y0 + CHeight - 1;
-	FocusBorder = (FontDistY <= 12) ? 2 : 3;
-	if (Rect.y0 < FocusBorder) {
-		FocusBorder = Rect.y0;
+	void _ResizeRect(GUI_RECT *pDest, const GUI_RECT *pSrc, int Diff) {
+		pDest->y0 = pSrc->y0 - Diff;
+		pDest->y1 = pSrc->y1 + Diff;
+		pDest->x0 = pSrc->x0 - Diff;
+		pDest->x1 = pSrc->x1 + Diff;
 	}
-	/* Clear inside ... Just in case      */
-	/* Fill with parents background color */
+	void _OnPaint() {
+		PCBITMAP pBmRadio;
+		PCBITMAP pBmCheck;
+		const char *pText;
+		GUI_RECT Rect, r, rFocus;
+		int i, y, HasFocus, FontDistY;
+		uint16_t SpaceAbove, CHeight, FocusBorder;
+		/* Init some data */
+		rFocus = WIDGET__GetClientRect(this);
+		HasFocus = (this->State & WIDGET_STATE_FOCUS) ? 1 : 0;
+		pBmRadio = this->Props.apBmRadio[WM_IsEnabled(this)];
+		pBmCheck = this->Props.pBmCheck;
+		rFocus.x1 = pBmRadio->XSize + RADIO_BORDER * 2 - 1;
+		rFocus.y1 = this->Height + ((this->NumItems - 1) * this->Spacing) - 1;
+		/* Select font and text color */
+		GUI_SetColor(this->Props.TextColor);
+		GUI_SetFont(this->Props.pFont);
+		GUI_SetTextMode(DRAWMODE_TRANS);
+		FontDistY = GUI_GetFontDistY();
+		CHeight = this->Props.pFont->CHeight;
+		SpaceAbove = this->Props.pFont->Baseline - CHeight;
+		Rect.x0 = pBmRadio->XSize + RADIO_BORDER * 2 + 2;
+		Rect.y0 = (CHeight <= this->Height) ? ((this->Height - CHeight) / 2) : 0;
+		Rect.y1 = Rect.y0 + CHeight - 1;
+		FocusBorder = (FontDistY <= 12) ? 2 : 3;
+		if (Rect.y0 < FocusBorder) {
+			FocusBorder = Rect.y0;
+		}
+		/* Clear inside ... Just in case      */
+		/* Fill with parents background color */
 #if WM_SUPPORT_TRANSPARENCY
-	if (!WM_GetHasTrans(pObj))
+		if (!WM_GetHasTrans(this))
 #endif
-	{
-		if (pObj->Props.BkColor != RGB_INVALID_COLOR) {
-			GUI_SetBkColor(pObj->Props.BkColor);
+		{
+			if (this->Props.BkColor != RGB_INVALID_COLOR) {
+				GUI_SetBkColor(this->Props.BkColor);
+			}
+			else {
+				GUI_SetBkColor(RADIO_DEFAULT_BKCOLOR);
+			}
+			GUI_Clear();
 		}
-		else {
-			GUI_SetBkColor(RADIO_DEFAULT_BKCOLOR);
-		}
-		GUI_Clear();
-	}
-	/* Iterate over all items */
-	for (i = 0; i < pObj->NumItems; i++) {
-		y = i * pObj->Spacing;
-		/* Draw the radio button bitmap */
-		GUI_DrawBitmap(pBmRadio, RADIO_BORDER, RADIO_BORDER + y);
-		/* Draw the check bitmap */
-		if (pObj->Sel == i) {
-			GUI_DrawBitmap(pBmCheck, RADIO_BORDER + (pBmRadio->XSize - pBmCheck->XSize) / 2,
-						   RADIO_BORDER + ((pBmRadio->YSize - pBmCheck->YSize) / 2) + y);
-		}
-		/* Draw text if available */
-		pText = (const char *)GUI_ARRAY_GetpItem(&pObj->TextArray, i);
-		if (pText) {
-			if (*pText) {
-				r = Rect;
-				r.x1 = r.x0 + GUI_GetStringDistX(pText) - 2;
-				r += GUI_POINT{ 0, y };
-				GUI_DispStringAt(pText, r.x0, r.y0 - SpaceAbove);
-				/* Calculate focus rect */
-				if (HasFocus && (pObj->Sel == i)) {
-					_ResizeRect(&rFocus, &r, FocusBorder);
+		/* Iterate over all items */
+		for (i = 0; i < this->NumItems; i++) {
+			y = i * this->Spacing;
+			/* Draw the radio button bitmap */
+			GUI_DrawBitmap(pBmRadio, RADIO_BORDER, RADIO_BORDER + y);
+			/* Draw the check bitmap */
+			if (this->Sel == i) {
+				GUI_DrawBitmap(pBmCheck, RADIO_BORDER + (pBmRadio->XSize - pBmCheck->XSize) / 2,
+							   RADIO_BORDER + ((pBmRadio->YSize - pBmCheck->YSize) / 2) + y);
+			}
+			/* Draw text if available */
+			pText = (const char *)GUI_ARRAY_GetpItem(&this->TextArray, i);
+			if (pText) {
+				if (*pText) {
+					r = Rect;
+					r.x1 = r.x0 + GUI_GetStringDistX(pText) - 2;
+					r += GUI_POINT{ 0, y };
+					GUI_DispStringAt(pText, r.x0, r.y0 - SpaceAbove);
+					/* Calculate focus rect */
+					if (HasFocus && (this->Sel == i)) {
+						_ResizeRect(&rFocus, &r, FocusBorder);
+					}
 				}
 			}
 		}
+		/* Draw the focus rect */
+		if (HasFocus) {
+			GUI_SetColor(RGB_BLACK);
+			WIDGET__DrawFocusRect(this, rFocus, 0);
+		}
 	}
-	/* Draw the focus rect */
-	if (HasFocus) {
-		GUI_SetColor(RGB_BLACK);
-		WIDGET__DrawFocusRect(pObj, rFocus, 0);
-	}
-}
-static void _OnTouch(RADIO_Obj *pObj, const GUI_PID_STATE *pState) {
-	int Notification;
-	int Hit = 0;
-	if (pState) {  /* Something happened in our area (pressed or released) */
-		if (pState->Pressed) {
-			int y, Sel;
-			y = pState->y;
-			Sel = y / pObj->Spacing;
-			y -= Sel * pObj->Spacing;
-			if (y <= pObj->Height) {
-				RADIO_SetValue(pObj, Sel);
+	void _OnTouch(const GUI_PID_STATE *pState) {
+		int Notification;
+		int Hit = 0;
+		if (pState) {  /* Something happened in our area (pressed or released) */
+			if (pState->Pressed) {
+				int y, Sel;
+				y = pState->y;
+				Sel = y / this->Spacing;
+				y -= Sel * this->Spacing;
+				if (y <= this->Height) {
+					RADIO_SetValue(this, Sel);
+				}
+				if (WM_IsFocussable(this)) {
+					WM_SetFocus(this);
+				}
+				Notification = WM_NOTIFICATION_CLICKED;
 			}
-			if (WM_IsFocussable(pObj)) {
-				WM_SetFocus(pObj);
+			else {
+				Hit = 1;
+				Notification = WM_NOTIFICATION_RELEASED;
 			}
-			Notification = WM_NOTIFICATION_CLICKED;
 		}
 		else {
-			Hit = 1;
-			Notification = WM_NOTIFICATION_RELEASED;
+			Notification = WM_NOTIFICATION_MOVED_OUT;
+		}
+		WM_NotifyParent(this, Notification);
+		if (Hit == 1) {
+			GUI_StoreKey(this->Id);
 		}
 	}
-	else {
-		Notification = WM_NOTIFICATION_MOVED_OUT;
-	}
-	WM_NotifyParent(pObj, Notification);
-	if (Hit == 1) {
-		GUI_StoreKey(pObj->Id);
-	}
-}
-static char _OnKey(RADIO_Obj *pObj, const WM_KEY_INFO *pInfo) {
-	if (pInfo->PressedCnt > 0) {
-		switch (pInfo->Key) {
-			case GUI_KEY_RIGHT:
-			case GUI_KEY_DOWN:
-				RADIO_Inc(pObj);
-				return 1;
-			case GUI_KEY_LEFT:
-			case GUI_KEY_UP:
-				RADIO_Dec(pObj);
-				return 1;
+	char _OnKey(const WM_KEY_INFO *pInfo) {
+		if (pInfo->PressedCnt > 0) {
+			switch (pInfo->Key) {
+				case GUI_KEY_RIGHT:
+				case GUI_KEY_DOWN:
+					RADIO_Inc(this);
+					return 1;
+				case GUI_KEY_LEFT:
+				case GUI_KEY_UP:
+					RADIO_Dec(this);
+					return 1;
+			}
 		}
+		return 0;
 	}
-	return 0;
+};
+
+RADIO_Obj::Properties RADIO_Obj::DefaultProps;
 }
+
+void _SetValue(RADIO_Obj *pObj, int v);
+void (*_pfHandleSetValue)(RADIO_Obj *pObj, int v);
+
 static WM_PARAM _RADIO_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	auto pObj = (RADIO_Obj *)hWin;
 	/* Let widget handle the standard messages */
@@ -208,15 +197,15 @@ static WM_PARAM _RADIO_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 		return Data;
 	switch (MsgId) {
 		case WM_PAINT:
-			_OnPaint(pObj);
+			pObj->_OnPaint();
 			return 0;
 		case WM_GET_RADIOGROUP:
 			return pObj->GroupId;
 		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
+			pObj->_OnTouch((const GUI_PID_STATE *)Data);
 			return 0;
 		case WM_KEY:
-			if (_OnKey(pObj, (const WM_KEY_INFO *)Data))
+			if (pObj->_OnKey((const WM_KEY_INFO *)Data))
 				return 0;
 			break;
 		case WM_DELETE:
@@ -225,7 +214,8 @@ static WM_PARAM _RADIO_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	}
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
-void RADIO__SetValue(RADIO_Obj *pObj, int v) {
+
+void _SetValue(RADIO_Obj *pObj, int v) {
 	if (v >= pObj->NumItems) {
 		v = (int)pObj->NumItems - 1;
 	}
@@ -235,8 +225,7 @@ void RADIO__SetValue(RADIO_Obj *pObj, int v) {
 		WM_NotifyParent(pObj, WM_NOTIFICATION_VALUE_CHANGED);
 	}
 }
-/* Note: the parameters to a create function may vary.
-		 Some widgets may have multiple create functions */
+
 RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParent,
 							int WinFlags, int ExFlags, int Id, int NumItems, int Spacing) {
 	RADIO_Handle hObj;
@@ -275,6 +264,7 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParen
 	}
 	return hObj;
 }
+
 void RADIO_AddValue(RADIO_Handle hObj, int Add) {
 		auto pObj = (RADIO_Obj *)hObj;
 		RADIO_SetValue(hObj, pObj->Sel + Add);
@@ -287,14 +277,14 @@ void RADIO_Inc(RADIO_Handle hObj) {
 }
 void RADIO_SetValue(RADIO_Handle hObj, int v) {
 		auto pObj = (RADIO_Obj *)hObj;
-		if (pObj->GroupId && RADIO__pfHandleSetValue) {
-			(*RADIO__pfHandleSetValue)(pObj, v);
+		if (pObj->GroupId && _pfHandleSetValue) {
+			(*_pfHandleSetValue)(pObj, v);
 		}
 		else {
 			if (v < 0) {
 				v = 0;
 			}
-			RADIO__SetValue(pObj, v);
+			_SetValue(pObj, v);
 		}
 }
 int RADIO_GetValue(RADIO_Handle hObj) {
@@ -308,7 +298,6 @@ int RADIO_GetValue(RADIO_Handle hObj) {
 RADIO_Handle RADIO_Create(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int Flags, unsigned Para) {
 	return RADIO_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id, Para & 0xFF, (Para >> 8) & 0xFF);
 }
-
 RADIO_Handle RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	RADIO_Handle  hThis;
 	int NumItems = (pCreateInfo->Para) & 0xFF;
@@ -345,7 +334,7 @@ void RADIO_SetFont(RADIO_Handle hObj, PCFONT pFont) {
 
 static void _SetValue(RADIO_Handle hObj, int v) {
 	auto pObj = (RADIO_Obj *)hObj;
-	RADIO__SetValue(pObj, v);
+	_SetValue(pObj, v);
 }
 static int _IsInGroup(WM_Obj *hWin, uint8_t GroupId) {
 	if (GroupId)
@@ -370,7 +359,7 @@ static void _ClearSelection(RADIO_Handle hObj, uint8_t GroupId) {
 	for (auto pWin = (WM_Obj *)WM__GetFirstSibling(hObj); pWin; pWin = pWin->pNext) {
 		if (pWin != (WM_Obj *)hObj)
 			if (_IsInGroup(pWin, GroupId))
-				RADIO__SetValue((RADIO_Obj *)pWin, -1);
+				_SetValue((RADIO_Obj *)pWin, -1);
 	}
 }
 static void _HandleSetValue(RADIO_Obj *pObj, int v) {
@@ -379,7 +368,7 @@ static void _HandleSetValue(RADIO_Obj *pObj, int v) {
 		if (hWin) {
 			WM_SetFocus(hWin);
 			_SetValue(hWin, 0x7FFF);
-			RADIO__SetValue(pObj, -1);
+			_SetValue(pObj, -1);
 		}
 	}
 	else if (v >= pObj->NumItems) {
@@ -387,13 +376,13 @@ static void _HandleSetValue(RADIO_Obj *pObj, int v) {
 		if (hWin) {
 			WM_SetFocus(hWin);
 			_SetValue(hWin, 0);
-			RADIO__SetValue(pObj, -1);
+			_SetValue(pObj, -1);
 		}
 	}
 	else {
 		if (pObj->Sel != v) {
 			_ClearSelection(pObj, pObj->GroupId);
-			RADIO__SetValue(pObj, v);
+			_SetValue(pObj, v);
 		}
 	}
 }
@@ -406,8 +395,8 @@ void RADIO_SetGroupId(RADIO_Handle hObj, uint8_t NewGroupId) {
 			WM_Obj *hFirst;
 			hFirst = WM__GetFirstSibling(hObj);
 			/* Set function pointer if necessary */
-			if (NewGroupId && (RADIO__pfHandleSetValue == nullptr)) {
-				RADIO__pfHandleSetValue = _HandleSetValue;
+			if (NewGroupId && (_pfHandleSetValue == nullptr)) {
+				_pfHandleSetValue = _HandleSetValue;
 			}
 			/* Pass our selection, if we have one, to another radio button in */
 			/* our old group. So the group have a valid selection when we leave it. */
@@ -423,18 +412,16 @@ void RADIO_SetGroupId(RADIO_Handle hObj, uint8_t NewGroupId) {
 			/* Make sure we have a valid selection according to our new group */
 			if (_GetNextInGroup(hFirst, NewGroupId) != 0) {
 				/* Join an existing group with an already valid selection, so clear our own one */
-				RADIO__SetValue(pObj, -1);
+				_SetValue(pObj, -1);
 			}
 			else if (pObj->Sel < 0) {
 				/* We are the first window in group, so we must have a valid selection at our own. */
-				RADIO__SetValue(pObj, 0);
+				_SetValue(pObj, 0);
 			}
 			/* Change the group */
 			pObj->GroupId = NewGroupId;
 		}
 }
-
-
 void RADIO_SetImage(RADIO_Handle hObj, PCBITMAP pBitmap, unsigned int Index) {
 		auto pObj = (RADIO_Obj *)hObj;
 		switch (Index) {
@@ -448,7 +435,6 @@ void RADIO_SetImage(RADIO_Handle hObj, PCBITMAP pBitmap, unsigned int Index) {
 		}
 		WM_Invalidate(hObj);
 }
-
 void RADIO_SetText(RADIO_Handle hObj, const char *pText, unsigned Index) {
 		auto pObj = (RADIO_Obj *)hObj;
 		if (Index < (unsigned)pObj->NumItems) {
@@ -456,7 +442,6 @@ void RADIO_SetText(RADIO_Handle hObj, const char *pText, unsigned Index) {
 			WM_Invalidate(hObj);
 		}
 }
-
 void RADIO_SetTextColor(RADIO_Handle hObj, RGBC Color) {
 		auto pObj = (RADIO_Obj *)hObj;
 		if (Color != pObj->Props.TextColor) {
@@ -469,7 +454,6 @@ void RADIO_SetTextColor(RADIO_Handle hObj, RGBC Color) {
 
 #define RADIO_BKCOLOR0_DEFAULT RGB_GRAYL(0xc0)           /* Inactive color */
 #define RADIO_BKCOLOR1_DEFAULT RGB_WHITE          /* Active color */
-
 
 /* Colors */
 static const RGBC _aColorDisabled[] = { RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
@@ -514,12 +498,12 @@ static const uint8_t _acCheck[] = {
   __XXXX__________
 };
 /* Bitmaps */
-CBITMAP RADIO__abmRadio[] = {
+CBITMAP _abmRadio[] = {
   { 12, 12, 3, 2, _acRadio, &_PalRadioDisabled},
   { 12, 12, 3, 2, _acRadio, &_PalRadioEnabled}
 };
 
-CBITMAP RADIO__bmCheck = {
+CBITMAP _bmCheck = {
   4, /* XSize */
   4, /* YSize */
   1, /* BytesPerLine */
