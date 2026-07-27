@@ -23,10 +23,10 @@ static void _OnKey(WM_Obj * hWin, const WM_KEY_INFO *pInfo) {
 		}
 	}
 }
-static WM_PARAM _MESSAGEBOX_cbCallback(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _MESSAGEBOX_cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
-			FRAMEWIN_SetClientColor(hWin, MESSAGEBOX_BKCOLOR);
+			((FRAMEWIN_Obj *)hWin)->SetClientColor(MESSAGEBOX_BKCOLOR);
 			return 0;
 		case WM_KEY:
 			_OnKey(hWin, (const WM_KEY_INFO *)Data);

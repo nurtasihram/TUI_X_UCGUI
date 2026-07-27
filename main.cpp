@@ -7,6 +7,7 @@ import TUX.Widget;
 import TUX.Widget.CheckBox;
 import TUX.Widget.Menu;
 import TUX.Widget.ListView;
+import TUX.Widget.Frame;
 
 static bool _MultiSel = false, _OwnerDrawn = true;
 const RGBC ColorsSmilie0[]{ RGB_WHITE, RGB_BLACK, RGB_RED };
@@ -72,41 +73,39 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[]{
 	{ BUTTON_CreateIndirect    , "Cancel"               , GUI_ID_CANCEL     , 120 , 90  , 80   , 20                                }
 };
 
-static int _GetItemSizeX(WM_Obj *hWin, int ItemIndex) {
-	char acBuffer[100];
-	LISTBOX_GetItemText(hWin, ItemIndex, acBuffer, sizeof(acBuffer));
-	return GUI_GetStringDistX(acBuffer) + bmSmilie0.XSize + 16;
-}
-static int _GetItemSizeY(WM_Obj *hWin, int ItemIndex) {
+static int _GetItemSizeY(LISTBOX_Obj *pObj, int ItemIndex) {
 	int DistY = GUI_GetFontDistY() + 1;
-	if (LISTBOX_GetMulti(hWin)) {
-		if (LISTBOX_GetItemSel(hWin, ItemIndex))
+	if (pObj->GetMulti()) {
+		if (pObj->GetItemSel(ItemIndex))
 			DistY += 8;
 	}
-	else if (LISTBOX_GetSel(hWin) == ItemIndex)
+	else if (pObj->GetSel() == ItemIndex)
 		DistY += 8;
 	return DistY;
 }
 
 static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
-	WM_Obj *hWin = pDrawItemInfo->hWin;
+	auto pObj = (LISTBOX_Obj *)pDrawItemInfo->hWin;
 	int Index = pDrawItemInfo->ItemIndex;
 	switch (pDrawItemInfo->Cmd) {
-		case WIDGET_ITEM_GET_XSIZE:
-			return _GetItemSizeX(hWin, Index);
+		case WIDGET_ITEM_GET_XSIZE: {
+			char acBuffer[100];
+			pObj->GetItemText(Index, acBuffer, sizeof(acBuffer));
+			return GUI_GetStringDistX(acBuffer) + bmSmilie0.XSize + 16;
+		}
 		case WIDGET_ITEM_GET_YSIZE:
-			return _GetItemSizeY(hWin, Index);
+			return _GetItemSizeY(pObj, Index);
 		case WIDGET_ITEM_DRAW:
 		{
 			int ColorIndex = 0;
 			char acBuffer[100];
 			RGBC aColor[4] = { RGB_BLACK, RGB_WHITE, RGB_WHITE, RGB_GRAY };
 			RGBC aBkColor[4] = { RGB_WHITE, RGB_GRAY, RGB_DARKBLUE, RGB_GRAYL(0xC0) };
-			bool IsDisabled = LISTBOX_GetItemDisabled(pDrawItemInfo->hWin, pDrawItemInfo->ItemIndex);
-			bool IsSelected = LISTBOX_GetItemSel(hWin, Index);
-			int MultiSel = LISTBOX_GetMulti(hWin);
-			int Sel = LISTBOX_GetSel(hWin);
-			int YSize = _GetItemSizeY(hWin, Index);
+			bool IsDisabled = pObj->GetItemDisabled(pDrawItemInfo->ItemIndex);
+			bool IsSelected = pObj->GetItemSel(Index);
+			int MultiSel = pObj->GetMulti();
+			int Sel = pObj->GetSel();
+			int YSize = _GetItemSizeY(pObj, Index);
 			/* Calculate color index */
 			if (MultiSel)
 				if (IsDisabled)
@@ -116,13 +115,13 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 			else if (IsDisabled)
 				ColorIndex = 3;
 			else if (pDrawItemInfo->ItemIndex == Sel)
-				ColorIndex = WM_HasFocus(pDrawItemInfo->hWin) ? 2 : 1;
+				ColorIndex = WM_HasFocus(pObj) ? 2 : 1;
 			else
 				ColorIndex = 0;
 			/* Draw item */
 			GUI_SetBkColor(aBkColor[ColorIndex]);
 			GUI_SetColor(aColor[ColorIndex]);
-			LISTBOX_GetItemText(pDrawItemInfo->hWin, pDrawItemInfo->ItemIndex, acBuffer, sizeof(acBuffer));
+			pObj->GetItemText(pDrawItemInfo->ItemIndex, acBuffer, sizeof(acBuffer));
 			GUI_Clear();
 			auto FontDistY = GUI_GetFontDistY();
 			GUI_DispStringAt(acBuffer, pDrawItemInfo->x0 + bmSmilie0.XSize + 16, pDrawItemInfo->y0 + (YSize - FontDistY) / 2);
@@ -132,7 +131,7 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 			/* Draw focus rectangle */
 			if (MultiSel && (pDrawItemInfo->ItemIndex == Sel)) {
 				GUI_RECT rFocus;
-				GUI_RECT rInside = WM_GetInsideRect(pDrawItemInfo->hWin);
+				GUI_RECT rInside = WM_GetInsideRect(pObj);
 				rFocus.x0 = pDrawItemInfo->x0;
 				rFocus.y0 = pDrawItemInfo->y0;
 				rFocus.x1 = rInside.x1;
@@ -143,7 +142,7 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 			break;
 		}
 		default:
-			return LISTBOX_OwnerDraw(pDrawItemInfo);
+			return LISTBOX_Obj::OwnerDraw(pDrawItemInfo);
 	}
 	return 0;
 }
@@ -212,22 +211,22 @@ static WM_Obj *_CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMem
 
 static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	CHECKBOX_Obj *pItem;
-	WM_Obj *hListBox = WM_GetDialogItem(hWin, GUI_ID_MULTIEDIT0);
+	auto pListBox = (LISTBOX_Obj *)WM_GetDialogItem(hWin, GUI_ID_MULTIEDIT0);
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
-			LISTBOX_SetText(hListBox, _ListBox);
-			LISTBOX_AddString(hListBox, "Francis");
-			LISTBOX_AddString(hListBox, "Japanese");
-			LISTBOX_AddString(hListBox, "Italiano");
-			LISTBOX_AddString(hListBox, "Espanol");
-			LISTBOX_AddString(hListBox, "Greek");
-			LISTBOX_AddString(hListBox, "Hebrew");
-			LISTBOX_AddString(hListBox, "Dutch");
-			LISTBOX_AddString(hListBox, "Other language ...");
-			LISTBOX_SetScrollStepH(hListBox, 6);
-			LISTBOX_SetAutoScrollH(hListBox, 1);
-			LISTBOX_SetAutoScrollV(hListBox, 1);
-			LISTBOX_SetOwnerDraw(hListBox, _OwnerDraw);
+			pListBox->SetText(_ListBox);
+			pListBox->AddString("Francis");
+			pListBox->AddString("Japanese");
+			pListBox->AddString("Italiano");
+			pListBox->AddString("Espanol");
+			pListBox->AddString("Greek");
+			pListBox->AddString("Hebrew");
+			pListBox->AddString("Dutch");
+			pListBox->AddString("Other language ...");
+			pListBox->SetScrollStepH(6);
+			pListBox->SetAutoScrollH(1);
+			pListBox->SetAutoScrollV(1);
+			pListBox->SetOwnerDraw(_OwnerDraw);
 			pItem = (CHECKBOX_Obj *)WM_GetDialogItem(hWin, GUI_ID_CHECK1);
 			pItem->SetState(1);
 			return 0;
@@ -252,7 +251,7 @@ static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			pItem = (CHECKBOX_Obj *)WM_GetDialogItem(hWin, Id);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SEL_CHANGED:
-					WM_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
+					pListBox->InvalidateItem(LISTBOX_ALL_ITEMS);
 					break;
 				case WM_NOTIFICATION_RELEASED: /* React only if released */
 					switch (Id) {
@@ -264,17 +263,17 @@ static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 							break;
 						case GUI_ID_CHECK0:
 							_MultiSel = !_MultiSel;
-							LISTBOX_SetMulti(hListBox, _MultiSel);
-							WM_SetFocus(hListBox);
-							WM_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
+							pListBox->SetMulti(_MultiSel);
+							WM_SetFocus(pListBox);
+							pListBox->InvalidateItem(LISTBOX_ALL_ITEMS);
 							break;
 						case GUI_ID_CHECK1:
 							_OwnerDrawn = !_OwnerDrawn;
 							if (_OwnerDrawn)
-								LISTBOX_SetOwnerDraw(hListBox, _OwnerDraw);
+								pListBox->SetOwnerDraw(_OwnerDraw);
 							else
-								LISTBOX_SetOwnerDraw(hListBox, nullptr);
-							WM_InvalidateItem(hListBox, LISTBOX_ALL_ITEMS);
+								pListBox->SetOwnerDraw(nullptr);
+							pListBox->InvalidateItem(LISTBOX_ALL_ITEMS);
 							break;
 					}
 					break;
@@ -302,13 +301,13 @@ static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 #define ID_MENU_EDIT_DELETE (GUI_ID_USER + 14)
 #define ID_MENU_HELP_ABOUT  (GUI_ID_USER + 15)
 
-static void _AddMenuItem(MENU_Handle hMenu, MENU_Handle hSubmenu, const char *pText, uint16_t Id, uint16_t Flags) {
+static void _AddMenuItem(MENU_Obj *pMenu, MENU_Obj *pSubmenu, const char *pText, uint16_t Id, uint16_t Flags) {
 	MENU_ITEM_DATA Item;
 	Item.pText = pText;
-	Item.hSubmenu = hSubmenu;
+	Item.pSubmenu = pSubmenu;
 	Item.Flags = Flags;
 	Item.Id = Id;
-	MENU_AddItem(hMenu, &Item);
+	pMenu->AddItem(&Item);
 }
 /*********************************************************************
 *
@@ -318,23 +317,18 @@ static void _AddMenuItem(MENU_Handle hMenu, MENU_Handle hSubmenu, const char *pT
 *
 **********************************************************************
 */
-static WM_Obj *_CreateMenu(WM_Obj *hParent) {
-	MENU_Handle hMenu;
-	MENU_Handle hMenuFile;
-	MENU_Handle hMenuEdit;
-	MENU_Handle hMenuHelp;
-	MENU_Handle hMenuRecent;
+static void _CreateMenu(FRAMEWIN_Obj *pParent) {
 	//
 	// Create main menu
 	//
-	hMenu = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_HORIZONTAL, ID_MENU);
+	auto hMenu = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_HORIZONTAL, ID_MENU);
 	//
 	// Create sub menus
 	//
-	hMenuFile = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
-	hMenuEdit = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
-	hMenuHelp = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
-	hMenuRecent = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
+	auto hMenuFile = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
+	auto hMenuEdit = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
+	auto hMenuHelp = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
+	auto hMenuRecent = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
 	//
 	// Add menu items to menu &#39;Recent&#39;
 	//
@@ -376,8 +370,7 @@ static WM_Obj *_CreateMenu(WM_Obj *hParent) {
 	//
 	// Attach menu to parent window
 	//
-	FRAMEWIN_AddMenu(hParent, hMenu);
-	return hMenu;
+	pParent->AddMenu(hMenu);
 }
 
 void _Create() {
@@ -404,36 +397,28 @@ static const GUI_WIDGET_CREATE_INFO _aListViewDialogCreate[] = {
 
 static WM_PARAM _cbListViewTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
-		case WM_INIT_DIALOG:
-		{
-			LISTVIEW_Handle hListView = WM_GetDialogItem(hWin, ID_LISTVIEW_TEST);
+		case WM_INIT_DIALOG: {
+			auto pListView = (LISTVIEW_Obj *)WM_GetDialogItem(hWin, ID_LISTVIEW_TEST);
 			// Add columns
-			LISTVIEW_AddColumn(hListView, 80, "Name", TEXTALIGN_LEFT);
-			LISTVIEW_AddColumn(hListView, 60, "Age", TEXTALIGN_RIGHT);
-			LISTVIEW_AddColumn(hListView, 120, "City", TEXTALIGN_LEFT);
+			pListView->AddColumn(80, "Name", TEXTALIGN_LEFT);
+			pListView->AddColumn(60, "Age", TEXTALIGN_RIGHT);
+			pListView->AddColumn(120, "City", TEXTALIGN_LEFT);
 			// Add rows
 			const char *row1[] = { "Alice", "25", "New York", nullptr };
 			const char *row2[] = { "Bob", "30", "London", nullptr };
 			const char *row3[] = { "Charlie", "35", "Tokyo", nullptr };
-			LISTVIEW_AddRow(hListView, row1);
-			LISTVIEW_AddRow(hListView, row2);
-			LISTVIEW_AddRow(hListView, row3);
+			pListView->AddRow(row1);
+			pListView->AddRow(row2);
+			pListView->AddRow(row3);
 			// Set grid visible
-			LISTVIEW_SetGridVis(hListView, 1);
-			// Set colors
-			LISTVIEW_SetBkColor(hListView, LISTVIEW_CI_UNSEL, RGB_WHITE);
-			LISTVIEW_SetBkColor(hListView, LISTVIEW_CI_SEL, RGB_GRAY);
-			LISTVIEW_SetBkColor(hListView, LISTVIEW_CI_SELFOCUS, RGB_BLUE);
-			LISTVIEW_SetTextColor(hListView, LISTVIEW_CI_UNSEL, RGB_BLACK);
-			LISTVIEW_SetTextColor(hListView, LISTVIEW_CI_SEL, RGB_WHITE);
-			LISTVIEW_SetTextColor(hListView, LISTVIEW_CI_SELFOCUS, RGB_WHITE);
+			pListView->SetGridVis(1);
 			break;
 		}
 		case WM_NOTIFY_PARENT:
 		{
 			auto pInfo = (WM_NOTIFY_INFO *)Data;
 			int Id = WM_GetId(pInfo->pWinSrc);
-			LISTVIEW_Handle hListView = WM_GetDialogItem(hWin, ID_LISTVIEW_TEST);
+			auto pListView = (LISTVIEW_Obj *)WM_GetDialogItem(hWin, ID_LISTVIEW_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_RELEASED:
 					switch (Id) {
@@ -444,15 +429,15 @@ static WM_PARAM _cbListViewTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 							sprintf(name, "User %d", rowCount);
 							sprintf(age, "%d", 20 + rowCount);
 							const char *newRow[] = { name, age, "Paris", nullptr };
-							LISTVIEW_AddRow(hListView, newRow);
+							pListView->AddRow(newRow);
 							rowCount++;
 							break;
 						}
 						case GUI_ID_USER + 102: // Delete Row
 						{
-							int sel = LISTVIEW_GetSel(hListView);
+							int sel = pListView->GetSel();
 							if (sel >= 0) {
-								LISTVIEW_DeleteRow(hListView, sel);
+								pListView->DeleteRow(sel);
 							}
 							break;
 						}
@@ -463,7 +448,7 @@ static WM_PARAM _cbListViewTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 					break;
 				case WM_NOTIFICATION_SEL_CHANGED:
 					if (Id == ID_LISTVIEW_TEST) {
-						int sel = LISTVIEW_GetSel(hListView);
+						int sel = pListView->GetSel();
 						// Can add code to respond to selection change
 					}
 					break;
@@ -492,7 +477,9 @@ int main(void) {
 	_TestListView();
 
 	for (;;) {
-		WM_Obj *hDialog = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
+		auto hDialog = (FRAMEWIN_Obj *)GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
+		hDialog->AddMinButton();
+		hDialog->AddMaxButton();
 		_CreateMenu(hDialog);
 		_MemDevPhase = 0;
 		_hMemDevFrame = _CreateMemDevFrame(280, 50, "MemDev ON", 1, &_hMemDevPane);

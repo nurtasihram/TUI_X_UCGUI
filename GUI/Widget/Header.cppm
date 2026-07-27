@@ -15,39 +15,6 @@ static PCCURSOR _pOldCursor;
 
 export {
    
-typedef WM_Obj * HEADER_Handle;
-
-HEADER_Handle HEADER_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, int SpecialFlags);
-HEADER_Handle HEADER_CreateIndirect(const GUI_WIDGET_CREATE_INFO * pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK * cb);
-HEADER_Handle HEADER_CreateAttached(WM_Obj * hParent, int Id, int SpecialFlags);
-HEADER_Handle HEADER_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
-                                    int WinFlags, int ExFlags, int Id);
-
-void HEADER_AddItem            (HEADER_Handle hObj, int Width, const char * s, int Align);
-void HEADER_DeleteItem         (HEADER_Handle hObj, unsigned Index);
-int  HEADER_GetHeight          (HEADER_Handle hObj);
-int  HEADER_GetItemWidth       (HEADER_Handle hObj, unsigned int Index);
-int  HEADER_GetNumItems        (HEADER_Handle hObj);
-void HEADER_SetBitmap          (HEADER_Handle hObj, unsigned int Index, PCBITMAP pBitmap);
-void HEADER_SetBitmapEx        (HEADER_Handle hObj, unsigned int Index, PCBITMAP pBitmap, int x, int y);
-void HEADER_SetBkColor         (HEADER_Handle hObj, RGBC Color);
-void HEADER_SetBMP             (HEADER_Handle hObj, unsigned int Index, const void * pBitmap);
-void HEADER_SetBMPEx           (HEADER_Handle hObj, unsigned int Index, const void * pBitmap, int x, int y);
-void HEADER_SetFont            (HEADER_Handle hObj, PCFONT pFont);
-void HEADER_SetHeight          (HEADER_Handle hObj, int Height);
-void HEADER_SetTextAlign       (HEADER_Handle hObj, unsigned int Index, int Align);
-void HEADER_SetItemText        (HEADER_Handle hObj, unsigned int Index, const char * s);
-void HEADER_SetItemWidth       (HEADER_Handle hObj, unsigned int Index, int Width);
-void HEADER_SetScrollPos       (HEADER_Handle hObj, int ScrollPos);
-void HEADER_SetTextColor       (HEADER_Handle hObj, RGBC Color);
-
-struct HEADER_COLUMN {
-	int16_t Width;
-	TEXTALIGN Align;
-	GUI_DRAW *pDrawObj;
-	char acText[1];
-};
-
 struct HEADER_Obj : public WIDGET {
 	struct Properties {
 		PCFONT pFont{ &GUI_Font13_1 };
@@ -58,191 +25,315 @@ struct HEADER_Obj : public WIDGET {
 		int16_t BorderV{ 2 };
 	} static DefaultProps;
 	Properties Props;
+	struct Column {
+		int16_t Width;
+		TEXTALIGN Align;
+		GUI_DRAW *pDrawObj;
+		char acText[1];
+	};
 	GUI_ARRAY Columns;
 	int16_t CapturePosX = -1;
 	int16_t CaptureItem = -1;
 	uint16_t ScrollPos = 0;
-};
 
-HEADER_Obj::Properties HEADER_Obj::DefaultProps;
-}
-
-static void _OnPaint(HEADER_Obj *pObj) {
-	int xPos = -pObj->ScrollPos;
-	int NumItems = GUI_ARRAY_GetNumItems(&pObj->Columns);
-	int EffectSize = pObj->pEffect->EffectSize;
-	GUI_RECT Rect;
-	GUI_SetBkColor(pObj->Props.BkColor);
-	GUI_SetFont(pObj->Props.pFont);
-	GUI_Clear();
-	for (int i = 0; i < NumItems; i++) {
-		auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, i);
+	void _OnPaint() {
+		int xPos = -ScrollPos;
+		int NumItems = GUI_ARRAY_GetNumItems(&Columns);
+		int EffectSize = pEffect->EffectSize;
+		GUI_RECT Rect;
+		GUI_SetBkColor(Props.BkColor);
+		GUI_SetFont(Props.pFont);
+		GUI_Clear();
+		for (int i = 0; i < NumItems; i++) {
+			auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, i);
+			Rect = WM_GetClientRect();
+			Rect.x0 = xPos;
+			Rect.x1 = Rect.x0 + pColumn->Width;
+			if (pColumn->pDrawObj) {
+				int xOff = 0, yOff = 0;
+				switch (pColumn->Align & TEXTALIGN_HORIZONTAL) {
+					case TEXTALIGN_RIGHT:
+						xOff = (pColumn->Width - GUI_DRAW__GetXSize(pColumn->pDrawObj));
+						break;
+					case TEXTALIGN_HCENTER:
+						xOff = (pColumn->Width - GUI_DRAW__GetXSize(pColumn->pDrawObj)) / 2;
+						break;
+				}
+				switch (pColumn->Align & TEXTALIGN_VERTICAL) {
+					case TEXTALIGN_BOTTOM:
+						yOff = ((Rect.y1 - Rect.y0 + 1) - GUI_DRAW__GetYSize(pColumn->pDrawObj));
+						break;
+					case TEXTALIGN_VCENTER:
+						yOff = ((Rect.y1 - Rect.y0 + 1) - GUI_DRAW__GetYSize(pColumn->pDrawObj)) / 2;
+						break;
+				}
+				WM_SetUserClipRect(&Rect);
+				GUI_DRAW__Draw(pColumn->pDrawObj, xPos + xOff, yOff);
+				WM_SetUserClipRect(nullptr);
+			}
+			WIDGET__EFFECT_DrawUpRect(this, Rect);
+			xPos += Rect.x1 - Rect.x0;
+			Rect.x0 += EffectSize + Props.BorderH;
+			Rect.x1 -= EffectSize + Props.BorderH;
+			Rect.y0 += EffectSize + Props.BorderV;
+			Rect.y1 -= EffectSize + Props.BorderV;
+			GUI_SetColor(Props.TextColor);
+			GUI_DispStringInRect(pColumn->acText, &Rect, pColumn->Align);
+		}
 		Rect = WM_GetClientRect();
 		Rect.x0 = xPos;
-		Rect.x1 = Rect.x0 + pColumn->Width;
-		if (pColumn->pDrawObj) {
-			int xOff = 0, yOff = 0;
-			switch (pColumn->Align & TEXTALIGN_HORIZONTAL) {
-				case TEXTALIGN_RIGHT:
-					xOff = (pColumn->Width - GUI_DRAW__GetXSize(pColumn->pDrawObj));
-					break;
-				case TEXTALIGN_HCENTER:
-					xOff = (pColumn->Width - GUI_DRAW__GetXSize(pColumn->pDrawObj)) / 2;
-					break;
-			}
-			switch (pColumn->Align & TEXTALIGN_VERTICAL) {
-				case TEXTALIGN_BOTTOM:
-					yOff = ((Rect.y1 - Rect.y0 + 1) - GUI_DRAW__GetYSize(pColumn->pDrawObj));
-					break;
-				case TEXTALIGN_VCENTER:
-					yOff = ((Rect.y1 - Rect.y0 + 1) - GUI_DRAW__GetYSize(pColumn->pDrawObj)) / 2;
-					break;
-			}
-			WM_SetUserClipRect(&Rect);
-			GUI_DRAW__Draw(pColumn->pDrawObj, xPos + xOff, yOff);
-			WM_SetUserClipRect(nullptr);
-		}
-		WIDGET__EFFECT_DrawUpRect(pObj, Rect);
-		xPos += Rect.x1 - Rect.x0;
-		Rect.x0 += EffectSize + pObj->Props.BorderH;
-		Rect.x1 -= EffectSize + pObj->Props.BorderH;
-		Rect.y0 += EffectSize + pObj->Props.BorderV;
-		Rect.y1 -= EffectSize + pObj->Props.BorderV;
-		GUI_SetColor(pObj->Props.TextColor);
-		GUI_DispStringInRect(pColumn->acText, &Rect, pColumn->Align);
+		Rect.x1 = 0xfff;
+		WIDGET__EFFECT_DrawUpRect(this, Rect);
 	}
-	Rect = WM_GetClientRect();
-	Rect.x0 = xPos;
-	Rect.x1 = 0xfff;
-	WIDGET__EFFECT_DrawUpRect(pObj, Rect);
-}
-static void _RestoreOldCursor(void) {
-	if (_pOldCursor) {
+	void _RestoreOldCursor(void) {
+		if (_pOldCursor) {
 #if GUI_SUPPORT_CURSOR
-		GUI_CURSOR_Select(_pOldCursor);
+			GUI_CURSOR_Select(_pOldCursor);
 #endif
-		_pOldCursor = 0;
-	}
-}
-static void _FreeAttached(HEADER_Obj *pObj) {
-	int i, NumItems;
-	NumItems = GUI_ARRAY_GetNumItems(&pObj->Columns);
-	for (i = 0; i < NumItems; i++) {
-		auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, i);
-		if (pColumn->pDrawObj) {
-			GUI_ALLOC_Free(pColumn->pDrawObj);
+			_pOldCursor = 0;
 		}
 	}
-	/* Delete attached objects (if any) */
-	GUI_ARRAY_Delete(&pObj->Columns);
-	_RestoreOldCursor();
-}
+	void _FreeAttached() {
+		int i, NumItems;
+		NumItems = GUI_ARRAY_GetNumItems(&Columns);
+		for (i = 0; i < NumItems; i++) {
+			auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, i);
+			if (pColumn->pDrawObj) {
+				GUI_ALLOC_Free(pColumn->pDrawObj);
+			}
+		}
+		/* Delete attached objects (if any) */
+		GUI_ARRAY_Delete(&Columns);
+		_RestoreOldCursor();
+	}
 #if (HEADER_SUPPORT_DRAG)
-static int _GetItemIndex(HEADER_Obj *pObj, int x, int y) {
-	if ((y >= 0) && (y < WM_GetWindowSizeY(pObj))) {
-		int xPos = pObj->pEffect->EffectSize;
-		for (int Index = 0, NumColumns = GUI_ARRAY_GetNumItems(&pObj->Columns); Index < NumColumns; ++Index) {
-			auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
-			xPos += pColumn->Width;
-			if (x - 4 <= xPos && xPos <= x + 4) {
-				if (Index < NumColumns && x < xPos) {
-					pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
-					if (pColumn->Width)
-						return Index;
+	int _GetItemIndex(int x, int y) {
+		if ((y >= 0) && (y < WM_GetWindowSizeY(this))) {
+			int xPos = pEffect->EffectSize;
+			for (int Index = 0, NumColumns = GUI_ARRAY_GetNumItems(&Columns); Index < NumColumns; ++Index) {
+				auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
+				xPos += pColumn->Width;
+				if (x - 4 <= xPos && xPos <= x + 4) {
+					if (Index < NumColumns && x < xPos) {
+						pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
+						if (pColumn->Width)
+							return Index;
+					}
+				}
+			}
+		}
+		return -1;
+	}
+	void _HandlePID(int x, int y, int Pressed) {
+		int Hit = _GetItemIndex(x, y);
+		/* set capture position () */
+		if ((Pressed == 1) && (Hit >= 0) && (CapturePosX == -1)) {
+			CapturePosX = x;
+			CaptureItem = Hit;
+		}
+		/* set mouse cursor and capture () */
+		if (Hit >= 0) {
+			WM_SetCapture(this, 1);
+#if GUI_SUPPORT_CURSOR
+			if (!_pOldCursor) {
+				_pOldCursor = GUI_CURSOR_Select(Props.pCursor);
+			}
+#endif
+		}
+		/* modify header */
+		if ((CapturePosX >= 0) && (x != CapturePosX) && (Pressed == 1)) {
+			int NewSize = GetItemWidth(CaptureItem) + x - CapturePosX;
+			if (NewSize >= 0) {
+				SetItemWidth(CaptureItem, NewSize);
+				CapturePosX = x;
+			}
+		}
+		/* release capture & restore cursor */
+		if (Pressed <= 0) {
+#if (GUI_SUPPORT_MOUSE)
+			if (Hit == -1)
+#endif
+			{
+				_RestoreOldCursor();
+				CapturePosX = -1;
+				WM_ReleaseCapture();
+			}
+		}
+	}
+	void _OnTouch(const GUI_PID_STATE *pState) {
+		int Notification;
+		if (pState) {  /* Something happened in our area (pressed or released) */
+			_HandlePID(pState->x + ScrollPos, pState->y, pState->Pressed);
+			Notification = pState->Pressed ?
+				WM_NOTIFICATION_CLICKED : WM_NOTIFICATION_RELEASED;
+		}
+		else
+			Notification = WM_NOTIFICATION_MOVED_OUT;
+		WM_NotifyParent(this, Notification);
+	}
+#endif
+#if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
+	void _OnMouseOver(const GUI_PID_STATE *pState) {
+		if (pState)
+			_HandlePID(pState->x + ScrollPos, pState->y, -1);
+	}
+#endif
+	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (HEADER_Obj *)hWin;
+		/* Let widget handle the standard messages */
+		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+			return Data;
+		switch (MsgId) {
+			case WM_PAINT:
+				pObj->_OnPaint();
+				return 0;
+#if (HEADER_SUPPORT_DRAG)
+			case WM_TOUCH:
+				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				return 0;
+#endif
+#if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
+			case WM_MOUSEOVER:
+				pObj->_OnMouseOver((const GUI_PID_STATE *)Data);
+				return 0;
+#endif
+			case WM_DELETE:
+				pObj->_FreeAttached(); /* No return here ... WM_DefaultProc needs to be called */
+				return 0;
+		}
+		return WM_DefaultProc(hWin, MsgId, Data);
+	}
+
+public:
+	void SetFont(PCFONT pFont) {
+		Props.pFont = pFont;
+		WM_Invalidate(this);
+	}
+	void SetHeight(int Height) {
+		auto Rect = WM_GetClientRect(this);
+		WM_SetSize(this, Rect.x1 - Rect.x0 + 1, Height);
+		WM_Invalidate(WM_GetParent(this));
+	}
+	void SetTextColor(RGBC Color) {
+		Props.TextColor = Color;
+		WM_Invalidate(this);
+	}
+	void SetBkColor(RGBC Color) {
+		Props.BkColor = Color;
+		WM_Invalidate(this);
+	}
+	void SetTextAlign(unsigned int Index, int Align) {
+		if (Index <= GUI_ARRAY_GetNumItems(&Columns)) {
+			Column *pColumn;
+			pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
+			pColumn->Align = Align;
+			WM_Invalidate(this);
+		}
+	}
+	void SetScrollPos(int ScrollPos) {
+		if ((ScrollPos >= 0)) {
+			if (ScrollPos != ScrollPos) {
+				ScrollPos = ScrollPos;
+				WM_Invalidate(this);
+				WM_Invalidate(WM_GetParent(this));
+			}
+		}
+	}
+	void AddItem(int Width, const char *s, int Align) {
+		Column Col;
+		if (!Width) {
+			PCFONT pFont = GUI_SetFont(Props.pFont);
+			Width = GUI_GetStringDistX(s) + 2 * (pEffect->EffectSize + Props.BorderH);
+			GUI_SetFont(pFont);
+		}
+		Col.Width = Width;
+		Col.Align = Align;
+		Col.pDrawObj = 0;
+		int Index = GUI_ARRAY_GetNumItems(&Columns);
+		if (GUI_ARRAY_AddItem(&Columns, &Col, sizeof(Column) + GUI__strlen(s) + 1) == 0) {
+			auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
+			GUI__strcpy(pColumn->acText, s);
+			WM_Invalidate(this);
+			WM_Invalidate(WM_GetParent(this));
+		}
+	}
+	void DeleteItem(unsigned Index) {
+		if (Index < GUI_ARRAY_GetNumItems(&Columns)) {
+			GUI_ARRAY_DeleteItem(&Columns, Index);
+			WM_Invalidate(this);
+			WM_Invalidate(WM_GetParent(this));
+		}
+	}
+	void SetItemText(unsigned int Index, const char *s) {
+		if (Index < GUI_ARRAY_GetNumItems(&Columns)) {
+			auto pColumn = (Column *)GUI_ARRAY_ResizeItem(&Columns, Index, sizeof(Column) + GUI__strlen(s));
+			if (pColumn) {
+				GUI__strcpy(pColumn->acText, s);
+			}
+		}
+	}
+	void SetItemWidth(unsigned int Index, int Width) {
+		if ((Width >= 0)) {
+
+			if (Index <= GUI_ARRAY_GetNumItems(&Columns)) {
+				auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
+				if (pColumn) {
+					pColumn->Width = Width;
+					WM_Invalidate(this);
+					WM__SendMsgNoData(WM_GetParent(this), WM_NOTIFY_CLIENTCHANGE);
+					WM_Invalidate(WM_GetParent(this));
 				}
 			}
 		}
 	}
-	return -1;
-}
-static void _HandlePID(HEADER_Obj *pObj, int x, int y, int Pressed) {
-	int Hit = _GetItemIndex(pObj, x, y);
-	/* set capture position () */
-	if ((Pressed == 1) && (Hit >= 0) && (pObj->CapturePosX == -1)) {
-		pObj->CapturePosX = x;
-		pObj->CaptureItem = Hit;
+	int GetHeight() {
+		int Height = 0;
+		GUI_RECT Rect = WM_GetClientRect(this);
+		Rect -= Rect.LeftTop();
+		Height = Rect.y1 - Rect.y0 + 1;
+
+		return Height;
 	}
-	/* set mouse cursor and capture () */
-	if (Hit >= 0) {
-		WM_SetCapture(pObj, 1);
-#if GUI_SUPPORT_CURSOR
-		if (!_pOldCursor) {
-			_pOldCursor = GUI_CURSOR_Select(pObj->Props.pCursor);
+	int GetItemWidth(unsigned int Index) {
+		int Width = 0;
+		if (Index <= GUI_ARRAY_GetNumItems(&Columns)) {
+			Column *pColumn;
+			pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
+			Width = pColumn->Width;
 		}
-#endif
+
+		return Width;
 	}
-	/* modify header */
-	if ((pObj->CapturePosX >= 0) && (x != pObj->CapturePosX) && (Pressed == 1)) {
-		int NewSize = HEADER_GetItemWidth(pObj, pObj->CaptureItem) + x - pObj->CapturePosX;
-		if (NewSize >= 0) {
-			HEADER_SetItemWidth(pObj, pObj->CaptureItem, NewSize);
-			pObj->CapturePosX = x;
-		}
+	int  GetNumItems() {
+		int NumCols = 0;
+		NumCols = GUI_ARRAY_GetNumItems(&Columns);
+		return NumCols;
 	}
-	/* release capture & restore cursor */
-	if (Pressed <= 0) {
-#if (GUI_SUPPORT_MOUSE)
-		if (Hit == -1)
-#endif
-		{
-			_RestoreOldCursor();
-			pObj->CapturePosX = -1;
-			WM_ReleaseCapture();
+
+	void _SetDrawObj(unsigned Index, GUI_DRAW *pDrawObj) {
+		if (Index <= GUI_ARRAY_GetNumItems(&Columns)) {
+			auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
+			if (pColumn) {
+				GUI_ALLOC_FreePtr((void **)&pColumn->pDrawObj);
+				pColumn->pDrawObj = pDrawObj;
+			}
 		}
 	}
-}
-static void _OnTouch(HEADER_Obj *pObj, const GUI_PID_STATE *pState) {
-	int Notification;
-	if (pState) {  /* Something happened in our area (pressed or released) */
-		_HandlePID(pObj, pState->x + pObj->ScrollPos, pState->y, pState->Pressed);
-		Notification = pState->Pressed ?
-			WM_NOTIFICATION_CLICKED : WM_NOTIFICATION_RELEASED;
+	void SetBitmapEx(unsigned Index, PCBITMAP pBitmap, int x, int y) {
+		_SetDrawObj(Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
+		WM_Invalidate(this);
 	}
-	else
-		Notification = WM_NOTIFICATION_MOVED_OUT;
-	WM_NotifyParent(pObj, Notification);
-}
-#endif
-#if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
-static void _OnMouseOver(HEADER_Obj *pObj, const GUI_PID_STATE *pState) {
-	if (pState)
-		_HandlePID(pObj, pState->x + pObj->ScrollPos, pState->y, -1);
-}
-#endif
-static WM_PARAM _HEADER_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-	auto pObj = (HEADER_Obj *)hWin;
-	/* Let widget handle the standard messages */
-	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
-		return Data;
-	switch (MsgId) {
-		case WM_PAINT:
-			_OnPaint(pObj);
-			return 0;
-#if (HEADER_SUPPORT_DRAG)
-		case WM_TOUCH:
-			_OnTouch(pObj, (const GUI_PID_STATE *)Data);
-			return 0;
-#endif
-#if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
-		case WM_MOUSEOVER:
-			_OnMouseOver(pObj, (const GUI_PID_STATE *)Data);
-			return 0;
-#endif
-		case WM_DELETE:
-			_FreeAttached(pObj); /* No return here ... WM_DefaultProc needs to be called */
-			return 0;
+	void SetBitmap(unsigned Index, PCBITMAP pBitmap) {
+		SetBitmapEx(Index, pBitmap, 0, 0);
 	}
-	return WM_DefaultProc(hWin, MsgId, Data);
-}
-HEADER_Handle HEADER_Create(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int Flags, int ExFlags) {
-	return HEADER_CreateEx(x0, y0, xsize, ysize, hParent, Flags, ExFlags, Id);
-}
-HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
+};
+
+HEADER_Obj::Properties HEADER_Obj::DefaultProps;
+
+HEADER_Obj *HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
 							  int WinFlags, int ExFlags, int Id) {
-	HEADER_Handle hObj;
 	GUI_USE_PARA(ExFlags);
 	/* Create the window */
-
 	if ((xsize == 0) && (x0 == 0) && (y0 == 0)) {
 		GUI_RECT Rect = WM_GetInsideRect(hParent);
 		xsize = Rect.x1 - Rect.x0 + 1;
@@ -255,10 +346,9 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hPar
 		ysize += 2 * WIDGET::DefaultEffect->EffectSize;
 	}
 	WinFlags |= WM_CF_ANCHOR_LEFT | WM_CF_ANCHOR_RIGHT;
-	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, &_HEADER_Callback,
+	auto pObj = (HEADER_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, HEADER_Obj::_Callback,
 								  sizeof(HEADER_Obj) - sizeof(WM_Obj));
-	if (hObj) {
-		auto pObj = (HEADER_Obj *)hObj;
+	if (pObj) {
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, 0);
 		/* init member variables */
@@ -269,154 +359,13 @@ HEADER_Handle HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hPar
 	}
 	else {
 	}
-
-	return hObj;
+	return pObj;
 }
 
-void HEADER_SetFont(HEADER_Handle hObj, PCFONT pFont) {
-	auto pObj = (HEADER_Obj *)hObj;
-	pObj->Props.pFont = pFont;
-	WM_Invalidate(hObj);
-}
-void HEADER_SetHeight(HEADER_Handle hObj, int Height) {
-	GUI_RECT Rect = WM_GetClientRect(hObj);
-	WM_SetSize(hObj, Rect.x1 - Rect.x0 + 1, Height);
-	WM_Invalidate(WM_GetParent(hObj));
-}
-void HEADER_SetTextColor(HEADER_Handle hObj, RGBC Color) {
-		auto pObj = (HEADER_Obj *)hObj;
-		pObj->Props.TextColor = Color;
-		WM_Invalidate(hObj);
-}
-void HEADER_SetBkColor(HEADER_Handle hObj, RGBC Color) {
-		auto pObj = (HEADER_Obj *)hObj;
-		pObj->Props.BkColor = Color;
-		WM_Invalidate(hObj);
-}
-void HEADER_SetTextAlign(HEADER_Handle hObj, unsigned int Index, int Align) {
-		auto pObj = (HEADER_Obj *)hObj;
-		if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
-			HEADER_COLUMN *pColumn;
-			pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
-			pColumn->Align = Align;
-			WM_Invalidate(hObj);
-		}
-}
-void HEADER_SetScrollPos(HEADER_Handle hObj, int ScrollPos) {
-	if ((ScrollPos >= 0)) {
-		auto pObj = (HEADER_Obj *)hObj;
-		if (ScrollPos != pObj->ScrollPos) {
-			pObj->ScrollPos = ScrollPos;
-			WM_Invalidate(hObj);
-			WM_Invalidate(WM_GetParent(hObj));
-		}
-	}
-}
-void HEADER_AddItem(HEADER_Handle hObj, int Width, const char *s, int Align) {
-	auto pObj = (HEADER_Obj *)hObj;
-	HEADER_COLUMN Column;
-	if (!Width) {
-		PCFONT pFont = GUI_SetFont(pObj->Props.pFont);
-		Width = GUI_GetStringDistX(s) + 2 * (pObj->pEffect->EffectSize + pObj->Props.BorderH);
-		GUI_SetFont(pFont);
-	}
-	Column.Width = Width;
-	Column.Align = Align;
-	Column.pDrawObj = 0;
-	int Index = GUI_ARRAY_GetNumItems(&pObj->Columns);
-	if (GUI_ARRAY_AddItem(&pObj->Columns, &Column, sizeof(HEADER_COLUMN) + GUI__strlen(s) + 1) == 0) {
-		HEADER_COLUMN *pColumn;
-		pObj = (HEADER_Obj *)hObj;
-		pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
-		GUI__strcpy(pColumn->acText, s);
-		WM_Invalidate(hObj);
-		WM_Invalidate(WM_GetParent(hObj));
-	}
-}
-void HEADER_DeleteItem(HEADER_Handle hObj, unsigned Index) {
-	auto pObj = (HEADER_Obj *)hObj;
-	if (Index < GUI_ARRAY_GetNumItems(&pObj->Columns)) {
-		GUI_ARRAY_DeleteItem(&pObj->Columns, Index);
-		WM_Invalidate(hObj);
-		WM_Invalidate(WM_GetParent(hObj));
-	}
-}
-void HEADER_SetItemText(HEADER_Handle hObj, unsigned int Index, const char *s) {
-	auto pObj = (HEADER_Obj *)hObj;
-	if (Index < GUI_ARRAY_GetNumItems(&pObj->Columns)) {
-		auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_ResizeItem(&pObj->Columns, Index, sizeof(HEADER_COLUMN) + GUI__strlen(s));
-		if (pColumn) {
-			GUI__strcpy(pColumn->acText, s);
-		}
-	}
-}
-void HEADER_SetItemWidth(HEADER_Handle hObj, unsigned int Index, int Width) {
-	if ((Width >= 0)) {
-		auto pObj = (HEADER_Obj *)hObj;
-		if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
-			auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
-			if (pColumn) {
-				pColumn->Width = Width;
-				WM_Invalidate(hObj);
-				WM__SendMsgNoData(WM_GetParent(hObj), WM_NOTIFY_CLIENTCHANGE);
-				WM_Invalidate(WM_GetParent(hObj));
-			}
-		}
-	}
-}
-int HEADER_GetHeight(HEADER_Handle hObj) {
-	int Height = 0;
-	GUI_RECT Rect = WM_GetClientRect(hObj);
-	Rect -= Rect.LeftTop();
-	Height = Rect.y1 - Rect.y0 + 1;
-
-	return Height;
-}
-int HEADER_GetItemWidth(HEADER_Handle hObj, unsigned int Index) {
-	int Width = 0;
-		auto pObj = (HEADER_Obj *)hObj;
-		if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
-			HEADER_COLUMN *pColumn;
-			pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
-			Width = pColumn->Width;
-		}
-
-	return Width;
-}
-int  HEADER_GetNumItems(HEADER_Handle hObj) {
-	int NumCols = 0;
-		auto pObj = (HEADER_Obj *)hObj;
-		NumCols = GUI_ARRAY_GetNumItems(&pObj->Columns);
-
-	return NumCols;
-}
-
-void _SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW *pDrawObj) {
-	auto pObj = (HEADER_Obj *)hObj;
-	if (Index <= GUI_ARRAY_GetNumItems(&pObj->Columns)) {
-		auto pColumn = (HEADER_COLUMN *)GUI_ARRAY_GetpItem(&pObj->Columns, Index);
-		if (pColumn) {
-			GUI_ALLOC_FreePtr((void **)&pColumn->pDrawObj);
-			pColumn->pDrawObj = pDrawObj;
-		}
-	}
-}
-void HEADER_SetBitmapEx(HEADER_Handle hObj, unsigned Index, PCBITMAP pBitmap, int x, int y) {
-	_SetDrawObj(hObj, Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
-	WM_Invalidate(hObj);
-}
-void HEADER_SetBitmap(HEADER_Handle hObj, unsigned Index, PCBITMAP pBitmap) {
-	HEADER_SetBitmapEx(hObj, Index, pBitmap, 0, 0);
-}
-
-HEADER_Handle HEADER_CreateAttached(WM_Obj *hParent, int Id, int SpecialFlags) {
-	return HEADER_CreateEx(0, 0, 0, 0, hParent, WM_CF_SHOW, SpecialFlags, Id);
-}
-
-HEADER_Handle HEADER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	HEADER_Handle  hThis;
+WM_Obj *HEADER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	GUI_USE_PARA(cb);
-	hThis = HEADER_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+	return HEADER_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
 							hWinParent, pCreateInfo->Flags, 0, pCreateInfo->Id);
-	return hThis;
+}
+
 }

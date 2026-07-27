@@ -17,77 +17,37 @@ enum LISTVIEW_CI {
 	 LISTVIEW_CI_SELFOCUS  = 2
 };
 
-typedef WM_Obj * LISTVIEW_Handle;
-
-LISTVIEW_Handle LISTVIEW_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, int SpecialFlags);
-LISTVIEW_Handle LISTVIEW_CreateAttached(WM_Obj * hParent, int Id, int SpecialFlags);
-LISTVIEW_Handle LISTVIEW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
-LISTVIEW_Handle LISTVIEW_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
-										int WinFlags, int ExFlags, int Id);
-
-void          LISTVIEW_AddColumn     (LISTVIEW_Handle hObj, int Width, const char * s, int Align);
-void          LISTVIEW_AddRow        (LISTVIEW_Handle hObj, const GUI_ConstString * ppText);
-void          LISTVIEW_DecSel        (LISTVIEW_Handle hObj);
-void          LISTVIEW_DeleteColumn  (LISTVIEW_Handle hObj, unsigned Index);
-void          LISTVIEW_DeleteRow     (LISTVIEW_Handle hObj, unsigned Index);
-RGBC          LISTVIEW_GetBkColor    (LISTVIEW_Handle hObj, unsigned Index);
-PCFONT        LISTVIEW_GetFont       (LISTVIEW_Handle hObj);
-HEADER_Handle LISTVIEW_GetHeader     (LISTVIEW_Handle hObj);
-unsigned      LISTVIEW_GetNumColumns (LISTVIEW_Handle hObj);
-unsigned      LISTVIEW_GetNumRows    (LISTVIEW_Handle hObj);
-int           LISTVIEW_GetSel        (LISTVIEW_Handle hObj);
-RGBC          LISTVIEW_GetTextColor  (LISTVIEW_Handle hObj, unsigned Index);
-void          LISTVIEW_IncSel        (LISTVIEW_Handle hObj);
-void          LISTVIEW_SetBkColor    (LISTVIEW_Handle hObj, unsigned int Index, RGBC Color);
-void          LISTVIEW_SetColumnWidth(LISTVIEW_Handle hObj, unsigned int Index, int Width);
-void          LISTVIEW_SetFont       (LISTVIEW_Handle hObj, PCFONT pFont);
-int           LISTVIEW_SetGridVis    (LISTVIEW_Handle hObj, int Show);
-void          LISTVIEW_SetItemBkColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, RGBC Color);
-void          LISTVIEW_SetItemText   (LISTVIEW_Handle hObj, unsigned Column, unsigned Row, const char * s);
-void          LISTVIEW_SetItemTextColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, RGBC Color);
-void          LISTVIEW_SetLBorder    (LISTVIEW_Handle hObj, unsigned BorderSize);
-void          LISTVIEW_SetRBorder    (LISTVIEW_Handle hObj, unsigned BorderSize);
-unsigned      LISTVIEW_SetRowHeight  (LISTVIEW_Handle hObj, unsigned RowHeight);
-void          LISTVIEW_SetSel        (LISTVIEW_Handle hObj, int Sel);
-void          LISTVIEW_SetTextAlign  (LISTVIEW_Handle hObj, unsigned int Index, int Align);
-void          LISTVIEW_SetTextColor  (LISTVIEW_Handle hObj, unsigned int Index, RGBC Color);
-
-struct LISTVIEW_ITEM_INFO {
-	RGBC aBkColor[3];
-	RGBC aTextColor[3];
-};
-
-struct LISTVIEW_ITEM {
-	WM_HMEM hItemInfo;
-	char acText[1];
-};
-
 struct LISTVIEW_Obj : public WIDGET {
 	struct Properties {
 		PCFONT pFont{ &GUI_Font13_1 };
 		RGBC aBkColor[3]{
-			RGB_WHITE,   /* Not selected */
-			RGB_GRAY,    /* Selected, no focus */
-			RGB_BLUE     /* Selected, focus */
+			/* Not selected */       RGB_WHITE,
+			/* Selected, no focus */ RGB_GRAY,
+			/* Selected, focus */    RGB_DARKBLUE
 		};
 		RGBC aTextColor[3]{
-			RGB_BLACK,   /* Not selected */
-			RGB_WHITE,   /* Selected, no focus */
-			RGB_WHITE    /* Selected, focus */
+			/* Not selected */       RGB_BLACK,
+			/* Selected, no focus */ RGB_WHITE,
+			/* Selected, focus */    RGB_WHITE
 		};
 		RGBC GridColor{ RGB_LIGHTGRAY };
 	} static DefaultProps;
 	Properties Props;
-	HEADER_Handle   hHeader;
-	GUI_ARRAY       RowArray;         /* One entry per line. Every entry is a handle of GUI_ARRAY of strings */
-	GUI_ARRAY       AlignArray;       /* One entry per column */
-	int16_t         Sel;
-	int16_t         ShowGrid;
-	uint16_t        RowDistY;
-	uint16_t        LBorder;
-	uint16_t        RBorder;
-	WM_SCROLL_STATE ScrollStateV;
-	WM_SCROLL_STATE ScrollStateH;
+	struct ItemInfo {
+		RGBC aBkColor[3];
+		RGBC aTextColor[3];
+	};
+	struct Item {
+		WM_HMEM hItemInfo;
+		char acText[1];
+	};
+	HEADER_Obj *pHeader;
+	GUI_ARRAY   RowArray;         /* One entry per line. Every entry is a handle of GUI_ARRAY of strings */
+	GUI_ARRAY   AlignArray;       /* One entry per column */
+	int16_t     Sel;
+	bool        ShowGrid;
+	uint16_t    RowDistY, LBorder, RBorder;
+	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
 	WM_Obj *hOwner;
 
 	void _NotifyOwner(int Notification) {
@@ -115,7 +75,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		unsigned RowDistY, ySize, r = 1;
 		GUI_RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
-		ySize = Rect.y1 - Rect.y0 + 1 - HEADER_GetHeight(hHeader);
+		ySize = Rect.y1 - Rect.y0 + 1 - pHeader->GetHeight();
 		RowDistY = _GetRowDistY();
 		if (RowDistY) {
 			r = ySize / RowDistY;
@@ -131,14 +91,14 @@ struct LISTVIEW_Obj : public WIDGET {
 		int xPos, yPos, Width, RowDistY;
 		int Align, i, j, EndRow;
 		/* Init some values */
-		NumColumns = HEADER_GetNumItems(hHeader);
+		NumColumns = pHeader->GetNumItems();
 		NumRows = GUI_ARRAY_GetNumItems(&this->RowArray);
 		NumVisRows = _GetNumVisibleRows();
 		RowDistY = _GetRowDistY();
 		LBorder = this->LBorder;
 		RBorder = this->RBorder;
 		EffectSize = this->pEffect->EffectSize;
-		yPos = HEADER_GetHeight(hHeader) + EffectSize;
+		yPos = pHeader->GetHeight() + EffectSize;
 		EndRow = this->ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
 		/* Calculate clipping rectangle */
 		ClipRect = *pClipRect - this->Rect.LeftTop();
@@ -175,7 +135,7 @@ struct LISTVIEW_Obj : public WIDGET {
 					}
 					xPos = EffectSize - this->ScrollStateH.v;
 					for (j = 0; j < NumColumns; j++) {
-						Width = HEADER_GetItemWidth(hHeader, j);
+						Width = pHeader->GetItemWidth(j);
 						Rect.x0 = xPos;
 						/* Break when all other columns are outside the drawing area */
 						if (Rect.x0 > ClipRect.x1) {
@@ -184,11 +144,11 @@ struct LISTVIEW_Obj : public WIDGET {
 						Rect.x1 = xPos + Width - 1;
 						/* Make sure that we draw only when column is in drawing area */
 						if (Rect.x1 >= ClipRect.x0) {
-							LISTVIEW_ITEM *pItem;
-							pItem = (LISTVIEW_ITEM *)GUI_ARRAY_GetpItem(pRow, j);
+							Item *pItem;
+							pItem = (Item *)GUI_ARRAY_GetpItem(pRow, j);
 							if (pItem->hItemInfo) {
-								LISTVIEW_ITEM_INFO *pItemInfo;
-								pItemInfo = (LISTVIEW_ITEM_INFO *)(pItem->hItemInfo);
+								ItemInfo *pItemInfo;
+								pItemInfo = (ItemInfo *)(pItem->hItemInfo);
 								GUI_SetBkColor(pItemInfo->aBkColor[ColorIndex]);
 								GUI_SetColor(pItemInfo->aTextColor[ColorIndex]);
 							}
@@ -222,7 +182,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		/* Draw grid */
 		if (this->ShowGrid) {
 			GUI_SetColor(Props.GridColor);
-			yPos = HEADER_GetHeight(hHeader) + EffectSize - 1;
+			yPos = pHeader->GetHeight() + EffectSize - 1;
 			for (i = 0; i < NumVisRows; i++) {
 				yPos += RowDistY;
 				/* Break when all other rows are outside the drawing area */
@@ -236,7 +196,7 @@ struct LISTVIEW_Obj : public WIDGET {
 			}
 			xPos = EffectSize - this->ScrollStateH.v;
 			for (i = 0; i < NumColumns; i++) {
-				xPos += HEADER_GetItemWidth(hHeader, i);
+				xPos += pHeader->GetItemWidth(i);
 				/* Break when all other columns are outside the drawing area */
 				if (xPos > ClipRect.x1) {
 					break;
@@ -254,7 +214,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		if (Sel >= 0) {
 			GUI_RECT Rect;
 			int HeaderHeight, RowDistY;
-			HeaderHeight = HEADER_GetHeight(hHeader);
+			HeaderHeight = pHeader->GetHeight();
 			RowDistY = _GetRowDistY();
 			WM_GetInsideRectExScrollbar(this, &Rect);
 			Rect.y0 += HeaderHeight + (Sel - this->ScrollStateV.v) * RowDistY;
@@ -264,7 +224,7 @@ struct LISTVIEW_Obj : public WIDGET {
 	void _InvalidateInsideArea() {
 		GUI_RECT Rect;
 		int HeaderHeight;
-		HeaderHeight = HEADER_GetHeight(hHeader);
+		HeaderHeight = pHeader->GetHeight();
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		Rect.y0 += HeaderHeight;
 		WM_InvalidateRect(this, &Rect);
@@ -273,7 +233,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		if (Sel >= 0) {
 			GUI_RECT Rect;
 			int HeaderHeight, RowDistY;
-			HeaderHeight = HEADER_GetHeight(hHeader);
+			HeaderHeight = pHeader->GetHeight();
 			RowDistY = _GetRowDistY();
 			WM_GetInsideRectExScrollbar(this, &Rect);
 			Rect.y0 += HeaderHeight + (Sel - this->ScrollStateV.v) * RowDistY;
@@ -284,7 +244,7 @@ struct LISTVIEW_Obj : public WIDGET {
 	void _SetSelFromPos(const GUI_PID_STATE *pState) {
 		GUI_RECT Rect;
 		int x, y, HeaderHeight;
-		HeaderHeight = HEADER_GetHeight(hHeader);
+		HeaderHeight = pHeader->GetHeight();
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		x = pState->x - Rect.x0;
 		y = pState->y - Rect.y0 - HeaderHeight;
@@ -294,7 +254,7 @@ struct LISTVIEW_Obj : public WIDGET {
 			unsigned Sel;
 			Sel = (y / _GetRowDistY()) + this->ScrollStateV.v;
 			if (Sel < GUI_ARRAY_GetNumItems(&this->RowArray)) {
-				LISTVIEW_SetSel(this, Sel);
+				SetSel(Sel);
 			}
 		}
 	}
@@ -317,10 +277,10 @@ struct LISTVIEW_Obj : public WIDGET {
 		if (pInfo->PressedCnt > 0)
 			switch (pInfo->Key) {
 				case GUI_KEY_DOWN:
-					LISTVIEW_IncSel(this);
+					IncSel();
 					return 1;
 				case GUI_KEY_UP:
-					LISTVIEW_DecSel(this);
+					DecSel();
 					return 1;
 			}
 		return 0;
@@ -330,12 +290,12 @@ struct LISTVIEW_Obj : public WIDGET {
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		return Rect.x1 + 1;
 	}
-	int _GetHeaderWidth(HEADER_Handle hHeader) {
+	int _GetHeaderWidth() {
 		int NumItems, i, r = 1;
-		NumItems = HEADER_GetNumItems(hHeader);
+		NumItems = pHeader->GetNumItems();
 		if (NumItems) {
 			for (i = 0, r = 0; i < NumItems; i++) {
-				r += HEADER_GetItemWidth(hHeader, i);
+				r += pHeader->GetItemWidth(i);
 			}
 		}
 		if (this->ScrollStateH.v > (r - this->ScrollStateH.PageSize)) {
@@ -364,7 +324,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		this->ScrollStateV.NumItems = (NumRows) ? NumRows : 1;
 		/* update horizontal scrollbar */
 		this->ScrollStateH.PageSize = _GetXSize();
-		this->ScrollStateH.NumItems = _GetHeaderWidth(hHeader);
+		this->ScrollStateH.NumItems = _GetHeaderWidth();
 		return _UpdateScrollPos();
 	}
 	void _FreeAttached() {
@@ -376,8 +336,8 @@ struct LISTVIEW_Obj : public WIDGET {
 			pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&this->RowArray, i);
 			/* Delete attached info items */
 			for (j = 0; j < NumColumns; j++) {
-				LISTVIEW_ITEM *pItem;
-				pItem = (LISTVIEW_ITEM *)GUI_ARRAY_GetpItem(pRow, j);
+				Item *pItem;
+				pItem = (Item *)GUI_ARRAY_GetpItem(pRow, j);
 				if (pItem->hItemInfo) {
 					GUI_ALLOC_Free(pItem->hItemInfo);
 				}
@@ -388,97 +348,335 @@ struct LISTVIEW_Obj : public WIDGET {
 		GUI_ARRAY_Delete(&this->AlignArray);
 		GUI_ARRAY_Delete(&this->RowArray);
 	}
+	ItemInfo *_GetpItemInfo(unsigned Column, unsigned Row, unsigned int Index) {
+		ItemInfo *pItemInfo = 0;
+		Item *pItem;
+		if ((Column < GetNumColumns()) && (Row < GetNumRows()) && (Index < GUI_COUNTOF(pItemInfo->aTextColor))) {
+			pItem = (Item *)GUI_ARRAY_GetpItem((GUI_ARRAY *)GUI_ARRAY_GetpItem(&RowArray, Row), Column);
+			if (!pItem->hItemInfo) {
+				int i;
+				pItem->hItemInfo = GUI_ALLOC_AllocZero(sizeof(ItemInfo));
+				pItemInfo = (ItemInfo *)(pItem->hItemInfo);
+				for (i = 0; i < GUI_COUNTOF(pItemInfo->aTextColor); i++) {
+					pItemInfo->aTextColor[i] = GetTextColor(i);
+					pItemInfo->aBkColor[i] = GetBkColor(i);
+				}
+			}
+			else {
+				pItemInfo = (ItemInfo *)(pItem->hItemInfo);
+			}
+		}
+
+		return pItemInfo;
+	}
+
+	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (LISTVIEW_Obj *)hWin;
+		/* Let widget handle the standard messages */
+		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+			return Data;
+		switch (MsgId) {
+			case WM_NOTIFY_CLIENTCHANGE:
+			case WM_SIZE:
+				pObj->_UpdateScrollParas();
+				return 0;
+			case WM_NOTIFY_PARENT: {
+				auto pInfo = (const WM_NOTIFY_INFO *)Data;
+				auto pWinSrc = pInfo->pWinSrc;
+				switch (pInfo->Notification) {
+					case WM_NOTIFICATION_CHILD_DELETED:
+						/* make sure we do not send any messages to the header child once it has been deleted */
+						if (pWinSrc == pObj->pHeader)
+							pObj->pHeader = nullptr;
+						break;
+					case WM_NOTIFICATION_VALUE_CHANGED: {
+						WM_SCROLL_STATE ScrollState;
+						if (pWinSrc == WM_GetScrollbarV(pObj)) {
+							WM_GetScrollState(pWinSrc, &ScrollState);
+							pObj->ScrollStateV.v = ScrollState.v;
+							pObj->_InvalidateInsideArea();
+							pObj->_NotifyOwner(WM_NOTIFICATION_SCROLL_CHANGED);
+						}
+						else if (pWinSrc == WM_GetScrollbarH(pObj)) {
+							WM_GetScrollState(pWinSrc, &ScrollState);
+							pObj->ScrollStateH.v = ScrollState.v;
+							pObj->_UpdateScrollParas();
+							pObj->pHeader->SetScrollPos(pObj->ScrollStateH.v);
+							pObj->_NotifyOwner(WM_NOTIFICATION_SCROLL_CHANGED);
+						}
+						break;
+					}
+					case WM_NOTIFICATION_SCROLLBAR_ADDED:
+						pObj->_UpdateScrollParas();
+						break;
+				}
+				return 0;
+			}
+			case WM_PAINT:
+				pObj->_OnPaint((const GUI_RECT *)Data);
+				return 0;
+			case WM_TOUCH:
+				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				return 0;
+			case WM_KEY:
+				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+					return 0;
+				break;
+			case WM_DELETE:
+				pObj->_FreeAttached();
+				return 0;
+		}
+		return WM_DefaultProc(hWin, MsgId, Data);
+	}
+
+public:
+	void IncSel() {
+		int Sel = GetSel();
+		SetSel(Sel + 1);
+	}
+	void DecSel() {
+		int Sel = GetSel();
+		if (Sel) {
+			SetSel(Sel - 1);
+		}
+	}
+	void AddColumn(int Width, const char *s, int Align) {
+		unsigned NumRows;
+		pHeader->AddItem(Width, s, Align);   /* Modify header */
+		GUI_ARRAY_AddItem(&AlignArray, &Align, sizeof(int));
+		NumRows = GetNumRows();
+		if (NumRows) {
+			GUI_ARRAY *pRow;
+			unsigned i;
+			for (i = 0; i < NumRows; i++) {
+				pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&RowArray, i);
+				GUI_ARRAY_AddItem(pRow, nullptr, sizeof(Item) + 1);
+			}
+		}
+		_UpdateScrollParas();
+		_InvalidateInsideArea();
+	}
+	void AddRow(const GUI_ConstString *ppText) {
+		int NumRows;
+		NumRows = GUI_ARRAY_GetNumItems(&RowArray);
+		/* Create GUI_ARRAY for the new row */
+		if (GUI_ARRAY_AddItem(&RowArray, nullptr, sizeof(GUI_ARRAY)) == 0) {
+			int i, NumColumns, NumBytes;
+			GUI_ARRAY *pRow;
+			const char *s;
+			/* Add columns for the new row */
+			NumColumns = pHeader->GetNumItems();
+			for (i = 0; i < NumColumns; i++) {
+				Item *pItem;
+				pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&RowArray, NumRows);
+				s = (ppText) ? *ppText++ : 0;
+				if (s == 0) {
+					ppText = 0;
+				}
+				NumBytes = GUI__strlen(s) + 1;     /* 0 if no string is specified (s == nullptr) */
+				GUI_ARRAY_AddItem(pRow, nullptr, sizeof(Item) + NumBytes);
+				pItem = (Item *)GUI_ARRAY_GetpItem(pRow, i);
+				if (NumBytes > 1) {
+					GUI__strcpy(pItem->acText, s);
+				}
+			}
+			_UpdateScrollParas();
+			_InvalidateRow(NumRows);
+		}
+	}
+	void DeleteColumn(unsigned Index) {
+		if (Index < GUI_ARRAY_GetNumItems(&AlignArray)) {
+			unsigned NumRows, i;
+			GUI_ARRAY *pRow;
+			pHeader->DeleteItem(Index);
+			GUI_ARRAY_DeleteItem(&AlignArray, Index);
+			NumRows = GUI_ARRAY_GetNumItems(&RowArray);
+			for (i = 0; i < NumRows; i++) {
+				Item *pItem;
+				pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&RowArray, i);
+				/* Delete attached info items */
+				pItem = (Item *)GUI_ARRAY_GetpItem(pRow, Index);
+				if (pItem->hItemInfo) {
+					GUI_ALLOC_Free(pItem->hItemInfo);
+				}
+				/* Delete cell */
+				GUI_ARRAY_DeleteItem(pRow, Index);
+			}
+			_UpdateScrollParas();
+			_InvalidateInsideArea();
+		}
+	}
+	void DeleteRow(unsigned Index) {
+		unsigned NumRows = GUI_ARRAY_GetNumItems(&RowArray);
+		if (Index < NumRows) {
+			auto pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&RowArray, Index);
+			/* Delete attached info items */
+			auto NumColumns = GUI_ARRAY_GetNumItems(pRow);
+			for (int i = 0; i < NumColumns; i++) {
+				Item *pItem;
+				pItem = (Item *)GUI_ARRAY_GetpItem(pRow, i);
+				if (pItem->hItemInfo) {
+					GUI_ALLOC_Free(pItem->hItemInfo);
+				}
+			}
+			/* Delete row */
+			GUI_ARRAY_Delete(pRow);
+			GUI_ARRAY_DeleteItem(&RowArray, Index);
+			/* Adjust properties */
+			if (Sel == (signed int)Index)
+				Sel = -1;
+			if (Sel > (signed int)Index)
+				Sel--;
+			if (_UpdateScrollParas())
+				_InvalidateInsideArea();
+			else
+				_InvalidateRowAndBelow(Index);
+		}
+	}
+	RGBC GetBkColor(unsigned Index) {
+		RGBC Color = RGB_INVALID_COLOR;
+		if (Index <= GUI_COUNTOF(Props.aBkColor)) {
+			Color = Props.aBkColor[Index];
+		}
+		return Color;
+	}
+	PCFONT GetFont() {
+		return Props.pFont;
+	}
+	HEADER_Obj *GetHeader() {
+		return pHeader;
+	}
+	unsigned GetNumColumns() {
+		return GUI_ARRAY_GetNumItems(&AlignArray);
+	}
+	unsigned GetNumRows() {
+		return GUI_ARRAY_GetNumItems(&RowArray);
+	}
+	int GetSel() {
+		return Sel;
+	}
+	RGBC GetTextColor(unsigned Index) {
+		RGBC Color = RGB_INVALID_COLOR;
+		if (Index <= GUI_COUNTOF(Props.aTextColor)) {
+			Color = Props.aTextColor[Index];
+		}
+		return Color;
+	}
+	void SetBkColor(unsigned int Index, RGBC Color) {
+		if (Index < GUI_COUNTOF(Props.aBkColor)) {
+			if (Color != Props.aBkColor[Index]) {
+				Props.aBkColor[Index] = Color;
+				_InvalidateInsideArea();
+			}
+		}
+	}
+	void SetColumnWidth(unsigned int Index, int Width) {
+		pHeader->SetItemWidth(Index, Width);
+	}
+	void SetFont(PCFONT pFont) {
+		if (pFont != Props.pFont) {
+			Props.pFont = pFont;
+			_UpdateScrollParas();
+			_InvalidateInsideArea();
+		}
+	}
+	int SetGridVis(int Show) {
+		if (Show != ShowGrid) {
+			ShowGrid = Show;
+			_UpdateScrollParas();
+			_InvalidateInsideArea();
+		}
+		return ShowGrid;
+	}
+	void SetItemTextColor(unsigned Column, unsigned Row, unsigned int Index, RGBC Color) {
+		ItemInfo *pItemInfo;
+		pItemInfo = _GetpItemInfo(Column, Row, Index);
+		if (pItemInfo) {
+			pItemInfo->aTextColor[Index] = Color;
+		}
+	}
+	void SetItemBkColor(unsigned Column, unsigned Row, unsigned int Index, RGBC Color) {
+		ItemInfo *pItemInfo;
+
+		pItemInfo = _GetpItemInfo(Column, Row, Index);
+		if (pItemInfo) {
+			pItemInfo->aBkColor[Index] = Color;
+		}
+	}
+	void SetItemText(unsigned Column, unsigned Row, const char *s) {
+		if ((Column < GetNumColumns()) && (Row < GetNumRows())) {
+			auto NumBytes = GUI__strlen(s) + 1;
+			auto pItem = (Item *)GUI_ARRAY_ResizeItem((GUI_ARRAY *)GUI_ARRAY_GetpItem(&RowArray, Row), Column, sizeof(Item) + NumBytes);
+			if (NumBytes > 1) {
+				GUI__strcpy(pItem->acText, s);
+			}
+			_InvalidateRow(Row);
+		}
+	}
+	void SetLBorder(unsigned BorderSize) {
+		if (LBorder != BorderSize) {
+			LBorder = BorderSize;
+			_InvalidateInsideArea();
+		}
+	}
+	void SetRBorder(unsigned BorderSize) {
+		if (RBorder != BorderSize) {
+			RBorder = BorderSize;
+			_InvalidateInsideArea();
+		}
+	}
+	unsigned SetRowHeight(unsigned RowHeight) {
+		if (RowDistY != RowHeight) {
+			RowDistY = RowHeight;
+			_UpdateScrollParas();
+			_InvalidateInsideArea();
+		}
+		return RowDistY;
+	}
+	void SetSel(int NewSel) {
+		int MaxSel = GUI_ARRAY_GetNumItems(&RowArray) - 1;
+		if (NewSel > MaxSel) {
+			NewSel = MaxSel;
+		}
+		if (NewSel < 0) {
+			NewSel = -1;
+		}
+		if (NewSel != Sel) {
+			int OldSel = Sel;
+			Sel = NewSel;
+			if (_UpdateScrollPos()) {
+				_InvalidateInsideArea();
+			}
+			else {
+				_InvalidateRow(OldSel);
+				_InvalidateRow(NewSel);
+			}
+			WM_NotifyParent(this, WM_NOTIFICATION_SEL_CHANGED);
+		}
+	}
+	void SetTextAlign(unsigned int Index, int Align) {
+		if (Index < GUI_ARRAY_GetNumItems(&AlignArray)) {
+			int *pAlign = (int *)GUI_ARRAY_GetpItem(&AlignArray, Index);
+			if (Align != *pAlign) {
+				*pAlign = Align;
+				_InvalidateInsideArea();
+			}
+		}
+	}
+	void SetTextColor(unsigned int Index, RGBC Color) {
+		if (Index < GUI_COUNTOF(Props.aTextColor)) {
+			if (Color != Props.aTextColor[Index]) {
+				Props.aTextColor[Index] = Color;
+				_InvalidateInsideArea();
+			}
+		}
+	}
 };
 
 LISTVIEW_Obj::Properties LISTVIEW_Obj::DefaultProps;
-}
 
-LISTVIEW_ITEM_INFO *_GetpItemInfo(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index) {
-	LISTVIEW_ITEM_INFO *pItemInfo = 0;
-	LISTVIEW_ITEM *pItem;
-	LISTVIEW_Obj *pObj;
-	if ((Column < LISTVIEW_GetNumColumns(hObj)) && (Row < LISTVIEW_GetNumRows(hObj)) && (Index < GUI_COUNTOF(pItemInfo->aTextColor))) {
-		pObj = (LISTVIEW_Obj *)hObj;
-		pItem = (LISTVIEW_ITEM *)GUI_ARRAY_GetpItem((GUI_ARRAY *)GUI_ARRAY_GetpItem(&pObj->RowArray, Row), Column);
-		if (!pItem->hItemInfo) {
-			int i;
-			pItem->hItemInfo = GUI_ALLOC_AllocZero(sizeof(LISTVIEW_ITEM_INFO));
-			pItemInfo = (LISTVIEW_ITEM_INFO *)(pItem->hItemInfo);
-			for (i = 0; i < GUI_COUNTOF(pItemInfo->aTextColor); i++) {
-				pItemInfo->aTextColor[i] = LISTVIEW_GetTextColor(hObj, i);
-				pItemInfo->aBkColor[i] = LISTVIEW_GetBkColor(hObj, i);
-			}
-		}
-		else {
-			pItemInfo = (LISTVIEW_ITEM_INFO *)(pItem->hItemInfo);
-		}
-	}
-
-	return pItemInfo;
-}
-
-static WM_PARAM _LISTVIEW_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-	auto pObj = (LISTVIEW_Obj *)hWin;
-	/* Let widget handle the standard messages */
-	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
-		return Data;
-	switch (MsgId) {
-		case WM_NOTIFY_CLIENTCHANGE:
-		case WM_SIZE:
-			pObj->_UpdateScrollParas();
-			return 0;
-		case WM_NOTIFY_PARENT: {
-			auto pInfo = (const WM_NOTIFY_INFO *)Data;
-			auto pWinSrc = pInfo->pWinSrc;
-			switch (pInfo->Notification) {
-				case WM_NOTIFICATION_CHILD_DELETED:
-					/* make sure we do not send any messages to the header child once it has been deleted */
-					if (pWinSrc == pObj->hHeader)
-						pObj->hHeader = nullptr;
-					break;
-				case WM_NOTIFICATION_VALUE_CHANGED: {
-					WM_SCROLL_STATE ScrollState;
-					if (pWinSrc == WM_GetScrollbarV(pObj)) {
-						WM_GetScrollState(pWinSrc, &ScrollState);
-						pObj->ScrollStateV.v = ScrollState.v;
-						pObj->_InvalidateInsideArea();
-						pObj->_NotifyOwner(WM_NOTIFICATION_SCROLL_CHANGED);
-					}
-					else if (pWinSrc == WM_GetScrollbarH(pObj)) {
-						WM_GetScrollState(pWinSrc, &ScrollState);
-						pObj->ScrollStateH.v = ScrollState.v;
-						pObj->_UpdateScrollParas();
-						HEADER_SetScrollPos(pObj->hHeader, pObj->ScrollStateH.v);
-						pObj->_NotifyOwner(WM_NOTIFICATION_SCROLL_CHANGED);
-					}
-					break;
-				}
-				case WM_NOTIFICATION_SCROLLBAR_ADDED:
-					pObj->_UpdateScrollParas();
-					break;
-			}
-			return 0;
-		}
-		case WM_PAINT:
-			pObj->_OnPaint((const GUI_RECT *)Data);
-			return 0;
-		case WM_TOUCH:
-			pObj->_OnTouch((const GUI_PID_STATE *)Data);
-			return 0;
-		case WM_KEY:
-			if (pObj->_OnKey((const WM_KEY_INFO *)Data))
-				return 0;
-			break;
-		case WM_DELETE:
-			pObj->_FreeAttached();
-			return 0;
-	}
-	return WM_DefaultProc(hWin, MsgId, Data);
-}
-
-LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
+LISTVIEW_Obj *LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
 								  int WinFlags, int ExFlags, int Id) {
-	LISTVIEW_Handle hObj;
 	GUI_USE_PARA(ExFlags);
 	/* Create the window */
 	if ((xsize == 0) && (ysize == 0) && (x0 == 0) && (y0 == 0)) {
@@ -486,10 +684,9 @@ LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *
 		xsize = Rect.x1 - Rect.x0 + 1;
 		ysize = Rect.y1 - Rect.y0 + 1;
 	}
-	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, &_LISTVIEW_Callback,
+	auto pObj = (LISTVIEW_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, LISTVIEW_Obj::_Callback,
 								  sizeof(LISTVIEW_Obj) - sizeof(WM_Obj));
-	if (hObj) {
-		auto pObj = (LISTVIEW_Obj *)hObj;
+	if (pObj) {
 		/* Init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* Init member variables */
@@ -499,331 +696,16 @@ LISTVIEW_Handle LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *
 		pObj->Sel = -1;
 		pObj->LBorder = 1;
 		pObj->RBorder = 1;
-		pObj->hHeader = HEADER_CreateEx(0, 0, 0, 0, hObj, WM_CF_SHOW, 0, 0);
+		pObj->pHeader = HEADER_CreateEx(0, 0, 0, 0, pObj, WM_CF_SHOW, 0, 0);
 		pObj->_UpdateScrollParas();
 	}
 	else {
 	}
-	return hObj;
+	return pObj;
 }
-LISTVIEW_Handle LISTVIEW_Create(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int Flags, int ExFlags) {
-	return LISTVIEW_CreateEx(x0, y0, xsize, ysize, hParent, Flags, ExFlags, Id);
-}
-LISTVIEW_Handle LISTVIEW_CreateAttached(WM_Obj *hParent, int Id, int SpecialFlags) {
-	return LISTVIEW_CreateEx(0, 0, 0, 0, hParent, WM_CF_SHOW, SpecialFlags, Id);
-}
-LISTVIEW_Handle LISTVIEW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	LISTVIEW_Handle  hThis;
-	GUI_USE_PARA(cb);
-	hThis = LISTVIEW_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+WM_Obj *LISTVIEW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	return LISTVIEW_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
 							  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-	return hThis;
 }
 
-void LISTVIEW_IncSel(LISTVIEW_Handle hObj) {
-	int Sel = LISTVIEW_GetSel(hObj);
-	LISTVIEW_SetSel(hObj, Sel + 1);
-}
-void LISTVIEW_DecSel(LISTVIEW_Handle hObj) {
-	int Sel = LISTVIEW_GetSel(hObj);
-	if (Sel) {
-		LISTVIEW_SetSel(hObj, Sel - 1);
-	}
-}
-void LISTVIEW_AddColumn(LISTVIEW_Handle hObj, int Width, const char *s, int Align) {
-		LISTVIEW_Obj *pObj;
-		unsigned NumRows;
-
-		pObj = (LISTVIEW_Obj *)hObj;
-		HEADER_AddItem(pObj->hHeader, Width, s, Align);   /* Modify header */
-		GUI_ARRAY_AddItem(&pObj->AlignArray, &Align, sizeof(int));
-		NumRows = LISTVIEW_GetNumRows(hObj);
-		if (NumRows) {
-			GUI_ARRAY *pRow;
-			unsigned i;
-			for (i = 0; i < NumRows; i++) {
-				pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&pObj->RowArray, i);
-				GUI_ARRAY_AddItem(pRow, nullptr, sizeof(LISTVIEW_ITEM) + 1);
-			}
-		}
-		pObj->_UpdateScrollParas();
-		pObj->_InvalidateInsideArea();
-}
-void LISTVIEW_AddRow(LISTVIEW_Handle hObj, const GUI_ConstString *ppText) {
-		LISTVIEW_Obj *pObj;
-		int NumRows;
-
-		pObj = (LISTVIEW_Obj *)hObj;
-		NumRows = GUI_ARRAY_GetNumItems(&pObj->RowArray);
-		/* Create GUI_ARRAY for the new row */
-		if (GUI_ARRAY_AddItem(&pObj->RowArray, nullptr, sizeof(GUI_ARRAY)) == 0) {
-			int i, NumColumns, NumBytes;
-			GUI_ARRAY *pRow;
-			const char *s;
-			/* Add columns for the new row */
-			NumColumns = HEADER_GetNumItems(pObj->hHeader);
-			for (i = 0; i < NumColumns; i++) {
-				LISTVIEW_ITEM *pItem;
-				pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&pObj->RowArray, NumRows);
-				s = (ppText) ? *ppText++ : 0;
-				if (s == 0) {
-					ppText = 0;
-				}
-				NumBytes = GUI__strlen(s) + 1;     /* 0 if no string is specified (s == nullptr) */
-				GUI_ARRAY_AddItem(pRow, nullptr, sizeof(LISTVIEW_ITEM) + NumBytes);
-				pItem = (LISTVIEW_ITEM *)GUI_ARRAY_GetpItem(pRow, i);
-				if (NumBytes > 1) {
-					GUI__strcpy(pItem->acText, s);
-				}
-			}
-			pObj->_UpdateScrollParas();
-			pObj->_InvalidateRow(NumRows);
-		}
-}
-void LISTVIEW_DeleteColumn(LISTVIEW_Handle hObj, unsigned Index) {
-	auto pObj = (LISTVIEW_Obj *)hObj;
-	if (Index < GUI_ARRAY_GetNumItems(&pObj->AlignArray)) {
-		unsigned NumRows, i;
-		GUI_ARRAY *pRow;
-		HEADER_DeleteItem(pObj->hHeader, Index);
-		GUI_ARRAY_DeleteItem(&pObj->AlignArray, Index);
-		NumRows = GUI_ARRAY_GetNumItems(&pObj->RowArray);
-		for (i = 0; i < NumRows; i++) {
-			LISTVIEW_ITEM *pItem;
-			pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&pObj->RowArray, i);
-			/* Delete attached info items */
-			pItem = (LISTVIEW_ITEM *)GUI_ARRAY_GetpItem(pRow, Index);
-			if (pItem->hItemInfo) {
-				GUI_ALLOC_Free(pItem->hItemInfo);
-			}
-			/* Delete cell */
-			GUI_ARRAY_DeleteItem(pRow, Index);
-		}
-		pObj->_UpdateScrollParas();
-		pObj->_InvalidateInsideArea();
-	}
-}
-void LISTVIEW_DeleteRow(LISTVIEW_Handle hObj, unsigned Index) {
-	LISTVIEW_Obj *pObj;
-	unsigned NumRows;
-	pObj = (LISTVIEW_Obj *)hObj;
-	NumRows = GUI_ARRAY_GetNumItems(&pObj->RowArray);
-	if (Index < NumRows) {
-		unsigned NumColumns, i;
-		GUI_ARRAY *pRow;
-		pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&pObj->RowArray, Index);
-		/* Delete attached info items */
-		NumColumns = GUI_ARRAY_GetNumItems(pRow);
-		for (i = 0; i < NumColumns; i++) {
-			LISTVIEW_ITEM *pItem;
-			pItem = (LISTVIEW_ITEM *)GUI_ARRAY_GetpItem(pRow, i);
-			if (pItem->hItemInfo) {
-				GUI_ALLOC_Free(pItem->hItemInfo);
-			}
-		}
-		/* Delete row */
-		GUI_ARRAY_Delete(pRow);
-		GUI_ARRAY_DeleteItem(&pObj->RowArray, Index);
-		/* Adjust properties */
-		if (pObj->Sel == (signed int)Index) {
-			pObj->Sel = -1;
-		}
-		if (pObj->Sel > (signed int)Index) {
-			pObj->Sel--;
-		}
-		if (pObj->_UpdateScrollParas()) {
-			pObj->_InvalidateInsideArea();
-		}
-		else {
-			pObj->_InvalidateRowAndBelow(Index);
-		}
-	}
-}
-RGBC LISTVIEW_GetBkColor(LISTVIEW_Handle hObj, unsigned Index) {
-	RGBC Color = RGB_INVALID_COLOR;
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		if (Index <= GUI_COUNTOF(pObj->Props.aBkColor)) {
-			Color = pObj->Props.aBkColor[Index];
-		}
-
-	return Color;
-}
-PCFONT LISTVIEW_GetFont(LISTVIEW_Handle hObj) {
-	PCFONT pFont = nullptr;
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		pFont = pObj->Props.pFont;
-
-	return pFont;
-}
-HEADER_Handle LISTVIEW_GetHeader(LISTVIEW_Handle hObj) {
-	HEADER_Handle hHeader = 0;
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		hHeader = pObj->hHeader;
-
-	return hHeader;
-}
-unsigned LISTVIEW_GetNumColumns(LISTVIEW_Handle hObj) {
-	unsigned NumColumns = 0;
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		NumColumns = GUI_ARRAY_GetNumItems(&pObj->AlignArray);
-
-	return NumColumns;
-}
-unsigned LISTVIEW_GetNumRows(LISTVIEW_Handle hObj) {
-	unsigned NumRows = 0;
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		NumRows = GUI_ARRAY_GetNumItems(&pObj->RowArray);
-
-	return NumRows;
-}
-int LISTVIEW_GetSel(LISTVIEW_Handle hObj) {
-	int r = -1;
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		r = pObj->Sel;
-
-	return r;
-}
-RGBC LISTVIEW_GetTextColor(LISTVIEW_Handle hObj, unsigned Index) {
-	RGBC Color = RGB_INVALID_COLOR;
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		if (Index <= GUI_COUNTOF(pObj->Props.aTextColor)) {
-			Color = pObj->Props.aTextColor[Index];
-		}
-
-	return Color;
-}
-void LISTVIEW_SetBkColor(LISTVIEW_Handle hObj, unsigned int Index, RGBC Color) {
-		LISTVIEW_Obj *pObj;
-		if (Index < GUI_COUNTOF(pObj->Props.aBkColor)) {
-			pObj = (LISTVIEW_Obj *)hObj;
-			if (Color != pObj->Props.aBkColor[Index]) {
-				pObj->Props.aBkColor[Index] = Color;
-				pObj->_InvalidateInsideArea();
-			}
-		}
-}
-void LISTVIEW_SetColumnWidth(LISTVIEW_Handle hObj, unsigned int Index, int Width) {
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		HEADER_SetItemWidth(pObj->hHeader, Index, Width);
-}
-void LISTVIEW_SetFont(LISTVIEW_Handle hObj, PCFONT pFont) {
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		if (pFont != pObj->Props.pFont) {
-			pObj->Props.pFont = pFont;
-			pObj->_UpdateScrollParas();
-			pObj->_InvalidateInsideArea();
-		}
-}
-int LISTVIEW_SetGridVis(LISTVIEW_Handle hObj, int Show) {
-	int ShowGrid = 0;
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		ShowGrid = pObj->ShowGrid;
-		if (Show != ShowGrid) {
-			pObj->ShowGrid = Show;
-			pObj->_UpdateScrollParas();
-			pObj->_InvalidateInsideArea();
-		}
-
-	return ShowGrid;
-}
-void LISTVIEW_SetItemTextColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, RGBC Color) {
-	LISTVIEW_ITEM_INFO *pItemInfo;
-	pItemInfo = _GetpItemInfo(hObj, Column, Row, Index);
-	if (pItemInfo) {
-		pItemInfo->aTextColor[Index] = Color;
-	}
-}
-void LISTVIEW_SetItemBkColor(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, unsigned int Index, RGBC Color) {
-	LISTVIEW_ITEM_INFO *pItemInfo;
-
-	pItemInfo = _GetpItemInfo(hObj, Column, Row, Index);
-	if (pItemInfo) {
-		pItemInfo->aBkColor[Index] = Color;
-	}
-}
-void LISTVIEW_SetItemText(LISTVIEW_Handle hObj, unsigned Column, unsigned Row, const char *s) {
-		if ((Column < LISTVIEW_GetNumColumns(hObj)) && (Row < LISTVIEW_GetNumRows(hObj))) {
-			int NumBytes;
-			LISTVIEW_ITEM *pItem;
-			auto pObj = (LISTVIEW_Obj *)hObj;
-			NumBytes = GUI__strlen(s) + 1;
-			pItem = (LISTVIEW_ITEM *)GUI_ARRAY_ResizeItem((GUI_ARRAY *)GUI_ARRAY_GetpItem(&pObj->RowArray, Row), Column, sizeof(LISTVIEW_ITEM) + NumBytes);
-			if (NumBytes > 1) {
-				GUI__strcpy(pItem->acText, s);
-			}
-			pObj->_InvalidateRow(Row);
-		}
-}
-void LISTVIEW_SetLBorder(LISTVIEW_Handle hObj, unsigned BorderSize) {
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		if (pObj->LBorder != BorderSize) {
-			pObj->LBorder = BorderSize;
-			pObj->_InvalidateInsideArea();
-		}
-}
-void LISTVIEW_SetRBorder(LISTVIEW_Handle hObj, unsigned BorderSize) {
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		if (pObj->RBorder != BorderSize) {
-			pObj->RBorder = BorderSize;
-			pObj->_InvalidateInsideArea();
-		}
-}
-unsigned LISTVIEW_SetRowHeight(LISTVIEW_Handle hObj, unsigned RowHeight) {
-	unsigned r = 0;
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		r = pObj->RowDistY;
-		if (RowHeight != r) {
-			pObj->RowDistY = RowHeight;
-			pObj->_UpdateScrollParas();
-			pObj->_InvalidateInsideArea();
-		}
-
-	return r;
-}
-void LISTVIEW_SetSel(LISTVIEW_Handle hObj, int NewSel) {
-		LISTVIEW_Obj *pObj;
-		int MaxSel;
-
-		pObj = (LISTVIEW_Obj *)hObj;
-		MaxSel = GUI_ARRAY_GetNumItems(&pObj->RowArray) - 1;
-		if (NewSel > MaxSel) {
-			NewSel = MaxSel;
-		}
-		if (NewSel < 0) {
-			NewSel = -1;
-		}
-		if (NewSel != pObj->Sel) {
-			int OldSel;
-			OldSel = pObj->Sel;
-			pObj->Sel = NewSel;
-			if (pObj->_UpdateScrollPos()) {
-				pObj->_InvalidateInsideArea();
-			}
-			else {
-				pObj->_InvalidateRow(OldSel);
-				pObj->_InvalidateRow(NewSel);
-			}
-			WM_NotifyParent(hObj, WM_NOTIFICATION_SEL_CHANGED);
-		}
-}
-void LISTVIEW_SetTextAlign(LISTVIEW_Handle hObj, unsigned int Index, int Align) {
-		auto pObj = (LISTVIEW_Obj *)hObj;
-		if (Index < GUI_ARRAY_GetNumItems(&pObj->AlignArray)) {
-			int *pAlign;
-			pAlign = (int *)GUI_ARRAY_GetpItem(&pObj->AlignArray, Index);
-			if (Align != *pAlign) {
-				*pAlign = Align;
-				pObj->_InvalidateInsideArea();
-			}
-		}
-}
-void LISTVIEW_SetTextColor(LISTVIEW_Handle hObj, unsigned int Index, RGBC Color) {
-		LISTVIEW_Obj *pObj;
-		if (Index < GUI_COUNTOF(pObj->Props.aTextColor)) {
-			pObj = (LISTVIEW_Obj *)hObj;
-			if (Color != pObj->Props.aTextColor[Index]) {
-				pObj->Props.aTextColor[Index] = Color;
-				pObj->_InvalidateInsideArea();
-			}
-		}
 }
