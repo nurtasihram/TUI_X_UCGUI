@@ -88,13 +88,12 @@ struct BUTTON_Obj : public WIDGET {
 		   If we have only one, we will use it.
 		   If we have to we will use the second one (Index 1) for the pressed state
 		*/
-		if (ColorIndex < 2) {
-			Index = (this->aDrawObj[BUTTON_BI_PRESSED] && PressedState) ? BUTTON_BI_PRESSED : BUTTON_BI_UNPRESSED;
-		}
-		else {
+		if (ColorIndex < 2)
+			Index = this->aDrawObj[BUTTON_BI_PRESSED] && PressedState ? BUTTON_BI_PRESSED : BUTTON_BI_UNPRESSED;
+		else
 			Index = this->aDrawObj[BUTTON_BI_DISABLED] ? BUTTON_BI_DISABLED : BUTTON_BI_UNPRESSED;
-		}
-		GUI_DRAW__Draw(this->aDrawObj[Index], 0, 0);
+		if (auto pDraw = this->aDrawObj[Index])
+			pDraw->Draw(0, 0);
 		/* Draw the actual button (background and text) */
 #if BUTTON_USE_3D
 		if (PressedState)

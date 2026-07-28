@@ -49,26 +49,26 @@ struct HEADER_Obj : public WIDGET {
 			Rect = WM_GetClientRect();
 			Rect.x0 = xPos;
 			Rect.x1 = Rect.x0 + pColumn->Width;
-			if (pColumn->pDrawObj) {
+			if (auto pDraw = pColumn->pDrawObj) {
 				int xOff = 0, yOff = 0;
 				switch (pColumn->Align & TEXTALIGN_HORIZONTAL) {
 					case TEXTALIGN_RIGHT:
-						xOff = (pColumn->Width - GUI_DRAW__GetXSize(pColumn->pDrawObj));
+						xOff = (pColumn->Width - pDraw->GetXSize());
 						break;
 					case TEXTALIGN_HCENTER:
-						xOff = (pColumn->Width - GUI_DRAW__GetXSize(pColumn->pDrawObj)) / 2;
+						xOff = (pColumn->Width - pDraw->GetXSize()) / 2;
 						break;
 				}
 				switch (pColumn->Align & TEXTALIGN_VERTICAL) {
 					case TEXTALIGN_BOTTOM:
-						yOff = ((Rect.y1 - Rect.y0 + 1) - GUI_DRAW__GetYSize(pColumn->pDrawObj));
+						yOff = ((Rect.y1 - Rect.y0 + 1) - pDraw->GetYSize());
 						break;
 					case TEXTALIGN_VCENTER:
-						yOff = ((Rect.y1 - Rect.y0 + 1) - GUI_DRAW__GetYSize(pColumn->pDrawObj)) / 2;
+						yOff = ((Rect.y1 - Rect.y0 + 1) - pDraw->GetYSize()) / 2;
 						break;
 				}
 				WM_SetUserClipRect(&Rect);
-				GUI_DRAW__Draw(pColumn->pDrawObj, xPos + xOff, yOff);
+				pDraw->Draw(xPos + xOff, yOff);
 				WM_SetUserClipRect(nullptr);
 			}
 			WIDGET__EFFECT_DrawUpRect(this, Rect);

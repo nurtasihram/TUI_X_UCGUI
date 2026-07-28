@@ -511,8 +511,7 @@ public:
 		if (Index < NumRows) {
 			auto pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&RowArray, Index);
 			/* Delete attached info items */
-			auto NumColumns = GUI_ARRAY_GetNumItems(pRow);
-			for (int i = 0; i < NumColumns; i++) {
+			for (int i = 0, NumColumns = GUI_ARRAY_GetNumItems(pRow); i < NumColumns; i++) {
 				Item *pItem;
 				pItem = (Item *)GUI_ARRAY_GetpItem(pRow, i);
 				if (pItem->hItemInfo) {
@@ -580,7 +579,7 @@ public:
 			_InvalidateInsideArea();
 		}
 	}
-	int SetGridVis(int Show) {
+	int SetGridVis(bool Show) {
 		if (Show != ShowGrid) {
 			ShowGrid = Show;
 			_UpdateScrollParas();

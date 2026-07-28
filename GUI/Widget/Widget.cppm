@@ -1,6 +1,7 @@
 module;
 
 #include "DIALOG_Intern.h"
+#include <memory>
 
 export module TUX.Widget;
 
@@ -28,6 +29,7 @@ struct WIDGET_ITEM_DRAW_INFO {
 
 typedef int WIDGET_DRAW_ITEM_FUNC(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo);
 
+#pragma region Widget Effect
 struct WIDGET_EFFECT {
 	void DrawUp(void) const { DrawUp(WM_GetClientRect()); }
 	void DrawDown(void) const { DrawDown(WM_GetClientRect()); }
@@ -49,35 +51,59 @@ extern PCWIDGET_EFFECT
 	WIDGET_Effect_3D,
 	WIDGET_Effect_3D1L,
 	WIDGET_Effect_3D2L;
+#pragma endregion
+
+#pragma region Draw
+typedef void GUI_DRAW_SELF_CB(void);
+struct GUI_DRAW {
+	virtual void Draw(int x, int y) const = 0;
+	virtual int GetXSize() const { return 0; }
+	virtual int GetYSize() const { return 0; }
+	GUI_POINT Off;
+	GUI_DRAW(GUI_POINT Off = { 0, 0 }) : Off(Off) {}
+};
+
+GUI_DRAW *GUI_DRAW_BITMAP_Create(PCBITMAP pBitmap, int x, int y) {
+	struct _GUI_DRAW : public GUI_DRAW {
+		PCBITMAP pBitmap;
+		_GUI_DRAW(PCBITMAP pBitmap, GUI_POINT Off = { 0, 0 }) : GUI_DRAW(Off), pBitmap(pBitmap) {}
+		void Draw(int x, int y) const override {
+			GUI_DrawBitmap(pBitmap, x + Off.x, y + Off.y);
+		}
+		int GetXSize() const override {
+			return pBitmap ? pBitmap->XSize : 0;
+		}
+		int GetYSize() const override {
+			return pBitmap ? pBitmap->YSize : 0;
+		}
+	};
+	auto pObj = (GUI_DRAW *)GUI_ALLOC_AllocZero(sizeof(_GUI_DRAW));
+	if (pObj)
+		new (pObj) _GUI_DRAW{ pBitmap, { x, y } };
+	return pObj;
+}
+
+GUI_DRAW *GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw, int x, int y) {
+	struct _GUI_DRAW : public GUI_DRAW {
+		GUI_DRAW_SELF_CB *pfDraw;
+		_GUI_DRAW(GUI_DRAW_SELF_CB *pfDraw, GUI_POINT Off = { 0, 0 }) : GUI_DRAW(Off), pfDraw(pfDraw) {}
+		void Draw(int x, int y) const override {
+			if (pfDraw)
+				pfDraw();
+		}
+	};
+	auto pObj = (GUI_DRAW *)GUI_ALLOC_AllocZero(sizeof(_GUI_DRAW));
+	if (pObj)
+		new (pObj) _GUI_DRAW{ pfDraw, { x, y } };
+	return pObj;
+}
+#pragma endregion
 
 struct WIDGET : public WM_Obj {
 	static PCWIDGET_EFFECT DefaultEffect;
 	PCWIDGET_EFFECT pEffect = DefaultEffect;
 	uint16_t Id, State;
 };
-
-typedef struct GUI_DRAW GUI_DRAW;
-typedef void   GUI_DRAW_SELF_CB(void);
-struct GUI_DRAW_CONSTS {
-	void (*pfDraw)    (const GUI_DRAW *pObj, int x, int y);
-	int  (*pfGetXSize)(const GUI_DRAW *pObj);
-	int  (*pfGetYSize)(const GUI_DRAW *pObj);
-};
-struct GUI_DRAW {
-	const GUI_DRAW_CONSTS *pConsts;
-	union {
-		const void *pData;
-		GUI_DRAW_SELF_CB *pfDraw;
-	} Data;
-	int16_t xOff, yOff;
-};
-void GUI_DRAW__Draw(GUI_DRAW *pDrawObj, int x, int y);
-int  GUI_DRAW__GetXSize(GUI_DRAW *pDrawObj);
-int  GUI_DRAW__GetYSize(GUI_DRAW *pDrawObj);
-
-/*GUI_DRAW_ Constructurs for different objects */
-GUI_DRAW *GUI_DRAW_BITMAP_Create(PCBITMAP pBitmap, int x, int y);
-GUI_DRAW *GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw, int x, int y);
 
 void      WIDGET__DrawFocusRect(WIDGET *pWidget, GUI_RECT r, int Dist);
 void      WIDGET__DrawVLine(WIDGET *pWidget, int x, int y0, int y1);
@@ -131,18 +157,6 @@ void WIDGET__RotateRect90(WIDGET *pWidget, GUI_RECT *pDest, const GUI_RECT *pRec
 	pDest->y1 = x1;
 }
 
-/*********************************************************************
-*
-*       WIDGET__GetClientRect
-  Returns the logical client rectangle, which means the normal
-  client rectangle for widgets with their standard orientation
-  and the rotated one for rotated widgets.
-*/
-GUI_RECT WIDGET__GetClientRect(WIDGET *pWidget) {
-	if (pWidget->State & WIDGET_STATE_VERTICAL)
-		return ~WM_GetClientRect();
-	return WM_GetClientRect();
-}
 RGBC WIDGET__GetBkColor(WM_Obj *hObj) {
 	RGBC BkColor = WM_GetBkColor(WM_GetParent(hObj));
 	if (BkColor == RGB_INVALID_COLOR) {
@@ -150,9 +164,16 @@ RGBC WIDGET__GetBkColor(WM_Obj *hObj) {
 	}
 	return BkColor;
 }
+
 GUI_RECT WIDGET__GetInsideRect(WIDGET *pWidget) {
 	return WM_GetClientRect(pWidget) - pWidget->pEffect->EffectSize;
 }
+GUI_RECT WIDGET__GetClientRect(WIDGET *pWidget) {
+	if (pWidget->State & WIDGET_STATE_VERTICAL)
+		return ~WM_GetClientRect();
+	return WM_GetClientRect();
+}
+
 int WIDGET__GetXSize(const WIDGET *pWidget) {
 	int r;
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
@@ -173,17 +194,13 @@ int WIDGET__GetYSize(const WIDGET *pWidget) {
 	}
 	return r + 1;
 }
-/*******************************************************************
-*
-*       WIDGET__GetWindowSizeX
-  Return width (or height in case of rotation) of window in pixels
-*/
 int WIDGET__GetWindowSizeX(WM_Obj *hWin) {
 	auto pWidget = (WIDGET *)hWin;
 	if (pWidget->State & WIDGET_STATE_VERTICAL)
 		return WM_GetWindowSizeY(hWin);
 	return WM_GetWindowSizeX(hWin);
 }
+
 void WIDGET_SetState(WM_Obj *hObj, int State) {
 	auto pWidget = (WIDGET *)hObj;
 	if (State != pWidget->State) {
@@ -204,15 +221,6 @@ void WIDGET_OrState(WM_Obj *hObj, int State) {
 			WM_Invalidate(hObj);
 		}
 }
-/*********************************************************************
-*
-*       WIDGET_AndState
-  Purpose:
-	Clear flags in the State element of the widget.
-	The bits to be cleared are set.
-  Example:
-	...(..., 3);   // Clears bit 0, 1 int the state member
-*/
 void WIDGET_AndState(WM_Obj *hObj, int Mask) {
 		auto pWidget = (WIDGET *)hObj;
 		auto StateNew = pWidget->State & (~Mask);
@@ -221,11 +229,13 @@ void WIDGET_AndState(WM_Obj *hObj, int Mask) {
 			WM_Invalidate(hObj);
 		}
 }
+
 void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
 	pWidget->pEffect = WIDGET::DefaultEffect;
 	pWidget->State = State;
 	pWidget->Id = Id;
 }
+
 bool WIDGET_HandleActive(WM_Obj *hObj, int MsgId, WM_PARAM *Data) {
 	auto pWidget = (WIDGET *)hObj;
 	switch (MsgId) {
@@ -286,10 +296,12 @@ bool WIDGET_HandleActive(WM_Obj *hObj, int MsgId, WM_PARAM *Data) {
 	}
 	return true; /* Message NOT handled */
 }
+
 void WIDGET__SetScrollState(WM_Obj *hWin, const WM_SCROLL_STATE *pVState, const WM_SCROLL_STATE *pHState) {
 	WM_SetScrollState(WM_GetDialogItem(hWin, GUI_ID_VSCROLL), pVState);
 	WM_SetScrollState(WM_GetDialogItem(hWin, GUI_ID_HSCROLL), pHState);
 }
+
 void WIDGET__DrawFocusRect(WIDGET *pWidget, GUI_RECT r, int Dist) {
 	if (pWidget->State & WIDGET_STATE_VERTICAL) {
 		GUI_RECT Rect;
@@ -321,16 +333,6 @@ void WIDGET__FillRect(WIDGET *pWidget, GUI_RECT r) {
 	GUI_FillRect(r);
 }
 
-/*********************************************************************
-*
-*       _EffectRequiresRedraw
-*
-* Purpose
-*   Check if the effect to draw is inside the invalid rectangle.
-* Returns:
-*   false if nothing need to be done.
-*   true if the effect needs to be drawn
-*/
 static bool _EffectRequiresRedraw(const WIDGET *pWidget, GUI_RECT r) {
 	int EffectSize = pWidget->pEffect->EffectSize;
 	GUI_RECT InvalidRect = pWidget->InvalidRect;
@@ -372,14 +374,6 @@ void WIDGET_SetEffect(WM_Obj *hObj, const WIDGET_EFFECT *pEffect) {
 	WM_SendMessage(hObj, WM_WIDGET_SET_EFFECT, (WM_PARAM)pEffect);
 }
 
-/*********************************************************************
-*
-*       WIDGET_SetWidth
-*
-* Function:
-*   Set width of the given widget. Width can be X-Size or Y-Size,
-*   depending on if the widget is rotated.
-*/
 int WIDGET_SetWidth(WM_Obj *hObj, int Width) {
 	auto pWidget = (WIDGET *)hObj;
 		if (pWidget->State & WIDGET_STATE_VERTICAL)
@@ -390,16 +384,6 @@ int WIDGET_SetWidth(WM_Obj *hObj, int Width) {
 
 #define WIDGET_FILL_TEXT_USES_TRANS 0
 
-/*********************************************************************
-*
-*       WIDGET__FillStringInRect
-*
-* Purpose
-*
-* Parameters
-*
-* Notes
-*/
 void WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_RECT TextRectMax, GUI_RECT TextRectAct) {
 	/* Check if we have anything to do at all ... */
 	GUI_RECT r = FillRect;
@@ -423,76 +407,3 @@ void WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_RECT Tex
 	}
 	GUI_ClearRect(FillRect);
 }
-
-#pragma region GUI_DRAW
-
-void GUI_DRAW__Draw(GUI_DRAW *pDrawObj, int x, int y) {
-	if (pDrawObj)
-		pDrawObj->pConsts->pfDraw(pDrawObj, x, y);
-}
-int GUI_DRAW__GetXSize(GUI_DRAW *pDrawObj) {
-	if (pDrawObj)
-		return pDrawObj->pConsts->pfGetXSize(pDrawObj);
-	return 0;
-}
-int GUI_DRAW__GetYSize(GUI_DRAW *pDrawObj) {
-	if (pDrawObj)
-		return pDrawObj->pConsts->pfGetYSize(pDrawObj);
-	return 0;
-}
-
-static void _DrawBitmap(const GUI_DRAW *pObj, int x, int y) {
-	GUI_DrawBitmap((CBITMAP *)pObj->Data.pData, x + pObj->xOff, y + pObj->yOff);
-}
-static int _GetXSize(const GUI_DRAW *pObj) {
-	return ((CBITMAP *)pObj->Data.pData)->XSize;
-}
-static int _GetYSize(const GUI_DRAW *pObj) {
-	return ((CBITMAP *)pObj->Data.pData)->YSize;
-}
-static const GUI_DRAW_CONSTS _ConstObjData = {
-	_DrawBitmap,
-	_GetXSize,
-	_GetYSize
-};
-GUI_DRAW *GUI_DRAW_BITMAP_Create(PCBITMAP pBitmap, int x, int y) {
-	auto pObj = (GUI_DRAW *)GUI_ALLOC_AllocZero(sizeof(GUI_DRAW));
-	if (pObj) {
-	pObj->pConsts = &_ConstObjData;
-	pObj->Data.pData = (const void *)pBitmap;
-	pObj->xOff = x;
-	pObj->yOff = y;
-	}
-	return pObj;
-}
-
-
-static void _DrawSELF(const GUI_DRAW *pObj, int x, int y) {
-	GUI_USE_PARA(x);
-	GUI_USE_PARA(y);
-	(*pObj->Data.pfDraw)();
-}
-static int _GetXSizeSELF(const GUI_DRAW *pObj) {
-	GUI_USE_PARA(pObj);
-	return 0;
-}
-static int _GetYSizeSELF(const GUI_DRAW *pObj) {
-	GUI_USE_PARA(pObj);
-	return 0;
-}
-static const GUI_DRAW_CONSTS _ConstObjDataSELF = {
-	_DrawSELF,
-	_GetXSizeSELF,
-	_GetYSizeSELF
-};
-GUI_DRAW *GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw, int x, int y) {
-	auto pObj = (GUI_DRAW *)GUI_ALLOC_AllocZero(sizeof(GUI_DRAW));
-	if (pObj) {
-	pObj->pConsts = &_ConstObjDataSELF;
-	pObj->Data.pfDraw = pfDraw;
-	pObj->xOff = x;
-	pObj->yOff = y;
-	}
-	return pObj;
-}
-#pragma endregion
