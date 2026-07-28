@@ -52,7 +52,7 @@ struct RADIO_Obj : public WIDGET {
 	} static DefaultProps;
 	Properties Props;
 	GUI_ARRAY TextArray;
-	int16_t Sel;                   /* current selection */
+	int16_t Sel; /* current selection */
 	uint16_t Spacing;
 	uint16_t Height;
 	uint16_t NumItems;
@@ -266,8 +266,8 @@ RADIO_Handle RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParen
 }
 
 void RADIO_AddValue(RADIO_Handle hObj, int Add) {
-		auto pObj = (RADIO_Obj *)hObj;
-		RADIO_SetValue(hObj, pObj->Sel + Add);
+	auto pObj = (RADIO_Obj *)hObj;
+	RADIO_SetValue(hObj, pObj->Sel + Add);
 }
 void RADIO_Dec(RADIO_Handle hObj) {
 	RADIO_AddValue(hObj, -1);
@@ -276,21 +276,21 @@ void RADIO_Inc(RADIO_Handle hObj) {
 	RADIO_AddValue(hObj, 1);
 }
 void RADIO_SetValue(RADIO_Handle hObj, int v) {
-		auto pObj = (RADIO_Obj *)hObj;
-		if (pObj->GroupId && _pfHandleSetValue) {
-			(*_pfHandleSetValue)(pObj, v);
+	auto pObj = (RADIO_Obj *)hObj;
+	if (pObj->GroupId && _pfHandleSetValue) {
+		(*_pfHandleSetValue)(pObj, v);
+	}
+	else {
+		if (v < 0) {
+			v = 0;
 		}
-		else {
-			if (v < 0) {
-				v = 0;
-			}
-			_SetValue(pObj, v);
-		}
+		_SetValue(pObj, v);
+	}
 }
 int RADIO_GetValue(RADIO_Handle hObj) {
 	int r = 0;
-		auto pObj = (RADIO_Obj *)hObj;
-		r = pObj->Sel;
+	auto pObj = (RADIO_Obj *)hObj;
+	r = pObj->Sel;
 
 	return r;
 }
@@ -309,27 +309,27 @@ RADIO_Handle RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_
 }
 
 void RADIO_SetBkColor(RADIO_Handle hObj, RGBC Color) {
-		auto pObj = (RADIO_Obj *)hObj;
-		if (Color != pObj->Props.BkColor) {
-			pObj->Props.BkColor = Color;
+	auto pObj = (RADIO_Obj *)hObj;
+	if (Color != pObj->Props.BkColor) {
+		pObj->Props.BkColor = Color;
 #if WM_SUPPORT_TRANSPARENCY
-			if (Color <= RGB_WHITE) {
-				WM_SetTransState(hObj, 0);
-			}
-			else {
-				WM_SetTransState(hObj, WM_CF_HASTRANS);
-			}
-#endif
-			WM_Invalidate(hObj);
+		if (Color <= RGB_WHITE) {
+			WM_SetTransState(hObj, 0);
 		}
+		else {
+			WM_SetTransState(hObj, WM_CF_HASTRANS);
+		}
+#endif
+		WM_Invalidate(hObj);
+	}
 }
 void RADIO_SetFont(RADIO_Handle hObj, PCFONT pFont) {
-		auto pObj = (RADIO_Obj *)hObj;
-		if (pFont != pObj->Props.pFont) {
-			pObj->Props.pFont = pFont;
-			if (GUI_ARRAY_GetNumItems(&pObj->TextArray))
-				WM_Invalidate(hObj);
-		}
+	auto pObj = (RADIO_Obj *)hObj;
+	if (pFont != pObj->Props.pFont) {
+		pObj->Props.pFont = pFont;
+		if (GUI_ARRAY_GetNumItems(&pObj->TextArray))
+			WM_Invalidate(hObj);
+	}
 }
 
 static void _SetValue(RADIO_Handle hObj, int v) {
@@ -388,68 +388,68 @@ static void _HandleSetValue(RADIO_Obj *pObj, int v) {
 }
 
 void RADIO_SetGroupId(RADIO_Handle hObj, uint8_t NewGroupId) {
-		auto pObj = (RADIO_Obj *)hObj;
-		uint8_t OldGroupId;
-		OldGroupId = pObj->GroupId;
-		if (NewGroupId != OldGroupId) {
-			WM_Obj *hFirst;
-			hFirst = WM__GetFirstSibling(hObj);
-			/* Set function pointer if necessary */
-			if (NewGroupId && (_pfHandleSetValue == nullptr)) {
-				_pfHandleSetValue = _HandleSetValue;
-			}
-			/* Pass our selection, if we have one, to another radio button in */
-			/* our old group. So the group have a valid selection when we leave it. */
-			if (OldGroupId && (pObj->Sel >= 0)) {
-				WM_Obj *hWin;
-				pObj->GroupId = 0; /* Leave group first, so _GetNextInGroup() could */
-				/* not find a handle to our own window. */
-				hWin = _GetNextInGroup(hFirst, OldGroupId);
-				if (hWin) {
-					_SetValue(hWin, 0);
-				}
-			}
-			/* Make sure we have a valid selection according to our new group */
-			if (_GetNextInGroup(hFirst, NewGroupId) != 0) {
-				/* Join an existing group with an already valid selection, so clear our own one */
-				_SetValue(pObj, -1);
-			}
-			else if (pObj->Sel < 0) {
-				/* We are the first window in group, so we must have a valid selection at our own. */
-				_SetValue(pObj, 0);
-			}
-			/* Change the group */
-			pObj->GroupId = NewGroupId;
+	auto pObj = (RADIO_Obj *)hObj;
+	uint8_t OldGroupId;
+	OldGroupId = pObj->GroupId;
+	if (NewGroupId != OldGroupId) {
+		WM_Obj *hFirst;
+		hFirst = WM__GetFirstSibling(hObj);
+		/* Set function pointer if necessary */
+		if (NewGroupId && (_pfHandleSetValue == nullptr)) {
+			_pfHandleSetValue = _HandleSetValue;
 		}
+		/* Pass our selection, if we have one, to another radio button in */
+		/* our old group. So the group have a valid selection when we leave it. */
+		if (OldGroupId && (pObj->Sel >= 0)) {
+			WM_Obj *hWin;
+			pObj->GroupId = 0; /* Leave group first, so _GetNextInGroup() could */
+			/* not find a handle to our own window. */
+			hWin = _GetNextInGroup(hFirst, OldGroupId);
+			if (hWin) {
+				_SetValue(hWin, 0);
+			}
+		}
+		/* Make sure we have a valid selection according to our new group */
+		if (_GetNextInGroup(hFirst, NewGroupId) != 0) {
+			/* Join an existing group with an already valid selection, so clear our own one */
+			_SetValue(pObj, -1);
+		}
+		else if (pObj->Sel < 0) {
+			/* We are the first window in group, so we must have a valid selection at our own. */
+			_SetValue(pObj, 0);
+		}
+		/* Change the group */
+		pObj->GroupId = NewGroupId;
+	}
 }
 void RADIO_SetImage(RADIO_Handle hObj, PCBITMAP pBitmap, unsigned int Index) {
-		auto pObj = (RADIO_Obj *)hObj;
-		switch (Index) {
-			case RADIO_BI_INACTIV:
-			case RADIO_BI_ACTIV:
-				pObj->Props.apBmRadio[Index] = pBitmap;
-				break;
-			case RADIO_BI_CHECK:
-				pObj->Props.pBmCheck = pBitmap;
-				break;
-		}
-		WM_Invalidate(hObj);
+	auto pObj = (RADIO_Obj *)hObj;
+	switch (Index) {
+		case RADIO_BI_INACTIV:
+		case RADIO_BI_ACTIV:
+			pObj->Props.apBmRadio[Index] = pBitmap;
+			break;
+		case RADIO_BI_CHECK:
+			pObj->Props.pBmCheck = pBitmap;
+			break;
+	}
+	WM_Invalidate(hObj);
 }
 void RADIO_SetText(RADIO_Handle hObj, const char *pText, unsigned Index) {
-		auto pObj = (RADIO_Obj *)hObj;
-		if (Index < (unsigned)pObj->NumItems) {
-			GUI_ARRAY_SetItem(&pObj->TextArray, Index, pText, pText ? (GUI__strlen(pText) + 1) : 0);
-			WM_Invalidate(hObj);
-		}
+	auto pObj = (RADIO_Obj *)hObj;
+	if (Index < (unsigned)pObj->NumItems) {
+		GUI_ARRAY_SetItem(&pObj->TextArray, Index, pText, pText ? (GUI__strlen(pText) + 1) : 0);
+		WM_Invalidate(hObj);
+	}
 }
 void RADIO_SetTextColor(RADIO_Handle hObj, RGBC Color) {
-		auto pObj = (RADIO_Obj *)hObj;
-		if (Color != pObj->Props.TextColor) {
-			pObj->Props.TextColor = Color;
-			if (GUI_ARRAY_GetNumItems(&pObj->TextArray)) {
-				WM_Invalidate(hObj);
-			}
+	auto pObj = (RADIO_Obj *)hObj;
+	if (Color != pObj->Props.TextColor) {
+		pObj->Props.TextColor = Color;
+		if (GUI_ARRAY_GetNumItems(&pObj->TextArray)) {
+			WM_Invalidate(hObj);
 		}
+	}
 }
 
 #define RADIO_BKCOLOR0_DEFAULT RGB_GRAYL(0xc0)           /* Inactive color */

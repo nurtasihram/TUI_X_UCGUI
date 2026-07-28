@@ -270,7 +270,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="test_cert.pfx" />
     <None Include="GUI\Core\Dots.inl">
       <Filter>GUI\Core</Filter>
     </None>

@@ -24,23 +24,6 @@ constexpr uint16_t SCROLLBAR_STATE_PRESSED    = WIDGET_STATE_USER0;
 constexpr uint16_t SCROLLBAR_CF_VERTICAL     = WIDGET_CF_VERTICAL;
 constexpr uint16_t SCROLLBAR_CF_FOCUSSABLE   = WIDGET_STATE_FOCUSSABLE;
 
-typedef WM_Obj * SCROLLBAR_Handle;
-SCROLLBAR_Handle SCROLLBAR_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int WinFlags, int SpecialFlags);
-SCROLLBAR_Handle SCROLLBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
-SCROLLBAR_Handle SCROLLBAR_CreateAttached(WM_Obj * hParent, int SpecialFlags);
-SCROLLBAR_Handle SCROLLBAR_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
-										  int WinFlags, int ExFlags, int Id);
-
-void SCROLLBAR_AddValue    (SCROLLBAR_Handle hObj, int Add);
-void SCROLLBAR_Dec         (SCROLLBAR_Handle hObj);
-void SCROLLBAR_Inc         (SCROLLBAR_Handle hObj);
-void SCROLLBAR_SetNumItems (SCROLLBAR_Handle hObj, int NumItems);
-void SCROLLBAR_SetPageSize (SCROLLBAR_Handle hObj, int PageSize);
-void SCROLLBAR_SetValue    (SCROLLBAR_Handle hObj, int v);
-int  SCROLLBAR_SetWidth    (SCROLLBAR_Handle hObj, int Width);
-void SCROLLBAR_SetState    (SCROLLBAR_Handle hObj, const WM_SCROLL_STATE *pState);
-int SCROLLBAR_GetValue(SCROLLBAR_Handle hObj);
-
 struct SCROLLBAR_POSITIONS {
 	int16_t x0_LeftArrow = 0,
 		x1_LeftArrow = 0;
@@ -239,7 +222,7 @@ struct SCROLLBAR_Obj : public WIDGET {
 					Sel++;
 				/* WM_SetFocus(hObj); */
 				WM_SetCapture(this, 1);
-				SCROLLBAR_SetValue(this, Sel);
+				SetValue(Sel);
 				if (!(this->State & SCROLLBAR_STATE_PRESSED))
 					_ScrollbarPressed();
 			}
@@ -253,11 +236,11 @@ struct SCROLLBAR_Obj : public WIDGET {
 			switch (pInfo->Key) {
 				case GUI_KEY_RIGHT:
 				case GUI_KEY_DOWN:
-					SCROLLBAR_Inc(this);
+					Inc();
 					return 1; /* Send to parent by not doing anything */
 				case GUI_KEY_LEFT:
 				case GUI_KEY_UP:
-					SCROLLBAR_Dec(this);
+					Dec();
 					return 1; /* Send to parent by not doing anything */
 			}
 		}
@@ -269,49 +252,102 @@ struct SCROLLBAR_Obj : public WIDGET {
 			WM_Invalidate(this);
 		}
 	}
+
+	void _InvalidatePartner() {     /* Invalidate the partner, since it is also affected */
+		WM_Invalidate(WM_GetScrollPartner(this));
+		WM_SendMessageNoPara(WM_GetParent(this), WM_NOTIFY_CLIENTCHANGE);   /* Client area may have changed */
+	}
+
+	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (SCROLLBAR_Obj *)hWin;
+		/* Let widget handle the standard messages */
+		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+			return Data;
+		switch (MsgId) {
+			case WM_PAINT:
+				pObj->_OnPaint();
+				return 0;
+			case WM_DELETE:
+				pObj->_InvalidatePartner();
+				return 0;
+			case WM_TOUCH:
+				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				return 0;
+			case WM_KEY:
+				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+					return 0; /* Send to parent by not doing anything */
+				break;
+			case WM_SET_SCROLL_STATE:
+				pObj->_OnSetScrollState((const WM_SCROLL_STATE *)Data);
+				return 0;
+			case WM_GET_SCROLL_STATE:
+				*(WM_SCROLL_STATE *)Data = pObj->ScrollState;
+				break;
+		}
+		return WM_DefaultProc(hWin, MsgId, Data);
+	}
+
+public:
+
+	void Dec() {
+		AddValue(-1);
+	}
+	void Inc() {
+		AddValue(1);
+	}
+	void AddValue(int Add) {
+		SetValue(ScrollState.v + Add);
+	}
+	void SetValue(int v) {
+		int Max = ScrollState.NumItems - ScrollState.PageSize;
+		if (Max < 0)
+			Max = 0;
+		/* Put in min/max range */
+		if (v < 0) {
+			v = 0;
+		}
+		if (v > Max) {
+			v = Max;
+		}
+		if (ScrollState.v != v) {
+			ScrollState.v = v;
+			WM_Invalidate(this);
+			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+		}
+	}
+	void SetNumItems(int NumItems) {
+		if (ScrollState.NumItems != NumItems) {
+			ScrollState.NumItems = NumItems;
+			WM_Invalidate(this);
+		}
+	}
+	void SetPageSize(int PageSize) {
+		if (ScrollState.PageSize != PageSize) {
+			ScrollState.PageSize = PageSize;
+			WM_Invalidate(this);
+		}
+	}
+	void SetState(const WM_SCROLL_STATE *pState) {
+		SetPageSize(pState->PageSize);
+		SetNumItems(pState->NumItems);
+		SetValue(pState->v);
+	}
+	int  GetValue() {
+		return ScrollState.v;
+	}
+	int  SetWidth(int Width) {
+		int r = 0;
+		r = WIDGET_SetWidth(this, Width);
+		_InvalidatePartner();     /* Invalidate the partner, since it is also affected */
+		return r;
+	}
+
 };
 
 SCROLLBAR_Obj::Properties SCROLLBAR_Obj::DefaultProps;
-}
 
-void _InvalidatePartner(SCROLLBAR_Handle hObj) {     /* Invalidate the partner, since it is also affected */
-	WM_Invalidate(WM_GetScrollPartner(hObj));
-	WM_SendMessageNoPara(WM_GetParent(hObj), WM_NOTIFY_CLIENTCHANGE);   /* Client area may have changed */
-}
-
-static WM_PARAM _SCROLLBAR_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-	auto pObj = (SCROLLBAR_Obj *)hWin;
-	/* Let widget handle the standard messages */
-	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
-		return Data;
-	switch (MsgId) {
-		case WM_PAINT:
-			pObj->_OnPaint();
-			return 0;
-		case WM_DELETE:
-			_InvalidatePartner(pObj);
-			return 0;
-		case WM_TOUCH:
-			pObj->_OnTouch((const GUI_PID_STATE *)Data);
-			return 0;
-		case WM_KEY:
-			if (pObj->_OnKey((const WM_KEY_INFO *)Data))
-				return 0; /* Send to parent by not doing anything */
-			break;
-		case WM_SET_SCROLL_STATE:
-			pObj->_OnSetScrollState((const WM_SCROLL_STATE *)Data);
-			return 0;
-		case WM_GET_SCROLL_STATE:
-			*(WM_SCROLL_STATE *)Data = pObj->ScrollState;
-			break;
-	}
-	return WM_DefaultProc(hWin, MsgId, Data);
-}
-
-SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
-									int WinFlags, int ExFlags, int Id) {
-	SCROLLBAR_Handle hObj;
-
+SCROLLBAR_Obj *SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
+								  int WinFlags, int ExFlags, int Id) {
 	/* Set defaults if necessary */
 	if ((xsize == 0) && (ysize == 0)) {
 		GUI_RECT Rect = WM_GetInsideRect(hParent);
@@ -329,10 +365,10 @@ SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj
 		}
 	}
 	/* Create the window */
-	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _SCROLLBAR_Callback,
-								  sizeof(SCROLLBAR_Obj) - sizeof(WM_Obj));
-	if (hObj) {
-		auto pObj = (SCROLLBAR_Obj *)hObj;
+	auto pObj = (SCROLLBAR_Obj *)WM_CreateWindowAsChild(
+		x0, y0, xsize, ysize, hParent, WinFlags, SCROLLBAR_Obj::_Callback,
+		sizeof(SCROLLBAR_Obj) - sizeof(WM_Obj));
+	if (pObj) {
 		uint16_t InitState;
 		/* Handle SpecialFlags */
 		InitState = 0;
@@ -352,18 +388,17 @@ SCROLLBAR_Handle SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj
 		pObj->ScrollState.NumItems = 100;
 		pObj->ScrollState.PageSize = 10;
 		pObj->ScrollState.v = 0;
-		_InvalidatePartner(hObj);
+		pObj->_InvalidatePartner();
 	}
 	else {
 	}
 
-	return hObj;
+	return pObj;
 }
-SCROLLBAR_Handle SCROLLBAR_Create(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int WinFlags, int SpecialFlags) {
+SCROLLBAR_Obj *SCROLLBAR_Create(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int WinFlags, int SpecialFlags) {
 	return SCROLLBAR_CreateEx(x0, y0, xsize, ysize, hParent, WinFlags, SpecialFlags, Id);
 }
-SCROLLBAR_Handle SCROLLBAR_CreateAttached(WM_Obj *hParent, int SpecialFlags) {
-	SCROLLBAR_Handle  hThis;
+SCROLLBAR_Obj *SCROLLBAR_CreateAttached(WM_Obj *hParent, int SpecialFlags) {
 	int Id;
 	int WinFlags;
 	if (SpecialFlags & SCROLLBAR_CF_VERTICAL) {
@@ -374,79 +409,13 @@ SCROLLBAR_Handle SCROLLBAR_CreateAttached(WM_Obj *hParent, int SpecialFlags) {
 		Id = GUI_ID_HSCROLL;
 		WinFlags = WM_CF_SHOW | WM_CF_STAYONTOP | WM_CF_ANCHOR_BOTTOM | WM_CF_ANCHOR_LEFT | WM_CF_ANCHOR_RIGHT;
 	}
-	hThis = SCROLLBAR_CreateEx(0, 0, 0, 0, hParent, WinFlags, SpecialFlags, Id);
-	WM_NotifyParent(hThis, WM_NOTIFICATION_SCROLLBAR_ADDED);
-	return hThis;
+	auto pThis = SCROLLBAR_CreateEx(0, 0, 0, 0, hParent, WinFlags, SpecialFlags, Id);
+	WM_NotifyParent(pThis, WM_NOTIFICATION_SCROLLBAR_ADDED);
+	return pThis;
 }
-SCROLLBAR_Handle SCROLLBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	SCROLLBAR_Handle  hThis;
-	GUI_USE_PARA(cb);
-	hThis = SCROLLBAR_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							   hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-	return hThis;
+WM_Obj *SCROLLBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	return SCROLLBAR_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+							  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 }
 
-void SCROLLBAR_Dec(SCROLLBAR_Handle hObj) {
-	SCROLLBAR_AddValue(hObj, -1);
-}
-void SCROLLBAR_Inc(SCROLLBAR_Handle hObj) {
-	SCROLLBAR_AddValue(hObj, 1);
-}
-void SCROLLBAR_AddValue(SCROLLBAR_Handle hObj, int Add) {
-	auto pObj = (SCROLLBAR_Obj *)hObj;
-	SCROLLBAR_SetValue(pObj, pObj->ScrollState.v + Add);
-}
-void SCROLLBAR_SetValue(SCROLLBAR_Handle hObj, int v) {
-	auto pObj = (SCROLLBAR_Obj *)hObj;
-	int Max;
-
-	Max = pObj->ScrollState.NumItems - pObj->ScrollState.PageSize;
-	if (Max < 0)
-		Max = 0;
-	/* Put in min/max range */
-	if (v < 0) {
-		v = 0;
-	}
-	if (v > Max) {
-		v = Max;
-	}
-	if (pObj->ScrollState.v != v) {
-		pObj->ScrollState.v = v;
-		WM_Invalidate(hObj);
-		WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
-	}
-}
-void SCROLLBAR_SetNumItems(SCROLLBAR_Handle hObj, int NumItems) {
-	auto pObj = (SCROLLBAR_Obj *)hObj;
-	if (pObj->ScrollState.NumItems != NumItems) {
-		pObj->ScrollState.NumItems = NumItems;
-		WM_Invalidate(hObj);
-	}
-}
-void SCROLLBAR_SetPageSize(SCROLLBAR_Handle hObj, int PageSize) {
-	auto pObj = (SCROLLBAR_Obj *)hObj;
-	if (pObj->ScrollState.PageSize != PageSize) {
-		pObj->ScrollState.PageSize = PageSize;
-		WM_Invalidate(hObj);
-	}
-}
-void SCROLLBAR_SetState(SCROLLBAR_Handle hObj, const WM_SCROLL_STATE *pState) {
-	SCROLLBAR_SetPageSize(hObj, pState->PageSize);
-	SCROLLBAR_SetNumItems(hObj, pState->NumItems);
-	SCROLLBAR_SetValue(hObj, pState->v);
-}
-
-int SCROLLBAR_GetValue(SCROLLBAR_Handle hObj) {
-	int r = 0;
-	auto pObj = (SCROLLBAR_Obj *)hObj;
-	r = pObj->ScrollState.v;
-
-	return r;
-}
-int SCROLLBAR_SetWidth(SCROLLBAR_Handle hObj, int Width) {
-	int r = 0;
-	r = WIDGET_SetWidth(hObj, Width);
-	_InvalidatePartner(hObj);     /* Invalidate the partner, since it is also affected */
-
-	return r;
 }

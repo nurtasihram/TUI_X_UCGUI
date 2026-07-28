@@ -260,8 +260,10 @@ struct LISTBOX_Obj : public WIDGET {
 		int Width = this->ScrollbarWidth;
 		//	if (Width == 0)
 		//		Width = SCROLLBAR_GetDefaultWidth();	////////////// FIX //////////////
-		SCROLLBAR_SetWidth(WM_GetDialogItem(this, GUI_ID_HSCROLL), Width);
-		SCROLLBAR_SetWidth(WM_GetDialogItem(this, GUI_ID_VSCROLL), Width);
+		if (auto pScroll = (SCROLLBAR_Obj *)WM_GetDialogItem(this, GUI_ID_HSCROLL))
+			pScroll->SetWidth(Width);
+		if (auto pScroll = (SCROLLBAR_Obj *)WM_GetDialogItem(this, GUI_ID_VSCROLL))
+			pScroll->SetWidth(Width);
 	}
 	int _CalcScrollParas() {
 		/* Calc vertical scroll parameters */

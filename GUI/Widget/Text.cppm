@@ -15,20 +15,6 @@ constexpr uint16_t TEXT_CF_VCENTER = TEXTALIGN_VCENTER;
 constexpr uint16_t TEXT_CF_TOP     = TEXTALIGN_TOP;
 constexpr uint16_t TEXT_CF_BOTTOM  = TEXTALIGN_BOTTOM;
 
-typedef WM_Obj * TEXT_Handle;
-
-TEXT_Handle TEXT_Create        (int x0, int y0, int xsize, int ysize, int Id, int Flags, const char * s, int Align);
-TEXT_Handle TEXT_CreateAsChild (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int Flags, const char * s, int Align);
-TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
-TEXT_Handle TEXT_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
-								int WinFlags, int ExFlags, int Id, const char *pText);
-/* Methods changing properties */
-void TEXT_SetBkColor  (TEXT_Handle pObj, RGBC Color); /* Obsolete. Left in GUI for compatibility to older versions */
-void TEXT_SetFont     (TEXT_Handle pObj, PCFONT pFont);
-void TEXT_SetText     (TEXT_Handle pObj, const char *s);
-void TEXT_SetTextAlign(TEXT_Handle pObj, int Align);
-void TEXT_SetTextColor(TEXT_Handle pObj, RGBC Color);
-
 struct TEXT_Obj : public WIDGET {
 	struct Properties {
 		PCFONT pFont{ &GUI_Font13_1 };
@@ -73,38 +59,64 @@ struct TEXT_Obj : public WIDGET {
 		/* Delete attached objects (if any) */
 		_FreeAttached();
 	}
+
+	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (TEXT_Obj *)hWin;
+		/* Let widget handle the standard messages */
+		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+			return Data;
+		switch (MsgId) {
+			case WM_PAINT:
+				pObj->_OnPaint();
+				return 0;
+			case WM_DELETE:
+				pObj->_Delete();
+				return 0;
+		}
+		return WM_DefaultProc(hWin, MsgId, Data);
+	}
+
+public:
+	void SetBkColor(RGBC Color) {
+		Props.BkColor = Color;
+#if WM_SUPPORT_TRANSPARENCY
+		if (Color <= RGB_WHITE)
+			WM_ClrHasTrans(this);
+		else
+			WM_SetHasTrans(this);
+#endif
+		WM_Invalidate(this);
+	}
+	void SetFont(PCFONT pFont) {
+		Props.pFont = pFont;
+		WM_Invalidate(this);
+	}
+	void SetText(const char *s) {
+		if (GUI__SetText(&pText, s))
+			WM_Invalidate(this);
+	}
+	void SetTextAlign(int Align) {
+		Props.Align = Align;
+		WM_Invalidate(this);
+	}
+	void SetTextColor(RGBC Color) {
+		Props.TextColor = Color;
+		WM_Invalidate(this);
+	}
+
 };
 
 TEXT_Obj::Properties TEXT_Obj::DefaultProps;
-}
 
-static WM_PARAM _TEXT_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-	auto pObj = (TEXT_Obj *)hWin;
-	/* Let widget handle the standard messages */
-	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
-		return Data;
-	switch (MsgId) {
-		case WM_PAINT:
-			pObj->_OnPaint();
-			return 0;
-		case WM_DELETE:
-			pObj->_Delete();
-			return 0;
-	}
-	return WM_DefaultProc(hWin, MsgId, Data);
-}
-
-TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
-						  int WinFlags, int ExFlags, int Id, const char *pText) {
-	TEXT_Handle hObj;
+TEXT_Obj *TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
+						int WinFlags, int ExFlags, int Id, const char *pText) {
 	/* Create the window */
 #if WM_SUPPORT_TRANSPARENCY
 	WinFlags |= WM_CF_HASTRANS;
 #endif
-	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _TEXT_Callback,
-								  sizeof(TEXT_Obj) - sizeof(WM_Obj));
-	if (hObj) {
-		auto pObj = (TEXT_Obj *)hObj;
+	auto pObj = (TEXT_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, TEXT_Obj::_Callback,
+												   sizeof(TEXT_Obj) - sizeof(WM_Obj));
+	if (pObj) {
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, 0);
 		/* init member variables */
@@ -117,52 +129,17 @@ TEXT_Handle TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
 	}
 	else {
 	}
-	return hObj;
+	return pObj;
 }
-TEXT_Handle TEXT_Create(int x0, int y0, int xsize, int ysize, int Id, int Flags, const char *s, int Align) {
+TEXT_Obj *TEXT_Create(int x0, int y0, int xsize, int ysize, int Id, int Flags, const char *s, int Align) {
 	return TEXT_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, Align, Id, s);
 }
-TEXT_Handle TEXT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int Flags, const char *s, int Align) {
+TEXT_Obj *TEXT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int Flags, const char *s, int Align) {
 	return TEXT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, Align, Id, s);
 }
-TEXT_Handle TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	TEXT_Handle  hThis;
-	GUI_USE_PARA(cb);
-	hThis = TEXT_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-						  hWinParent, WM_CF_SHOW, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->pName);
-	return hThis;
+WM_Obj *TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	return TEXT_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+						 hWinParent, WM_CF_SHOW, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->pName);
 }
 
-void TEXT_SetBkColor(TEXT_Handle hObj, RGBC Color) {
-		auto pObj = (TEXT_Obj *)hObj;
-		pObj->Props.BkColor = Color;
-#if WM_SUPPORT_TRANSPARENCY
-		if (Color <= RGB_WHITE) {
-			WM_ClrHasTrans(hObj);
-		}
-		else {
-			WM_SetHasTrans(hObj);
-		}
-#endif
-		WM_Invalidate(hObj);
-}
-void TEXT_SetFont(TEXT_Handle hObj, PCFONT pFont) {
-		auto pObj = (TEXT_Obj *)hObj;
-		pObj->Props.pFont = pFont;
-		WM_Invalidate(hObj);
-}
-void TEXT_SetText(TEXT_Handle hObj, const char *s) {
-		auto pObj = (TEXT_Obj *)hObj;
-		if (GUI__SetText(&pObj->pText, s))
-			WM_Invalidate(hObj);
-}
-void TEXT_SetTextAlign(TEXT_Handle hObj, int Align) {
-		auto pObj = (TEXT_Obj *)hObj;
-		pObj->Props.Align = Align;
-		WM_Invalidate(hObj);
-}
-void TEXT_SetTextColor(TEXT_Handle hObj, RGBC Color) {
-		auto pObj = (TEXT_Obj *)hObj;
-		pObj->Props.TextColor = Color;
-		WM_Invalidate(hObj);
 }

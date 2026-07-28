@@ -134,7 +134,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="GUI\Core\Dots.inl" />
-    <None Include="test_cert.pfx" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
