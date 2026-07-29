@@ -10,8 +10,6 @@ import TUX.Widget;
 #define BUTTON_REACT_ON_LEVEL 0
 #define BUTTON_USE_3D 1
 
-constexpr GUI_POINT BUTTON_3D_MOVE{ 1, 1 };
-
 export {
 constexpr uint16_t BUTTON_CF_HIDE    = WM_CF_HIDE;
 constexpr uint16_t BUTTON_CF_SHOW    = WM_CF_SHOW;
@@ -51,31 +49,18 @@ struct BUTTON_Obj : public WIDGET {
 	GUI_DRAW *aDrawObj[3];
 
 	void _OnPaint() {
-		const char *s = nullptr;
-		unsigned int Index;
-		int PressedState, ColorIndex;
-		GUI_RECT rClient, rInside;
-		PressedState = (State & BUTTON_STATE_PRESSED) ? 1 : 0;
-		ColorIndex = (WM_IsEnabled(this)) ? PressedState : 2;
+		bool IsPressed = State & BUTTON_STATE_PRESSED;
+		int ColorIndex = (WM_IsEnabled(this)) ? IsPressed : 2;
 		GUI_SetFont(this->Props.pFont);
-		if (this->pText)
-			s = this->pText;
-		rClient = WM_GetClientRect();
-		/* Start drawing */
-		rInside = rClient;
-		/* Draw the 3D effect (if configured) */
+		auto rClient = WM_GetClientRect();
+		auto rInside = rClient;
+		auto EffectSize = pEffect->EffectSize;
 #if BUTTON_USE_3D
-		{
-			int EffectSize;
-			if ((PressedState) == 0) {
-				const_cast<WIDGET_EFFECT *>(this->pEffect)->DrawUp();  /* _WIDGET_EFFECT_3D_DrawUp(); */
-				EffectSize = this->pEffect->EffectSize;
-			}
-			else {
-				GUI_SetColor(RGB_BLACK);
-				GUI_DrawRect({ rClient.x0, rClient.y0, rClient.x1, rClient.y1 });
-				EffectSize = 1;
-			}
+		if (pEffect) {
+			if (IsPressed)
+				pEffect->DrawDown();
+			else 
+				pEffect->DrawUp();
 			rInside -= EffectSize;
 		}
 #endif
@@ -88,25 +73,30 @@ struct BUTTON_Obj : public WIDGET {
 		   If we have only one, we will use it.
 		   If we have to we will use the second one (Index 1) for the pressed state
 		*/
+		unsigned int Index;
 		if (ColorIndex < 2)
-			Index = this->aDrawObj[BUTTON_BI_PRESSED] && PressedState ? BUTTON_BI_PRESSED : BUTTON_BI_UNPRESSED;
+			Index = this->aDrawObj[BUTTON_BI_PRESSED] && IsPressed ? BUTTON_BI_PRESSED : BUTTON_BI_UNPRESSED;
 		else
 			Index = this->aDrawObj[BUTTON_BI_DISABLED] ? BUTTON_BI_DISABLED : BUTTON_BI_UNPRESSED;
 		if (auto pDraw = this->aDrawObj[Index])
 			pDraw->Draw(0, 0);
 		/* Draw the actual button (background and text) */
 #if BUTTON_USE_3D
-		if (PressedState)
-			rInside += BUTTON_3D_MOVE;
+		if (pEffect) {
+			if (IsPressed)
+				rInside += EffectSize;
+			else
+				rInside -= EffectSize;
+		}
 #endif
 		GUI_SetTextMode(DRAWMODE_TRANS);
-		GUI_DispStringInRect(s, &rInside, this->Props.Align);
+		GUI_DispStringInRect(pText, &rInside, this->Props.Align);
+		WM_SetUserClipRect(nullptr);
 		/* Draw focus */
 		if (State & BUTTON_STATE_FOCUS) {
 			GUI_SetColor(RGB_BLACK);
-			GUI_DrawFocusRect(rClient, 2);
+			GUI_DrawFocusRect(rClient, EffectSize + 1);
 		}
-		WM_SetUserClipRect(nullptr);
 	}
 	void _Delete() {
 		GUI_ALLOC_FreePtr((void **)&this->pText);
