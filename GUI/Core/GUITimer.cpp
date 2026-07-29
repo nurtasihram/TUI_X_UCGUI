@@ -1,5 +1,7 @@
 #include "GUI_Protected.h"
 
+#if GUI_SUPPORT_TIMER
+
 typedef struct {
 	GUI_TIMER_CALLBACK *cb;
 	GUI_TIMER_HANDLE hNext;
@@ -184,3 +186,5 @@ void GUI_TIMER_Restart(GUI_TIMER_HANDLE hObj) {
 		_Link(hObj);
 	}
 }
+
+#endif

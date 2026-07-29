@@ -22,6 +22,10 @@
 #define GUI_SUPPORT_DEVICES (GUI_SUPPORT_MEMDEV)
 #endif
 
+#ifndef GUI_SUPPORT_TIMER
+#define GUI_SUPPORT_TIMER 1
+#endif
+
 /* In order to avoid warnings for undefined parameters */
 #ifndef GUI_USE_PARA
 #define GUI_USE_PARA(para) (void)para;

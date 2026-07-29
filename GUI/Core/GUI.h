@@ -311,6 +311,7 @@ int     GUI_MessageBox(const char *sMessage, const char *sCaption, int Flags);
 #define GUI_MB_OK                20
 #define GUI_MB_WARNING           21
 
+#if GUI_SUPPORT_TIMER
 typedef struct {
 	GUI_TIMER_TIME Time;
 	uintptr_t Context;
@@ -330,6 +331,7 @@ void GUI_TIMER_Restart(GUI_TIMER_HANDLE hObj);
 int  GUI_TIMER_Exec(void);
 
 void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, uintptr_t Context);	//houhh 20061020
+#endif
 
 /* Message layer */
 void GUI_StoreKeyMsg(int Key, int Pressed);

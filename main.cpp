@@ -1127,16 +1127,16 @@ void _TestSlider() {
 #define ID_EDIT_CLEAR              (GUI_ID_USER + 231)
 
 static void _UpdateEditStatus(WM_Obj *hWin) {
-	auto hEdit = (EDIT_Handle)WM_GetDialogItem(hWin, ID_EDIT_TEST);
+	auto pEdit = (EDIT_Obj *)WM_GetDialogItem(hWin, ID_EDIT_TEST);
 	auto pStatus = (TEXT_Obj *)WM_GetDialogItem(hWin, ID_EDIT_STATUS);
-	if (hEdit && pStatus) {
+	if (pEdit && pStatus) {
 		char acText[96];
 		char acStatus[192];
-		auto pEditObj = (EDIT_Obj *)hEdit;
+		auto pEditObj = (EDIT_Obj *)pEdit;
 		const char *pMode = (pEditObj->EditMode == GUI_EDIT_MODE_OVERWRITE) ? "Overwrite" : "Insert";
-		EDIT_GetText(hEdit, acText, sizeof(acText) - 1);
+		pEdit->GetText(acText, sizeof(acText) - 1);
 		sprintf(acStatus, "Len:%d Cursor:%d Sel:%d Mode:%s Text:%s",
-				EDIT_GetNumChars(hEdit),
+				pEdit->GetNumChars(),
 				pEditObj->CursorPos,
 				pEditObj->SelSize,
 				pMode,
@@ -1146,14 +1146,14 @@ static void _UpdateEditStatus(WM_Obj *hWin) {
 }
 
 static void _ResetEditScenario(WM_Obj *hWin) {
-	auto hEdit = (EDIT_Handle)WM_GetDialogItem(hWin, ID_EDIT_TEST);
-	EDIT_SetMaxLen(hEdit, 64);
-	EDIT_SetText(hEdit, "EditInteractiveDemo");
-	EDIT_SetInsertMode(hEdit, 1);
-	EDIT_SetSel(hEdit, -1, -1);
-	EDIT_SetCursorAtChar(hEdit, 4);
-	WM_SetFocus(hEdit);
-	WM_Invalidate(hEdit);
+	auto pEdit = (EDIT_Obj *)WM_GetDialogItem(hWin, ID_EDIT_TEST);
+	pEdit->SetMaxLen(64);
+	pEdit->SetText("EditInteractiveDemo");
+	pEdit->SetInsertMode(1);
+	pEdit->SetSel(-1, -1);
+	pEdit->SetCursorAtChar(4);
+	WM_SetFocus(pEdit);
+	WM_Invalidate(pEdit);
 	_UpdateEditStatus(hWin);
 }
 
@@ -1184,7 +1184,7 @@ static WM_PARAM _cbEditTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 		case WM_NOTIFY_PARENT: {
 			auto pInfo = (WM_NOTIFY_INFO *)Data;
 			int Id = WM_GetId(pInfo->pWinSrc);
-			auto hEdit = (EDIT_Handle)WM_GetDialogItem(hWin, ID_EDIT_TEST);
+			auto pEdit = (EDIT_Obj *)WM_GetDialogItem(hWin, ID_EDIT_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED:
 					if (Id == ID_EDIT_TEST) {
@@ -1197,40 +1197,40 @@ static WM_PARAM _cbEditTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 							_ResetEditScenario(hWin);
 							break;
 						case ID_EDIT_LEFT:
-							EDIT_AddKey(hEdit, GUI_KEY_LEFT);
+							pEdit->AddKey(GUI_KEY_LEFT);
 							_UpdateEditStatus(hWin);
 							break;
 						case ID_EDIT_RIGHT:
-							EDIT_AddKey(hEdit, GUI_KEY_RIGHT);
+							pEdit->AddKey(GUI_KEY_RIGHT);
 							_UpdateEditStatus(hWin);
 							break;
 						case ID_EDIT_HOME:
-							EDIT_AddKey(hEdit, GUI_KEY_HOME);
+							pEdit->AddKey(GUI_KEY_HOME);
 							_UpdateEditStatus(hWin);
 							break;
 						case ID_EDIT_END:
-							EDIT_AddKey(hEdit, GUI_KEY_END);
+							pEdit->AddKey(GUI_KEY_END);
 							_UpdateEditStatus(hWin);
 							break;
 						case ID_EDIT_BACKSPACE:
-							EDIT_AddKey(hEdit, GUI_KEY_BACKSPACE);
+							pEdit->AddKey(GUI_KEY_BACKSPACE);
 							_UpdateEditStatus(hWin);
 							break;
 						case ID_EDIT_DELETE:
-							EDIT_AddKey(hEdit, GUI_KEY_DELETE);
+							pEdit->AddKey(GUI_KEY_DELETE);
 							_UpdateEditStatus(hWin);
 							break;
 						case ID_EDIT_TOGGLE_MODE:
-							EDIT_AddKey(hEdit, GUI_KEY_INSERT);
+							pEdit->AddKey(GUI_KEY_INSERT);
 							_UpdateEditStatus(hWin);
 							break;
 						case ID_EDIT_INSERT_MARK:
-							EDIT_AddKey(hEdit, '#');
+							pEdit->AddKey('#');
 							_UpdateEditStatus(hWin);
 							break;
 						case ID_EDIT_CLEAR:
-							EDIT_SetText(hEdit, "");
-							EDIT_SetCursorAtChar(hEdit, 0);
+							pEdit->SetText("");
+							pEdit->SetCursorAtChar(0);
 							_UpdateEditStatus(hWin);
 							break;
 						case GUI_ID_CANCEL:
