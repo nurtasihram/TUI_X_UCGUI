@@ -10,22 +10,6 @@ export {
 constexpr uint16_t SLIDER_STATE_PRESSED    = WIDGET_STATE_USER0;
 constexpr uint16_t SLIDER_CF_VERTICAL = WIDGET_CF_VERTICAL;
 
-typedef WM_Obj * SLIDER_Handle;
-
-SLIDER_Handle SLIDER_Create        (int x0, int y0, int xsize, int ysize, WM_Obj * hParent, int Id, int WinFlags, int SpecialFlags);
-SLIDER_Handle SLIDER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj * hWinParent, int x0, int y0, WM_CALLBACK *cb);
-SLIDER_Handle SLIDER_CreateEx      (int x0, int y0, int xsize, int ysize, WM_Obj * hParent,
-									int WinFlags, int ExFlags, int Id);
-
-void SLIDER_Inc         (SLIDER_Handle hObj);
-void SLIDER_Dec         (SLIDER_Handle hObj);
-void SLIDER_SetBkColor  (SLIDER_Handle hObj, RGBC Color);
-void SLIDER_SetWidth    (SLIDER_Handle hObj, int Width);
-void SLIDER_SetValue    (SLIDER_Handle hObj, int v);
-void SLIDER_SetRange    (SLIDER_Handle hObj, int Min, int Max);
-void SLIDER_SetNumTicks (SLIDER_Handle hObj, int NumTicks);
-int  SLIDER_GetValue(SLIDER_Handle hObj);
-
 struct SLIDER_Obj : public WIDGET {
 	struct Properties {
 		RGBC BkColor{ RGB_GRAYL(0xC0) };
@@ -136,7 +120,7 @@ struct SLIDER_Obj : public WIDGET {
 					WM_SetFocus(this);
 				}
 				WM_SetCapture(this, 1);
-				SLIDER_SetValue(this, Sel);
+				SetValue(Sel);
 				if ((State & SLIDER_STATE_PRESSED) == 0) {
 					_SliderPressed();
 				}
@@ -153,51 +137,115 @@ struct SLIDER_Obj : public WIDGET {
 		if (pInfo->PressedCnt > 0) {
 			switch (pInfo->Key) {
 				case GUI_KEY_RIGHT:
-					SLIDER_Inc(this);
+					Inc();
 					return 1;
 				case GUI_KEY_LEFT:
-					SLIDER_Dec(this);
+					Dec();
 					return 1;
 			}
 		}
 		return 0;
 	}
+
+	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (SLIDER_Obj *)hWin;
+		/* Let widget handle the standard messages */
+		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+			return Data;
+		switch (MsgId) {
+			case WM_PAINT:
+				pObj->_OnPaint();
+				return 0;
+			case WM_TOUCH:
+				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				return 0;
+			case WM_KEY:
+				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+					return 0;
+				break;
+		}
+		return WM_DefaultProc(hWin, MsgId, Data);
+	}
+
+public:
+	void Dec() {
+		if (v > Min) {
+			v--;
+			WM_Invalidate(this);
+			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+		}
+	}
+	void Inc() {
+		if (v < Max) {
+			v++;
+			WM_Invalidate(this);
+			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+		}
+	}
+	void SetWidth(int Width) {
+		if (Width != Width) {
+			Width = Width;
+			WM_Invalidate(this);
+		}
+	}
+	void SetValue(int v) {
+		/* Put in min/max range */
+		if (v < Min)
+			v = Min;
+		if (v > Max)
+			v = Max;
+		if (this->v != v) {
+			this->v = v;
+			WM_Invalidate(this);
+			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+		}
+	}
+	void SetRange(int Min, int Max) {
+		if (Max < Min)
+			Max = Min;
+		this->Min = Min;
+		this->Max = Max;
+		if (v < Min) {
+			v = Min;
+		}
+		if (v > Max) {
+			v = Max;
+		}
+		WM_Invalidate(this);
+	}
+	void SetNumTicks(int NumTicks) {
+		if ((NumTicks >= 0)) {
+			this->NumTicks = NumTicks;
+			WM_Invalidate(this);
+		}
+	}
+	void SetBkColor(RGBC Color) {
+		Props.BkColor = Color;
+#if WM_SUPPORT_TRANSPARENCY
+		if (Color <= RGB_WHITE) {
+			WM_ClrHasTrans(this);
+		}
+		else {
+			WM_SetHasTrans(this);
+		}
+#endif
+		WM_Invalidate(this);
+	}
+	int  GetValue() {
+		return v;
+	}
+
 };
 
 SLIDER_Obj::Properties SLIDER_Obj::DefaultProps;
-}
 
-static WM_PARAM _SLIDER_Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-	auto pObj = (SLIDER_Obj *)hWin;
-	/* Let widget handle the standard messages */
-	if (!WIDGET_HandleActive(pObj, MsgId, &Data))
-		return Data;
-	switch (MsgId) {
-		case WM_PAINT:
-			pObj->_OnPaint();
-			return 0;
-		case WM_TOUCH:
-			pObj->_OnTouch((const GUI_PID_STATE *)Data);
-			return 0;
-		case WM_KEY:
-			if (pObj->_OnKey((const WM_KEY_INFO *)Data))
-				return 0;
-			break;
-	}
-	return WM_DefaultProc(hWin, MsgId, Data);
-}
-
-SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
+SLIDER_Obj *SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
 							  int WinFlags, int ExFlags, int Id) {
-	SLIDER_Handle hObj;
-	/* Create the window */
-
 #if WM_SUPPORT_TRANSPARENCY
 	WinFlags |= WM_CF_HASTRANS;
 #endif
-	hObj = WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, _SLIDER_Callback, sizeof(SLIDER_Obj) - sizeof(WM_Obj));
-	if (hObj) {
-		auto pObj = (SLIDER_Obj *)hObj;
+	auto pObj = (SLIDER_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, SLIDER_Obj::_Callback, sizeof(SLIDER_Obj) - sizeof(WM_Obj));
+	if (pObj) {
 		uint16_t InitState;
 		/* Handle SpecialFlags */
 		InitState = WIDGET_STATE_FOCUSSABLE;
@@ -216,94 +264,14 @@ SLIDER_Handle SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hPar
 	else {
 	}
 
-	return hObj;
+	return pObj;
 }
-SLIDER_Handle SLIDER_Create(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int WinFlags, int SpecialFlags) {
+SLIDER_Obj *SLIDER_Create(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int WinFlags, int SpecialFlags) {
 	return SLIDER_CreateEx(x0, y0, xsize, ysize, hParent, WinFlags, SpecialFlags, Id);
 }
-SLIDER_Handle SLIDER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	SLIDER_Handle  hThis;
-	GUI_USE_PARA(cb);
-	hThis = SLIDER_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+WM_Obj *SLIDER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	return SLIDER_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
 							hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-	return hThis;
 }
 
-void SLIDER_Dec(SLIDER_Handle hObj) {
-	auto pObj = (SLIDER_Obj *)hObj;
-		if (pObj->v > pObj->Min) {
-			pObj->v--;
-			WM_Invalidate(hObj);
-			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
-		}
-}
-void SLIDER_Inc(SLIDER_Handle hObj) {
-	auto pObj = (SLIDER_Obj *)hObj;
-		if (pObj->v < pObj->Max) {
-			pObj->v++;
-			WM_Invalidate(hObj);
-			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
-		}
-}
-void SLIDER_SetWidth(SLIDER_Handle hObj, int Width) {
-	auto pObj = (SLIDER_Obj *)hObj;
-		if (pObj->Width != Width) {
-			pObj->Width = Width;
-			WM_Invalidate(hObj);
-		}
-}
-void SLIDER_SetValue(SLIDER_Handle hObj, int v) {
-	auto pObj = (SLIDER_Obj *)hObj;
-		/* Put in min/max range */
-		if (v < pObj->Min)
-			v = pObj->Min;
-		if (v > pObj->Max)
-			v = pObj->Max;
-		if (pObj->v != v) {
-			pObj->v = v;
-			WM_Invalidate(hObj);
-			WM_NotifyParent(hObj, WM_NOTIFICATION_VALUE_CHANGED);
-		}
-}
-void SLIDER_SetRange(SLIDER_Handle hObj, int Min, int Max) {
-		auto pObj = (SLIDER_Obj *)hObj;
-		if (Max < Min) {
-			Max = Min;
-		}
-		pObj->Min = Min;
-		pObj->Max = Max;
-		if (pObj->v < Min) {
-			pObj->v = Min;
-		}
-		if (pObj->v > Max) {
-			pObj->v = Max;
-		}
-		WM_Invalidate(hObj);
-}
-void SLIDER_SetNumTicks(SLIDER_Handle hObj, int NumTicks) {
-	if ((NumTicks >= 0)) {
-		auto pObj = (SLIDER_Obj *)hObj;
-		pObj->NumTicks = NumTicks;
-		WM_Invalidate(hObj);
-	}
-}
-void SLIDER_SetBkColor(SLIDER_Handle hObj, RGBC Color) {
-		auto pObj = (SLIDER_Obj *)hObj;
-		pObj->Props.BkColor = Color;
-#if WM_SUPPORT_TRANSPARENCY
-		if (Color <= RGB_WHITE) {
-			WM_ClrHasTrans(hObj);
-		}
-		else {
-			WM_SetHasTrans(hObj);
-		}
-#endif
-		WM_Invalidate(hObj);
-}
-int SLIDER_GetValue(SLIDER_Handle hObj) {
-	int r = 0;
-	auto pObj = (SLIDER_Obj *)hObj;
-		r = pObj->v;
-
-	return r;
 }
