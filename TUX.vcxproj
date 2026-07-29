@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GUI\Core\GUI.cppm" />
+    <ClCompile Include="GUI\Core\GUI.Types.cppm" />
     <ClCompile Include="GUI\Core\GUICore.cpp" />
     <ClCompile Include="GUI\Core\GUI_X_MEM.cpp" />
     <ClCompile Include="GUI\Core\GUICurs.cpp" />
@@ -33,22 +35,19 @@
     <ClCompile Include="GUI\Core\GUI_UC_EncodeUTF8.cpp" />
     <ClCompile Include="GUI\Core\LCD.cpp" />
     <ClCompile Include="GUI\Core\LCD_Mirror.cpp" />
-    <ClCompile Include="GUI\Resources\F08_1.cpp" />
-    <ClCompile Include="GUI\Resources\F08_ASCII.cpp" />
-    <ClCompile Include="GUI\Resources\F13_1.cpp" />
-    <ClCompile Include="GUI\Resources\F13_ASCII.cpp" />
-    <ClCompile Include="GUI\Resources\F6x8.cpp" />
-    <ClCompile Include="GUI\Resources\F8x8.cpp" />
     <ClCompile Include="GUI\LCDDriver\LCD9325.cpp" />
     <ClCompile Include="GUI\MemDev\GUIDEV.cpp" />
     <ClCompile Include="GUI\MemDev\GUIDEV_24.cpp" />
-    <ClCompile Include="GUI\Resources\GUI_CursorArrowL.cpp" />
-    <ClCompile Include="GUI\Resources\GUI_CursorArrowM.cpp" />
-    <ClCompile Include="GUI\Resources\GUI_CursorArrowS.cpp" />
-    <ClCompile Include="GUI\Resources\GUI_CursorCrossL.cpp" />
-    <ClCompile Include="GUI\Resources\GUI_CursorCrossM.cpp" />
-    <ClCompile Include="GUI\Resources\GUI_CursorCrossS.cpp" />
-    <ClCompile Include="GUI\Resources\GUI_CursorHeaderM.cpp" />
+    <ClCompile Include="GUI\Resources\CursorArrow.cpp" />
+    <ClCompile Include="GUI\Resources\CursorCross.cpp" />
+    <ClCompile Include="GUI\Resources\CursorHeader.cpp" />
+    <ClCompile Include="GUI\Resources\FontMono6x8.cpp" />
+    <ClCompile Include="GUI\Resources\FontMono8x8.cpp" />
+    <ClCompile Include="GUI\Resources\FontProp13_1.cpp" />
+    <ClCompile Include="GUI\Resources\FontProp13_ASCII.cpp" />
+    <ClCompile Include="GUI\Resources\FontProp8_1.cpp" />
+    <ClCompile Include="GUI\Resources\FontProp8_ASCII.cpp" />
+    <ClCompile Include="GUI\Resources\Resources.cppm" />
     <ClCompile Include="GUI\Widget\Button.cppm" />
     <ClCompile Include="GUI\Widget\CheckBox.cppm" />
     <ClCompile Include="GUI\Widget\DIALOG.cpp" />
@@ -65,7 +64,6 @@
     <ClInclude Include="Config\GUIConf.h" />
     <ClInclude Include="GUI\Core\GUI.h" />
     <ClInclude Include="GUI\Core\GUIDebug.h" />
-    <ClInclude Include="GUI\Core\GUIType.h" />
     <ClInclude Include="GUI\Core\GUI_ConfDefaults.h" />
     <ClInclude Include="GUI\Core\GUI_Private.h" />
     <ClInclude Include="GUI\Core\GUI_Protected.h" />
@@ -131,9 +129,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GUI_X\SimDisp.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="GUI\Core\Dots.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

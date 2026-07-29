@@ -64,7 +64,7 @@ CBITMAP bmSmilie1{
 	acSmilie1, &PalSmilie1
 };
 
-static const GUI_ConstString _ListBox[]{
+static const char *_ListBox[]{
   "English", "Deutsch", nullptr
 };
 #define GUI_ID_MULTIEDIT0  GUI_ID_USER + 0x00

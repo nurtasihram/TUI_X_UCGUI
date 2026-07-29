@@ -34,7 +34,7 @@ struct EDIT_Obj : public WIDGET {
 	typedef void tEDIT_UpdateBuffer(EDIT_Obj *pObj);
 
 	struct Properties {
-		PCFONT pFont{ &GUI_Font13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 		RGBC aTextColor[2]{
 			/* Disabled */	RGB_BLACK,
 			/* Enabled */	RGB_BLACK

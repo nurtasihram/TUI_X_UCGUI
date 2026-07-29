@@ -1,25 +1,15 @@
-#include "GUI.h"
+import TUX.Resources;
 
-#ifndef GUI_NOFCHARS
 #define GUI_NOFCHARS (163)
-#endif
 
-/*      *********************************
-		*                               *
-		*   Special character codes     *
-		*                               *
-		*********************************
-*/
-
-/* No 95 to 125 for European character set  */
-
-#define CODE_SACCAGUE     95     /*  small accent ague */
+#pragma region Special character codes
+#pragma region No 95 to 125 for European character set
+#define CODE_SACCAGUE     95  /*  small accent ague */
 #define CODE_SACCGRAV     96
 #define CODE_SACCCIRC     97
 #define CODE_SUMLAUT      98
 #define CODE_STILDE       99
 #define CODE_I_NOPOINT    100
-
 #define CODE_SHARPS       101
 #define CODE_A_RING       102
 #define CODE_SA_RING      103
@@ -37,18 +27,16 @@
 #define CODE_LITTLE_O     115
 #define CODE_LITTLE_U     116
 #define CODE_LITTLE_N     117
-
 #define CODE_INVEXCLAM    118
 #define CODE_INVQUEST     119
-
-#define CODE_CACCAGUE     120    /* capital accent ague */
+#define CODE_CACCAGUE     120 /* capital accent ague */
 #define CODE_CACCGRAV     121
 #define CODE_CACCCIRC     122
 #define CODE_CUMLAUT      123
 #define CODE_CTILDE       124
 #define CODE_CEDILLA      125
-
-/* No 126 to 156 for complete ISO 8859_1 western latin character set  */
+#pragma endregion
+#pragma region No 126 to 156 for complete ISO 8859_1 western latin character set
 #define CODE_NB_SPACE     126
 #define CODE_CENT         127
 #define CODE_POUND        128
@@ -89,8 +77,10 @@
 #define CODE_ARROW_DOWN   160
 #define CODE_ENTER        161
 #define CODE_CHECKMARK    162
+#pragma endregion
+#pragma endregion
 
-const uint8_t GUI_acFont6x8[][8]{
+static const uint8_t GUI_acFont6x8[][8]{
  {
 	________________,
 	________________,
@@ -364,7 +354,6 @@ const uint8_t GUI_acFont6x8[][8]{
 	__XXXX__________,
 	____XX__________,
 	__XX____________}
-
 /* '<' 3c */
  ,{
 	______XX________,
@@ -1861,8 +1850,7 @@ const uint8_t GUI_acFont6x8[][8]{
 #endif
 
 };
-
-const FONT_MONO::TRANSINFO::LIST GUI_F6x8_TL8859_1[]{
+static const FONT_MONO::TRANSINFO::LIST GUI_F6x8_TL8859_1[]{
 /*
 	The folowing are extensions to ISO 8859-1.
 	Since ISO 8859-1 does not define any characters for the codes
@@ -1986,12 +1974,12 @@ const FONT_MONO::TRANSINFO::LIST GUI_F6x8_TL8859_1[]{
 	{CODE_SMALLTHORN,-1},                 /* 254, small thorn, Icelandic  */
 	{'y'-32,CODE_SUMLAUT},                /* 255, */
 };
-
-const FONT_MONO::TRANSINFO GUI_F6x8_TI8859_1{
+static const FONT_MONO::TRANSINFO GUI_F6x8_TI8859_1{
 	144, 255,  /* First/Last character for translation */
 	&GUI_F6x8_TL8859_1[0]
 };
-extern const FONT_MONO GUI_Font6x8{
+
+CFONT_MONO FontMono6x8{
 	8, 8, /* YSize, YDist */
 	7,    /* Baseline */
 	5, 7, /* LHeight, CHeight */

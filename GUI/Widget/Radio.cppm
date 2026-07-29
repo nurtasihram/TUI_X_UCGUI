@@ -27,7 +27,7 @@ constexpr uint16_t RADIO_TEXTPOS_LEFT        = WIDGET_STATE_USER0;/* Not impleme
 
 struct RADIO_Obj : public WIDGET {
 	struct Properties {
-		PCFONT pFont{ &GUI_Font13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 		RGBC TextColor{ RGB_BLACK };
 		RGBC BkColor{ RGB_INVALID_COLOR };
 		PCBITMAP apBmRadio[2]{ &_abmRadio[0], &_abmRadio[1] };

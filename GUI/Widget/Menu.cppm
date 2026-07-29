@@ -91,7 +91,7 @@ struct MENU_Obj : public WIDGET {
 			RGB_GRAYL(0x7C)
 		};
 		uint8_t aBorder[4]{ 4, 4, 2, 2 }; /* Left, Right, Top, Bottom */
-		PCFONT pFont{ &GUI_Font13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 	} static DefaultProps;
 	Properties Props;
 	GUI_ARRAY   ItemArray;

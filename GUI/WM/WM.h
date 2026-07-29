@@ -1,7 +1,8 @@
 #pragma once
 
 #include "GUI_ConfDefaults.h"
-#include "GUIType.h"      /* Needed because of typedefs only */
+
+import TUX;
 
 /* Support for transparency. Switching it off makes Wm smaller and faster */
 #ifndef WM_SUPPORT_TRANSPARENCY

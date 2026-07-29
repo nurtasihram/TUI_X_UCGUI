@@ -36,7 +36,7 @@ constexpr uint16_t MULTIEDIT_CI_READONLY  = 1;
 
 struct MULTIEDIT_Obj : public WIDGET {
 	struct Properties {
-		PCFONT pFont{ &GUI_Font13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 		RGBC aBkColor[NUM_DISP_MODES]{
 			/* Edit mode */		RGB_WHITE,
 			/* Read-only */		RGB_GRAYL(0xC0)

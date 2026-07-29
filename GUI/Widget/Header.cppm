@@ -17,10 +17,10 @@ export {
    
 struct HEADER_Obj : public WIDGET {
 	struct Properties {
-		PCFONT pFont{ &GUI_Font13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 		RGBC BkColor{ RGB_GRAYL(0xAA) };
 		RGBC TextColor{ RGB_BLACK };
-		PCCURSOR pCursor{ &GUI_CursorHeaderM };
+		PCCURSOR pCursor{ &CursorHeaderM };
 		int16_t BorderH{ 0 };
 		int16_t BorderV{ 2 };
 	} static DefaultProps;

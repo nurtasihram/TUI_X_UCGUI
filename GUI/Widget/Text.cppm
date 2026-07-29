@@ -17,7 +17,7 @@ constexpr uint16_t TEXT_CF_BOTTOM  = TEXTALIGN_BOTTOM;
 
 struct TEXT_Obj : public WIDGET {
 	struct Properties {
-		PCFONT pFont{ &GUI_Font13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 		TEXTALIGN Align{ 0 };
 		RGBC TextColor{ RGB_BLACK };
 		RGBC BkColor{ RGB_INVALID_COLOR };

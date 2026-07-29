@@ -42,12 +42,6 @@
     <ClCompile Include="GUI_X\GUI_X.cc">
       <Filter>GUI_X</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Resources\F8x8.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\F13_1.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\MemDev\GUIDEV.cpp">
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
@@ -62,12 +56,6 @@
     </ClCompile>
     <ClCompile Include="GUI\LCDDriver\LCD9325.cpp">
       <Filter>GUI\LCDDriver</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\F08_1.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\F6x8.cpp">
-      <Filter>GUI\Resources</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\DIALOG.cpp">
       <Filter>GUI\Widget</Filter>
@@ -119,33 +107,6 @@
     </ClCompile>
     <ClCompile Include="GUI\Core\LCD_Mirror.cpp">
       <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorArrowL.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorArrowS.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorCrossL.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorCrossM.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorCrossS.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorHeaderM.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\GUI_CursorArrowM.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\F08_ASCII.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\F13_ASCII.cpp">
-      <Filter>GUI\Resources</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUICore.cpp">
       <Filter>GUI\Core</Filter>
@@ -205,6 +166,42 @@
     <ClCompile Include="GUI\Widget\GUI_ARRAY.cppm">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\Resources\CursorArrow.cpp">
+      <Filter>GUI\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Resources\CursorCross.cpp">
+      <Filter>GUI\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Resources\CursorHeader.cpp">
+      <Filter>GUI\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Resources\FontMono6x8.cpp">
+      <Filter>GUI\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Resources\FontMono8x8.cpp">
+      <Filter>GUI\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Resources\FontProp8_1.cpp">
+      <Filter>GUI\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Resources\FontProp8_ASCII.cpp">
+      <Filter>GUI\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Resources\FontProp13_1.cpp">
+      <Filter>GUI\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Resources\FontProp13_ASCII.cpp">
+      <Filter>GUI\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Resources\Resources.cppm">
+      <Filter>GUI\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUI.cppm">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUI.Types.cppm">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">
@@ -255,9 +252,6 @@
     <ClInclude Include="GUI\Core\LCD_Protected.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Core\GUIType.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="GUI_X\SimDisp.ico">
@@ -268,10 +262,5 @@
     <ResourceCompile Include="GUI_X\SimDisp.rc">
       <Filter>GUI_X</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="GUI\Core\Dots.inl">
-      <Filter>GUI\Core</Filter>
-    </None>
   </ItemGroup>
 </Project>

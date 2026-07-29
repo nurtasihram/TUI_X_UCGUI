@@ -1,21 +1,13 @@
-#include "GUI.h"
+import TUX.Resources;
 
-/*      *********************************
-	      *                               *
-	      *   Special character codes     *
-	      *                               *
-	      *********************************
-*/
-
-/* No 95 to 125 for European character set  */
-
-#define CODE_SACCAGUE     95     /*  small accent ague */
+#pragma region Special character codes
+#pragma region No 95 to 125 for European character set
+#define CODE_SACCAGUE     95  /*  small accent ague */
 #define CODE_SACCGRAV     96
 #define CODE_SACCCIRC     97
 #define CODE_SUMLAUT      98
 #define CODE_STILDE       99
 #define CODE_I_NOPOINT    100
-
 #define CODE_SHARPS       101
 #define CODE_A_RING       102
 #define CODE_SA_RING      103
@@ -33,18 +25,16 @@
 #define CODE_LITTLE_O     115
 #define CODE_LITTLE_U     116
 #define CODE_LITTLE_N     117
-
 #define CODE_INVEXCLAM    118
 #define CODE_INVQUEST     119
-
-#define CODE_CACCAGUE     120    /* capital accent ague */
+#define CODE_CACCAGUE     120 /* capital accent ague */
 #define CODE_CACCGRAV     121
 #define CODE_CACCCIRC     122
 #define CODE_CUMLAUT      123
 #define CODE_CTILDE       124
 #define CODE_CEDILLA      125
-
-/* No 126 to 156 for complete ISO 8859_1 western latin character set  */
+#pragma endregion
+#pragma region No 126 to 156 for complete ISO 8859_1 western latin character set
 #define CODE_NB_SPACE     126
 #define CODE_CENT         127
 #define CODE_POUND        128
@@ -85,16 +75,10 @@
 #define CODE_ARROW_DOWN   160
 #define CODE_ENTER        161
 #define CODE_CHECKMARK    162
+#pragma endregion
+#pragma endregion
 
-/*
-	  ****************************************************************
-	  *                                                              *
-	  *                      8 * 8  font                             *
-	  *                                                              *
-	  ****************************************************************
-*/
-
-BM_BPP1 GUI_F8x8_acFont[][8]{
+static BM_BPP1 GUI_F8x8_acFont[][8]{
 	{
 	________________,
 	________________,
@@ -1633,8 +1617,7 @@ BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXXXXXX______,
 	____XXXX________}
 };
-
-const FONT_MONO::TRANSINFO::LIST GUI_F8x8_TransList[]{
+static const FONT_MONO::TRANSINFO::LIST GUI_F8x8_TransList[]{
 /*
 	The folowing are extensions to ISO 8859-1.
 	Since ISO 8859-1 does not define any characters for the codes
@@ -1758,12 +1741,12 @@ const FONT_MONO::TRANSINFO::LIST GUI_F8x8_TransList[]{
 	{CODE_SMALLTHORN,-1},                 /* 254, small thorn, Icelandic  */
 	{'y'-32,CODE_SUMLAUT},                /* 255, */
 };
-
-const FONT_MONO::TRANSINFO GUI_F8x8_TransInfo{
+static const FONT_MONO::TRANSINFO GUI_F8x8_TransInfo{
 	144, 255,          /*  FirstChar, LastChar */
 	GUI_F8x8_TransList /*  const FONT_TRANSLIST *pList */
 };
-extern const FONT_MONO GUI_Font8x8{
+
+CFONT_MONO FontMono_8x8{
 	8, 8, /* YSize, YDist */
 	7,    /* Baseline */
 	5, 7, /* LHeight, CHeight */

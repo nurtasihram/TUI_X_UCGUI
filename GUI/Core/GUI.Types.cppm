@@ -1,0 +1,793 @@
+export module TUX.Types;
+
+export import <stdint.h>;
+
+export {
+
+auto Max(auto v0, auto v1) { return v0 > v1 ? v0 : v1; }
+auto Min(auto v0, auto v1) { return v0 < v1 ? v0 : v1; }
+
+#pragma region Coordinates
+struct GUI_POINT {
+	int16_t x, y;
+
+	constexpr GUI_POINT(int a = 0) : x(a), y(a) {}
+	constexpr GUI_POINT(int x, int y) :
+		x(x), y(y) {}
+
+	inline GUI_POINT operator~() const { return{ y, x }; }
+	inline GUI_POINT operator+(const GUI_POINT &pt) const { return{ x + pt.x, y + pt.y }; }
+	inline GUI_POINT operator-(const GUI_POINT &pt) const { return{ x - pt.x, y - pt.y }; }
+	inline GUI_POINT &operator+=(const GUI_POINT &pt) { x += pt.x, y += pt.y; return *this; }
+	inline GUI_POINT &operator-=(const GUI_POINT &pt) { x -= pt.x, y -= pt.y; return *this; }
+};
+struct GUI_RECT {
+	int16_t x0 = 0, y0 = 0, x1 = 0, y1 = 0;
+
+	constexpr GUI_RECT() {}
+	constexpr GUI_RECT(int x0, int y0, int x1, int y1) :
+		x0(x0), y0(y0), x1(x1), y1(y1) {}
+
+	inline GUI_POINT LeftTop() const { return{ x0, y0 }; }
+
+	inline auto XSize() const { return x1 - x0 + 1; }
+	inline auto YSize() const { return y1 - y0 + 1; }
+
+	inline GUI_RECT operator~() const { return{ y0, x0, y1, x1 }; }
+
+	inline GUI_RECT &operator+=(const GUI_POINT &pt) {
+		x0 += pt.x, y0 += pt.y, x1 += pt.x, y1 += pt.y;
+		return *this;
+	}
+	inline GUI_RECT operator+(const GUI_POINT &pt) const {
+		return{ x0 + pt.x, y0 + pt.y, x1 + pt.x, y1 + pt.y };
+	}
+	inline GUI_RECT &operator-=(const GUI_POINT &pt) {
+		x0 -= pt.x, y0 -= pt.y, x1 -= pt.x, y1 -= pt.y;
+		return *this;
+	}
+	inline GUI_RECT operator-(const GUI_POINT &pt) const {
+		return{ x0 - pt.x, y0 - pt.y, x1 - pt.x, y1 - pt.y };
+	}
+
+	inline GUI_RECT &operator-=(int dist) {
+		x0 += dist, y0 += dist, x1 -= dist, y1 -= dist;
+		return *this;
+	}
+	inline GUI_RECT operator-(int dist) const {
+		return{ x0 + dist, y0 + dist, x1 - dist, y1 - dist };
+	}
+
+	inline GUI_RECT &operator&=(const GUI_RECT &r) {
+		if (x0 < r.x0) x0 = r.x0;
+		if (y0 < r.y0) y0 = r.y0;
+		if (x1 > r.x1) x1 = r.x1;
+		if (y1 > r.y1) y1 = r.y1;
+		return *this;
+	}
+	inline GUI_RECT operator&(const GUI_RECT &r) const {
+		return{ Max(x0, r.x0), Max(y0, r.y0), Min(x1, r.x1), Min(y1, r.y1) };
+	}
+
+	inline GUI_RECT &operator|=(const GUI_RECT &r) {
+		if (x0 > r.x0) x0 = r.x0;
+		if (y0 > r.y0) y0 = r.y0;
+		if (x1 < r.x1) x1 = r.x1;
+		if (y1 < r.y1) y1 = r.y1;
+		return *this;
+	}
+	inline GUI_RECT operator|(const GUI_RECT &r) const {
+		return{ Min(x0, r.x0), Min(y0, r.y0), Max(x1, r.x1), Max(y1, r.y1) };
+	}
+
+	bool operator<=(const GUI_RECT &r) {
+		return
+			r.x0 <= x1 && r.y0 <= y1 &&
+			r.x1 >= x0 && r.y1 >= y0;
+	}
+
+	inline operator bool() const {
+		return x0 <= x1 && y0 <= y1;
+	}
+};
+#pragma endregion
+
+#pragma region Bitmaps 
+
+#pragma region Standard Colors
+using RGBC = uint32_t;
+constexpr RGBC COLOR_RGB (uint8_t r, uint8_t g, uint8_t b) { return (b) | ((g) << 8) | ((r) << 16); }
+constexpr RGBC RGB_GRAYL (uint8_t a) { return COLOR_RGB(a, a, a); }
+constexpr RGBC RGB_BLUEL (uint8_t a) { return COLOR_RGB(0, 0, a); }
+constexpr RGBC RGB_GREENL(uint8_t a) { return COLOR_RGB(0, a, 0); }
+constexpr RGBC RGB_REDL  (uint8_t a) { return COLOR_RGB(a, 0, 0); }
+constexpr RGBC RGB_BLACK       = RGB_GRAYL(0x00);
+constexpr RGBC RGB_DARKGRAY    = RGB_GRAYL(0x40);
+constexpr RGBC RGB_GRAY        = RGB_GRAYL(0x80);
+constexpr RGBC RGB_LIGHTGRAY   = RGB_GRAYL(0xD3);
+constexpr RGBC RGB_WHITE       = RGB_GRAYL(0xFF);
+constexpr RGBC RGB_BLUE        = COLOR_RGB(0x00, 0x00, 0xFF);
+constexpr RGBC RGB_GREEN       = COLOR_RGB(0x00, 0xFF, 0x00);
+constexpr RGBC RGB_RED         = COLOR_RGB(0xFF, 0x00, 0x00);
+constexpr RGBC RGB_CYAN        = COLOR_RGB(0x00, 0xFF, 0xFF);
+constexpr RGBC RGB_MAGENTA     = COLOR_RGB(0xFF, 0x00, 0xFF);
+constexpr RGBC RGB_YELLOW      = COLOR_RGB(0xFF, 0xFF, 0x00);
+constexpr RGBC RGB_LIGHTBLUE   = COLOR_RGB(0x80, 0x80, 0xFF);
+constexpr RGBC RGB_LIGHTGREEN  = COLOR_RGB(0x80, 0xFF, 0x80);
+constexpr RGBC RGB_LIGHTRED    = COLOR_RGB(0xFF, 0x80, 0x80);
+constexpr RGBC RGB_LIGHTCYAN   = COLOR_RGB(0x80, 0xFF, 0xFF);
+constexpr RGBC RGB_LIGHTMAGENT = COLOR_RGB(0xFF, 0x80, 0xFF);
+constexpr RGBC RGB_LIGHTYELLOW = COLOR_RGB(0xFF, 0xFF, 0x80);
+constexpr RGBC RGB_DARKBLUE    = COLOR_RGB(0x00, 0x00, 0x80);
+constexpr RGBC RGB_DARKGREEN   = COLOR_RGB(0x00, 0x80, 0x00);
+constexpr RGBC RGB_DARKRED     = COLOR_RGB(0x80, 0x00, 0x00);
+constexpr RGBC RGB_DARKCYAN    = COLOR_RGB(0x00, 0x80, 0x80);
+constexpr RGBC RGB_DARKMAGENTA = COLOR_RGB(0x80, 0x00, 0x80);
+constexpr RGBC RGB_DARKYELLOW  = COLOR_RGB(0x80, 0x80, 0x00);
+constexpr RGBC RGB_BROWN       = COLOR_RGB(0xA5, 0x2A, 0x2A);
+
+constexpr RGBC RGB_INVALID_COLOR = ~0;      /* Invalid color - more than 24 bits */
+#pragma endregion
+
+struct GUI_LOGPALETTE {
+	int  NumEntries;
+	char HasTrans;
+	const RGBC *pPalEntries;
+};
+extern const GUI_LOGPALETTE GUI_CursorPal;
+extern const GUI_LOGPALETTE GUI_CursorPalI;
+
+struct BITMAP_METHODS {
+	void(*pfDraw)(int x0, int y0, int xsize, int ysize, const uint8_t *pPixel, const GUI_LOGPALETTE *pLogPal, int xMag, int yMag);
+};
+
+struct GUI_BITMAP {
+	uint16_t XSize, YSize;
+	uint16_t BytesPerLine;
+	uint16_t BitsPerPixel;
+	const void *pData;
+	const GUI_LOGPALETTE *pPal;
+};
+using CBITMAP = const GUI_BITMAP;
+using PCBITMAP = const GUI_BITMAP *;
+
+struct CURSOR {
+	PCBITMAP pBitmap;
+	int xHot, yHot;
+};
+using CCURSOR = const CURSOR;
+using PCCURSOR = const CURSOR *;
+#pragma endregion
+
+#pragma region Encoder
+typedef uint16_t tGUI_GetCharCode(const char *s);
+typedef int  tGUI_GetCharSize(const char *s);
+typedef int  tGUI_CalcSizeOfChar(uint16_t Char);
+typedef int  tGUI_Encode(char *s, uint16_t Char);
+
+typedef struct {
+	tGUI_GetCharCode *pfGetCharCode;
+	tGUI_GetCharSize *pfGetCharSize;
+	tGUI_CalcSizeOfChar *pfCalcSizeOfChar;
+	tGUI_Encode *pfEncode;
+} GUI_UC_ENC_APILIST;
+
+typedef int  tGUI_GetLineDistX(const char *s, int Len);
+typedef int  tGUI_GetLineLen(const char *s, int MaxLen);
+typedef void tGL_DispLine(const char *s, int Len);
+
+typedef struct {
+	tGUI_GetLineDistX *pfGetLineDistX;
+	tGUI_GetLineLen *pfGetLineLen;
+	tGL_DispLine *pfDispLine;
+} tGUI_ENC_APIList;
+#pragma endregion
+
+#pragma region Font
+struct FONT {
+	uint8_t YSize, YDist;
+	uint8_t Baseline, LHeight, CHeight;
+	const tGUI_ENC_APIList *pafEncode = nullptr;
+
+	FONT(uint8_t YSize, uint8_t YDist,
+		 uint8_t Baseline,
+		 uint8_t LHeight, uint8_t CHeight) :
+		YSize(YSize), YDist(YDist),
+		Baseline(Baseline),
+		LHeight(LHeight), CHeight(CHeight) {}
+
+	virtual void DispChar(uint16_t c) const = 0;
+	virtual int  GetCharDistX(uint16_t c) const = 0;
+	virtual bool IsInFont(uint16_t c) const = 0;
+};
+using CFONT = const FONT;
+using PCFONT = const FONT *;
+
+struct FONT_MONO : FONT {
+	const void *pData;
+	const void *pTransData;
+	struct TRANSINFO {
+		uint16_t FirstChar, LastChar;
+		struct LIST {
+			int16_t c0, c1;
+		} const *pList;
+	} const *pTrans;
+	uint16_t FirstChar, LastChar;
+	uint8_t XSize, XDist;
+	uint8_t BytesPerLine;
+
+	FONT_MONO(uint8_t YSize, uint8_t YDist,
+			  uint8_t Baseline,
+			  uint8_t LHeight, uint8_t CHeight,
+			  /* For FONT_MONO */
+			  const void *pData,
+			  const void *pTransData,
+			  const TRANSINFO *pTrans,
+			  uint16_t FirstChar, uint16_t LastChar,
+			  uint8_t XSize, uint8_t XDist,
+			  uint8_t BytesPerLine) :
+		FONT(YSize, YDist, Baseline, LHeight, CHeight),
+		pData(pData), pTransData(pTransData), pTrans(pTrans),
+		FirstChar(FirstChar), LastChar(LastChar),
+		XSize(XSize), XDist(XDist),
+		BytesPerLine(BytesPerLine) {}
+
+	void DispChar(uint16_t c) const override;
+	int  GetCharDistX(uint16_t c) const override;
+	bool IsInFont(uint16_t c) const override;
+};
+using CFONT_MONO = const FONT_MONO;
+
+struct FONT_PROP : FONT {
+	uint16_t First, Last;
+	struct CHARINFO {
+		uint8_t XSize, XDist;
+		uint8_t BytesPerLine;
+		const void *pData;
+	} const *paCharInfo;
+	const FONT_PROP *pNext;
+
+	FONT_PROP(uint8_t YSize, uint8_t YDist,
+			  uint8_t Baseline,
+			  uint8_t LHeight, uint8_t CHeight,
+			  /* for FONT_PROP */
+			  uint16_t First, uint16_t Last,
+			  const CHARINFO *paCharInfo,
+			  const FONT_PROP *pNext = nullptr) :
+		FONT(YSize, YDist, Baseline, LHeight, CHeight),
+		First(First), Last(Last),
+		paCharInfo(paCharInfo),
+		pNext(pNext) {}
+
+	const FONT_PROP *FindChar(uint16_t c) const;
+
+	void DispChar(uint16_t c) const override;
+	int  GetCharDistX(uint16_t c) const override;
+	bool IsInFont(uint16_t c) const override;
+};
+using CFONT_PROP = const FONT_PROP;
+#pragma endregion
+
+#pragma region Standard Pixel Formats
+enum BITS_BPP1 : uint8_t {
+	________________ = 0x00,
+	______________XX = 0x01,
+	____________XX__ = 0x02,
+	____________XXXX = 0x03,
+	__________XX____ = 0x04,
+	__________XX__XX = 0x05,
+	__________XXXX__ = 0x06,
+	__________XXXXXX = 0x07,
+	________XX______ = 0x08,
+	________XX____XX = 0x09,
+	________XX__XX__ = 0x0a,
+	________XX__XXXX = 0x0b,
+	________XXXX____ = 0x0c,
+	________XXXX__XX = 0x0d,
+	________XXXXXX__ = 0x0e,
+	________XXXXXXXX = 0x0f,
+	______XX________ = 0x10,
+	______XX______XX = 0x11,
+	______XX____XX__ = 0x12,
+	______XX____XXXX = 0x13,
+	______XX__XX____ = 0x14,
+	______XX__XX__XX = 0x15,
+	______XX__XXXX__ = 0x16,
+	______XX__XXXXXX = 0x17,
+	______XXXX______ = 0x18,
+	______XXXX____XX = 0x19,
+	______XXXX__XX__ = 0x1a,
+	______XXXX__XXXX = 0x1b,
+	______XXXXXX____ = 0x1c,
+	______XXXXXX__XX = 0x1d,
+	______XXXXXXXX__ = 0x1e,
+	______XXXXXXXXXX = 0x1f,
+	____XX__________ = 0x20,
+	____XX________XX = 0x21,
+	____XX______XX__ = 0x22,
+	____XX______XXXX = 0x23,
+	____XX____XX____ = 0x24,
+	____XX____XX__XX = 0x25,
+	____XX____XXXX__ = 0x26,
+	____XX____XXXXXX = 0x27,
+	____XX__XX______ = 0x28,
+	____XX__XX____XX = 0x29,
+	____XX__XX__XX__ = 0x2a,
+	____XX__XX__XXXX = 0x2b,
+	____XX__XXXX____ = 0x2c,
+	____XX__XXXX__XX = 0x2d,
+	____XX__XXXXXX__ = 0x2e,
+	____XX__XXXXXXXX = 0x2f,
+	____XXXX________ = 0x30,
+	____XXXX______XX = 0x31,
+	____XXXX____XX__ = 0x32,
+	____XXXX____XXXX = 0x33,
+	____XXXX__XX____ = 0x34,
+	____XXXX__XX__XX = 0x35,
+	____XXXX__XXXX__ = 0x36,
+	____XXXX__XXXXXX = 0x37,
+	____XXXXXX______ = 0x38,
+	____XXXXXX____XX = 0x39,
+	____XXXXXX__XX__ = 0x3a,
+	____XXXXXX__XXXX = 0x3b,
+	____XXXXXXXX____ = 0x3c,
+	____XXXXXXXX__XX = 0x3d,
+	____XXXXXXXXXX__ = 0x3e,
+	____XXXXXXXXXXXX = 0x3f,
+	__XX____________ = 0x40,
+	__XX__________XX = 0x41,
+	__XX________XX__ = 0x42,
+	__XX________XXXX = 0x43,
+	__XX______XX____ = 0x44,
+	__XX______XX__XX = 0x45,
+	__XX______XXXX__ = 0x46,
+	__XX______XXXXXX = 0x47,
+	__XX____XX______ = 0x48,
+	__XX____XX____XX = 0x49,
+	__XX____XX__XX__ = 0x4a,
+	__XX____XX__XXXX = 0x4b,
+	__XX____XXXX____ = 0x4c,
+	__XX____XXXX__XX = 0x4d,
+	__XX____XXXXXX__ = 0x4e,
+	__XX____XXXXXXXX = 0x4f,
+	__XX__XX________ = 0x50,
+	__XX__XX______XX = 0x51,
+	__XX__XX____XX__ = 0x52,
+	__XX__XX____XXXX = 0x53,
+	__XX__XX__XX____ = 0x54,
+	__XX__XX__XX__XX = 0x55,
+	__XX__XX__XXXX__ = 0x56,
+	__XX__XX__XXXXXX = 0x57,
+	__XX__XXXX______ = 0x58,
+	__XX__XXXX____XX = 0x59,
+	__XX__XXXX__XX__ = 0x5a,
+	__XX__XXXX__XXXX = 0x5b,
+	__XX__XXXXXX____ = 0x5c,
+	__XX__XXXXXX__XX = 0x5d,
+	__XX__XXXXXXXX__ = 0x5e,
+	__XX__XXXXXXXXXX = 0x5f,
+	__XXXX__________ = 0x60,
+	__XXXX________XX = 0x61,
+	__XXXX______XX__ = 0x62,
+	__XXXX______XXXX = 0x63,
+	__XXXX____XX____ = 0x64,
+	__XXXX____XX__XX = 0x65,
+	__XXXX____XXXX__ = 0x66,
+	__XXXX____XXXXXX = 0x67,
+	__XXXX__XX______ = 0x68,
+	__XXXX__XX____XX = 0x69,
+	__XXXX__XX__XX__ = 0x6a,
+	__XXXX__XX__XXXX = 0x6b,
+	__XXXX__XXXX____ = 0x6c,
+	__XXXX__XXXX__XX = 0x6d,
+	__XXXX__XXXXXX__ = 0x6e,
+	__XXXX__XXXXXXXX = 0x6f,
+	__XXXXXX________ = 0x70,
+	__XXXXXX______XX = 0x71,
+	__XXXXXX____XX__ = 0x72,
+	__XXXXXX____XXXX = 0x73,
+	__XXXXXX__XX____ = 0x74,
+	__XXXXXX__XX__XX = 0x75,
+	__XXXXXX__XXXX__ = 0x76,
+	__XXXXXX__XXXXXX = 0x77,
+	__XXXXXXXX______ = 0x78,
+	__XXXXXXXX____XX = 0x79,
+	__XXXXXXXX__XX__ = 0x7a,
+	__XXXXXXXX__XXXX = 0x7b,
+	__XXXXXXXXXX____ = 0x7c,
+	__XXXXXXXXXX__XX = 0x7d,
+	__XXXXXXXXXXXX__ = 0x7e,
+	__XXXXXXXXXXXXXX = 0x7f,
+	XX______________ = 0x80,
+	XX____________XX = 0x81,
+	XX__________XX__ = 0x82,
+	XX__________XXXX = 0x83,
+	XX________XX____ = 0x84,
+	XX________XX__XX = 0x85,
+	XX________XXXX__ = 0x86,
+	XX________XXXXXX = 0x87,
+	XX______XX______ = 0x88,
+	XX______XX____XX = 0x89,
+	XX______XX__XX__ = 0x8a,
+	XX______XX__XXXX = 0x8b,
+	XX______XXXX____ = 0x8c,
+	XX______XXXX__XX = 0x8d,
+	XX______XXXXXX__ = 0x8e,
+	XX______XXXXXXXX = 0x8f,
+	XX____XX________ = 0x90,
+	XX____XX______XX = 0x91,
+	XX____XX____XX__ = 0x92,
+	XX____XX____XXXX = 0x93,
+	XX____XX__XX____ = 0x94,
+	XX____XX__XX__XX = 0x95,
+	XX____XX__XXXX__ = 0x96,
+	XX____XX__XXXXXX = 0x97,
+	XX____XXXX______ = 0x98,
+	XX____XXXX____XX = 0x99,
+	XX____XXXX__XX__ = 0x9a,
+	XX____XXXX__XXXX = 0x9b,
+	XX____XXXXXX____ = 0x9c,
+	XX____XXXXXX__XX = 0x9d,
+	XX____XXXXXXXX__ = 0x9e,
+	XX____XXXXXXXXXX = 0x9f,
+	XX__XX__________ = 0xa0,
+	XX__XX________XX = 0xa1,
+	XX__XX______XX__ = 0xa2,
+	XX__XX______XXXX = 0xa3,
+	XX__XX____XX____ = 0xa4,
+	XX__XX____XX__XX = 0xa5,
+	XX__XX____XXXX__ = 0xa6,
+	XX__XX____XXXXXX = 0xa7,
+	XX__XX__XX______ = 0xa8,
+	XX__XX__XX____XX = 0xa9,
+	XX__XX__XX__XX__ = 0xaa,
+	XX__XX__XX__XXXX = 0xab,
+	XX__XX__XXXX____ = 0xac,
+	XX__XX__XXXX__XX = 0xad,
+	XX__XX__XXXXXX__ = 0xae,
+	XX__XX__XXXXXXXX = 0xaf,
+	XX__XXXX________ = 0xb0,
+	XX__XXXX______XX = 0xb1,
+	XX__XXXX____XX__ = 0xb2,
+	XX__XXXX____XXXX = 0xb3,
+	XX__XXXX__XX____ = 0xb4,
+	XX__XXXX__XX__XX = 0xb5,
+	XX__XXXX__XXXX__ = 0xb6,
+	XX__XXXX__XXXXXX = 0xb7,
+	XX__XXXXXX______ = 0xb8,
+	XX__XXXXXX____XX = 0xb9,
+	XX__XXXXXX__XX__ = 0xba,
+	XX__XXXXXX__XXXX = 0xbb,
+	XX__XXXXXXXX____ = 0xbc,
+	XX__XXXXXXXX__XX = 0xbd,
+	XX__XXXXXXXXXX__ = 0xbe,
+	XX__XXXXXXXXXXXX = 0xbf,
+	XXXX____________ = 0xc0,
+	XXXX__________XX = 0xc1,
+	XXXX________XX__ = 0xc2,
+	XXXX________XXXX = 0xc3,
+	XXXX______XX____ = 0xc4,
+	XXXX______XX__XX = 0xc5,
+	XXXX______XXXX__ = 0xc6,
+	XXXX______XXXXXX = 0xc7,
+	XXXX____XX______ = 0xc8,
+	XXXX____XX____XX = 0xc9,
+	XXXX____XX__XX__ = 0xca,
+	XXXX____XX__XXXX = 0xcb,
+	XXXX____XXXX____ = 0xcc,
+	XXXX____XXXX__XX = 0xcd,
+	XXXX____XXXXXX__ = 0xce,
+	XXXX____XXXXXXXX = 0xcf,
+	XXXX__XX________ = 0xd0,
+	XXXX__XX______XX = 0xd1,
+	XXXX__XX____XX__ = 0xd2,
+	XXXX__XX____XXXX = 0xd3,
+	XXXX__XX__XX____ = 0xd4,
+	XXXX__XX__XX__XX = 0xd5,
+	XXXX__XX__XXXX__ = 0xd6,
+	XXXX__XX__XXXXXX = 0xd7,
+	XXXX__XXXX______ = 0xd8,
+	XXXX__XXXX____XX = 0xd9,
+	XXXX__XXXX__XX__ = 0xda,
+	XXXX__XXXX__XXXX = 0xdb,
+	XXXX__XXXXXX____ = 0xdc,
+	XXXX__XXXXXX__XX = 0xdd,
+	XXXX__XXXXXXXX__ = 0xde,
+	XXXX__XXXXXXXXXX = 0xdf,
+	XXXXXX__________ = 0xe0,
+	XXXXXX________XX = 0xe1,
+	XXXXXX______XX__ = 0xe2,
+	XXXXXX______XXXX = 0xe3,
+	XXXXXX____XX____ = 0xe4,
+	XXXXXX____XX__XX = 0xe5,
+	XXXXXX____XXXX__ = 0xe6,
+	XXXXXX____XXXXXX = 0xe7,
+	XXXXXX__XX______ = 0xe8,
+	XXXXXX__XX____XX = 0xe9,
+	XXXXXX__XX__XX__ = 0xea,
+	XXXXXX__XX__XXXX = 0xeb,
+	XXXXXX__XXXX____ = 0xec,
+	XXXXXX__XXXX__XX = 0xed,
+	XXXXXX__XXXXXX__ = 0xee,
+	XXXXXX__XXXXXXXX = 0xef,
+	XXXXXXXX________ = 0xf0,
+	XXXXXXXX______XX = 0xf1,
+	XXXXXXXX____XX__ = 0xf2,
+	XXXXXXXX____XXXX = 0xf3,
+	XXXXXXXX__XX____ = 0xf4,
+	XXXXXXXX__XX__XX = 0xf5,
+	XXXXXXXX__XXXX__ = 0xf6,
+	XXXXXXXX__XXXXXX = 0xf7,
+	XXXXXXXXXX______ = 0xf8,
+	XXXXXXXXXX____XX = 0xf9,
+	XXXXXXXXXX__XX__ = 0xfa,
+	XXXXXXXXXX__XXXX = 0xfb,
+	XXXXXXXXXXXX____ = 0xfc,
+	XXXXXXXXXXXX__XX = 0xfd,
+	XXXXXXXXXXXXXX__ = 0xfe,
+	XXXXXXXXXXXXXXXX = 0xff
+};
+using BM_BPP1 = const BITS_BPP1;
+
+enum BITS_BPP2 : uint8_t {
+	________ = 0x00,
+	______XX = 0x01,
+	______oo = 0x02,
+	______dd = 0x03,
+	____XX__ = 0x04,
+	____XXXX = 0x05,
+	____XXoo = 0x06,
+	____XXdd = 0x07,
+	____oo__ = 0x08,
+	____ooXX = 0x09,
+	____oooo = 0x0A,
+	____oodd = 0x0B,
+	____dd__ = 0x0C,
+	____ddXX = 0x0D,
+	____ddoo = 0x0E,
+	____dddd = 0x0F,
+	__XX____ = 0x10,
+	__XX__XX = 0x11,
+	__XX__oo = 0x12,
+	__XX__dd = 0x13,
+	__XXXX__ = 0x14,
+	__XXXXXX = 0x15,
+	__XXXXoo = 0x16,
+	__XXXXdd = 0x17,
+	__XXoo__ = 0x18,
+	__XXooXX = 0x19,
+	__XXoooo = 0x1A,
+	__XXoodd = 0x1B,
+	__XXdd__ = 0x1C,
+	__XXddXX = 0x1D,
+	__XXddoo = 0x1E,
+	__XXdddd = 0x1F,
+	__oo____ = 0x20,
+	__oo__XX = 0x21,
+	__oo__oo = 0x22,
+	__oo__dd = 0x23,
+	__ooXX__ = 0x24,
+	__ooXXXX = 0x25,
+	__ooXXoo = 0x26,
+	__ooXXdd = 0x27,
+	__oooo__ = 0x28,
+	__ooooXX = 0x29,
+	__oooooo = 0x2A,
+	__oooodd = 0x2B,
+	__oodd__ = 0x2C,
+	__ooddXX = 0x2D,
+	__ooddoo = 0x2E,
+	__oodddd = 0x2F,
+	__dd____ = 0x30,
+	__dd__XX = 0x31,
+	__dd__oo = 0x32,
+	__dd__dd = 0x33,
+	__ddXX__ = 0x34,
+	__ddXXXX = 0x35,
+	__ddXXoo = 0x36,
+	__ddXXdd = 0x37,
+	__ddoo__ = 0x38,
+	__ddooXX = 0x39,
+	__ddoooo = 0x3A,
+	__ddoodd = 0x3B,
+	__dddd__ = 0x3C,
+	__ddddXX = 0x3D,
+	__ddddoo = 0x3E,
+	__dddddd = 0x3F,
+	XX______ = 0x40,
+	XX____XX = 0x41,
+	XX____oo = 0x42,
+	XX____dd = 0x43,
+	XX__XX__ = 0x44,
+	XX__XXXX = 0x45,
+	XX__XXoo = 0x46,
+	XX__XXdd = 0x47,
+	XX__oo__ = 0x48,
+	XX__ooXX = 0x49,
+	XX__oooo = 0x4A,
+	XX__oodd = 0x4B,
+	XX__dd__ = 0x4C,
+	XX__ddXX = 0x4D,
+	XX__ddoo = 0x4E,
+	XX__dddd = 0x4F,
+	XXXX____ = 0x50,
+	XXXX__XX = 0x51,
+	XXXX__oo = 0x52,
+	XXXX__dd = 0x53,
+	XXXXXX__ = 0x54,
+	XXXXXXXX = 0x55,
+	XXXXXXoo = 0x56,
+	XXXXXXdd = 0x57,
+	XXXXoo__ = 0x58,
+	XXXXooXX = 0x59,
+	XXXXoooo = 0x5A,
+	XXXXoodd = 0x5B,
+	XXXXdd__ = 0x5C,
+	XXXXddXX = 0x5D,
+	XXXXddoo = 0x5E,
+	XXXXdddd = 0x5F,
+	XXoo____ = 0x60,
+	XXoo__XX = 0x61,
+	XXoo__oo = 0x62,
+	XXoo__dd = 0x63,
+	XXooXX__ = 0x64,
+	XXooXXXX = 0x65,
+	XXooXXoo = 0x66,
+	XXooXXdd = 0x67,
+	XXoooo__ = 0x68,
+	XXooooXX = 0x69,
+	XXoooooo = 0x6A,
+	XXoooodd = 0x6B,
+	XXoodd__ = 0x6C,
+	XXooddXX = 0x6D,
+	XXooddoo = 0x6E,
+	XXoodddd = 0x6F,
+	XXdd____ = 0x70,
+	XXdd__XX = 0x71,
+	XXdd__oo = 0x72,
+	XXdd__dd = 0x73,
+	XXddXX__ = 0x74,
+	XXddXXXX = 0x75,
+	XXddXXoo = 0x76,
+	XXddXXdd = 0x77,
+	XXddoo__ = 0x78,
+	XXddooXX = 0x79,
+	XXddoooo = 0x7A,
+	XXddoodd = 0x7B,
+	XXdddd__ = 0x7C,
+	XXddddXX = 0x7D,
+	XXddddoo = 0x7E,
+	XXdddddd = 0x7F,
+	oo______ = 0x80,
+	oo____XX = 0x81,
+	oo____oo = 0x82,
+	oo____dd = 0x83,
+	oo__XX__ = 0x84,
+	oo__XXXX = 0x85,
+	oo__XXoo = 0x86,
+	oo__XXdd = 0x87,
+	oo__oo__ = 0x88,
+	oo__ooXX = 0x89,
+	oo__oooo = 0x8A,
+	oo__oodd = 0x8B,
+	oo__dd__ = 0x8C,
+	oo__ddXX = 0x8D,
+	oo__ddoo = 0x8E,
+	oo__dddd = 0x8F,
+	ooXX____ = 0x90,
+	ooXX__XX = 0x91,
+	ooXX__oo = 0x92,
+	ooXX__dd = 0x93,
+	ooXXXX__ = 0x94,
+	ooXXXXXX = 0x95,
+	ooXXXXoo = 0x96,
+	ooXXXXdd = 0x97,
+	ooXXoo__ = 0x98,
+	ooXXooXX = 0x99,
+	ooXXoooo = 0x9A,
+	ooXXoodd = 0x9B,
+	ooXXdd__ = 0x9C,
+	ooXXddXX = 0x9D,
+	ooXXddoo = 0x9E,
+	ooXXdddd = 0x9F,
+	oooo____ = 0xA0,
+	oooo__XX = 0xA1,
+	oooo__oo = 0xA2,
+	oooo__dd = 0xA3,
+	ooooXX__ = 0xA4,
+	ooooXXXX = 0xA5,
+	ooooXXoo = 0xA6,
+	ooooXXdd = 0xA7,
+	oooooo__ = 0xA8,
+	ooooooXX = 0xA9,
+	oooooooo = 0xAA,
+	oooooodd = 0xAB,
+	oooodd__ = 0xAC,
+	ooooddXX = 0xAD,
+	ooooddoo = 0xAE,
+	oooodddd = 0xAF,
+	oodd____ = 0xB0,
+	oodd__XX = 0xB1,
+	oodd__oo = 0xB2,
+	oodd__dd = 0xB3,
+	ooddXX__ = 0xB4,
+	ooddXXXX = 0xB5,
+	ooddXXoo = 0xB6,
+	ooddXXdd = 0xB7,
+	ooddoo__ = 0xB8,
+	ooddooXX = 0xB9,
+	ooddoooo = 0xBA,
+	ooddoodd = 0xBB,
+	oodddd__ = 0xBC,
+	ooddddXX = 0xBD,
+	ooddddoo = 0xBE,
+	oodddddd = 0xBF,
+	dd______ = 0xC0,
+	dd____XX = 0xC1,
+	dd____oo = 0xC2,
+	dd____dd = 0xC3,
+	dd__XX__ = 0xC4,
+	dd__XXXX = 0xC5,
+	dd__XXoo = 0xC6,
+	dd__XXdd = 0xC7,
+	dd__oo__ = 0xC8,
+	dd__ooXX = 0xC9,
+	dd__oooo = 0xCA,
+	dd__oodd = 0xCB,
+	dd__dd__ = 0xCC,
+	dd__ddXX = 0xCD,
+	dd__ddoo = 0xCE,
+	dd__dddd = 0xCF,
+	ddXX____ = 0xD0,
+	ddXX__XX = 0xD1,
+	ddXX__oo = 0xD2,
+	ddXX__dd = 0xD3,
+	ddXXXX__ = 0xD4,
+	ddXXXXXX = 0xD5,
+	ddXXXXoo = 0xD6,
+	ddXXXXdd = 0xD7,
+	ddXXoo__ = 0xD8,
+	ddXXooXX = 0xD9,
+	ddXXoooo = 0xDA,
+	ddXXoodd = 0xDB,
+	ddXXdd__ = 0xDC,
+	ddXXddXX = 0xDD,
+	ddXXddoo = 0xDE,
+	ddXXdddd = 0xDF,
+	ddoo____ = 0xE0,
+	ddoo__XX = 0xE1,
+	ddoo__oo = 0xE2,
+	ddoo__dd = 0xE3,
+	ddooXX__ = 0xE4,
+	ddooXXXX = 0xE5,
+	ddooXXoo = 0xE6,
+	ddooXXdd = 0xE7,
+	ddoooo__ = 0xE8,
+	ddooooXX = 0xE9,
+	ddoooooo = 0xEA,
+	ddoooodd = 0xEB,
+	ddoodd__ = 0xEC,
+	ddooddXX = 0xED,
+	ddooddoo = 0xEE,
+	ddoodddd = 0xEF,
+	dddd____ = 0xF0,
+	dddd__XX = 0xF1,
+	dddd__oo = 0xF2,
+	dddd__dd = 0xF3,
+	ddddXX__ = 0xF4,
+	ddddXXXX = 0xF5,
+	ddddXXoo = 0xF6,
+	ddddXXdd = 0xF7,
+	ddddoo__ = 0xF8,
+	ddddooXX = 0xF9,
+	ddddoooo = 0xFA,
+	ddddoodd = 0xFB,
+	dddddd__ = 0xFC,
+	ddddddXX = 0xFD,
+	ddddddoo = 0xFE,
+	dddddddd = 0xFF
+};
+using BM_BPP2 = const BITS_BPP2;
+#pragma endregion
+
+}

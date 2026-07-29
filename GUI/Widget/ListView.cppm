@@ -19,7 +19,7 @@ enum LISTVIEW_CI {
 
 struct LISTVIEW_Obj : public WIDGET {
 	struct Properties {
-		PCFONT pFont{ &GUI_Font13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 		RGBC aBkColor[3]{
 			/* Not selected */       RGB_WHITE,
 			/* Selected, no focus */ RGB_GRAY,
@@ -456,7 +456,7 @@ public:
 		_UpdateScrollParas();
 		_InvalidateInsideArea();
 	}
-	void AddRow(const GUI_ConstString *ppText) {
+	void AddRow(const char **ppText) {
 		int NumRows;
 		NumRows = GUI_ARRAY_GetNumItems(&RowArray);
 		/* Create GUI_ARRAY for the new row */

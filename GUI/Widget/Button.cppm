@@ -31,7 +31,7 @@ enum BUTTON_CI {
 
 struct BUTTON_Obj : public WIDGET {
 	struct Properties {
-		PCFONT pFont{ &GUI_Font13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 		RGBC aTextColor[3]{
 			/* Unpressed */	RGB_BLACK,
 			/* Pressed */	RGB_BLACK,

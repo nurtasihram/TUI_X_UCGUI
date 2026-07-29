@@ -40,7 +40,7 @@ struct LISTBOX_ITEM {
 
 struct LISTBOX_Obj : public WIDGET {
 	struct Properties {
-		PCFONT pFont{ &GUI_Font13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 		RGBC aBkColor[4]{
 			/* Unselect */			RGB_WHITE,
 			/* Selected */			RGB_GRAY,
@@ -62,7 +62,7 @@ struct LISTBOX_Obj : public WIDGET {
 	WM_Obj *hOwner;
 	int16_t Sel; /* current selection */
 	uint8_t Flags;
-	uint8_t  ScrollbarWidth;
+	uint16_t  ScrollbarWidth;
 	uint16_t ItemSpacing;
 
 	void _NotifyOwner(int Notification) {
@@ -697,7 +697,7 @@ public:
 			}
 		}
 	}
-	void SetText(const GUI_ConstString *ppText) {
+	void SetText(const char **ppText) {
 		int i;
 		const char *s;
 		if (ppText) {
@@ -1018,7 +1018,7 @@ public:
 LISTBOX_Obj::Properties LISTBOX_Obj::DefaultProps;
 
 LISTBOX_Obj *LISTBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
-								int WinFlags, int ExFlags, int Id, const GUI_ConstString *ppText) {
+								int WinFlags, int ExFlags, int Id, const char **ppText) {
 	auto pObj = (LISTBOX_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, LISTBOX_Obj::_Callback,
 								  sizeof(LISTBOX_Obj) - sizeof(WM_Obj));
 	if (pObj) {
@@ -1035,10 +1035,10 @@ LISTBOX_Obj *LISTBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hPar
 	}
 	return pObj;
 }
-LISTBOX_Obj *LISTBOX_Create(const GUI_ConstString *ppText, int x0, int y0, int xsize, int ysize, int Flags) {
+LISTBOX_Obj *LISTBOX_Create(const char **ppText, int x0, int y0, int xsize, int ysize, int Flags) {
 	return LISTBOX_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, 0, ppText);
 }
-LISTBOX_Obj *LISTBOX_CreateAsChild(const GUI_ConstString *ppText, WM_Obj *hWinParent,
+LISTBOX_Obj *LISTBOX_CreateAsChild(const char **ppText, WM_Obj *hWinParent,
 									 int x0, int y0, int xsize, int ysize, int Flags) {
 	return LISTBOX_CreateEx(x0, y0, xsize, ysize, hWinParent, Flags, 0, 0, ppText);
 }

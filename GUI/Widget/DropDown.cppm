@@ -21,7 +21,7 @@ constexpr uint16_t DROPDOWN_CI_SELFOCUS  = 2;
 
 struct DROPDOWN_Obj : public WIDGET {
 	struct Properties {
-		PCFONT pFont{ &GUI_Font13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 		RGBC aBkColor[4]{
 			/* Unselect */			RGB_WHITE,
 			/* Selected */			RGB_GRAY,

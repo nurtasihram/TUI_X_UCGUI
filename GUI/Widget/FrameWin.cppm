@@ -32,7 +32,7 @@ constexpr uint16_t FRAMEWIN_BUTTON_LEFT    = 1 << 1;
 
 struct FRAMEWIN_Obj : public WIDGET {
 	struct Properties {
-		PCFONT pFont{ &GUI_Font13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 		RGBC aTextColor[2]{
 			/* Lose focused */	RGB_BLACK,
 			/* Focused */		RGB_WHITE

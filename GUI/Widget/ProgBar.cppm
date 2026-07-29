@@ -11,7 +11,7 @@ export {
 
 struct PROGBAR_Obj : public WIDGET {
 	struct Properties {
-		PCFONT pFont{ &GUI_Font13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 		RGBC aBkColor[2]{
 			/* Active */	RGB_DARKBLUE,
 			/* Inactive */	RGB_GRAYL(0x55)

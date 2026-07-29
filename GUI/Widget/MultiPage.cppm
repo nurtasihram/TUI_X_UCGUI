@@ -26,7 +26,7 @@ struct MULTIPAGE_PAGE {
 };
 struct MULTIPAGE_Obj : public WIDGET {
 	struct Properties {
-		PCFONT Font{ &GUI_Font13_1 };
+		PCFONT Font{ &FontProp13_1 };
 		RGBC aBkColor[MULTIPAGE_NUMCOLORS]{
 			/* Disabled page */	RGB_GRAYL(0xD0),
 			/* Enabled page */	RGB_GRAYL(0xC0)

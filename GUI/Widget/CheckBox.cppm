@@ -22,7 +22,7 @@ enum CHECKBOX_CI {
 struct CHECKBOX_Obj : public WIDGET {
 	static CBITMAP abmCheck[2];
 	struct Properties {
-		PCFONT pFont{ &GUI_Font13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 		PCBITMAP apBm[4]{
 			/* Inactive */	&abmCheck[0],
 			/* Active */	&abmCheck[1],

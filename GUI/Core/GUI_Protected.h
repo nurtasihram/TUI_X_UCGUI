@@ -5,11 +5,11 @@
 #include "GUIDebug.h"
 
 #ifndef GUI_DEFAULT_FONT
-#define GUI_DEFAULT_FONT    &GUI_Font6x8
+#define GUI_DEFAULT_FONT    &FontMono6x8
 #endif
 
 #ifndef GUI_DEFAULT_CURSOR
-#define GUI_DEFAULT_CURSOR  &GUI_CursorArrowM
+#define GUI_DEFAULT_CURSOR  &CursorArrowM
 #endif
 
 #ifndef GUI_DEFAULT_BKCOLOR

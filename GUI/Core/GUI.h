@@ -1,9 +1,10 @@
 #pragma once
 
+#include "LCD.h"
 #include "GUI_ConfDefaults.h"
-#include "GUIType.h"
-#include "Dots.inl"
 
+import TUX;
+import TUX.Resources;
 
 #define GUI_COUNTOF(a) (sizeof(a) / sizeof(a[0]))
 
@@ -66,52 +67,7 @@ Note that we have chosen the values to be close to existing
 #define GUI_TS_STRIKETHRU       (1 << 1)
 #define GUI_TS_OVERLINE         (1 << 2)
 
-/*      *********************************
-		*
-		*      Standard colors
-		*
-		*********************************
-*/
-#pragma region Color definitions
-constexpr RGBC COLOR_RGB (uint8_t r, uint8_t g, uint8_t b) { return (b) | ((g) << 8) | ((r) << 16); }
-constexpr RGBC RGB_GRAYL (uint8_t a) { return COLOR_RGB(a,a,a); }
-constexpr RGBC RGB_BLUEL (uint8_t a) { return COLOR_RGB(0,0,a); }
-constexpr RGBC RGB_GREENL(uint8_t a) { return COLOR_RGB(0,a,0); }
-constexpr RGBC RGB_REDL  (uint8_t a) { return COLOR_RGB(a,0,0); }
-constexpr RGBC RGB_BLACK           = RGB_GRAYL(0x00);
-constexpr RGBC RGB_DARKGRAY        = RGB_GRAYL(0x40);
-constexpr RGBC RGB_GRAY            = RGB_GRAYL(0x80);
-constexpr RGBC RGB_LIGHTGRAY       = RGB_GRAYL(0xD3);
-constexpr RGBC RGB_WHITE           = RGB_GRAYL(0xFF);
-constexpr RGBC RGB_BLUE            = COLOR_RGB(0x00,0x00,0xFF);
-constexpr RGBC RGB_GREEN           = COLOR_RGB(0x00,0xFF,0x00);
-constexpr RGBC RGB_RED             = COLOR_RGB(0xFF,0x00,0x00);
-constexpr RGBC RGB_CYAN            = COLOR_RGB(0x00,0xFF,0xFF);
-constexpr RGBC RGB_MAGENTA         = COLOR_RGB(0xFF,0x00,0xFF);
-constexpr RGBC RGB_YELLOW          = COLOR_RGB(0xFF,0xFF,0x00);
-constexpr RGBC RGB_LIGHTBLUE       = COLOR_RGB(0x80,0x80,0xFF);
-constexpr RGBC RGB_LIGHTGREEN      = COLOR_RGB(0x80,0xFF,0x80);
-constexpr RGBC RGB_LIGHTRED        = COLOR_RGB(0xFF,0x80,0x80);
-constexpr RGBC RGB_LIGHTCYAN       = COLOR_RGB(0x80,0xFF,0xFF);
-constexpr RGBC RGB_LIGHTMAGENTA    = COLOR_RGB(0xFF,0x80,0xFF);
-constexpr RGBC RGB_LIGHTYELLOW     = COLOR_RGB(0xFF,0xFF,0x80);
-constexpr RGBC RGB_DARKBLUE        = COLOR_RGB(0x00,0x00,0x80);
-constexpr RGBC RGB_DARKGREEN       = COLOR_RGB(0x00,0x80,0x00);
-constexpr RGBC RGB_DARKRED         = COLOR_RGB(0x80,0x00,0x00);
-constexpr RGBC RGB_DARKCYAN        = COLOR_RGB(0x00,0x80,0x80);
-constexpr RGBC RGB_DARKMAGENTA     = COLOR_RGB(0x80,0x00,0x80);
-constexpr RGBC RGB_DARKYELLOW      = COLOR_RGB(0x80,0x80,0x00);
-constexpr RGBC RGB_BROWN           = COLOR_RGB(0xA5,0x2A,0x2A);
 
-constexpr RGBC RGB_INVALID_COLOR   = ~0;      /* Invalid color - more than 24 bits */
-#pragma endregion
-
-/*      *********************************
-		*
-		*      Coordinates
-		*
-		*********************************
-*/
 #define GUI_COORD_X 0
 #define GUI_COORD_Y 1
 
@@ -152,34 +108,6 @@ using TEXTALIGN = uint8_t;
 #define GUI_XMAX  4095
 #define GUI_YMIN -4095
 #define GUI_YMAX  4095
-
-/*********************************************************************
-*
-*             GUI_CONTEXT
-*
-* This structure is public for one reason only:
-* To allow the application to save and restore the context.
-*/
-struct GUI_CONTEXT {
-	/* Variables in LCD module */
-	uint32_t aColor[2];
-	GUI_RECT ClipRect;
-	uint8_t DrawMode;
-	/* Variables in GUICHAR module */
-	PCFONT pAFont;
-	const GUI_UC_ENC_APILIST *pUC_API; /* Unicode encoding API */
-	GUI_POINT DispPos;
-	int16_t TextMode, TextAlign;
-	/* Variables in WM module */
-	const GUI_RECT *WM__pUserClipRect;
-	GUI_POINT Off;
-	/* Variables in MEMDEV module (with memory devices only) */
-#if GUI_SUPPORT_DEVICES
-	const tLCDDEV_APIList *pDeviceAPI;  /* function pointers only */
-	GUI_HMEM    hDevData;
-	GUI_RECT    ClipRectPrev;
-#endif
-};
 
 void         GUI_Init(void);
 void         GUI_SetDefault(void);
