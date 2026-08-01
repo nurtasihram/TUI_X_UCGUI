@@ -25,7 +25,7 @@ WM_Obj * GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidg
 							int x0, int y0) {
 	auto hDialog = paWidget->pfCreateIndirect(paWidget, hParent, x0, y0, cb);     /* Create parent window */
 	auto hDialogClient = WM_GetClientWindow(hDialog);
-	WIDGET_OrState(hDialog, paWidget->Flags);
+	((WIDGET *)hDialog)->AddStates(paWidget->Flags);
 	WM_ShowWindow(hDialog);
 	WM_ShowWindow(hDialogClient);
 	while (--NumWidgets > 0) {

@@ -100,12 +100,12 @@ struct BUTTON_Obj : public WIDGET {
 		GUI_ALLOC_FreePtr((void **)&this->aDrawObj[1]);
 	}
 	void _ButtonPressed() {
-		WIDGET_OrState(this, BUTTON_STATE_PRESSED);
+		AddStates(BUTTON_STATE_PRESSED);
 		if (this->Status & WM_SF_ISVIS)
 			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
 	}
 	void _ButtonReleased(int Notification) {
-		WIDGET_AndState(this, BUTTON_STATE_PRESSED);
+		DelStates(BUTTON_STATE_PRESSED);
 		if (this->Status & WM_SF_ISVIS)
 			WM_NotifyParent(this, Notification);
 		if (Notification == WM_NOTIFICATION_RELEASED) {
@@ -251,21 +251,12 @@ public:
 			WM_Invalidate(this);
 		}
 	}
-	void SetState(int State) {
-		WIDGET_SetState(this, State);
-	}
 
-	void SetPressed(int State) {
-		if (State)
-			WIDGET_OrState(this, BUTTON_STATE_PRESSED);
-		else
-			WIDGET_AndState(this, BUTTON_STATE_PRESSED);
+	void SetPressed(bool On) {
+		CtlStates(BUTTON_STATE_PRESSED, On);
 	}
-	void SetFocussable(int State) {
-		if (State)
-			WIDGET_OrState(this, WIDGET_STATE_FOCUSSABLE);
-		else
-			WIDGET_AndState(this, WIDGET_STATE_FOCUSSABLE);
+	void SetFocussable(bool On) {
+		CtlStates(WIDGET_STATE_FOCUSSABLE, On);
 	}
 };
 

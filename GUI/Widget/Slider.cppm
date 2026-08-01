@@ -81,12 +81,12 @@ struct SLIDER_Obj : public WIDGET {
 		}
 	}
 	void _SliderPressed() {
-		WIDGET_OrState(this, SLIDER_STATE_PRESSED);
+		AddStates(SLIDER_STATE_PRESSED);
 		if (this->Status & WM_SF_ISVIS)
 			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
 	}
 	void _SliderReleased() {
-		WIDGET_AndState(this, SLIDER_STATE_PRESSED);
+		DelStates(SLIDER_STATE_PRESSED);
 		if (this->Status & WM_SF_ISVIS)
 			WM_NotifyParent(this, WM_NOTIFICATION_RELEASED);
 	}

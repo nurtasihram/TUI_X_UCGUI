@@ -96,6 +96,7 @@ struct WIDGET : public WM_Obj {
 	static PCWIDGET_EFFECT DefaultEffect;
 	PCWIDGET_EFFECT pEffect = DefaultEffect;
 	uint16_t Id, State;
+
 	void SetBkColorPrefer(RGBC BkColor) {
 		while (BkColor == RGB_INVALID_COLOR) {
 			auto pParent = WM_GetParent(this);
@@ -126,57 +127,27 @@ struct WIDGET : public WM_Obj {
 		if (pEffect)
 			pEffect->DrawDown(r);
 	}
+
+	auto GetStates() const { return State; }
+	void SetStates(uint16_t States) {
+		if (this->State != States) {
+			this->State = States;
+			WM_Invalidate(this);
+		}
+	}
+	void AddStates(uint16_t States) {
+		SetStates(State | States);
+	}
+	void DelStates(uint16_t States) {
+		SetStates(State & ~States);
+	}
+	void CtlStates(uint16_t States, bool On) {
+		SetStates(On ? State | States : State & ~States);
+	}
 };
-
-GUI_RECT  WIDGET__GetInsideRect(WIDGET *pWidget);
-
-void      WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State);
-void      WIDGET__SetScrollState(WM_Obj *hWin, const WM_SCROLL_STATE *pVState, const WM_SCROLL_STATE *pState);
-void      WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_RECT TextRectMax, GUI_RECT TextRectAct);
-
-void  WIDGET_SetState(WM_Obj *hObj, int State);
-void  WIDGET_AndState(WM_Obj *hObj, int State);
-void  WIDGET_OrState(WM_Obj *hObj, int State);
-int   WIDGET_GetState(WM_Obj *hObj);
-
-void  WIDGET_SetEffect(WM_Obj *hObj, const WIDGET_EFFECT *pEffect);
-
-bool  WIDGET_HandleActive(WM_Obj *hObj, int MsgId, WM_PARAM *Data);
-}
-
-PCWIDGET_EFFECT WIDGET::DefaultEffect = WIDGET_Effect_3D2L;
 
 GUI_RECT WIDGET__GetInsideRect(WIDGET *pWidget) {
 	return WM_GetClientRect(pWidget) - pWidget->EffectSize();
-}
-
-void WIDGET_SetState(WM_Obj *hObj, int State) {
-	auto pWidget = (WIDGET *)hObj;
-	if (State != pWidget->State) {
-		pWidget->State = State;
-		WM_Invalidate(hObj);
-	}
-}
-int WIDGET_GetState(WM_Obj *hObj) {
-	auto pWidget = (WIDGET *)hObj;
-	if (hObj)
-		return pWidget->State;
-	return 0;
-}
-void WIDGET_OrState(WM_Obj *hObj, int State) {
-	auto pWidget = (WIDGET *)hObj;
-		if (State != (pWidget->State & State)) {
-			pWidget->State |= State;
-			WM_Invalidate(hObj);
-		}
-}
-void WIDGET_AndState(WM_Obj *hObj, int Mask) {
-		auto pWidget = (WIDGET *)hObj;
-		auto StateNew = pWidget->State & (~Mask);
-		if (pWidget->State != StateNew) {
-			pWidget->State = StateNew;
-			WM_Invalidate(hObj);
-		}
 }
 
 void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
@@ -225,11 +196,11 @@ bool WIDGET_HandleActive(WM_Obj *hObj, int MsgId, WM_PARAM *Data) {
 		case WM_SET_FOCUS: {
 			int Notification;
 			if (*Data) {
-				WIDGET_SetState(hObj, pWidget->State | WIDGET_STATE_FOCUS);
+				pWidget->SetStates(pWidget->State | WIDGET_STATE_FOCUS);
 				Notification = WM_NOTIFICATION_GOT_FOCUS;
 			}
 			else {
-				WIDGET_SetState(hObj, pWidget->State & ~WIDGET_STATE_FOCUS);
+				pWidget->SetStates(pWidget->State & ~WIDGET_STATE_FOCUS);
 				Notification = WM_NOTIFICATION_LOST_FOCUS;
 			}
 			WM_NotifyParent(hObj, Notification);
@@ -276,3 +247,7 @@ void WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_RECT Tex
 	}
 	GUI_ClearRect(FillRect);
 }
+
+}
+
+PCWIDGET_EFFECT WIDGET::DefaultEffect = WIDGET_Effect_3D2L;

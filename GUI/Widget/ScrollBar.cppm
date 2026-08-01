@@ -158,12 +158,12 @@ struct SCROLLBAR_Obj : public WIDGET {
 		}
 	}
 	void _ScrollbarPressed() {
-		WIDGET_OrState(this, SCROLLBAR_STATE_PRESSED);
+		AddStates(SCROLLBAR_STATE_PRESSED);
 		if (Status & WM_SF_ISVIS)
 			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
 	}
 	void _ScrollbarReleased() {
-		WIDGET_AndState(this, SCROLLBAR_STATE_PRESSED);
+		DelStates(SCROLLBAR_STATE_PRESSED);
 		if (Status & WM_SF_ISVIS)
 			WM_NotifyParent(this, WM_NOTIFICATION_RELEASED);
 	}
