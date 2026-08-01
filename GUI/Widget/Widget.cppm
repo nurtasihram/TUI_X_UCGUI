@@ -99,15 +99,18 @@ struct WIDGET : public WM_Obj {
 
 	void SetBkColorPrefer(RGBC BkColor) {
 		while (BkColor == RGB_INVALID_COLOR) {
-			auto pParent = WM_GetParent(this);
-			if (pParent)
-				BkColor = WM_GetBkColor(pParent);
+			if (auto pParent = WM_GetParent(this))
+				BkColor = pParent->GetBkColor();
 			else
 				break;
 		}
 		GUI.SetBkColor(BkColor);
 	}
 
+	void SetScrollState(const WM_SCROLL_STATE &VState, const WM_SCROLL_STATE &HState);
+	void SetEffect(const WIDGET_EFFECT *pEffect) {
+		SendMessage(WM_WIDGET_SET_EFFECT, (WM_PARAM)pEffect);
+	}
 	auto EffectSize() const {
 		return pEffect ? pEffect->EffectSize : 0;
 	}
@@ -215,15 +218,6 @@ bool WIDGET_HandleActive(WM_Obj *hObj, int MsgId, WM_PARAM *Data) {
 			return false; /* Message handled */
 	}
 	return true; /* Message NOT handled */
-}
-
-void WIDGET__SetScrollState(WM_Obj *hWin, const WM_SCROLL_STATE *pVState, const WM_SCROLL_STATE *pHState) {
-	WM_SetScrollState(WM_GetDialogItem(hWin, GUI_ID_VSCROLL), pVState);
-	WM_SetScrollState(WM_GetDialogItem(hWin, GUI_ID_HSCROLL), pHState);
-}
-
-void WIDGET_SetEffect(WM_Obj *hObj, const WIDGET_EFFECT *pEffect) {
-	WM_SendMessage(hObj, WM_WIDGET_SET_EFFECT, (WM_PARAM)pEffect);
 }
 
 void WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_RECT TextRectMax, GUI_RECT TextRectAct) {

@@ -102,7 +102,7 @@ struct FRAMEWIN_Obj : public WIDGET {
 			int x1 = pChild->Rect.x1 - this->Rect.x0;
 			int y0 = pChild->Rect.y0 - this->Rect.y0;
 			if (y0 == BorderSize) {
-				if (pChild->Status & WM_SF_ANCHOR_RIGHT) {
+				if (pChild->Status & WC_ANCHOR_RIGHT) {
 					if (x0 <= pPos->rTitleText.x1)
 						pPos->rTitleText.x1 = x0 - 1;
 				}
@@ -139,7 +139,7 @@ struct FRAMEWIN_Obj : public WIDGET {
 				for (pChild = this->pFirstChild; pChild; pChild = pChild->pNext) {
 					auto r = pChild->Rect - this->Rect.LeftTop();
 					if ((r.y0 == this->Props.BorderSize) && ((r.y1 - r.y0 + 1) == OldHeight)) {
-						if (pChild->Status & WM_SF_ANCHOR_RIGHT) {
+						if (pChild->Status & WC_ANCHOR_RIGHT) {
 							if (r.x1 > xRight) {
 								pRight = pChild;
 								xRight = r.x0;
@@ -266,8 +266,9 @@ struct FRAMEWIN_Obj : public WIDGET {
 				return (WM_PARAM)pObj->hClient;
 			case WM_NOTIFY_PARENT: {
 				auto pInfo = (const WM_NOTIFY_INFO *)Data;
+				auto pWinSrc = pInfo->pWinSrc;
 				if (pInfo->Notification == WM_NOTIFICATION_RELEASED) {
-					int Id = WM_GetId(pInfo->pWinSrc);
+					int Id = pWinSrc->GetID();
 					switch (Id) {
 						case GUI_ID_CLOSE:
 							WM_DeleteWindow(pObj);
@@ -408,7 +409,7 @@ public:
 			pMenu->SetOwner(this->hClient);
 		}
 		pMenu->Attach(this, x0, y0, xSize, 0, 0);
-		WM_SetAnchor(pMenu, WM_CF_ANCHOR_LEFT | WM_CF_ANCHOR_RIGHT);
+		WM_SetAnchor(pMenu, WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT);
 		_UpdatePositions();
 		WM_Invalidate(this);
 	}
@@ -450,7 +451,7 @@ public:
 	void _InvalidateButton(int Id) {
 		WM_Obj *pChild;
 		for (pChild = this->pFirstChild; pChild; pChild = pChild->pNext)
-			if (WM_GetId(pChild) == Id)
+			if (pChild->GetID() == Id)
 				WM_Invalidate(pChild);
 	}
 	void _RestoreMinimized() {
@@ -459,8 +460,8 @@ public:
 			int OldHeight = 1 + this->Rect.y1 - this->Rect.y0;
 			int NewHeight = 1 + this->rRestore.y1 - this->rRestore.y0;
 			WM_ResizeWindow(this, 0, NewHeight - OldHeight);
-			WM_ShowWindow(this->hClient);
-			WM_ShowWindow(this->pMenu);
+			hClient->ShowWindow();
+			pMenu->ShowWindow();
 			_UpdatePositions();
 			this->Flags &= ~FRAMEWIN_CF_MINIMIZED;
 			_InvalidateButton(GUI_ID_MINIMIZE);
@@ -484,8 +485,8 @@ public:
 			int OldHeight = this->Rect.y1 - this->Rect.y0 + 1;
 			int NewHeight = _CalcTitleHeight() + this->EffectSize() * 2 + 2;
 			this->rRestore = this->Rect;
-			WM_HideWindow(this->hClient);
-			WM_HideWindow(this->pMenu);
+			hClient->HideWindow();
+			pMenu->HideWindow();
 			WM_ResizeWindow(this, 0, NewHeight - OldHeight);
 			_UpdatePositions();
 			this->Flags |= FRAMEWIN_CF_MINIMIZED;
@@ -529,7 +530,7 @@ public:
 		for (auto pChild = this->pFirstChild; pChild; pChild = pChild->pNext) {
 			auto r = pChild->Rect - this->Rect.LeftTop();
 			if (r.y0 == Props.BorderSize && r.y1 - r.y0 + 1 == OldHeight) {
-				if (pChild->Status & WM_SF_ANCHOR_RIGHT)
+				if (pChild->Status & WC_ANCHOR_RIGHT)
 					WM_MoveWindow(pChild, -Diff, Diff);
 				else
 					WM_MoveWindow(pChild, Diff, Diff);
@@ -560,7 +561,7 @@ public:
 	void SetClientColor(RGBC Color) {
 		if (Props.ClientColor != Color) {
 			Props.ClientColor = Color;
-			WM_Invalidate(this->hClient);
+			WM_Invalidate(hClient);
 		}
 	}
 
@@ -930,10 +931,10 @@ public:
 			y0 = pChild->Rect.y0 - Rect.y0;
 			if ((y0 == Props.BorderSize) && (pChild != hClient)) {
 				if (State & FRAMEWIN_CF_TITLEVIS) {
-					WM_ShowWindow(pChild);
+					pChild->ShowWindow();
 				}
 				else {
-					WM_HideWindow(pChild);
+					pChild->HideWindow();
 				}
 			}
 		}
@@ -952,10 +953,10 @@ public:
 			_ShowHideButtons();
 			if (this->Flags & FRAMEWIN_CF_MINIMIZED) {
 				if (State & FRAMEWIN_CF_TITLEVIS) {
-					WM_ShowWindow(this);
+					ShowWindow();
 				}
 				else {
-					WM_HideWindow(this);
+					HideWindow();
 				}
 			}
 			WM_Invalidate(this);
@@ -970,11 +971,11 @@ public:
 		_CalcPositions(&Pos);
 		if (Flags & FRAMEWIN_BUTTON_RIGHT) {
 			x = Pos.rTitleText.x1 - (Size - 1) - Off;
-			WinFlags = WM_CF_SHOW | WM_CF_ANCHOR_RIGHT;
+			WinFlags = WC_VISIBLE | WC_ANCHOR_RIGHT;
 		}
 		else {
 			x = Pos.rTitleText.x0 + Off;
-			WinFlags = WM_CF_SHOW;
+			WinFlags = WC_VISIBLE;
 		}
 		auto r = BUTTON_CreateAsChild(x, BorderSize, Size, Size, this, Id, WinFlags);
 		r->SetFocussable(0);
@@ -1051,7 +1052,7 @@ int FRAMEWIN_Obj::_CaptureFlags = 0;
 FRAMEWIN_Obj *FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
 								  int WinFlags, int ExFlags, int Id, const char *pTitle, WM_CALLBACK *cb) {
 	/* Create the window */
-	WinFlags |= WM_CF_LATE_CLIP;    /* Always use late clipping since widget is optimized for it. */
+	WinFlags |= WC_LATE_CLIP;    /* Always use late clipping since widget is optimized for it. */
 	auto pObj = (FRAMEWIN_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, FRAMEWIN_Obj::_Callback,
 								  sizeof(FRAMEWIN_Obj) - sizeof(WM_Obj));
 	if (pObj) {
@@ -1069,13 +1070,13 @@ FRAMEWIN_Obj *FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hP
 											   Pos.rClient.x1 - Pos.rClient.x0 + 1,
 											   Pos.rClient.y1 - Pos.rClient.y0 + 1,
 											   pObj,
-											   WM_CF_ANCHOR_RIGHT | WM_CF_ANCHOR_LEFT | WM_CF_ANCHOR_TOP | WM_CF_ANCHOR_BOTTOM | WM_CF_SHOW | WM_CF_LATE_CLIP,
+											   WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM | WC_VISIBLE | WC_LATE_CLIP,
 											   FRAMEWIN_Obj::_cbClient, 0);
 		/* Normally we disable memory devices for the frame window:
 		 * The frame window does not flicker, and not using memory devices is usually faster.
 		 * You can still use memory by explicitly specifying the flag
 		 */
-		if ((WinFlags & (WM_CF_MEMDEV | (WM_CF_MEMDEV_ON_REDRAW))) == 0) {
+		if ((WinFlags & (WC_MEMDEV | (WC_MEMDEV_ON_REDRAW))) == 0) {
 			WM_DisableMemdev(pObj);
 		}
 		pObj->SetText(pTitle);

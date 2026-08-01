@@ -57,7 +57,7 @@ struct RADIO_Obj : public WIDGET {
 		/* Init some data */
 		rFocus = WM_GetClientRect(this);
 		HasFocus = (this->State & WIDGET_STATE_FOCUS) ? 1 : 0;
-		pBmRadio = this->Props.apBmRadio[WM_IsEnabled(this)];
+		pBmRadio = this->Props.apBmRadio[IsEnabled()];
 		pBmCheck = this->Props.pBmCheck;
 		rFocus.x1 = pBmRadio->XSize + RADIO_BORDER * 2 - 1;
 		rFocus.y1 = this->Height + ((this->NumItems - 1) * this->Spacing) - 1;
@@ -122,7 +122,7 @@ struct RADIO_Obj : public WIDGET {
 				if (y <= this->Height) {
 					SetValue( Sel);
 				}
-				if (WM_IsFocussable(this)) {
+				if (IsFocussable()) {
 					WM_SetFocus(this);
 				}
 				Notification = WM_NOTIFICATION_CLICKED;
@@ -195,7 +195,7 @@ public:
 	}
 	static int _IsInGroup(WM_Obj *pWin, uint8_t GroupId) {
 		if (GroupId)
-			return WM_SendMessage(pWin, WM_GET_RADIOGROUP, 0) == GroupId;
+			return pWin->SendMessage(WM_GET_RADIOGROUP, 0) == GroupId;
 		return 0;
 	}
 	static RADIO_Obj *_GetPrevInGroup(WM_Obj *pWin, uint8_t GroupId) {
@@ -349,7 +349,7 @@ RADIO_Obj *RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParent,
 		xSize = RADIO_Obj::DefaultProps.apBmRadio[0]->XSize + RADIO_BORDER * 2;
 	}
 #if WM_SUPPORT_TRANSPARENCY
-	WinFlags |= WM_CF_HASTRANS;
+	WinFlags |= WC_HASTRANS;
 #endif
 	/* Create the window */
 	auto pObj = (RADIO_Obj *)WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent, WinFlags, RADIO_Obj::_Callback, sizeof(RADIO_Obj) - sizeof(WM_Obj));
@@ -361,7 +361,6 @@ RADIO_Obj *RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParent,
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | ExFlags);
 		/* Init member variables */
 		pObj->Props = RADIO_Obj::DefaultProps;
-		pObj->Props.BkColor = WM_GetBkColor(hParent);
 		pObj->NumItems = NumItems;
 		pObj->Spacing = Spacing;
 		pObj->Height = Height;

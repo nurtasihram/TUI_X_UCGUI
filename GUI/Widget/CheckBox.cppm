@@ -44,7 +44,7 @@ struct CHECKBOX_Obj : public WIDGET {
 	uint8_t CurrentState;
 	char *pText;
 	void _OnPaint() {
-		int ColorIndex = WM_IsEnabled(this),
+		int ColorIndex = IsEnabled(),
 			EffectSize = this->EffectSize();
 		/* Clear inside ... Just in case      */
 		/* Fill with parents background color */
@@ -128,7 +128,7 @@ struct CHECKBOX_Obj : public WIDGET {
 		}
 	}
 	char _OnKey(const WM_KEY_INFO *pInfo) {
-		if (WM_IsEnabled(this)) {
+		if (IsEnabled()) {
 			if (pInfo->PressedCnt > 0) {
 				switch (pInfo->Key) {
 					case GUI_KEY_SPACE:
@@ -279,7 +279,7 @@ CHECKBOX_Obj *CHECKBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hP
 	}
 #if WM_SUPPORT_TRANSPARENCY
 	if (CHECKBOX_Obj::DefaultProps.BkColor == RGB_INVALID_COLOR)
-		WinFlags |= WM_CF_HASTRANS;
+		WinFlags |= WC_HASTRANS;
 #endif
 	/* Create the window */
 	auto pObj = (CHECKBOX_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, CHECKBOX_Obj::_Callback,

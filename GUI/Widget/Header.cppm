@@ -280,7 +280,7 @@ public:
 				if (pColumn) {
 					pColumn->Width = Width;
 					WM_Invalidate(this);
-					WM__SendMsgNoData(WM_GetParent(this), WM_NOTIFY_CLIENTCHANGE);
+					WM_GetParent(this)->SendMessage(WM_NOTIFY_CLIENTCHANGE);
 					WM_Invalidate(WM_GetParent(this));
 				}
 			}
@@ -345,7 +345,7 @@ HEADER_Obj *HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParen
 		ysize += 2 * HEADER_Obj::DefaultProps.BorderV;
 		ysize += 2 * WIDGET::DefaultEffect->EffectSize;
 	}
-	WinFlags |= WM_CF_ANCHOR_LEFT | WM_CF_ANCHOR_RIGHT;
+	WinFlags |= WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT;
 	auto pObj = (HEADER_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, HEADER_Obj::_Callback,
 								  sizeof(HEADER_Obj) - sizeof(WM_Obj));
 	if (pObj) {

@@ -82,12 +82,12 @@ struct SLIDER_Obj : public WIDGET {
 	}
 	void _SliderPressed() {
 		AddStates(SLIDER_STATE_PRESSED);
-		if (this->Status & WM_SF_ISVIS)
+		if (this->Status & WC_VISIBLE)
 			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
 	}
 	void _SliderReleased() {
 		DelStates(SLIDER_STATE_PRESSED);
-		if (this->Status & WM_SF_ISVIS)
+		if (this->Status & WC_VISIBLE)
 			WM_NotifyParent(this, WM_NOTIFICATION_RELEASED);
 	}
 	void _OnTouch(const GUI_PID_STATE *pState) {
@@ -112,7 +112,7 @@ struct SLIDER_Obj : public WIDGET {
 			auto Div = xsize ? xsize : 1;     /* Make sure we do not divide by 0, even though xsize should never be 0 in this case anyhow */
 			Sel = Min + ((uint32_t)Range * (uint32_t)x + Div / 2) / Div;
 		}
-		if (WM_IsFocussable(this))
+		if (IsFocussable())
 			WM_SetFocus(this);
 		WM_SetCapture(this, 1);
 		SetValue(Sel);
@@ -220,7 +220,7 @@ SLIDER_Obj::Properties SLIDER_Obj::DefaultProps;
 SLIDER_Obj *SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
 							  int WinFlags, int ExFlags, int Id) {
 #if WM_SUPPORT_TRANSPARENCY
-	WinFlags |= WM_CF_HASTRANS;
+	WinFlags |= WC_HASTRANS;
 #endif
 	auto pObj = (SLIDER_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, SLIDER_Obj::_Callback, sizeof(SLIDER_Obj) - sizeof(WM_Obj));
 	if (pObj) {

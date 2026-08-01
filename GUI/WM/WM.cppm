@@ -65,13 +65,12 @@ enum WM_MSGID : int {
 	 /* Enable or disable widget */
 	 WM_NOTIFY_ENABLE           = 40,
 	 /* Visibility of a window has or may have changed */
-	 WM_NOTIFY_VIS_CHANGED      = 41,
 	 /* Set or get dialog status */
-	 WM_HANDLE_DIALOG_STATUS    = 42,
+	 WM_HANDLE_DIALOG_STATUS    = 41,
 	 /* Send to all siblings and children of a radio control when selection changed */
-	 WM_GET_RADIOGROUP          = 43,
+	 WM_GET_RADIOGROUP          = 42,
 	 /* Send to owner window of menu widget */	
-	 WM_MENU                    = 44,
+	 WM_MENU                    = 43,
 };
 template<auto code> constexpr int16_t WM_WIDGET = 0x0300 + code;
 template<auto code> constexpr int16_t WM_USER   = 0x0400 + code;
@@ -107,48 +106,100 @@ template<auto code> constexpr int WM_NOTIFICATION_WIDGET = (int)WM_NOTIFICATION_
  * function as flag-parameter. The flags are combinable using the	  *
  * binary or operator.												  *
  **********************************************************************/
-enum WM_CF : uint16_t {
+using WM_CF = uint16_t;
+constexpr WM_CF
 	 /* Has transparency. Needs to be defined for windows which do not fill the entire section of their (client) rectangle. */
-	 WM_CF_HASTRANS         = 1 << 0, 
+	 WC_HASTRANS         = 1 << 0, 
 	 /* Hide window after creation (default !) */
-	 WM_CF_HIDE             = 0 << 1, 
+	 WC_HIDE             = 0 << 1, 
 	 /* Show window after creation */
-	 WM_CF_SHOW             = 1 << 1, 
+	 WC_VISIBLE          = 1 << 1, 
 	 /* Use memory device for redraws */
-	 WM_CF_MEMDEV           = 1 << 2, 
+	 WC_MEMDEV           = 1 << 2, 
 	 /* Stay on top */
-	 WM_CF_STAYONTOP        = 1 << 3, 
+	 WC_STAYONTOP        = 1 << 3, 
 	 /* Disabled: Does not receive PID (mouse & touch) input */
-	 WM_CF_DISABLED         = 1 << 4, 
+	 WC_DISABLED         = 1 << 4, 
 
 	 /* Create only flags ... Not available as status flags */
 	
 	 /* If automatic activation upon creation of window is desired */
-	 WM_CF_ACTIVATE         = 1 << 5, 
+	 WC_ACTIVATE         = 1 << 5, 
 	 /* Put window in foreground after creation (default !) */
-	 WM_CF_FGND             = 0 << 6, 
+	 WC_FGND             = 0 << 6, 
 	 /* Put window in background after creation */
-	 WM_CF_BGND             = 1 << 6, 
+	 WC_BGND             = 1 << 6, 
 
 	 /* Anchor flags */
 	
 	 /* Right anchor ... If parent is resized, distance to right will remain const (left is default) */
-	 WM_CF_ANCHOR_RIGHT     = 1 << 7, 
+	 WC_ANCHOR_RIGHT     = 1 << 7, 
 	 /* Bottom anchor ... If parent is resized, distance to bottom will remain const (top is default) */
-	 WM_CF_ANCHOR_BOTTOM    = 1 << 8, 
+	 WC_ANCHOR_BOTTOM    = 1 << 8, 
 	 /* Left anchor ... If parent is resized, distance to left will remain const (left is default) */
-	 WM_CF_ANCHOR_LEFT      = 1 << 9, 
+	 WC_ANCHOR_LEFT      = 1 << 9, 
 	 /* Top anchor ... If parent is resized, distance to top will remain const (top is default) */
-	 WM_CF_ANCHOR_TOP       = 1 << 10,
+	 WC_ANCHOR_TOP       = 1 << 10,
 
 	 /* Constant outline. This is relevant for transparent windows only. If a window is transparent and does not have a constant outline, its background is invalided instead of the window itself. This causes add. computation time when redrawing. */
-	 WM_CF_CONST_OUTLINE    = 1 << 11,
-	 WM_CF_LATE_CLIP        = 1 << 12,
-	 WM_CF_MEMDEV_ON_REDRAW = 1 << 13,
-	 WM_CF_RESERVED3        = 1 << 14,
-	 WM_CF_RESERVED4        = 1 << 15
-};
+	 WC_CONST_OUTLINE    = 1 << 11,
+	 WC_LATE_CLIP        = 1 << 12,
+	 WC_MEMDEV_ON_REDRAW = 1 << 13,
+
+	 WC_RESERVED3        = 1 << 14,
+	 WC_RESERVED4        = 1 << 15;
 #pragma endregion
+
+/************************************************************
+*
+*                    GUI_KEY_...
+*
+*************************************************************
+These ID values are basically meant to be used with widgets
+Note that we have chosen the values to be close to existing
+"standards", so do not change them unless forced to.
+*/
+constexpr int 
+	GUI_KEY_BACKSPACE = 8 ,        /* ASCII: BACKSPACE Crtl-H */
+	GUI_KEY_TAB       = 9 ,        /* ASCII: TAB       Crtl-I */
+	GUI_KEY_ENTER     = 13,        /* ASCII: ENTER     Crtl-M */
+	GUI_KEY_LEFT      = 16,
+	GUI_KEY_UP        = 17,
+	GUI_KEY_RIGHT     = 18,
+	GUI_KEY_DOWN      = 19,
+	GUI_KEY_HOME      = 23,
+	GUI_KEY_END       = 24,
+	GUI_KEY_SHIFT     = 25,
+	GUI_KEY_CONTROL   = 26,
+	GUI_KEY_ESCAPE    = 27,        /* ASCII: ESCAPE    0x1b   */
+	GUI_KEY_INSERT    = 29,
+	GUI_KEY_DELETE    = 30,
+	GUI_KEY_SPACE     = 32,
+	GUI_KEY_F1        = 40,
+	GUI_KEY_F2        = 41;
+
+/*********************************************************************
+*
+*       Dialog item IDs
+*
+*  The IDs below are arbitrary values. They just have to be unique
+*  within the dialog.
+*
+*  If you use your own Ids, we recommend to use values above GUI_ID_USER.
+*/
+constexpr uint16_t
+	GUI_ID_OK        = 1,
+	GUI_ID_CANCEL    = 2,
+	GUI_ID_YES       = 3,
+	GUI_ID_NO        = 4,
+	GUI_ID_CLOSE     = 5,
+	GUI_ID_HELP      = 6,
+	GUI_ID_MAXIMIZE  = 7,
+	GUI_ID_MINIMIZE  = 8,
+	GUI_ID_VSCROLL   = 0xFE,
+	GUI_ID_HSCROLL   = 0xFF,
+	GUI_ID_USER      = 0x100;
+
 
 #pragma region Windows parameter type
 using WM_PARAM = uintptr_t;

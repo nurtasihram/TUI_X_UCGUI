@@ -208,6 +208,9 @@
     <ClCompile Include="GUI\WM\Window.cppm">
       <Filter>GUI\WM</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\ScrollCtrl.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">

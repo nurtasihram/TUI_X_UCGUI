@@ -76,9 +76,8 @@ struct EDIT_Obj : public WIDGET {
 
 	void _OnPaint() {
 		const char *pText = nullptr;
-		auto IsEnabled = WM_IsEnabled(this);
 		/* Set colors and font */
-		GUI.SetBkColor(this->Props.aBkColor[IsEnabled]);
+		GUI.SetBkColor(this->Props.aBkColor[IsEnabled() ? 1 : 0]);
 		GUI.SetColor(this->Props.aTextColor[0]);
 		GUI_SetFont(this->Props.pFont);
 		/* Calculate size */
@@ -310,7 +309,6 @@ struct EDIT_Obj : public WIDGET {
 
 	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (EDIT_Obj *)hWin;
-		int IsEnabled = WM_IsEnabled(pObj);
 		/* Let widget handle the standard messages */
 		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 			return Data;
@@ -560,8 +558,8 @@ GUI_TIMER_HANDLE EDIT_Obj::Timer1 = 0;
 EDIT_Obj *EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int WinFlags, int ExFlags,
 						  int Id, int MaxLen) {
 	/* Alloc memory for obj */
-	WinFlags |= WM_CF_LATE_CLIP;    /* Always use late clipping since widget is optimized for it. */
-	auto pObj = (EDIT_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WM_CF_SHOW | WinFlags, EDIT_Obj::_Callback,
+	WinFlags |= WC_LATE_CLIP;    /* Always use late clipping since widget is optimized for it. */
+	auto pObj = (EDIT_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WC_VISIBLE | WinFlags, EDIT_Obj::_Callback,
 								  sizeof(EDIT_Obj) - sizeof(WM_Obj));
 	if (pObj) {
 		/* init widget specific variables */

@@ -182,7 +182,7 @@ static WM_PARAM _cbMemDevPane(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 			GUI_DrawRect({ 0, 0, Size.x - 1, Size.y - 1 });
 			GUI.SetColor(RGB_BLACK);
 			GUI_DispStringAt(MemDevOn ? "MemDev ON" : "MemDev OFF", 8, 8);
-			GUI_DispStringAt(MemDevOn ? "WM_CF_MEMDEV enabled" : "WM_CF_MEMDEV disabled", 8, 24);
+			GUI_DispStringAt(MemDevOn ? "WC_MEMDEV enabled" : "WC_MEMDEV disabled", 8, 24);
 			GUI.SetColor(RGB_GRAY);
 			GUI_DrawRect({ 10, 48, Size.x - 11, 72 });
 			GUI.SetColor(MemDevOn ? RGB_GREEN : RGB_RED);
@@ -200,23 +200,19 @@ static WM_PARAM _cbMemDevPane(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 }
 
 static WM_Obj *_CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMemDev, WM_Obj **phPane) {
-	WM_Obj *hFrame;
-	WM_Obj *hClient;
-	int Flags;
-	Flags = WM_CF_SHOW;
-	if (UseMemDev) {
-		Flags |= WM_CF_MEMDEV;
-	}
-	hFrame = FRAMEWIN_CreateEx(x0, y0, 190, 180, 0, WM_CF_SHOW, FRAMEWIN_CF_MOVEABLE, 0, pTitle, 0);
-	hClient = WM_GetClientWindow(hFrame);
-	auto Size = hClient->GetSize();
-	*phPane = WM_CreateWindowAsChild(0, 0, Size.x, Size.y, hClient, Flags, _cbMemDevPane, 0);
-	return hFrame;
+	auto Flags = WC_VISIBLE;
+	if (UseMemDev)
+		Flags |= WC_MEMDEV;
+	auto pFrame = FRAMEWIN_CreateEx(x0, y0, 190, 180, 0, WC_VISIBLE, FRAMEWIN_CF_MOVEABLE, 0, pTitle, 0);
+	auto pClient = WM_GetClientWindow(pFrame);
+	auto Size = pClient->GetSize();
+	*phPane = WM_CreateWindowAsChild(0, 0, Size.x, Size.y, pClient, Flags, _cbMemDevPane, 0);
+	return pFrame;
 }
 
 static WM_PARAM _cbCallback(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	CHECKBOX_Obj *pItem;
-	auto pListBox = (LISTBOX_Obj *)WM_GetDialogItem(pWin, GUI_ID_MULTIEDIT0);
+	auto pListBox = pWin->GetItem<LISTBOX_Obj>(GUI_ID_MULTIEDIT0);
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
 			pListBox->SetText(_ListBox);
@@ -232,7 +228,7 @@ static WM_PARAM _cbCallback(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 			pListBox->SetAutoScrollH(1);
 			pListBox->SetAutoScrollV(1);
 			pListBox->SetOwnerDraw(_OwnerDraw);
-			pItem = (CHECKBOX_Obj *)WM_GetDialogItem(pWin, GUI_ID_CHECK1);
+			pItem = pWin->GetItem<CHECKBOX_Obj>(GUI_ID_CHECK1);
 			pItem->SetState(1);
 			return 0;
 		case WM_KEY: {
@@ -251,9 +247,10 @@ static WM_PARAM _cbCallback(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 			//WM_SetFocus(hListBox);
 			return 0;
 		case WM_NOTIFY_PARENT: {
-			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
-			int Id = WM_GetId(pInfo->pWinSrc); /* Id of widget */
-			pItem = (CHECKBOX_Obj *)WM_GetDialogItem(pWin, Id);
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pWinSrc = pInfo->pWinSrc;
+			int Id = pWinSrc->GetID(); /* Id of widget */
+			pItem = pWin->GetItem<CHECKBOX_Obj>(Id);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SEL_CHANGED:
 					pListBox->InvalidateItem(LISTBOX_ALL_ITEMS);
@@ -410,10 +407,10 @@ static const GUI_WIDGET_CREATE_INFO _aListViewDialogCreate[] = {
 	{ BUTTON_CreateIndirect    , "Close"              , GUI_ID_CANCEL     , 190 , 180 , 80  , 25                             }
 };
 
-static WM_PARAM _cbListViewTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbListViewTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pListView = (LISTVIEW_Obj *)WM_GetDialogItem(hWin, ID_LISTVIEW_TEST);
+			auto pListView = pWin->GetItem<LISTVIEW_Obj>(ID_LISTVIEW_TEST);
 			// Add columns
 			pListView->AddColumn(80, "Name", TEXTALIGN_LEFT);
 			pListView->AddColumn(60, "Age", TEXTALIGN_RIGHT);
@@ -429,11 +426,11 @@ static WM_PARAM _cbListViewTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			pListView->SetGridVis(1);
 			break;
 		}
-		case WM_NOTIFY_PARENT:
-		{
+		case WM_NOTIFY_PARENT: {
 			auto pInfo = (WM_NOTIFY_INFO *)Data;
-			int Id = WM_GetId(pInfo->pWinSrc);
-			auto pListView = (LISTVIEW_Obj *)WM_GetDialogItem(hWin, ID_LISTVIEW_TEST);
+			auto pWinSrc = pInfo->pWinSrc;
+			int Id = pWinSrc->GetID();
+			auto pListView = pWin->GetItem<LISTVIEW_Obj>(ID_LISTVIEW_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_RELEASED:
 					switch (Id) {
@@ -457,7 +454,7 @@ static WM_PARAM _cbListViewTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 							break;
 						}
 						case GUI_ID_CANCEL:
-							GUI_EndDialog(hWin, 0);
+							GUI_EndDialog(pWin, 0);
 							break;
 					}
 					break;
@@ -471,7 +468,7 @@ static WM_PARAM _cbListViewTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(hWin, MsgId, Data);
+	return WM_DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestListView() {
@@ -504,9 +501,9 @@ static const char *_DropDownInitialItems[] = {
 	nullptr
 };
 
-static void _UpdateDropDownStatus(WM_Obj *hWin) {
-	auto pDropDown = (DROPDOWN_Obj *)WM_GetDialogItem(hWin, ID_DROPDOWN_TEST);
-	auto pStatus = (TEXT_Obj *)WM_GetDialogItem(hWin, ID_DROPDOWN_STATUS);
+static void _UpdateDropDownStatus(WM_Obj *pWin) {
+	auto pDropDown = pWin->GetItem<DROPDOWN_Obj>(ID_DROPDOWN_TEST);
+	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_DROPDOWN_STATUS);
 	if (pDropDown && pStatus) {
 		char acStatus[96];
 		sprintf(acStatus, "Items: %d  Sel: %d  AutoScroll: %s",
@@ -518,25 +515,26 @@ static void _UpdateDropDownStatus(WM_Obj *hWin) {
 }
 
 static const GUI_WIDGET_CREATE_INFO _aDropDownDialogCreate[] = {
-	{ FRAMEWIN_CreateIndirect  , "DropDown Test"      , 0                 , 50  , 40  , 390 , 230 , FRAMEWIN_CF_MOVEABLE       },
-	{ DROPDOWN_CreateIndirect  , ""                   , ID_DROPDOWN_TEST  , 10  , 10  , 220 , 96  , 0                          },
-	{ TEXT_CreateIndirect      , "Use the DropDown or buttons below to interact." , 0 , 10 , 45 , 360 , 16 , TEXT_CF_LEFT },
-	{ BUTTON_CreateIndirect    , "Add Item"           , ID_DROPDOWN_ADD   , 10  , 70  , 80  , 25                             },
-	{ BUTTON_CreateIndirect    , "Insert"             , ID_DROPDOWN_INSERT, 95  , 70  , 80  , 25                             },
-	{ BUTTON_CreateIndirect    , "Delete"             , ID_DROPDOWN_DELETE, 180 , 70  , 80  , 25                             },
-	{ BUTTON_CreateIndirect    , "Next"               , ID_DROPDOWN_NEXT   , 265 , 70  , 80  , 25                             },
-	{ BUTTON_CreateIndirect    , "Prev"               , ID_DROPDOWN_PREV   , 10  , 105 , 80  , 25                             },
-	{ BUTTON_CreateIndirect    , "AutoScroll"         , ID_DROPDOWN_AUTOSCROLL, 95 , 105 , 80  , 25                          },
-	{ BUTTON_CreateIndirect    , "Expand"             , ID_DROPDOWN_EXPAND , 180 , 105 , 80  , 25                             },
-	{ BUTTON_CreateIndirect    , "Collapse"           , ID_DROPDOWN_COLLAPSE, 265 , 105 , 80  , 25                            },
-	{ TEXT_CreateIndirect      , ""                   , ID_DROPDOWN_STATUS , 10  , 145 , 360 , 18 , TEXT_CF_LEFT               },
-	{ BUTTON_CreateIndirect    , "Close"              , GUI_ID_CANCEL      , 265 , 175 , 80  , 25                             }
+	{ FRAMEWIN_CreateIndirect  , "DropDown Test"      , 0                      , 50  , 40  , 390 , 230 , FRAMEWIN_CF_MOVEABLE       },
+	{ DROPDOWN_CreateIndirect  , ""                   , ID_DROPDOWN_TEST       , 10  , 10  , 220 , 96  , 0                          },
+	{ TEXT_CreateIndirect      , "Use the DropDown or buttons below to interact."
+	                                                                           , 0   , 10  , 45 , 360 , 16 , TEXT_CF_LEFT },
+	{ BUTTON_CreateIndirect    , "Add Item"           , ID_DROPDOWN_ADD        , 10  , 70  , 80  , 25                  },
+	{ BUTTON_CreateIndirect    , "Insert"             , ID_DROPDOWN_INSERT     , 95  , 70  , 80  , 25                  },
+	{ BUTTON_CreateIndirect    , "Delete"             , ID_DROPDOWN_DELETE     , 180 , 70  , 80  , 25                  },
+	{ BUTTON_CreateIndirect    , "Next"               , ID_DROPDOWN_NEXT       , 265 , 70  , 80  , 25                  },
+	{ BUTTON_CreateIndirect    , "Prev"               , ID_DROPDOWN_PREV       , 10  , 105 , 80  , 25                  },
+	{ BUTTON_CreateIndirect    , "AutoScroll"         , ID_DROPDOWN_AUTOSCROLL , 95  , 105 , 80  , 25                   },
+	{ BUTTON_CreateIndirect    , "Expand"             , ID_DROPDOWN_EXPAND     , 180 , 105 , 80  , 25                  },
+	{ BUTTON_CreateIndirect    , "Collapse"           , ID_DROPDOWN_COLLAPSE   , 265 , 105 , 80  , 25                  },
+	{ TEXT_CreateIndirect      , ""                   , ID_DROPDOWN_STATUS     , 10  , 145 , 360 , 18 , TEXT_CF_LEFT   },
+	{ BUTTON_CreateIndirect    , "Close"              , GUI_ID_CANCEL          , 265 , 175 , 80  , 25                  }
 };
 
-static WM_PARAM _cbDropDownTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbDropDownTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pDropDown = (DROPDOWN_Obj *)WM_GetDialogItem(hWin, ID_DROPDOWN_TEST);
+			auto pDropDown = pWin->GetItem<DROPDOWN_Obj>(ID_DROPDOWN_TEST);
 			for (auto i = 0; _DropDownInitialItems[i]; ++i) {
 				pDropDown->AddString(_DropDownInitialItems[i]);
 			}
@@ -545,17 +543,18 @@ static WM_PARAM _cbDropDownTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			_DropDownAutoScroll = false;
 			pDropDown->SetAutoScroll(0);
 			_DropDownItemCounter = 0;
-			_UpdateDropDownStatus(hWin);
+			_UpdateDropDownStatus(pWin);
 			break;
 		}
 		case WM_NOTIFY_PARENT: {
-			auto pInfo = (WM_NOTIFY_INFO *)Data;
-			int Id = WM_GetId(pInfo->pWinSrc);
-			auto pDropDown = (DROPDOWN_Obj *)WM_GetDialogItem(hWin, ID_DROPDOWN_TEST);
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto  pWinSrc = pInfo->pWinSrc;
+			int Id = pWinSrc->GetID();
+			auto pDropDown = pWin->GetItem<DROPDOWN_Obj>(ID_DROPDOWN_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SEL_CHANGED:
 					if (Id == ID_DROPDOWN_TEST) {
-						_UpdateDropDownStatus(hWin);
+						_UpdateDropDownStatus(pWin);
 					}
 					break;
 				case WM_NOTIFICATION_RELEASED:
@@ -564,7 +563,7 @@ static WM_PARAM _cbDropDownTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 							char acLabel[32];
 							sprintf(acLabel, "Item %d", ++_DropDownItemCounter);
 							pDropDown->AddString(acLabel);
-							_UpdateDropDownStatus(hWin);
+							_UpdateDropDownStatus(pWin);
 							break;
 						}
 						case ID_DROPDOWN_INSERT: {
@@ -578,7 +577,7 @@ static WM_PARAM _cbDropDownTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 							else {
 								pDropDown->AddString(acLabel);
 							}
-							_UpdateDropDownStatus(hWin);
+							_UpdateDropDownStatus(pWin);
 							break;
 						}
 						case ID_DROPDOWN_DELETE: {
@@ -594,21 +593,21 @@ static WM_PARAM _cbDropDownTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 									pDropDown->SetSel(0);
 								}
 							}
-							_UpdateDropDownStatus(hWin);
+							_UpdateDropDownStatus(pWin);
 							break;
 						}
 						case ID_DROPDOWN_NEXT:
 							pDropDown->IncSel();
-							_UpdateDropDownStatus(hWin);
+							_UpdateDropDownStatus(pWin);
 							break;
 						case ID_DROPDOWN_PREV:
 							pDropDown->DecSel();
-							_UpdateDropDownStatus(hWin);
+							_UpdateDropDownStatus(pWin);
 							break;
 						case ID_DROPDOWN_AUTOSCROLL:
 							_DropDownAutoScroll = !_DropDownAutoScroll;
 							pDropDown->SetAutoScroll(_DropDownAutoScroll ? 1 : 0);
-							_UpdateDropDownStatus(hWin);
+							_UpdateDropDownStatus(pWin);
 							break;
 						case ID_DROPDOWN_EXPAND:
 							pDropDown->Expand();
@@ -617,7 +616,7 @@ static WM_PARAM _cbDropDownTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 							pDropDown->Collapse();
 							break;
 						case GUI_ID_CANCEL:
-							GUI_EndDialog(hWin, 0);
+							GUI_EndDialog(pWin, 0);
 							break;
 					}
 					break;
@@ -625,7 +624,7 @@ static WM_PARAM _cbDropDownTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(hWin, MsgId, Data);
+	return WM_DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestDropDown() {
@@ -652,12 +651,12 @@ static int _MultiPageNewPageIndex = 0;
 static WM_Obj *_CreateMultiPagePage(MULTIPAGE_Obj *pMultiPage, const char *pLabel) {
 	char acText[96];
 	sprintf(acText, "Content: %s", pLabel);
-	return TEXT_CreateAsChild(8, 8, 300, 20, pMultiPage, 0, WM_CF_SHOW, acText, TEXT_CF_LEFT);
+	return TEXT_CreateAsChild(8, 8, 300, 20, pMultiPage, 0, WC_VISIBLE, acText, TEXT_CF_LEFT);
 }
 
-static void _UpdateMultiPageStatus(WM_Obj *hWin) {
-	auto pMultiPage = (MULTIPAGE_Obj *)WM_GetDialogItem(hWin, ID_MULTIPAGE_TEST);
-	auto pStatus = (TEXT_Obj *)WM_GetDialogItem(hWin, ID_MULTIPAGE_STATUS);
+static void _UpdateMultiPageStatus(WM_Obj *pWin) {
+	auto pMultiPage = pWin->GetItem<MULTIPAGE_Obj>(ID_MULTIPAGE_TEST);
+	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_MULTIPAGE_STATUS);
 	if (pMultiPage && pStatus) {
 		char acStatus[96];
 		int Sel = pMultiPage->GetSelection();
@@ -681,10 +680,10 @@ static const GUI_WIDGET_CREATE_INFO _aMultiPageDialogCreate[] = {
 	{ BUTTON_CreateIndirect    , "Close"              , GUI_ID_CANCEL             , 330 , 225 , 70  , 25                      }
 };
 
-static WM_PARAM _cbMultiPageTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbMultiPageTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pMultiPage = (MULTIPAGE_Obj *)WM_GetDialogItem(hWin, ID_MULTIPAGE_TEST);
+			auto pMultiPage = pWin->GetItem<MULTIPAGE_Obj>(ID_MULTIPAGE_TEST);
 			const char *aTitles[] = { "Home", "Settings", "About", nullptr };
 			_MultiPagePageCount = 0;
 			_MultiPageNewPageIndex = 0;
@@ -694,17 +693,18 @@ static WM_PARAM _cbMultiPageTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 				_MultiPagePageCount++;
 			}
 			pMultiPage->SelectPage(0);
-			_UpdateMultiPageStatus(hWin);
+			_UpdateMultiPageStatus(pWin);
 			return 0;
 		}
 		case WM_NOTIFY_PARENT: {
-			auto pInfo = (WM_NOTIFY_INFO *)Data;
-			int Id = WM_GetId(pInfo->pWinSrc);
-			auto pMultiPage = (MULTIPAGE_Obj *)WM_GetDialogItem(hWin, ID_MULTIPAGE_TEST);
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pWinSrc = pInfo->pWinSrc;
+			int Id = pWinSrc->GetID();
+			auto pMultiPage = pWin->GetItem<MULTIPAGE_Obj>(ID_MULTIPAGE_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SEL_CHANGED:
 					if (Id == ID_MULTIPAGE_TEST) {
-						_UpdateMultiPageStatus(hWin);
+						_UpdateMultiPageStatus(pWin);
 					}
 					break;
 				case WM_NOTIFICATION_RELEASED:
@@ -715,7 +715,7 @@ static WM_PARAM _cbMultiPageTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 							auto pPage = _CreateMultiPagePage(pMultiPage, acTitle);
 							pMultiPage->AddPage(pPage, acTitle);
 							_MultiPagePageCount++;
-							_UpdateMultiPageStatus(hWin);
+							_UpdateMultiPageStatus(pWin);
 							break;
 						}
 						case ID_MULTIPAGE_DELETE:
@@ -726,7 +726,7 @@ static WM_PARAM _cbMultiPageTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 									_MultiPagePageCount--;
 								}
 							}
-							_UpdateMultiPageStatus(hWin);
+							_UpdateMultiPageStatus(pWin);
 							break;
 						case ID_MULTIPAGE_NEXT:
 							if (_MultiPagePageCount > 0) {
@@ -734,7 +734,7 @@ static WM_PARAM _cbMultiPageTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 								int Next = (Sel + 1) % _MultiPagePageCount;
 								pMultiPage->SelectPage((unsigned)Next);
 							}
-							_UpdateMultiPageStatus(hWin);
+							_UpdateMultiPageStatus(pWin);
 							break;
 						case ID_MULTIPAGE_PREV:
 							if (_MultiPagePageCount > 0) {
@@ -742,7 +742,7 @@ static WM_PARAM _cbMultiPageTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 								int Prev = (Sel <= 0) ? (_MultiPagePageCount - 1) : (Sel - 1);
 								pMultiPage->SelectPage((unsigned)Prev);
 							}
-							_UpdateMultiPageStatus(hWin);
+							_UpdateMultiPageStatus(pWin);
 							break;
 						case ID_MULTIPAGE_TOGGLE_ENABLE:
 							if (_MultiPagePageCount > 0) {
@@ -756,7 +756,7 @@ static WM_PARAM _cbMultiPageTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 									}
 								}
 							}
-							_UpdateMultiPageStatus(hWin);
+							_UpdateMultiPageStatus(pWin);
 							break;
 						case ID_MULTIPAGE_RENAME:
 							if (_MultiPagePageCount > 0) {
@@ -767,10 +767,10 @@ static WM_PARAM _cbMultiPageTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 									pMultiPage->SetText(acTitle, (unsigned)Sel);
 								}
 							}
-							_UpdateMultiPageStatus(hWin);
+							_UpdateMultiPageStatus(pWin);
 							break;
 						case GUI_ID_CANCEL:
-							GUI_EndDialog(hWin, 0);
+							GUI_EndDialog(pWin, 0);
 							break;
 					}
 					break;
@@ -778,7 +778,7 @@ static WM_PARAM _cbMultiPageTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(hWin, MsgId, Data);
+	return WM_DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestMultiPage() {
@@ -798,9 +798,9 @@ void _TestMultiPage() {
 #define ID_RADIO_SET1      (GUI_ID_USER + 165)
 #define ID_RADIO_SET2      (GUI_ID_USER + 166)
 
-static void _UpdateRadioStatus(WM_Obj *hWin) {
-	auto pRadio = (RADIO_Obj *)WM_GetDialogItem(hWin, ID_RADIO_TEST);
-	auto pStatus = (TEXT_Obj *)WM_GetDialogItem(hWin, ID_RADIO_STATUS);
+static void _UpdateRadioStatus(WM_Obj *pWin) {
+	auto pRadio = pWin->GetItem<RADIO_Obj>(ID_RADIO_TEST);
+	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_RADIO_STATUS);
 	if (pRadio && pStatus) {
 		char acStatus[64];
 		sprintf(acStatus, "Selected: %d", pRadio->GetValue());
@@ -809,62 +809,63 @@ static void _UpdateRadioStatus(WM_Obj *hWin) {
 }
 
 static const GUI_WIDGET_CREATE_INFO _aRadioDialogCreate[] = {
-	{ FRAMEWIN_CreateIndirect, "Radio Test", 0, 60, 50, 360, 220, FRAMEWIN_CF_MOVEABLE },
-	{ RADIO_CreateIndirect, "", ID_RADIO_TEST, 10, 10, 200, 80, 0, (3 | (24 << 8)) },
-	{ BUTTON_CreateIndirect, "Prev", ID_RADIO_PREV, 10, 100, 70, 25 },
-	{ BUTTON_CreateIndirect, "Next", ID_RADIO_NEXT, 85, 100, 70, 25 },
-	{ BUTTON_CreateIndirect, "Set 0", ID_RADIO_SET0, 160, 100, 60, 25 },
-	{ BUTTON_CreateIndirect, "Set 1", ID_RADIO_SET1, 225, 100, 60, 25 },
-	{ BUTTON_CreateIndirect, "Set 2", ID_RADIO_SET2, 290, 100, 60, 25 },
-	{ TEXT_CreateIndirect, "", ID_RADIO_STATUS, 10, 140, 220, 18, TEXT_CF_LEFT },
-	{ BUTTON_CreateIndirect, "Close", GUI_ID_CANCEL, 270, 170, 80, 25 }
+	{ FRAMEWIN_CreateIndirect , "Radio Test" , 0               , 60  , 50  , 360 , 220 , FRAMEWIN_CF_MOVEABLE },
+	{ RADIO_CreateIndirect    , ""           , ID_RADIO_TEST   , 10  , 10  , 200 , 80  , 0, (3 | (24 << 8))   },
+	{ BUTTON_CreateIndirect   , "Prev"       , ID_RADIO_PREV   , 10  , 100 , 70  , 25                         },
+	{ BUTTON_CreateIndirect   , "Next"       , ID_RADIO_NEXT   , 85  , 100 , 70  , 25                         },
+	{ BUTTON_CreateIndirect   , "Set 0"      , ID_RADIO_SET0   , 160 , 100 , 60  , 25                         },
+	{ BUTTON_CreateIndirect   , "Set 1"      , ID_RADIO_SET1   , 225 , 100 , 60  , 25                         },
+	{ BUTTON_CreateIndirect   , "Set 2"      , ID_RADIO_SET2   , 290 , 100 , 60  , 25                         },
+	{ TEXT_CreateIndirect     , ""           , ID_RADIO_STATUS , 10  , 140 , 220 , 18  , TEXT_CF_LEFT         },
+	{ BUTTON_CreateIndirect   , "Close"      , GUI_ID_CANCEL   , 270 , 170 , 80  , 25                         }
 };
 
-static WM_PARAM _cbRadioTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbRadioTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pRadio = (RADIO_Obj *)WM_GetDialogItem(hWin, ID_RADIO_TEST);
+			auto pRadio = pWin->GetItem<RADIO_Obj>(ID_RADIO_TEST);
 			pRadio->SetText("Option A", 0);
 			pRadio->SetText("Option B", 1);
 			pRadio->SetText("Option C", 2);
 			pRadio->SetValue(0);
-			_UpdateRadioStatus(hWin);
+			_UpdateRadioStatus(pWin);
 			return 0;
 		}
 		case WM_NOTIFY_PARENT: {
-			auto pInfo = (WM_NOTIFY_INFO *)Data;
-			int Id = WM_GetId(pInfo->pWinSrc);
-			auto pRadio = (RADIO_Obj *)WM_GetDialogItem(hWin, ID_RADIO_TEST);
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pWinSrc = pInfo->pWinSrc;
+			int Id = pWinSrc->GetID();
+			auto pRadio = pWin->GetItem<RADIO_Obj>(ID_RADIO_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED:
 					if (Id == ID_RADIO_TEST) {
-						_UpdateRadioStatus(hWin);
+						_UpdateRadioStatus(pWin);
 					}
 					break;
 				case WM_NOTIFICATION_RELEASED:
 					switch (Id) {
 						case ID_RADIO_PREV:
 							pRadio->Dec();
-							_UpdateRadioStatus(hWin);
+							_UpdateRadioStatus(pWin);
 							break;
 						case ID_RADIO_NEXT:
 							pRadio->Inc();
-							_UpdateRadioStatus(hWin);
+							_UpdateRadioStatus(pWin);
 							break;
 						case ID_RADIO_SET0:
 							pRadio->SetValue(0);
-							_UpdateRadioStatus(hWin);
+							_UpdateRadioStatus(pWin);
 							break;
 						case ID_RADIO_SET1:
 							pRadio->SetValue(1);
-							_UpdateRadioStatus(hWin);
+							_UpdateRadioStatus(pWin);
 							break;
 						case ID_RADIO_SET2:
 							pRadio->SetValue(2);
-							_UpdateRadioStatus(hWin);
+							_UpdateRadioStatus(pWin);
 							break;
 						case GUI_ID_CANCEL:
-							GUI_EndDialog(hWin, 0);
+							GUI_EndDialog(pWin, 0);
 							break;
 					}
 					break;
@@ -872,7 +873,7 @@ static WM_PARAM _cbRadioTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(hWin, MsgId, Data);
+	return WM_DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestRadio() {
@@ -896,8 +897,8 @@ static int _ProgBarMax = 100;
 static int _ProgBarValue = 0;
 static bool _ProgBarCustomText = false;
 
-static void _UpdateProgBarStatus(WM_Obj *hWin) {
-	auto pStatus = (TEXT_Obj *)WM_GetDialogItem(hWin, ID_PROGBAR_STATUS);
+static void _UpdateProgBarStatus(WM_Obj *pWin) {
+	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_PROGBAR_STATUS);
 	if (pStatus) {
 		char acStatus[80];
 		sprintf(acStatus, "Range: %d-%d  Value: %d", _ProgBarMin, _ProgBarMax, _ProgBarValue);
@@ -916,10 +917,10 @@ static const GUI_WIDGET_CREATE_INFO _aProgBarDialogCreate[] = {
 	{ BUTTON_CreateIndirect   , "Close", GUI_ID_CANCEL, 255, 135, 80, 25 }
 };
 
-static WM_PARAM _cbProgBarTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbProgBarTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pProg = (PROGBAR_Obj *)WM_GetDialogItem(hWin, ID_PROGBAR_TEST);
+			auto pProg = pWin->GetItem<PROGBAR_Obj>(ID_PROGBAR_TEST);
 			_ProgBarMin = 0;
 			_ProgBarMax = 100;
 			_ProgBarValue = 30;
@@ -928,13 +929,14 @@ static WM_PARAM _cbProgBarTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			pProg->SetValue(_ProgBarValue);
 			pProg->SetTextAlign(TEXTALIGN_HCENTER);
 			pProg->SetText(nullptr);
-			_UpdateProgBarStatus(hWin);
+			_UpdateProgBarStatus(pWin);
 			return 0;
 		}
 		case WM_NOTIFY_PARENT: {
-			auto pInfo = (WM_NOTIFY_INFO *)Data;
-			int Id = WM_GetId(pInfo->pWinSrc);
-			auto pProg = (PROGBAR_Obj *)WM_GetDialogItem(hWin, ID_PROGBAR_TEST);
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pWinSrc = pInfo->pWinSrc;
+			int Id = pWinSrc->GetID();
+			auto pProg = pWin->GetItem<PROGBAR_Obj>(ID_PROGBAR_TEST);
 			if (pInfo->Notification == WM_NOTIFICATION_RELEASED) {
 				switch (Id) {
 					case ID_PROGBAR_DEC:
@@ -943,7 +945,7 @@ static WM_PARAM _cbProgBarTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 							_ProgBarValue = _ProgBarMin;
 						}
 						pProg->SetValue(_ProgBarValue);
-						_UpdateProgBarStatus(hWin);
+						_UpdateProgBarStatus(pWin);
 						break;
 					case ID_PROGBAR_INC:
 						_ProgBarValue += 10;
@@ -951,12 +953,12 @@ static WM_PARAM _cbProgBarTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 							_ProgBarValue = _ProgBarMax;
 						}
 						pProg->SetValue(_ProgBarValue);
-						_UpdateProgBarStatus(hWin);
+						_UpdateProgBarStatus(pWin);
 						break;
 					case ID_PROGBAR_RESET:
 						_ProgBarValue = 0;
 						pProg->SetValue(_ProgBarValue);
-						_UpdateProgBarStatus(hWin);
+						_UpdateProgBarStatus(pWin);
 						break;
 					case ID_PROGBAR_TOGGLE_TEXT:
 						_ProgBarCustomText = !_ProgBarCustomText;
@@ -966,17 +968,17 @@ static WM_PARAM _cbProgBarTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 						else {
 							pProg->SetText(nullptr);
 						}
-						_UpdateProgBarStatus(hWin);
+						_UpdateProgBarStatus(pWin);
 						break;
 					case GUI_ID_CANCEL:
-						GUI_EndDialog(hWin, 0);
+						GUI_EndDialog(pWin, 0);
 						break;
 				}
 			}
 			return 0;
 		}
 	}
-	return WM_DefaultProc(hWin, MsgId, Data);
+	return WM_DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestProgBar() {
@@ -1002,8 +1004,8 @@ static int _SliderMax = 100;
 static int _SliderValue = 25;
 static bool _SliderAutoTicks = false;
 
-static void _UpdateSliderStatus(WM_Obj *hWin) {
-	auto pStatus = (TEXT_Obj *)WM_GetDialogItem(hWin, ID_SLIDER_STATUS);
+static void _UpdateSliderStatus(WM_Obj *pWin) {
+	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_SLIDER_STATUS);
 	if (pStatus) {
 		char acStatus[96];
 		sprintf(acStatus, "Range: %d-%d  Value: %d  Ticks: %s",
@@ -1029,11 +1031,11 @@ static const GUI_WIDGET_CREATE_INFO _aSliderDialogCreate[] = {
 	{ BUTTON_CreateIndirect   , "Close"                                     , GUI_ID_CANCEL          , 375 , 200 , 80  , 25                         }
 };
 
-static WM_PARAM _cbSliderTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbSliderTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pSliderH = (SLIDER_Obj *)WM_GetDialogItem(hWin, ID_SLIDER_TEST);
-			auto pSliderV = (SLIDER_Obj *)WM_GetDialogItem(hWin, ID_SLIDER_TEST_V);
+			auto pSliderH = pWin->GetItem<SLIDER_Obj>(ID_SLIDER_TEST);
+			auto pSliderV = pWin->GetItem<SLIDER_Obj>(ID_SLIDER_TEST_V);
 			_SliderMin = 0;
 			_SliderMax = 100;
 			_SliderValue = 25;
@@ -1044,14 +1046,15 @@ static WM_PARAM _cbSliderTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			pSliderV->SetRange(_SliderMin, _SliderMax);
 			pSliderV->SetNumTicks(11);
 			pSliderV->SetValue(_SliderValue);
-			_UpdateSliderStatus(hWin);
+			_UpdateSliderStatus(pWin);
 			return 0;
 		}
 		case WM_NOTIFY_PARENT: {
-			auto pInfo = (WM_NOTIFY_INFO *)Data;
-			int Id = WM_GetId(pInfo->pWinSrc);
-			auto pSliderH = (SLIDER_Obj *)WM_GetDialogItem(hWin, ID_SLIDER_TEST);
-			auto pSliderV = (SLIDER_Obj *)WM_GetDialogItem(hWin, ID_SLIDER_TEST_V);
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pWinSrc = pInfo->pWinSrc;
+			int Id = pWinSrc->GetID();
+			auto pSliderH = pWin->GetItem<SLIDER_Obj>(ID_SLIDER_TEST);
+			auto pSliderV = pWin->GetItem<SLIDER_Obj>(ID_SLIDER_TEST_V);
 			auto pSlider = (Id == ID_SLIDER_TEST_V) ? pSliderV : pSliderH;
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED:
@@ -1059,7 +1062,7 @@ static WM_PARAM _cbSliderTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 						_SliderValue = pSlider->GetValue();
 						pSliderH->SetValue(_SliderValue);
 						pSliderV->SetValue(_SliderValue);
-						_UpdateSliderStatus(hWin);
+						_UpdateSliderStatus(pWin);
 					}
 					break;
 				case WM_NOTIFICATION_RELEASED:
@@ -1069,20 +1072,20 @@ static WM_PARAM _cbSliderTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 							pSliderH->SetValue(_SliderValue);
 							pSliderV->SetValue(_SliderValue);
 							_SliderValue = pSliderH->GetValue();
-							_UpdateSliderStatus(hWin);
+							_UpdateSliderStatus(pWin);
 							break;
 						case ID_SLIDER_INC:
 							_SliderValue += 10;
 							pSliderH->SetValue(_SliderValue);
 							pSliderV->SetValue(_SliderValue);
 							_SliderValue = pSliderH->GetValue();
-							_UpdateSliderStatus(hWin);
+							_UpdateSliderStatus(pWin);
 							break;
 						case ID_SLIDER_RESET:
 							_SliderValue = _SliderMin;
 							pSliderH->SetValue(_SliderValue);
 							pSliderV->SetValue(_SliderValue);
-							_UpdateSliderStatus(hWin);
+							_UpdateSliderStatus(pWin);
 							break;
 						case ID_SLIDER_TOGGLE_RANGE:
 							if ((_SliderMin == 0) && (_SliderMax == 100)) {
@@ -1097,16 +1100,16 @@ static WM_PARAM _cbSliderTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 							pSliderV->SetRange(_SliderMin, _SliderMax);
 							_SliderValue = pSliderH->GetValue();
 							pSliderV->SetValue(_SliderValue);
-							_UpdateSliderStatus(hWin);
+							_UpdateSliderStatus(pWin);
 							break;
 						case ID_SLIDER_TOGGLE_TICKS:
 							_SliderAutoTicks = !_SliderAutoTicks;
 							pSliderH->SetNumTicks(_SliderAutoTicks ? -1 : 11);
 							pSliderV->SetNumTicks(_SliderAutoTicks ? -1 : 11);
-							_UpdateSliderStatus(hWin);
+							_UpdateSliderStatus(pWin);
 							break;
 						case GUI_ID_CANCEL:
-							GUI_EndDialog(hWin, 0);
+							GUI_EndDialog(pWin, 0);
 							break;
 					}
 					break;
@@ -1114,7 +1117,7 @@ static WM_PARAM _cbSliderTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(hWin, MsgId, Data);
+	return WM_DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestSlider() {
@@ -1139,9 +1142,9 @@ void _TestSlider() {
 #define ID_EDIT_INSERT_MARK        (GUI_ID_USER + 230)
 #define ID_EDIT_CLEAR              (GUI_ID_USER + 231)
 
-static void _UpdateEditStatus(WM_Obj *hWin) {
-	auto pEdit = (EDIT_Obj *)WM_GetDialogItem(hWin, ID_EDIT_TEST);
-	auto pStatus = (TEXT_Obj *)WM_GetDialogItem(hWin, ID_EDIT_STATUS);
+static void _UpdateEditStatus(WM_Obj *pWin) {
+	auto pEdit = pWin->GetItem<EDIT_Obj>(ID_EDIT_TEST);
+	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_EDIT_STATUS);
 	if (pEdit && pStatus) {
 		char acText[96];
 		char acStatus[192];
@@ -1158,8 +1161,8 @@ static void _UpdateEditStatus(WM_Obj *hWin) {
 	}
 }
 
-static void _ResetEditScenario(WM_Obj *hWin) {
-	auto pEdit = (EDIT_Obj *)WM_GetDialogItem(hWin, ID_EDIT_TEST);
+static void _ResetEditScenario(WM_Obj *pWin) {
+	auto pEdit = pWin->GetItem<EDIT_Obj>(ID_EDIT_TEST);
 	pEdit->SetMaxLen(64);
 	pEdit->SetText("EditInteractiveDemo");
 	pEdit->SetInsertMode(1);
@@ -1167,7 +1170,7 @@ static void _ResetEditScenario(WM_Obj *hWin) {
 	pEdit->SetCursorAtChar(4);
 	WM_SetFocus(pEdit);
 	WM_Invalidate(pEdit);
-	_UpdateEditStatus(hWin);
+	_UpdateEditStatus(pWin);
 }
 
 static const GUI_WIDGET_CREATE_INFO _aEditDialogCreate[] = {
@@ -1189,65 +1192,66 @@ static const GUI_WIDGET_CREATE_INFO _aEditDialogCreate[] = {
 	{ BUTTON_CreateIndirect, "Close", GUI_ID_CANCEL, 373, 205, 80, 25 }
 };
 
-static WM_PARAM _cbEditTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbEditTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
-			_ResetEditScenario(hWin);
+			_ResetEditScenario(pWin);
 			return 0;
 		case WM_NOTIFY_PARENT: {
-			auto pInfo = (WM_NOTIFY_INFO *)Data;
-			int Id = WM_GetId(pInfo->pWinSrc);
-			auto pEdit = (EDIT_Obj *)WM_GetDialogItem(hWin, ID_EDIT_TEST);
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pWinSrc = pInfo->pWinSrc;
+			int Id = pWinSrc->GetID();
+			auto pEdit = pWin->GetItem<EDIT_Obj>(ID_EDIT_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED:
 					if (Id == ID_EDIT_TEST) {
-						_UpdateEditStatus(hWin);
+						_UpdateEditStatus(pWin);
 					}
 					break;
 				case WM_NOTIFICATION_RELEASED:
 					switch (Id) {
 						case ID_EDIT_LOAD_SAMPLE:
-							_ResetEditScenario(hWin);
+							_ResetEditScenario(pWin);
 							break;
 						case ID_EDIT_LEFT:
 							pEdit->AddKey(GUI_KEY_LEFT);
-							_UpdateEditStatus(hWin);
+							_UpdateEditStatus(pWin);
 							break;
 						case ID_EDIT_RIGHT:
 							pEdit->AddKey(GUI_KEY_RIGHT);
-							_UpdateEditStatus(hWin);
+							_UpdateEditStatus(pWin);
 							break;
 						case ID_EDIT_HOME:
 							pEdit->AddKey(GUI_KEY_HOME);
-							_UpdateEditStatus(hWin);
+							_UpdateEditStatus(pWin);
 							break;
 						case ID_EDIT_END:
 							pEdit->AddKey(GUI_KEY_END);
-							_UpdateEditStatus(hWin);
+							_UpdateEditStatus(pWin);
 							break;
 						case ID_EDIT_BACKSPACE:
 							pEdit->AddKey(GUI_KEY_BACKSPACE);
-							_UpdateEditStatus(hWin);
+							_UpdateEditStatus(pWin);
 							break;
 						case ID_EDIT_DELETE:
 							pEdit->AddKey(GUI_KEY_DELETE);
-							_UpdateEditStatus(hWin);
+							_UpdateEditStatus(pWin);
 							break;
 						case ID_EDIT_TOGGLE_MODE:
 							pEdit->AddKey(GUI_KEY_INSERT);
-							_UpdateEditStatus(hWin);
+							_UpdateEditStatus(pWin);
 							break;
 						case ID_EDIT_INSERT_MARK:
 							pEdit->AddKey('#');
-							_UpdateEditStatus(hWin);
+							_UpdateEditStatus(pWin);
 							break;
 						case ID_EDIT_CLEAR:
 							pEdit->SetText("");
 							pEdit->SetCursorAtChar(0);
-							_UpdateEditStatus(hWin);
+							_UpdateEditStatus(pWin);
 							break;
 						case GUI_ID_CANCEL:
-							GUI_EndDialog(hWin, 0);
+							GUI_EndDialog(pWin, 0);
 							break;
 					}
 					break;
@@ -1255,7 +1259,7 @@ static WM_PARAM _cbEditTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(hWin, MsgId, Data);
+	return WM_DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestEdit() {
@@ -1278,9 +1282,9 @@ void _TestEdit() {
 static bool _MultiEditReadOnly = false;
 static int _MultiEditLineNo = 1;
 
-static void _UpdateMultiEditStatus(WM_Obj *hWin) {
-	auto pEdit = (MULTIEDIT_Obj *)WM_GetDialogItem(hWin, ID_MULTIEDIT_TEST);
-	auto pStatus = (TEXT_Obj *)WM_GetDialogItem(hWin, ID_MULTIEDIT_STATUS);
+static void _UpdateMultiEditStatus(WM_Obj *pWin) {
+	auto pEdit = pWin->GetItem<MULTIEDIT_Obj>(ID_MULTIEDIT_TEST);
+	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_MULTIEDIT_STATUS);
 	if (pEdit && pStatus) {
 		char acStatus[96];
 		sprintf(acStatus, "Len: %d  ReadOnly: %s", pEdit->GetTextSize(), _MultiEditReadOnly ? "On" : "Off");
@@ -1300,10 +1304,10 @@ static const GUI_WIDGET_CREATE_INFO _aMultiEditDialogCreate[] = {
 	{ BUTTON_CreateIndirect    , "Close"           , GUI_ID_CANCEL                , 325 , 230 , 80  , 25                         }
 };
 
-static WM_PARAM _cbMultiEditTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbMultiEditTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pEdit = (MULTIEDIT_Obj *)WM_GetDialogItem(hWin, ID_MULTIEDIT_TEST);
+			auto pEdit = pWin->GetItem<MULTIEDIT_Obj>(ID_MULTIEDIT_TEST);
 			_MultiEditReadOnly = false;
 			_MultiEditLineNo = 1;
 			pEdit->SetText("Line 1");
@@ -1311,17 +1315,18 @@ static WM_PARAM _cbMultiEditTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			pEdit->SetAutoScrollH(1);
 			pEdit->SetReadOnly(0);
 			pEdit->SetWrapWord();
-			_UpdateMultiEditStatus(hWin);
+			_UpdateMultiEditStatus(pWin);
 			return 0;
 		}
 		case WM_NOTIFY_PARENT: {
-			auto pInfo = (WM_NOTIFY_INFO *)Data;
-			int Id = WM_GetId(pInfo->pWinSrc);
-			auto pEdit = (MULTIEDIT_Obj *)WM_GetDialogItem(hWin, ID_MULTIEDIT_TEST);
+			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pWinSrc = pInfo->pWinSrc;
+			int Id = pWinSrc->GetID();
+			auto pEdit = pWin->GetItem<MULTIEDIT_Obj>(ID_MULTIEDIT_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED:
 					if (Id == ID_MULTIEDIT_TEST) {
-						_UpdateMultiEditStatus(hWin);
+						_UpdateMultiEditStatus(pWin);
 					}
 					break;
 				case WM_NOTIFICATION_RELEASED:
@@ -1334,29 +1339,29 @@ static WM_PARAM _cbMultiEditTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 							sprintf(acLine, "\r\nLine %d", ++_MultiEditLineNo);
 							sprintf(acNew, "%s%s", acOld, acLine);
 							pEdit->SetText(acNew);
-							_UpdateMultiEditStatus(hWin);
+							_UpdateMultiEditStatus(pWin);
 							break;
 						}
 						case ID_MULTIEDIT_CLEAR:
 							_MultiEditLineNo = 0;
 							pEdit->SetText("");
-							_UpdateMultiEditStatus(hWin);
+							_UpdateMultiEditStatus(pWin);
 							break;
 						case ID_MULTIEDIT_TOGGLE_READONLY:
 							_MultiEditReadOnly = !_MultiEditReadOnly;
 							pEdit->SetReadOnly(_MultiEditReadOnly ? 1 : 0);
-							_UpdateMultiEditStatus(hWin);
+							_UpdateMultiEditStatus(pWin);
 							break;
 						case ID_MULTIEDIT_WRAP_WORD:
 							pEdit->SetWrapWord();
-							_UpdateMultiEditStatus(hWin);
+							_UpdateMultiEditStatus(pWin);
 							break;
 						case ID_MULTIEDIT_WRAP_NONE:
 							pEdit->SetWrapNone();
-							_UpdateMultiEditStatus(hWin);
+							_UpdateMultiEditStatus(pWin);
 							break;
 						case GUI_ID_CANCEL:
-							GUI_EndDialog(hWin, 0);
+							GUI_EndDialog(pWin, 0);
 							break;
 					}
 					break;
@@ -1364,7 +1369,7 @@ static WM_PARAM _cbMultiEditTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(hWin, MsgId, Data);
+	return WM_DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestMultiEdit() {

@@ -11,9 +11,9 @@ import TUX.Widget;
 #define BUTTON_USE_3D 1
 
 export {
-constexpr uint16_t BUTTON_CF_HIDE    = WM_CF_HIDE;
-constexpr uint16_t BUTTON_CF_SHOW    = WM_CF_SHOW;
-constexpr uint16_t BUTTON_CF_MEMDEV  = WM_CF_MEMDEV;
+constexpr uint16_t BUTTON_CF_HIDE    = WC_HIDE;
+constexpr uint16_t BUTTON_CF_SHOW    = WC_VISIBLE;
+constexpr uint16_t BUTTON_CF_MEMDEV  = WC_MEMDEV;
 constexpr uint16_t BUTTON_STATE_FOCUS       = WIDGET_STATE_FOCUS;
 constexpr uint16_t BUTTON_STATE_PRESSED     = WIDGET_STATE_USER<0>;
 constexpr uint16_t BUTTON_STATE_HASFOCUS    = 0;
@@ -50,7 +50,7 @@ struct BUTTON_Obj : public WIDGET {
 
 	void _OnPaint() {
 		bool IsPressed = State & BUTTON_STATE_PRESSED;
-		int ColorIndex = (WM_IsEnabled(this)) ? IsPressed : 2;
+		int ColorIndex = (IsEnabled()) ? IsPressed : 2;
 		GUI_SetFont(this->Props.pFont);
 		auto rClient = WM_GetClientRect();
 		auto rInside = rClient;
@@ -101,12 +101,12 @@ struct BUTTON_Obj : public WIDGET {
 	}
 	void _ButtonPressed() {
 		AddStates(BUTTON_STATE_PRESSED);
-		if (this->Status & WM_SF_ISVIS)
+		if (this->Status & WC_VISIBLE)
 			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
 	}
 	void _ButtonReleased(int Notification) {
 		DelStates(BUTTON_STATE_PRESSED);
-		if (this->Status & WM_SF_ISVIS)
+		if (this->Status & WC_VISIBLE)
 			WM_NotifyParent(this, Notification);
 		if (Notification == WM_NOTIFICATION_RELEASED) {
 			GUI_DEBUG_LOG("BUTTON: Hit\n");

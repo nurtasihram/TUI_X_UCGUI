@@ -94,7 +94,7 @@ TEXT_Obj *TEXT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
 						int WinFlags, int ExFlags, int Id, const char *pText) {
 	/* Create the window */
 #if WM_SUPPORT_TRANSPARENCY
-	WinFlags |= WM_CF_HASTRANS;
+	WinFlags |= WC_HASTRANS;
 #endif
 	auto pObj = (TEXT_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, TEXT_Obj::_Callback,
 												   sizeof(TEXT_Obj) - sizeof(WM_Obj));
@@ -121,7 +121,7 @@ TEXT_Obj *TEXT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj *hPare
 }
 WM_Obj *TEXT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	return TEXT_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-						 hWinParent, WM_CF_SHOW, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->pName);
+						 hWinParent, WC_VISIBLE, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->pName);
 }
 
 }

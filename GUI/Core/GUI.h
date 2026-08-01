@@ -8,54 +8,6 @@ import TUX.Resources;
 
 #define GUI_COUNTOF(a) (sizeof(a) / sizeof(a[0]))
 
-/************************************************************
-*
-*                    GUI_KEY_...
-*
-*************************************************************
-These ID values are basically meant to be used with widgets
-Note that we have chosen the values to be close to existing
-"standards", so do not change them unless forced to.
-*/
-#define GUI_KEY_BACKSPACE         8         /* ASCII: BACKSPACE Crtl-H */
-#define GUI_KEY_TAB               9         /* ASCII: TAB       Crtl-I */
-#define GUI_KEY_ENTER             13        /* ASCII: ENTER     Crtl-M */
-#define GUI_KEY_LEFT              16
-#define GUI_KEY_UP                17
-#define GUI_KEY_RIGHT             18
-#define GUI_KEY_DOWN              19
-#define GUI_KEY_HOME              23
-#define GUI_KEY_END               24
-#define GUI_KEY_SHIFT             25
-#define GUI_KEY_CONTROL           26
-#define GUI_KEY_ESCAPE            27        /* ASCII: ESCAPE    0x1b   */
-#define GUI_KEY_INSERT            29
-#define GUI_KEY_DELETE            30
-#define GUI_KEY_SPACE             32
-#define GUI_KEY_F1                40
-#define GUI_KEY_F2                41
-
-/*********************************************************************
-*
-*       Dialog item IDs
-*
-*  The IDs below are arbitrary values. They just have to be unique
-*  within the dialog.
-*
-*  If you use your own Ids, we recommend to use values above GUI_ID_USER.
-*/
-#define GUI_ID_OK                1
-#define GUI_ID_CANCEL            2
-#define GUI_ID_YES               3
-#define GUI_ID_NO                4
-#define GUI_ID_CLOSE             5
-#define GUI_ID_HELP              6
-#define GUI_ID_MAXIMIZE          7
-#define GUI_ID_MINIMIZE          8
-#define GUI_ID_VSCROLL  0xFE
-#define GUI_ID_HSCROLL  0xFF
-#define GUI_ID_USER     0x100
-
 /*    *********************************
 	*
 	*     Min/Max coordinates

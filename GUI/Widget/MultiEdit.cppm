@@ -275,14 +275,14 @@ struct MULTIEDIT_Obj : public WIDGET {
 		this->InvalidFlags |= INVALID_CURSORXY;
 	}
 	void _SetScrollState() {
-		WIDGET__SetScrollState(this, &this->ScrollStateV, &this->ScrollStateH);
+		SetScrollState(ScrollStateV, ScrollStateH);
 	}
 	void _CalcScrollPos() {
 		int xCursor, yCursor;
 		_GetCursorXY(&xCursor, &yCursor);
 		yCursor /= Props.pFont->DistY();
-		WM_CheckScrollPos(&this->ScrollStateV, yCursor, 0, 0);       /* Vertical */
-		WM_CheckScrollPos(&this->ScrollStateH, xCursor, 30, 30);     /* Horizontal */
+		ScrollStateV.CheckPos(yCursor, 0, 0);       /* Vertical */
+		ScrollStateH.CheckPos(xCursor, 30, 30);     /* Horizontal */
 		_SetScrollState();
 	}
 	int _GetTextSizeX() {
@@ -387,7 +387,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 		GUI_RECT rInsideRect;
 		_ManageScrollers();
 		WM_GetInsideRectExScrollbar(this, &rInsideRect);
-		WM_InvalidateRect(this, &rInsideRect);
+		WM_Invalidate(this, &rInsideRect);
 	}
 	int _InvalidateCursorPos() {
 		int Value;
@@ -892,13 +892,13 @@ struct MULTIEDIT_Obj : public WIDGET {
 				switch (pInfo->Notification) {
 					case WM_NOTIFICATION_VALUE_CHANGED: {
 						WM_SCROLL_STATE ScrollState;
-						if (pWinSrc == WM_GetScrollbarV(pObj)) {
+						if (pWinSrc == pObj->GetScrollbarV()) {
 							WM_GetScrollState(pWinSrc, &ScrollState);
 							pObj->ScrollStateV.v = ScrollState.v;
 							WM_Invalidate(pObj);
 							WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 						}
-						else if (pWinSrc == WM_GetScrollbarH(pObj)) {
+						else if (pWinSrc == pObj->GetScrollbarH()) {
 							WM_GetScrollState(pWinSrc, &ScrollState);
 							pObj->ScrollStateH.v = ScrollState.v;
 							WM_Invalidate(pObj);

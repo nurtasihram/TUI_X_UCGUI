@@ -44,18 +44,18 @@ struct MULTIPAGE_Obj : public WIDGET {
 	int ScrollState;
 
 	void _AddScrollbar(int x, int y, int w, int h) {
-		if (auto pScroll = (SCROLLBAR_Obj *)WM_GetScrollbarH(this)) {
+		if (auto pScroll = GetScrollbarH()) {
 			WM_MoveChildTo(pScroll, x, y);
 			WM_SetSize(pScroll, w, h);
 		}
 		else {
-			pScroll = SCROLLBAR_Create(x, y, w, h, this, GUI_ID_HSCROLL, WM_CF_SHOW, 0);
-			WIDGET_SetEffect(pScroll, this->pEffect);
+			auto pScrollbar = SCROLLBAR_Create(x, y, w, h, this, GUI_ID_HSCROLL, WC_VISIBLE, 0);
+			pScrollbar->SetEffect(this->pEffect);
 		}
 		this->State |= MULTIPAGE_STATE_SCROLLMODE;
 	}
 	void _SetScrollbar(int NumItems) {
-		auto pScroll = (SCROLLBAR_Obj *)WM_GetScrollbarH(this);
+		auto pScroll = (SCROLLBAR_Obj *)GetScrollbarH();
 		pScroll->SetNumItems(NumItems);
 		pScroll->SetPageSize(1);
 		if (ScrollState >= NumItems)
@@ -63,7 +63,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 		pScroll->SetValue(this->ScrollState);
 	}
 	void _DeleteScrollbar() {
-		WM_DeleteWindow(WM_GetScrollbarH(this));
+		WM_DeleteWindow(GetScrollbarH());
 		this->State &= ~MULTIPAGE_STATE_SCROLLMODE;
 	}
 	void _ShowPage(unsigned Index) {
@@ -76,11 +76,11 @@ struct MULTIPAGE_Obj : public WIDGET {
 		}
 		for (auto pChild = pClient->pFirstChild; pChild; pChild = pChild->pNext) {
 			if (pChild == hWin) {
-				WM_ShowWindow(pChild);
+				pChild->ShowWindow();
 				WM_SetFocus(pChild);
 			}
 			else
-				WM_HideWindow(pChild);
+				pChild->HideWindow();
 		}
 	}
 	void _SetEnable(unsigned Index, int State) {
@@ -333,7 +333,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 				auto pInfo = (const WM_NOTIFY_INFO *)Data;
 				auto pWinSrc = pInfo->pWinSrc;
 				if (pInfo->Notification == WM_NOTIFICATION_VALUE_CHANGED) {
-					if (WM_GetId(pWinSrc) == GUI_ID_HSCROLL) {
+					if (pWinSrc->GetID() == GUI_ID_HSCROLL) {
 						pObj->ScrollState = ((SCROLLBAR_Obj *)pWinSrc)->GetValue();
 						WM_Invalidate(pObj);
 					}
@@ -346,7 +346,8 @@ struct MULTIPAGE_Obj : public WIDGET {
 				pObj->_CalcClientRect((GUI_RECT *)Data);
 				return 0;
 			case WM_WIDGET_SET_EFFECT:
-				WIDGET_SetEffect(WM_GetScrollbarH(pObj), (WIDGET_EFFECT const *)Data);
+				if (auto pScroll = (SCROLLBAR_Obj *)pObj->GetScrollbarH())
+					pScroll->SetEffect((const WIDGET_EFFECT *)Data);
 			case WM_SIZE:
 				pObj->_UpdatePositions();
 				return 0;
@@ -535,7 +536,7 @@ MULTIPAGE_Obj::Properties MULTIPAGE_Obj::DefaultProps;
 MULTIPAGE_Obj *MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
 								  int WinFlags, int ExFlags, int Id) {
 	/* Create the window */
-	auto pObj = (MULTIPAGE_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags | WM_CF_HASTRANS, MULTIPAGE_Obj::_Callback,
+	auto pObj = (MULTIPAGE_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags | WC_HASTRANS, MULTIPAGE_Obj::_Callback,
 								  sizeof(MULTIPAGE_Obj) - sizeof(WM_Obj));
 	if (pObj) {
 		GUI_RECT rClient;
@@ -548,7 +549,7 @@ MULTIPAGE_Obj *MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *
 		pObj->ScrollState = 0;
 		pObj->State = 0;
 		pObj->_CalcClientRect(&rClient);
-		Flags = WM_CF_SHOW | WM_CF_ANCHOR_LEFT | WM_CF_ANCHOR_RIGHT | WM_CF_ANCHOR_TOP | WM_CF_ANCHOR_BOTTOM;
+		Flags = WC_VISIBLE | WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM;
 		pObj->pClient = (WM_Obj *)WM_CreateWindowAsChild(rClient.x0, rClient.y0,
 														 rClient.x1 - rClient.x0 + 1,
 														 rClient.y1 - rClient.y0 + 1,

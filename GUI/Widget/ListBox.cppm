@@ -59,18 +59,18 @@ struct LISTBOX_Obj : public WIDGET {
 	GUI_ARRAY ItemArray;
 	WIDGET_DRAW_ITEM_FUNC *pfDrawItem;
 	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
-	WM_Obj *hOwner;
+	WM_Obj *pOwner;
 	int16_t Sel; /* current selection */
 	uint8_t Flags;
-	uint16_t  ScrollbarWidth;
+	uint16_t ScrollbarWidth;
 	uint16_t ItemSpacing;
 
 	void _NotifyOwner(int Notification) {
-		auto hOwner = this->hOwner ? this->hOwner : WM_GetParent(this);
+		auto pOwner = this->pOwner ? this->pOwner : WM_GetParent(this);
 		WM_NOTIFY_INFO Info;
 		Info.Notification = Notification;
 		Info.pWinSrc = this;
-		WM_SendMessage(hOwner, WM_NOTIFY_PARENT, (WM_PARAM)&Info);
+		pOwner->SendMessage(WM_NOTIFY_PARENT, (WM_PARAM)&Info);
 	}
 
 	int _CallOwnerDraw(int Cmd, int ItemIndex, GUI_POINT Pos) {
@@ -198,9 +198,9 @@ struct LISTBOX_Obj : public WIDGET {
 				ScrollStateV.v = this->Sel;
 			}
 		}
-		WM_CheckScrollBounds(&ScrollStateV);
-		WM_CheckScrollBounds(&ScrollStateH);
-		WIDGET__SetScrollState(this, &ScrollStateV, &ScrollStateH);
+		ScrollStateV.Bounds();
+		ScrollStateH.Bounds();
+		SetScrollState(ScrollStateV, ScrollStateH);
 		return ScrollStateV.v - PrevScrollStateV;
 	}
 	void _InvalidateItemSize(uint16_t Index) {
@@ -214,7 +214,7 @@ struct LISTBOX_Obj : public WIDGET {
 	void _InvalidateInsideArea() {
 		GUI_RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
-		WM_InvalidateRect(this, &Rect);
+		WM_Invalidate(this, &Rect);
 	}
 	void _InvalidateItem(int Sel) {
 		if (Sel >= 0) {
@@ -227,7 +227,7 @@ struct LISTBOX_Obj : public WIDGET {
 				WM_GetInsideRectExScrollbar(this, &Rect);
 				Rect.y0 += ItemPosY;
 				Rect.y1 = Rect.y0 + ItemDistY - 1;
-				WM_InvalidateRect(this, &Rect);
+				WM_Invalidate(this, &Rect);
 			}
 		}
 	}
@@ -239,7 +239,7 @@ struct LISTBOX_Obj : public WIDGET {
 				GUI_RECT Rect;
 				WM_GetInsideRectExScrollbar(this, &Rect);
 				Rect.y0 += ItemPosY;
-				WM_InvalidateRect(this, &Rect);
+				WM_Invalidate(this, &Rect);
 			}
 		}
 	}
@@ -247,9 +247,9 @@ struct LISTBOX_Obj : public WIDGET {
 		int Width = this->ScrollbarWidth;
 		//	if (Width == 0)
 		//		Width = SCROLLBAR_GetDefaultWidth();	////////////// FIX //////////////
-		if (auto pScroll = (SCROLLBAR_Obj *)WM_GetDialogItem(this, GUI_ID_HSCROLL))
+		if (auto pScroll = (SCROLLBAR_Obj *)GetScrollbarH())
 			pScroll->SetWidth(Width);
-		if (auto pScroll = (SCROLLBAR_Obj *)WM_GetDialogItem(this, GUI_ID_VSCROLL))
+		if (auto pScroll = (SCROLLBAR_Obj *)GetScrollbarV())
 			pScroll->SetWidth(Width);
 	}
 	int _CalcScrollParas() {
@@ -394,7 +394,7 @@ struct LISTBOX_Obj : public WIDGET {
 	}
 #if GUI_SUPPORT_MOUSE
 	void _OnMouseOver(const GUI_PID_STATE *pState) {
-		if (this->hOwner) {
+		if (this->pOwner) {
 			if (pState) {  /* Something happened in our area (pressed or released) */
 				int Sel = _GetItemFromPos(pState->x, pState->y);
 				if (Sel >= 0)
@@ -440,13 +440,13 @@ struct LISTBOX_Obj : public WIDGET {
 				_ToggleMultiSel(this->Sel);
 				return 1;               /* Key has been consumed */
 			case GUI_KEY_RIGHT:
-				if (WM_SetScrollValue(&ScrollStateH, ScrollStateH.v + Props.ScrollStepH)) {
+				if (ScrollStateH.SetValue(ScrollStateH.v + Props.ScrollStepH)) {
 					UpdateScrollers();
 					_InvalidateInsideArea();
 				}
 				return 1;               /* Key has been consumed */
 			case GUI_KEY_LEFT:
-				if (WM_SetScrollValue(&ScrollStateH, ScrollStateH.v - Props.ScrollStepH)) {
+				if (ScrollStateH.SetValue(ScrollStateH.v - Props.ScrollStepH)) {
 					UpdateScrollers();
 					_InvalidateInsideArea();
 				}
@@ -468,10 +468,10 @@ struct LISTBOX_Obj : public WIDGET {
 
 	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (LISTBOX_Obj *)hWin;
-		/* In popup mode (hOwner set), bypass WIDGET_HandleActive for WM_PID_STATE_CHANGED.
+		/* In popup mode (pOwner set), bypass WIDGET_HandleActive for WM_PID_STATE_CHANGED.
 		 * WIDGET_HandleActive internally calls WM_SetFocus on press, which would steal
 		 * focus from the dropdown and cause its parent window to flicker. */
-		if (!(pObj->hOwner && MsgId == WM_PID_STATE_CHANGED)) {
+		if (!(pObj->pOwner && MsgId == WM_PID_STATE_CHANGED)) {
 			/* Let widget handle the standard messages */
 			if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 				return Data;
@@ -483,13 +483,13 @@ struct LISTBOX_Obj : public WIDGET {
 				switch (pInfo->Notification) {
 					case WM_NOTIFICATION_VALUE_CHANGED: {
 						WM_SCROLL_STATE ScrollState;
-						if (pWinSrc == WM_GetScrollbarV(pObj)) {
+						if (pWinSrc == pObj->GetScrollbarV()) {
 							WM_GetScrollState(pWinSrc, &ScrollState);
 							pObj->ScrollStateV.v = ScrollState.v;
 							pObj->_InvalidateInsideArea();
 							pObj->_NotifyOwner(WM_NOTIFICATION_SCROLL_CHANGED);
 						}
-						else if (pWinSrc == WM_GetScrollbarH(pObj)) {
+						else if (pWinSrc == pObj->GetScrollbarH()) {
 							WM_GetScrollState(pWinSrc, &ScrollState);
 							pObj->ScrollStateH.v = ScrollState.v;
 							pObj->_InvalidateInsideArea();
@@ -521,7 +521,7 @@ struct LISTBOX_Obj : public WIDGET {
 			}
 			case WM_TOUCH: {
 				auto pState = (const GUI_PID_STATE *)Data;
-				if (pObj->hOwner && pState) {
+				if (pObj->pOwner && pState) {
 					GUI_RECT r = WM_GetClientRect(pObj);
 					if (pState->x < 0 || pState->y < 0 || pState->x > r.x1 || pState->y > r.y1) {
 						if (pState->Pressed)
@@ -583,7 +583,7 @@ public:
 				}
 				else {
 					ColorIndex = IsDisabled ? 3 : ItemIndex != pObj->Sel ? 0	:
-						pObj->State & WIDGET_STATE_FOCUS || pObj->hOwner ? 2 : 1;
+						pObj->State & WIDGET_STATE_FOCUS || pObj->pOwner ? 2 : 1;
 				}
 				/* Display item */
 				GUI.SetBkColor(pObj->Props.aBkColor[ColorIndex]);
@@ -925,8 +925,8 @@ public:
 			this->_InvalidateInsideArea();
 		}
 	}
-	void SetOwner(WM_Obj *hOwner) {
-		this->hOwner = hOwner;
+	void SetOwner(WM_Obj *pOwner) {
+		this->pOwner = pOwner;
 		this->_InvalidateInsideArea();
 	}
 	void SetOwnerDraw(WIDGET_DRAW_ITEM_FUNC *pfDrawItem) {

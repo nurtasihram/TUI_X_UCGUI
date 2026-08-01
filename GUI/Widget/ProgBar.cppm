@@ -180,7 +180,7 @@ public:
 			GUI_RECT r2;
 			_GetTextRect(&r2, _GetText(acBuffer));
 			r1 |= r2;
-			WM_InvalidateRect(this, &r1);
+			WM_Invalidate(this, &r1);
 		}
 		GUI_SetFont(pOldFont);
 	}
@@ -215,7 +215,7 @@ PROGBAR_Obj *PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hPar
 	if (pObj) {
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, 0);
-		WIDGET_SetEffect(pObj, WIDGET_Effect_None); /* Standard effect for progbar: None */
+		pObj->SetEffect(WIDGET_Effect_None); /* Standard effect for progbar: None */
 		/* init member variables */
 		pObj->Props = PROGBAR_Obj::DefaultProps;
 		pObj->Max = 100;

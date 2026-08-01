@@ -939,7 +939,7 @@ MENU_Obj::Properties MENU_Obj::DefaultProps;
 MENU_Obj *MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParent, int WinFlags, int ExFlags, int Id) {
 	/* Create the window */
 	auto pObj = (MENU_Obj *)WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent,
-												   WM_CF_SHOW | WM_CF_STAYONTOP | WinFlags,
+												   WC_VISIBLE | WC_STAYONTOP | WinFlags,
 												   MENU_Obj::_Callback, sizeof(MENU_Obj) - sizeof(WM_Obj));
 	if (pObj) {
 		/* init widget specific variables */
@@ -958,7 +958,7 @@ MENU_Obj *MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParent, i
 		pObj->Sel = -1;
 		pObj->pOwner = 0;
 		pObj->IsSubmenuActive = 0;
-		WIDGET_SetEffect(pObj, MENU__pDefaultEffect);
+		pObj->SetEffect(MENU__pDefaultEffect);
 	}
 	else {
 	}

@@ -50,13 +50,13 @@ struct SCROLLBAR_Obj : public WIDGET {
 		Pos.x1 = (State & SCROLLBAR_CF_VERTICAL) ? r.y1 : r.x1;
 		/* Subtract the rectangle of the other scrollbar (if existing and visible) */
 		if (Id == GUI_ID_HSCROLL)
-			if (auto pWin = WM_GetScrollbarV(pParent)) {
+			if (auto pWin = pParent->GetScrollbarV()) {
 				auto rSub = pWin->GetRect();
 				if (r.x1 == rSub.x1)
 					r.x1 = rSub.x0 - 1;
 			}
 		if (Id == GUI_ID_VSCROLL)
-			if (auto pWin = WM_GetScrollbarH(pParent)) {
+			if (auto pWin = pParent->GetScrollbarH()) {
 				auto rSub = pWin->GetRect();
 				if (r.y1 == rSub.y1)
 					r.y1 = rSub.y0 - 1;
@@ -159,12 +159,12 @@ struct SCROLLBAR_Obj : public WIDGET {
 	}
 	void _ScrollbarPressed() {
 		AddStates(SCROLLBAR_STATE_PRESSED);
-		if (Status & WM_SF_ISVIS)
+		if (Status & WC_VISIBLE)
 			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
 	}
 	void _ScrollbarReleased() {
 		DelStates(SCROLLBAR_STATE_PRESSED);
-		if (Status & WM_SF_ISVIS)
+		if (Status & WC_VISIBLE)
 			WM_NotifyParent(this, WM_NOTIFICATION_RELEASED);
 	}
 	void _OnTouch(const GUI_PID_STATE *pState) {
@@ -371,11 +371,11 @@ SCROLLBAR_Obj *SCROLLBAR_CreateAttached(WM_Obj *hParent, int SpecialFlags) {
 	int WinFlags;
 	if (SpecialFlags & SCROLLBAR_CF_VERTICAL) {
 		Id = GUI_ID_VSCROLL;
-		WinFlags = WM_CF_SHOW | WM_CF_STAYONTOP | WM_CF_ANCHOR_RIGHT | WM_CF_ANCHOR_TOP | WM_CF_ANCHOR_BOTTOM;
+		WinFlags = WC_VISIBLE | WC_STAYONTOP | WC_ANCHOR_RIGHT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM;
 	}
 	else {
 		Id = GUI_ID_HSCROLL;
-		WinFlags = WM_CF_SHOW | WM_CF_STAYONTOP | WM_CF_ANCHOR_BOTTOM | WM_CF_ANCHOR_LEFT | WM_CF_ANCHOR_RIGHT;
+		WinFlags = WC_VISIBLE | WC_STAYONTOP | WC_ANCHOR_BOTTOM | WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT;
 	}
 	auto pThis = SCROLLBAR_CreateEx(0, 0, 0, 0, hParent, WinFlags, SpecialFlags, Id);
 	WM_NotifyParent(pThis, WM_NOTIFICATION_SCROLLBAR_ADDED);

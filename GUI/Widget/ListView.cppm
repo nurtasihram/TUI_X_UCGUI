@@ -48,14 +48,14 @@ struct LISTVIEW_Obj : public WIDGET {
 	bool        ShowGrid;
 	uint16_t    RowDistY, LBorder, RBorder;
 	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
-	WM_Obj *hOwner;
+	WM_Obj *pOwner;
 
 	void _NotifyOwner(int Notification) {
-		auto hOwner = this->hOwner ? this->hOwner : WM_GetParent(this);
+		auto pOwner = this->pOwner ? this->pOwner : WM_GetParent(this);
 		WM_NOTIFY_INFO Info;
 		Info.Notification = Notification;
 		Info.pWinSrc = this;
-		WM_SendMessage(hOwner, WM_NOTIFY_PARENT, (WM_PARAM)&Info);
+		pOwner->SendMessage(WM_NOTIFY_PARENT, (WM_PARAM)&Info);
 	}
 
 	unsigned _GetRowDistY() {
@@ -218,7 +218,7 @@ struct LISTVIEW_Obj : public WIDGET {
 			RowDistY = _GetRowDistY();
 			WM_GetInsideRectExScrollbar(this, &Rect);
 			Rect.y0 += HeaderHeight + (Sel - this->ScrollStateV.v) * RowDistY;
-			WM_InvalidateRect(this, &Rect);
+			WM_Invalidate(this, &Rect);
 		}
 	}
 	void _InvalidateInsideArea() {
@@ -227,7 +227,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		HeaderHeight = pHeader->GetHeight();
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		Rect.y0 += HeaderHeight;
-		WM_InvalidateRect(this, &Rect);
+		WM_Invalidate(this, &Rect);
 	}
 	void _InvalidateRow(int Sel) {
 		if (Sel >= 0) {
@@ -238,7 +238,7 @@ struct LISTVIEW_Obj : public WIDGET {
 			WM_GetInsideRectExScrollbar(this, &Rect);
 			Rect.y0 += HeaderHeight + (Sel - this->ScrollStateV.v) * RowDistY;
 			Rect.y1 = Rect.y0 + RowDistY - 1;
-			WM_InvalidateRect(this, &Rect);
+			WM_Invalidate(this, &Rect);
 		}
 	}
 	void _SetSelFromPos(const GUI_PID_STATE *pState) {
@@ -304,17 +304,14 @@ struct LISTVIEW_Obj : public WIDGET {
 		return r;
 	}
 	int _UpdateScrollPos() {
-		int PrevScrollStateV;
-		PrevScrollStateV = this->ScrollStateV.v;
-		if (this->Sel >= 0) {
-			WM_CheckScrollPos(&this->ScrollStateV, this->Sel, 0, 0);
-		}
-		else {
-			WM_CheckScrollBounds(&this->ScrollStateV);
-		}
-		WM_CheckScrollBounds(&this->ScrollStateH);
-		WIDGET__SetScrollState(this, &this->ScrollStateV, &this->ScrollStateH);
-		return this->ScrollStateV.v - PrevScrollStateV;
+		auto PrevScrollStateV = ScrollStateV.v;
+		if (Sel >= 0)
+			ScrollStateV.CheckPos(Sel, 0, 0);
+		else
+			ScrollStateV.Bounds();
+		ScrollStateH.Bounds();
+		SetScrollState(ScrollStateV, ScrollStateH);
+		return ScrollStateV.v - PrevScrollStateV;
 	}
 	int _UpdateScrollParas() {
 		int NumRows;
@@ -391,13 +388,13 @@ struct LISTVIEW_Obj : public WIDGET {
 						break;
 					case WM_NOTIFICATION_VALUE_CHANGED: {
 						WM_SCROLL_STATE ScrollState;
-						if (pWinSrc == WM_GetScrollbarV(pObj)) {
+						if (pWinSrc == pObj->GetScrollbarV()) {
 							WM_GetScrollState(pWinSrc, &ScrollState);
 							pObj->ScrollStateV.v = ScrollState.v;
 							pObj->_InvalidateInsideArea();
 							pObj->_NotifyOwner(WM_NOTIFICATION_SCROLL_CHANGED);
 						}
-						else if (pWinSrc == WM_GetScrollbarH(pObj)) {
+						else if (pWinSrc == pObj->GetScrollbarH()) {
 							WM_GetScrollState(pWinSrc, &ScrollState);
 							pObj->ScrollStateH.v = ScrollState.v;
 							pObj->_UpdateScrollParas();
@@ -695,7 +692,7 @@ LISTVIEW_Obj *LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hP
 		pObj->Sel = -1;
 		pObj->LBorder = 1;
 		pObj->RBorder = 1;
-		pObj->pHeader = HEADER_CreateEx(0, 0, 0, 0, pObj, WM_CF_SHOW, 0, 0);
+		pObj->pHeader = HEADER_CreateEx(0, 0, 0, 0, pObj, WC_VISIBLE, 0, 0);
 		pObj->_UpdateScrollParas();
 	}
 	else {

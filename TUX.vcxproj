@@ -48,6 +48,7 @@
     <ClCompile Include="GUI\Resources\FontProp8_1.cpp" />
     <ClCompile Include="GUI\Resources\FontProp8_ASCII.cpp" />
     <ClCompile Include="GUI\Resources\Resources.cppm" />
+    <ClCompile Include="GUI\ScrollCtrl.cpp" />
     <ClCompile Include="GUI\Widget\Button.cppm" />
     <ClCompile Include="GUI\Widget\CheckBox.cppm" />
     <ClCompile Include="GUI\Widget\DIALOG.cpp" />

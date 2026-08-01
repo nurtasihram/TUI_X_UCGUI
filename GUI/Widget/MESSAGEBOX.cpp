@@ -34,7 +34,7 @@ static WM_PARAM _MESSAGEBOX_cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 		case WM_NOTIFY_PARENT: {
 			auto pInfo = (const WM_NOTIFY_INFO *)Data;
 			auto pWinSrc = pInfo->pWinSrc;
-			int Id = WM_GetId(pWinSrc); /* Get control ID */
+			int Id = pWinSrc->GetID(); /* Get control ID */
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_RELEASED: /* React only if released */
 					if (Id == GUI_ID_OK)

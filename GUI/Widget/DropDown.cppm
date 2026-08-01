@@ -166,7 +166,7 @@ struct DROPDOWN_Obj : public WIDGET {
 
 	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (DROPDOWN_Obj *)hWin;
-		char IsExpandedBeforeMsg = (pObj->pListWin && WM_IsVisible(pObj->pListWin)) ? 1 : 0;
+		bool IsExpandedBeforeMsg = pObj->pListWin ? pObj->pListWin->IsVisible() : false;
 		/* Let widget handle the standard messages */
 		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 			return Data;
@@ -194,7 +194,7 @@ struct DROPDOWN_Obj : public WIDGET {
 				return 0;
 			}
 			case WM_PID_STATE_CHANGED:
-				if (IsExpandedBeforeMsg == 0) {    /* Make sure we do not react a second time */
+				if (!IsExpandedBeforeMsg) {    /* Make sure we do not react a second time */
 					auto pInfo = (const WM_PID_STATE_CHANGED_INFO *)Data;
 					if (pInfo->State)
 						pObj->Expand();
@@ -241,8 +241,8 @@ public:
 		}
 		auto pLst = this->pListWin;
 		if (pLst == 0) {
-			pLst = LISTBOX_CreateAsChild(nullptr, WM_GetDesktopWindow(), r.x0, r.y0, xSize, ySize, WM_CF_SHOW | WM_CF_STAYONTOP | WM_CF_ACTIVATE);
-			WIDGET_SetEffect(pLst, WIDGET_Effect_3D1L);
+			pLst = LISTBOX_CreateAsChild(nullptr, WM_GetDesktopWindow(), r.x0, r.y0, xSize, ySize, WC_VISIBLE | WC_STAYONTOP | WC_ACTIVATE);
+			pLst->SetEffect(WIDGET_Effect_3D1L);
 			if (pLst) {
 				if (this->Flags & DROPDOWN_SF_AUTOSCROLLBAR) {
 					pLst->SetScrollbarWidth(this->ScrollbarWidth);
@@ -254,7 +254,7 @@ public:
 		}
 		else {
 			WM_MoveTo(pLst, r.x0, r.y0);
-			WM_ShowWindow(pLst);
+			pLst->ShowWindow();
 		}
 		if (pLst) {
 			while (pLst->GetNumItems() > 0)
