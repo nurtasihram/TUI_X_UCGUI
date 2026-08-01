@@ -146,16 +146,6 @@ bool  WIDGET_HandleActive(WM_Obj *hObj, int MsgId, WM_PARAM *Data);
 
 PCWIDGET_EFFECT WIDGET::DefaultEffect = WIDGET_Effect_3D2L;
 
-void WIDGET__RotateRect90(WIDGET *pWidget, GUI_RECT *pDest, const GUI_RECT *pRect) {
-	int x0 = pRect->x0;
-	int x1 = pRect->x1;
-	int XSize = pWidget->Rect.x1 - pWidget->Rect.x0;
-	pDest->x0 = XSize - pRect->y1;
-	pDest->y0 = x0;
-	pDest->x1 = XSize - pRect->y0;
-	pDest->y1 = x1;
-}
-
 GUI_RECT WIDGET__GetInsideRect(WIDGET *pWidget) {
 	return WM_GetClientRect(pWidget) - pWidget->EffectSize();
 }
