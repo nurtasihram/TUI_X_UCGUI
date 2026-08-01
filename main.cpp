@@ -993,12 +993,13 @@ void _TestProgBar() {
 }
 
 #define ID_SLIDER_TEST         (GUI_ID_USER + 190)
-#define ID_SLIDER_STATUS       (GUI_ID_USER + 191)
-#define ID_SLIDER_DEC          (GUI_ID_USER + 192)
-#define ID_SLIDER_INC          (GUI_ID_USER + 193)
-#define ID_SLIDER_RESET        (GUI_ID_USER + 194)
-#define ID_SLIDER_TOGGLE_RANGE (GUI_ID_USER + 195)
-#define ID_SLIDER_TOGGLE_TICKS (GUI_ID_USER + 196)
+#define ID_SLIDER_TEST_V       (GUI_ID_USER + 191)
+#define ID_SLIDER_STATUS       (GUI_ID_USER + 192)
+#define ID_SLIDER_DEC          (GUI_ID_USER + 193)
+#define ID_SLIDER_INC          (GUI_ID_USER + 194)
+#define ID_SLIDER_RESET        (GUI_ID_USER + 195)
+#define ID_SLIDER_TOGGLE_RANGE (GUI_ID_USER + 196)
+#define ID_SLIDER_TOGGLE_TICKS (GUI_ID_USER + 197)
 
 static int _SliderMin = 0;
 static int _SliderMax = 100;
@@ -1019,58 +1020,72 @@ static void _UpdateSliderStatus(WM_Obj *hWin) {
 }
 
 static const GUI_WIDGET_CREATE_INFO _aSliderDialogCreate[] = {
-	{ FRAMEWIN_CreateIndirect, "Slider Test", 0, 70, 60, 390, 220, FRAMEWIN_CF_MOVEABLE },
-	{ SLIDER_CreateIndirect, "", ID_SLIDER_TEST, 15, 20, 340, 30, 0 },
-	{ TEXT_CreateIndirect, "Drag the slider or use the buttons below.", 0, 15, 55, 340, 16, TEXT_CF_LEFT },
-	{ BUTTON_CreateIndirect, "-10", ID_SLIDER_DEC, 15, 85, 60, 25 },
-	{ BUTTON_CreateIndirect, "+10", ID_SLIDER_INC, 80, 85, 60, 25 },
-	{ BUTTON_CreateIndirect, "Reset", ID_SLIDER_RESET, 145, 85, 70, 25 },
-	{ BUTTON_CreateIndirect, "Range", ID_SLIDER_TOGGLE_RANGE, 220, 85, 70, 25 },
-	{ BUTTON_CreateIndirect, "Ticks", ID_SLIDER_TOGGLE_TICKS, 295, 85, 60, 25 },
-	{ TEXT_CreateIndirect, "", ID_SLIDER_STATUS, 15, 125, 340, 18, TEXT_CF_LEFT },
-	{ BUTTON_CreateIndirect, "Close", GUI_ID_CANCEL, 275, 160, 80, 25 }
+	{ FRAMEWIN_CreateIndirect , "Slider Test"                               , 0                      , 70  , 60  , 470 , 250 , FRAMEWIN_CF_MOVEABLE },
+	{ SLIDER_CreateIndirect   , ""                                          , ID_SLIDER_TEST         , 15  , 20  , 340 , 30                         },
+	{ SLIDER_CreateIndirect   , ""                                          , ID_SLIDER_TEST_V       , 375 , 20  , 30  , 150 , SLIDER_CF_VERTICAL      },
+	{ TEXT_CreateIndirect     , "Drag the horizontal or vertical slider."   , 0                      , 15  , 55  , 350 , 16  , TEXT_CF_LEFT         },
+	{ BUTTON_CreateIndirect   , "-10"                                       , ID_SLIDER_DEC          , 15  , 90  , 60  , 25                         },
+	{ BUTTON_CreateIndirect   , "+10"                                       , ID_SLIDER_INC          , 80  , 90  , 60  , 25                         },
+	{ BUTTON_CreateIndirect   , "Reset"                                     , ID_SLIDER_RESET        , 145 , 90  , 70  , 25                         },
+	{ BUTTON_CreateIndirect   , "Range"                                     , ID_SLIDER_TOGGLE_RANGE , 220 , 90  , 70  , 25                         },
+	{ BUTTON_CreateIndirect   , "Ticks"                                     , ID_SLIDER_TOGGLE_TICKS , 295 , 90  , 60  , 25                         },
+	{ TEXT_CreateIndirect     , ""                                          , ID_SLIDER_STATUS       , 15  , 130 , 350 , 18  , TEXT_CF_LEFT         },
+	{ BUTTON_CreateIndirect   , "Close"                                     , GUI_ID_CANCEL          , 375 , 200 , 80  , 25                         }
 };
 
 static WM_PARAM _cbSliderTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pSlider = (SLIDER_Obj *)WM_GetDialogItem(hWin, ID_SLIDER_TEST);
+			auto pSliderH = (SLIDER_Obj *)WM_GetDialogItem(hWin, ID_SLIDER_TEST);
+			auto pSliderV = (SLIDER_Obj *)WM_GetDialogItem(hWin, ID_SLIDER_TEST_V);
 			_SliderMin = 0;
 			_SliderMax = 100;
 			_SliderValue = 25;
 			_SliderAutoTicks = false;
-			pSlider->SetRange(_SliderMin, _SliderMax);
-			pSlider->SetNumTicks(11);
-			pSlider->SetValue(_SliderValue);
+			pSliderH->SetRange(_SliderMin, _SliderMax);
+			pSliderH->SetNumTicks(11);
+			pSliderH->SetValue(_SliderValue);
+			pSliderV->SetRange(_SliderMin, _SliderMax);
+			pSliderV->SetNumTicks(11);
+			pSliderV->SetValue(_SliderValue);
 			_UpdateSliderStatus(hWin);
 			return 0;
 		}
 		case WM_NOTIFY_PARENT: {
 			auto pInfo = (WM_NOTIFY_INFO *)Data;
 			int Id = WM_GetId(pInfo->pWinSrc);
-			auto pSlider = (SLIDER_Obj *)WM_GetDialogItem(hWin, ID_SLIDER_TEST);
+			auto pSliderH = (SLIDER_Obj *)WM_GetDialogItem(hWin, ID_SLIDER_TEST);
+			auto pSliderV = (SLIDER_Obj *)WM_GetDialogItem(hWin, ID_SLIDER_TEST_V);
+			auto pSlider = (Id == ID_SLIDER_TEST_V) ? pSliderV : pSliderH;
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED:
-					if (Id == ID_SLIDER_TEST) {
+					if ((Id == ID_SLIDER_TEST) || (Id == ID_SLIDER_TEST_V)) {
 						_SliderValue = pSlider->GetValue();
+						pSliderH->SetValue(_SliderValue);
+						pSliderV->SetValue(_SliderValue);
 						_UpdateSliderStatus(hWin);
 					}
 					break;
 				case WM_NOTIFICATION_RELEASED:
 					switch (Id) {
 						case ID_SLIDER_DEC:
-							pSlider->SetValue(_SliderValue - 10);
-							_SliderValue = pSlider->GetValue();
+							_SliderValue -= 10;
+							pSliderH->SetValue(_SliderValue);
+							pSliderV->SetValue(_SliderValue);
+							_SliderValue = pSliderH->GetValue();
 							_UpdateSliderStatus(hWin);
 							break;
 						case ID_SLIDER_INC:
-							pSlider->SetValue(_SliderValue + 10);
-							_SliderValue = pSlider->GetValue();
+							_SliderValue += 10;
+							pSliderH->SetValue(_SliderValue);
+							pSliderV->SetValue(_SliderValue);
+							_SliderValue = pSliderH->GetValue();
 							_UpdateSliderStatus(hWin);
 							break;
 						case ID_SLIDER_RESET:
-							pSlider->SetValue(_SliderMin);
-							_SliderValue = pSlider->GetValue();
+							_SliderValue = _SliderMin;
+							pSliderH->SetValue(_SliderValue);
+							pSliderV->SetValue(_SliderValue);
 							_UpdateSliderStatus(hWin);
 							break;
 						case ID_SLIDER_TOGGLE_RANGE:
@@ -1082,13 +1097,16 @@ static WM_PARAM _cbSliderTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 								_SliderMin = 0;
 								_SliderMax = 100;
 							}
-							pSlider->SetRange(_SliderMin, _SliderMax);
-							_SliderValue = pSlider->GetValue();
+							pSliderH->SetRange(_SliderMin, _SliderMax);
+							pSliderV->SetRange(_SliderMin, _SliderMax);
+							_SliderValue = pSliderH->GetValue();
+							pSliderV->SetValue(_SliderValue);
 							_UpdateSliderStatus(hWin);
 							break;
 						case ID_SLIDER_TOGGLE_TICKS:
 							_SliderAutoTicks = !_SliderAutoTicks;
-							pSlider->SetNumTicks(_SliderAutoTicks ? -1 : 11);
+							pSliderH->SetNumTicks(_SliderAutoTicks ? -1 : 11);
+							pSliderV->SetNumTicks(_SliderAutoTicks ? -1 : 11);
 							_UpdateSliderStatus(hWin);
 							break;
 						case GUI_ID_CANCEL:
@@ -1367,15 +1385,15 @@ int main(void) {
 	GUI_CURSOR_Show();
 	WM_SetDesktopColor(RGB_GRAY);
 
-	//_TestListView();
+	_TestListView();
 
-	//_TestMultiPage();
+	_TestMultiPage();
 
-	//_TestRadio();
+	_TestRadio();
 
-	//_TestProgBar();
+	_TestProgBar();
 
-	//_TestSlider();
+	_TestSlider();
 
 	_TestEdit();
 

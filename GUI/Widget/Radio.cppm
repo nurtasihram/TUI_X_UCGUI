@@ -22,8 +22,8 @@ enum RADIO_CI {
 	 RADIO_BI_CHECK   = 2
 };
 
-constexpr uint16_t RADIO_TEXTPOS_RIGHT       = 0;
-constexpr uint16_t RADIO_TEXTPOS_LEFT        = WIDGET_STATE_USER0;/* Not implemented, TBD */
+constexpr uint16_t RADIO_TEXTPOS_RIGHT = 0;
+constexpr uint16_t RADIO_TEXTPOS_LEFT  = WIDGET_STATE_USER<0>;/* Not implemented, TBD */
 
 struct RADIO_Obj : public WIDGET {
 	struct Properties {
@@ -55,7 +55,7 @@ struct RADIO_Obj : public WIDGET {
 		int i, y, HasFocus, FontDistY;
 		uint16_t SpaceAbove, CHeight, FocusBorder;
 		/* Init some data */
-		rFocus = WIDGET__GetClientRect(this);
+		rFocus = WM_GetClientRect(this);
 		HasFocus = (this->State & WIDGET_STATE_FOCUS) ? 1 : 0;
 		pBmRadio = this->Props.apBmRadio[WM_IsEnabled(this)];
 		pBmCheck = this->Props.pBmCheck;
@@ -77,18 +77,8 @@ struct RADIO_Obj : public WIDGET {
 		}
 		/* Clear inside ... Just in case      */
 		/* Fill with parents background color */
-#if WM_SUPPORT_TRANSPARENCY
-		if (!WM_GetHasTrans(this))
-#endif
-		{
-			if (this->Props.BkColor != RGB_INVALID_COLOR) {
-				GUI.SetBkColor(this->Props.BkColor);
-			}
-			else {
-				GUI.SetBkColor(RADIO_DEFAULT_BKCOLOR);
-			}
-			GUI_Clear();
-		}
+		SetBkColorPrefer(Props.BkColor);
+		GUI_Clear();
 		/* Iterate over all items */
 		for (i = 0; i < this->NumItems; i++) {
 			y = i * this->Spacing;
@@ -117,7 +107,7 @@ struct RADIO_Obj : public WIDGET {
 		/* Draw the focus rect */
 		if (HasFocus) {
 			GUI.SetColor(RGB_BLACK);
-			WIDGET__DrawFocusRect(this, rFocus, 0);
+			GUI_DrawFocusRect(rFocus, 0);
 		}
 	}
 	void _OnTouch(const GUI_PID_STATE *pState) {
@@ -276,16 +266,8 @@ public:
 		return Sel;
 	}
 	void SetBkColor(RGBC Color) {
-		if (Color != Props.BkColor) {
+		if (Props.BkColor != Color) {
 			Props.BkColor = Color;
-#if WM_SUPPORT_TRANSPARENCY
-			if (Color <= RGB_WHITE) {
-				WM_SetTransState(this, 0);
-			}
-			else {
-				WM_SetTransState(this, WM_CF_HASTRANS);
-			}
-#endif
 			WM_Invalidate(this);
 		}
 	}

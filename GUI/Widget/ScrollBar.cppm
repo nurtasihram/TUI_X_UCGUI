@@ -6,34 +6,21 @@ export module TUX.Widget.ScrollBar;
 
 import TUX.Widget;
 
-static void _WIDGET__RECT2VRECT(const WIDGET *pWidget, GUI_RECT *pRect) {
-	if (pWidget->State & WIDGET_STATE_VERTICAL) {
-		int xSize = pWidget->Rect.x1 - pWidget->Rect.x0 + 1;
-		int x0, x1;
-		x0 = pRect->x0;
-		x1 = pRect->x1;
-		pRect->x0 = pRect->y0;
-		pRect->x1 = pRect->y1;
-		pRect->y1 = xSize - 1 - x0;
-		pRect->y0 = xSize - 1 - x1;
-	}
-}
-
 export {
-constexpr uint16_t SCROLLBAR_STATE_PRESSED    = WIDGET_STATE_USER0;
-constexpr uint16_t SCROLLBAR_CF_VERTICAL     = WIDGET_CF_VERTICAL;
 constexpr uint16_t SCROLLBAR_CF_FOCUSSABLE   = WIDGET_STATE_FOCUSSABLE;
+constexpr uint16_t SCROLLBAR_CF_VERTICAL     = WIDGET_STATE_USER<0>;
+constexpr uint16_t SCROLLBAR_STATE_PRESSED   = WIDGET_STATE_USER<1>;
 
 struct SCROLLBAR_POSITIONS {
 	int16_t x0_LeftArrow = 0,
-		x1_LeftArrow = 0;
-		int16_t x0_RightArrow = 0,
-		x1_RightArrow = 0;
-		int16_t x0_Thumb = 0,
-		x1_Thumb = 0;
-		int16_t ThumbSize = 0;
-		int16_t xSizeMoveable = 0;
-		int16_t x1 = 0;
+			x1_LeftArrow = 0;
+	int16_t x0_RightArrow = 0,
+			x1_RightArrow = 0;
+	int16_t x0_Thumb = 0,
+			x1_Thumb = 0;
+	int16_t ThumbSize = 0;
+	int16_t xSizeMoveable = 0;
+	int16_t x1 = 0;
 };
 
 struct SCROLLBAR_Obj : public WIDGET {
@@ -49,68 +36,58 @@ struct SCROLLBAR_Obj : public WIDGET {
 	WM_SCROLL_STATE ScrollState;
 
 	int _GetArrowSize() {
-		auto xSize = WIDGET__GetXSize(this);
-		auto ySize = WIDGET__GetYSize(this);
-		auto r = ySize / 2 + 5;
-		if (r > xSize - 5)
-			r = xSize - 5;
+		auto Size = WM_GetWindowRect(this).Size();
+		if (State & SCROLLBAR_CF_VERTICAL)
+			Size = ~Size;
+		auto r = Size.y / 2 + 5;
+		if (r > Size.x - 5)
+			r = Size.x - 5;
 		return r;
 	}
-	void _CalcPositions(SCROLLBAR_POSITIONS *pPos) {
-		int xSizeArrow, xSize, xSizeMoveable, ThumbSize, NumItems, xSizeThumbArea;
-		WM_Obj *hWin;
-		GUI_RECT r, rSub;
-		int x0, y0;
-		r = this->Rect;
-		x0 = r.x0;
-		y0 = r.y0;
-		pPos->x1 = (this->State & WIDGET_STATE_VERTICAL) ? r.y1 : r.x1;
+	SCROLLBAR_POSITIONS _CalcPositions() {
+		SCROLLBAR_POSITIONS Pos;
+		auto r = Rect;
+		Pos.x1 = (State & SCROLLBAR_CF_VERTICAL) ? r.y1 : r.x1;
 		/* Subtract the rectangle of the other scrollbar (if existing and visible) */
-		if (this->Id == GUI_ID_HSCROLL) {
-			hWin = WM_GetScrollbarV(this->pParent);
-			if (hWin) {
-				rSub = WM_GetWindowRect(hWin);
-				if (r.x1 == rSub.x1) {
+		if (Id == GUI_ID_HSCROLL)
+			if (auto pWin = WM_GetScrollbarV(pParent)) {
+				auto rSub = WM_GetWindowRect(pWin);
+				if (r.x1 == rSub.x1)
 					r.x1 = rSub.x0 - 1;
-				}
 			}
-		}
-		if (this->Id == GUI_ID_VSCROLL) {
-			hWin = WM_GetScrollbarH(this->pParent);
-			if (hWin) {
-				rSub = WM_GetWindowRect(hWin);
-				if (r.y1 == rSub.y1) {
+		if (Id == GUI_ID_VSCROLL)
+			if (auto pWin = WM_GetScrollbarH(pParent)) {
+				auto rSub = WM_GetWindowRect(pWin);
+				if (r.y1 == rSub.y1)
 					r.y1 = rSub.y0 - 1;
-				}
 			}
-		}
 		/* Convert coordinates of this window */
-		r += GUI_POINT{ -x0, -y0 };
+		r -= r.LeftTop();
 		/* Convert real into virtual coordinates */
-		_WIDGET__RECT2VRECT(this, &r);
-		NumItems = this->ScrollState.NumItems;
-		xSize = r.x1 - r.x0 + 1;
-		xSizeArrow = _GetArrowSize();
-		xSizeThumbArea = xSize - 2 * xSizeArrow;     /* Number of pixels available for thumb and movement */
-		ThumbSize = GUI__DivideRound(xSizeThumbArea * this->ScrollState.PageSize, NumItems);
-		if (ThumbSize < 4) {
+		if (State & SCROLLBAR_CF_VERTICAL)
+			r = r.Rotate90R(WM_GetWindowSizeY(this));
+		auto NumItems = ScrollState.NumItems;
+		auto xSize = r.x1 - r.x0 + 1;
+		auto xSizeArrow = _GetArrowSize();
+		auto xSizeThumbArea = xSize - 2 * xSizeArrow;     /* Number of pixels available for thumb and movement */
+		auto ThumbSize = GUI__DivideRound(xSizeThumbArea * ScrollState.PageSize, NumItems);
+		if (ThumbSize < 4)
 			ThumbSize = 4;
-		}
-		if (ThumbSize > xSizeThumbArea) {
+		if (ThumbSize > xSizeThumbArea)
 			ThumbSize = xSizeThumbArea;
-		}
-		xSizeMoveable = xSizeThumbArea - ThumbSize;
-		pPos->x0_LeftArrow = r.x0;
-		pPos->x1_LeftArrow = xSizeArrow - 1;
-		pPos->x1_RightArrow = xSize - 1;
-		pPos->x0_RightArrow = xSize - xSizeArrow;
-		pPos->x0_Thumb = pPos->x1_LeftArrow + 1 + GUI__DivideRound(xSizeMoveable * this->ScrollState.v, NumItems - this->ScrollState.PageSize);
-		pPos->x1_Thumb = pPos->x0_Thumb + ThumbSize - 1;
-		pPos->xSizeMoveable = xSizeMoveable;
-		pPos->ThumbSize = ThumbSize;
+		auto xSizeMoveable = xSizeThumbArea - ThumbSize;
+		Pos.x0_LeftArrow = r.x0;
+		Pos.x1_LeftArrow = xSizeArrow - 1;
+		Pos.x1_RightArrow = xSize - 1;
+		Pos.x0_RightArrow = xSize - xSizeArrow;
+		Pos.x0_Thumb = Pos.x1_LeftArrow + 1 + GUI__DivideRound(xSizeMoveable * ScrollState.v, NumItems - ScrollState.PageSize);
+		Pos.x1_Thumb = Pos.x0_Thumb + ThumbSize - 1;
+		Pos.xSizeMoveable = xSizeMoveable;
+		Pos.ThumbSize = ThumbSize;
+		return Pos;
 	}
 	void _DrawTriangle(int x, int y, int Size, int Inc) {
-		if (State & WIDGET_STATE_VERTICAL)
+		if (State & SCROLLBAR_CF_VERTICAL)
 			for (; Size >= 0; Size--, x += Inc)
 				GUI_DrawHLine(x, y - Size, y + Size);
 		else
@@ -118,118 +95,111 @@ struct SCROLLBAR_Obj : public WIDGET {
 				GUI_DrawVLine(x, y - Size, y + Size);
 	}
 	void _OnPaint() {
-		int ArrowSize, ArrowOff;
-		SCROLLBAR_POSITIONS Pos;
-		GUI_RECT r, rClient;
 		/*
 		  Get / calc position info
 		*/
-		_CalcPositions(&Pos);
-		rClient = WIDGET__GetClientRect(this);
-		r = rClient;
-		ArrowSize = ((r.y1 - r.y0) / 3) - 1;
-		ArrowOff = 3 + ArrowSize + ArrowSize / 3;
+		auto r = WM_GetClientRect(this);
+		auto Pos = _CalcPositions();
+		auto Height = State & SCROLLBAR_CF_VERTICAL ? r.DistX() : r.DistY();
+		auto CenterH = Height >> 1;
+		auto ArrowSize = (Height / 3) - 1;
+		auto ArrowOff = 3 + ArrowSize + ArrowSize / 3;
+		int16_t GUI_RECT:: *x0, GUI_RECT:: *x1;
+		if (State & SCROLLBAR_CF_VERTICAL)
+			x0 = &GUI_RECT::y0, x1 = &GUI_RECT::y1;
+		else
+			x0 = &GUI_RECT::x0, x1 = &GUI_RECT::x1;
 		/*
 		  Draw left Arrow
 		*/
-		GUI.SetColor(this->Props.Color);
-		r = rClient;
-		r.x0 = Pos.x0_LeftArrow;
-		r.x1 = Pos.x1_LeftArrow;
-		WIDGET__FillRect(this, r);
-		GUI.SetColor(this->Props.aBkColor[1]);
-		_DrawTriangle(r.x0 + ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, -1);
-		WIDGET__EFFECT_DrawUpRect(this, r);
+		GUI.SetColor(Props.Color);
+		r.*x0 = Pos.x0_LeftArrow;
+		r.*x1 = Pos.x1_LeftArrow;
+		GUI_FillRect(r);
+		GUI.SetColor(Props.aBkColor[1]);
+		_DrawTriangle(r.*x0 + ArrowOff, CenterH, ArrowSize, -1);
+		DrawUp(r);
 		/*
 		  Draw the thumb area which is not covered by the thumb
 		*/
-		GUI.SetColor(this->Props.aBkColor[0]);
-		r.x0 = Pos.x1_LeftArrow + 1;
-		r.x1 = Pos.x0_Thumb - 1;
-		WIDGET__FillRect(this, r);
-		r = rClient;
-		r.x0 = Pos.x1_Thumb + 1;
-		r.x1 = Pos.x0_RightArrow - 1;
-		WIDGET__FillRect(this, r);
+		GUI.SetColor(Props.aBkColor[0]);
+		r.*x0 = Pos.x1_LeftArrow + 1;
+		r.*x1 = Pos.x0_Thumb - 1;
+		GUI_FillRect(r);
+		r.*x0 = Pos.x1_Thumb + 1;
+		r.*x1 = Pos.x0_RightArrow - 1;
+		GUI_FillRect(r);
 		/*
 		  Draw Thumb
 		*/
-		r = rClient;
-		r.x0 = Pos.x0_Thumb;
-		r.x1 = Pos.x1_Thumb;
-		GUI.SetColor(this->Props.Color);
-		WIDGET__FillRect(this, r);
-		WIDGET__EFFECT_DrawUpRect(this, r);
+		r.*x0 = Pos.x0_Thumb;
+		r.*x1 = Pos.x1_Thumb;
+		GUI.SetColor(Props.Color);
+		GUI_FillRect(r);
+		DrawUp(r);
 		/*
 		  Draw right Arrow
 		*/
-		GUI.SetColor(this->Props.Color);
-		r.x0 = Pos.x0_RightArrow;
-		r.x1 = Pos.x1_RightArrow;
-		WIDGET__FillRect(this, r);
-		GUI.SetColor(this->Props.aBkColor[1]);
-		_DrawTriangle(r.x1 - ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, 1);
-		WIDGET__EFFECT_DrawUpRect(this, r);
+		GUI.SetColor(Props.Color);
+		r.*x0 = Pos.x0_RightArrow;
+		r.*x1 = Pos.x1_RightArrow;
+		GUI_FillRect(r);
+		GUI.SetColor(Props.aBkColor[1]);
+		_DrawTriangle(r.*x1 - ArrowOff, CenterH, ArrowSize, 1);
+		DrawUp(r);
 		/*
 		  Draw overlap area (if any ...)
 		*/
 		if (Pos.x1_RightArrow != Pos.x1) {
-			r.x0 = Pos.x1_RightArrow + 1;
-			r.x1 = Pos.x1;
-			GUI.SetColor(this->Props.Color);
-			WIDGET__FillRect(this, r);
+			r.*x0 = Pos.x1_RightArrow + 1;
+			r.*x1 = Pos.x1;
+			GUI.SetColor(Props.Color);
+			GUI_FillRect(r);
 		}
 	}
 	void _ScrollbarPressed() {
 		WIDGET_OrState(this, SCROLLBAR_STATE_PRESSED);
-		if (this->Status & WM_SF_ISVIS) {
+		if (Status & WM_SF_ISVIS)
 			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
-		}
 	}
 	void _ScrollbarReleased() {
 		WIDGET_AndState(this, SCROLLBAR_STATE_PRESSED);
-		if (this->Status & WM_SF_ISVIS) {
+		if (Status & WM_SF_ISVIS)
 			WM_NotifyParent(this, WM_NOTIFICATION_RELEASED);
-		}
 	}
 	void _OnTouch(const GUI_PID_STATE *pState) {
-		SCROLLBAR_POSITIONS Pos;
-		if (pState) { /* Something happened in our area (pressed or released) */
-			if (pState->Pressed) {
-				int Range;
-				int x;
-				int Sel = this->ScrollState.v;
-				_CalcPositions(&Pos);
-				Range = this->ScrollState.NumItems - this->ScrollState.PageSize;
-				/* Swap mouse coordinates if necessary */
-				if (this->State & WIDGET_STATE_VERTICAL)
-					x = pState->y;
-				else
-					x = pState->x;
-				if (x <= Pos.x1_LeftArrow) /* left arrow (line left) */
-					Sel--;
-				else if (x < Pos.x0_Thumb) /* left area  (page left) */
-					Sel -= this->ScrollState.PageSize;
-				else if (x <= Pos.x1_Thumb) {      /* Thumb area */
-					if (Pos.xSizeMoveable > 0) {
-						x = x - Pos.ThumbSize / 2 - Pos.x1_LeftArrow - 1;
-						Sel = GUI__DivideRound(Range * x, Pos.xSizeMoveable);
-					}
-				}
-				else if (x < Pos.x0_RightArrow) /* right area (page right) */
-					Sel += this->ScrollState.PageSize;
-				else  if (x <= Pos.x1_RightArrow)
-					Sel++;
-				/* WM_SetFocus(hObj); */
-				WM_SetCapture(this, 1);
-				SetValue(Sel);
-				if (!(this->State & SCROLLBAR_STATE_PRESSED))
-					_ScrollbarPressed();
-			}
+		if (!pState)
+			return;
+		if (!pState->Pressed) {
 			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
-			else if (this->State & SCROLLBAR_STATE_PRESSED)
+			if (State & SCROLLBAR_STATE_PRESSED)
 				_ScrollbarReleased();
+			return;
 		}
+		auto Sel = ScrollState.v;
+		auto Pos = _CalcPositions();
+		auto Range = ScrollState.NumItems - ScrollState.PageSize;
+		/* Swap mouse coordinates if necessary */
+		int x = State & SCROLLBAR_CF_VERTICAL ? pState->y : pState->x;
+		if (x <= Pos.x1_LeftArrow) /* left arrow (line left) */
+			Sel--;
+		else if (x < Pos.x0_Thumb) /* left area  (page left) */
+			Sel -= ScrollState.PageSize;
+		else if (x <= Pos.x1_Thumb) {      /* Thumb area */
+			if (Pos.xSizeMoveable > 0) {
+				x = x - Pos.ThumbSize / 2 - Pos.x1_LeftArrow - 1;
+				Sel = GUI__DivideRound(Range * x, Pos.xSizeMoveable);
+			}
+		}
+		else if (x < Pos.x0_RightArrow) /* right area (page right) */
+			Sel += ScrollState.PageSize;
+		else  if (x <= Pos.x1_RightArrow)
+			Sel++;
+		/* WM_SetFocus(hObj); */
+		WM_SetCapture(this, 1);
+		SetValue(Sel);
+		if (!(State & SCROLLBAR_STATE_PRESSED))
+			_ScrollbarPressed();
 	}
 	char _OnKey(const WM_KEY_INFO *pInfo) {
 		if (pInfo->PressedCnt > 0) {
@@ -247,13 +217,13 @@ struct SCROLLBAR_Obj : public WIDGET {
 		return 0;
 	}
 	void _OnSetScrollState(const WM_SCROLL_STATE *pState) {
-		if (this->ScrollState != *pState) {
-			this->ScrollState = *pState;
+		if (ScrollState != *pState) {
+			ScrollState = *pState;
 			WM_Invalidate(this);
 		}
 	}
 
-	void _InvalidatePartner() {     /* Invalidate the partner, since it is also affected */
+	void _InvalidatePartner() { /* Invalidate the partner, since it is also affected */
 		WM_Invalidate(WM_GetScrollPartner(this));
 		WM_SendMessageNoPara(WM_GetParent(this), WM_NOTIFY_CLIENTCHANGE);   /* Client area may have changed */
 	}
@@ -303,12 +273,10 @@ public:
 		if (Max < 0)
 			Max = 0;
 		/* Put in min/max range */
-		if (v < 0) {
+		if (v < 0)
 			v = 0;
-		}
-		if (v > Max) {
+		if (v > Max)
 			v = Max;
-		}
 		if (ScrollState.v != v) {
 			ScrollState.v = v;
 			WM_Invalidate(this);
@@ -335,11 +303,11 @@ public:
 	int  GetValue() {
 		return ScrollState.v;
 	}
-	int  SetWidth(int Width) {
-		int r = 0;
-		r = WIDGET_SetWidth(this, Width);
-		_InvalidatePartner();     /* Invalidate the partner, since it is also affected */
-		return r;
+	void SetWidth(int Width) {
+		if (State & SCROLLBAR_CF_VERTICAL)
+			 WM_SetXSize(this, Width);
+		else WM_SetYSize(this, Width);
+		_InvalidatePartner(); /* Invalidate the partner, since it is also affected */
 	}
 
 };
@@ -373,7 +341,7 @@ SCROLLBAR_Obj *SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *
 		/* Handle SpecialFlags */
 		InitState = 0;
 		if (ExFlags & SCROLLBAR_CF_VERTICAL) {
-			InitState |= WIDGET_CF_VERTICAL;
+			InitState |= SCROLLBAR_CF_VERTICAL;
 		}
 		if (ExFlags & SCROLLBAR_CF_FOCUSSABLE) {
 			InitState |= WIDGET_STATE_FOCUSSABLE;

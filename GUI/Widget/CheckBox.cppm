@@ -45,21 +45,11 @@ struct CHECKBOX_Obj : public WIDGET {
 	char *pText;
 	void _OnPaint() {
 		int ColorIndex = WM_IsEnabled(this),
-			EffectSize = this->pEffect->EffectSize;
+			EffectSize = this->EffectSize();
 		/* Clear inside ... Just in case      */
 		/* Fill with parents background color */
-#if WM_SUPPORT_TRANSPARENCY
-		if (!WM_GetHasTrans(this))
-#endif
-		{
-			if (this->Props.BkColor == RGB_INVALID_COLOR) {
-				GUI.SetBkColor(WIDGET__GetBkColor(this));
-			}
-			else {
-				GUI.SetBkColor(this->Props.BkColor);
-			}
-			GUI_Clear();
-		}
+		SetBkColorPrefer(Props.BkColor);
+		GUI_Clear();
 		/* Get size from bitmap */
 		GUI_RECT RectBox;
 		RectBox.x1 = this->Props.apBm[0]->XSize - 1 + 2 * EffectSize;
@@ -71,16 +61,15 @@ struct CHECKBOX_Obj : public WIDGET {
 		if (this->CurrentState)
 			GUI_DrawBitmap(this->Props.apBm[(this->CurrentState - 1) * 2 + ColorIndex], EffectSize, EffectSize);
 		/* Draw the effect arround the box */
-		WIDGET__EFFECT_DrawDownRect(this, RectBox);
+		DrawDown(RectBox);
 		WM_SetUserClipRect(nullptr);
 		/* Draw text if needed */
 		if (this->pText) {
-			GUI_RECT RectText;
 			/* Draw the text */
 			auto s = this->pText;
-			RectText = WM_GetClientRect();
+			auto RectText = WM_GetClientRect();
 			RectText.x0 += RectBox.x1 + 1 + this->Props.Spacing;
-			GUI.SetTextMode(DRAWMODE_TRANS);
+			GUI.SetTextMode(0);
 			GUI.SetColor(this->Props.TextColor);
 			GUI_SetFont(this->Props.pFont);
 			GUI_DispStringInRect(s, &RectText, this->Props.Align);
@@ -108,7 +97,7 @@ struct CHECKBOX_Obj : public WIDGET {
 				RectFocus.x1 = RectFocus.x0 + xSizeText;
 				RectFocus.y1 = RectFocus.y0 + ySizeText;
 				GUI.SetColor(RGB_BLACK);
-				WIDGET__DrawFocusRect(this, RectFocus, 0);
+				GUI_DrawFocusRect(RectFocus, 0);
 			}
 		}
 	}
@@ -180,14 +169,6 @@ struct CHECKBOX_Obj : public WIDGET {
 	void SetBkColor(RGBC Color) {
 		if (Props.BkColor != Color) {
 			Props.BkColor = Color;
-#if WM_SUPPORT_TRANSPARENCY
-			if (Color <= RGB_WHITE) {
-				WM_SetTransState(this, 0);
-			}
-			else {
-				WM_SetTransState(this, WM_CF_HASTRANS);
-			}
-#endif
 			WM_Invalidate(this);
 		}
 	}

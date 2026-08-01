@@ -14,8 +14,7 @@ export {
 
 typedef void *GUI_HMEM;
 
-struct GUI_PID_STATE {
-	int16_t x, y;
+struct GUI_PID_STATE : GUI_POINT {
 	uint8_t Pressed;
 };
 

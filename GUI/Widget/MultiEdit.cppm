@@ -688,7 +688,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 		FontSizeY = Props.pFont->DistY();
 		ScrollPosX = this->ScrollStateH.v;
 		ScrollPosY = this->ScrollStateV.v;
-		EffectSize = this->pEffect->EffectSize;
+		EffectSize = this->EffectSize();
 		HBorder = this->Props.HBorder;
 		xOff = EffectSize + HBorder - ScrollPosX;
 		yOff = EffectSize - ScrollPosY * FontSizeY;
@@ -751,14 +751,14 @@ struct MULTIEDIT_Obj : public WIDGET {
 		}
 		WM_SetUserClipRect(prOldClip);
 		/* Draw the 3D effect (if configured) */
-		WIDGET__EFFECT_DrawDown(this);
+		DrawDown();
 	}
 	void _OnTouch(const GUI_PID_STATE *pState) {
 		int Notification;
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
 				int Effect, xPos, yPos;
-				Effect = this->pEffect->EffectSize;
+				Effect = this->EffectSize();
 				xPos = pState->x + this->ScrollStateH.v - Effect - this->Props.HBorder;
 				yPos = pState->y + this->ScrollStateV.v * Props.pFont->DistY() - Effect;
 				_SetCursorXY(xPos, yPos);

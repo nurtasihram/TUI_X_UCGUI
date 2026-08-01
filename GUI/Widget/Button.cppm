@@ -15,7 +15,7 @@ constexpr uint16_t BUTTON_CF_HIDE    = WM_CF_HIDE;
 constexpr uint16_t BUTTON_CF_SHOW    = WM_CF_SHOW;
 constexpr uint16_t BUTTON_CF_MEMDEV  = WM_CF_MEMDEV;
 constexpr uint16_t BUTTON_STATE_FOCUS       = WIDGET_STATE_FOCUS;
-constexpr uint16_t BUTTON_STATE_PRESSED     = WIDGET_STATE_USER0;
+constexpr uint16_t BUTTON_STATE_PRESSED     = WIDGET_STATE_USER<0>;
 constexpr uint16_t BUTTON_STATE_HASFOCUS    = 0;
 
 enum BUTTON_BI {
@@ -54,15 +54,13 @@ struct BUTTON_Obj : public WIDGET {
 		GUI_SetFont(this->Props.pFont);
 		auto rClient = WM_GetClientRect();
 		auto rInside = rClient;
-		auto EffectSize = pEffect->EffectSize;
+		auto EffectSize = this->EffectSize();
 #if BUTTON_USE_3D
-		if (pEffect) {
-			if (IsPressed)
-				pEffect->DrawDown();
-			else 
-				pEffect->DrawUp();
-			rInside -= EffectSize;
-		}
+		if (IsPressed)
+			DrawDown();
+		else 
+			DrawUp();
+		rInside -= EffectSize;
 #endif
 		/* Draw background */
 		GUI.SetBkColor(this->Props.aBkColor[ColorIndex]);
@@ -82,12 +80,10 @@ struct BUTTON_Obj : public WIDGET {
 			pDraw->Draw(0, 0);
 		/* Draw the actual button (background and text) */
 #if BUTTON_USE_3D
-		if (pEffect) {
-			if (IsPressed)
-				rInside += EffectSize;
-			else
-				rInside -= EffectSize;
-		}
+		if (IsPressed)
+			rInside += EffectSize;
+		else
+			rInside -= EffectSize;
 #endif
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		GUI_DispStringInRect(pText, &rInside, this->Props.Align);
@@ -105,37 +101,33 @@ struct BUTTON_Obj : public WIDGET {
 	}
 	void _ButtonPressed() {
 		WIDGET_OrState(this, BUTTON_STATE_PRESSED);
-		if (this->Status & WM_SF_ISVIS) {
+		if (this->Status & WM_SF_ISVIS)
 			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
-		}
 	}
 	void _ButtonReleased(int Notification) {
 		WIDGET_AndState(this, BUTTON_STATE_PRESSED);
-		if (this->Status & WM_SF_ISVIS) {
+		if (this->Status & WM_SF_ISVIS)
 			WM_NotifyParent(this, Notification);
-		}
 		if (Notification == WM_NOTIFICATION_RELEASED) {
 			GUI_DEBUG_LOG("BUTTON: Hit\n");
 			GUI_StoreKey(this->Id);
 		}
 	}
 	void _OnTouch(const GUI_PID_STATE *pState) {
-#if BUTTON_REACT_ON_LEVEL
-		if (!pState) /* Mouse moved out */
-			_ButtonReleased(WM_NOTIFICATION_MOVED_OUT);
-#else
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
-				if (!(this->State & BUTTON_STATE_PRESSED))
+				if (!(State & BUTTON_STATE_PRESSED))
 					_ButtonPressed();
+				WM_SetCapture(this, 1);
 			}
 			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
-			else if (this->State & BUTTON_STATE_PRESSED)
-				_ButtonReleased(WM_NOTIFICATION_RELEASED);
+			else if (State & BUTTON_STATE_PRESSED)
+				_ButtonReleased(
+					WM_GetClientRect(this) <= *pState ? WM_NOTIFICATION_RELEASED :
+					WM_NOTIFICATION_MOVED_OUT);
 		}
 		else
 			_ButtonReleased(WM_NOTIFICATION_MOVED_OUT);
-#endif
 	}
 	int _OnKey(const WM_KEY_INFO *pInfo) {
 		switch (pInfo->Key) {

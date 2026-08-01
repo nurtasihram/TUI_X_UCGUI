@@ -224,7 +224,7 @@ struct FRAMEWIN_Obj : public WIDGET {
 		GUI_FillRect({ 0, y0, xsize - 1, y0 + this->Props.IBorderSize - 1 });
 		/* Draw the 3D effect (if configured) */
 		if (this->Props.BorderSize >= 2)
-			WIDGET__EFFECT_DrawUpRect(this, WM_GetClientRect()); /* this->pEffect->pfDrawUp(); */
+			DrawUp();
 	}
 	void _OnChildHasFocus(const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
 		if (pInfo) {
@@ -486,7 +486,7 @@ public:
 		/* When window is not minimized, minimize it */
 		if ((this->Flags & FRAMEWIN_CF_MINIMIZED) == 0) {
 			int OldHeight = this->Rect.y1 - this->Rect.y0 + 1;
-			int NewHeight = _CalcTitleHeight() + this->pEffect->EffectSize * 2 + 2;
+			int NewHeight = _CalcTitleHeight() + this->EffectSize() * 2 + 2;
 			this->rRestore = this->Rect;
 			WM_HideWindow(this->hClient);
 			WM_HideWindow(this->pMenu);

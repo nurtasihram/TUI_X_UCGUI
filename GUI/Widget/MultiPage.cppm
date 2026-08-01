@@ -9,9 +9,9 @@ import TUX.Widget.ScrollBar;
 
 import TUX.Array;
 
-#define MULTIPAGE_STATE_ENABLED     (1<<0)
-#define MULTIPAGE_STATE_SCROLLMODE  WIDGET_STATE_USER0
-#define MULTIPAGE_NUMCOLORS         2
+	constexpr uint16_t MULTIPAGE_STATE_ENABLED     = (1<<0);
+constexpr uint16_t MULTIPAGE_STATE_SCROLLMODE  = WIDGET_STATE_USER<0>;
+constexpr uint16_t MULTIPAGE_NUMCOLORS         = 2;
 
 export {
 constexpr uint16_t MULTIPAGE_ALIGN_LEFT   = 0 << 0;
@@ -208,12 +208,12 @@ struct MULTIPAGE_Obj : public WIDGET {
 		r = *pRect;
 		r.x0 += x0;
 		r.x1 = r.x0 + w;
-		WIDGET__EFFECT_DrawUpRect(this, r);
-		r -= this->pEffect->EffectSize;
+		DrawUp(r);
+		r -= this->EffectSize();
 		if (this->Selection == Index) {
 			if (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
-				r.y0 -= this->pEffect->EffectSize + 1;
-				if (this->pEffect->EffectSize > 1) {
+				r.y0 -= this->EffectSize() + 1;
+				if (this->EffectSize() > 1) {
 					GUI.SetColor(RGB_WHITE);
 					GUI_DrawVLine(r.x0 - 1, r.y0, r.y0 + 1);
 					GUI.SetColor(RGB_GRAYL(0x55));
@@ -221,8 +221,8 @@ struct MULTIPAGE_Obj : public WIDGET {
 				}
 			}
 			else {
-				r.y1 += this->pEffect->EffectSize + 1;
-				if (this->pEffect->EffectSize > 1) {
+				r.y1 += this->EffectSize() + 1;
+				if (this->EffectSize() > 1) {
 					GUI.SetColor(RGB_WHITE);
 					GUI_DrawVLine(r.x0 - 1, r.y1 - 2, r.y1 - 1);
 					GUI.SetColor(RGB_GRAYL(0x55));
@@ -231,7 +231,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 			}
 		}
 		GUI.SetColor(this->Props.aBkColor[ColorIndex]);
-		WIDGET__FillRect(this, r);
+		GUI_FillRect(r);
 		GUI.SetBkColor(this->Props.aBkColor[ColorIndex]);
 		GUI.SetColor(this->Props.aTextColor[ColorIndex]);
 		GUI_DispStringAt(pText, r.x0 + 4, pRect->y0 + 3);
@@ -240,7 +240,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 		GUI_RECT rBorder;
 		/* Draw border of multipage */
 		_CalcBorderRect(&rBorder);
-		WIDGET__EFFECT_DrawUpRect(this, rBorder);
+		DrawUp(rBorder);
 		/* Draw text items */
 		if (this->Handles.NumItems > 0) {
 			MULTIPAGE_PAGE *pPage;
@@ -348,7 +348,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 			case WM_GET_CLIENT_WINDOW:
 				return (WM_PARAM)pObj->pClient;
 			case WM_GET_INSIDE_RECT:
-				pObj->_CalcClientRect((GUI_RECT *)(Data));
+				pObj->_CalcClientRect((GUI_RECT *)Data);
 				return 0;
 			case WM_WIDGET_SET_EFFECT:
 				WIDGET_SetEffect(WM_GetScrollbarH(pObj), (WIDGET_EFFECT const *)Data);
@@ -373,6 +373,8 @@ struct MULTIPAGE_Obj : public WIDGET {
 				GUI.SetBkColor(pParent->Props.aBkColor[1]);
 				GUI_Clear();
 				return 0;
+			case WM_GET_BKCOLOR:
+				return (WM_PARAM)pParent->Props.aBkColor[1];
 			case WM_TOUCH:
 				WM_SetFocus(pParent);
 				WM_BringToTop(pParent);

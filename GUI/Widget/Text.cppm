@@ -33,20 +33,8 @@ struct TEXT_Obj : public WIDGET {
 		GUI.SetColor(Props.TextColor);
 		GUI_SetFont(Props.pFont);
 		/* Fill with parents background color */
-#if !WM_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent */
-		if (Props.BkColor == RGB_INVALID_COLOR) {
-			GUI.SetBkColor(WIDGET__GetBkColor(this));
-		}
-		else {
-			GUI.SetBkColor(Props.BkColor);
-		}
+		SetBkColorPrefer(Props.BkColor);
 		GUI_Clear();
-#else
-		if (!WM_GetHasTrans(this)) {
-			GUI.SetBkColor(Props.BkColor);
-			GUI_Clear();
-		}
-#endif
 		/* Show the text */
 		if (pText) {
 			s = pText;
@@ -79,12 +67,6 @@ struct TEXT_Obj : public WIDGET {
 public:
 	void SetBkColor(RGBC Color) {
 		Props.BkColor = Color;
-#if WM_SUPPORT_TRANSPARENCY
-		if (Color <= RGB_WHITE)
-			WM_ClrHasTrans(this);
-		else
-			WM_SetHasTrans(this);
-#endif
 		WM_Invalidate(this);
 	}
 	void SetFont(PCFONT pFont) {

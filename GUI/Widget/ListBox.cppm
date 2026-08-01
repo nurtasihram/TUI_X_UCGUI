@@ -351,7 +351,7 @@ struct LISTBOX_Obj : public WIDGET {
 		GUI.SetBkColor(Props.aBkColor[0]);
 		GUI_ClearRect(RectItem);
 		/* Draw the 3D effect (if configured) */
-		WIDGET__EFFECT_DrawDown(this);
+		DrawDown();
 	}
 	void _ToggleMultiSel(int Sel) {
 		if (this->Flags & LISTBOX_SF_MULTISEL) {

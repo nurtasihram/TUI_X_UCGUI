@@ -7,13 +7,13 @@ export module TUX.Widget.Slider;
 import TUX.Widget;
 
 export {
-constexpr uint16_t SLIDER_STATE_PRESSED    = WIDGET_STATE_USER0;
-constexpr uint16_t SLIDER_CF_VERTICAL = WIDGET_CF_VERTICAL;
+constexpr uint16_t SLIDER_CF_VERTICAL   = WIDGET_STATE_USER<0>;
+constexpr uint16_t SLIDER_STATE_PRESSED = WIDGET_STATE_USER<1>;
 
 struct SLIDER_Obj : public WIDGET {
 	struct Properties {
-		RGBC BkColor{ RGB_GRAYL(0xC0) };
-		RGBC Color{ RGB_GRAYL(0xC0) };
+		RGBC BkColor { RGB_INVALID_COLOR };
+		RGBC Color   { RGB_GRAYL(0xC0) };
 	} static DefaultProps;
 	Properties Props;
 	int16_t Min, Max, v;
@@ -22,116 +22,102 @@ struct SLIDER_Obj : public WIDGET {
 	uint8_t Flags;
 
 	void _OnPaint() {
-		GUI_RECT r, rFocus, rSlider, rSlot;
-		int x0, xsize, i, Range, NumTicks;
-		rFocus = WIDGET__GetClientRect(this);
-		r = rFocus - 1;
-		NumTicks = this->NumTicks;
-		xsize = r.x1 - r.x0 + 1 - this->Width;
-		x0 = r.x0 + this->Width / 2;
-		Range = this->Max - this->Min;
-		if (Range == 0) {
+		auto r = State & WIDGET_STATE_VERTICAL ? ~WM_GetClientRect(this) : WM_GetClientRect(this);
+		auto xsize = r.x1 - r.x0 + 1 - this->Width;
+		auto x0 = r.x0 + this->Width / 2;
+		auto Range = this->Max - this->Min;
+		if (Range == 0)
 			Range = 1;
-		}
-		/* Fill with parents background color */
-#if !WM_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent */
-		if (this->Props.BkColor == RGB_INVALID_COLOR) {
-			GUI.SetBkColor(WIDGET__GetBkColor(this));
-		}
-		else {
-			GUI.SetBkColor(this->Props.BkColor);
-		}
-		GUI_Clear();
-#else
-		if (!WM_GetHasTrans(this)) {
-			GUI.SetBkColor(this->Props.BkColor);
-			GUI_Clear();
-		}
-#endif
 		/* Calculate Slider position */
-		rSlider = r;
+		auto rSlider = r;
 		rSlider.y0 = 5;
 		rSlider.x0 = x0 + (uint32_t)xsize * (uint32_t)(this->v - this->Min) / Range - this->Width / 2;
 		rSlider.x1 = rSlider.x0 + this->Width;
 		/* Calculate Slot position */
+		GUI_RECT rSlot;
 		rSlot.x0 = x0;
 		rSlot.x1 = x0 + xsize;
 		rSlot.y0 = (rSlider.y0 + rSlider.y1) / 2 - 1;
 		rSlot.y1 = rSlot.y0 + 3;
-		WIDGET__EFFECT_DrawDownRect(this, rSlot);        /* Draw slot */
-		/* Draw the ticks */
+		/* Calculate the ticks */
+		auto NumTicks = this->NumTicks;
 		if (NumTicks < 0) {
 			NumTicks = Range + 1;
-			if (NumTicks > (xsize / 5)) {
+			if (NumTicks > (xsize / 5))
 				NumTicks = 11;
-			}
 		}
-		if (NumTicks > 1) {
-			GUI.SetColor(RGB_BLACK);
-			for (i = 0; i < NumTicks; i++) {
+		/* Fill with parents background color */
+		SetBkColorPrefer(Props.BkColor);
+		GUI_Clear();
+		GUI.SetColor(RGB_BLACK);
+		if (State & WIDGET_STATE_VERTICAL) {
+			auto xSize = WM_GetWindowSizeX(this);
+			rSlot = rSlot.Rotate90L(xSize);
+			rSlider = rSlider.Rotate90L(xSize);
+			/* Draw the ticks */
+			for (int i = 0; i < NumTicks; i++) {
 				int x = x0 + xsize * i / (NumTicks - 1);
-				WIDGET__DrawVLine(this, x, 1, 3);
+				GUI_DrawHLine(x, 1, 3);
 			}
 		}
+		else {
+			/* Draw the ticks */
+			for (int i = 0; i < NumTicks; i++) {
+				int x = x0 + xsize * i / (NumTicks - 1);
+				GUI_DrawVLine(x, 1, 3);
+			}
+		}
+		/* Draw slot */
+		DrawDown(rSlot);
 		/* Draw the slider itself */
 		GUI.SetColor(this->Props.Color);
-		WIDGET__FillRect(this, rSlider);
+		GUI_FillRect(rSlider);
 		GUI.SetColor(RGB_BLACK);
-		WIDGET__EFFECT_DrawUpRect(this, rSlider);
+		DrawUp(rSlider);
 		/* Draw focus */
 		if (this->State & WIDGET_STATE_FOCUS) {
 			GUI.SetColor(RGB_BLACK);
-			WIDGET__DrawFocusRect(this, rFocus, 0);
+			GUI_DrawFocusRect(WM_GetClientRect(this), 0);
 		}
 	}
 	void _SliderPressed() {
 		WIDGET_OrState(this, SLIDER_STATE_PRESSED);
-		if (this->Status & WM_SF_ISVIS) {
+		if (this->Status & WM_SF_ISVIS)
 			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
-		}
 	}
 	void _SliderReleased() {
 		WIDGET_AndState(this, SLIDER_STATE_PRESSED);
-		if (this->Status & WM_SF_ISVIS) {
+		if (this->Status & WM_SF_ISVIS)
 			WM_NotifyParent(this, WM_NOTIFICATION_RELEASED);
-		}
 	}
 	void _OnTouch(const GUI_PID_STATE *pState) {
-		if (pState) {  /* Something happened in our area (pressed or released) */
-			if (pState->Pressed) {
-				int x0, xsize, x, Sel, Range;
-				Range = (this->Max - this->Min);
-				x0 = 1 + this->Width / 2;  /* 1 pixel focus rectangle + width of actual slider */
-				x = (this->State & WIDGET_STATE_VERTICAL) ? pState->y : pState->x;
-				x -= x0;
-				xsize = WIDGET__GetWindowSizeX(this) - 2 * x0;
-				if (x <= 0) {
-					Sel = this->Min;
-				}
-				else if (x >= xsize) {
-					Sel = this->Max;
-				}
-				else {
-					int Div;
-					Div = xsize ? xsize : 1;     /* Make sure we do not divide by 0, even though xsize should never be 0 in this case anyhow */
-					Sel = this->Min + ((uint32_t)Range * (uint32_t)x + Div / 2) / Div;
-				}
-				if (WM_IsFocussable(this)) {
-					WM_SetFocus(this);
-				}
-				WM_SetCapture(this, 1);
-				SetValue(Sel);
-				if ((State & SLIDER_STATE_PRESSED) == 0) {
-					_SliderPressed();
-				}
-			}
-			else {
-				/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
-				if (State & SLIDER_STATE_PRESSED) {
-					_SliderReleased();
-				}
-			}
+		if (!pState)
+			return;
+		if (!pState->Pressed) {
+			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
+			if (State & SLIDER_STATE_PRESSED)
+				_SliderReleased();
+			return;
 		}
+		auto Range = Max - Min;
+		auto x0 = 1 + this->Width / 2;  /* 1 pixel focus rectangle + width of actual slider */
+		auto x = (this->State & WIDGET_STATE_VERTICAL ? pState->y : pState->x) - x0;
+		auto xsize = (State & WIDGET_STATE_VERTICAL ? WM_GetWindowSizeY(this) : WM_GetWindowSizeX(this)) - 2 * x0;
+		int Sel;
+		if (x <= 0)
+			Sel = Min;
+		else if (x >= xsize)
+			Sel = Max;
+		else {
+			auto Div = xsize ? xsize : 1;     /* Make sure we do not divide by 0, even though xsize should never be 0 in this case anyhow */
+			Sel = Min + ((uint32_t)Range * (uint32_t)x + Div / 2) / Div;
+		}
+		if (WM_IsFocussable(this))
+			WM_SetFocus(this);
+		WM_SetCapture(this, 1);
+		SetValue(Sel);
+		if (!(State & SLIDER_STATE_PRESSED))
+			_SliderPressed();
 	}
 	char _OnKey(const WM_KEY_INFO *pInfo) {
 		if (pInfo->PressedCnt > 0) {
@@ -183,8 +169,8 @@ public:
 		}
 	}
 	void SetWidth(int Width) {
-		if (Width != Width) {
-			Width = Width;
+		if (this->Width != Width) {
+			this->Width = Width;
 			WM_Invalidate(this);
 		}
 	}
@@ -221,14 +207,6 @@ public:
 	}
 	void SetBkColor(RGBC Color) {
 		Props.BkColor = Color;
-#if WM_SUPPORT_TRANSPARENCY
-		if (Color <= RGB_WHITE) {
-			WM_ClrHasTrans(this);
-		}
-		else {
-			WM_SetHasTrans(this);
-		}
-#endif
 		WM_Invalidate(this);
 	}
 	int  GetValue() {
@@ -250,7 +228,7 @@ SLIDER_Obj *SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParen
 		/* Handle SpecialFlags */
 		InitState = WIDGET_STATE_FOCUSSABLE;
 		if (ExFlags & SLIDER_CF_VERTICAL) {
-			InitState |= WIDGET_CF_VERTICAL;
+			InitState |= WIDGET_STATE_VERTICAL;
 		}
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, InitState);
