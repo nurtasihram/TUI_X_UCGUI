@@ -51,7 +51,7 @@ struct SLIDER_Obj : public WIDGET {
 		GUI_Clear();
 		GUI.SetColor(RGB_BLACK);
 		if (State & SLIDER_CF_VERTICAL) {
-			auto xSize = WM_GetWindowSizeX(this);
+			auto xSize = GetSizeX();
 			rSlot = rSlot.Rotate90L(xSize);
 			rSlider = rSlider.Rotate90L(xSize);
 			/* Draw the ticks */
@@ -102,7 +102,7 @@ struct SLIDER_Obj : public WIDGET {
 		auto Range = Max - Min;
 		auto x0 = 1 + this->Width / 2;  /* 1 pixel focus rectangle + width of actual slider */
 		auto x = (this->State & SLIDER_CF_VERTICAL ? pState->y : pState->x) - x0;
-		auto xsize = (State & SLIDER_CF_VERTICAL ? WM_GetWindowSizeY(this) : WM_GetWindowSizeX(this)) - 2 * x0;
+		auto xsize = (State & SLIDER_CF_VERTICAL ? GetSizeY() : GetSizeX()) - 2 * x0;
 		int Sel;
 		if (x <= 0)
 			Sel = Min;

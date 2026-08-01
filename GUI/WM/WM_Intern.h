@@ -63,8 +63,6 @@ WM_Obj * WM__GetFirstSibling         (WM_Obj * pWin);
 WM_Obj * WM__GetFocussedChild        (WM_Obj * pWin);
 int     WM__GetHasFocus             (WM_Obj * pWin);
 WM_Obj * WM__GetLastSibling          (WM_Obj * pWin);
-int     WM__GetWindowSizeX          (const WM_Obj *pWin);
-int     WM__GetWindowSizeY          (const WM_Obj *pWin);
 void    WM__InsertWindowIntoList    (WM_Obj * pWin, WM_Obj * pParent);
 void    WM__InvalidateAreaBelow     (const GUI_RECT *pRect, WM_Obj * pStopWin);
 void    WM__InvalidateTransAreaAbove(const GUI_RECT *pRect, WM_Obj * pStopWin);

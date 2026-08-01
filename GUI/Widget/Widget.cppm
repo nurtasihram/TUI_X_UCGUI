@@ -14,7 +14,7 @@ template<uint8_t bits>
 constexpr uint16_t
 	WIDGET_STATE_USER = 1 << (WIDGET_STATE_USER_START + bits);
 
-constexpr uint16_t WM_WIDGET_SET_EFFECT     = WM_WIDGET + 0;
+constexpr uint16_t WM_WIDGET_SET_EFFECT     = WM_WIDGET<0>;
 
 constexpr uint8_t
 	WIDGET_ITEM_DRAW          = 0,

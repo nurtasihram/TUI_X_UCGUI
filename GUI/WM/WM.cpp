@@ -24,10 +24,10 @@ static WM_Obj *pWinNextDraw;
 static WM_Obj *pWinCapture;
 bool WM__CaptureReleaseAuto;
 
-GUI_PID_STATE          WM_PID__StateLast;
+GUI_PID_STATE WM_PID__StateLast;
 
 #if WM_SUPPORT_TRANSPARENCY
-int                    WM__TransWindowCnt;
+int WM__TransWindowCnt;
 WM_Obj *WM__hATransWindow;
 #endif
 
@@ -1488,12 +1488,6 @@ void WM_SetEnableState(WM_Obj * pWin, int State) {
 		WM_SendMessage(pWin, WM_NOTIFY_ENABLE, (WM_PARAM)State);
 	}
 }
-void WM_EnableWindow(WM_Obj * pWin) {
-	WM_SetEnableState(pWin, 1);
-}
-void WM_DisableWindow(WM_Obj * pWin) {
-	WM_SetEnableState(pWin, 0);
-}
 void WM_ForEachDesc(WM_Obj * pWin, WM_tfForEach *pcb, void *pData) {
 	WM__ForEachDesc(pWin, pcb, pData);
 }
@@ -1623,17 +1617,17 @@ void WM_GetInsideRectExScrollbar(WM_Obj * pWin, GUI_RECT *pRect) {
 		if (pRect) {
 			pBarH = WM_GetDialogItem(pWin, GUI_ID_HSCROLL);
 			pBarV = WM_GetDialogItem(pWin, GUI_ID_VSCROLL);
-			rWin = WM_GetWindowRect(pWin);     /* The entire window in screen coordinates */
+			rWin = pWin->GetRect();     /* The entire window in screen coordinates */
 			rInside = WM_GetInsideRect(pWin);
 			if (pBarV) {
-				rScrollbar = WM_GetWindowRect(pBarV) - rWin.LeftTop();
+				rScrollbar = pBarV->GetRect() - rWin.LeftTop();
 				WinFlags = WM_GetFlags(pBarV);
 				if ((WinFlags & WM_SF_ANCHOR_RIGHT) && (WinFlags & WM_SF_ISVIS)) {
 					rInside.x1 = rScrollbar.x0 - 1;
 				}
 			}
 			if (pBarH) {
-				rScrollbar = WM_GetWindowRect(pBarH) - rWin.LeftTop();
+				rScrollbar = pBarH->GetRect() - rWin.LeftTop();
 				WinFlags = WM_GetFlags(pBarH);
 				if ((WinFlags & WM_SF_ANCHOR_BOTTOM) && (WinFlags & WM_SF_ISVIS)) {
 					rInside.y1 = rScrollbar.y0 - 1;
@@ -1668,26 +1662,6 @@ WM_Obj * WM_GetNextSibling(WM_Obj * pWin) {
 	}
 	return pWin;
 }
-int WM_GetWindowOrgX(WM_Obj * pWin) {
-	int r = 0;
-	if (pWin) {
-		r = pWin->Rect.x0;
-	}
-	return r;
-}
-int WM_GetWindowOrgY(WM_Obj * pWin) {
-	int r = 0;
-	if (pWin) {
-		r = pWin->Rect.y0;
-	}
-	return r;
-}
-int WM_GetOrgX(void) {
-	return WM_GetWindowOrgX(pWinActive);
-}
-int WM_GetOrgY(void) {
-	return WM_GetWindowOrgY(pWinActive);
-}
 WM_Obj * WM_GetParent(WM_Obj * pWin) {
 	if (pWin) {
 		pWin = pWin->pParent;
@@ -1714,76 +1688,6 @@ void WM_GetScrollState(WM_Obj * pObj, WM_SCROLL_STATE *pScrollState) {
 	WM_SendMessage(pObj, WM_GET_SCROLL_STATE, (WM_PARAM)pScrollState);
 }
 #define WM_DEBUG_LEVEL 1
-/*********************************************************************
-*
-*       WM_GetWindowRect
-*
-* Returns the window rect in screen (desktop) coordinates.
-*/
-GUI_RECT WM_GetWindowRect() {
-	WM_Obj * pWin;
-#if WM_SUPPORT_TRANSPARENCY
-	pWin = WM__hATransWindow ? WM__hATransWindow : pWinActive;
-#else
-	pWin = pWinActive;
-#endif
-	return pWin->Rect;
-}
-GUI_RECT WM_GetWindowRect(WM_Obj * pWin) {
-	GUI_RECT Rect = {};
-	if (pWin) {
-		Rect = pWin->Rect;
-	}
-	return Rect;
-}
-/*********************************************************************
-*
-*       _GetDefaultWin
-  When drawing, we have to start at the bottom window !
-*/
-static WM_Obj * _GetDefaultWin(WM_Obj * pWin) {
-	if (!pWin)
-		pWin = WM_GetActiveWindow();
-	return pWin;
-}
-/*********************************************************************
-*
-*       WM__GetWindowSizeX
-  Return width of window in pixels
-*/
-int WM__GetWindowSizeX(const WM_Obj *pWin) {
-	return pWin->Rect.x1 - pWin->Rect.x0 + 1;
-}
-/*********************************************************************
-*
-*       WM__GetWindowSizeY
-  Return height of window in pixels
-*/
-int WM__GetWindowSizeY(const WM_Obj *pWin) {
-	return pWin->Rect.y1 - pWin->Rect.y0 + 1;
-}
-/*********************************************************************
-*
-*       WM_GetWindowSizeX
-  Return width of window in pixels
-*/
-int WM_GetWindowSizeX(WM_Obj * pWin) {
-	int r;
-	pWin = _GetDefaultWin(pWin);
-	r = WM__GetWindowSizeX(pWin);
-	return r;
-}
-/*********************************************************************
-*
-*       WM_GetWindowSizeY
-  Return height of window in pixels
-*/
-int WM_GetWindowSizeY(WM_Obj * pWin) {
-	int r;
-	pWin = _GetDefaultWin(pWin);
-	r = WM__GetWindowSizeY(pWin);
-	return r;
-}
 bool WM_HasCaptured(WM_Obj * pWin) {
 	return (pWin == pWinCapture) ? true : false;
 }
@@ -1804,21 +1708,6 @@ void WM_HideWindow(WM_Obj * pWin) {
 #endif
 		}
 	}
-}
-static char _CompareRect(const GUI_RECT *pRect0, const GUI_RECT *pRect1) {
-	if (pRect0->x0 != pRect1->x0) {
-		return 1;                          /* Not equal */
-	}
-	if (pRect0->x1 != pRect1->x1) {
-		return 1;                          /* Not equal */
-	}
-	if (pRect0->y0 != pRect1->y0) {
-		return 1;                          /* Not equal */
-	}
-	if (pRect0->y1 != pRect1->y1) {
-		return 1;                          /* Not equal */
-	}
-	return 0;                            /* Equal */
 }
 static char _WindowSiblingsOverlapRect(WM_Obj * iWin, GUI_RECT *pRect) {
 	WM_Obj *pWin;
@@ -2060,8 +1949,8 @@ void WM_SetCaptureMove(WM_Obj * pWin, const GUI_PID_STATE *pState, int MinVisibi
 		else {
 			GUI_RECT Rect, RectParent;
 			/* make sure at least a part of the windows stays inside of its parent */
-			Rect = WM_GetWindowRect(pWin) + GUI_POINT{dx, dy};
-			RectParent = WM_GetWindowRect(WM_GetParent(pWin)) - MinVisibility;
+			Rect = pWin->GetRect() + GUI_POINT{dx, dy};
+			RectParent = WM_GetParent(pWin)->GetRect() - MinVisibility;
 			if (RectParent <= Rect)
 				WM_MoveWindow(pWin, dx, dy);
 		}

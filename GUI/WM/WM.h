@@ -3,6 +3,7 @@
 #include "GUI_ConfDefaults.h"
 
 import TUX;
+import TUX.Window;
 
 /* Support for transparency. Switching it off makes Wm smaller and faster */
 #ifndef WM_SUPPORT_TRANSPARENCY
@@ -23,188 +24,9 @@ generate any code !
 #define WM_SUPPORT_NOTIFY_VIS_CHANGED 0
 #endif
 
-/*********************************************************************
-*
-*               Messages Ids
-* The following is the list of windows messages.
-*/
-enum WM_MSGID : int {
-	 /* The first message received, right after client has actually been created */
-	 WM_CREATE                  = 1 ,
-	 /* window has been moved */
-	 WM_MOVE                    = 3 ,
-	 /* Is sent to a window after its size has changed */
-	 WM_SIZE                    = 5 ,
-	 /* Delete (Destroy) command: This tells the client to free its data strutures since the window it is associates with no longer exists.*/
-	 WM_DELETE                  = 11,
-	 /* Touch screen message */
-	 WM_TOUCH                   = 12,
-	 /* Touch screen message to ancestors */
-	 WM_TOUCH_CHILD             = 13,
-	 /* Key has been pressed */
-	 WM_KEY                     = 14,
-	 /* Repaint window (because content is (partially) invalid */
-	 WM_PAINT                   = 15,
-	 /* Mouse has moved, no key pressed */
-	 WM_MOUSEOVER               = 16,
-	 /* Pointer input device state has changed */
-	 WM_PID_STATE_CHANGED       = 17,
-	 /* get inside rectangle: client rectangle minus pixels lost to effect */
-	 WM_GET_INSIDE_RECT         = 20,
-	 /* Get id of widget */
-	 WM_GET_ID                  = 21,
-	 /* Set id of widget */
-	 WM_SET_ID                  = 22,
-	 /* Get window handle of client window. Default is the same as window */
-	 WM_GET_CLIENT_WINDOW       = 23,
-	 /* Let window know that mouse capture is over */
-	 WM_CAPTURE_RELEASED        = 24,
-	 /* Inform dialog that it is ready for init */
-	 WM_INIT_DIALOG             = 30,
-	 /* Inform window that it has gotten or lost the focus */
-	 WM_SET_FOCUS               = 31,
-	 /* Find out if window can accept the focus */
-	 WM_GET_ACCEPT_FOCUS        = 32,
-	 
-	 WM_NOTIFY_CHILD_HAS_FOCUS  = 33,
-	 /* Return back ground color (only frame window and similar) */
-	 WM_GET_BKCOLOR             = 34,
-	 /* Query state of scroll bar */
-	 WM_GET_SCROLL_STATE        = 35,
-	 /* Set scroll info ... only effective for scrollbars */
-	 WM_SET_SCROLL_STATE        = 36,
-	 /* Client area may have changed */
-	 WM_NOTIFY_CLIENTCHANGE     = 37,
-	 /* Notify parent. Information is detailed as notification code */
-	 WM_NOTIFY_PARENT           = 38,
-	 /* Enable or disable widget */
-	 WM_NOTIFY_ENABLE           = 40,
-	 /* Visibility of a window has or may have changed */
-	 WM_NOTIFY_VIS_CHANGED      = 41,
-	 /* Set or get dialog status */
-	 WM_HANDLE_DIALOG_STATUS    = 42,
-	 /* Send to all siblings and children of a radio control when selection changed */
-	 WM_GET_RADIOGROUP          = 43,
-	 /* Send to owner window of menu widget */	
-	WM_MENU                    = 44,
-};
-
-#define WM_TIMER                    0x0113  /* Timer has expired */
-#define WM_WIDGET                   0x0300  /* 256 messages reserved for Widget messages */
-#define WM_USER                     0x0400  /* Reserved for user messages ...  */
-
-/*********************************************************************
-*
-*               Notification codes
-*
-* The following is the list of notification codes send
-* with the WM_NOTIFY_PARENT message
-*/
-enum WM_NOTIFICATION : int {
-	 WM_NOTIFICATION_CLICKED           =  1,
-	 WM_NOTIFICATION_RELEASED          =  2,
-	 WM_NOTIFICATION_MOVED_OUT         =  3,
-	 WM_NOTIFICATION_SEL_CHANGED       =  4,
-	 WM_NOTIFICATION_VALUE_CHANGED     =  5,
-	 WM_NOTIFICATION_SCROLLBAR_ADDED   =  6,
-	 WM_NOTIFICATION_CHILD_DELETED     =  7,
-	 WM_NOTIFICATION_GOT_FOCUS         =  8,
-	 WM_NOTIFICATION_LOST_FOCUS        =  9,
-	 WM_NOTIFICATION_SCROLL_CHANGED    =  10
-};
-
-#define WM_NOTIFICATION_WIDGET             11      /* Space for widget defined notifications */
-#define WM_NOTIFICATION_USER               16      /* Space for  application (user) defined notifications */
-
-/*********************************************************************
-*
-*           Window create flags.
-* These flags can be passed to the create window
-* function as flag-parameter. The flags are combinable using the
-* binary or operator.
-*/
-enum WM_CF : uint16_t {
-	 /* Has transparency. Needs to be defined for windows which do not fill the entire section of their (client) rectangle. */
-	 WM_CF_HASTRANS         = 1 << 0, 
-	 /* Hide window after creation (default !) */
-	 WM_CF_HIDE             = 0 << 1, 
-	 /* Show window after creation */
-	 WM_CF_SHOW             = 1 << 1, 
-	 /* Use memory device for redraws */
-	 WM_CF_MEMDEV           = 1 << 2, 
-	 /* Stay on top */
-	 WM_CF_STAYONTOP        = 1 << 3, 
-	 /* Disabled: Does not receive PID (mouse & touch) input */
-	 WM_CF_DISABLED         = 1 << 4, 
-
-	 /* Create only flags ... Not available as status flags */
-	
-	 /* If automatic activation upon creation of window is desired */
-	 WM_CF_ACTIVATE         = 1 << 5, 
-	 /* Put window in foreground after creation (default !) */
-	 WM_CF_FGND             = 0 << 6, 
-	 /* Put window in background after creation */
-	 WM_CF_BGND             = 1 << 6, 
-
-	 /* Anchor flags */
-	
-	 /* Right anchor ... If parent is resized, distance to right will remain const (left is default) */
-	 WM_CF_ANCHOR_RIGHT     = 1 << 7, 
-	 /* Bottom anchor ... If parent is resized, distance to bottom will remain const (top is default) */
-	 WM_CF_ANCHOR_BOTTOM    = 1 << 8, 
-	 /* Left anchor ... If parent is resized, distance to left will remain const (left is default) */
-	 WM_CF_ANCHOR_LEFT      = 1 << 9, 
-	 /* Top anchor ... If parent is resized, distance to top will remain const (top is default) */
-	 WM_CF_ANCHOR_TOP       = 1 << 10,
-
-	 /* Constant outline. This is relevant for transparent windows only. If a window is transparent and does not have a constant outline, its background is invalided instead of the window itself. This causes add. computation time when redrawing. */
-	 WM_CF_CONST_OUTLINE    = 1 << 11,
-	 WM_CF_LATE_CLIP        = 1 << 12,
-	 WM_CF_MEMDEV_ON_REDRAW = 1 << 13,
-	 WM_CF_RESERVED3        = 1 << 14,
-	 WM_CF_RESERVED4        = 1 << 15
-};
-
 using WM_HMEM = GUI_HMEM;
 
-typedef uintptr_t WM_PARAM;
-
-struct WM_KEY_INFO {
-	int16_t Key, PressedCnt;
-};
-
-struct WM_SCROLL_STATE {
-	int16_t NumItems = 0, v = 0, PageSize = 0;
-	inline bool operator!=(const WM_SCROLL_STATE &other) const {
-		return NumItems != other.NumItems || v != other.v || PageSize != other.PageSize;
-	}
-	inline bool operator==(const WM_SCROLL_STATE &other) const {
-		return !(*this != other);
-	}
-};
-
-struct WM_DIALOG_STATUS {
-	int16_t Done;
-	int16_t ReturnValue;
-};
-
-struct WM_PID_STATE_CHANGED_INFO {
-	int16_t x, y;
-	uint8_t State, StatePrev;
-};
-
 #define WM_UNATTACHED  ((WM_Obj *)-1)                        /* Do not attach to a window */
-typedef WM_PARAM WM_CALLBACK(struct WM_Obj *pWin, int MsgId, WM_PARAM Data);
-struct WM_Obj {
-	GUI_RECT Rect;        /* outer dimensions of window */
-	GUI_RECT InvalidRect; /* invalid rectangle */
-	WM_CALLBACK *cb;      /* ptr to notification callback */
-	WM_Obj *pNextLin;     /* Next window in linear list */
-	WM_Obj *pParent;
-	WM_Obj *pFirstChild;
-	WM_Obj *pNext;
-	uint16_t Status; /* Some status flags */
-};
 
 struct WM_NOTIFY_INFO {
 	int Notification;
@@ -285,16 +107,8 @@ GUI_RECT WM_GetClientRect();
 GUI_RECT WM_GetClientRect(WM_Obj *pWin);
 GUI_RECT WM_GetInsideRect();
 GUI_RECT WM_GetInsideRect(WM_Obj *pWin);
-GUI_RECT WM_GetWindowRect();
-GUI_RECT WM_GetWindowRect(WM_Obj *pWin);
 
 void WM_GetInsideRectExScrollbar(WM_Obj *pWin, GUI_RECT *pRect); /* not to be documented (may change in future version) */
-int  WM_GetOrgX(void);
-int  WM_GetOrgY(void);
-int  WM_GetWindowOrgX(WM_Obj *pWin);
-int  WM_GetWindowOrgY(WM_Obj *pWin);
-int  WM_GetWindowSizeX(WM_Obj *pWin);
-int  WM_GetWindowSizeY(WM_Obj *pWin);
 WM_Obj *WM_GetFirstChild(WM_Obj *pWin);
 WM_Obj *WM_GetNextSibling(WM_Obj *pWin);
 WM_Obj *WM_GetParent(WM_Obj *pWin);
@@ -352,11 +166,7 @@ int       WM_SetFocus(WM_Obj *pWin);
 WM_Obj *WM_SetFocusOnNextChild(WM_Obj *pParent);     /* Set the focus to the next child */
 WM_Obj *WM_SetFocusOnPrevChild(WM_Obj *pParent);     /* Set the focus to the previous child */
 WM_Obj *WM_GetDialogItem(WM_Obj *pWin, int Id);
-void      WM_EnableWindow(WM_Obj *pWin);
-void      WM_DisableWindow(WM_Obj *pWin);
 void      WM_GetScrollState(WM_Obj *pObj, WM_SCROLL_STATE *pScrollState);
-int       WM_GetUserData(WM_Obj *pWin, void *pDest, int SizeOfBuffer);
-int       WM_SetUserData(WM_Obj *pWin, const void *pSrc, int SizeOfBuffer);
 
 int       WM_HandlePID(void);
 WM_Obj *WM_Screen2hWin(int x, int y);

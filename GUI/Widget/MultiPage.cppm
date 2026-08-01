@@ -297,19 +297,14 @@ struct MULTIPAGE_Obj : public WIDGET {
 		int Notification;
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
-				int x = pState->x;
-				int y = pState->y;
-				if (!_ClickedOnMultipage(x, y)) {
-					WM_Obj *hBelow;
-					x += WM_GetWindowOrgX(this);
-					y += WM_GetWindowOrgY(this);
-					hBelow = WM_Screen2hWinEx(this, x, y);
-					if (hBelow) {
+				GUI_POINT Pos = *pState;
+				if (!_ClickedOnMultipage(Pos.x, Pos.y)) {
+					Pos += GetOrg();
+					if (auto pBelow = WM_Screen2hWinEx(this, Pos.x, Pos.y)) {
 						GUI_PID_STATE State;
-						State.x = x - WM_GetWindowOrgX(hBelow);
-						State.y = y - WM_GetWindowOrgY(hBelow);
+						State = Pos - pBelow->GetOrg();
 						State.Pressed = pState->Pressed;
-						((WM_Obj *)hBelow)->cb(hBelow, WM_TOUCH, (WM_PARAM)&State);
+						pBelow->cb(pBelow, WM_TOUCH, (WM_PARAM)&State);
 					}
 				}
 				else

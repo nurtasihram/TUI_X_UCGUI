@@ -76,25 +76,24 @@ struct FRAMEWIN_Obj : public WIDGET {
 	void _CalcPositions(POSITIONS *pPos) {
 		WM_Obj *pChild;
 		int BorderSize = this->Props.BorderSize;
-		int xsize = WM__GetWindowSizeX(this);
-		int ysize = WM__GetWindowSizeY(this);
+		auto size = GetSize();
 		int IBorderSize = 0;
 		if (this->State & FRAMEWIN_CF_TITLEVIS)
 			IBorderSize = this->Props.IBorderSize;
 		int TitleHeight = _CalcTitleHeight();
 		int MenuHeight = 0;
-		if (this->pMenu)
-			MenuHeight = WM_GetWindowSizeY(this->pMenu);
+		if (pMenu)
+			MenuHeight = pMenu->GetSizeY();
 		pPos->TitleHeight = TitleHeight;
 		pPos->MenuHeight = MenuHeight;
 		/* Set object properties accordingly */
 		pPos->rClient.x0 = BorderSize;
-		pPos->rClient.x1 = xsize - BorderSize - 1;
+		pPos->rClient.x1 = size.x - BorderSize - 1;
 		pPos->rClient.y0 = BorderSize + IBorderSize + TitleHeight + MenuHeight;
-		pPos->rClient.y1 = ysize - BorderSize - 1;
+		pPos->rClient.y1 = size.y - BorderSize - 1;
 		/* Calculate title rect */
 		pPos->rTitleText.x0 = BorderSize;
-		pPos->rTitleText.x1 = xsize - BorderSize - 1;
+		pPos->rTitleText.x1 = size.x - BorderSize - 1;
 		pPos->rTitleText.y0 = BorderSize;
 		pPos->rTitleText.y1 = BorderSize + TitleHeight - 1;
 		/* Iterate over all children */
@@ -187,10 +186,8 @@ struct FRAMEWIN_Obj : public WIDGET {
 		return 0;
 	}
 	void _OnPaint() {
-		auto hWin = WM_GetActiveWindow();
 		const char *pText = nullptr;
-		auto xsize = WM_GetWindowSizeX(hWin);
-		auto ysize = WM_GetWindowSizeY(hWin);
+		auto size = GetSize();
 		auto BorderSize = this->Props.BorderSize;
 		POSITIONS Pos;
 		_CalcPositions(&Pos);
@@ -217,11 +214,11 @@ struct FRAMEWIN_Obj : public WIDGET {
 		WIDGET__FillStringInRect(pText, r, Pos.rTitleText, rText);
 		/* Draw Frame */
 		GUI.SetColor(this->Props.FrameColor);
-		GUI_FillRect({ 0, 0, xsize - 1, BorderSize - 1 });
-		GUI_FillRect({ 0, 0, Pos.rClient.x0 - 1, ysize - 1 });
-		GUI_FillRect({ Pos.rClient.x1 + 1, 0, xsize - 1, ysize - 1 });
-		GUI_FillRect({ 0, Pos.rClient.y1 + 1, xsize - 1, ysize - 1 });
-		GUI_FillRect({ 0, y0, xsize - 1, y0 + this->Props.IBorderSize - 1 });
+		GUI_FillRect({ 0, 0, size.x - 1, BorderSize - 1 });
+		GUI_FillRect({ 0, 0, Pos.rClient.x0 - 1, size.y - 1 });
+		GUI_FillRect({ Pos.rClient.x1 + 1, 0, size.x - 1, size.y - 1 });
+		GUI_FillRect({ 0, Pos.rClient.y1 + 1, size.x - 1, size.y - 1 });
+		GUI_FillRect({ 0, y0, size.x - 1, y0 + this->Props.IBorderSize - 1 });
 		/* Draw the 3D effect (if configured) */
 		if (this->Props.BorderSize >= 2)
 			DrawUp();
@@ -405,8 +402,7 @@ public:
 		}
 		x0 = BorderSize;
 		y0 = BorderSize + TitleHeight + IBorderSize;
-		xSize = WM__GetWindowSizeX(this);
-		xSize -= BorderSize * 2;
+		xSize = GetSizeX() - BorderSize * 2;
 		this->pMenu = pMenu;
 		if (this->cb) {
 			pMenu->SetOwner(this->hClient);
@@ -854,18 +850,15 @@ public:
 	}
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 	int _ForwardMouseOverMsg(const GUI_PID_STATE *pState) {
-		WM_Obj *hBelow;
-		GUI_PID_STATE StateBelow;
-		StateBelow.x = pState->x + WM_GetWindowOrgX(this);
-		StateBelow.y = pState->y + WM_GetWindowOrgY(this);
-		hBelow = WM_Screen2hWin(StateBelow.x, StateBelow.y);
-		if (hBelow && (hBelow != this)) {
-			StateBelow.x -= WM_GetWindowOrgX(hBelow);
-			StateBelow.y -= WM_GetWindowOrgY(hBelow);
-			WM__SendMessage(hBelow, WM_MOUSEOVER, (WM_PARAM)&StateBelow);
-			return 1;
+		GUI_PID_STATE StateBelow = *pState;
+		StateBelow += GetOrg();
+		auto pBelow = WM_Screen2hWin(StateBelow.x, StateBelow.y);
+		if (pBelow && pBelow != this) {
+			StateBelow -= pBelow->GetOrg();
+			WM__SendMessage(pBelow, WM_MOUSEOVER, (WM_PARAM)&StateBelow);
+			return true;
 		}
-		return 0;
+		return false;
 	}
 	int _OnMouseOver(const GUI_PID_STATE *pState) {
 		if (pState) {

@@ -95,7 +95,7 @@ struct MENU_Obj : public WIDGET {
 	} static DefaultProps;
 	Properties Props;
 	GUI_ARRAY   ItemArray;
-	WM_Obj *hOwner;
+	WM_Obj *pOwner;
 	uint16_t Flags;
 	char IsSubmenuActive;
 	uint16_t Width;
@@ -117,7 +117,7 @@ struct MENU_Obj : public WIDGET {
 		WM_Invalidate(this);  /* Can be optimized, no need to invalidate all items */
 	}
 	char _IsTopLevelMenu() {
-		if (_SendMenuMessage(this, this->hOwner, MENU_IS_MENU, 0) == 0) {
+		if (_SendMenuMessage(this, this->pOwner, MENU_IS_MENU, 0) == 0) {
 			return 1;
 		}
 		return 0;
@@ -353,19 +353,19 @@ struct MENU_Obj : public WIDGET {
 						y += this->_CalcMenuSizeY() - (this->_GetEffectSize() << 1);
 						x -= EffectSize;
 					}
-					x += WM_GetWindowOrgX(this);
-					y += WM_GetWindowOrgY(this);
+					x += GetOrgX();
+					y += GetOrgY();
 					/*
 					 * Notify owner window when for the first time open a menu (when no
 					 * other submenu was open), so it can initialize the menu items.
 					 */
 					if (PrevActiveSubmenu == 0) {
 						if (this->_IsTopLevelMenu()) {
-							_SendMenuMessage(this, this->hOwner, MENU_ON_INITMENU, 0);
+							_SendMenuMessage(this, this->pOwner, MENU_ON_INITMENU, 0);
 						}
 					}
 					/* Notify owner window when a submenu opens, so it can initialize the menu items. */
-					_SendMenuMessage(this, this->hOwner, MENU_ON_INITSUBMENU, pItem->Id);
+					_SendMenuMessage(this, this->pOwner, MENU_ON_INITSUBMENU, pItem->Id);
 					/* Set active menu as owner of submenu. */
 					pItem->pSubmenu->SetOwner(this);
 					/* Attach submenu and inform it about its activation. */
@@ -412,7 +412,7 @@ struct MENU_Obj : public WIDGET {
 			if ((pItem->Flags & (MENU_IF_DISABLED | MENU_IF_SEPARATOR)) == 0) {
 				this->_ClosePopup();
 				/* Send item select message to owner. */
-				_SendMenuMessage(this, this->hOwner, MENU_ON_ITEMSELECT, pItem->Id);
+				_SendMenuMessage(this, this->pOwner, MENU_ON_ITEMSELECT, pItem->Id);
 			}
 		}
 	}
@@ -442,28 +442,22 @@ struct MENU_Obj : public WIDGET {
 			this->Flags &= ~MENU_SF_ACTIVE;
 		}
 	}
-	int _ForwardMouseOverMsg(int x, int y) {
+	int _ForwardMouseOverMsg(GUI_POINT Pos) {
 #if (GUI_SUPPORT_MOUSE)
-		if ((this->IsSubmenuActive == 0) && !(this->Flags & MENU_SF_POPUP)) {
-			if (this->_IsTopLevelMenu()) {
-				WM_Obj *hBelow;
-				x += WM_GetWindowOrgX(this);
-				y += WM_GetWindowOrgY(this);
-				hBelow = WM_Screen2hWin(x, y);
-				if (hBelow && (hBelow != this)) {
+		if (!IsSubmenuActive && !(Flags & MENU_SF_POPUP)) {
+			if (_IsTopLevelMenu()) {
+				Pos += GetOrg();
+				if (auto pBelow = WM_Screen2hWin(Pos.x, Pos.y); pBelow && (pBelow != this)) {
 					GUI_PID_STATE State;
-					x -= WM_GetWindowOrgX(hBelow);
-					y -= WM_GetWindowOrgY(hBelow);
+					State = Pos - pBelow->GetOrg();
 					State.Pressed = 0;
-					State.x = x;
-					State.y = y;
-					WM__SendMessage(hBelow, WM_MOUSEOVER, (WM_PARAM)&State);
-					return 1;
+					WM__SendMessage(pBelow, WM_MOUSEOVER, (WM_PARAM)&State);
+					return true;
 				}
 			}
 		}
 #endif
-		return 0;
+		return false;
 	}
 	char _HandlePID(int x, int y, int Pressed) {
 		GUI_PID_STATE PrevState;
@@ -488,16 +482,16 @@ struct MENU_Obj : public WIDGET {
 				 */
 				if (Pressed == 1) {
 					if (PrevState.Pressed == 0) /* Clicked */
-						this->_ActivateMenu(ItemIndex);
-					this->_SelectItem(ItemIndex);
+						_ActivateMenu(ItemIndex);
+					_SelectItem(ItemIndex);
 				}
 				else if (Pressed == 0 && PrevState.Pressed == 1) /* Released */
-					this->_ActivateItem(ItemIndex);
+					_ActivateItem(ItemIndex);
 				else if (Pressed < 0) {  /* Mouse moved */
-					if (this->_ForwardMouseOverMsg(x, y) == 0)
-						this->_SelectItem(ItemIndex);
+					if (!_ForwardMouseOverMsg({x, y}))
+						_SelectItem(ItemIndex);
 					else
-						this->_DeselectItem();
+						_DeselectItem();
 				}
 			}
 			else {
@@ -510,11 +504,11 @@ struct MENU_Obj : public WIDGET {
 						 * User has clicked outside the menu. Close the active submenu.
 						 * The widget itself must be closed (if needed) by the owner.
 						 */
-						this->_DeactivateMenu();
-					this->_DeselectItem();
+						_DeactivateMenu();
+					_DeselectItem();
 				}
 				else if (Pressed < 0) /* Moved out or mouse moved */
-					this->_DeselectItem();
+					_DeselectItem();
 			}
 			return 0;
 		}
@@ -527,26 +521,25 @@ struct MENU_Obj : public WIDGET {
 				 * User has clicked outside the menu. Close the active submenu.
 				 * The widget itself must be closed (if needed) by the owner.
 				 */
-				this->_DeactivateMenu();
-				this->_ClosePopup();
+				_DeactivateMenu();
+				_ClosePopup();
 			}
-			this->_DeselectItem();
-			this->_ForwardMouseOverMsg(x, y);
+			_DeselectItem();
+			_ForwardMouseOverMsg({ x, y });
 		}
 		return 1;   /* Coordinates are not in widget, we need to forward PID message to owner */
 	}
 	void _ForwardPIDMsgToOwner(int MsgId, const GUI_PID_STATE *pState) {
 		if (!this->_IsTopLevelMenu()) {
-			auto hOwner = this->hOwner ? this->hOwner : WM_GetParent(this);
-			if (hOwner) {
+			auto pOwner = this->pOwner ? this->pOwner : WM_GetParent(this);
+			if (pOwner) {
 				GUI_PID_STATE State;
 				if (pState) {
 					State = *pState;
-					State.x += WM_GetWindowOrgX(this) - WM_GetWindowOrgX(hOwner);
-					State.y += WM_GetWindowOrgY(this) - WM_GetWindowOrgY(hOwner);
+					State += GetOrg() - pOwner->GetOrg();
 					pState = &State;
 				}
-				WM__SendMessage(hOwner, MsgId, (WM_PARAM)pState);
+				WM__SendMessage(pOwner, MsgId, (WM_PARAM)pState);
 			}
 		}
 	}
@@ -570,9 +563,9 @@ struct MENU_Obj : public WIDGET {
 			case MENU_ON_INITMENU:
 			case MENU_ON_INITSUBMENU: {
 				/* Forward message to owner. */
-				auto hOwner = this->hOwner ? this->hOwner : WM_GetParent(this);
-				if (hOwner)
-					WM__SendMessage(hOwner, WM_MENU, Data);
+				auto pOwner = this->pOwner ? this->pOwner : WM_GetParent(this);
+				if (pOwner)
+					WM__SendMessage(pOwner, WM_MENU, Data);
 				break;
 			}
 			case MENU_ON_OPEN:
@@ -806,14 +799,14 @@ public:
 			}
 		}
 	}
-	void SetOwner(WM_Obj *hOwner) {
-		this->hOwner = hOwner;
+	void SetOwner(WM_Obj *pOwner) {
+		this->pOwner = pOwner;
 	}
-	void Attach(WM_Obj *hDestWin, int x, int y, int xSize, int ySize, int Flags) {
+	void Attach(WM_Obj *pDestWin, int x, int y, int xSize, int ySize, int Flags) {
 		GUI_USE_PARA(Flags);
 		this->Width = ((xSize > 0) ? xSize : 0);
 		this->Height = ((ySize > 0) ? ySize : 0);
-		WM_AttachWindowAt(this, hDestWin, x, y);
+		WM_AttachWindowAt(this, pDestWin, x, y);
 		this->_ResizeMenu();
 	}
 
@@ -886,17 +879,15 @@ public:
 			}
 		}
 	}
-	void Popup(WM_Obj *hDestWin, int x, int y, int xSize, int ySize, int Flags) {
-		GUI_USE_PARA(Flags);
-		if (hDestWin) {
+	void Popup(WM_Obj *pDestWin, int x, int y, int xSize, int ySize, int Flags) {
+		if (pDestWin) {
 			this->Flags |= MENU_SF_POPUP;
 			this->Width = ((xSize > 0) ? xSize : 0);
 			this->Height = ((ySize > 0) ? ySize : 0);
-			x += WM_GetWindowOrgX(hDestWin);
-			y += WM_GetWindowOrgY(hDestWin);
-			SetOwner(hDestWin);
-			WM_AttachWindowAt(this, WM_GetDesktopWindow(), x, y);
-			_SendMenuMessage(hDestWin, this, MENU_ON_OPEN, 0);
+			auto Pos = pDestWin->GetOrg();
+			SetOwner(pDestWin);
+			WM_AttachWindowAt(this, WM_GetDesktopWindow(), Pos.x, Pos.y);
+			_SendMenuMessage(pDestWin, this, MENU_ON_OPEN, 0);
 		}
 	}
 	void SetBkColor(unsigned ColorIndex, RGBC Color) {
@@ -965,7 +956,7 @@ MENU_Obj *MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParent, i
 		pObj->Width = ((xSize > 0) ? xSize : 0);
 		pObj->Height = ((ySize > 0) ? ySize : 0);
 		pObj->Sel = -1;
-		pObj->hOwner = 0;
+		pObj->pOwner = 0;
 		pObj->IsSubmenuActive = 0;
 		WIDGET_SetEffect(pObj, MENU__pDefaultEffect);
 	}

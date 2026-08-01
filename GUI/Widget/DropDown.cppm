@@ -161,7 +161,7 @@ struct DROPDOWN_Obj : public WIDGET {
 			Height = Props.pFont->DistY();
 		}
 		Height += this->EffectSize() + 2 * this->Props.TextBorderSize;
-		WM_SetSize(this, WM__GetWindowSizeX(this), Height);
+		WM_SetSize(this, GetSizeX(), Height);
 	}
 
 	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
@@ -229,11 +229,11 @@ public:
 	void Expand() {
 		int xSize, ySize, i, NumItems;
 		GUI_RECT r;
-		xSize = WM__GetWindowSizeX(this);
-		ySize = this->ySizeEx;
+		xSize = GetSizeX();
+		ySize = ySizeEx;
 		NumItems = _GetNumItems();
-		r = WM_GetWindowRect(this);
-		if (this->Flags & DROPDOWN_CF_UP) {
+		r = GetRect();
+		if (Flags & DROPDOWN_CF_UP) {
 			r.y0 -= ySize;
 		}
 		else {

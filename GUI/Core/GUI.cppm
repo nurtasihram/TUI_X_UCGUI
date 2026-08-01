@@ -16,6 +16,10 @@ typedef void *GUI_HMEM;
 
 struct GUI_PID_STATE : GUI_POINT {
 	uint8_t Pressed;
+	auto operator=(const GUI_POINT &p) {
+		this->x = p.x;
+		this->y = p.y;
+	}
 };
 
 using DRAWMODE = uint8_t; // 2bits

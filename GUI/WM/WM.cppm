@@ -2,7 +2,7 @@ module;
 
 #include <stdint.h>
 
-export module TUX.WM;
+export module TUX.WindowTypes;
 
 export {
 
@@ -73,11 +73,8 @@ enum WM_MSGID : int {
 	 /* Send to owner window of menu widget */	
 	 WM_MENU                    = 44,
 };
-
-template<auto code>
-constexpr int16_t WM_WIDGET = 0x0300 + code;
-template<auto code>
-constexpr int16_t WM_USER = 0x0400 + code;
+template<auto code> constexpr int16_t WM_WIDGET = 0x0300 + code;
+template<auto code> constexpr int16_t WM_USER   = 0x0400 + code;
 
 /*********************************************************************
 *
@@ -100,8 +97,7 @@ enum WM_NOTIFICATION : int {
 	WM_NOTIFICATION_SCROLL_CHANGED		,
 	WM_NOTIFICATION_END
 };
-template<auto code>
-constexpr int WM_NOTIFICATION_WIDGET = (int)WM_NOTIFICATION_END + code;
+template<auto code> constexpr int WM_NOTIFICATION_WIDGET = (int)WM_NOTIFICATION_END + code;
 
 #pragma endregion
 
@@ -205,6 +201,6 @@ struct WM_PID_STATE_CHANGED_INFO {
 	int16_t x, y;
 	uint8_t State, StatePrev;
 };
-#pragma region
+#pragma endregion
 
 }

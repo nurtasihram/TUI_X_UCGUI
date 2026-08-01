@@ -700,8 +700,8 @@ struct MULTIEDIT_Obj : public WIDGET {
 		/* Draw the text if necessary */
 		rClip.x0 = EffectSize + HBorder;
 		rClip.y0 = EffectSize;
-		rClip.x1 = WM_GetWindowSizeX(this) - EffectSize - HBorder - 1;
-		rClip.y1 = WM_GetWindowSizeY(this) - EffectSize - 1;
+		rClip.x1 = GetSizeX() - EffectSize - HBorder - 1;
+		rClip.y1 = GetSizeY() - EffectSize - 1;
 		prOldClip = WM_SetUserClipRect(&rClip);
 		if (this->hText) {
 			const char *pText;

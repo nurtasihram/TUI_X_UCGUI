@@ -202,6 +202,12 @@
     <ClCompile Include="GUI\Core\GUI.Types.cppm">
       <Filter>GUI\Core</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\WM\WM.cppm">
+      <Filter>GUI\WM</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\WM\Window.cppm">
+      <Filter>GUI\WM</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">

@@ -36,7 +36,7 @@ struct SCROLLBAR_Obj : public WIDGET {
 	WM_SCROLL_STATE ScrollState;
 
 	int _GetArrowSize() {
-		auto Size = WM_GetWindowRect(this).Size();
+		auto Size = GetSize();
 		if (State & SCROLLBAR_CF_VERTICAL)
 			Size = ~Size;
 		auto r = Size.y / 2 + 5;
@@ -51,13 +51,13 @@ struct SCROLLBAR_Obj : public WIDGET {
 		/* Subtract the rectangle of the other scrollbar (if existing and visible) */
 		if (Id == GUI_ID_HSCROLL)
 			if (auto pWin = WM_GetScrollbarV(pParent)) {
-				auto rSub = WM_GetWindowRect(pWin);
+				auto rSub = pWin->GetRect();
 				if (r.x1 == rSub.x1)
 					r.x1 = rSub.x0 - 1;
 			}
 		if (Id == GUI_ID_VSCROLL)
 			if (auto pWin = WM_GetScrollbarH(pParent)) {
-				auto rSub = WM_GetWindowRect(pWin);
+				auto rSub = pWin->GetRect();
 				if (r.y1 == rSub.y1)
 					r.y1 = rSub.y0 - 1;
 			}
@@ -65,7 +65,7 @@ struct SCROLLBAR_Obj : public WIDGET {
 		r -= r.LeftTop();
 		/* Convert real into virtual coordinates */
 		if (State & SCROLLBAR_CF_VERTICAL)
-			r = r.Rotate90R(WM_GetWindowSizeY(this));
+			r = r.Rotate90R(GetSizeY());
 		auto NumItems = ScrollState.NumItems;
 		auto xSize = r.x1 - r.x0 + 1;
 		auto xSizeArrow = _GetArrowSize();

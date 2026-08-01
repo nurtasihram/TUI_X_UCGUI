@@ -171,7 +171,7 @@ struct EDIT_Obj : public WIDGET {
 			const char *pText;
 			pText = this->pText;
 			pOldFont = GUI_SetFont(this->Props.pFont);
-			xSize = WM_GetWindowSizeX(this);
+			xSize = GetSizeX();
 			TextWidth = GUI_GetStringDistX(pText);
 			switch (this->Props.Align & TEXTALIGN_HORIZONTAL) {
 				case TEXTALIGN_HCENTER:

@@ -108,7 +108,7 @@ struct HEADER_Obj : public WIDGET {
 	}
 #if (HEADER_SUPPORT_DRAG)
 	int _GetItemIndex(int x, int y) {
-		if ((y >= 0) && (y < WM_GetWindowSizeY(this))) {
+		if ((y >= 0) && (y < GetSizeY())) {
 			int xPos = this->EffectSize();
 			for (int Index = 0, NumColumns = GUI_ARRAY_GetNumItems(&Columns); Index < NumColumns; ++Index) {
 				auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);

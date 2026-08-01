@@ -54,7 +54,9 @@
     <ClCompile Include="GUI\Widget\MESSAGEBOX.cpp" />
     <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp" />
     <ClCompile Include="GUI\Widget\WINDOW.cpp" />
+    <ClCompile Include="GUI\WM\Window.cppm" />
     <ClCompile Include="GUI\WM\WM.cpp" />
+    <ClCompile Include="GUI\WM\WM.cppm" />
     <ClCompile Include="GUI\WM\WMMemDev.cpp" />
     <ClCompile Include="GUI_X\GUI_X.cc" />
     <ClCompile Include="GUI_X\GUI_X_LCD.cc" />

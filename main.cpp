@@ -71,7 +71,7 @@ static const char *_ListBox[]{
 #define GUI_ID_CHECK0      GUI_ID_USER + 0x01
 #define GUI_ID_CHECK1      GUI_ID_USER + 0x02
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[]{
-	{ FRAMEWIN_CreateIndirect  , "Owner drawn list box" , 0                 , 50  , 50  , 220  , 175  , FRAMEWIN_CF_MOVEABLE       },
+	{ FRAMEWIN_CreateIndirect  , "Owner drawn list box" , 0                 , 50  , 50  , 220  , 175  , FRAMEWIN_CF_MOVEABLE | FRAMEWIN_CF_RESIZEABLE },
 	{ LISTBOX_CreateIndirect   , ""                     , GUI_ID_MULTIEDIT0 , 10  , 10  , 100  , 100  , 0                    , 100 },
 	{ CHECKBOX_CreateIndirect  , ""                     , GUI_ID_CHECK0     , 120 , 10  , 0    , 0                                 },
 	{ TEXT_CreateIndirect      , "Multi select"         , 0                 , 140 , 10  , 80   , 15   , TEXT_CF_LEFT               },
@@ -163,16 +163,15 @@ static int _MemDevPhase;
 
 void _TestEdit();
 
-static WM_PARAM _cbMemDevPane(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbMemDevPane(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_PAINT:
 		{
-			int xSize = WM_GetWindowSizeX(hWin);
-			int ySize = WM_GetWindowSizeY(hWin);
+			auto Size = pWin->GetSize();
 			int BarWidth = 36;
-			int Span = xSize - BarWidth - 20;
+			int Span = Size.x - BarWidth - 20;
 			int XPos = 0;
-			int MemDevOn = (hWin == _hMemDevPane);
+			int MemDevOn = (pWin == _hMemDevPane);
 			if (Span > 0) {
 				int Phase = _MemDevPhase % (Span * 2);
 				XPos = Phase > Span ? Span * 2 - Phase : Phase;
@@ -180,31 +179,29 @@ static WM_PARAM _cbMemDevPane(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			GUI.SetBkColor(RGB_WHITE);
 			GUI_Clear();
 			GUI.SetColor(RGB_DARKGRAY);
-			GUI_DrawRect({ 0, 0, xSize - 1, ySize - 1 });
+			GUI_DrawRect({ 0, 0, Size.x - 1, Size.y - 1 });
 			GUI.SetColor(RGB_BLACK);
 			GUI_DispStringAt(MemDevOn ? "MemDev ON" : "MemDev OFF", 8, 8);
 			GUI_DispStringAt(MemDevOn ? "WM_CF_MEMDEV enabled" : "WM_CF_MEMDEV disabled", 8, 24);
 			GUI.SetColor(RGB_GRAY);
-			GUI_DrawRect({ 10, 48, xSize - 11, 72 });
+			GUI_DrawRect({ 10, 48, Size.x - 11, 72 });
 			GUI.SetColor(MemDevOn ? RGB_GREEN : RGB_RED);
 			GUI_FillRect({ 10 + XPos, 49, 10 + XPos + BarWidth, 71 });
 			GUI.SetColor(RGB_BLUE);
-			GUI_FillRect({ 10, ySize - 40, xSize - 11, ySize - 25 });
+			GUI_FillRect({ 10, Size.y - 40, Size.x - 11, Size.y - 25 });
 			GUI.SetColor(RGB_YELLOW);
-			GUI_FillRect({ 10 + XPos / 2, ySize - 39, 35 + XPos / 2, ySize - 26 });
+			GUI_FillRect({ 10 + XPos / 2, Size.y - 39, 35 + XPos / 2, Size.y - 26 });
 			GUI.SetColor(RGB_BLACK);
-			GUI_DispStringAt("Animated redraw area", 8, ySize - 18);
+			GUI_DispStringAt("Animated redraw area", 8, Size.y - 18);
 			return 0;
 		}
 	}
-	return WM_DefaultProc(hWin, MsgId, Data);
+	return WM_DefaultProc(pWin, MsgId, Data);
 }
 
 static WM_Obj *_CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMemDev, WM_Obj **phPane) {
 	WM_Obj *hFrame;
 	WM_Obj *hClient;
-	int xSize;
-	int ySize;
 	int Flags;
 	Flags = WM_CF_SHOW;
 	if (UseMemDev) {
@@ -212,15 +209,14 @@ static WM_Obj *_CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMem
 	}
 	hFrame = FRAMEWIN_CreateEx(x0, y0, 190, 180, 0, WM_CF_SHOW, FRAMEWIN_CF_MOVEABLE, 0, pTitle, 0);
 	hClient = WM_GetClientWindow(hFrame);
-	xSize = WM_GetWindowSizeX(hClient);
-	ySize = WM_GetWindowSizeY(hClient);
-	*phPane = WM_CreateWindowAsChild(0, 0, xSize, ySize, hClient, Flags, _cbMemDevPane, 0);
+	auto Size = hClient->GetSize();
+	*phPane = WM_CreateWindowAsChild(0, 0, Size.x, Size.y, hClient, Flags, _cbMemDevPane, 0);
 	return hFrame;
 }
 
-static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbCallback(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	CHECKBOX_Obj *pItem;
-	auto pListBox = (LISTBOX_Obj *)WM_GetDialogItem(hWin, GUI_ID_MULTIEDIT0);
+	auto pListBox = (LISTBOX_Obj *)WM_GetDialogItem(pWin, GUI_ID_MULTIEDIT0);
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
 			pListBox->SetText(_ListBox);
@@ -236,17 +232,17 @@ static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			pListBox->SetAutoScrollH(1);
 			pListBox->SetAutoScrollV(1);
 			pListBox->SetOwnerDraw(_OwnerDraw);
-			pItem = (CHECKBOX_Obj *)WM_GetDialogItem(hWin, GUI_ID_CHECK1);
+			pItem = (CHECKBOX_Obj *)WM_GetDialogItem(pWin, GUI_ID_CHECK1);
 			pItem->SetState(1);
 			return 0;
 		case WM_KEY: {
 			const WM_KEY_INFO *pInfo = (const WM_KEY_INFO *)Data;
 			switch (pInfo->Key) {
 				case GUI_KEY_ESCAPE:
-					GUI_EndDialog(hWin, 1);
+					GUI_EndDialog(pWin, 1);
 					break;
 				case GUI_KEY_ENTER:
-					GUI_EndDialog(hWin, 0);
+					GUI_EndDialog(pWin, 0);
 					break;
 			}
 			return 0;
@@ -257,7 +253,7 @@ static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 		case WM_NOTIFY_PARENT: {
 			const WM_NOTIFY_INFO *pInfo = (const WM_NOTIFY_INFO *)Data;
 			int Id = WM_GetId(pInfo->pWinSrc); /* Id of widget */
-			pItem = (CHECKBOX_Obj *)WM_GetDialogItem(hWin, Id);
+			pItem = (CHECKBOX_Obj *)WM_GetDialogItem(pWin, Id);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SEL_CHANGED:
 					pListBox->InvalidateItem(LISTBOX_ALL_ITEMS);
@@ -265,10 +261,10 @@ static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 				case WM_NOTIFICATION_RELEASED: /* React only if released */
 					switch (Id) {
 						case GUI_ID_OK:
-							GUI_EndDialog(hWin, 0);
+							GUI_EndDialog(pWin, 0);
 							break;
 						case GUI_ID_CANCEL:
-							GUI_EndDialog(hWin, 1);
+							GUI_EndDialog(pWin, 1);
 							break;
 						case GUI_ID_CHECK0:
 							_MultiSel = !_MultiSel;
@@ -293,7 +289,7 @@ static WM_PARAM _cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(hWin, MsgId, Data);
+	return WM_DefaultProc(pWin, MsgId, Data);
 }
 
 #define ID_MENU             (GUI_ID_USER +  0)
@@ -1293,15 +1289,15 @@ static void _UpdateMultiEditStatus(WM_Obj *hWin) {
 }
 
 static const GUI_WIDGET_CREATE_INFO _aMultiEditDialogCreate[] = {
-	{ FRAMEWIN_CreateIndirect, "MultiEdit Test", 0, 60, 60, 420, 280, FRAMEWIN_CF_MOVEABLE },
-	{ MULTIEDIT_CreateIndirect, "", ID_MULTIEDIT_TEST, 10, 10, 395, 150, 0, 512 },
-	{ BUTTON_CreateIndirect, "Append", ID_MULTIEDIT_APPEND, 10, 170, 70, 25 },
-	{ BUTTON_CreateIndirect, "Clear", ID_MULTIEDIT_CLEAR, 85, 170, 70, 25 },
-	{ BUTTON_CreateIndirect, "ReadOnly", ID_MULTIEDIT_TOGGLE_READONLY, 160, 170, 85, 25 },
-	{ BUTTON_CreateIndirect, "Wrap Word", ID_MULTIEDIT_WRAP_WORD, 250, 170, 75, 25 },
-	{ BUTTON_CreateIndirect, "Wrap None", ID_MULTIEDIT_WRAP_NONE, 330, 170, 75, 25 },
-	{ TEXT_CreateIndirect, "", ID_MULTIEDIT_STATUS, 10, 205, 310, 18, TEXT_CF_LEFT },
-	{ BUTTON_CreateIndirect, "Close", GUI_ID_CANCEL, 325, 230, 80, 25 }
+	{ FRAMEWIN_CreateIndirect  , "MultiEdit Test"  , 0                            , 60  , 60  , 420 , 280 , FRAMEWIN_CF_MOVEABLE },
+	{ MULTIEDIT_CreateIndirect , ""                , ID_MULTIEDIT_TEST            , 10  , 10  , 395 , 150 , 0, 512               },
+	{ BUTTON_CreateIndirect    , "Append"          , ID_MULTIEDIT_APPEND          , 10  , 170 , 70  , 25                         },
+	{ BUTTON_CreateIndirect    , "Clear"           , ID_MULTIEDIT_CLEAR           , 85  , 170 , 70  , 25                         },
+	{ BUTTON_CreateIndirect    , "ReadOnly"        , ID_MULTIEDIT_TOGGLE_READONLY , 160 , 170 , 85  , 25                         },
+	{ BUTTON_CreateIndirect    , "Wrap Word"       , ID_MULTIEDIT_WRAP_WORD       , 250 , 170 , 75  , 25                         },
+	{ BUTTON_CreateIndirect    , "Wrap None"       , ID_MULTIEDIT_WRAP_NONE       , 330 , 170 , 75  , 25                         },
+	{ TEXT_CreateIndirect      , ""                , ID_MULTIEDIT_STATUS          , 10  , 205 , 310 , 18  , TEXT_CF_LEFT         },
+	{ BUTTON_CreateIndirect    , "Close"           , GUI_ID_CANCEL                , 325 , 230 , 80  , 25                         }
 };
 
 static WM_PARAM _cbMultiEditTest(WM_Obj *hWin, int MsgId, WM_PARAM Data) {

@@ -24,7 +24,7 @@ enum LISTBOX_CI {
 
 typedef WM_Obj * LISTBOX_Handle;
 
-constexpr uint16_t LISTBOX_NOTIFICATION_LOST_FOCUS = (WM_NOTIFICATION_WIDGET + 0);
+constexpr uint16_t LISTBOX_NOTIFICATION_LOST_FOCUS = WM_NOTIFICATION_WIDGET<0>;
 constexpr uint16_t LISTBOX_CF_AUTOSCROLLBAR_H      = (1<<0);
 constexpr uint16_t LISTBOX_CF_AUTOSCROLLBAR_V      = (1<<1);
 constexpr uint16_t LISTBOX_CF_MULTISEL             = (1<<2);
