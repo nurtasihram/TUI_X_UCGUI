@@ -29,6 +29,7 @@ struct GUI_RECT {
 		x0(x0), y0(y0), x1(x1), y1(y1) {}
 
 	inline GUI_POINT LeftTop() const { return{ x0, y0 }; }
+	inline void LeftTop(GUI_POINT Pos) { x0 = Pos.x, y0 = Pos.y; }
 
 	inline auto XSize() const { return x1 - x0 + 1; }
 	inline auto YSize() const { return y1 - y0 + 1; }
@@ -199,6 +200,9 @@ struct FONT {
 	virtual void DispChar(uint16_t c) const = 0;
 	virtual int  GetCharDistX(uint16_t c) const = 0;
 	virtual bool IsInFont(uint16_t c) const = 0;
+public:
+	inline auto SizeY() const { return YSize; }
+	inline auto DistY() const { return YDist; }
 };
 using CFONT = const FONT;
 using PCFONT = const FONT *;

@@ -265,7 +265,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 				}
 			}
 			this->CursorPosX = x;
-			this->CursorPosY = CursorLine * GUI_GetFontDistY();
+			this->CursorPosY = CursorLine * Props.pFont->DistY();
 			this->InvalidFlags &= ~INVALID_CURSORXY;
 		}
 		*px = this->CursorPosX;
@@ -280,7 +280,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 	void _CalcScrollPos() {
 		int xCursor, yCursor;
 		_GetCursorXY(&xCursor, &yCursor);
-		yCursor /= GUI_GetYDistOfFont(this->Props.pFont);
+		yCursor /= Props.pFont->DistY();
 		WM_CheckScrollPos(&this->ScrollStateV, yCursor, 0, 0);       /* Vertical */
 		WM_CheckScrollPos(&this->ScrollStateH, xCursor, 30, 30);     /* Horizontal */
 		_SetScrollState();
@@ -314,7 +314,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 	int _GetNumVisLines() {
 		GUI_RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
-		return (Rect.y1 - Rect.y0 + 1) / GUI_GetYDistOfFont(this->Props.pFont);
+		return (Rect.y1 - Rect.y0 + 1) / Props.pFont->DistY();
 	}
 	int _GetNumLines() {
 		if (this->InvalidFlags & INVALID_NUMLINES) {
@@ -488,7 +488,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 			int SizeX = 0;
 			uint16_t Char;
 			GUI_SetFont(this->Props.pFont);
-			CursorLine = y / GUI_GetFontDistY();
+			CursorLine = y / Props.pFont->DistY();
 			pLine = _GetpLine(CursorLine);
 			pText = (char *)(this->hText);
 			WrapChars = _WrapGetNumCharsDisp(pLine);
@@ -518,19 +518,19 @@ struct MULTIEDIT_Obj : public WIDGET {
 	void _MoveCursorUp() {
 		int xPos, yPos;
 		_GetCursorXY(&xPos, &yPos);
-		yPos -= GUI_GetYDistOfFont(this->Props.pFont);
+		yPos -= Props.pFont->DistY();
 		_SetCursorXY(xPos, yPos);
 	}
 	void _MoveCursorDown() {
 		int xPos, yPos;
 		_GetCursorXY(&xPos, &yPos);
-		yPos += GUI_GetYDistOfFont(this->Props.pFont);
+		yPos += Props.pFont->DistY();
 		_SetCursorXY(xPos, yPos);
 	}
 	void _MoveCursor2NextLine() {
 		int xPos, yPos;
 		_GetCursorXY(&xPos, &yPos);
-		yPos += GUI_GetYDistOfFont(this->Props.pFont);
+		yPos += Props.pFont->DistY();
 		_SetCursorXY(0, yPos);
 	}
 	void _MoveCursor2LineEnd() {
@@ -678,14 +678,14 @@ struct MULTIEDIT_Obj : public WIDGET {
 		}
 		return 0;
 	}
-	void _MULTIEDIT_Paint() {
+	void _OnPaint() {
 		int ScrollPosX, ScrollPosY, EffectSize, HBorder;
 		int x, y, xOff, yOff, ColorIndex, FontSizeY;
 		GUI_RECT r, rClip;
 		const GUI_RECT *prOldClip;
 		/* Init some values */
 		GUI_SetFont(this->Props.pFont);
-		FontSizeY = GUI_GetFontDistY();
+		FontSizeY = Props.pFont->DistY();
 		ScrollPosX = this->ScrollStateH.v;
 		ScrollPosY = this->ScrollStateV.v;
 		EffectSize = this->pEffect->EffectSize;
@@ -694,8 +694,8 @@ struct MULTIEDIT_Obj : public WIDGET {
 		yOff = EffectSize - ScrollPosY * FontSizeY;
 		ColorIndex = ((this->Flags & MULTIEDIT_SF_READONLY) ? 1 : 0);
 		/* Set colors and draw the background */
-		GUI_SetBkColor(this->Props.aBkColor[ColorIndex]);
-		GUI_SetColor(this->Props.aColor[ColorIndex]);
+		GUI.SetBkColor(this->Props.aBkColor[ColorIndex]);
+		GUI.SetColor(this->Props.aColor[ColorIndex]);
 		GUI_Clear();
 		/* Draw the text if necessary */
 		rClip.x0 = EffectSize + HBorder;
@@ -760,7 +760,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 				int Effect, xPos, yPos;
 				Effect = this->pEffect->EffectSize;
 				xPos = pState->x + this->ScrollStateH.v - Effect - this->Props.HBorder;
-				yPos = pState->y + this->ScrollStateV.v * GUI_GetYDistOfFont(this->Props.pFont) - Effect;
+				yPos = pState->y + this->ScrollStateV.v * Props.pFont->DistY() - Effect;
 				_SetCursorXY(xPos, yPos);
 				_Invalidate();
 				Notification = WM_NOTIFICATION_CLICKED;
@@ -913,7 +913,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 				return 0;
 			}
 			case WM_PAINT:
-				pObj->_MULTIEDIT_Paint();
+				pObj->_OnPaint();
 				return 0;
 			case WM_TOUCH:
 				pObj->_OnTouch((const GUI_PID_STATE *)Data);

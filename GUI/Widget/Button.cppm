@@ -65,8 +65,8 @@ struct BUTTON_Obj : public WIDGET {
 		}
 #endif
 		/* Draw background */
-		GUI_SetBkColor(this->Props.aBkColor[ColorIndex]);
-		GUI_SetColor(this->Props.aTextColor[ColorIndex]);
+		GUI.SetBkColor(this->Props.aBkColor[ColorIndex]);
+		GUI.SetColor(this->Props.aTextColor[ColorIndex]);
 		WM_SetUserClipRect(&rInside);
 		GUI_Clear();
 		/* Draw bitmap.
@@ -89,12 +89,12 @@ struct BUTTON_Obj : public WIDGET {
 				rInside -= EffectSize;
 		}
 #endif
-		GUI_SetTextMode(DRAWMODE_TRANS);
+		GUI.SetTextMode(DRAWMODE_TRANS);
 		GUI_DispStringInRect(pText, &rInside, this->Props.Align);
 		WM_SetUserClipRect(nullptr);
 		/* Draw focus */
 		if (State & BUTTON_STATE_FOCUS) {
-			GUI_SetColor(RGB_BLACK);
+			GUI.SetColor(RGB_BLACK);
 			GUI_DrawFocusRect(rClient, EffectSize + 1);
 		}
 	}

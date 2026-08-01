@@ -9,7 +9,7 @@
 static const RGBC aID[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
 static PIXELINDEX *_XY2PTR(int x, int y) {
-	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
+	auto pDev = (GUI_MEMDEV *)GUI.hDevData;
 	auto pData = (uint8_t *)(pDev + 1);
 	pData += (y - pDev->y0) * pDev->BytesPerLine;
 	return ((PIXELINDEX *)pData) + x - pDev->x0;
@@ -22,7 +22,7 @@ static void _DrawBitLine1BPP(int x, int y, const uint8_t  *p, int Diff, unsigned
 	unsigned PixelCnt;
 	PixelCnt = 8 - Diff;
 	pixels = LCD_aMirror[*p] >> Diff;
-	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
+	switch (GUI.DrawMode & (DRAWMODE_TRANS)) {
 		case 0: /* Write mode */
 			do {
 				/* Prepare loop */
@@ -75,7 +75,7 @@ static void _DrawBitLine2BPP(int x, int y, const uint8_t  *p, int Diff, int xsiz
 	uint8_t  PixelCnt;
 	PixelCnt = 4 - Diff;
 	pixels = (*p) << (Diff << 1);
-	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
+	switch (GUI.DrawMode & (DRAWMODE_TRANS)) {
 		case 0:    /* Write mode */
 		PixelLoopWrite:
 			if (PixelCnt > xsize)
@@ -117,7 +117,7 @@ static void _DrawBitLine4BPP(int x, int y, const uint8_t  *p, int Diff, int xsiz
 	uint8_t PixelCnt;
 	PixelCnt = 2 - Diff;
 	pixels = (*p) << (Diff << 2);
-	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
+	switch (GUI.DrawMode & (DRAWMODE_TRANS)) {
 		/*
 				  * Write mode *
 		*/
@@ -179,7 +179,7 @@ static void _DrawBitLine4BPP(int x, int y, const uint8_t  *p, int Diff, int xsiz
 }
 static void _DrawBitLine8BPP(int x, int y, const uint8_t  *pSrc, int xsize,
 							 const RGBC *pTrans, PIXELINDEX *pDest) {
-	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
+	switch (GUI.DrawMode & (DRAWMODE_TRANS)) {
 		case 0:    /* Write mode */
 			do {
 				*pDest = *(pTrans + *pSrc);
@@ -199,7 +199,7 @@ static void _DrawBitLine8BPP(int x, int y, const uint8_t  *pSrc, int xsize,
 	}
 }
 static void _DrawBitLine8BPP_DDB(int x, int y, const uint8_t  *pSrc, int xsize, PIXELINDEX *pDest) {
-	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
+	switch (GUI.DrawMode & (DRAWMODE_TRANS)) {
 		case 0:    /* Write mode */
 			GUI__memcpy(pDest, pSrc, xsize);
 			break;
@@ -215,7 +215,7 @@ static void _DrawBitLine8BPP_DDB(int x, int y, const uint8_t  *pSrc, int xsize, 
 	}
 }
 static void _DrawBitLine16BPP_DDB(int x, int y, const uint16_t *pSrc, int xsize, PIXELINDEX *pDest) {
-	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
+	switch (GUI.DrawMode & (DRAWMODE_TRANS)) {
 		case 0:    /* Write mode */
 			GUI__memcpy(pDest, pSrc, xsize * 2);
 			break;
@@ -232,7 +232,7 @@ static void _DrawBitLine16BPP_DDB(int x, int y, const uint16_t *pSrc, int xsize,
 }
 
 static void _DrawBitLine24BPP_DDB(int x, int y, const RGBC *pSrc, int xsize, PIXELINDEX *pDest) {
-	switch (GUI_Context.DrawMode & (DRAWMODE_TRANS)) {
+	switch (GUI.DrawMode & (DRAWMODE_TRANS)) {
 		case 0: /* Write mode */
 			GUI__memcpy(pDest, pSrc, xsize * 4);  /* 4 bytes per pixel for 24-bit */
 			break;
@@ -252,7 +252,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 						int BitsPerPixel, int BytesPerLine,
 						const uint8_t *pData, int Diff, const RGBC *pTrans) {
 	int i;
-	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
+	auto pDev = (GUI_MEMDEV *)GUI.hDevData;
 	unsigned    BytesPerLineDest;
 	PIXELINDEX *pDest;
 	BytesPerLineDest = pDev->BytesPerLine;
@@ -311,7 +311,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 static void _FillRect(int x0, int y0, int x1, int y1) {
 	unsigned BytesPerLine;
 	int Len;
-	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
+	auto pDev = (GUI_MEMDEV *)GUI.hDevData;
 	auto pData = _XY2PTR(x0, y0);
 	BytesPerLine = pDev->BytesPerLine;
 	Len = x1 - x0 + 1;
@@ -330,7 +330,7 @@ static void _DrawHLine(int x0, int y, int x1) {
 }
 
 static void _DrawVLine(int x, int y0, int y1) {
-	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
+	auto pDev = (GUI_MEMDEV *)GUI.hDevData;
 	auto pData = _XY2PTR(x, y0);
 	unsigned BytesPerLine = pDev->BytesPerLine;
 	unsigned NumPixels = y1 - y0 + 1;
@@ -341,7 +341,7 @@ static void _DrawVLine(int x, int y0, int y1) {
 }
 
 static void _SetPixel(int x, int y, RGBC Index) {
-	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
+	auto pDev = (GUI_MEMDEV *)GUI.hDevData;
 	auto pData = _XY2PTR(x, y);
 	*pData = Index;
 }

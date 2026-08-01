@@ -16,9 +16,7 @@ import TUX.Resources;
 These ID values are basically meant to be used with widgets
 Note that we have chosen the values to be close to existing
 "standards", so do not change them unless forced to.
-
 */
-
 #define GUI_KEY_BACKSPACE         8         /* ASCII: BACKSPACE Crtl-H */
 #define GUI_KEY_TAB               9         /* ASCII: TAB       Crtl-I */
 #define GUI_KEY_ENTER             13        /* ASCII: ENTER     Crtl-M */
@@ -34,7 +32,6 @@ Note that we have chosen the values to be close to existing
 #define GUI_KEY_INSERT            29
 #define GUI_KEY_DELETE            30
 #define GUI_KEY_SPACE             32
-
 #define GUI_KEY_F1                40
 #define GUI_KEY_F2                41
 
@@ -47,7 +44,6 @@ Note that we have chosen the values to be close to existing
 *
 *  If you use your own Ids, we recommend to use values above GUI_ID_USER.
 */
-
 #define GUI_ID_OK                1
 #define GUI_ID_CANCEL            2
 #define GUI_ID_YES               3
@@ -56,46 +52,9 @@ Note that we have chosen the values to be close to existing
 #define GUI_ID_HELP              6
 #define GUI_ID_MAXIMIZE          7
 #define GUI_ID_MINIMIZE          8
-
 #define GUI_ID_VSCROLL  0xFE
 #define GUI_ID_HSCROLL  0xFF
-
 #define GUI_ID_USER     0x100
-
-#define GUI_TS_NORMAL           (0)
-#define GUI_TS_UNDERLINE        (1 << 0)
-#define GUI_TS_STRIKETHRU       (1 << 1)
-#define GUI_TS_OVERLINE         (1 << 2)
-
-
-#define GUI_COORD_X 0
-#define GUI_COORD_Y 1
-
-/*********************************************************************
-*
-*            Standard Fonts
-*
-**********************************************************************
-
-Note: The external declarations for the fonts are now also included in
-		this file.
-*/
-
-/* Text alignment flags, horizontal */
-#define TEXTALIGN_LEFT        (0<<0)
-#define TEXTALIGN_RIGHT       (1<<0)
-#define TEXTALIGN_CENTER      (2<<0)
-#define TEXTALIGN_HORIZONTAL  (3<<0)
-#define TEXTALIGN_HCENTER     TEXTALIGN_CENTER
-
-/* Text alignment flags, vertical */
-#define TEXTALIGN_TOP        (0<<2)
-#define TEXTALIGN_BOTTOM     (1<<2)
-#define TEXTALIGN_BASELINE   (2<<2)
-#define TEXTALIGN_VCENTER    (3<<2)
-#define TEXTALIGN_VERTICAL   TEXTALIGN_VCENTER
-
-using TEXTALIGN = uint8_t;
 
 /*    *********************************
 	*
@@ -109,18 +68,11 @@ using TEXTALIGN = uint8_t;
 #define GUI_YMIN -4095
 #define GUI_YMAX  4095
 
-void         GUI_Init(void);
-void         GUI_SetDefault(void);
-DRAWMODE GUI_SetDrawMode(DRAWMODE dm);
-void         GUI_SaveContext(GUI_CONTEXT *pContext);
-void         GUI_RestoreContext(const GUI_CONTEXT *pContext);
+void GUI_Init(void);
+void GUI_SaveContext(GUI_CONTEXT *pContext);
+void GUI_RestoreContext(const GUI_CONTEXT *pContext);
 
 int  GUI__DivideRound(int a, int b);
-
-RGBC GUI_GetBkColor(void);
-RGBC GUI_GetColor(void);
-void GUI_SetBkColor(RGBC);
-void GUI_SetColor(RGBC);
 
 int  GUI_BMP_Draw(const void *pFileData, int x0, int y0);
 int  GUI_BMP_GetXSize(const void *pFileData);
@@ -157,20 +109,11 @@ void  GUI_DispStringAt(const char *s, int x, int y);
 void  GUI__DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign, int MaxNumChars);
 void  GUI_DispStringInRect(const char *s, GUI_RECT *pRect, int Flags);
 void  GUI_DispStringInRectMax(const char *s, GUI_RECT *pRect, int TextAlign, int MaxLen); /* Not to be doc. */
+
 void  GUI_GetTextExtend(GUI_RECT *pRect, const char *s, int Len);
 int   GUI_GetYAdjust(void);
-PCFONT GUI_GetFont(void);
 int   GUI_GetCharDistX(uint16_t c);
 int   GUI_GetStringDistX(const char *s);
-int   GUI_GetFontDistY(void);
-int   GUI_GetFontSizeY(void);
-int   GUI_GetYSizeOfFont(PCFONT pFont);
-int   GUI_GetYDistOfFont(PCFONT pFont);
-int   GUI_GetTextAlign(void);
-int   GUI_GetTextMode(void);
-char  GUI_IsInFont(PCFONT pFont, uint16_t c);
-void  GUI_SetTextAlign(int Align);
-void  GUI_SetTextMode(int Mode);
 PCFONT GUI_SetFont(PCFONT pNewFont);
 void  GUI_GotoXY(int x, int y);
 void  GUI_DispNextLine(void);
@@ -186,8 +129,8 @@ void GUI_UC_DispString(const uint16_t *s);
 void *GUI_ALLOC_AllocInit(const void *pInitData, size_t Size);
 void *GUI_ALLOC_AllocNoInit(size_t size);
 void *GUI_ALLOC_AllocZero(size_t size);
-void     GUI_ALLOC_Free(void *ptr);
-void     GUI_ALLOC_FreePtr(void **pptr);
+void  GUI_ALLOC_Free(void *ptr);
+void  GUI_ALLOC_FreePtr(void **pptr);
 void *GUI_ALLOC_Realloc(void *ptr, size_t NewSize);
 size_t   GUI_ALLOC_GetMaxSize(void);
 void     GUI__memcpy(void *pDest, const void *pSrc, size_t NumBytes);

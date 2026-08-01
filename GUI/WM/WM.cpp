@@ -99,11 +99,11 @@ static WM_Obj * _GethDrawWin(void) {
 	return pWinActive;
 }
 static void _SetClipRectUserIntersect(const GUI_RECT *prSrc) {
-	if (GUI_Context.WM__pUserClipRect == nullptr) {
+	if (GUI.WM__pUserClipRect == nullptr) {
 		LCD_SetClipRectEx(prSrc);
 	}
 	else {
-		GUI_RECT r = *GUI_Context.WM__pUserClipRect;
+		GUI_RECT r = *GUI.WM__pUserClipRect;
 		WM__Client2Screen(_GethDrawWin(), &r);     /* Convert User ClipRect into screen coordinates */
 		/* Set intersection as clip rect */
 		r &= *prSrc;
@@ -531,7 +531,7 @@ WM_Obj * WM_SelectWindow(WM_Obj * pWin) {
 	/* Select new window */
 	pWinActive = pWin;
 	LCD_SetClipRectMax();             /* Drawing operations will clip ... If WM is deactivated, allow all */
-	GUI_Context.Off = pWin->Rect.LeftTop();
+	GUI.Off = pWin->Rect.LeftTop();
 	return pWinPrev;
 }
 WM_Obj * WM_GetActiveWindow(void) {
@@ -725,7 +725,7 @@ bool WM__GetNextIVR(void) {
 *
 *       WM__InitIVRSearch
   This routine is called from the clipping level
-  (the WM_ITERATE_START macro) when starting an iteration over the
+  when starting an iteration over the
   visible rectangles.
   Return value:
 	0 : There is no valid rectangle (nothing to do ...)
@@ -756,9 +756,9 @@ bool WM__InitIVRSearch(GUI_RECT rcMax) {
 	/* If the drawing routine has specified a rectangle, use it to reduce the rectangle */
 	r &= rcMax;
 	/* If user has reduced the cliprect size, reduce the rectangle */
-	if (GUI_Context.WM__pUserClipRect) {
+	if (GUI.WM__pUserClipRect) {
 		auto pWin = pAWin;
-		auto rUser = *(GUI_Context.WM__pUserClipRect);
+		auto rUser = *(GUI.WM__pUserClipRect);
 #if WM_SUPPORT_TRANSPARENCY
 		if (WM__hATransWindow)
 			pWin = WM__hATransWindow;
@@ -801,24 +801,18 @@ void WM__ActivateClipRect(void) {
 }
 #pragma endregion
 
-void WM_SetDefault(void) {
-	GUI_SetDefault();
-	GUI_Context.WM__pUserClipRect = nullptr;   /* No add. clipping */
-}
 static void _Paint1(WM_Obj *pWin) {
 	int Status = pWin->Status;
 	/* Send WM_PAINT if window is visible and a callback is defined */
 	if ((pWin->cb != nullptr) && (Status & WM_SF_ISVIS)) {
 		WM__PaintCallbackCnt++;
 		if (Status & WM_SF_LATE_CLIP) {
-			WM_SetDefault();
 			WM_SendMessage(pWin, WM_PAINT, (WM_PARAM)&pWin->InvalidRect);
 		}
 		else {
-			WM_ITERATE_START(pWin->InvalidRect) {
-				WM_SetDefault();
+			WM_Iterate(pWin->InvalidRect, [&] {
 				WM_SendMessage(pWin, WM_PAINT, (WM_PARAM)&pWin->InvalidRect);
-			} WM_ITERATE_END();
+			});
 		}
 		WM__PaintCallbackCnt--;
 	}
@@ -850,16 +844,16 @@ static int _Paint1Trans(WM_Obj *pWin) {
 	/* Check if we need to do any drawing */
 	if (pWin->Rect <= pAWin->InvalidRect) {
 		/* Save old values */
-		auto Prev = GUI_Context.Off;
+		auto Prev = GUI.Off;
 		/* Set values for the current (transparent) window, rather than the one below */
 		pWin->InvalidRect = pWin->Rect & pAWin->InvalidRect;
 		WM__hATransWindow = pWin;
-		GUI_Context.Off = pWin->Rect.LeftTop();
+		GUI.Off = pWin->Rect.LeftTop();
 		/* Do the actual drawing ... */
 		_Paint1(pWin);
 		/* Restore settings */
 		WM__hATransWindow = 0;
-		GUI_Context.Off = Prev;
+		GUI.Off = Prev;
 		return 1; /* Some drawing took place */
 	}
 	return 0; /* No invalid area, so nothing was drawn */
@@ -965,7 +959,7 @@ static void _cbPaintMemDev(void *p) {
 	GUI_RECT Rect;
 	auto pWin = pWinActive;
 	Rect = pWin->InvalidRect;
-	pWin->InvalidRect = GUI_Context.ClipRect;
+	pWin->InvalidRect = GUI.ClipRect;
 	WM__PaintWinAndOverlays((WM_Obj *)p);
 	pWin->InvalidRect = Rect;
 }
@@ -1058,7 +1052,7 @@ static WM_PARAM cbBackWin(WM_Obj * pWin, int MsgId, WM_PARAM Data) {
 		}
 		case WM_PAINT:
 			if (BkColorDesktop != RGB_INVALID_COLOR) {
-				GUI_SetBkColor(BkColorDesktop);
+				GUI.SetBkColor(BkColorDesktop);
 				GUI_Clear();
 			}
 			return 0;
@@ -1474,13 +1468,13 @@ void WM__RemoveCriticalHandle(WM_CRITICAL_HANDLE *pCriticalHandle) {
 *   Debug code: shows invalid areas
 */
 static void _ShowInvalid(WM_Obj * pWin) {
-	auto Context = GUI_Context;
+	auto Context = GUI;
 	auto rClient = pWin->InvalidRect - pWin->Rect.LeftTop();
 	WM_SelectWindow(pWin);
-	GUI_SetColor(RGB_GREEN);
-	GUI_SetBkColor(RGB_GREEN);
+	GUI.SetColor(RGB_GREEN);
+	GUI.SetBkColor(RGB_GREEN);
 	GUI_FillRect(rClient);
-	GUI_Context = Context;
+	GUI = Context;
 }
 void WM_SetEnableState(WM_Obj * pWin, int State) {
 	uint16_t Status;
@@ -1935,7 +1929,6 @@ void WM_Paint(WM_Obj * pWin) {
 	if (pWin) {
 		GUI_SaveContext(&Context);
 		WM_SelectWindow(pWin);
-		WM_SetDefault();
 		WM_Invalidate(pWin);  /* Important ... Window procedure is informed about invalid rect and may optimize */
 		/* Paint the window and its overlaying transparent windows */
 		WM__PaintWinAndOverlays(pWin);
@@ -2322,8 +2315,8 @@ void WM_SetTransState(WM_Obj * pWin, unsigned State) {
 #endif /* WM_SUPPORT_TRANSPARENCY */
 
 const GUI_RECT *WM_SetUserClipRect(const GUI_RECT *pRect) {
-	auto pRectReturn = GUI_Context.WM__pUserClipRect;
-	GUI_Context.WM__pUserClipRect = pRect;
+	auto pRectReturn = GUI.WM__pUserClipRect;
+	GUI.WM__pUserClipRect = pRect;
 	/* Activate it ... */
 	WM__ActivateClipRect();
 	return pRectReturn;
@@ -2595,7 +2588,7 @@ void WM_Init(void) {
 	if (_IsInited)
 		return;
 	pWinNextDraw = pWinFirst = nullptr;
-	GUI_Context.WM__pUserClipRect = nullptr;
+	GUI.WM__pUserClipRect = nullptr;
 	NumWindows = NumInvalidWindows = 0;
 	/* Make sure we have at least one window. This greatly simplifies the
 		drawing routines as they do not have to check if the window is valid.

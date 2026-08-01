@@ -73,19 +73,10 @@ struct LISTBOX_Obj : public WIDGET {
 		WM_SendMessage(hOwner, WM_NOTIFY_PARENT, (WM_PARAM)&Info);
 	}
 
-	int _CallOwnerDraw(int Cmd, int ItemIndex) {
-		WIDGET_ITEM_DRAW_INFO ItemInfo;
-		int r;
-		ItemInfo.Cmd = Cmd;
-		ItemInfo.hWin = this;
-		ItemInfo.ItemIndex = ItemIndex;
-		if (this->pfDrawItem) {
-			r = this->pfDrawItem(&ItemInfo);
-		}
-		else {
-			r = OwnerDraw(&ItemInfo);
-		}
-		return r;
+	int _CallOwnerDraw(int Cmd, int ItemIndex, GUI_POINT Pos) {
+		if (pfDrawItem)
+			return pfDrawItem(this, Cmd, ItemIndex, Pos);
+		return OwnerDraw(this, Cmd, ItemIndex, Pos);
 	}
 	uint16_t _GetNumItems() {
 		return GUI_ARRAY_GetNumItems(&ItemArray);
@@ -104,16 +95,14 @@ struct LISTBOX_Obj : public WIDGET {
 		return (Rect.y1 - Rect.y0 + 1);
 	}
 	int _GetItemSizeX(uint16_t Index) {
-		LISTBOX_ITEM *pItem;
+		auto pItem = (LISTBOX_ITEM *)GUI_ARRAY_GetpItem(&ItemArray, Index);
 		int xSize = 0;
-		pItem = (LISTBOX_ITEM *)GUI_ARRAY_GetpItem(&ItemArray, Index);
 		if (pItem) {
 			xSize = pItem->xSize;
 		}
 		if (xSize == 0) {
-			PCFONT pOldFont;
-			pOldFont = GUI_SetFont(Props.pFont);
-			xSize = _CallOwnerDraw(WIDGET_ITEM_GET_XSIZE, Index);
+			PCFONT pOldFont = GUI_SetFont(Props.pFont);
+			xSize = _CallOwnerDraw(WIDGET_ITEM_GET_XSIZE, Index, {});
 			GUI_SetFont(pOldFont);
 		}
 		if (pItem) {
@@ -122,16 +111,14 @@ struct LISTBOX_Obj : public WIDGET {
 		return xSize;
 	}
 	int _GetItemSizeY(uint16_t Index) {
-		LISTBOX_ITEM *pItem;
+		auto pItem = (LISTBOX_ITEM *)GUI_ARRAY_GetpItem(&ItemArray, Index);
 		int ySize = 0;
-		pItem = (LISTBOX_ITEM *)GUI_ARRAY_GetpItem(&ItemArray, Index);
 		if (pItem) {
 			ySize = pItem->ySize;
 		}
 		if (ySize == 0) {
-			PCFONT pOldFont;
-			pOldFont = GUI_SetFont(Props.pFont);
-			ySize = _CallOwnerDraw(WIDGET_ITEM_GET_YSIZE, Index);
+			PCFONT pOldFont = GUI_SetFont(Props.pFont);
+			ySize = _CallOwnerDraw(WIDGET_ITEM_GET_YSIZE, Index, {});
 			GUI_SetFont(pOldFont);
 		}
 		if (pItem) {
@@ -325,10 +312,8 @@ struct LISTBOX_Obj : public WIDGET {
 		GUI_ARRAY_Delete(&ItemArray);
 	}
 	void _OnPaint(const GUI_RECT *pClipRect) {
-		WIDGET_ITEM_DRAW_INFO ItemInfo;
 		GUI_RECT RectInside, RectItem, ClipRect;
-		int ItemDistY, NumItems, i;
-		NumItems = _GetNumItems();
+		int ItemDistY;
 		GUI_SetFont(Props.pFont);
 		/* Calculate clipping rectangle */
 		ClipRect = *pClipRect - this->Rect.LeftTop();
@@ -337,13 +322,13 @@ struct LISTBOX_Obj : public WIDGET {
 		RectItem.x0 = ClipRect.x0;
 		RectItem.x1 = ClipRect.x1;
 		/* Fill item info structure */
-		ItemInfo.Cmd = WIDGET_ITEM_DRAW;
-		ItemInfo.hWin = this;
-		ItemInfo.x0 = RectInside.x0 - ScrollStateH.v;
-		ItemInfo.y0 = RectInside.y0;
+		GUI_POINT ItemPos{
+			RectInside.x0 - ScrollStateH.v,
+			RectInside.y0
+		};
 		/* Do the drawing */
-		for (i = ScrollStateV.v; i < NumItems; i++) {
-			RectItem.y0 = ItemInfo.y0;
+		for (int i = ScrollStateV.v, NumItems = _GetNumItems(); i < NumItems; i++) {
+			RectItem.y0 = ItemPos.y;
 			/* Break when all other rows are outside the drawing area */
 			if (RectItem.y0 > ClipRect.y1) {
 				break;
@@ -354,23 +339,16 @@ struct LISTBOX_Obj : public WIDGET {
 			if (RectItem.y1 >= ClipRect.y0) {
 				/* Set user clip rect */
 				WM_SetUserClipRect(&RectItem);
-				/* Fill item info structure */
-				ItemInfo.ItemIndex = i;
 				/* Draw item */
-				if (this->pfDrawItem) {
-					this->pfDrawItem(&ItemInfo);
-				}
-				else {
-					OwnerDraw(&ItemInfo);
-				}
+				_CallOwnerDraw(WIDGET_ITEM_DRAW, i, GUI_POINT{ ItemPos.x, ItemPos.y });
 			}
-			ItemInfo.y0 += ItemDistY;
+			ItemPos.y += ItemDistY;
 		}
 		WM_SetUserClipRect(nullptr);
 		/* Calculate & clear 'data free' area */
-		RectItem.y0 = ItemInfo.y0;
+		RectItem.y0 = ItemPos.y;
 		RectItem.y1 = RectInside.y1;
-		GUI_SetBkColor(Props.aBkColor[0]);
+		GUI.SetBkColor(Props.aBkColor[0]);
 		GUI_ClearRect(RectItem);
 		/* Draw the 3D effect (if configured) */
 		WIDGET__EFFECT_DrawDown(this);
@@ -580,76 +558,47 @@ public:
 		this->_ManageAutoScroll();
 		return this->_CalcScrollParas();
 	}
-	static int OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
-		auto pObj = (LISTBOX_Obj *)(pDrawItemInfo->hWin);
-		switch (pDrawItemInfo->Cmd) {
+	static int OwnerDraw(WM_Obj *pWin, int Cmd, int ItemIndex, GUI_POINT Pos) {
+		auto pObj = (LISTBOX_Obj *)pWin;
+		switch (Cmd) {
 			case WIDGET_ITEM_GET_XSIZE: {
-				PCFONT pOldFont;
-				const char *s;
-				int DistX;
-				pOldFont = GUI_SetFont(pObj->Props.pFont);
-				s = pObj->_GetpString(pDrawItemInfo->ItemIndex);
-				DistX = GUI_GetStringDistX(s);
+				auto pOldFont = GUI_SetFont(pObj->Props.pFont);
+				auto s = pObj->_GetpString(ItemIndex);
+				auto DistX = GUI_GetStringDistX(s);
 				GUI_SetFont(pOldFont);
 				return DistX;
 			}
-			case WIDGET_ITEM_GET_YSIZE: {
-				pObj = (LISTBOX_Obj *)(pDrawItemInfo->hWin);
-				return GUI_GetYDistOfFont(pObj->Props.pFont) + pObj->ItemSpacing;
-			}
+			case WIDGET_ITEM_GET_YSIZE:
+				return pObj->Props.pFont->DistY() + pObj->ItemSpacing;
 			case WIDGET_ITEM_DRAW: {
-				LISTBOX_ITEM *pItem;
-				WM_HMEM hItem;
-				int FontDistY;
-				int ItemIndex = pDrawItemInfo->ItemIndex;
-				const char *s;
-				int ColorIndex;
-				char IsDisabled;
-				char IsSelected;
-				pObj = (LISTBOX_Obj *)(pDrawItemInfo->hWin);
-				hItem = GUI_ARRAY_GethItem(&pObj->ItemArray, ItemIndex);
-				pItem = (LISTBOX_ITEM *)(hItem);
+				auto pItem = (LISTBOX_ITEM *)GUI_ARRAY_GethItem(&pObj->ItemArray, ItemIndex);
 				auto r = WM_GetInsideRect();
-				FontDistY = GUI_GetFontDistY();
+				auto FontDistY = pObj->Props.pFont->DistY();
 				/* Calculate color index */
-				IsDisabled = (pItem->Status & LISTBOX_ITEM_DISABLED) ? 1 : 0;
-				IsSelected = (pItem->Status & LISTBOX_ITEM_SELECTED) ? 1 : 0;
+				bool IsDisabled = pItem->Status & LISTBOX_ITEM_DISABLED;
+				bool IsSelected = pItem->Status & LISTBOX_ITEM_SELECTED;
+				int ColorIndex;
 				if (pObj->Flags & LISTBOX_SF_MULTISEL) {
-					if (IsDisabled) {
-						ColorIndex = 3;
-					}
-					else {
-						ColorIndex = (IsSelected) ? 2 : 0;
-					}
+					ColorIndex = IsDisabled ? 3 : IsSelected ? 2 : 0;
 				}
 				else {
-					if (IsDisabled) {
-						ColorIndex = 3;
-					}
-					else {
-						if (ItemIndex == pObj->Sel) {
-							ColorIndex = (pObj->State & WIDGET_STATE_FOCUS || pObj->hOwner) ? 2 : 1;
-						}
-						else {
-							ColorIndex = 0;
-						}
-					}
+					ColorIndex = IsDisabled ? 3 : ItemIndex != pObj->Sel ? 0	:
+						pObj->State & WIDGET_STATE_FOCUS || pObj->hOwner ? 2 : 1;
 				}
 				/* Display item */
-				GUI_SetBkColor(pObj->Props.aBkColor[ColorIndex]);
-				GUI_SetColor(pObj->Props.aTextColor[ColorIndex]);
-				s = pObj->_GetpString(ItemIndex);
-				GUI_SetTextMode(DRAWMODE_TRANS);
+				GUI.SetBkColor(pObj->Props.aBkColor[ColorIndex]);
+				GUI.SetColor(pObj->Props.aTextColor[ColorIndex]);
+				auto s = pObj->_GetpString(ItemIndex);
+				GUI.SetTextMode(DRAWMODE_TRANS);
 				GUI_Clear();
-				GUI_DispStringAt(s, pDrawItemInfo->x0 + 1, pDrawItemInfo->y0);
+				GUI_DispStringAt(s, Pos.x + 1, Pos.y);
 				/* Display focus rectangle */
 				if ((pObj->Flags & LISTBOX_SF_MULTISEL) && (ItemIndex == pObj->Sel)) {
 					GUI_RECT rFocus;
-					rFocus.x0 = pDrawItemInfo->x0;
-					rFocus.y0 = pDrawItemInfo->y0;
+					rFocus.LeftTop(Pos);
 					rFocus.x1 = r.x1;
-					rFocus.y1 = pDrawItemInfo->y0 + FontDistY - 1;
-					GUI_SetColor(RGB_WHITE - pObj->Props.aBkColor[ColorIndex]);
+					rFocus.y1 = Pos.y + FontDistY - 1;
+					GUI.SetColor(RGB_WHITE - pObj->Props.aBkColor[ColorIndex]);
 					GUI_DrawFocusRect(rFocus, 0);
 				}
 				return 0;

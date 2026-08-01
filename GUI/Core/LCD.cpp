@@ -3,7 +3,7 @@
 #include "GUIDebug.h"
 
 void LCD_SetClipRectMax(void) {
-	LCDDEV_L0_GetRect(&GUI_Context.ClipRect);
+	LCDDEV_L0_GetRect(&GUI.ClipRect);
 }
 void LCD_L0_GetRect(GUI_RECT *pRect) {
 	pRect->x0 = 0;
@@ -14,27 +14,27 @@ void LCD_L0_GetRect(GUI_RECT *pRect) {
 void LCD_SetClipRectEx(const GUI_RECT *pRect) {
 	GUI_RECT r;
 	LCDDEV_L0_GetRect(&r);
-	GUI_Context.ClipRect = *pRect & r;
+	GUI.ClipRect = *pRect & r;
 }
 
 #define RETURN_IF_Y_OUT() \
-  if (y < GUI_Context.ClipRect.y0) return;             \
-  if (y > GUI_Context.ClipRect.y1) return;
+  if (y < GUI.ClipRect.y0) return;             \
+  if (y > GUI.ClipRect.y1) return;
 #define RETURN_IF_X_OUT() \
-  if (x < GUI_Context.ClipRect.x0) return;             \
-  if (x > GUI_Context.ClipRect.x1) return;
+  if (x < GUI.ClipRect.x0) return;             \
+  if (x > GUI.ClipRect.x1) return;
 #define CLIP_X() \
-  if (x0 < GUI_Context.ClipRect.x0) { x0 = GUI_Context.ClipRect.x0; } \
-  if (x1 > GUI_Context.ClipRect.x1) { x1 = GUI_Context.ClipRect.x1; }
+  if (x0 < GUI.ClipRect.x0) { x0 = GUI.ClipRect.x0; } \
+  if (x1 > GUI.ClipRect.x1) { x1 = GUI.ClipRect.x1; }
 #define CLIP_Y() \
-  if (y0 < GUI_Context.ClipRect.y0) { y0 = GUI_Context.ClipRect.y0; } \
-  if (y1 > GUI_Context.ClipRect.y1) { y1 = GUI_Context.ClipRect.y1; }
+  if (y0 < GUI.ClipRect.y0) { y0 = GUI.ClipRect.y0; } \
+  if (y1 > GUI.ClipRect.y1) { y1 = GUI.ClipRect.y1; }
 #define RETURN_IF_Y_OUT() \
-  if (y < GUI_Context.ClipRect.y0) return;             \
-  if (y > GUI_Context.ClipRect.y1) return;
+  if (y < GUI.ClipRect.y0) return;             \
+  if (y > GUI.ClipRect.y1) return;
 #define RETURN_IF_X_OUT() \
-  if (x < GUI_Context.ClipRect.x0) return;             \
-  if (x > GUI_Context.ClipRect.x1) return;
+  if (x < GUI.ClipRect.x0) return;             \
+  if (x > GUI.ClipRect.x1) return;
 
 void LCD_SetPixel(int x, int y, int ColorIndex) {
 	RETURN_IF_X_OUT();
@@ -109,17 +109,17 @@ void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize,
 	y1 = y0 + ysize - 1;
 	x1 = x0 + xsize - 1;
 	/*  Clip y0 (top) */
-	Diff = GUI_Context.ClipRect.y0 - y0;
+	Diff = GUI.ClipRect.y0 - y0;
 	if (Diff > 0) {
 		ysize -= Diff;
 		if (ysize <= 0) {
 			return;
 		}
-		y0 = GUI_Context.ClipRect.y0;
+		y0 = GUI.ClipRect.y0;
 		pPixel += (unsigned)Diff * (unsigned)BytesPerLine;
 	}
 	/*  Clip y1 (bottom) */
-	Diff = y1 - GUI_Context.ClipRect.y1;
+	Diff = y1 - GUI.ClipRect.y1;
 	if (Diff > 0) {
 		ysize -= Diff;
 		if (ysize <= 0) {
@@ -127,14 +127,14 @@ void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize,
 		}
 	}
 	/*        Clip right side    */
-	Diff = x1 - GUI_Context.ClipRect.x1;
+	Diff = x1 - GUI.ClipRect.x1;
 	if (Diff > 0) {
 		xsize -= Diff;
 	}
 	/*        Clip left side ... (The difficult side ...)    */
 	Diff = 0;
-	if (x0 < GUI_Context.ClipRect.x0) {
-		Diff = GUI_Context.ClipRect.x0 - x0;
+	if (x0 < GUI.ClipRect.x0) {
+		Diff = GUI.ClipRect.x0 - x0;
 		xsize -= Diff;
 		switch (BitsPerPixel) {
 			case 1:

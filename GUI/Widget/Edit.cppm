@@ -78,8 +78,8 @@ struct EDIT_Obj : public WIDGET {
 		const char *pText = nullptr;
 		auto IsEnabled = WM_IsEnabled(this);
 		/* Set colors and font */
-		GUI_SetBkColor(this->Props.aBkColor[IsEnabled]);
-		GUI_SetColor(this->Props.aTextColor[0]);
+		GUI.SetBkColor(this->Props.aBkColor[IsEnabled]);
+		GUI.SetColor(this->Props.aTextColor[0]);
 		GUI_SetFont(this->Props.pFont);
 		/* Calculate size */
 		auto r = WM_GetClientRect(this);

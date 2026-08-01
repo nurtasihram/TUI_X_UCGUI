@@ -30,27 +30,27 @@ struct TEXT_Obj : public WIDGET {
 	}
 	void _OnPaint() {
 		const char *s;
-		GUI_SetColor(Props.TextColor);
+		GUI.SetColor(Props.TextColor);
 		GUI_SetFont(Props.pFont);
 		/* Fill with parents background color */
 #if !WM_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent */
 		if (Props.BkColor == RGB_INVALID_COLOR) {
-			GUI_SetBkColor(WIDGET__GetBkColor(this));
+			GUI.SetBkColor(WIDGET__GetBkColor(this));
 		}
 		else {
-			GUI_SetBkColor(Props.BkColor);
+			GUI.SetBkColor(Props.BkColor);
 		}
 		GUI_Clear();
 #else
 		if (!WM_GetHasTrans(this)) {
-			GUI_SetBkColor(Props.BkColor);
+			GUI.SetBkColor(Props.BkColor);
 			GUI_Clear();
 		}
 #endif
 		/* Show the text */
 		if (pText) {
 			s = pText;
-			GUI_SetTextMode(DRAWMODE_TRANS);
+			GUI.SetTextMode(DRAWMODE_TRANS);
 			auto r = WM_GetClientRect();
 			GUI_DispStringInRect(s, &r, Props.Align);
 		}

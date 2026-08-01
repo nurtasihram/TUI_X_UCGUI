@@ -58,7 +58,7 @@ static WM_PARAM _cb(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 			_OnKey(pObj, (const WM_KEY_INFO *)Data);
 			break;
 		case WM_PAINT:
-			GUI_SetBkColor(pObj->Props.BkColor);
+			GUI.SetBkColor(pObj->Props.BkColor);
 			GUI_Clear();
 			return 0;
 		case WM_GET_BKCOLOR:

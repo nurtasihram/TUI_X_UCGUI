@@ -67,14 +67,11 @@ struct FRAMEWIN_Obj : public WIDGET {
 	};
 
 	int _CalcTitleHeight() {
-		int r = 0;
-		if (this->State & FRAMEWIN_CF_TITLEVIS) {
-			r = this->Props.TitleHeight;
-			if (r == 0) {
-				r = 2 + GUI_GetYSizeOfFont(this->Props.pFont);
-			}
-		}
-		return r;
+		return State & FRAMEWIN_CF_TITLEVIS ? 
+			Props.TitleHeight ?
+				Props.TitleHeight :
+				2 + Props.pFont->SizeY() :
+			0;
 	}
 	void _CalcPositions(POSITIONS *pPos) {
 		WM_Obj *pChild;
@@ -215,11 +212,11 @@ struct FRAMEWIN_Obj : public WIDGET {
 		GUI__CalcTextRect(pText, &Pos.rTitleText, &rText, this->Props.Align);
 		auto y0 = Pos.TitleHeight + BorderSize;
 		/* Draw Title */
-		GUI_SetBkColor(this->Props.aBarColor[Index]);
-		GUI_SetColor(this->Props.aTextColor[Index]);
+		GUI.SetBkColor(this->Props.aBarColor[Index]);
+		GUI.SetColor(this->Props.aTextColor[Index]);
 		WIDGET__FillStringInRect(pText, r, Pos.rTitleText, rText);
 		/* Draw Frame */
-		GUI_SetColor(this->Props.FrameColor);
+		GUI.SetColor(this->Props.FrameColor);
 		GUI_FillRect({ 0, 0, xsize - 1, BorderSize - 1 });
 		GUI_FillRect({ 0, 0, Pos.rClient.x0 - 1, ysize - 1 });
 		GUI_FillRect({ Pos.rClient.x1 + 1, 0, xsize - 1, ysize - 1 });
@@ -337,7 +334,7 @@ struct FRAMEWIN_Obj : public WIDGET {
 		switch (MsgId) {
 			case WM_PAINT:
 				if (pParent->Props.ClientColor != RGB_INVALID_COLOR) {
-					GUI_SetBkColor(pParent->Props.ClientColor);
+					GUI.SetBkColor(pParent->Props.ClientColor);
 					GUI_Clear();
 				}
 				/* Give the user callback  a chance to draw.
@@ -994,48 +991,38 @@ public:
 	BUTTON_Obj *AddCloseButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
 		auto pButton = AddButton(Flags, Off, GUI_ID_CLOSE);
 		pButton->SetSelfDraw(0, []() {
-			auto r = WM_GetInsideRect();
-			WM_ADDORG(r.x0, r.y0);
-			WM_ADDORG(r.x1, r.y1);
+			auto r = WM_GetInsideRect() + GUI.Off;
 			int Size = r.x1 - r.x0 - 2;
-			WM_ITERATE_START(r) {
-				for (int i = 2; i < Size; i++) {
-					LCD_DrawHLine(r.x0 + i, r.y0 + i, r.x0 + i + 1);
-					LCD_DrawHLine(r.x1 - i - 1, r.y0 + i, r.x1 - i);
-				}
-			} WM_ITERATE_END();
+			for (int i = 2; i < Size; i++) {
+				LCD_DrawHLine(r.x0 + i, r.y0 + i, r.x0 + i + 1);
+				LCD_DrawHLine(r.x1 - i - 1, r.y0 + i, r.x1 - i);
+			}
 		});
 		return pButton;
 	}
 
 	static void _DrawMax(void) {
 		auto pObj = (FRAMEWIN_Obj *)WM_GetParent(WM_GetActiveWindow());
-		auto r = WM_GetInsideRect();
-		WM_ADDORG(r.x0, r.y0);
-		WM_ADDORG(r.x1, r.y1);
+		auto r = WM_GetInsideRect() + GUI.Off;
 		if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED) {
 			int Size = ((r.x1 - r.x0 + 1) << 1) / 3;
-			WM_ITERATE_START(r) {
-				LCD_DrawHLine(r.x1 - Size, r.y0 + 1, r.x1 - 1);
-				LCD_DrawHLine(r.x1 - Size, r.y0 + 2, r.x1 - 1);
-				LCD_DrawHLine(r.x0 + Size, r.y0 + Size, r.x1 - 1);
-				LCD_DrawVLine(r.x1 - Size, r.y0 + 1, r.y1 - Size);
-				LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y0 + Size);
-				LCD_DrawHLine(r.x0 + 1, r.y1 - Size, r.x0 + Size);
-				LCD_DrawHLine(r.x0 + 1, r.y1 - Size + 1, r.x0 + Size);
-				LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x0 + Size);
-				LCD_DrawVLine(r.x0 + 1, r.y1 - Size, r.y1 - 1);
-				LCD_DrawVLine(r.x0 + Size, r.y1 - Size, r.y1 - 1);
-			} WM_ITERATE_END();
+			LCD_DrawHLine(r.x1 - Size, r.y0 + 1, r.x1 - 1);
+			LCD_DrawHLine(r.x1 - Size, r.y0 + 2, r.x1 - 1);
+			LCD_DrawHLine(r.x0 + Size, r.y0 + Size, r.x1 - 1);
+			LCD_DrawVLine(r.x1 - Size, r.y0 + 1, r.y1 - Size);
+			LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y0 + Size);
+			LCD_DrawHLine(r.x0 + 1, r.y1 - Size, r.x0 + Size);
+			LCD_DrawHLine(r.x0 + 1, r.y1 - Size + 1, r.x0 + Size);
+			LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x0 + Size);
+			LCD_DrawVLine(r.x0 + 1, r.y1 - Size, r.y1 - 1);
+			LCD_DrawVLine(r.x0 + Size, r.y1 - Size, r.y1 - 1);
 		}
 		else {
-			WM_ITERATE_START(r) {
-				LCD_DrawHLine(r.x0 + 1, r.y0 + 1, r.x1 - 1);
-				LCD_DrawHLine(r.x0 + 1, r.y0 + 2, r.x1 - 1);
-				LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x1 - 1);
-				LCD_DrawVLine(r.x0 + 1, r.y0 + 1, r.y1 - 1);
-				LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 1);
-			} WM_ITERATE_END();
+			LCD_DrawHLine(r.x0 + 1, r.y0 + 1, r.x1 - 1);
+			LCD_DrawHLine(r.x0 + 1, r.y0 + 2, r.x1 - 1);
+			LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x1 - 1);
+			LCD_DrawVLine(r.x0 + 1, r.y0 + 1, r.y1 - 1);
+			LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 1);
 		}
 	}
 	BUTTON_Obj *AddMaxButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
@@ -1048,21 +1035,15 @@ public:
 		auto pButton = AddButton(Flags, Off, GUI_ID_MINIMIZE);
 		pButton->SetSelfDraw(0, [] {
 			auto pObj = (FRAMEWIN_Obj *)WM_GetParent(WM_GetActiveWindow());
-			auto r = WM_GetInsideRect();
-			WM_ADDORG(r.x0, r.y0);
-			WM_ADDORG(r.x1, r.y1);
+			auto r = WM_GetInsideRect() + GUI.Off;
 			int Size = (r.x1 - r.x0 + 1) >> 1;
 			if (pObj->Flags & FRAMEWIN_CF_MINIMIZED) {
-				WM_ITERATE_START(r) {
-					for (int i = 1; i < Size; i++)
-						LCD_DrawHLine(r.x0 + i, r.y0 + i + (Size >> 1), r.x1 - i);
-				} WM_ITERATE_END();
+				for (int i = 1; i < Size; i++)
+					LCD_DrawHLine(r.x0 + i, r.y0 + i + (Size >> 1), r.x1 - i);
 			}
 			else {
-				WM_ITERATE_START(r) {
-					for (int i = 1; i < Size; i++)
-						LCD_DrawHLine(r.x0 + i, r.y1 - i - (Size >> 1), r.x1 - i);
-				} WM_ITERATE_END();
+				for (int i = 1; i < Size; i++)
+					LCD_DrawHLine(r.x0 + i, r.y1 - i - (Size >> 1), r.x1 - i);
 			}
 		});
 		return pButton;

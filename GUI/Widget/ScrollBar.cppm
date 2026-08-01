@@ -132,18 +132,18 @@ struct SCROLLBAR_Obj : public WIDGET {
 		/*
 		  Draw left Arrow
 		*/
-		GUI_SetColor(this->Props.Color);
+		GUI.SetColor(this->Props.Color);
 		r = rClient;
 		r.x0 = Pos.x0_LeftArrow;
 		r.x1 = Pos.x1_LeftArrow;
 		WIDGET__FillRect(this, r);
-		GUI_SetColor(this->Props.aBkColor[1]);
+		GUI.SetColor(this->Props.aBkColor[1]);
 		_DrawTriangle(r.x0 + ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, -1);
 		WIDGET__EFFECT_DrawUpRect(this, r);
 		/*
 		  Draw the thumb area which is not covered by the thumb
 		*/
-		GUI_SetColor(this->Props.aBkColor[0]);
+		GUI.SetColor(this->Props.aBkColor[0]);
 		r.x0 = Pos.x1_LeftArrow + 1;
 		r.x1 = Pos.x0_Thumb - 1;
 		WIDGET__FillRect(this, r);
@@ -157,17 +157,17 @@ struct SCROLLBAR_Obj : public WIDGET {
 		r = rClient;
 		r.x0 = Pos.x0_Thumb;
 		r.x1 = Pos.x1_Thumb;
-		GUI_SetColor(this->Props.Color);
+		GUI.SetColor(this->Props.Color);
 		WIDGET__FillRect(this, r);
 		WIDGET__EFFECT_DrawUpRect(this, r);
 		/*
 		  Draw right Arrow
 		*/
-		GUI_SetColor(this->Props.Color);
+		GUI.SetColor(this->Props.Color);
 		r.x0 = Pos.x0_RightArrow;
 		r.x1 = Pos.x1_RightArrow;
 		WIDGET__FillRect(this, r);
-		GUI_SetColor(this->Props.aBkColor[1]);
+		GUI.SetColor(this->Props.aBkColor[1]);
 		_DrawTriangle(r.x1 - ArrowOff, (r.y1 - r.y0) >> 1, ArrowSize, 1);
 		WIDGET__EFFECT_DrawUpRect(this, r);
 		/*
@@ -176,7 +176,7 @@ struct SCROLLBAR_Obj : public WIDGET {
 		if (Pos.x1_RightArrow != Pos.x1) {
 			r.x0 = Pos.x1_RightArrow + 1;
 			r.x1 = Pos.x1;
-			GUI_SetColor(this->Props.Color);
+			GUI.SetColor(this->Props.Color);
 			WIDGET__FillRect(this, r);
 		}
 	}

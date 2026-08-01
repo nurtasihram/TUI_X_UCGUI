@@ -42,8 +42,8 @@ struct PROGBAR_Obj : public WIDGET {
 		return EffectSize + ((xSize - 2 * EffectSize) * (int32_t)(v - Min)) / (Max - Min);
 	}
 	void _DrawPart(int Index, int xText, int yText, const char *pText) {
-		GUI_SetBkColor(Props.aBkColor[Index]);
-		GUI_SetColor(Props.aTextColor[Index]);
+		GUI.SetBkColor(Props.aBkColor[Index]);
+		GUI.SetColor(Props.aTextColor[Index]);
 		GUI_Clear();
 		GUI_GotoXY(xText, yText);
 		GUI_DispString(pText);
@@ -78,7 +78,7 @@ struct PROGBAR_Obj : public WIDGET {
 		int xSize = Rect.x1 - Rect.x0 + 1;
 		int ySize = Rect.y1 - Rect.y0 + 1;
 		int TextWidth = GUI_GetStringDistX(pText);
-		int TextHeight = GUI_GetFontSizeY();
+		int TextHeight = Props.pFont->SizeY();
 		int EffectSize = pEffect->EffectSize;
 		switch (Props.Align & TEXTALIGN_HORIZONTAL) {
 			case TEXTALIGN_CENTER:
@@ -107,7 +107,7 @@ struct PROGBAR_Obj : public WIDGET {
 		pText = _GetText(ac);
 		GUI_SetFont(Props.pFont);
 		_GetTextRect(&rText, pText);
-		GUI_SetTextMode(DRAWMODE_TRANS);
+		GUI.SetTextMode(DRAWMODE_TRANS);
 		/* Draw left bar */
 		r = rInside;
 		r.x1 = xPos - 1;

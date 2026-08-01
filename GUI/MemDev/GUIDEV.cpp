@@ -5,7 +5,7 @@
 #if GUI_SUPPORT_MEMDEV
 
 void GUI_MEMDEV__GetRect(GUI_RECT *pRect) {
-	auto pDev = (GUI_MEMDEV *)GUI_Context.hDevData;
+	auto pDev = (GUI_MEMDEV *)GUI.hDevData;
 	pRect->x0 = pDev->x0;
 	pRect->y0 = pDev->y0;
 	pRect->x1 = pDev->x0 + pDev->XSize - 1;
@@ -16,7 +16,7 @@ void GUI_MEMDEV_Delete(GUI_MEMDEV_Handle hMemDev) {
 	/* Make sure memory device is not used */
 	if (hMemDev) {
 		auto pDev = (GUI_MEMDEV *)hMemDev;
-		if (GUI_Context.hDevData == hMemDev)
+		if (GUI.hDevData == hMemDev)
 			GUI_SelectLCD();
 		/* Delete the associated usage device */
 		GUI_ALLOC_Free(hMemDev);
@@ -88,17 +88,17 @@ GUI_MEMDEV_Handle GUI_MEMDEV_Create(int x0, int y0, int xsize, int ysize) {
 }
 
 GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem) {
-	GUI_MEMDEV_Handle r = GUI_Context.hDevData;
+	GUI_MEMDEV_Handle r = GUI.hDevData;
 	if (hMem == 0)
 		GUI_SelectLCD();
 	else {
 		auto pDev = (GUI_MEMDEV *)hMem;
 		WM_Deactivate();
 		/* If LCD was selected Save cliprect */
-		if (GUI_Context.hDevData == 0)
-			GUI_Context.ClipRectPrev = GUI_Context.ClipRect;
-		GUI_Context.hDevData = hMem;
-		GUI_Context.pDeviceAPI = pDev->pAPIList;
+		if (GUI.hDevData == 0)
+			GUI.ClipRectPrev = GUI.ClipRect;
+		GUI.hDevData = hMem;
+		GUI.pDeviceAPI = pDev->pAPIList;
 		LCD_SetClipRectMax();
 	}
 	return r;
@@ -122,7 +122,7 @@ void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 	if (hMem) {
 		GUI_RECT r;
-		GUI_MEMDEV_Handle hMemPrev = GUI_Context.hDevData;
+		GUI_MEMDEV_Handle hMemPrev = GUI.hDevData;
 		auto pDevData = (GUI_MEMDEV *)(hMem);  /* Convert to pointer */
 		/* Make sure LCD is selected as device */
 		GUI_SelectLCD();  /* Activate LCD */
@@ -135,9 +135,9 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 		r.y1 = (r.y0 = y) + pDevData->YSize - 1;;
 		/* Do the drawing. Window manager has to be on */
 		WM_Activate();
-		WM_ITERATE_START(r) {
+		WM_Iterate(r, [&] {
 			GUI_MEMDEV__WriteToActiveAt(hMem, x, y);
-		} WM_ITERATE_END();
+		});
 		/* Reactivate previously used device */
 		GUI_MEMDEV_Select(hMemPrev);
 	}
@@ -149,14 +149,14 @@ void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV_Handle hMem) {
 
 int GUI_MEMDEV_GetXSize(GUI_MEMDEV_Handle hMem) {
 	if (!hMem)
-		hMem = GUI_Context.hDevData;
+		hMem = GUI.hDevData;
 	if (hMem)
 		return ((GUI_MEMDEV *)hMem)->XSize;
 	return 0;
 }
 int GUI_MEMDEV_GetYSize(GUI_MEMDEV_Handle hMem) {
 	if (!hMem)
-		hMem = GUI_Context.hDevData;
+		hMem = GUI.hDevData;
 	if (hMem)
 		return ((GUI_MEMDEV *)hMem)->YSize;
 	return 0;
@@ -164,7 +164,7 @@ int GUI_MEMDEV_GetYSize(GUI_MEMDEV_Handle hMem) {
 void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV_Handle hMem, int YSize) {
 	/* Make sure memory handle is valid */
 	if (!hMem)
-		hMem = GUI_Context.hDevData;
+		hMem = GUI.hDevData;
 	if (!hMem)
 		return;
 	auto pDevData = (GUI_MEMDEV *)(hMem);  /* Convert to pointer */
@@ -175,7 +175,7 @@ void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV_Handle hMem, int YSize) {
 void GUI_MEMDEV_SetOrg(GUI_MEMDEV_Handle hMem, int x0, int y0) {
 	/* Make sure memory handle is valid */
 	if (!hMem) {
-		if ((hMem = GUI_Context.hDevData) == 0) {
+		if ((hMem = GUI.hDevData) == 0) {
 			return;
 		}
 	}

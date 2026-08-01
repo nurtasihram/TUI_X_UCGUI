@@ -82,7 +82,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[]{
 };
 
 static int _GetItemSizeY(LISTBOX_Obj *pObj, int ItemIndex) {
-	int DistY = GUI_GetFontDistY() + 1;
+	int DistY = pObj->Props.pFont->DistY() + 1;
 	if (pObj->GetMulti()) {
 		if (pObj->GetItemSel(ItemIndex))
 			DistY += 8;
@@ -92,10 +92,9 @@ static int _GetItemSizeY(LISTBOX_Obj *pObj, int ItemIndex) {
 	return DistY;
 }
 
-static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
-	auto pObj = (LISTBOX_Obj *)pDrawItemInfo->hWin;
-	int Index = pDrawItemInfo->ItemIndex;
-	switch (pDrawItemInfo->Cmd) {
+static int _OwnerDraw(WM_Obj *pWin, int Cmd, int Index, GUI_POINT ItemPos) {
+	auto pObj = (LISTBOX_Obj *)pWin;
+	switch (Cmd) {
 		case WIDGET_ITEM_GET_XSIZE: {
 			char acBuffer[100];
 			pObj->GetItemText(Index, acBuffer, sizeof(acBuffer));
@@ -109,7 +108,7 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 			char acBuffer[100];
 			RGBC aColor[4] = { RGB_BLACK, RGB_WHITE, RGB_WHITE, RGB_GRAY };
 			RGBC aBkColor[4] = { RGB_WHITE, RGB_GRAY, RGB_DARKBLUE, RGB_GRAYL(0xC0) };
-			bool IsDisabled = pObj->GetItemDisabled(pDrawItemInfo->ItemIndex);
+			bool IsDisabled = pObj->GetItemDisabled(Index);
 			bool IsSelected = pObj->GetItemSel(Index);
 			int MultiSel = pObj->GetMulti();
 			int Sel = pObj->GetSel();
@@ -122,35 +121,35 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo) {
 					ColorIndex = IsSelected ? 2 : 0;
 			else if (IsDisabled)
 				ColorIndex = 3;
-			else if (pDrawItemInfo->ItemIndex == Sel)
+			else if (Index == Sel)
 				ColorIndex = WM_HasFocus(pObj) ? 2 : 1;
 			else
 				ColorIndex = 0;
 			/* Draw item */
-			GUI_SetBkColor(aBkColor[ColorIndex]);
-			GUI_SetColor(aColor[ColorIndex]);
-			pObj->GetItemText(pDrawItemInfo->ItemIndex, acBuffer, sizeof(acBuffer));
+			GUI.SetBkColor(aBkColor[ColorIndex]);
+			GUI.SetColor(aColor[ColorIndex]);
+			pObj->GetItemText(Index, acBuffer, sizeof(acBuffer));
 			GUI_Clear();
-			auto FontDistY = GUI_GetFontDistY();
-			GUI_DispStringAt(acBuffer, pDrawItemInfo->x0 + bmSmilie0.XSize + 16, pDrawItemInfo->y0 + (YSize - FontDistY) / 2);
+			auto FontDistY = GUI.GetFont()->DistY();
+			GUI_DispStringAt(acBuffer, ItemPos.x + bmSmilie0.XSize + 16, ItemPos.y + (YSize - FontDistY) / 2);
 			/* Draw bitmap */
-			auto pBm = MultiSel ? IsSelected ? &bmSmilie1 : &bmSmilie0 : (pDrawItemInfo->ItemIndex == Sel) ? &bmSmilie1 : &bmSmilie0;
-			GUI_DrawBitmap(pBm, pDrawItemInfo->x0 + 7, pDrawItemInfo->y0 + (YSize - pBm->YSize) / 2);
+			auto pBm = MultiSel ? IsSelected ? &bmSmilie1 : &bmSmilie0 : (Index == Sel) ? &bmSmilie1 : &bmSmilie0;
+			GUI_DrawBitmap(pBm, ItemPos.x + 7, ItemPos.y + (YSize - pBm->YSize) / 2);
 			/* Draw focus rectangle */
-			if (MultiSel && (pDrawItemInfo->ItemIndex == Sel)) {
+			if (MultiSel && Index == Sel) {
+				auto rInside = WM_GetInsideRect(pObj);
 				GUI_RECT rFocus;
-				GUI_RECT rInside = WM_GetInsideRect(pObj);
-				rFocus.x0 = pDrawItemInfo->x0;
-				rFocus.y0 = pDrawItemInfo->y0;
+				rFocus.x0 = ItemPos.x;
+				rFocus.y0 = ItemPos.y;
 				rFocus.x1 = rInside.x1;
-				rFocus.y1 = pDrawItemInfo->y0 + YSize - 1;
-				GUI_SetColor(RGB_WHITE - aBkColor[ColorIndex]);
+				rFocus.y1 = ItemPos.y + YSize - 1;
+				GUI.SetColor(RGB_WHITE - aBkColor[ColorIndex]);
 				GUI_DrawFocusRect(rFocus, 0);
 			}
 			break;
 		}
 		default:
-			return LISTBOX_Obj::OwnerDraw(pDrawItemInfo);
+			return LISTBOX_Obj::OwnerDraw(pWin, Cmd, Index, ItemPos);
 	}
 	return 0;
 }
@@ -178,22 +177,22 @@ static WM_PARAM _cbMemDevPane(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
 				int Phase = _MemDevPhase % (Span * 2);
 				XPos = Phase > Span ? Span * 2 - Phase : Phase;
 			}
-			GUI_SetBkColor(RGB_WHITE);
+			GUI.SetBkColor(RGB_WHITE);
 			GUI_Clear();
-			GUI_SetColor(RGB_DARKGRAY);
+			GUI.SetColor(RGB_DARKGRAY);
 			GUI_DrawRect({ 0, 0, xSize - 1, ySize - 1 });
-			GUI_SetColor(RGB_BLACK);
+			GUI.SetColor(RGB_BLACK);
 			GUI_DispStringAt(MemDevOn ? "MemDev ON" : "MemDev OFF", 8, 8);
 			GUI_DispStringAt(MemDevOn ? "WM_CF_MEMDEV enabled" : "WM_CF_MEMDEV disabled", 8, 24);
-			GUI_SetColor(RGB_GRAY);
+			GUI.SetColor(RGB_GRAY);
 			GUI_DrawRect({ 10, 48, xSize - 11, 72 });
-			GUI_SetColor(MemDevOn ? RGB_GREEN : RGB_RED);
+			GUI.SetColor(MemDevOn ? RGB_GREEN : RGB_RED);
 			GUI_FillRect({ 10 + XPos, 49, 10 + XPos + BarWidth, 71 });
-			GUI_SetColor(RGB_BLUE);
+			GUI.SetColor(RGB_BLUE);
 			GUI_FillRect({ 10, ySize - 40, xSize - 11, ySize - 25 });
-			GUI_SetColor(RGB_YELLOW);
+			GUI.SetColor(RGB_YELLOW);
 			GUI_FillRect({ 10 + XPos / 2, ySize - 39, 35 + XPos / 2, ySize - 26 });
-			GUI_SetColor(RGB_BLACK);
+			GUI.SetColor(RGB_BLACK);
 			GUI_DispStringAt("Animated redraw area", 8, ySize - 18);
 			return 0;
 		}

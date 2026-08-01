@@ -170,7 +170,7 @@ struct MENU_Obj : public WIDGET {
 			ItemHeight = this->Height - (this->_GetEffectSize() << 1);
 		}
 		else {
-			ItemHeight = GUI_GetYDistOfFont(this->Props.pFont);
+			ItemHeight = Props.pFont->DistY();
 			if (this->Flags & MENU_SF_VERTICAL) {
 				auto pItem = (MENU_ITEM *)GUI_ARRAY_GetpItem(&this->ItemArray, Index);
 				if (pItem->Flags & MENU_IF_SEPARATOR) {
@@ -623,8 +623,8 @@ struct MENU_Obj : public WIDGET {
 				}
 			}
 		}
-		GUI_SetBkColor(this->Props.aBkColor[ColorIndex]);
-		GUI_SetColor(this->Props.aTextColor[ColorIndex]);
+		GUI.SetBkColor(this->Props.aBkColor[ColorIndex]);
+		GUI.SetColor(this->Props.aTextColor[ColorIndex]);
 	}
 	void _OnPaint() {
 		GUI_RECT FillRect, TextRect;
@@ -632,7 +632,7 @@ struct MENU_Obj : public WIDGET {
 		unsigned TextWidth, NumItems, i;
 		uint8_t BorderLeft = this->Props.aBorder[MENU_BI_LEFT];
 		uint8_t BorderTop = this->Props.aBorder[MENU_BI_TOP];
-		int FontHeight = GUI_GetYDistOfFont(this->Props.pFont);
+		int FontHeight = Props.pFont->DistY();
 		int EffectSize = this->_GetEffectSize();
 		NumItems = this->_GetNumItems();
 		FillRect = WM_GetClientRect(this);
@@ -650,7 +650,7 @@ struct MENU_Obj : public WIDGET {
 				FillRect.y1 = FillRect.y0 + ItemHeight - 1;
 				if (pItem->Flags & MENU_IF_SEPARATOR) {
 					GUI_ClearRect(FillRect);
-					GUI_SetColor(RGB_GRAYL(0x7C));
+					GUI.SetColor(RGB_GRAYL(0x7C));
 					GUI_DrawHLine(FillRect.y0 + BorderTop + 1, FillRect.x0 + 2, FillRect.x1 - 2);
 				}
 				else {
@@ -676,7 +676,7 @@ struct MENU_Obj : public WIDGET {
 				FillRect.x1 = FillRect.x0 + ItemWidth - 1;
 				if (pItem->Flags & MENU_IF_SEPARATOR) {
 					GUI_ClearRect(FillRect);
-					GUI_SetColor(RGB_GRAYL(0x7C));
+					GUI.SetColor(RGB_GRAYL(0x7C));
 					GUI_DrawVLine(FillRect.x0 + BorderLeft + 1, FillRect.y0 + 2, FillRect.y1 - 2);
 				}
 				else {
@@ -691,7 +691,7 @@ struct MENU_Obj : public WIDGET {
 		if (this->Width || this->Height) {
 			GUI_RECT r = WM_GetClientRect(this);
 			r -= EffectSize;
-			GUI_SetBkColor(this->Props.aBkColor[MENU_CI_ENABLED]);
+			GUI.SetBkColor(this->Props.aBkColor[MENU_CI_ENABLED]);
 			GUI_ClearRect({ FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1 });
 			GUI_ClearRect({ EffectSize, FillRect.y1 + 1, r.x1, r.y1 });
 		}

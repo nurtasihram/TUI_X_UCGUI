@@ -41,7 +41,7 @@ struct HEADER_Obj : public WIDGET {
 		int NumItems = GUI_ARRAY_GetNumItems(&Columns);
 		int EffectSize = pEffect->EffectSize;
 		GUI_RECT Rect;
-		GUI_SetBkColor(Props.BkColor);
+		GUI.SetBkColor(Props.BkColor);
 		GUI_SetFont(Props.pFont);
 		GUI_Clear();
 		for (int i = 0; i < NumItems; i++) {
@@ -77,7 +77,7 @@ struct HEADER_Obj : public WIDGET {
 			Rect.x1 -= EffectSize + Props.BorderH;
 			Rect.y0 += EffectSize + Props.BorderV;
 			Rect.y1 -= EffectSize + Props.BorderV;
-			GUI_SetColor(Props.TextColor);
+			GUI.SetColor(Props.TextColor);
 			GUI_DispStringInRect(pColumn->acText, &Rect, pColumn->Align);
 		}
 		Rect = WM_GetClientRect();
@@ -341,7 +341,7 @@ HEADER_Obj *HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParen
 		y0 = Rect.y0;
 	}
 	if (ysize == 0) {
-		ysize = GUI_GetYDistOfFont(HEADER_Obj::DefaultProps.pFont);
+		ysize = HEADER_Obj::DefaultProps.pFont->DistY();
 		ysize += 2 * HEADER_Obj::DefaultProps.BorderV;
 		ysize += 2 * WIDGET::DefaultEffect->EffectSize;
 	}

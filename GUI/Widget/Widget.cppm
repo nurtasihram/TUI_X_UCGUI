@@ -20,14 +20,7 @@ constexpr uint8_t WIDGET_ITEM_GET_YSIZE     = 2;
 
 constexpr uint16_t WM_WIDGET_SET_EFFECT      = WM_WIDGET + 0;
 
-struct WIDGET_ITEM_DRAW_INFO {
-	WM_Obj *hWin;
-	int Cmd;         /*WIDGET_ITEM_GET_XSIZE, WIDGET_ITEM_GET_YSIZE, WIDGET_ITEM_DRAW, */
-	int ItemIndex;
-	int x0, y0;
-};
-
-typedef int WIDGET_DRAW_ITEM_FUNC(const WIDGET_ITEM_DRAW_INFO *pDrawItemInfo);
+typedef int WIDGET_DRAW_ITEM_FUNC(WM_Obj *pWin, int Cmd, int ItemIndex, GUI_POINT ItemPos);
 
 #pragma region Widget Effect
 struct WIDGET_EFFECT {
@@ -386,10 +379,8 @@ int WIDGET_SetWidth(WM_Obj *hObj, int Width) {
 
 void WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_RECT TextRectMax, GUI_RECT TextRectAct) {
 	/* Check if we have anything to do at all ... */
-	GUI_RECT r = FillRect;
-	WM_ADDORG(r.x0, r.y0);
-	WM_ADDORG(r.x1, r.y1);
-	if (!(r <= GUI_Context.ClipRect))
+	auto r = FillRect + GUI.Off;
+	if (!(r <= GUI.ClipRect))
 		return;
 	if (pText) {
 		if (*pText) { /* Speed optimization, not required */
@@ -398,7 +389,7 @@ void WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_RECT Tex
 			/* Set clipping rectangle */
 			auto pOldClipRect = WM_SetUserClipRect(&TextRectMax);
 			/* Display text */
-			GUI_SetTextMode(DRAWMODE_NORMAL);
+			GUI.SetTextMode(DRAWMODE_NORMAL);
 			GUI_DispStringAt(pText, TextRectAct.x0, TextRectAct.y0);
 			/* Restore clipping rectangle */
 			WM_SetUserClipRect(pOldClipRect);

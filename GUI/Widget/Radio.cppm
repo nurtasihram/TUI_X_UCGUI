@@ -62,10 +62,10 @@ struct RADIO_Obj : public WIDGET {
 		rFocus.x1 = pBmRadio->XSize + RADIO_BORDER * 2 - 1;
 		rFocus.y1 = this->Height + ((this->NumItems - 1) * this->Spacing) - 1;
 		/* Select font and text color */
-		GUI_SetColor(this->Props.TextColor);
+		GUI.SetColor(this->Props.TextColor);
 		GUI_SetFont(this->Props.pFont);
-		GUI_SetTextMode(DRAWMODE_TRANS);
-		FontDistY = GUI_GetFontDistY();
+		GUI.SetTextMode(DRAWMODE_TRANS);
+		FontDistY = Props.pFont->DistY();
 		CHeight = this->Props.pFont->CHeight;
 		SpaceAbove = this->Props.pFont->Baseline - CHeight;
 		Rect.x0 = pBmRadio->XSize + RADIO_BORDER * 2 + 2;
@@ -82,10 +82,10 @@ struct RADIO_Obj : public WIDGET {
 #endif
 		{
 			if (this->Props.BkColor != RGB_INVALID_COLOR) {
-				GUI_SetBkColor(this->Props.BkColor);
+				GUI.SetBkColor(this->Props.BkColor);
 			}
 			else {
-				GUI_SetBkColor(RADIO_DEFAULT_BKCOLOR);
+				GUI.SetBkColor(RADIO_DEFAULT_BKCOLOR);
 			}
 			GUI_Clear();
 		}
@@ -116,7 +116,7 @@ struct RADIO_Obj : public WIDGET {
 		}
 		/* Draw the focus rect */
 		if (HasFocus) {
-			GUI_SetColor(RGB_BLACK);
+			GUI.SetColor(RGB_BLACK);
 			WIDGET__DrawFocusRect(this, rFocus, 0);
 		}
 	}

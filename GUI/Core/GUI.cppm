@@ -19,10 +19,25 @@ struct GUI_PID_STATE {
 	uint8_t Pressed;
 };
 
-using DRAWMODE = uint8_t;
-constexpr DRAWMODE DRAWMODE_NORMAL = 0;
-constexpr DRAWMODE DRAWMODE_TRANS  = 1 << 1;
-constexpr DRAWMODE DRAWMODE_REV    = 1 << 2;
+using DRAWMODE = uint8_t; // 2bits
+constexpr DRAWMODE DRAWMODE_NORMAL = 0,
+				   DRAWMODE_TRANS  = 1 << 1,
+				   DRAWMODE_REV    = 1 << 2;
+
+using TEXTALIGN = uint8_t; // 4bits
+constexpr TEXTALIGN
+/* Text alignment flags, horizontal */
+	TEXTALIGN_LEFT        = (0<<0),
+	TEXTALIGN_RIGHT       = (1<<0),
+	TEXTALIGN_CENTER      = (2<<0),
+	TEXTALIGN_HORIZONTAL  = (3<<0),
+	TEXTALIGN_HCENTER     = TEXTALIGN_CENTER,
+/* Text alignment flags, vertical */
+	TEXTALIGN_TOP         = (0<<2),
+	TEXTALIGN_BOTTOM      = (1<<2),
+	TEXTALIGN_BASELINE    = (2<<2),
+	TEXTALIGN_VCENTER     = (3<<2),
+	TEXTALIGN_VERTICAL    = TEXTALIGN_VCENTER;
 
 struct GUI_CONTEXT {
 	/* Variables in LCD module */
@@ -33,15 +48,16 @@ struct GUI_CONTEXT {
 	PCFONT pAFont;
 	const GUI_UC_ENC_APILIST *pUC_API; /* Unicode encoding API */
 	GUI_POINT DispPos;
-	int16_t TextMode, TextAlign;
+	int16_t TextMode = 0;
+	int16_t TextAlign = 0;
 	/* Variables in WM module */
-	const GUI_RECT *WM__pUserClipRect;
+	const GUI_RECT *WM__pUserClipRect = nullptr;
 	GUI_POINT Off;
 	/* Variables in MEMDEV module (with memory devices only) */
 #if GUI_SUPPORT_DEVICES
 	const tLCDDEV_APIList *pDeviceAPI;  /* function pointers only */
-	GUI_HMEM    hDevData;
-	GUI_RECT    ClipRectPrev;
+	GUI_HMEM hDevData;
+	GUI_RECT ClipRectPrev;
 #endif
 public:
 	DRAWMODE SetDrawMode(DRAWMODE dm) {

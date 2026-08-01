@@ -322,7 +322,6 @@ WM_Obj *WM_GetDesktopWindow(void);
 
 /* Reduce clipping area of a window */
 const GUI_RECT *WM_SetUserClipRect(const GUI_RECT *pRect);
-void            WM_SetDefault(void);
 
 /* Use of memory devices */
 void WM_EnableMemdev(WM_Obj *pWin);
@@ -367,18 +366,10 @@ void      WM_ForEachDesc(WM_Obj *pWin, WM_tfForEach *pcb, void *pData);
 #pragma region IVR
 bool WM__InitIVRSearch(GUI_RECT rcMax);
 bool WM__GetNextIVR(void);
+inline void WM_Iterate(GUI_RECT &r, auto fn) {
+	if (WM__InitIVRSearch(r))
+		do { fn(); }
+		while (WM__GetNextIVR());
 
-#define WM_ITERATE_START(r)   \
-	if (WM__InitIVRSearch(r)) \
-		do {
-#define WM_ITERATE_END()          \
-	} while (WM__GetNextIVR());
-
-#define WM_ADDORGX(x0)    x0 += GUI_Context.Off.x
-#define WM_ADDORGY(y0)    y0 += GUI_Context.Off.y
-#define WM_ADDORG(x0,y0) WM_ADDORGX(x0); WM_ADDORGY(y0)
-
-#define WM_SUBORGX(x0)    x0 -= GUI_Context.Off.x
-#define WM_SUBORGY(y0)    y0 -= GUI_Context.Off.y
-#define WM_SUBORG(x0,y0) WM_SUBORGX(x0); WM_SUBORGY(y0)
+}
 #pragma endregion

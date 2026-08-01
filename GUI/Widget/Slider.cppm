@@ -36,15 +36,15 @@ struct SLIDER_Obj : public WIDGET {
 		/* Fill with parents background color */
 #if !WM_SUPPORT_TRANSPARENCY   /* Not needed any more, since window is transparent */
 		if (this->Props.BkColor == RGB_INVALID_COLOR) {
-			GUI_SetBkColor(WIDGET__GetBkColor(this));
+			GUI.SetBkColor(WIDGET__GetBkColor(this));
 		}
 		else {
-			GUI_SetBkColor(this->Props.BkColor);
+			GUI.SetBkColor(this->Props.BkColor);
 		}
 		GUI_Clear();
 #else
 		if (!WM_GetHasTrans(this)) {
-			GUI_SetBkColor(this->Props.BkColor);
+			GUI.SetBkColor(this->Props.BkColor);
 			GUI_Clear();
 		}
 #endif
@@ -67,20 +67,20 @@ struct SLIDER_Obj : public WIDGET {
 			}
 		}
 		if (NumTicks > 1) {
-			GUI_SetColor(RGB_BLACK);
+			GUI.SetColor(RGB_BLACK);
 			for (i = 0; i < NumTicks; i++) {
 				int x = x0 + xsize * i / (NumTicks - 1);
 				WIDGET__DrawVLine(this, x, 1, 3);
 			}
 		}
 		/* Draw the slider itself */
-		GUI_SetColor(this->Props.Color);
+		GUI.SetColor(this->Props.Color);
 		WIDGET__FillRect(this, rSlider);
-		GUI_SetColor(RGB_BLACK);
+		GUI.SetColor(RGB_BLACK);
 		WIDGET__EFFECT_DrawUpRect(this, rSlider);
 		/* Draw focus */
 		if (this->State & WIDGET_STATE_FOCUS) {
-			GUI_SetColor(RGB_BLACK);
+			GUI.SetColor(RGB_BLACK);
 			WIDGET__DrawFocusRect(this, rFocus, 0);
 		}
 	}

@@ -64,7 +64,7 @@ struct LISTVIEW_Obj : public WIDGET {
 			RowDistY = this->RowDistY;
 		}
 		else {
-			RowDistY = GUI_GetYDistOfFont(Props.pFont);
+			RowDistY = Props.pFont->DistY();
 			if (this->ShowGrid) {
 				RowDistY++;
 			}
@@ -105,9 +105,9 @@ struct LISTVIEW_Obj : public WIDGET {
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		ClipRect &= Rect;
 		/* Set drawing color, font and text mode */
-		GUI_SetColor(Props.aTextColor[0]);
+		GUI.SetColor(Props.aTextColor[0]);
 		GUI_SetFont(Props.pFont);
-		GUI_SetTextMode(DRAWMODE_TRANS);
+		GUI.SetTextMode(DRAWMODE_TRANS);
 		/* Do the drawing */
 		for (i = this->ScrollStateV.v; i < EndRow; i++) {
 			pRow = (const GUI_ARRAY *)GUI_ARRAY_GetpItem(&this->RowArray, i);
@@ -128,7 +128,7 @@ struct LISTVIEW_Obj : public WIDGET {
 					else {
 						ColorIndex = 0;
 					}
-					GUI_SetBkColor(Props.aBkColor[ColorIndex]);
+					GUI.SetBkColor(Props.aBkColor[ColorIndex]);
 					/* Iterate over all columns */
 					if (this->ShowGrid) {
 						Rect.y1--;
@@ -149,11 +149,11 @@ struct LISTVIEW_Obj : public WIDGET {
 							if (pItem->hItemInfo) {
 								ItemInfo *pItemInfo;
 								pItemInfo = (ItemInfo *)(pItem->hItemInfo);
-								GUI_SetBkColor(pItemInfo->aBkColor[ColorIndex]);
-								GUI_SetColor(pItemInfo->aTextColor[ColorIndex]);
+								GUI.SetBkColor(pItemInfo->aBkColor[ColorIndex]);
+								GUI.SetColor(pItemInfo->aTextColor[ColorIndex]);
 							}
 							else {
-								GUI_SetColor(Props.aTextColor[ColorIndex]);
+								GUI.SetColor(Props.aTextColor[ColorIndex]);
 							}
 							/* Clear background */
 							GUI_ClearRect(Rect);
@@ -163,7 +163,7 @@ struct LISTVIEW_Obj : public WIDGET {
 							Align = *((int *)GUI_ARRAY_GetpItem(&this->AlignArray, j));
 							GUI_DispStringInRect(pItem->acText, &Rect, Align);
 							if (pItem->hItemInfo)
-								GUI_SetBkColor(Props.aBkColor[ColorIndex]);
+								GUI.SetBkColor(Props.aBkColor[ColorIndex]);
 						}
 						xPos += Width;
 					}
@@ -176,12 +176,12 @@ struct LISTVIEW_Obj : public WIDGET {
 		}
 		/* Clear unused area below items */
 		if (yPos <= ClipRect.y1) {
-			GUI_SetBkColor(Props.aBkColor[0]);
+			GUI.SetBkColor(Props.aBkColor[0]);
 			GUI_ClearRect({ ClipRect.x0, yPos, ClipRect.x1, ClipRect.y1 });
 		}
 		/* Draw grid */
 		if (this->ShowGrid) {
-			GUI_SetColor(Props.GridColor);
+			GUI.SetColor(Props.GridColor);
 			yPos = pHeader->GetHeight() + EffectSize - 1;
 			for (i = 0; i < NumVisRows; i++) {
 				yPos += RowDistY;

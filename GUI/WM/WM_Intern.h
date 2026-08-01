@@ -1,7 +1,7 @@
 #pragma once
 
 #include "WM.h"
-#include "GUI_Protected.h"       /* For GUI_Context */
+#include "GUI_Protected.h"       /* For GUI */
 
 
 /*********************************************************************

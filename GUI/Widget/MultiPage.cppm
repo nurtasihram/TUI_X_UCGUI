@@ -26,7 +26,7 @@ struct MULTIPAGE_PAGE {
 };
 struct MULTIPAGE_Obj : public WIDGET {
 	struct Properties {
-		PCFONT Font{ &FontProp13_1 };
+		PCFONT pFont{ &FontProp13_1 };
 		RGBC aBkColor[MULTIPAGE_NUMCOLORS]{
 			/* Disabled page */	RGB_GRAYL(0xD0),
 			/* Enabled page */	RGB_GRAYL(0xC0)
@@ -107,26 +107,26 @@ struct MULTIPAGE_Obj : public WIDGET {
 	void _CalcClientRect(GUI_RECT *pRect) {
 		*pRect = WIDGET__GetInsideRect(this);
 		if (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
-			pRect->y1 -= GUI_GetYSizeOfFont(this->Props.Font) + 6;
+			pRect->y1 -= Props.pFont->SizeY() + 6;
 		}
 		else {
-			pRect->y0 += GUI_GetYSizeOfFont(this->Props.Font) + 6;
+			pRect->y0 += Props.pFont->SizeY() + 6;
 		}
 	}
 	void _CalcBorderRect(GUI_RECT *pRect) {
 		*pRect = WM_GetClientRect(this);
 		if (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
-			pRect->y1 -= GUI_GetYSizeOfFont(this->Props.Font) + 6;
+			pRect->y1 -= Props.pFont->SizeY() + 6;
 		}
 		else {
-			pRect->y0 += GUI_GetYSizeOfFont(this->Props.Font) + 6;
+			pRect->y0 += Props.pFont->SizeY() + 6;
 		}
 	}
 	int _GetPageSizeX(unsigned Index) {
 		int r = 0;
 		if ((int)Index < this->Handles.NumItems) {
 			MULTIPAGE_PAGE *pPage;
-			GUI_SetFont(this->Props.Font);
+			GUI_SetFont(this->Props.pFont);
 			pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&this->Handles, Index);
 			r = GUI_GetStringDistX(&pPage->acText) + 10;
 		}
@@ -145,7 +145,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 	void _GetTextRect(GUI_RECT *pRect) {
 		GUI_RECT rBorder;
 		int Width, Height;
-		Height = GUI_GetYSizeOfFont(this->Props.Font) + 6;
+		Height = Props.pFont->SizeY() + 6;
 		_CalcBorderRect(&rBorder);
 		/* Calculate Y-Position of text item */
 		if (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
@@ -180,8 +180,8 @@ struct MULTIPAGE_Obj : public WIDGET {
 		/* Set scrollmode according to the text width */
 		if (Width > rBorder.x1) {
 			GUI_RECT rText;
-			int Size, x0, y0, NumItems = 0;
-			Size = ((GUI_GetYSizeOfFont(this->Props.Font) + 6) * 3) >> 2;
+			int x0, y0, NumItems = 0;
+			auto Size = ((Props.pFont->SizeY() + 6) * 3) >> 2;
 			x0 = (this->Props.Align & MULTIPAGE_ALIGN_RIGHT) ? (rBorder.x0) : (rBorder.x1 - 2 * Size + 1);
 			y0 = (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) ? (rBorder.y1) : (rBorder.y0 - Size + 1);
 			/* A scrollbar is required so we add one to the multipage */
@@ -214,26 +214,26 @@ struct MULTIPAGE_Obj : public WIDGET {
 			if (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
 				r.y0 -= this->pEffect->EffectSize + 1;
 				if (this->pEffect->EffectSize > 1) {
-					GUI_SetColor(RGB_WHITE);
+					GUI.SetColor(RGB_WHITE);
 					GUI_DrawVLine(r.x0 - 1, r.y0, r.y0 + 1);
-					GUI_SetColor(RGB_GRAYL(0x55));
+					GUI.SetColor(RGB_GRAYL(0x55));
 					GUI_DrawVLine(r.x1 + 1, r.y0, r.y0 + 1);
 				}
 			}
 			else {
 				r.y1 += this->pEffect->EffectSize + 1;
 				if (this->pEffect->EffectSize > 1) {
-					GUI_SetColor(RGB_WHITE);
+					GUI.SetColor(RGB_WHITE);
 					GUI_DrawVLine(r.x0 - 1, r.y1 - 2, r.y1 - 1);
-					GUI_SetColor(RGB_GRAYL(0x55));
+					GUI.SetColor(RGB_GRAYL(0x55));
 					GUI_DrawVLine(r.x1 + 1, r.y1 - 2, r.y1 - 1);
 				}
 			}
 		}
-		GUI_SetColor(this->Props.aBkColor[ColorIndex]);
+		GUI.SetColor(this->Props.aBkColor[ColorIndex]);
 		WIDGET__FillRect(this, r);
-		GUI_SetBkColor(this->Props.aBkColor[ColorIndex]);
-		GUI_SetColor(this->Props.aTextColor[ColorIndex]);
+		GUI.SetBkColor(this->Props.aBkColor[ColorIndex]);
+		GUI.SetColor(this->Props.aTextColor[ColorIndex]);
 		GUI_DispStringAt(pText, r.x0 + 4, pRect->y0 + 3);
 	}
 	void _OnPaint() {
@@ -259,7 +259,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 			rClip.y0 = rText.y0 - 1;
 			rClip.y1 = rText.y1 + 1;
 			WM_SetUserClipRect(&rClip);
-			GUI_SetFont(this->Props.Font);
+			GUI_SetFont(this->Props.pFont);
 			for (i = 0; i < this->Handles.NumItems; i++) {
 				pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&this->Handles, i);
 				x0 += w;
@@ -370,7 +370,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 		auto pParent = (MULTIPAGE_Obj *)WM_GetParent(pObj);
 		switch (MsgId) {
 			case WM_PAINT:
-				GUI_SetBkColor(pParent->Props.aBkColor[1]);
+				GUI.SetBkColor(pParent->Props.aBkColor[1]);
 				GUI_Clear();
 				return 0;
 			case WM_TOUCH:
@@ -499,7 +499,7 @@ public:
 	}
 	void SetFont(PCFONT pFont) {
 		if (pFont) {
-			this->Props.Font = pFont;
+			this->Props.pFont = pFont;
 			this->_UpdatePositions();
 		}
 	}

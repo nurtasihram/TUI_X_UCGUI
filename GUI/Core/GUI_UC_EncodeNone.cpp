@@ -57,6 +57,6 @@ const GUI_UC_ENC_APILIST GUI__API_TableNone = {
 };
 
 void GUI_UC_SetEncodeNone(void) {
-  GUI_Context.pUC_API = &GUI__API_TableNone;
+  GUI.pUC_API = &GUI__API_TableNone;
 
 }

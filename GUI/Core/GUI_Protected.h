@@ -38,8 +38,8 @@ GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, 
 
 #endif
 
-#define GUI_UC__GetCharSize(sText)  GUI_Context.pUC_API->pfGetCharSize(sText)
-#define GUI_UC__GetCharCode(sText)  GUI_Context.pUC_API->pfGetCharCode(sText)
+#define GUI_UC__GetCharSize(sText)  GUI.pUC_API->pfGetCharSize(sText)
+#define GUI_UC__GetCharCode(sText)  GUI.pUC_API->pfGetCharCode(sText)
 
 int   GUI_UC__CalcSizeOfChar(uint16_t Char);
 uint16_t   GUI_UC__GetCharCodeInc(const char **ps);
@@ -79,7 +79,6 @@ extern const GUI_LOGPALETTE GUI_CursorPalI;
 
 int GUI_GetBitmapPixel(PCBITMAP pBMP, unsigned x, unsigned y);
 
-extern GUI_CONTEXT GUI_Context;
 extern GUI_tfTimer *GUI_pfTimerExec;
 
 extern const GUI_UC_ENC_APILIST GUI__API_TableNone;

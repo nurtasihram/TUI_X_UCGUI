@@ -5,7 +5,7 @@
 int GUI_UC_GetCharSize(const char  * s) {
   int r;
 
-  r =  GUI_Context.pUC_API->pfGetCharSize(s);
+  r =  GUI.pUC_API->pfGetCharSize(s);
 
   return r;
 }
@@ -13,19 +13,19 @@ int GUI_UC_GetCharSize(const char  * s) {
 uint16_t GUI_UC_GetCharCode(const char  * s) {
   uint16_t r;
 
-  r =  GUI_Context.pUC_API->pfGetCharCode(s);
+  r =  GUI.pUC_API->pfGetCharCode(s);
 
   return r;
 }
 
 int GUI_UC_Encode(char *s, uint16_t Char) {
     int r;
-    r = GUI_Context.pUC_API->pfEncode(s, Char);
+    r = GUI.pUC_API->pfEncode(s, Char);
     return r;
 }
 
 int GUI_UC__CalcSizeOfChar(uint16_t Char) {
-  return GUI_Context.pUC_API->pfCalcSizeOfChar(Char);
+  return GUI.pUC_API->pfCalcSizeOfChar(Char);
 }
 
 uint16_t GUI_UC__GetCharCodeInc(const char  ** ps) {

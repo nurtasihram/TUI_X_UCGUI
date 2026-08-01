@@ -109,21 +109,21 @@ struct DROPDOWN_Obj : public WIDGET {
 		WIDGET__EFFECT_DrawDown(this);
 		/* Draw the outer text frames */
 		r.x1 -= InnerSize;     /* Spare square area to the right */
-		GUI_SetColor(this->Props.aBkColor[ColorIndex]);
+		GUI.SetColor(this->Props.aBkColor[ColorIndex]);
 		/* Draw the text */
-		GUI_SetBkColor(this->Props.aBkColor[ColorIndex]);
+		GUI.SetBkColor(this->Props.aBkColor[ColorIndex]);
 		GUI_FillRect(r);
 		r.x0 += TextBorderSize;
 		r.x1 -= TextBorderSize;
-		GUI_SetColor(this->Props.aTextColor[ColorIndex]);
+		GUI.SetColor(this->Props.aTextColor[ColorIndex]);
 		GUI_DispStringInRect(s, &r, this->Props.Align);/**/
 		/* Draw arrow */
 		r = WM_GetClientRect();
 		r -= Border;
 		r.x0 = r.x1 + 1 - InnerSize;
-		GUI_SetColor(RGB_GRAYL(0xc0));
+		GUI.SetColor(RGB_GRAYL(0xc0));
 		GUI_FillRect(r);
-		GUI_SetColor(RGB_BLACK);
+		GUI.SetColor(RGB_BLACK);
 		_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.y1 - r.y0 - 8) / 2);
 		WIDGET__EFFECT_DrawUpRect(this, r);
 	}
@@ -158,7 +158,7 @@ struct DROPDOWN_Obj : public WIDGET {
 		int Height;
 		Height = this->TextHeight;
 		if (!Height) {
-			Height = GUI_GetYDistOfFont(this->Props.pFont);
+			Height = Props.pFont->DistY();
 		}
 		Height += this->pEffect->EffectSize + 2 * this->Props.TextBorderSize;
 		WM_SetSize(this, WM__GetWindowSizeX(this), Height);
@@ -299,12 +299,12 @@ public:
 	}
 	void SetFont(PCFONT pfont) {
 		int OldHeight;
-		OldHeight = GUI_GetYDistOfFont(this->Props.pFont);
+		OldHeight = Props.pFont->DistY();
 		this->Props.pFont = pfont;
 		_AdjustHeight();
 		WM_Invalidate(this);
 		if (this->pListWin) {
-			if (OldHeight != GUI_GetYDistOfFont(this->Props.pFont)) {
+			if (OldHeight != Props.pFont->DistY()) {
 				Collapse();
 				Expand();
 			}

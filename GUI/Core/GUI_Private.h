@@ -5,15 +5,15 @@
 
 
 #if GUI_SUPPORT_DEVICES
-#define LCDDEV_L0_DrawBitmap GUI_Context.pDeviceAPI->pfDrawBitmap
-#define LCDDEV_L0_DrawHLine  GUI_Context.pDeviceAPI->pfDrawHLine
-#define LCDDEV_L0_DrawVLine  GUI_Context.pDeviceAPI->pfDrawVLine
-#define LCDDEV_L0_DrawPixel  GUI_Context.pDeviceAPI->pfDrawPixel
-#define LCDDEV_L0_FillRect   GUI_Context.pDeviceAPI->pfFillRect
-#define LCDDEV_L0_GetPixel   GUI_Context.pDeviceAPI->pfGetPixel
-#define LCDDEV_L0_GetRect    GUI_Context.pDeviceAPI->pfGetRect
-#define LCDDEV_L0_GetPixel   GUI_Context.pDeviceAPI->pfGetPixel
-#define LCDDEV_L0_SetPixel   GUI_Context.pDeviceAPI->pfSetPixel
+#define LCDDEV_L0_DrawBitmap GUI.pDeviceAPI->pfDrawBitmap
+#define LCDDEV_L0_DrawHLine  GUI.pDeviceAPI->pfDrawHLine
+#define LCDDEV_L0_DrawVLine  GUI.pDeviceAPI->pfDrawVLine
+#define LCDDEV_L0_DrawPixel  GUI.pDeviceAPI->pfDrawPixel
+#define LCDDEV_L0_FillRect   GUI.pDeviceAPI->pfFillRect
+#define LCDDEV_L0_GetPixel   GUI.pDeviceAPI->pfGetPixel
+#define LCDDEV_L0_GetRect    GUI.pDeviceAPI->pfGetRect
+#define LCDDEV_L0_GetPixel   GUI.pDeviceAPI->pfGetPixel
+#define LCDDEV_L0_SetPixel   GUI.pDeviceAPI->pfSetPixel
 #else
 #define LCDDEV_L0_DrawBitmap LCD_L0_DrawBitmap
 #define LCDDEV_L0_DrawHLine  LCD_L0_DrawHLine

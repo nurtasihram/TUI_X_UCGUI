@@ -5,9 +5,9 @@
 
 extern const struct tLCDDEV_APIList_struct *LCD_aAPI[1];
 
-#define LCD_BKCOLORINDEX GUI_Context.aColor[0]
-#define LCD_COLORINDEX   GUI_Context.aColor[1]
-#define LCD_ACOLORINDEX  GUI_Context.aColor
+#define LCD_BKCOLORINDEX GUI.aColor[0]
+#define LCD_COLORINDEX   GUI.aColor[1]
+#define LCD_ACOLORINDEX  GUI.aColor
 
 void LCD_DrawBitmap(int x0, int y0,
                     int xsize, int ysize,

@@ -67,7 +67,7 @@ WM_Obj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags
 	if (xSizeFrame < (xSizeMessage + 4 + MESSAGEBOX_BORDER * 2)) {
 		xSizeFrame = xSizeMessage + 4 + MESSAGEBOX_BORDER * 2;
 	}
-	ySizeCaption = GUI_GetYSizeOfFont(GUI_DEFAULT_FONT);//FRAMEWIN_Obj::DefaultProps.pFont);
+	ySizeCaption = (GUI_DEFAULT_FONT)->SizeY();//FRAMEWIN_Obj::DefaultProps.pFont);
 	ySizeFrame = ySizeMessage +            /* size of message */
 		MESSAGEBOX_YSIZEOK +      /* size of button */
 		ySizeCaption +            /* caption size */

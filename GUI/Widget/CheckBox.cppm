@@ -53,10 +53,10 @@ struct CHECKBOX_Obj : public WIDGET {
 #endif
 		{
 			if (this->Props.BkColor == RGB_INVALID_COLOR) {
-				GUI_SetBkColor(WIDGET__GetBkColor(this));
+				GUI.SetBkColor(WIDGET__GetBkColor(this));
 			}
 			else {
-				GUI_SetBkColor(this->Props.BkColor);
+				GUI.SetBkColor(this->Props.BkColor);
 			}
 			GUI_Clear();
 		}
@@ -66,7 +66,7 @@ struct CHECKBOX_Obj : public WIDGET {
 		RectBox.y1 = this->Props.apBm[0]->YSize - 1 + 2 * EffectSize;
 		WM_SetUserClipRect(&RectBox);
 		/* Clear inside  ... Just in case */
-		GUI_SetBkColor(this->Props.aBkColorBox[ColorIndex]);
+		GUI.SetBkColor(this->Props.aBkColorBox[ColorIndex]);
 		GUI_Clear();
 		if (this->CurrentState)
 			GUI_DrawBitmap(this->Props.apBm[(this->CurrentState - 1) * 2 + ColorIndex], EffectSize, EffectSize);
@@ -80,14 +80,14 @@ struct CHECKBOX_Obj : public WIDGET {
 			auto s = this->pText;
 			RectText = WM_GetClientRect();
 			RectText.x0 += RectBox.x1 + 1 + this->Props.Spacing;
-			GUI_SetTextMode(DRAWMODE_TRANS);
-			GUI_SetColor(this->Props.TextColor);
+			GUI.SetTextMode(DRAWMODE_TRANS);
+			GUI.SetColor(this->Props.TextColor);
 			GUI_SetFont(this->Props.pFont);
 			GUI_DispStringInRect(s, &RectText, this->Props.Align);
 			/* Draw focus rectangle */
 			if (this->State & WIDGET_STATE_FOCUS) {
 				int xSizeText = GUI_GetStringDistX(s);
-				int ySizeText = GUI_GetFontSizeY();
+				int ySizeText = Props.pFont->SizeY();
 				GUI_RECT RectFocus = RectText;
 				switch (this->Props.Align & ~(TEXTALIGN_HORIZONTAL)) {
 					case TEXTALIGN_VCENTER:
@@ -107,7 +107,7 @@ struct CHECKBOX_Obj : public WIDGET {
 				}
 				RectFocus.x1 = RectFocus.x0 + xSizeText;
 				RectFocus.y1 = RectFocus.y0 + ySizeText;
-				GUI_SetColor(RGB_BLACK);
+				GUI.SetColor(RGB_BLACK);
 				WIDGET__DrawFocusRect(this, RectFocus, 0);
 			}
 		}
