@@ -133,7 +133,7 @@ struct MENU_Obj : public WIDGET {
 	int _GetEffectSize() {
 		int r = 0;
 		if (this->_HasEffect()) {
-			r = this->pEffect->EffectSize;
+			r = this->EffectSize();
 		}
 		return r;
 	}

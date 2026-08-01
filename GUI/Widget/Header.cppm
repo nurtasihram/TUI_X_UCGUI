@@ -39,7 +39,7 @@ struct HEADER_Obj : public WIDGET {
 	void _OnPaint() {
 		int xPos = -ScrollPos;
 		int NumItems = GUI_ARRAY_GetNumItems(&Columns);
-		int EffectSize = pEffect->EffectSize;
+		int EffectSize = this->EffectSize();
 		GUI_RECT Rect;
 		GUI.SetBkColor(Props.BkColor);
 		GUI_SetFont(Props.pFont);
@@ -71,7 +71,7 @@ struct HEADER_Obj : public WIDGET {
 				pDraw->Draw(xPos + xOff, yOff);
 				WM_SetUserClipRect(nullptr);
 			}
-			WIDGET__EFFECT_DrawUpRect(this, Rect);
+			DrawUp(Rect);
 			xPos += Rect.x1 - Rect.x0;
 			Rect.x0 += EffectSize + Props.BorderH;
 			Rect.x1 -= EffectSize + Props.BorderH;
@@ -83,7 +83,7 @@ struct HEADER_Obj : public WIDGET {
 		Rect = WM_GetClientRect();
 		Rect.x0 = xPos;
 		Rect.x1 = 0xfff;
-		WIDGET__EFFECT_DrawUpRect(this, Rect);
+		DrawUp(Rect);
 	}
 	void _RestoreOldCursor(void) {
 		if (_pOldCursor) {
@@ -109,7 +109,7 @@ struct HEADER_Obj : public WIDGET {
 #if (HEADER_SUPPORT_DRAG)
 	int _GetItemIndex(int x, int y) {
 		if ((y >= 0) && (y < WM_GetWindowSizeY(this))) {
-			int xPos = pEffect->EffectSize;
+			int xPos = this->EffectSize();
 			for (int Index = 0, NumColumns = GUI_ARRAY_GetNumItems(&Columns); Index < NumColumns; ++Index) {
 				auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
 				xPos += pColumn->Width;
@@ -243,7 +243,7 @@ public:
 		Column Col;
 		if (!Width) {
 			PCFONT pFont = GUI_SetFont(Props.pFont);
-			Width = GUI_GetStringDistX(s) + 2 * (pEffect->EffectSize + Props.BorderH);
+			Width = GUI_GetStringDistX(s) + 2 * (this->EffectSize() + Props.BorderH);
 			GUI_SetFont(pFont);
 		}
 		Col.Width = Width;

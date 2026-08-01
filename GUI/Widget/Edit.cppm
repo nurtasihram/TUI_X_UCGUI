@@ -140,7 +140,7 @@ struct EDIT_Obj : public WIDGET {
 #endif
 				GUI_DrawRect({ rInvert.x0, rInvert.y0, rInvert.x0 + CursorWidth, rInvert.y1 });
 		}
-		WIDGET__EFFECT_DrawDown(this);
+		DrawDown();
 	}
 	void _Delete() {
 		GUI_ALLOC_FreePtr((void **)&this->pText);
@@ -181,7 +181,7 @@ struct EDIT_Obj : public WIDGET {
 					xPos -= xSize - TextWidth - (this->Props.Border + EDIT_XOFF);
 					break;
 				default:
-					xPos -= (this->Props.Border + EDIT_XOFF) + this->pEffect->EffectSize;
+					xPos -= (this->Props.Border + EDIT_XOFF) + this->EffectSize();
 			}
 			NumChars = GUI__GetNumChars(pText);
 			if (xPos < 0) {

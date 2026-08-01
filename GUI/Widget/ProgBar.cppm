@@ -31,7 +31,7 @@ struct PROGBAR_Obj : public WIDGET {
 		GUI_ALLOC_FreePtr((void **)&pText);
 	}
 	int _Value2X(int v) {
-		int EffectSize = pEffect->EffectSize;
+		int EffectSize = this->EffectSize();
 		int xSize = Rect.x1 - Rect.x0 + 1;
 		if (v < Min) {
 			v = Min;
@@ -79,7 +79,7 @@ struct PROGBAR_Obj : public WIDGET {
 		int ySize = Rect.y1 - Rect.y0 + 1;
 		int TextWidth = GUI_GetStringDistX(pText);
 		int TextHeight = Props.pFont->SizeY();
-		int EffectSize = pEffect->EffectSize;
+		int EffectSize = this->EffectSize();
 		switch (Props.Align & TEXTALIGN_HORIZONTAL) {
 			case TEXTALIGN_CENTER:
 				pRect->x0 = (xSize - TextWidth) / 2;
@@ -102,7 +102,7 @@ struct PROGBAR_Obj : public WIDGET {
 		char ac[5];
 		int xPos;
 		auto rClient = WM_GetClientRect();
-		rInside = rClient - pEffect->EffectSize;
+		rInside = rClient - EffectSize();
 		xPos = _Value2X(v);
 		pText = _GetText(ac);
 		GUI_SetFont(Props.pFont);
@@ -119,7 +119,7 @@ struct PROGBAR_Obj : public WIDGET {
 		WM_SetUserClipRect(&r);
 		_DrawPart(1, rText.x0, rText.y0, pText);
 		WM_SetUserClipRect(nullptr);
-		WIDGET__EFFECT_DrawDownRect(this, rClient);
+		DrawDown(rClient);
 	}
 	void _Delete() {
 		_FreeText();

@@ -33,6 +33,18 @@ struct GUI_RECT {
 
 	inline auto XSize() const { return x1 - x0 + 1; }
 	inline auto YSize() const { return y1 - y0 + 1; }
+	inline auto Size() const { return GUI_POINT{ XSize(), YSize() }; }
+
+	inline auto DistX() const { return x1 - x0; }
+	inline auto DistY() const { return y1 - y0; }
+	inline  auto Dist() const { return GUI_POINT{ DistX(), DistY() }; }
+
+	inline GUI_RECT Rotate90L(int16_t XSize) const {
+		return{ XSize - y1, x0, XSize - y0, x1 };
+	}
+	inline GUI_RECT Rotate90R(int16_t YSize) const {
+		return{ y0, YSize - x1, y1, YSize - x0 };
+	}
 
 	inline GUI_RECT operator~() const { return{ y0, x0, y1, x1 }; }
 
@@ -85,6 +97,11 @@ struct GUI_RECT {
 		return
 			r.x0 <= x1 && r.y0 <= y1 &&
 			r.x1 >= x0 && r.y1 >= y0;
+	}
+	bool operator<=(const GUI_POINT &pt) {
+		return
+			x0 <= pt.x && pt.x <= x1 &&
+			y0 <= pt.y && pt.y <= y1;
 	}
 
 	inline operator bool() const {

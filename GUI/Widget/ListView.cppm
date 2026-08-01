@@ -97,7 +97,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		RowDistY = _GetRowDistY();
 		LBorder = this->LBorder;
 		RBorder = this->RBorder;
-		EffectSize = this->pEffect->EffectSize;
+		EffectSize = this->EffectSize();
 		yPos = pHeader->GetHeight() + EffectSize;
 		EndRow = this->ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
 		/* Calculate clipping rectangle */
@@ -208,7 +208,7 @@ struct LISTVIEW_Obj : public WIDGET {
 			}
 		}
 		/* Draw the effect */
-		WIDGET__EFFECT_DrawDown(this);
+		DrawDown();
 	}
 	void _InvalidateRowAndBelow(int Sel) {
 		if (Sel >= 0) {

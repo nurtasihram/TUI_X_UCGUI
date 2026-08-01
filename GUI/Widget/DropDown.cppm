@@ -97,7 +97,7 @@ struct DROPDOWN_Obj : public WIDGET {
 		int InnerSize, ColorIndex;
 		int TextBorderSize;
 		/* Do some initial calculations */
-		Border = this->pEffect->EffectSize;
+		Border = this->EffectSize();
 		TextBorderSize = this->Props.TextBorderSize;
 		GUI_SetFont(this->Props.pFont);
 		ColorIndex = (this->State & WIDGET_STATE_FOCUS) ? 2 : 1;
@@ -106,7 +106,7 @@ struct DROPDOWN_Obj : public WIDGET {
 		r -= Border;
 		InnerSize = r.y1 - r.y0 + 1;
 		/* Draw the 3D effect (if configured) */
-		WIDGET__EFFECT_DrawDown(this);
+		DrawDown();
 		/* Draw the outer text frames */
 		r.x1 -= InnerSize;     /* Spare square area to the right */
 		GUI.SetColor(this->Props.aBkColor[ColorIndex]);
@@ -125,7 +125,7 @@ struct DROPDOWN_Obj : public WIDGET {
 		GUI_FillRect(r);
 		GUI.SetColor(RGB_BLACK);
 		_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.y1 - r.y0 - 8) / 2);
-		WIDGET__EFFECT_DrawUpRect(this, r);
+		DrawUp(r);
 	}
 	void _OnTouch(const GUI_PID_STATE *pState) {
 		if (pState) { /* Something happened in our area (pressed or released) */
@@ -160,7 +160,7 @@ struct DROPDOWN_Obj : public WIDGET {
 		if (!Height) {
 			Height = Props.pFont->DistY();
 		}
-		Height += this->pEffect->EffectSize + 2 * this->Props.TextBorderSize;
+		Height += this->EffectSize() + 2 * this->Props.TextBorderSize;
 		WM_SetSize(this, WM__GetWindowSizeX(this), Height);
 	}
 
