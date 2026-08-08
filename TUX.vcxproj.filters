@@ -208,6 +208,7 @@
     <ClCompile Include="GUI\Core\GUITimer.cppm">
       <Filter>GUI\Core</Filter>
     </ClCompile>
+    <ClCompile Include="GUI_ARRAY.cppm" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">

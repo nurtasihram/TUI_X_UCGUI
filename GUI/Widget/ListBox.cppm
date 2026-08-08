@@ -56,7 +56,7 @@ struct LISTBOX_Obj : public WIDGET {
 		uint8_t ScrollStepH{ 10 };
 	} static DefaultProps;
 	Properties Props;
-	GUI_ARRAY_T<LISTBOX_ITEM> ItemArray;
+	ARRAY<LISTBOX_ITEM> ItemArray;
 	WIDGET_DRAW_ITEM_FUNC *pfDrawItem;
 	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
 	WM_Obj *pOwner;

@@ -39,7 +39,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 	} static DefaultProps;
 	Properties Props;
 	WM_Obj *pClient;
-	GUI_ARRAY_T<MULTIPAGE_PAGE> Handles;
+	ARRAY<MULTIPAGE_PAGE> Handles;
 	unsigned Selection;
 	int ScrollState;
 

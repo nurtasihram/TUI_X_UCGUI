@@ -42,8 +42,8 @@ struct LISTVIEW_Obj : public WIDGET {
 		char *pText;
 	};
 	HEADER_Obj *pHeader;
-	GUI_ARRAY_T<GUI_ARRAY_T<Item>> RowArray; /* One entry per line. Every entry is a GUI_ARRAY_T<Item> */
-	GUI_ARRAY_T<int>       AlignArray; /* One entry per column */
+	ARRAY<ARRAY<Item>> RowArray; /* One entry per line. Every entry is a ARRAY<Item> */
+	ARRAY<int>       AlignArray; /* One entry per column */
 	int16_t     Sel;
 	bool        ShowGrid;
 	uint16_t    RowDistY, LBorder, RBorder;
@@ -449,7 +449,7 @@ public:
 	void AddRow(const char **ppText) {
 		int NumRows;
 		NumRows = RowArray.GetNumItems();
-		/* Create GUI_ARRAY_T<Item> for the new row */
+		/* Create ARRAY<Item> for the new row */
 		if (RowArray.AddItem() == 0) {
 			int i, NumColumns;
 			const char *s;

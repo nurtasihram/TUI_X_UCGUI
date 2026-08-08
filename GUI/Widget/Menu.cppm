@@ -94,7 +94,7 @@ struct MENU_Obj : public WIDGET {
 		PCFONT pFont{ &FontProp13_1 };
 	} static DefaultProps;
 	Properties Props;
-	GUI_ARRAY_T<MENU_ITEM> ItemArray;
+	ARRAY<MENU_ITEM> ItemArray;
 	WM_Obj *pOwner;
 	uint16_t Flags;
 	char IsSubmenuActive;
@@ -751,10 +751,15 @@ public:
 		if (Item.Flags & MENU_IF_SEPARATOR) {
 			Item.pSubmenu = nullptr;   /* Ensures that no separator is a submenu */
 		}
-		if (auto pItem = this->ItemArray.SetItem(Index, &Item)) {
-			GUI__SetText(&pItem->pText, pText);
+		if (Index < this->ItemArray.GetNumItems()) {
+			auto &pItem = this->ItemArray[Index];
+			GUI__SetText(&pItem.pText, pText);
+			pItem.Id       = Item.Id;
+			pItem.Flags    = Item.Flags;
+			pItem.pSubmenu = Item.pSubmenu;
+			pItem.TextWidth= Item.TextWidth;
 			if (Item.pSubmenu)
-				pItem->pSubmenu->SetOwner(this);
+				pItem.pSubmenu->SetOwner(this);
 			return 1;
 		}
 		return 0;

@@ -34,7 +34,7 @@ struct RADIO_Obj : public WIDGET {
 		PCBITMAP pBmCheck{ &_bmCheck };
 	} static DefaultProps;
 	Properties Props;
-	GUI_ARRAY_T<char *> TextArray;
+	ARRAY<char *> TextArray;
 	int16_t Sel; /* current selection */
 	uint16_t Spacing;
 	uint16_t Height;

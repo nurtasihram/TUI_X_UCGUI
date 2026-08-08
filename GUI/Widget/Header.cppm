@@ -31,7 +31,7 @@ struct HEADER_Obj : public WIDGET {
 		GUI_DRAW *pDrawObj;
 		char *pText;
 	};
-	GUI_ARRAY_T<Column> Columns;
+	ARRAY<Column> Columns;
 	int16_t CapturePosX = -1;
 	int16_t CaptureItem = -1;
 	uint16_t ScrollPos = 0;

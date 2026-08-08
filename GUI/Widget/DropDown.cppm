@@ -41,7 +41,7 @@ struct DROPDOWN_Obj : public WIDGET {
 	int16_t    Sel;      /* current selection */
 	int16_t    ySizeEx;  /* Drop down size */
 	int16_t    TextHeight;
-	GUI_ARRAY_T<char *> Handles;
+	ARRAY<char *> Handles;
 	WM_SCROLL_STATE ScrollState;
 	LISTBOX_Obj *pListWin;
 	uint8_t  Flags;
