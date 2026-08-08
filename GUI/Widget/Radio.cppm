@@ -1,4 +1,4 @@
-module;
+﻿module;
 
 #include "DIALOG_Intern.h"
 
@@ -90,7 +90,7 @@ struct RADIO_Obj : public WIDGET {
 							   RADIO_BORDER + ((pBmRadio->YSize - pBmCheck->YSize) / 2) + y);
 			}
 			/* Draw text if available */
-			pText = (const char *)GUI_ARRAY_GetpItem(&this->TextArray, i);
+			pText = (const char *)this->TextArray.GetItem(i);
 			if (pText) {
 				if (*pText) {
 					r = Rect;
@@ -175,7 +175,7 @@ struct RADIO_Obj : public WIDGET {
 					return 0;
 				break;
 			case WM_DELETE:
-				GUI_ARRAY_Delete(&pObj->TextArray);
+				pObj->TextArray.Delete();
 				return 0;
 		}
 		return WM_DefaultProc(hWin, MsgId, Data);
@@ -274,7 +274,7 @@ public:
 	void SetFont(PCFONT pFont) {
 		if (pFont != Props.pFont) {
 			Props.pFont = pFont;
-			if (GUI_ARRAY_GetNumItems(&TextArray))
+			if (TextArray.GetNumItems())
 				WM_Invalidate(this);
 		}
 	}
@@ -319,14 +319,14 @@ public:
 	}
 	void SetText(const char *pText, unsigned Index) {
 		if (Index < (unsigned)NumItems) {
-			GUI_ARRAY_SetItem(&TextArray, Index, pText, pText ? (GUI__strlen(pText) + 1) : 0);
+			TextArray.SetItem(Index, pText, pText ? (GUI__strlen(pText) + 1) : 0);
 			WM_Invalidate(this);
 		}
 	}
 	void SetTextColor(RGBC Color) {
 		if (Color != Props.TextColor) {
 			Props.TextColor = Color;
-			if (GUI_ARRAY_GetNumItems(&TextArray)) {
+			if (TextArray.GetNumItems()) {
 				WM_Invalidate(this);
 			}
 		}
@@ -355,7 +355,7 @@ RADIO_Obj *RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParent,
 	auto pObj = (RADIO_Obj *)WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent, WinFlags, RADIO_Obj::_Callback, sizeof(RADIO_Obj) - sizeof(WM_Obj));
 	if (pObj) {
 		for (int i = 0; i < NumItems; i++)
-			GUI_ARRAY_AddItem(&pObj->TextArray, nullptr, 0);
+			pObj->TextArray.AddItem(nullptr, 0);
 		/* Init widget specific variables */
 		ExFlags &= RADIO_TEXTPOS_LEFT;
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | ExFlags);

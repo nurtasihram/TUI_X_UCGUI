@@ -1,4 +1,4 @@
-module;
+﻿module;
 
 #include "DIALOG_Intern.h"
 
@@ -29,7 +29,7 @@ struct HEADER_Obj : public WIDGET {
 		int16_t Width;
 		TEXTALIGN Align;
 		GUI_DRAW *pDrawObj;
-		char acText[1];
+		char *pText;
 	};
 	GUI_ARRAY Columns;
 	int16_t CapturePosX = -1;
@@ -38,14 +38,14 @@ struct HEADER_Obj : public WIDGET {
 
 	void _OnPaint() {
 		int xPos = -ScrollPos;
-		int NumItems = GUI_ARRAY_GetNumItems(&Columns);
+		int NumItems = Columns.GetNumItems();
 		int EffectSize = this->EffectSize();
 		RECT Rect;
 		GUI.SetBkColor(Props.BkColor);
 		GUI_SetFont(Props.pFont);
 		GUI_Clear();
 		for (int i = 0; i < NumItems; i++) {
-			auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, i);
+			auto pColumn = (Column *)Columns.GetItem(i);
 			Rect = WM_GetClientRect();
 			Rect.x0 = xPos;
 			Rect.x1 = Rect.x0 + pColumn->Width;
@@ -78,7 +78,7 @@ struct HEADER_Obj : public WIDGET {
 			Rect.y0 += EffectSize + Props.BorderV;
 			Rect.y1 -= EffectSize + Props.BorderV;
 			GUI.SetColor(Props.TextColor);
-			GUI_DispStringInRect(pColumn->acText, &Rect, pColumn->Align);
+			GUI_DispStringInRect(pColumn->pText, &Rect, pColumn->Align);
 		}
 		Rect = WM_GetClientRect();
 		Rect.x0 = xPos;
@@ -95,27 +95,28 @@ struct HEADER_Obj : public WIDGET {
 	}
 	void _FreeAttached() {
 		int i, NumItems;
-		NumItems = GUI_ARRAY_GetNumItems(&Columns);
+		NumItems = Columns.GetNumItems();
 		for (i = 0; i < NumItems; i++) {
-			auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, i);
+			auto pColumn = (Column *)Columns.GetItem(i);
+			GUI_ALLOC_FreePtr((void **)&pColumn->pText);
 			if (pColumn->pDrawObj) {
 				GUI_ALLOC_Free(pColumn->pDrawObj);
 			}
 		}
 		/* Delete attached objects (if any) */
-		GUI_ARRAY_Delete(&Columns);
+		Columns.Delete();
 		_RestoreOldCursor();
 	}
 #if (HEADER_SUPPORT_DRAG)
 	int _GetItemIndex(int x, int y) {
 		if ((y >= 0) && (y < GetSizeY())) {
 			int xPos = this->EffectSize();
-			for (int Index = 0, NumColumns = GUI_ARRAY_GetNumItems(&Columns); Index < NumColumns; ++Index) {
-				auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
+			for (int Index = 0, NumColumns = Columns.GetNumItems(); Index < NumColumns; ++Index) {
+				auto pColumn = (Column *)Columns.GetItem(Index);
 				xPos += pColumn->Width;
 				if (x - 4 <= xPos && xPos <= x + 4) {
 					if (Index < NumColumns && x < xPos) {
-						pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
+						pColumn = (Column *)Columns.GetItem(Index);
 						if (pColumn->Width)
 							return Index;
 					}
@@ -223,9 +224,9 @@ public:
 		WM_Invalidate(this);
 	}
 	void SetTextAlign(unsigned int Index, int Align) {
-		if (Index <= GUI_ARRAY_GetNumItems(&Columns)) {
+		if (Index <= Columns.GetNumItems()) {
 			Column *pColumn;
-			pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
+			pColumn = (Column *)Columns.GetItem(Index);
 			pColumn->Align = Align;
 			WM_Invalidate(this);
 		}
@@ -240,7 +241,7 @@ public:
 		}
 	}
 	void AddItem(int Width, const char *s, int Align) {
-		Column Col;
+		Column Col = {};
 		if (!Width) {
 			PCFONT pFont = GUI_SetFont(Props.pFont);
 			Width = GUI_GetStringDistX(s) + 2 * (this->EffectSize() + Props.BorderH);
@@ -249,34 +250,35 @@ public:
 		Col.Width = Width;
 		Col.Align = Align;
 		Col.pDrawObj = 0;
-		int Index = GUI_ARRAY_GetNumItems(&Columns);
-		if (GUI_ARRAY_AddItem(&Columns, &Col, sizeof(Column) + GUI__strlen(s) + 1) == 0) {
-			auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
-			GUI__strcpy(pColumn->acText, s);
+		int Index = Columns.GetNumItems();
+		if (Columns.AddItem(&Col, sizeof(Column)) == 0) {
+			auto pColumn = (Column *)Columns.GetItem(Index);
+			GUI__SetText(&pColumn->pText, s);
 			WM_Invalidate(this);
 			WM_Invalidate(Parent());
 		}
 	}
 	void DeleteItem(unsigned Index) {
-		if (Index < GUI_ARRAY_GetNumItems(&Columns)) {
-			GUI_ARRAY_DeleteItem(&Columns, Index);
+		if (Index < Columns.GetNumItems()) {
+			if (auto pColumn = (Column *)Columns.GetItem(Index))
+				GUI_ALLOC_FreePtr((void **)&pColumn->pText);
+			Columns.DeleteItem(Index);
 			WM_Invalidate(this);
 			WM_Invalidate(Parent());
 		}
 	}
 	void SetItemText(unsigned int Index, const char *s) {
-		if (Index < GUI_ARRAY_GetNumItems(&Columns)) {
-			auto pColumn = (Column *)GUI_ARRAY_ResizeItem(&Columns, Index, sizeof(Column) + GUI__strlen(s));
-			if (pColumn) {
-				GUI__strcpy(pColumn->acText, s);
-			}
+		if (Index < Columns.GetNumItems()) {
+			auto pColumn = (Column *)Columns.GetItem(Index);
+			if (pColumn && GUI__SetText(&pColumn->pText, s))
+				WM_Invalidate(this);
 		}
 	}
 	void SetItemWidth(unsigned int Index, int Width) {
 		if ((Width >= 0)) {
 
-			if (Index <= GUI_ARRAY_GetNumItems(&Columns)) {
-				auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
+			if (Index <= Columns.GetNumItems()) {
+				auto pColumn = (Column *)Columns.GetItem(Index);
 				if (pColumn) {
 					pColumn->Width = Width;
 					WM_Invalidate(this);
@@ -296,9 +298,9 @@ public:
 	}
 	int GetItemWidth(unsigned int Index) {
 		int Width = 0;
-		if (Index <= GUI_ARRAY_GetNumItems(&Columns)) {
+		if (Index <= Columns.GetNumItems()) {
 			Column *pColumn;
-			pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
+			pColumn = (Column *)Columns.GetItem(Index);
 			Width = pColumn->Width;
 		}
 
@@ -306,13 +308,13 @@ public:
 	}
 	int  GetNumItems() {
 		int NumCols = 0;
-		NumCols = GUI_ARRAY_GetNumItems(&Columns);
+		NumCols = Columns.GetNumItems();
 		return NumCols;
 	}
 
 	void _SetDrawObj(unsigned Index, GUI_DRAW *pDrawObj) {
-		if (Index <= GUI_ARRAY_GetNumItems(&Columns)) {
-			auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
+		if (Index <= Columns.GetNumItems()) {
+			auto pColumn = (Column *)Columns.GetItem(Index);
 			if (pColumn) {
 				GUI_ALLOC_FreePtr((void **)&pColumn->pDrawObj);
 				pColumn->pDrawObj = pDrawObj;

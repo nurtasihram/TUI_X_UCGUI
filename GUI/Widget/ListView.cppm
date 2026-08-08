@@ -1,4 +1,4 @@
-module;
+﻿module;
 
 #include "DIALOG_Intern.h"
 
@@ -39,7 +39,7 @@ struct LISTVIEW_Obj : public WIDGET {
 	};
 	struct Item {
 		WM_HMEM hItemInfo;
-		char acText[1];
+		char *pText;
 	};
 	HEADER_Obj *pHeader;
 	GUI_ARRAY   RowArray;         /* One entry per line. Every entry is a handle of GUI_ARRAY of strings */
@@ -92,7 +92,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		int Align, i, j, EndRow;
 		/* Init some values */
 		NumColumns = pHeader->GetNumItems();
-		NumRows = GUI_ARRAY_GetNumItems(&this->RowArray);
+		NumRows = RowArray.GetNumItems();
 		NumVisRows = _GetNumVisibleRows();
 		RowDistY = _GetRowDistY();
 		LBorder = this->LBorder;
@@ -110,7 +110,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		/* Do the drawing */
 		for (i = this->ScrollStateV.v; i < EndRow; i++) {
-			pRow = (const GUI_ARRAY *)GUI_ARRAY_GetpItem(&this->RowArray, i);
+			pRow = (const GUI_ARRAY *)this->RowArray.GetItem(i);
 			if (pRow) {
 				Rect.y0 = yPos;
 				/* Break when all other rows are outside the drawing area */
@@ -145,7 +145,7 @@ struct LISTVIEW_Obj : public WIDGET {
 						/* Make sure that we draw only when column is in drawing area */
 						if (Rect.x1 >= ClipRect.x0) {
 							Item *pItem;
-							pItem = (Item *)GUI_ARRAY_GetpItem(pRow, j);
+							pItem = (Item *)pRow->GetItem(j);
 							if (pItem->hItemInfo) {
 								ItemInfo *pItemInfo;
 								pItemInfo = (ItemInfo *)(pItem->hItemInfo);
@@ -160,8 +160,8 @@ struct LISTVIEW_Obj : public WIDGET {
 							/* Draw text */
 							Rect.x0 += LBorder;
 							Rect.x1 -= RBorder;
-							Align = *((int *)GUI_ARRAY_GetpItem(&this->AlignArray, j));
-							GUI_DispStringInRect(pItem->acText, &Rect, Align);
+							Align = *((int *)this->AlignArray.GetItem(j));
+							GUI_DispStringInRect(pItem->pText, &Rect, Align);
 							if (pItem->hItemInfo)
 								GUI.SetBkColor(Props.aBkColor[ColorIndex]);
 						}
@@ -253,7 +253,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		if ((x >= 0) && (x <= Rect.x1) && (y >= 0) && (y <= (Rect.y1 - HeaderHeight))) {
 			unsigned Sel;
 			Sel = (y / _GetRowDistY()) + this->ScrollStateV.v;
-			if (Sel < GUI_ARRAY_GetNumItems(&this->RowArray)) {
+			if (Sel < RowArray.GetNumItems()) {
 				SetSel(Sel);
 			}
 		}
@@ -315,7 +315,7 @@ struct LISTVIEW_Obj : public WIDGET {
 	}
 	int _UpdateScrollParas() {
 		int NumRows;
-		NumRows = GUI_ARRAY_GetNumItems(&this->RowArray);
+		NumRows = RowArray.GetNumItems();
 		/* update vertical scrollbar */
 		this->ScrollStateV.PageSize = _GetNumVisibleRows();
 		this->ScrollStateV.NumItems = (NumRows) ? NumRows : 1;
@@ -326,30 +326,31 @@ struct LISTVIEW_Obj : public WIDGET {
 	}
 	void _FreeAttached() {
 		int i, j, NumRows, NumColumns;
-		NumRows = GUI_ARRAY_GetNumItems(&this->RowArray);
-		NumColumns = GUI_ARRAY_GetNumItems(&this->AlignArray);
+		NumRows = RowArray.GetNumItems();
+		NumColumns = AlignArray.GetNumItems();
 		for (i = 0; i < NumRows; i++) {
 			GUI_ARRAY *pRow;
-			pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&this->RowArray, i);
+			pRow = (GUI_ARRAY *)this->RowArray.GetItem(i);
 			/* Delete attached info items */
 			for (j = 0; j < NumColumns; j++) {
 				Item *pItem;
-				pItem = (Item *)GUI_ARRAY_GetpItem(pRow, j);
+				pItem = (Item *)pRow->GetItem(j);
+				GUI_ALLOC_FreePtr((void **)&pItem->pText);
 				if (pItem->hItemInfo) {
 					GUI_ALLOC_Free(pItem->hItemInfo);
 				}
 			}
 			/* Delete row */
-			GUI_ARRAY_Delete(pRow);
+			pRow->Delete();
 		}
-		GUI_ARRAY_Delete(&this->AlignArray);
-		GUI_ARRAY_Delete(&this->RowArray);
+		this->AlignArray.Delete();
+		this->RowArray.Delete();
 	}
 	ItemInfo *_GetpItemInfo(unsigned Column, unsigned Row, unsigned int Index) {
 		ItemInfo *pItemInfo = 0;
 		Item *pItem;
 		if ((Column < GetNumColumns()) && (Row < GetNumRows()) && (Index < GUI_COUNTOF(pItemInfo->aTextColor))) {
-			pItem = (Item *)GUI_ARRAY_GetpItem((GUI_ARRAY *)GUI_ARRAY_GetpItem(&RowArray, Row), Column);
+			pItem = (Item *)((GUI_ARRAY *)RowArray.GetItem(Row))->GetItem(Column);
 			if (!pItem->hItemInfo) {
 				int i;
 				pItem->hItemInfo = GUI_ALLOC_AllocZero(sizeof(ItemInfo));
@@ -440,14 +441,14 @@ public:
 	void AddColumn(int Width, const char *s, int Align) {
 		unsigned NumRows;
 		pHeader->AddItem(Width, s, Align);   /* Modify header */
-		GUI_ARRAY_AddItem(&AlignArray, &Align, sizeof(int));
+		AlignArray.AddItem(&Align, sizeof(int));
 		NumRows = GetNumRows();
 		if (NumRows) {
 			GUI_ARRAY *pRow;
 			unsigned i;
 			for (i = 0; i < NumRows; i++) {
-				pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&RowArray, i);
-				GUI_ARRAY_AddItem(pRow, nullptr, sizeof(Item) + 1);
+				pRow = (GUI_ARRAY *)RowArray.GetItem(i);
+				pRow->AddItem(nullptr, sizeof(Item));
 			}
 		}
 		_UpdateScrollParas();
@@ -455,9 +456,9 @@ public:
 	}
 	void AddRow(const char **ppText) {
 		int NumRows;
-		NumRows = GUI_ARRAY_GetNumItems(&RowArray);
+		NumRows = RowArray.GetNumItems();
 		/* Create GUI_ARRAY for the new row */
-		if (GUI_ARRAY_AddItem(&RowArray, nullptr, sizeof(GUI_ARRAY)) == 0) {
+		if (RowArray.AddItem(nullptr, sizeof(GUI_ARRAY)) == 0) {
 			int i, NumColumns, NumBytes;
 			GUI_ARRAY *pRow;
 			const char *s;
@@ -465,59 +466,59 @@ public:
 			NumColumns = pHeader->GetNumItems();
 			for (i = 0; i < NumColumns; i++) {
 				Item *pItem;
-				pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&RowArray, NumRows);
+				pRow = (GUI_ARRAY *)RowArray.GetItem(NumRows);
 				s = (ppText) ? *ppText++ : 0;
 				if (s == 0) {
 					ppText = 0;
 				}
 				NumBytes = GUI__strlen(s) + 1;     /* 0 if no string is specified (s == nullptr) */
-				GUI_ARRAY_AddItem(pRow, nullptr, sizeof(Item) + NumBytes);
-				pItem = (Item *)GUI_ARRAY_GetpItem(pRow, i);
-				if (NumBytes > 1) {
-					GUI__strcpy(pItem->acText, s);
-				}
+				pRow->AddItem(nullptr, sizeof(Item));
+				pItem = (Item *)pRow->GetItem(i);
+				GUI__SetText(&pItem->pText, s);
 			}
 			_UpdateScrollParas();
 			_InvalidateRow(NumRows);
 		}
 	}
 	void DeleteColumn(unsigned Index) {
-		if (Index < GUI_ARRAY_GetNumItems(&AlignArray)) {
+		if (Index < AlignArray.GetNumItems()) {
 			unsigned NumRows, i;
 			GUI_ARRAY *pRow;
 			pHeader->DeleteItem(Index);
-			GUI_ARRAY_DeleteItem(&AlignArray, Index);
-			NumRows = GUI_ARRAY_GetNumItems(&RowArray);
+			AlignArray.DeleteItem(Index);
+			NumRows = RowArray.GetNumItems();
 			for (i = 0; i < NumRows; i++) {
 				Item *pItem;
-				pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&RowArray, i);
+				pRow = (GUI_ARRAY *)RowArray.GetItem(i);
 				/* Delete attached info items */
-				pItem = (Item *)GUI_ARRAY_GetpItem(pRow, Index);
+				pItem = (Item *)pRow->GetItem(Index);
+				GUI_ALLOC_FreePtr((void **)&pItem->pText);
 				if (pItem->hItemInfo) {
 					GUI_ALLOC_Free(pItem->hItemInfo);
 				}
 				/* Delete cell */
-				GUI_ARRAY_DeleteItem(pRow, Index);
+				pRow->DeleteItem(Index);
 			}
 			_UpdateScrollParas();
 			_InvalidateInsideArea();
 		}
 	}
 	void DeleteRow(unsigned Index) {
-		unsigned NumRows = GUI_ARRAY_GetNumItems(&RowArray);
+		unsigned NumRows = RowArray.GetNumItems();
 		if (Index < NumRows) {
-			auto pRow = (GUI_ARRAY *)GUI_ARRAY_GetpItem(&RowArray, Index);
+			auto pRow = (GUI_ARRAY *)RowArray.GetItem(Index);
 			/* Delete attached info items */
-			for (int i = 0, NumColumns = GUI_ARRAY_GetNumItems(pRow); i < NumColumns; i++) {
+			for (int i = 0, NumColumns = pRow->GetNumItems(); i < NumColumns; i++) {
 				Item *pItem;
-				pItem = (Item *)GUI_ARRAY_GetpItem(pRow, i);
+				pItem = (Item *)pRow->GetItem(i);
+				GUI_ALLOC_FreePtr((void **)&pItem->pText);
 				if (pItem->hItemInfo) {
 					GUI_ALLOC_Free(pItem->hItemInfo);
 				}
 			}
 			/* Delete row */
-			GUI_ARRAY_Delete(pRow);
-			GUI_ARRAY_DeleteItem(&RowArray, Index);
+			pRow->Delete();
+			RowArray.DeleteItem(Index);
 			/* Adjust properties */
 			if (Sel == (signed int)Index)
 				Sel = -1;
@@ -543,10 +544,10 @@ public:
 		return pHeader;
 	}
 	unsigned GetNumColumns() {
-		return GUI_ARRAY_GetNumItems(&AlignArray);
+		return AlignArray.GetNumItems();
 	}
 	unsigned GetNumRows() {
-		return GUI_ARRAY_GetNumItems(&RowArray);
+		return RowArray.GetNumItems();
 	}
 	int GetSel() {
 		return Sel;
@@ -601,11 +602,10 @@ public:
 	}
 	void SetItemText(unsigned Column, unsigned Row, const char *s) {
 		if ((Column < GetNumColumns()) && (Row < GetNumRows())) {
-			auto NumBytes = GUI__strlen(s) + 1;
-			auto pItem = (Item *)GUI_ARRAY_ResizeItem((GUI_ARRAY *)GUI_ARRAY_GetpItem(&RowArray, Row), Column, sizeof(Item) + NumBytes);
-			if (NumBytes > 1) {
-				GUI__strcpy(pItem->acText, s);
-			}
+			auto pRow = (GUI_ARRAY *)RowArray.GetItem(Row);
+			auto pItem = (Item *)pRow->GetItem(Column);
+			if (pItem)
+				GUI__SetText(&pItem->pText, s);
 			_InvalidateRow(Row);
 		}
 	}
@@ -630,7 +630,7 @@ public:
 		return RowDistY;
 	}
 	void SetSel(int NewSel) {
-		int MaxSel = GUI_ARRAY_GetNumItems(&RowArray) - 1;
+		int MaxSel = RowArray.GetNumItems() - 1;
 		if (NewSel > MaxSel) {
 			NewSel = MaxSel;
 		}
@@ -651,8 +651,8 @@ public:
 		}
 	}
 	void SetTextAlign(unsigned int Index, int Align) {
-		if (Index < GUI_ARRAY_GetNumItems(&AlignArray)) {
-			int *pAlign = (int *)GUI_ARRAY_GetpItem(&AlignArray, Index);
+		if (Index < AlignArray.GetNumItems()) {
+			int *pAlign = (int *)AlignArray.GetItem(Index);
 			if (Align != *pAlign) {
 				*pAlign = Align;
 				_InvalidateInsideArea();

@@ -1,4 +1,4 @@
-module;
+﻿module;
 
 #include "DIALOG_Intern.h"
 
@@ -22,7 +22,7 @@ constexpr uint16_t MULTIPAGE_ALIGN_BOTTOM = 1 << 2;
 struct MULTIPAGE_PAGE {
 	WM_Obj *hWin;
 	uint8_t Status;
-	char    acText;
+	char *pText;
 };
 struct MULTIPAGE_Obj : public WIDGET {
 	struct Properties {
@@ -71,7 +71,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 		auto pClient = this->pClient;
 		if ((int)Index < this->Handles.NumItems) {
 			MULTIPAGE_PAGE *pPage;
-			pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&this->Handles, Index);
+			pPage = (MULTIPAGE_PAGE *)this->Handles.GetItem(Index);
 			hWin = pPage->hWin;
 		}
 		for (auto pChild = pClient->pFirstChild; pChild; pChild = pChild->pNext) {
@@ -86,7 +86,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 	void _SetEnable(unsigned Index, int State) {
 		if ((int)Index < this->Handles.NumItems) {
 			MULTIPAGE_PAGE *pPage;
-			pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&this->Handles, Index);
+			pPage = (MULTIPAGE_PAGE *)this->Handles.GetItem(Index);
 			if (State) {
 				pPage->Status |= MULTIPAGE_STATE_ENABLED;
 			}
@@ -99,7 +99,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 		int r = 0;
 		if ((int)Index < this->Handles.NumItems) {
 			MULTIPAGE_PAGE *pPage;
-			pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&this->Handles, Index);
+			pPage = (MULTIPAGE_PAGE *)this->Handles.GetItem(Index);
 			r = (pPage->Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0;
 		}
 		return r;
@@ -127,8 +127,8 @@ struct MULTIPAGE_Obj : public WIDGET {
 		if ((int)Index < this->Handles.NumItems) {
 			MULTIPAGE_PAGE *pPage;
 			GUI_SetFont(this->Props.pFont);
-			pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&this->Handles, Index);
-			r = GUI_GetStringDistX(&pPage->acText) + 10;
+			pPage = (MULTIPAGE_PAGE *)this->Handles.GetItem(Index);
+			r = GUI_GetStringDistX(pPage->pText) + 10;
 		}
 		return r;
 	}
@@ -261,10 +261,10 @@ struct MULTIPAGE_Obj : public WIDGET {
 			WM_SetUserClipRect(&rClip);
 			GUI_SetFont(this->Props.pFont);
 			for (i = 0; i < this->Handles.NumItems; i++) {
-				pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&this->Handles, i);
+				pPage = (MULTIPAGE_PAGE *)this->Handles.GetItem(i);
 				x0 += w;
-				w = GUI_GetStringDistX(&pPage->acText) + 10;
-				_DrawTextItem(&pPage->acText, i, &rText, x0, w, (pPage->Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0);
+				w = GUI_GetStringDistX(pPage->pText) + 10;
+				_DrawTextItem(pPage->pText, i, &rText, x0, w, (pPage->Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0);
 			}
 			WM_SetUserClipRect(nullptr);
 		}
@@ -351,9 +351,14 @@ struct MULTIPAGE_Obj : public WIDGET {
 			case WM_SIZE:
 				pObj->_UpdatePositions();
 				return 0;
-			case WM_DELETE:
-				GUI_ARRAY_Delete(&pObj->Handles);
+			case WM_DELETE: {
+				for (int _i = 0; _i < pObj->Handles.NumItems; _i++) {
+					auto _p = (MULTIPAGE_PAGE *)pObj->Handles.GetItem(_i);
+					GUI_ALLOC_FreePtr((void **)&_p->pText);
+				}
+				pObj->Handles.Delete();
 				/* No break here ... WM_DefaultProc needs to be called */
+			}
 			default:
 				/* Let widget handle the standard messages */
 				if (!Handled)
@@ -393,7 +398,7 @@ public:
 			for (auto pChild = pClient->pFirstChild; pChild && !hWin; pChild = pChild->pNext) {
 				hWin = pChild;
 				for (int i = 0; i < Handles.NumItems; i++) {
-					auto pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&Handles, i);
+					auto pPage = (MULTIPAGE_PAGE *)Handles.GetItem(i);
 					if (pPage->hWin == pChild) {
 						hWin = 0;
 						break;
@@ -406,17 +411,17 @@ public:
 			WM_AttachWindowAt(hWin, this->pClient, 0, 0);
 		}
 		if (hWin) {
-			MULTIPAGE_PAGE Page;
+			MULTIPAGE_PAGE Page = {};
 			char NullByte = 0;
 			if (!pText) {
 				pText = &NullByte;
 			}
 			Page.hWin = hWin;
 			Page.Status = MULTIPAGE_STATE_ENABLED;
-			if (GUI_ARRAY_AddItem(&Handles, &Page, sizeof(MULTIPAGE_PAGE) + GUI__strlen(pText)) == 0) {
+			if (Handles.AddItem(&Page, sizeof(MULTIPAGE_PAGE)) == 0) {
 				MULTIPAGE_PAGE *pPage;
-				pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&Handles, Handles.NumItems - 1);
-				GUI__memcpy(&pPage->acText, pText, GUI__strlen(pText) + 1);
+				pPage = (MULTIPAGE_PAGE *)Handles.GetItem(Handles.NumItems - 1);
+				GUI__SetText(&pPage->pText, pText);
 			}
 			SelectPage(Handles.NumItems - 1);
 		}
@@ -425,7 +430,7 @@ public:
 		if ((int)Index < Handles.NumItems) {
 			WM_Obj *hWin;
 			MULTIPAGE_PAGE *pPage;
-			pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&Handles, Index);
+			pPage = (MULTIPAGE_PAGE *)Handles.GetItem(Index);
 			hWin = pPage->hWin;
 			/* Remove the page from the multipage object */
 			if (Index == this->Selection) {
@@ -442,7 +447,8 @@ public:
 					this->Selection--;
 				}
 			}
-			GUI_ARRAY_DeleteItem(&Handles, Index);
+			GUI_ALLOC_FreePtr((void **)&pPage->pText);
+			Handles.DeleteItem(Index);
 			this->_UpdatePositions();
 			/* Delete the window of the page */
 			if (Delete) {
@@ -468,19 +474,10 @@ public:
 		WM_Invalidate(this);
 	}
 	void SetText(const char *pText, unsigned Index) {
-		if (pText) {
-			if ((int)Index < Handles.NumItems) {
-				MULTIPAGE_PAGE *pPage;
-				MULTIPAGE_PAGE Page;
-				pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&Handles, Index);
-				Page.hWin = pPage->hWin;
-				Page.Status = pPage->Status;
-				if (GUI_ARRAY_SetItem(&Handles, Index, &Page, sizeof(MULTIPAGE_PAGE) + GUI__strlen(pText))) {
-					pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&Handles, Index);
-					GUI__memcpy(&pPage->acText, pText, GUI__strlen(pText) + 1);
-					this->_UpdatePositions();
-				}
-			}
+		if (pText && (int)Index < Handles.NumItems) {
+			auto pPage = (MULTIPAGE_PAGE *)Handles.GetItem(Index);
+			if (pPage && GUI__SetText(&pPage->pText, pText))
+				this->_UpdatePositions();
 		}
 	}
 	void SetBkColor(RGBC Color, unsigned Index) {
@@ -516,7 +513,7 @@ public:
 		WM_Obj *r = 0;
 		if ((int)Index < Handles.NumItems) {
 			MULTIPAGE_PAGE *pPage;
-			pPage = (MULTIPAGE_PAGE *)GUI_ARRAY_GetpItem(&Handles, Index);
+			pPage = (MULTIPAGE_PAGE *)Handles.GetItem(Index);
 			r = pPage->hWin;
 		}
 

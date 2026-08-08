@@ -1,4 +1,4 @@
-module;
+﻿module;
 
 #include "DIALOG_Intern.h"
 
@@ -60,7 +60,7 @@ struct DROPDOWN_Obj : public WIDGET {
 		return Handles.NumItems;
 	}
 	WM_HMEM _GethItem(int Index) {
-		return GUI_ARRAY_GethItem(&Handles, Index);
+		return Handles.GetItem(Index);
 	}
 	void _DrawTriangleDown(int x, int y, int Size) {
 		for (; Size >= 0; Size--, y++) {
@@ -87,7 +87,7 @@ struct DROPDOWN_Obj : public WIDGET {
 		}
 	}
 	void _FreeAttached() {
-		GUI_ARRAY_Delete(&Handles);
+		Handles.Delete();
 		WM_DeleteWindow(this->pListWin);
 		this->pListWin = nullptr;
 	}
@@ -287,7 +287,7 @@ public:
 	}
 	void AddString(const char *s) {
 		if (s) {
-			GUI_ARRAY_AddItem(&this->Handles, s, GUI__strlen(s) + 1);
+			this->Handles.AddItem(s, GUI__strlen(s) + 1);
 			WM_Invalidate(this);
 		}
 	}
@@ -371,7 +371,7 @@ public:
 		unsigned int NumItems;
 		NumItems = GetNumItems();
 		if (Index < NumItems) {
-			GUI_ARRAY_DeleteItem(&this->Handles, Index);
+			this->Handles.DeleteItem(Index);
 			WM_Invalidate(this);
 			if (this->pListWin) {
 				this->pListWin->DeleteItem(Index);
@@ -385,7 +385,7 @@ public:
 			NumItems = GetNumItems();
 			if (Index < NumItems) {
 				WM_HMEM hItem;
-				hItem = GUI_ARRAY_InsertItem(&this->Handles, Index, GUI__strlen(s) + 1);
+				hItem = this->Handles.InsertItem(Index, GUI__strlen(s) + 1);
 				if (hItem) {
 					auto pBuffer = (char *)(hItem);
 					GUI__strcpy(pBuffer, s);
