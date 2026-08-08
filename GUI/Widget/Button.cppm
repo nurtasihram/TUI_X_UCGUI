@@ -113,7 +113,7 @@ struct BUTTON_Obj : public WIDGET {
 			GUI_StoreKey(this->Id);
 		}
 	}
-	void _OnTouch(const GUI_PID_STATE *pState) {
+	void _OnTouch(const PID_STATE *pState) {
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
 				if (!(State & BUTTON_STATE_PRESSED))
@@ -141,7 +141,7 @@ struct BUTTON_Obj : public WIDGET {
 		return 0;
 	}
 #if BUTTON_REACT_ON_LEVEL
-	void _OnPidStateChange(const WM_PID_STATE_CHANGED_INFO *pState) {
+	void _OnPidStateChange(const PID_CHANGED_INFO *pState) {
 		if (pState->StatePrev == 0 && pState->State == 1) {
 			if (!(this->State & BUTTON_STATE_PRESSED))
 				_ButtonPressed();
@@ -160,11 +160,11 @@ struct BUTTON_Obj : public WIDGET {
 		switch (MsgId) {
 #if BUTTON_REACT_ON_LEVEL
 			case WM_PID_STATE_CHANGED:
-				pObj->_OnPidStateChange((const WM_PID_STATE_CHANGED_INFO *)Data);
+				pObj->_OnPidStateChange((const PID_CHANGED_INFO *)Data);
 				return 0; /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
 #endif
 			case WM_TOUCH:
-				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0; /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
 			case WM_PAINT:
 				pObj->_OnPaint();

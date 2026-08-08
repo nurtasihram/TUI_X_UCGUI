@@ -11,7 +11,7 @@ struct WINDOW_Obj : public WIDGET {
 	Properties Props;
 	WM_CALLBACK *cb;
 	WM_Obj *hFocussedChild;
-	WM_DIALOG_STATUS *pDialogStatus;
+	DIALOG_STATUS *pDialogStatus;
 };
 
 WINDOW_Obj::Properties WINDOW_Obj::DefaultProps;
@@ -38,7 +38,7 @@ static WM_PARAM _cb(WM_Obj * hWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_HANDLE_DIALOG_STATUS:
 			if (Data) /* set pointer to Dialog status */
-				pObj->pDialogStatus = (WM_DIALOG_STATUS *)Data;
+				pObj->pDialogStatus = (DIALOG_STATUS *)Data;
 			return (WM_PARAM)pObj->pDialogStatus;
 		case WM_SET_FOCUS:
 			if (Data) { /* Focus received */

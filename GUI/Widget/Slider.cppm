@@ -34,7 +34,7 @@ struct SLIDER_Obj : public WIDGET {
 		rSlider.x0 = x0 + (uint32_t)xsize * (uint32_t)(this->v - this->Min) / Range - this->Width / 2;
 		rSlider.x1 = rSlider.x0 + this->Width;
 		/* Calculate Slot position */
-		GUI_RECT rSlot;
+		RECT rSlot;
 		rSlot.x0 = x0;
 		rSlot.x1 = x0 + xsize;
 		rSlot.y0 = (rSlider.y0 + rSlider.y1) / 2 - 1;
@@ -90,7 +90,7 @@ struct SLIDER_Obj : public WIDGET {
 		if (this->Status & WC_VISIBLE)
 			WM_NotifyParent(this, WM_NOTIFICATION_RELEASED);
 	}
-	void _OnTouch(const GUI_PID_STATE *pState) {
+	void _OnTouch(const PID_STATE *pState) {
 		if (!pState)
 			return;
 		if (!pState->Pressed) {
@@ -143,7 +143,7 @@ struct SLIDER_Obj : public WIDGET {
 				pObj->_OnPaint();
 				return 0;
 			case WM_TOUCH:
-				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_KEY:
 				if (pObj->_OnKey((const WM_KEY_INFO *)Data))

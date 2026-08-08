@@ -8,97 +8,97 @@ auto Max(auto v0, auto v1) { return v0 > v1 ? v0 : v1; }
 auto Min(auto v0, auto v1) { return v0 < v1 ? v0 : v1; }
 
 #pragma region Coordinates
-struct GUI_POINT {
+struct POINT {
 	int16_t x, y;
 
-	constexpr GUI_POINT(int a = 0) : x(a), y(a) {}
-	constexpr GUI_POINT(int x, int y) :
+	constexpr POINT(int a = 0) : x(a), y(a) {}
+	constexpr POINT(int x, int y) :
 		x(x), y(y) {}
 
-	inline GUI_POINT operator~() const { return{ y, x }; }
-	inline GUI_POINT operator+(const GUI_POINT &pt) const { return{ x + pt.x, y + pt.y }; }
-	inline GUI_POINT operator-(const GUI_POINT &pt) const { return{ x - pt.x, y - pt.y }; }
-	inline GUI_POINT &operator+=(const GUI_POINT &pt) { x += pt.x, y += pt.y; return *this; }
-	inline GUI_POINT &operator-=(const GUI_POINT &pt) { x -= pt.x, y -= pt.y; return *this; }
+	inline POINT operator~() const { return{ y, x }; }
+	inline POINT operator+(const POINT &pt) const { return{ x + pt.x, y + pt.y }; }
+	inline POINT operator-(const POINT &pt) const { return{ x - pt.x, y - pt.y }; }
+	inline POINT &operator+=(const POINT &pt) { x += pt.x, y += pt.y; return *this; }
+	inline POINT &operator-=(const POINT &pt) { x -= pt.x, y -= pt.y; return *this; }
 };
-struct GUI_RECT {
+struct RECT {
 	int16_t x0 = 0, y0 = 0, x1 = 0, y1 = 0;
 
-	constexpr GUI_RECT() {}
-	constexpr GUI_RECT(int x0, int y0, int x1, int y1) :
+	constexpr RECT() {}
+	constexpr RECT(int x0, int y0, int x1, int y1) :
 		x0(x0), y0(y0), x1(x1), y1(y1) {}
 
-	inline GUI_POINT LeftTop() const { return{ x0, y0 }; }
-	inline void LeftTop(GUI_POINT Pos) { x0 = Pos.x, y0 = Pos.y; }
+	inline POINT LeftTop() const { return{ x0, y0 }; }
+	inline void LeftTop(POINT Pos) { x0 = Pos.x, y0 = Pos.y; }
 
 	inline auto XSize() const { return x1 - x0 + 1; }
 	inline auto YSize() const { return y1 - y0 + 1; }
-	inline auto Size() const { return GUI_POINT{ XSize(), YSize() }; }
+	inline auto Size() const { return POINT{ XSize(), YSize() }; }
 
 	inline auto DistX() const { return x1 - x0; }
 	inline auto DistY() const { return y1 - y0; }
-	inline  auto Dist() const { return GUI_POINT{ DistX(), DistY() }; }
+	inline  auto Dist() const { return POINT{ DistX(), DistY() }; }
 
-	inline GUI_RECT Rotate90L(int16_t XSize) const {
+	inline RECT Rotate90L(int16_t XSize) const {
 		return{ XSize - y1, x0, XSize - y0, x1 };
 	}
-	inline GUI_RECT Rotate90R(int16_t YSize) const {
+	inline RECT Rotate90R(int16_t YSize) const {
 		return{ y0, YSize - x1, y1, YSize - x0 };
 	}
 
-	inline GUI_RECT operator~() const { return{ y0, x0, y1, x1 }; }
+	inline RECT operator~() const { return{ y0, x0, y1, x1 }; }
 
-	inline GUI_RECT &operator+=(const GUI_POINT &pt) {
+	inline RECT &operator+=(const POINT &pt) {
 		x0 += pt.x, y0 += pt.y, x1 += pt.x, y1 += pt.y;
 		return *this;
 	}
-	inline GUI_RECT operator+(const GUI_POINT &pt) const {
+	inline RECT operator+(const POINT &pt) const {
 		return{ x0 + pt.x, y0 + pt.y, x1 + pt.x, y1 + pt.y };
 	}
-	inline GUI_RECT &operator-=(const GUI_POINT &pt) {
+	inline RECT &operator-=(const POINT &pt) {
 		x0 -= pt.x, y0 -= pt.y, x1 -= pt.x, y1 -= pt.y;
 		return *this;
 	}
-	inline GUI_RECT operator-(const GUI_POINT &pt) const {
+	inline RECT operator-(const POINT &pt) const {
 		return{ x0 - pt.x, y0 - pt.y, x1 - pt.x, y1 - pt.y };
 	}
 
-	inline GUI_RECT &operator-=(int dist) {
+	inline RECT &operator-=(int dist) {
 		x0 += dist, y0 += dist, x1 -= dist, y1 -= dist;
 		return *this;
 	}
-	inline GUI_RECT operator-(int dist) const {
+	inline RECT operator-(int dist) const {
 		return{ x0 + dist, y0 + dist, x1 - dist, y1 - dist };
 	}
 
-	inline GUI_RECT &operator&=(const GUI_RECT &r) {
+	inline RECT &operator&=(const RECT &r) {
 		if (x0 < r.x0) x0 = r.x0;
 		if (y0 < r.y0) y0 = r.y0;
 		if (x1 > r.x1) x1 = r.x1;
 		if (y1 > r.y1) y1 = r.y1;
 		return *this;
 	}
-	inline GUI_RECT operator&(const GUI_RECT &r) const {
+	inline RECT operator&(const RECT &r) const {
 		return{ Max(x0, r.x0), Max(y0, r.y0), Min(x1, r.x1), Min(y1, r.y1) };
 	}
 
-	inline GUI_RECT &operator|=(const GUI_RECT &r) {
+	inline RECT &operator|=(const RECT &r) {
 		if (x0 > r.x0) x0 = r.x0;
 		if (y0 > r.y0) y0 = r.y0;
 		if (x1 < r.x1) x1 = r.x1;
 		if (y1 < r.y1) y1 = r.y1;
 		return *this;
 	}
-	inline GUI_RECT operator|(const GUI_RECT &r) const {
+	inline RECT operator|(const RECT &r) const {
 		return{ Min(x0, r.x0), Min(y0, r.y0), Max(x1, r.x1), Max(y1, r.y1) };
 	}
 
-	bool operator<=(const GUI_RECT &r) {
+	bool operator<=(const RECT &r) {
 		return
 			r.x0 <= x1 && r.y0 <= y1 &&
 			r.x1 >= x0 && r.y1 >= y0;
 	}
-	bool operator<=(const GUI_POINT &pt) {
+	bool operator<=(const POINT &pt) {
 		return
 			x0 <= pt.x && pt.x <= x1 &&
 			y0 <= pt.y && pt.y <= y1;

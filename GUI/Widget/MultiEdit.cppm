@@ -84,7 +84,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 		return this->NumChars;
 	}
 	int _GetXSize() {
-		GUI_RECT Rect;
+		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		return Rect.x1 - Rect.x0 - (this->Props.HBorder * 2) - 1;
 	}
@@ -171,7 +171,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 		}
 		return r;
 	}
-	void _DispString(const char *pText, GUI_RECT *pRect) {
+	void _DispString(const char *pText, RECT *pRect) {
 		int NumCharsDisp;
 		NumCharsDisp = _WrapGetNumCharsDisp(pText);
 		if (this->Flags & MULTIEDIT_SF_PASSWORD) {
@@ -312,7 +312,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 		return this->TextSizeX;
 	}
 	int _GetNumVisLines() {
-		GUI_RECT Rect;
+		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		return (Rect.y1 - Rect.y0 + 1) / Props.pFont->DistY();
 	}
@@ -384,7 +384,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 		WM_Invalidate(this);
 	}
 	void _InvalidateTextArea() {
-		GUI_RECT rInsideRect;
+		RECT rInsideRect;
 		_ManageScrollers();
 		WM_GetInsideRectExScrollbar(this, &rInsideRect);
 		WM_Invalidate(this, &rInsideRect);
@@ -681,8 +681,8 @@ struct MULTIEDIT_Obj : public WIDGET {
 	void _OnPaint() {
 		int ScrollPosX, ScrollPosY, EffectSize, HBorder;
 		int x, y, xOff, yOff, ColorIndex, FontSizeY;
-		GUI_RECT r, rClip;
-		const GUI_RECT *prOldClip;
+		RECT r, rClip;
+		const RECT *prOldClip;
 		/* Init some values */
 		GUI_SetFont(this->Props.pFont);
 		FontSizeY = Props.pFont->DistY();
@@ -753,7 +753,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 		/* Draw the 3D effect (if configured) */
 		DrawDown();
 	}
-	void _OnTouch(const GUI_PID_STATE *pState) {
+	void _OnTouch(const PID_STATE *pState) {
 		int Notification;
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
@@ -887,7 +887,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 				pObj->_Invalidate();
 				return 0;
 			case WM_NOTIFY_PARENT: {
-				auto pInfo = (const WM_NOTIFY_INFO *)Data;
+				auto pInfo = (const NOTIFY_INFO *)Data;
 				auto pWinSrc = pInfo->pWinSrc;
 				switch (pInfo->Notification) {
 					case WM_NOTIFICATION_VALUE_CHANGED: {
@@ -916,7 +916,7 @@ struct MULTIEDIT_Obj : public WIDGET {
 				pObj->_OnPaint();
 				return 0;
 			case WM_TOUCH:
-				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_DELETE:
 				GUI_ALLOC_FreePtr(&pObj->hText);
@@ -1131,7 +1131,7 @@ MULTIEDIT_Obj *MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *
 									int Id, int BufferSize, const char *pText) {
 	/* Create the window */
 	if ((xsize == 0) && (ysize == 0) && (x0 == 0) && (y0 == 0)) {
-		GUI_RECT Rect = WM_GetClientRect(hParent);
+		RECT Rect = WM_GetClientRect(hParent);
 		xsize = Rect.x1 - Rect.x0 + 1;
 		ysize = Rect.y1 - Rect.y0 + 1;
 	}

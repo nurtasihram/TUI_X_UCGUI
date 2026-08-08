@@ -18,12 +18,12 @@ const GUI_LOGPALETTE GUI_CursorPalI{
 
 static int _AllocSize;
 static void *_pBuffer = nullptr;
-static GUI_RECT _Rect;
+static RECT _Rect;
 static bool _CursorIsVis = false, _CursorOn = false;
 static PCCURSOR _pCursor = nullptr;
 static uint8_t _CursorDeActCnt = 0;
 static int16_t _x, _y; /* Position of hot spot */
-static GUI_RECT _ClipRect;
+static RECT _ClipRect;
 const RGBC *aCursorPal = nullptr;
 
 static void _SetPixel(int x, int y, int Index) {
@@ -110,7 +110,7 @@ void GUI_CURSOR__TempShow(void) {
 	}
 }
 
-bool GUI_CURSOR__TempHide(GUI_RECT r) {
+bool GUI_CURSOR__TempHide(RECT r) {
 	if (!_CursorIsVis)
 		return false; /* Cursor not visible -> nothing to do */
 	if (_Rect <= r) {

@@ -3,11 +3,11 @@
 import TUX.Widget;
 
 struct WIDGET_EFFECT_Simple : public WIDGET_EFFECT {
-	void DrawUp(GUI_RECT r) const override {
+	void DrawUp(RECT r) const override {
 		GUI.SetColor(RGB_BLACK);
 		GUI_DrawRect(r);
 	}
-	void DrawDown(GUI_RECT r) const override {
+	void DrawDown(RECT r) const override {
 		GUI.SetColor(RGB_BLACK);
 		GUI_DrawRect(r);
 	}
@@ -15,7 +15,7 @@ struct WIDGET_EFFECT_Simple : public WIDGET_EFFECT {
 };
 
 struct WIDGET_EFFECT_3D : public WIDGET_EFFECT {
-	void DrawUp(GUI_RECT r) const override {
+	void DrawUp(RECT r) const override {
 		GUI.SetColor(RGB_BLACK);
 		GUI_DrawRect(r); /* Draw rectangle around it */
 		/* Draw the bright sides */
@@ -27,7 +27,7 @@ struct WIDGET_EFFECT_3D : public WIDGET_EFFECT {
 		GUI_DrawHLine(r.y1 - 1, r.x0 + 1, r.x1 - 1);
 		GUI_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 2);
 	}
-	void DrawDown(GUI_RECT r) const override {
+	void DrawDown(RECT r) const override {
 		GUI.SetColor(RGB_BLACK); /* TBD: Use halftone */
 		/*  GUI_DrawRect(0, 0, r.x1, r.y1);*/
 		/* Draw the upper left sides */
@@ -49,7 +49,7 @@ struct WIDGET_EFFECT_3D : public WIDGET_EFFECT {
 };
 
 struct WIDGET_EFFECT_3D1L : public WIDGET_EFFECT {
-	void DrawUp(GUI_RECT r) const override {
+	void DrawUp(RECT r) const override {
 		/* Draw the upper left sides */
 		GUI.SetColor(RGB_GRAYL(0xE7));
 		GUI_DrawHLine(r.y0, r.x0, r.x1 - 1);
@@ -59,7 +59,7 @@ struct WIDGET_EFFECT_3D1L : public WIDGET_EFFECT {
 		GUI_DrawHLine(r.y1, r.x0, r.x1);
 		GUI_DrawVLine(r.x1, r.y0, r.y1 - 1);
 	}
-	void DrawDown(GUI_RECT r) const override {
+	void DrawDown(RECT r) const override {
 		/* Draw the upper left sides */
 		GUI.SetColor(RGB_GRAYL(0x60));
 		GUI_DrawHLine(r.y0, r.x0, r.x1 - 1);
@@ -73,7 +73,7 @@ struct WIDGET_EFFECT_3D1L : public WIDGET_EFFECT {
 };
 
 struct WIDGET_EFFECT_3D2L : public WIDGET_EFFECT {
-	void DrawUp(GUI_RECT r) const override {
+	void DrawUp(RECT r) const override {
 		/* Draw the upper left sides */
 		GUI.SetColor(RGB_GRAYL(0xD0));
 		GUI_DrawHLine(r.y0, r.x0, r.x1 - 1);
@@ -89,7 +89,7 @@ struct WIDGET_EFFECT_3D2L : public WIDGET_EFFECT {
 		GUI_DrawHLine(r.y1 - 1, r.x0 + 1, r.x1 - 1);
 		GUI_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 2);
 	}
-	void DrawDown(GUI_RECT r) const override {
+	void DrawDown(RECT r) const override {
 		/* Draw the upper left sides */
 		GUI.SetColor(RGB_GRAYL(0x9A));
 		GUI_DrawHLine(r.y0, r.x0, r.x1 - 1);

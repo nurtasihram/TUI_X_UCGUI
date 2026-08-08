@@ -65,7 +65,7 @@ void GUI_RestoreContext(const GUI_CONTEXT *pContext) {
 #pragma endregion
 
 #pragma region Draw
-void GUI_ClearRect(GUI_RECT r) {
+void GUI_ClearRect(RECT r) {
 	DRAWMODE PrevDraw = GUI.SetDrawMode(DRAWMODE_REV);
 	r += GUI.Off;
 	WM_Iterate(r, [&] {
@@ -77,13 +77,13 @@ void GUI_Clear(void) {
 	GUI_GotoXY(0, 0); /* Reset text cursor to upper left */
 	GUI_ClearRect({ GUI_XMIN, GUI_YMIN, GUI_XMAX, GUI_YMAX });
 }
-void GUI_FillRect(GUI_RECT r) {
+void GUI_FillRect(RECT r) {
 	r += GUI.Off;
 	WM_Iterate(r, [&] {
 		LCD_FillRect(r.x0, r.y0, r.x1, r.y1);
 	});
 }
-void GUI_DrawRect(GUI_RECT r) {
+void GUI_DrawRect(RECT r) {
 	r += GUI.Off;
 	WM_Iterate(r, [&] {
 		LCD_DrawHLine(r.x0, r.y0, r.x1);
@@ -92,7 +92,7 @@ void GUI_DrawRect(GUI_RECT r) {
 		LCD_DrawVLine(r.x1, r.y0 + 1, r.y1 - 1);
 	});
 }
-void GUI_DrawFocusRect(GUI_RECT r, int Dist) {
+void GUI_DrawFocusRect(RECT r, int Dist) {
 	r -= Dist;
 	r += GUI.Off;
 	WM_Iterate(r, [&] {
@@ -120,7 +120,7 @@ void GUI_DrawBitmap(PCBITMAP pBitmap, int x0, int y0) {
 	auto pTrans = pBitmap->pPal ? pBitmap->pPal->pPalEntries : nullptr;
 	if (!pTrans) 
 		pTrans = (pBitmap->BitsPerPixel != 1) ? nullptr : &LCD_BKCOLORINDEX;
-	GUI_RECT r;
+	RECT r;
 	x0 += GUI.Off.x;
 	y0 += GUI.Off.y;
 	r.x1 = (r.x0 = x0) + pBitmap->XSize - 1;
@@ -145,7 +145,7 @@ PCFONT GUI_SetFont(PCFONT pNewFont) {
 	return pOldFont;
 }
 
-void GUI_GetTextExtend(GUI_RECT *pRect, const char *s, int MaxNumChars) {
+void GUI_GetTextExtend(RECT *pRect, const char *s, int MaxNumChars) {
 	int xMax = 0;
 	int NumLines = 0;
 	int LineSizeX = 0;
@@ -178,7 +178,7 @@ void GUI_GetTextExtend(GUI_RECT *pRect, const char *s, int MaxNumChars) {
 	pRect->y1 = pRect->y0 + GUI.pAFont->SizeY() * NumLines - 1;
 }
 
-void GUI__CalcTextRect(const char *pText, const GUI_RECT *pTextRectIn, GUI_RECT *pTextRectOut, int TextAlign) {
+void GUI__CalcTextRect(const char *pText, const RECT *pTextRectIn, RECT *pTextRectOut, int TextAlign) {
 	if (pText) {
 		int xPos, yPos, TextWidth, TextHeight;
 
@@ -368,7 +368,7 @@ bool FONT_PROP::IsInFont(uint16_t c) const {
 
 #pragma region Display String
 
-static void _DispLine(const char *s, int MaxNumChars, const GUI_RECT *pRect) {
+static void _DispLine(const char *s, int MaxNumChars, const RECT *pRect) {
 	/* Check if we have anything to do at all ... */
 	if (!(*pRect <= GUI.ClipRect))
 		return;
@@ -377,7 +377,7 @@ static void _DispLine(const char *s, int MaxNumChars, const GUI_RECT *pRect) {
 	else while (MaxNumChars--) 
 		GUI.pAFont->DispChar(GUI_UC__GetCharCodeInc(&s));
 }
-void GUI__DispLine(const char *s, int MaxNumChars, const GUI_RECT *pr) {
+void GUI__DispLine(const char *s, int MaxNumChars, const RECT *pr) {
 	auto r = *pr + GUI.Off;
 	WM_Iterate(r, [&] {
 		GUI.DispPos = r.LeftTop();
@@ -396,7 +396,7 @@ void GUI_DispString(const char *s) {
 	yAdjust = GUI_GetYAdjust();
 	GUI.DispPos.y -= yAdjust;
 	for (; *s; s++) {
-		GUI_RECT r;
+		RECT r;
 		int LineNumChars = GUI__GetLineNumChars(s, 0x7fff);
 		int xLineSize = GUI__GetLineDistX(s, LineNumChars);
 		/* Check if x-position needs to be changed due to h-alignment */
@@ -440,9 +440,9 @@ void GUI_DispStringAt(const char *s, int x, int y) {
 	GUI.DispPos.y = y;
 	GUI_DispString(s);
 }
-void GUI__DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign, int MaxNumChars) {
-	GUI_RECT r;
-	GUI_RECT rLine;
+void GUI__DispStringInRect(const char *s, RECT *pRect, int TextAlign, int MaxNumChars) {
+	RECT r;
+	RECT rLine;
 	int y = 0;
 	auto sOrg = s;
 	int FontYSize;
@@ -507,10 +507,10 @@ void GUI__DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign, int Ma
 	}
 }
 
-void GUI_DispStringInRectMax(const char *s, GUI_RECT *pRect, int TextAlign, int MaxLen) {
+void GUI_DispStringInRectMax(const char *s, RECT *pRect, int TextAlign, int MaxLen) {
 	if (s) {
-		const GUI_RECT *pOldClipRect = nullptr;
-		GUI_RECT r;
+		const RECT *pOldClipRect = nullptr;
+		RECT r;
 
 		if (pRect) {
 			pOldClipRect = WM_SetUserClipRect(pRect);
@@ -525,14 +525,14 @@ void GUI_DispStringInRectMax(const char *s, GUI_RECT *pRect, int TextAlign, int 
 	}
 }
 
-void GUI_DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign) {
+void GUI_DispStringInRect(const char *s, RECT *pRect, int TextAlign) {
 	GUI_DispStringInRectMax(s, pRect, TextAlign, 0x7fff);
 }
 #pragma endregion
 
 #pragma region Display Char
 void GUI_DispChar(uint16_t c) {
-	GUI_RECT r;
+	RECT r;
 	GUI.DispPos += GUI.Off;
 	r.x1 = (r.x0 = GUI.DispPos.x) + GUI_GetCharDistX(c) - 1;
 	r.y1 = (r.y0 = GUI.DispPos.y) + GUI.pAFont->SizeY() - 1;

@@ -104,7 +104,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 		}
 		return r;
 	}
-	void _CalcClientRect(GUI_RECT *pRect) {
+	void _CalcClientRect(RECT *pRect) {
 		*pRect = WIDGET__GetInsideRect(this);
 		if (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
 			pRect->y1 -= Props.pFont->SizeY() + 6;
@@ -113,7 +113,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 			pRect->y0 += Props.pFont->SizeY() + 6;
 		}
 	}
-	void _CalcBorderRect(GUI_RECT *pRect) {
+	void _CalcBorderRect(RECT *pRect) {
 		*pRect = WM_GetClientRect(this);
 		if (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
 			pRect->y1 -= Props.pFont->SizeY() + 6;
@@ -142,8 +142,8 @@ struct MULTIPAGE_Obj : public WIDGET {
 	int _GetTextWidth() {
 		return _GetPagePosX(this->Handles.NumItems);
 	}
-	void _GetTextRect(GUI_RECT *pRect) {
-		GUI_RECT rBorder;
+	void _GetTextRect(RECT *pRect) {
+		RECT rBorder;
 		int Width, Height;
 		Height = Props.pFont->SizeY() + 6;
 		_CalcBorderRect(&rBorder);
@@ -173,13 +173,13 @@ struct MULTIPAGE_Obj : public WIDGET {
 		}
 	}
 	void _UpdatePositions() {
-		GUI_RECT rBorder;
+		RECT rBorder;
 		int Width;
 		Width = _GetTextWidth();
 		_CalcBorderRect(&rBorder);
 		/* Set scrollmode according to the text width */
 		if (Width > rBorder.x1) {
-			GUI_RECT rText;
+			RECT rText;
 			int x0, y0, NumItems = 0;
 			auto Size = ((Props.pFont->SizeY() + 6) * 3) >> 2;
 			x0 = (this->Props.Align & MULTIPAGE_ALIGN_RIGHT) ? (rBorder.x0) : (rBorder.x1 - 2 * Size + 1);
@@ -203,8 +203,8 @@ struct MULTIPAGE_Obj : public WIDGET {
 		WM_Invalidate(this);
 	}
 	void _DrawTextItem(const char *pText, unsigned Index,
-					   const GUI_RECT *pRect, int x0, int w, int ColorIndex) {
-		GUI_RECT r;
+					   const RECT *pRect, int x0, int w, int ColorIndex) {
+		RECT r;
 		r = *pRect;
 		r.x0 += x0;
 		r.x1 = r.x0 + w;
@@ -237,14 +237,14 @@ struct MULTIPAGE_Obj : public WIDGET {
 		GUI_DispStringAt(pText, r.x0 + 4, pRect->y0 + 3);
 	}
 	void _OnPaint() {
-		GUI_RECT rBorder;
+		RECT rBorder;
 		/* Draw border of multipage */
 		_CalcBorderRect(&rBorder);
 		DrawUp(rBorder);
 		/* Draw text items */
 		if (this->Handles.NumItems > 0) {
 			MULTIPAGE_PAGE *pPage;
-			GUI_RECT rText, rClip;
+			RECT rText, rClip;
 			int i, w = 0, x0 = 0;
 			if (this->State & MULTIPAGE_STATE_SCROLLMODE) {
 				if (this->Props.Align & MULTIPAGE_ALIGN_RIGHT) {
@@ -270,7 +270,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 		}
 	}
 	int _ClickedOnMultipage(int x, int y) {
-		GUI_RECT rText;
+		RECT rText;
 		_GetTextRect(&rText);
 		if ((y >= rText.y0) && (y <= rText.y1)) {
 			if ((this->Handles.NumItems > 0) && (x >= rText.x0) && (x <= rText.x1)) {
@@ -293,15 +293,15 @@ struct MULTIPAGE_Obj : public WIDGET {
 		}
 		return 1;
 	}
-	void _OnTouch(const GUI_PID_STATE *pState) {
+	void _OnTouch(const PID_STATE *pState) {
 		int Notification;
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
-				GUI_POINT Pos = *pState;
+				POINT Pos = *pState;
 				if (!_ClickedOnMultipage(Pos.x, Pos.y)) {
 					Pos += GetOrg();
 					if (auto pBelow = WM_Screen2hWinEx(this, Pos.x, Pos.y)) {
-						GUI_PID_STATE State;
+						PID_STATE State;
 						State = Pos - pBelow->GetOrg();
 						State.Pressed = pState->Pressed;
 						pBelow->cb(pBelow, WM_TOUCH, (WM_PARAM)&State);
@@ -327,10 +327,10 @@ struct MULTIPAGE_Obj : public WIDGET {
 				pObj->_OnPaint();
 				return 0;
 			case WM_TOUCH:
-				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_NOTIFY_PARENT: {
-				auto pInfo = (const WM_NOTIFY_INFO *)Data;
+				auto pInfo = (const NOTIFY_INFO *)Data;
 				auto pWinSrc = pInfo->pWinSrc;
 				if (pInfo->Notification == WM_NOTIFICATION_VALUE_CHANGED) {
 					if (pWinSrc->GetID() == GUI_ID_HSCROLL) {
@@ -343,7 +343,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 			case WM_GET_CLIENT_WINDOW:
 				return (WM_PARAM)pObj->pClient;
 			case WM_GET_INSIDE_RECT:
-				pObj->_CalcClientRect((GUI_RECT *)Data);
+				pObj->_CalcClientRect((RECT *)Data);
 				return 0;
 			case WM_WIDGET_SET_EFFECT:
 				if (auto pScroll = (SCROLLBAR_Obj *)pObj->GetScrollbarH())
@@ -363,7 +363,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 		return 0;
 	}
 	static WM_PARAM _ClientCallback(WM_Obj *pObj, int MsgId, WM_PARAM Data) {
-		auto pParent = (MULTIPAGE_Obj *)WM_GetParent(pObj);
+		auto pParent = (MULTIPAGE_Obj *)pObj->Parent();
 		switch (MsgId) {
 			case WM_PAINT:
 				GUI.SetBkColor(pParent->Props.aBkColor[1]);
@@ -502,7 +502,7 @@ public:
 		}
 	}
 	void SetAlign(unsigned Align) {
-		GUI_RECT rClient;
+		RECT rClient;
 		this->Props.Align = Align;
 		this->_CalcClientRect(&rClient);
 		WM_MoveTo(this->pClient, rClient.x0 + this->Rect.x0,
@@ -539,7 +539,7 @@ MULTIPAGE_Obj *MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *
 	auto pObj = (MULTIPAGE_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags | WC_HASTRANS, MULTIPAGE_Obj::_Callback,
 								  sizeof(MULTIPAGE_Obj) - sizeof(WM_Obj));
 	if (pObj) {
-		GUI_RECT rClient;
+		RECT rClient;
 		int Flags;
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);

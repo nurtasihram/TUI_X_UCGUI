@@ -51,7 +51,7 @@ struct CHECKBOX_Obj : public WIDGET {
 		SetBkColorPrefer(Props.BkColor);
 		GUI_Clear();
 		/* Get size from bitmap */
-		GUI_RECT RectBox;
+		RECT RectBox;
 		RectBox.x1 = this->Props.apBm[0]->XSize - 1 + 2 * EffectSize;
 		RectBox.y1 = this->Props.apBm[0]->YSize - 1 + 2 * EffectSize;
 		WM_SetUserClipRect(&RectBox);
@@ -77,7 +77,7 @@ struct CHECKBOX_Obj : public WIDGET {
 			if (this->State & WIDGET_STATE_FOCUS) {
 				int xSizeText = GUI_GetStringDistX(s);
 				int ySizeText = Props.pFont->SizeY();
-				GUI_RECT RectFocus = RectText;
+				RECT RectFocus = RectText;
 				switch (this->Props.Align & ~(TEXTALIGN_HORIZONTAL)) {
 					case TEXTALIGN_VCENTER:
 						RectFocus.y0 = (RectText.y1 - ySizeText) / 2;
@@ -101,7 +101,7 @@ struct CHECKBOX_Obj : public WIDGET {
 			}
 		}
 	}
-	void _OnTouch(const GUI_PID_STATE *pState) {
+	void _OnTouch(const PID_STATE *pState) {
 		int Notification = 0;
 		int Hit = 0;
 		if (pState) {  /* Something happened in our area (pressed or released) */
@@ -155,7 +155,7 @@ struct CHECKBOX_Obj : public WIDGET {
 				pObj->_OnPaint();
 				return 0;
 			case WM_TOUCH:
-				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				pObj->_OnTouch((const PID_STATE *)Data);
 				break;
 		}
 		return WM_DefaultProc(hWin, MsgId, Data);

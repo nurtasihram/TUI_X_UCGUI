@@ -243,12 +243,11 @@ struct WM_SCROLL_STATE {
 		return !(*this != other);
 	}
 };
-struct WM_DIALOG_STATUS {
-	int16_t Done;
-	int16_t ReturnValue;
+struct DIALOG_STATUS {
+	int16_t Done = 0, ReturnValue = 0;
 };
 
-struct WM_PID_STATE_CHANGED_INFO {
+struct PID_CHANGED_INFO {
 	int16_t x, y;
 	uint8_t State, StatePrev;
 };

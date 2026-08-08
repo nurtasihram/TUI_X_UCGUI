@@ -14,9 +14,9 @@ export {
 
 typedef void *GUI_HMEM;
 
-struct GUI_PID_STATE : GUI_POINT {
+struct PID_STATE : POINT {
 	uint8_t Pressed;
-	auto operator=(const GUI_POINT &p) {
+	auto operator=(const POINT &p) {
 		this->x = p.x;
 		this->y = p.y;
 	}
@@ -45,22 +45,22 @@ constexpr TEXTALIGN
 struct GUI_CONTEXT {
 	/* Variables in LCD module */
 	uint32_t aColor[2];
-	GUI_RECT ClipRect;
+	RECT ClipRect;
 	uint8_t DrawMode;
 	/* Variables in GUICHAR module */
 	PCFONT pAFont;
 	const GUI_UC_ENC_APILIST *pUC_API; /* Unicode encoding API */
-	GUI_POINT DispPos;
+	POINT DispPos;
 	int16_t TextMode = 0;
 	int16_t TextAlign = 0;
 	/* Variables in WM module */
-	const GUI_RECT *WM__pUserClipRect = nullptr;
-	GUI_POINT Off;
+	const RECT *WM__pUserClipRect = nullptr;
+	POINT Off;
 	/* Variables in MEMDEV module (with memory devices only) */
 #if GUI_SUPPORT_DEVICES
 	const tLCDDEV_APIList *pDeviceAPI;  /* function pointers only */
 	GUI_HMEM hDevData;
-	GUI_RECT ClipRectPrev;
+	RECT ClipRectPrev;
 #endif
 public:
 	DRAWMODE SetDrawMode(DRAWMODE dm) {

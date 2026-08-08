@@ -31,7 +31,7 @@ struct GUI_MEMDEV {
 };
 
 void GUI_MEMDEV__CopyFromLCD(GUI_MEMDEV_Handle hMem);
-void GUI_MEMDEV__GetRect(GUI_RECT *pRect);
+void GUI_MEMDEV__GetRect(RECT *pRect);
 
 GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Flags
 											, const tLCDDEV_APIList *pMemDevAPI);
@@ -50,9 +50,9 @@ int  GUI__GetLineNumChars(const char *s, int MaxNumChars);
 int  GUI__GetNumChars(const char *s);
 int  GUI__GetLineDistX(const char *s, int Len);
 int  GUI__HandleEOLine(const char **ps);
-void GUI__DispLine(const char *s, int Len, const GUI_RECT *pr);
+void GUI__DispLine(const char *s, int Len, const RECT *pr);
 void GUI__AddSpaceHex(uint32_t v, uint8_t Len, char **ps);
-void GUI__CalcTextRect(const char *pText, const GUI_RECT *pTextRectIn, GUI_RECT *pTextRectOut, int TextAlign);
+void GUI__CalcTextRect(const char *pText, const RECT *pTextRectIn, RECT *pTextRectOut, int TextAlign);
 
 int GUI__WrapGetNumCharsDisp(const char *pText, int xSize, GUI_WRAPMODE WrapMode);
 int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, GUI_WRAPMODE WrapMode);

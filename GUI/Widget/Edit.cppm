@@ -88,14 +88,14 @@ struct EDIT_Obj : public WIDGET {
 		auto rInside = rFillRect;
 		rInside.x0 += this->Props.Border + EDIT_XOFF;
 		rInside.x1 -= this->Props.Border + EDIT_XOFF;
-		GUI_RECT rText;
+		RECT rText;
 		GUI__CalcTextRect(pText, &rInside, &rText, this->Props.Align);
 		WIDGET__FillStringInRect(pText, rFillRect, rInside, rText);
 		/* Calculate position and size of cursor */
 		if (this->State & WIDGET_STATE_FOCUS) {
 			auto p = pText;
 			int CursorWidth = this->XSizeCursor > 0 ? this->XSizeCursor : 1;
-			GUI_RECT rInvert;
+			RECT rInvert;
 			if (pText) {
 				uint16_t Char;
 				int i;
@@ -277,7 +277,7 @@ struct EDIT_Obj : public WIDGET {
 		}
 		return Char;
 	}
-	void _OnTouch(const GUI_PID_STATE *pState) {
+	void _OnTouch(const PID_STATE *pState) {
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			static int StartPress = 0;
 			if (pState->Pressed) {
@@ -314,7 +314,7 @@ struct EDIT_Obj : public WIDGET {
 			return Data;
 		switch (MsgId) {
 			case WM_TOUCH:
-				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_PAINT:
 				pObj->_OnPaint();

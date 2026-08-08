@@ -66,14 +66,14 @@ struct LISTBOX_Obj : public WIDGET {
 	uint16_t ItemSpacing;
 
 	void _NotifyOwner(int Notification) {
-		auto pOwner = this->pOwner ? this->pOwner : WM_GetParent(this);
-		WM_NOTIFY_INFO Info;
+		auto pOwner = this->pOwner ? this->pOwner : Parent();
+		NOTIFY_INFO Info;
 		Info.Notification = Notification;
 		Info.pWinSrc = this;
-		pOwner->SendMessage(WM_NOTIFY_PARENT, (WM_PARAM)&Info);
+		pOwner->Require(WM_NOTIFY_PARENT, (WM_PARAM)&Info);
 	}
 
-	int _CallOwnerDraw(int Cmd, int ItemIndex, GUI_POINT Pos) {
+	int _CallOwnerDraw(int Cmd, int ItemIndex, POINT Pos) {
 		if (pfDrawItem)
 			return pfDrawItem(this, Cmd, ItemIndex, Pos);
 		return OwnerDraw(this, Cmd, ItemIndex, Pos);
@@ -90,7 +90,7 @@ struct LISTBOX_Obj : public WIDGET {
 		return s;
 	}
 	int _GetYSize() {
-		GUI_RECT Rect;
+		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		return (Rect.y1 - Rect.y0 + 1);
 	}
@@ -212,7 +212,7 @@ struct LISTBOX_Obj : public WIDGET {
 		}
 	}
 	void _InvalidateInsideArea() {
-		GUI_RECT Rect;
+		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		WM_Invalidate(this, &Rect);
 	}
@@ -221,7 +221,7 @@ struct LISTBOX_Obj : public WIDGET {
 			int ItemPosY;
 			ItemPosY = _GetItemPosY(Sel);
 			if (ItemPosY >= 0) {
-				GUI_RECT Rect;
+				RECT Rect;
 				int ItemDistY;
 				ItemDistY = _GetItemSizeY(Sel);
 				WM_GetInsideRectExScrollbar(this, &Rect);
@@ -236,7 +236,7 @@ struct LISTBOX_Obj : public WIDGET {
 			int ItemPosY;
 			ItemPosY = _GetItemPosY(Sel);
 			if (ItemPosY >= 0) {
-				GUI_RECT Rect;
+				RECT Rect;
 				WM_GetInsideRectExScrollbar(this, &Rect);
 				Rect.y0 += ItemPosY;
 				WM_Invalidate(this, &Rect);
@@ -257,7 +257,7 @@ struct LISTBOX_Obj : public WIDGET {
 		ScrollStateV.NumItems = _GetNumItems();
 		ScrollStateV.PageSize = _GetNumVisItems();
 		/* Calc horizontal scroll parameters */
-		GUI_RECT Rect;
+		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		ScrollStateH.NumItems = _GetContentsSizeX();
 		ScrollStateH.PageSize = Rect.x1 - Rect.x0 + 1;
@@ -270,7 +270,7 @@ struct LISTBOX_Obj : public WIDGET {
 			WM_SetScrollbarV(this, IsRequired);
 		}
 		if (this->Flags & LISTBOX_SF_AUTOSCROLLBAR_H) {
-			GUI_RECT Rect;
+			RECT Rect;
 			int xSize, xSizeContents;
 			xSizeContents = _GetContentsSizeX();
 			WM_GetInsideRectExScrollbar(this, &Rect);
@@ -311,8 +311,8 @@ struct LISTBOX_Obj : public WIDGET {
 	void _FreeAttached() {
 		GUI_ARRAY_Delete(&ItemArray);
 	}
-	void _OnPaint(const GUI_RECT *pClipRect) {
-		GUI_RECT RectInside, RectItem, ClipRect;
+	void _OnPaint(const RECT *pClipRect) {
+		RECT RectInside, RectItem, ClipRect;
 		int ItemDistY;
 		GUI_SetFont(Props.pFont);
 		/* Calculate clipping rectangle */
@@ -322,7 +322,7 @@ struct LISTBOX_Obj : public WIDGET {
 		RectItem.x0 = ClipRect.x0;
 		RectItem.x1 = ClipRect.x1;
 		/* Fill item info structure */
-		GUI_POINT ItemPos{
+		POINT ItemPos{
 			RectInside.x0 - ScrollStateH.v,
 			RectInside.y0
 		};
@@ -340,7 +340,7 @@ struct LISTBOX_Obj : public WIDGET {
 				/* Set user clip rect */
 				WM_SetUserClipRect(&RectItem);
 				/* Draw item */
-				_CallOwnerDraw(WIDGET_ITEM_DRAW, i, GUI_POINT{ ItemPos.x, ItemPos.y });
+				_CallOwnerDraw(WIDGET_ITEM_DRAW, i, POINT{ ItemPos.x, ItemPos.y });
 			}
 			ItemPos.y += ItemDistY;
 		}
@@ -368,7 +368,7 @@ struct LISTBOX_Obj : public WIDGET {
 	}
 	int _GetItemFromPos(int x, int y) {
 		int Sel = -1;
-		GUI_RECT Rect;
+		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		if ((x >= Rect.x0) && (y >= Rect.y0)) {
 			if ((x <= Rect.x1) && (y <= Rect.y1)) {
@@ -384,7 +384,7 @@ struct LISTBOX_Obj : public WIDGET {
 		}
 		return Sel;
 	}
-	void _OnTouch(const GUI_PID_STATE *pState) {
+	void _OnTouch(const PID_STATE *pState) {
 		if (pState) { /* Something happened in our area (pressed or released) */
 			if (pState->Pressed == 0)
 				_NotifyOwner(WM_NOTIFICATION_RELEASED);
@@ -393,7 +393,7 @@ struct LISTBOX_Obj : public WIDGET {
 			_NotifyOwner(WM_NOTIFICATION_MOVED_OUT);
 	}
 #if GUI_SUPPORT_MOUSE
-	void _OnMouseOver(const GUI_PID_STATE *pState) {
+	void _OnMouseOver(const PID_STATE *pState) {
 		if (this->pOwner) {
 			if (pState) {  /* Something happened in our area (pressed or released) */
 				int Sel = _GetItemFromPos(pState->x, pState->y);
@@ -478,7 +478,7 @@ struct LISTBOX_Obj : public WIDGET {
 		}
 		switch (MsgId) {
 			case WM_NOTIFY_PARENT: {
-				auto pInfo = (const WM_NOTIFY_INFO *)Data;
+				auto pInfo = (const NOTIFY_INFO *)Data;
 				auto pWinSrc = pInfo->pWinSrc;
 				switch (pInfo->Notification) {
 					case WM_NOTIFICATION_VALUE_CHANGED: {
@@ -504,10 +504,10 @@ struct LISTBOX_Obj : public WIDGET {
 				return 0;
 			}
 			case WM_PAINT:
-				pObj->_OnPaint((const GUI_RECT *)Data);
+				pObj->_OnPaint((const RECT *)Data);
 				return 0;
 			case WM_PID_STATE_CHANGED: {
-				auto pInfo = (const WM_PID_STATE_CHANGED_INFO *)Data;
+				auto pInfo = (const PID_CHANGED_INFO *)Data;
 				if (pInfo->State) {
 					int Sel;
 					Sel = pObj->_GetItemFromPos(pInfo->x, pInfo->y);
@@ -520,9 +520,9 @@ struct LISTBOX_Obj : public WIDGET {
 				return 0;
 			}
 			case WM_TOUCH: {
-				auto pState = (const GUI_PID_STATE *)Data;
+				auto pState = (const PID_STATE *)Data;
 				if (pObj->pOwner && pState) {
-					GUI_RECT r = WM_GetClientRect(pObj);
+					RECT r = WM_GetClientRect(pObj);
 					if (pState->x < 0 || pState->y < 0 || pState->x > r.x1 || pState->y > r.y1) {
 						if (pState->Pressed)
 							pObj->_NotifyOwner(LISTBOX_NOTIFICATION_LOST_FOCUS);
@@ -534,7 +534,7 @@ struct LISTBOX_Obj : public WIDGET {
 			}
 #if GUI_SUPPORT_MOUSE
 			case WM_MOUSEOVER:
-				pObj->_OnMouseOver((const GUI_PID_STATE *)Data);
+				pObj->_OnMouseOver((const PID_STATE *)Data);
 				return 0;
 #endif
 			case WM_DELETE:
@@ -558,7 +558,7 @@ public:
 		this->_ManageAutoScroll();
 		return this->_CalcScrollParas();
 	}
-	static int OwnerDraw(WM_Obj *pWin, int Cmd, int ItemIndex, GUI_POINT Pos) {
+	static int OwnerDraw(WM_Obj *pWin, int Cmd, int ItemIndex, POINT Pos) {
 		auto pObj = (LISTBOX_Obj *)pWin;
 		switch (Cmd) {
 			case WIDGET_ITEM_GET_XSIZE: {
@@ -594,7 +594,7 @@ public:
 				GUI_DispStringAt(s, Pos.x + 1, Pos.y);
 				/* Display focus rectangle */
 				if ((pObj->Flags & LISTBOX_SF_MULTISEL) && (ItemIndex == pObj->Sel)) {
-					GUI_RECT rFocus;
+					RECT rFocus;
 					rFocus.LeftTop(Pos);
 					rFocus.x1 = r.x1;
 					rFocus.y1 = Pos.y + FontDistY - 1;

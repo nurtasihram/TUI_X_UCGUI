@@ -127,7 +127,7 @@ struct DROPDOWN_Obj : public WIDGET {
 		_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.y1 - r.y0 - 8) / 2);
 		DrawUp(r);
 	}
-	void _OnTouch(const GUI_PID_STATE *pState) {
+	void _OnTouch(const PID_STATE *pState) {
 		if (pState) { /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
 				Expand();
@@ -172,7 +172,7 @@ struct DROPDOWN_Obj : public WIDGET {
 			return Data;
 		switch (MsgId) {
 			case WM_NOTIFY_PARENT: {
-				auto pInfo = (const WM_NOTIFY_INFO *)Data;
+				auto pInfo = (const NOTIFY_INFO *)Data;
 				switch (pInfo->Notification) {
 					case WM_NOTIFICATION_SCROLL_CHANGED:
 						WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
@@ -195,13 +195,13 @@ struct DROPDOWN_Obj : public WIDGET {
 			}
 			case WM_PID_STATE_CHANGED:
 				if (!IsExpandedBeforeMsg) {    /* Make sure we do not react a second time */
-					auto pInfo = (const WM_PID_STATE_CHANGED_INFO *)Data;
+					auto pInfo = (const PID_CHANGED_INFO *)Data;
 					if (pInfo->State)
 						pObj->Expand();
 				}
 				return 0;
 			case WM_TOUCH:
-				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_PAINT:
 				pObj->_OnPaint();
@@ -228,7 +228,7 @@ public:
 	}
 	void Expand() {
 		int xSize, ySize, i, NumItems;
-		GUI_RECT r;
+		RECT r;
 		xSize = GetSizeX();
 		ySize = ySizeEx;
 		NumItems = _GetNumItems();

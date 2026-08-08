@@ -5,14 +5,14 @@
 void LCD_SetClipRectMax(void) {
 	LCDDEV_L0_GetRect(&GUI.ClipRect);
 }
-void LCD_L0_GetRect(GUI_RECT *pRect) {
+void LCD_L0_GetRect(RECT *pRect) {
 	pRect->x0 = 0;
 	pRect->y0 = 0;
 	pRect->x1 = LCD_GetXSize() - 1;
 	pRect->y1 = LCD_GetYSize() - 1;
 }
-void LCD_SetClipRectEx(const GUI_RECT *pRect) {
-	GUI_RECT r;
+void LCD_SetClipRectEx(const RECT *pRect) {
+	RECT r;
 	LCDDEV_L0_GetRect(&r);
 	GUI.ClipRect = *pRect & r;
 }
@@ -43,7 +43,7 @@ void LCD_SetPixel(int x, int y, int ColorIndex) {
 }
 
 RGBC LCD_GetPixel(int x, int y) {
-	GUI_RECT r;
+	RECT r;
 	LCDDEV_L0_GetRect(&r);
 	if (x < r.x0) {
 		return 0;

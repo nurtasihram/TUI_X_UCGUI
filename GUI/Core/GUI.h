@@ -31,10 +31,10 @@ int  GUI_BMP_GetXSize(const void *pFileData);
 int  GUI_BMP_GetYSize(const void *pFileData);
 
 void GUI_Clear(void);
-void GUI_ClearRect(GUI_RECT r);
-void GUI_DrawFocusRect(GUI_RECT r, int Dist);
-void GUI_DrawRect(GUI_RECT r);
-void GUI_FillRect(GUI_RECT r);
+void GUI_ClearRect(RECT r);
+void GUI_DrawFocusRect(RECT r, int Dist);
+void GUI_DrawRect(RECT r);
+void GUI_FillRect(RECT r);
 
 void GUI_DrawBitmap(PCBITMAP pBM, int x0, int y0);
 
@@ -50,7 +50,7 @@ PCCURSOR GUI_CURSOR_Select(PCCURSOR pCursor);
 void               GUI_CURSOR_Show(void);
 void               GUI_CURSOR_Hide(void);
 void               GUI_CURSOR__TempShow(void);
-bool               GUI_CURSOR__TempHide(GUI_RECT);
+bool               GUI_CURSOR__TempHide(RECT);
 #endif
 
 void  GUI_DispChar(uint16_t c);
@@ -58,11 +58,11 @@ void  GUI_DispChars(uint16_t c, int Cnt);
 void  GUI_DispCharAt(uint16_t c, int16_t x, int16_t y);
 void  GUI_DispString(const char *s);
 void  GUI_DispStringAt(const char *s, int x, int y);
-void  GUI__DispStringInRect(const char *s, GUI_RECT *pRect, int TextAlign, int MaxNumChars);
-void  GUI_DispStringInRect(const char *s, GUI_RECT *pRect, int Flags);
-void  GUI_DispStringInRectMax(const char *s, GUI_RECT *pRect, int TextAlign, int MaxLen); /* Not to be doc. */
+void  GUI__DispStringInRect(const char *s, RECT *pRect, int TextAlign, int MaxNumChars);
+void  GUI_DispStringInRect(const char *s, RECT *pRect, int Flags);
+void  GUI_DispStringInRectMax(const char *s, RECT *pRect, int TextAlign, int MaxLen); /* Not to be doc. */
 
-void  GUI_GetTextExtend(GUI_RECT *pRect, const char *s, int Len);
+void  GUI_GetTextExtend(RECT *pRect, const char *s, int Len);
 int   GUI_GetYAdjust(void);
 int   GUI_GetCharDistX(uint16_t c);
 int   GUI_GetStringDistX(const char *s);
@@ -110,7 +110,7 @@ int  GUI_MEMDEV_GetYSize(GUI_MEMDEV_Handle hMem);
 void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV_Handle hMem, int YSize);
 GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem);  /* Select (activate) a particular memory device. */
 void  GUI_MEMDEV_SetOrg(GUI_MEMDEV_Handle hMem, int x0, int y0);
-int   GUI_MEMDEV_Draw(GUI_RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int MemSize, int Flags);
+int   GUI_MEMDEV_Draw(RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int MemSize, int Flags);
 #endif
 
 void GUI_SelectLCD(void);
@@ -167,16 +167,16 @@ int  GUI_WaitKey(void);
 void GUI_StoreKey(int c);
 void GUI_ClearKeyBuffer(void);
 
-void GUI_PID_StoreState(const GUI_PID_STATE *pState);
-int  GUI_PID_GetState(GUI_PID_STATE *pState);
+void GUI_PID_StoreState(const PID_STATE *pState);
+int  GUI_PID_GetState(PID_STATE *pState);
 
-int  GUI_MOUSE_GetState(GUI_PID_STATE *pState);
-void GUI_MOUSE_StoreState(const GUI_PID_STATE *pState);
+int  GUI_MOUSE_GetState(PID_STATE *pState);
+void GUI_MOUSE_StoreState(const PID_STATE *pState);
 
-int  GUI_TOUCH_GetState(GUI_PID_STATE *pState);
+int  GUI_TOUCH_GetState(PID_STATE *pState);
 void GUI_TOUCH_GetUnstable(int *px, int *py);  /* for diagnostics only */
 void GUI_TOUCH_StoreState(int x, int y);
-void GUI_TOUCH_StoreStateEx(const GUI_PID_STATE *pState);
+void GUI_TOUCH_StoreStateEx(const PID_STATE *pState);
 void GUI_TOUCH_StoreUnstable(int x, int y);
 
 #define GUI_DispString_UC  GUI_UC_DispString

@@ -54,16 +54,16 @@ struct FRAMEWIN_Obj : public WIDGET {
 	WM_Obj *hClient;
 	MENU_Obj *pMenu;
 	char *pText;
-	GUI_RECT rRestore;
+	RECT rRestore;
 	uint16_t Flags;
 	WM_Obj *hFocussedChild; /* Handle to focussed child .. default none (0) */
-	WM_DIALOG_STATUS *pDialogStatus;
+	DIALOG_STATUS *pDialogStatus;
 
 	struct POSITIONS {
 		int16_t TitleHeight;
 		int16_t MenuHeight;
-		GUI_RECT rClient;
-		GUI_RECT rTitleText;
+		RECT rClient;
+		RECT rTitleText;
 	};
 
 	int _CalcTitleHeight() {
@@ -163,7 +163,7 @@ struct FRAMEWIN_Obj : public WIDGET {
 			} while (pLeft || pRight);
 		}
 	}
-	void _OnTouch(const GUI_PID_STATE *pState) {
+	void _OnTouch(const PID_STATE *pState) {
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
 				if (!(this->Flags & FRAMEWIN_CF_ACTIVE))
@@ -191,7 +191,7 @@ struct FRAMEWIN_Obj : public WIDGET {
 		auto BorderSize = this->Props.BorderSize;
 		POSITIONS Pos;
 		_CalcPositions(&Pos);
-		GUI_RECT r{
+		RECT r{
 			Pos.rClient.x0,
 			Pos.rTitleText.y0,
 			Pos.rClient.x1,
@@ -205,7 +205,7 @@ struct FRAMEWIN_Obj : public WIDGET {
 		Pos.rTitleText.x0++;
 		Pos.rTitleText.x1--;
 		GUI_SetFont(this->Props.pFont);
-		GUI_RECT rText;
+		RECT rText;
 		GUI__CalcTextRect(pText, &Pos.rTitleText, &rText, this->Props.Align);
 		auto y0 = Pos.TitleHeight + BorderSize;
 		/* Draw Title */
@@ -244,13 +244,13 @@ struct FRAMEWIN_Obj : public WIDGET {
 		switch (MsgId) {
 			case WM_HANDLE_DIALOG_STATUS:
 				if (Data) /* set pointer to Dialog status */
-					pObj->pDialogStatus = (WM_DIALOG_STATUS *)Data;
+					pObj->pDialogStatus = (DIALOG_STATUS *)Data;
 				return (WM_PARAM)pObj->pDialogStatus;
 			case WM_PAINT:
 				pObj->_OnPaint();
 				return 0;
 			case WM_TOUCH:
-				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_KEY:
 				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
@@ -259,13 +259,13 @@ struct FRAMEWIN_Obj : public WIDGET {
 			case WM_GET_INSIDE_RECT: {
 				POSITIONS Pos;
 				pObj->_CalcPositions(&Pos);
-				*(GUI_RECT *)Data = Pos.rClient;
+				*(RECT *)Data = Pos.rClient;
 				return 0;
 			}
 			case WM_GET_CLIENT_WINDOW: /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
 				return (WM_PARAM)pObj->hClient;
 			case WM_NOTIFY_PARENT: {
-				auto pInfo = (const WM_NOTIFY_INFO *)Data;
+				auto pInfo = (const NOTIFY_INFO *)Data;
 				auto pWinSrc = pInfo->pWinSrc;
 				if (pInfo->Notification == WM_NOTIFICATION_RELEASED) {
 					int Id = pWinSrc->GetID();
@@ -306,7 +306,7 @@ struct FRAMEWIN_Obj : public WIDGET {
 				   the framewindow will receive the focus.
 				 */
 				if (!(pObj->Flags & FRAMEWIN_CF_ACTIVE)) {
-					auto pState = (const GUI_PID_STATE *)Data;
+					auto pState = (const PID_STATE *)Data;
 					if (pState) /* Message may not have a valid pointer (moved out) ! */
 						if (pState->Pressed)
 							WM_SetFocus(pObj);
@@ -327,7 +327,7 @@ struct FRAMEWIN_Obj : public WIDGET {
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
 	static WM_PARAM _cbClient(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pParent = (FRAMEWIN_Obj *)WM_GetParent(hWin);
+		auto pParent = (FRAMEWIN_Obj *)hWin->Parent();
 		auto cb = pParent->cb;
 		switch (MsgId) {
 			case WM_PAINT:
@@ -470,7 +470,7 @@ public:
 	void _RestoreMaximized() {
 		/* When window was maximized, restore it */
 		if (this->Flags & FRAMEWIN_CF_MAXIMIZED) {
-			GUI_RECT r = this->rRestore;
+			RECT r = this->rRestore;
 			WM_MoveTo(this, r.x0, r.y0);
 			WM_SetSize(this, r.x1 - r.x0 + 1, r.y1 - r.y0 + 1);
 			_UpdatePositions();
@@ -498,7 +498,7 @@ public:
 		/* When window is not maximized, maximize it */
 		if (!(this->Flags & FRAMEWIN_CF_MAXIMIZED)) {
 			auto pParent = this->pParent;
-			GUI_RECT r = pParent->Rect;
+			RECT r = pParent->Rect;
 			if (!pParent->pParent) {
 				r.x1 = LCD_GetXSize();
 				r.y1 = LCD_GetYSize();
@@ -751,7 +751,7 @@ public:
 	}
 	void _ChangeWindowPosSize(int *px, int *py) {
 		int dx = 0, dy = 0;
-		GUI_RECT Rect = WM_GetClientRect(this);
+		RECT Rect = WM_GetClientRect(this);
 		/* Calculate new size of window */
 		if (_CaptureFlags & FRAMEWIN_RESIZE_X)
 			dx = (_CaptureFlags & FRAMEWIN_REPOS_X) ? _CaptureX - *px : *px - _CaptureX;
@@ -798,7 +798,7 @@ public:
 	}
 	int _CheckReactBorder(int x, int y) {
 		int Mode = 0;
-		GUI_RECT r = WM_GetClientRect(this);
+		RECT r = WM_GetClientRect(this);
 		if ((x >= 0) && (y >= 0) && (x <= r.x1) && (y <= r.y1)) {
 			Mode |= _CheckBorderX(x, r.x1, FRAMEWIN_REACT_BORDER);
 			if (Mode) {
@@ -813,7 +813,7 @@ public:
 		}
 		return Mode;
 	}
-	int _OnTouchResize(const GUI_PID_STATE *pState) {
+	int _OnTouchResize(const PID_STATE *pState) {
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			int x = pState->x, y = pState->y;
 			int Mode = _CheckReactBorder(x, y);
@@ -850,8 +850,8 @@ public:
 		return 0;
 	}
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
-	int _ForwardMouseOverMsg(const GUI_PID_STATE *pState) {
-		GUI_PID_STATE StateBelow = *pState;
+	int _ForwardMouseOverMsg(const PID_STATE *pState) {
+		PID_STATE StateBelow = *pState;
 		StateBelow += GetOrg();
 		auto pBelow = WM_Screen2hWin(StateBelow.x, StateBelow.y);
 		if (pBelow && pBelow != this) {
@@ -861,7 +861,7 @@ public:
 		}
 		return false;
 	}
-	int _OnMouseOver(const GUI_PID_STATE *pState) {
+	int _OnMouseOver(const PID_STATE *pState) {
 		if (pState) {
 			int x = pState->x, y = pState->y;
 			int Mode = _CheckReactBorder(x, y);
@@ -888,10 +888,10 @@ public:
 			return 0;
 		switch (MsgId) {
 			case WM_TOUCH:
-				return _OnTouchResize((const GUI_PID_STATE *)Data);
+				return _OnTouchResize((const PID_STATE *)Data);
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 			case WM_MOUSEOVER:
-				return _OnMouseOver((const GUI_PID_STATE *)Data);
+				return _OnMouseOver((const PID_STATE *)Data);
 #endif
 			case WM_CAPTURE_RELEASED:
 #if GUI_SUPPORT_CURSOR
@@ -996,7 +996,7 @@ public:
 	}
 
 	static void _DrawMax(void) {
-		auto pObj = (FRAMEWIN_Obj *)WM_GetParent(WM_GetActiveWindow());
+		auto pObj = (FRAMEWIN_Obj *)WM_GetActiveWindow()->Parent();
 		auto r = WM_GetInsideRect() + GUI.Off;
 		if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED) {
 			int Size = ((r.x1 - r.x0 + 1) << 1) / 3;
@@ -1028,7 +1028,7 @@ public:
 	BUTTON_Obj *AddMinButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
 		auto pButton = AddButton(Flags, Off, GUI_ID_MINIMIZE);
 		pButton->SetSelfDraw(0, [] {
-			auto pObj = (FRAMEWIN_Obj *)WM_GetParent(WM_GetActiveWindow());
+			auto pObj = (FRAMEWIN_Obj *)WM_GetActiveWindow()->Parent();
 			auto r = WM_GetInsideRect() + GUI.Off;
 			int Size = (r.x1 - r.x0 + 1) >> 1;
 			if (pObj->Flags & FRAMEWIN_CF_MINIMIZED) {

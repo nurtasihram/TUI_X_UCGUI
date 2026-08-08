@@ -10,7 +10,7 @@ typedef void tLCDDEV_DrawVLine(int x, int y0, int y1);
 typedef void tLCDDEV_FillRect(int x0, int y0, int x1, int y1);
 typedef RGBC tLCDDEV_GetPixel(int x, int y);
 typedef void tLCDDEV_SetPixel(int x, int y, RGBC Color);
-typedef void tLCDDEV_GetRect(GUI_RECT *pRect);
+typedef void tLCDDEV_GetRect(RECT *pRect);
 
 typedef void tLCDDEV_DrawBitmap(int x0, int y0, int xsize, int ysize,
 								int BitsPerPixel, int BytesPerLine,
@@ -37,7 +37,7 @@ void LCD_DrawHLine(int x0, int y0, int x1);
 void LCD_DrawPixel(int x0, int y0);
 void LCD_DrawVLine(int x, int y0, int y1);
 
-void LCD_SetClipRectEx(const GUI_RECT *pRect);
+void LCD_SetClipRectEx(const RECT *pRect);
 void LCD_SetClipRectMax(void);
 
 void LCD_SetPixel(int x, int y, int Color);

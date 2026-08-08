@@ -10,41 +10,41 @@
 #define MESSAGEBOX_YSIZEOK 20
 #define MESSAGEBOX_BKCOLOR RGB_WHITE
 
-static void _OnKey(WM_Obj * hWin, const WM_KEY_INFO *pInfo) {
+static void _OnKey(WM_Obj *pWin, const WM_KEY_INFO *pInfo) {
 	int Key = pInfo->Key;
 	if (pInfo->PressedCnt) {
 		switch (Key) {
 			case GUI_KEY_ESCAPE:
-				GUI_EndDialog(hWin, 1); /* End dialog with return value 1 if <ESC> is pressed */
+				pWin->DialogEnd(1); /* End dialog with return value 1 if <ESC> is pressed */
 				break;
 			case GUI_KEY_ENTER:
-				GUI_EndDialog(hWin, 0); /* End dialog with return value 0 if <ENTER> is pressed */
+				pWin->DialogEnd(0); /* End dialog with return value 0 if <ENTER> is pressed */
 				break;
 		}
 	}
 }
-static WM_PARAM _MESSAGEBOX_cbCallback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _MESSAGEBOX_cbCallback(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
-			((FRAMEWIN_Obj *)hWin)->SetClientColor(MESSAGEBOX_BKCOLOR);
+			((FRAMEWIN_Obj *)pWin)->SetClientColor(MESSAGEBOX_BKCOLOR);
 			return 0;
 		case WM_KEY:
-			_OnKey(hWin, (const WM_KEY_INFO *)Data);
+			_OnKey(pWin, (const WM_KEY_INFO *)Data);
 			return 0;
 		case WM_NOTIFY_PARENT: {
-			auto pInfo = (const WM_NOTIFY_INFO *)Data;
+			auto pInfo = (const NOTIFY_INFO *)Data;
 			auto pWinSrc = pInfo->pWinSrc;
 			int Id = pWinSrc->GetID(); /* Get control ID */
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_RELEASED: /* React only if released */
 					if (Id == GUI_ID_OK)
-						GUI_EndDialog(hWin, 0); /* End dialog with return value 0 if OK */
+						pWin->DialogEnd(0); /* End dialog with return value 0 if OK */
 					break;
 			}
 			return 0;
 		}
 	}
-	return WM_DefaultProc(hWin, MsgId, Data);
+	return WM_DefaultProc(pWin, MsgId, Data);
 }
 WM_Obj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags) {
 	GUI_WIDGET_CREATE_INFO _aDialogCreate[3];                                     /* 0: FrameWin, 1: Text, 2: Button */
@@ -56,7 +56,7 @@ WM_Obj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags
 	int xSizeCaption;                                                             /* Length in pixels of caption */
 	int ySizeCaption;                                                             /* YSize of caption */
 	int ySizeMessage;                                                             /* YSize of message */
-	GUI_RECT Rect;
+	RECT Rect;
 	/* Zeroinit variables */
 	memset(_aDialogCreate, 0, sizeof(_aDialogCreate));
 	/* Get dimension of message */
@@ -121,8 +121,8 @@ WM_Obj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags
 	return GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _MESSAGEBOX_cbCallback, 0, 0, 0);
 }
 int GUI_MessageBox(const char *sMessage, const char *sCaption, int Flags) {
-	WM_Obj * hWin;
-	hWin = MESSAGEBOX_Create(sMessage, sCaption, Flags);
+	WM_Obj * pWin;
+	pWin = MESSAGEBOX_Create(sMessage, sCaption, Flags);
 	/* Exec dialog */
-	return GUI_ExecCreatedDialog(hWin);
+	return pWin->DialogExec();
 }

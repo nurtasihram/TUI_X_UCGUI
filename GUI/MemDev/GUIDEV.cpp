@@ -4,7 +4,7 @@
 /* Memory device capabilities are compiled only if support for them is enabled.*/
 #if GUI_SUPPORT_MEMDEV
 
-void GUI_MEMDEV__GetRect(GUI_RECT *pRect) {
+void GUI_MEMDEV__GetRect(RECT *pRect) {
 	auto pDev = (GUI_MEMDEV *)GUI.hDevData;
 	pRect->x0 = pDev->x0;
 	pRect->y0 = pDev->y0;
@@ -121,7 +121,7 @@ void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 
 void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 	if (hMem) {
-		GUI_RECT r;
+		RECT r;
 		GUI_MEMDEV_Handle hMemPrev = GUI.hDevData;
 		auto pDevData = (GUI_MEMDEV *)(hMem);  /* Convert to pointer */
 		/* Make sure LCD is selected as device */
@@ -205,7 +205,7 @@ static int _Min(int v0, int v1) {
 *  automatically calculates the size of, creates, moves
 *  and then destroys the memory device.
 */
-int GUI_MEMDEV_Draw(GUI_RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int NumLines, int Flags) {
+int GUI_MEMDEV_Draw(RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int NumLines, int Flags) {
 	int x0, y0, x1, y1, xsize, ysize;
 	GUI_MEMDEV_Handle hMD;
 	if (pRect) {

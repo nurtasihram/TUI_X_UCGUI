@@ -40,7 +40,7 @@ struct HEADER_Obj : public WIDGET {
 		int xPos = -ScrollPos;
 		int NumItems = GUI_ARRAY_GetNumItems(&Columns);
 		int EffectSize = this->EffectSize();
-		GUI_RECT Rect;
+		RECT Rect;
 		GUI.SetBkColor(Props.BkColor);
 		GUI_SetFont(Props.pFont);
 		GUI_Clear();
@@ -160,7 +160,7 @@ struct HEADER_Obj : public WIDGET {
 			}
 		}
 	}
-	void _OnTouch(const GUI_PID_STATE *pState) {
+	void _OnTouch(const PID_STATE *pState) {
 		int Notification;
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			_HandlePID(pState->x + ScrollPos, pState->y, pState->Pressed);
@@ -173,7 +173,7 @@ struct HEADER_Obj : public WIDGET {
 	}
 #endif
 #if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
-	void _OnMouseOver(const GUI_PID_STATE *pState) {
+	void _OnMouseOver(const PID_STATE *pState) {
 		if (pState)
 			_HandlePID(pState->x + ScrollPos, pState->y, -1);
 	}
@@ -189,12 +189,12 @@ struct HEADER_Obj : public WIDGET {
 				return 0;
 #if (HEADER_SUPPORT_DRAG)
 			case WM_TOUCH:
-				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 #endif
 #if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
 			case WM_MOUSEOVER:
-				pObj->_OnMouseOver((const GUI_PID_STATE *)Data);
+				pObj->_OnMouseOver((const PID_STATE *)Data);
 				return 0;
 #endif
 			case WM_DELETE:
@@ -212,7 +212,7 @@ public:
 	void SetHeight(int Height) {
 		auto Rect = WM_GetClientRect(this);
 		WM_SetSize(this, Rect.x1 - Rect.x0 + 1, Height);
-		WM_Invalidate(WM_GetParent(this));
+		WM_Invalidate(Parent());
 	}
 	void SetTextColor(RGBC Color) {
 		Props.TextColor = Color;
@@ -235,7 +235,7 @@ public:
 			if (ScrollPos != ScrollPos) {
 				ScrollPos = ScrollPos;
 				WM_Invalidate(this);
-				WM_Invalidate(WM_GetParent(this));
+				WM_Invalidate(Parent());
 			}
 		}
 	}
@@ -254,14 +254,14 @@ public:
 			auto pColumn = (Column *)GUI_ARRAY_GetpItem(&Columns, Index);
 			GUI__strcpy(pColumn->acText, s);
 			WM_Invalidate(this);
-			WM_Invalidate(WM_GetParent(this));
+			WM_Invalidate(Parent());
 		}
 	}
 	void DeleteItem(unsigned Index) {
 		if (Index < GUI_ARRAY_GetNumItems(&Columns)) {
 			GUI_ARRAY_DeleteItem(&Columns, Index);
 			WM_Invalidate(this);
-			WM_Invalidate(WM_GetParent(this));
+			WM_Invalidate(Parent());
 		}
 	}
 	void SetItemText(unsigned int Index, const char *s) {
@@ -280,15 +280,15 @@ public:
 				if (pColumn) {
 					pColumn->Width = Width;
 					WM_Invalidate(this);
-					WM_GetParent(this)->SendMessage(WM_NOTIFY_CLIENTCHANGE);
-					WM_Invalidate(WM_GetParent(this));
+					Parent()->Require(WM_NOTIFY_CLIENTCHANGE);
+					WM_Invalidate(Parent());
 				}
 			}
 		}
 	}
 	int GetHeight() {
 		int Height = 0;
-		GUI_RECT Rect = WM_GetClientRect(this);
+		RECT Rect = WM_GetClientRect(this);
 		Rect -= Rect.LeftTop();
 		Height = Rect.y1 - Rect.y0 + 1;
 
@@ -335,7 +335,7 @@ HEADER_Obj *HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParen
 	GUI_USE_PARA(ExFlags);
 	/* Create the window */
 	if ((xsize == 0) && (x0 == 0) && (y0 == 0)) {
-		GUI_RECT Rect = WM_GetInsideRect(hParent);
+		RECT Rect = WM_GetInsideRect(hParent);
 		xsize = Rect.x1 - Rect.x0 + 1;
 		x0 = Rect.x0;
 		y0 = Rect.y0;

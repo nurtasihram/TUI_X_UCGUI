@@ -104,7 +104,7 @@ struct MENU_Obj : public WIDGET {
 
 	static int _SendMenuMessage(WM_Obj *pSrcWin, WM_Obj *pDestWin, uint16_t MsgType, uint16_t ItemId) {
 		if (!pDestWin)
-			pDestWin = WM_GetParent(pSrcWin);
+			pDestWin = pSrcWin->Parent();
 		if (pDestWin) {
 			MENU_MSG_DATA MsgData;
 			MsgData.MsgType = MsgType;
@@ -442,13 +442,13 @@ struct MENU_Obj : public WIDGET {
 			this->Flags &= ~MENU_SF_ACTIVE;
 		}
 	}
-	int _ForwardMouseOverMsg(GUI_POINT Pos) {
+	int _ForwardMouseOverMsg(POINT Pos) {
 #if (GUI_SUPPORT_MOUSE)
 		if (!IsSubmenuActive && !(Flags & MENU_SF_POPUP)) {
 			if (_IsTopLevelMenu()) {
 				Pos += GetOrg();
 				if (auto pBelow = WM_Screen2hWin(Pos.x, Pos.y); pBelow && (pBelow != this)) {
-					GUI_PID_STATE State;
+					PID_STATE State;
 					State = Pos - pBelow->GetOrg();
 					State.Pressed = 0;
 					WM__SendMessage(pBelow, WM_MOUSEOVER, (WM_PARAM)&State);
@@ -460,14 +460,14 @@ struct MENU_Obj : public WIDGET {
 		return false;
 	}
 	char _HandlePID(int x, int y, int Pressed) {
-		GUI_PID_STATE PrevState;
+		PID_STATE PrevState;
 		char XYInWidget = 0;
 		WM_PID__GetPrevState(&PrevState);
 		/*
 		 * Check if coordinates are inside the widget.
 		 */
 		if ((x >= 0) && (y >= 0)) {
-			GUI_RECT r = WM_GetClientRect(this);
+			RECT r = WM_GetClientRect(this);
 			if (x <= r.x1 && y <= r.y1)
 				XYInWidget = 1;
 		}
@@ -529,11 +529,11 @@ struct MENU_Obj : public WIDGET {
 		}
 		return 1;   /* Coordinates are not in widget, we need to forward PID message to owner */
 	}
-	void _ForwardPIDMsgToOwner(int MsgId, const GUI_PID_STATE *pState) {
+	void _ForwardPIDMsgToOwner(int MsgId, const PID_STATE *pState) {
 		if (!this->_IsTopLevelMenu()) {
-			auto pOwner = this->pOwner ? this->pOwner : WM_GetParent(this);
+			auto pOwner = this->pOwner ? this->pOwner : Parent();
 			if (pOwner) {
-				GUI_PID_STATE State;
+				PID_STATE State;
 				if (pState) {
 					State = *pState;
 					State += GetOrg() - pOwner->GetOrg();
@@ -563,7 +563,7 @@ struct MENU_Obj : public WIDGET {
 			case MENU_ON_INITMENU:
 			case MENU_ON_INITSUBMENU: {
 				/* Forward message to owner. */
-				auto pOwner = this->pOwner ? this->pOwner : WM_GetParent(this);
+				auto pOwner = this->pOwner ? this->pOwner : Parent();
 				if (pOwner)
 					WM__SendMessage(pOwner, WM_MENU, Data);
 				break;
@@ -583,13 +583,13 @@ struct MENU_Obj : public WIDGET {
 		}
 		return 0;
 	}
-	char _OnTouch(const GUI_PID_STATE *pState) {
+	char _OnTouch(const PID_STATE *pState) {
 		if (pState) /* Something happened in our area (pressed or released) */
 			return this->_HandlePID(pState->x, pState->y, pState->Pressed);
 		return this->_HandlePID(-1, -1, -1); /* Moved out */
 	}
 #if (GUI_SUPPORT_MOUSE)
-	char _OnMouseOver(const GUI_PID_STATE *pState) {
+	char _OnMouseOver(const PID_STATE *pState) {
 		if (pState)
 			return this->_HandlePID(pState->x, pState->y, -1);
 		return 0;
@@ -620,7 +620,7 @@ struct MENU_Obj : public WIDGET {
 		GUI.SetColor(this->Props.aTextColor[ColorIndex]);
 	}
 	void _OnPaint() {
-		GUI_RECT FillRect, TextRect;
+		RECT FillRect, TextRect;
 		MENU_ITEM *pItem;
 		unsigned TextWidth, NumItems, i;
 		uint8_t BorderLeft = this->Props.aBorder[MENU_BI_LEFT];
@@ -682,7 +682,7 @@ struct MENU_Obj : public WIDGET {
 			}
 		}
 		if (this->Width || this->Height) {
-			GUI_RECT r = WM_GetClientRect(this);
+			RECT r = WM_GetClientRect(this);
 			r -= EffectSize;
 			GUI.SetBkColor(this->Props.aBkColor[MENU_CI_ENABLED]);
 			GUI_ClearRect({ FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1 });
@@ -703,13 +703,13 @@ struct MENU_Obj : public WIDGET {
 			case WM_MENU:
 				return pObj->_OnMenu(Data);
 			case WM_TOUCH:
-				if (pObj->_OnTouch((const GUI_PID_STATE *)Data))
-					pObj->_ForwardPIDMsgToOwner(WM_TOUCH, (const GUI_PID_STATE *)Data);
+				if (pObj->_OnTouch((const PID_STATE *)Data))
+					pObj->_ForwardPIDMsgToOwner(WM_TOUCH, (const PID_STATE *)Data);
 				break;
 #if (GUI_SUPPORT_MOUSE)
 			case WM_MOUSEOVER:
-				if (pObj->_OnMouseOver((const GUI_PID_STATE *)Data))
-					pObj->_ForwardPIDMsgToOwner(WM_MOUSEOVER, (const GUI_PID_STATE *)Data);
+				if (pObj->_OnMouseOver((const PID_STATE *)Data))
+					pObj->_ForwardPIDMsgToOwner(WM_MOUSEOVER, (const PID_STATE *)Data);
 				break;
 #endif
 			case WM_PAINT:

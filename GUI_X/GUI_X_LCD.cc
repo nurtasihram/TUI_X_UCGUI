@@ -39,7 +39,7 @@ extern int  LCD_L0_Init(void) {
 						   tSimDisp_MouseKey mk) {
 		if (xPos < 0 || yPos < 0)
 			return;
-		static GUI_PID_STATE _State;
+		static PID_STATE _State;
 		_State.x = xPos;
 		_State.y = yPos;
 		_State.Pressed = mk.Left;

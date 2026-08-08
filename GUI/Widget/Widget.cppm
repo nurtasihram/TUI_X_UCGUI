@@ -20,16 +20,16 @@ constexpr uint8_t
 	WIDGET_ITEM_DRAW          = 0,
 	WIDGET_ITEM_GET_XSIZE     = 1,
 	WIDGET_ITEM_GET_YSIZE     = 2;
-typedef int WIDGET_DRAW_ITEM_FUNC(WM_Obj *pWin, int Cmd, int ItemIndex, GUI_POINT ItemPos);
+typedef int WIDGET_DRAW_ITEM_FUNC(WM_Obj *pWin, int Cmd, int ItemIndex, POINT ItemPos);
 
 #pragma region Widget Effect
 struct WIDGET_EFFECT {
 	void DrawUp(void) const { DrawUp(WM_GetClientRect()); }
 	void DrawDown(void) const { DrawDown(WM_GetClientRect()); }
-	GUI_RECT GetRect() const { return WM_GetClientRect() - EffectSize; }
+	RECT GetRect() const { return WM_GetClientRect() - EffectSize; }
 
-	virtual void DrawUp(GUI_RECT r) const {}
-	virtual void DrawDown(GUI_RECT r) const {}
+	virtual void DrawUp(RECT r) const {}
+	virtual void DrawDown(RECT r) const {}
 
 	int EffectSize;
 
@@ -52,14 +52,14 @@ struct GUI_DRAW {
 	virtual void Draw(int x, int y) const = 0;
 	virtual int GetXSize() const { return 0; }
 	virtual int GetYSize() const { return 0; }
-	GUI_POINT Off;
-	GUI_DRAW(GUI_POINT Off = { 0, 0 }) : Off(Off) {}
+	POINT Off;
+	GUI_DRAW(POINT Off = { 0, 0 }) : Off(Off) {}
 };
 
 GUI_DRAW *GUI_DRAW_BITMAP_Create(PCBITMAP pBitmap, int x, int y) {
 	struct _GUI_DRAW : public GUI_DRAW {
 		PCBITMAP pBitmap;
-		_GUI_DRAW(PCBITMAP pBitmap, GUI_POINT Off = { 0, 0 }) : GUI_DRAW(Off), pBitmap(pBitmap) {}
+		_GUI_DRAW(PCBITMAP pBitmap, POINT Off = { 0, 0 }) : GUI_DRAW(Off), pBitmap(pBitmap) {}
 		void Draw(int x, int y) const override {
 			GUI_DrawBitmap(pBitmap, x + Off.x, y + Off.y);
 		}
@@ -79,7 +79,7 @@ GUI_DRAW *GUI_DRAW_BITMAP_Create(PCBITMAP pBitmap, int x, int y) {
 GUI_DRAW *GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw, int x, int y) {
 	struct _GUI_DRAW : public GUI_DRAW {
 		GUI_DRAW_SELF_CB *pfDraw;
-		_GUI_DRAW(GUI_DRAW_SELF_CB *pfDraw, GUI_POINT Off = { 0, 0 }) : GUI_DRAW(Off), pfDraw(pfDraw) {}
+		_GUI_DRAW(GUI_DRAW_SELF_CB *pfDraw, POINT Off = { 0, 0 }) : GUI_DRAW(Off), pfDraw(pfDraw) {}
 		void Draw(int x, int y) const override {
 			if (pfDraw)
 				pfDraw();
@@ -99,7 +99,7 @@ struct WIDGET : public WM_Obj {
 
 	void SetBkColorPrefer(RGBC BkColor) {
 		while (BkColor == RGB_INVALID_COLOR) {
-			if (auto pParent = WM_GetParent(this))
+			if (auto pParent = Parent())
 				BkColor = pParent->GetBkColor();
 			else
 				break;
@@ -109,7 +109,7 @@ struct WIDGET : public WM_Obj {
 
 	void SetScrollState(const WM_SCROLL_STATE &VState, const WM_SCROLL_STATE &HState);
 	void SetEffect(const WIDGET_EFFECT *pEffect) {
-		SendMessage(WM_WIDGET_SET_EFFECT, (WM_PARAM)pEffect);
+		Require(WM_WIDGET_SET_EFFECT, (WM_PARAM)pEffect);
 	}
 	auto EffectSize() const {
 		return pEffect ? pEffect->EffectSize : 0;
@@ -122,11 +122,11 @@ struct WIDGET : public WM_Obj {
 		if (pEffect)
 			pEffect->DrawDown();
 	}
-	void DrawUp(const GUI_RECT &r) const {
+	void DrawUp(const RECT &r) const {
 		if (pEffect)
 			pEffect->DrawUp(r);
 	}
-	void DrawDown(const GUI_RECT &r) const {
+	void DrawDown(const RECT &r) const {
 		if (pEffect)
 			pEffect->DrawDown(r);
 	}
@@ -149,7 +149,7 @@ struct WIDGET : public WM_Obj {
 	}
 };
 
-GUI_RECT WIDGET__GetInsideRect(WIDGET *pWidget) {
+RECT WIDGET__GetInsideRect(WIDGET *pWidget) {
 	return WM_GetClientRect(pWidget) - pWidget->EffectSize();
 }
 
@@ -175,7 +175,7 @@ bool WIDGET_HandleActive(WM_Obj *hObj, int MsgId, WM_PARAM *Data) {
 			return false; /* Message handled -> Return */
 		case WM_PID_STATE_CHANGED:
 			if (pWidget->State & WIDGET_STATE_FOCUSSABLE) {
-				auto pInfo = (const WM_PID_STATE_CHANGED_INFO *)*Data;
+				auto pInfo = (const PID_CHANGED_INFO *)*Data;
 				if (pInfo->State)
 					WM_SetFocus(hObj);
 			}
@@ -184,7 +184,7 @@ bool WIDGET_HandleActive(WM_Obj *hObj, int MsgId, WM_PARAM *Data) {
 			/* A descendent (child) has been touched or released.
 			   If it has been touched, we need to get to top.
 			 */
-			auto pState = (const GUI_PID_STATE *)*Data;
+			auto pState = (const PID_STATE *)*Data;
 			if (pState) { /* Message may not have a valid pointer (moved out) ! */
 				if (pState->Pressed) {
 					WM_BringToTop(hObj);
@@ -214,13 +214,13 @@ bool WIDGET_HandleActive(WM_Obj *hObj, int MsgId, WM_PARAM *Data) {
 			*(bool *)Data = pWidget->State & WIDGET_STATE_FOCUSSABLE; /* Can handle focus */
 			return false; /* Message handled */
 		case WM_GET_INSIDE_RECT:
-			*(GUI_RECT *)*Data = WIDGET__GetInsideRect(pWidget);
+			*(RECT *)*Data = WIDGET__GetInsideRect(pWidget);
 			return false; /* Message handled */
 	}
 	return true; /* Message NOT handled */
 }
 
-void WIDGET__FillStringInRect(const char *pText, GUI_RECT FillRect, GUI_RECT TextRectMax, GUI_RECT TextRectAct) {
+void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax, RECT TextRectAct) {
 	/* Check if we have anything to do at all ... */
 	auto r = FillRect + GUI.Off;
 	if (!(r <= GUI.ClipRect))

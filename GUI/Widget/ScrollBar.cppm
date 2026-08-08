@@ -104,11 +104,11 @@ struct SCROLLBAR_Obj : public WIDGET {
 		auto CenterH = Height >> 1;
 		auto ArrowSize = (Height / 3) - 1;
 		auto ArrowOff = 3 + ArrowSize + ArrowSize / 3;
-		int16_t GUI_RECT:: *x0, GUI_RECT:: *x1;
+		int16_t RECT:: *x0, RECT:: *x1;
 		if (State & SCROLLBAR_CF_VERTICAL)
-			x0 = &GUI_RECT::y0, x1 = &GUI_RECT::y1;
+			x0 = &RECT::y0, x1 = &RECT::y1;
 		else
-			x0 = &GUI_RECT::x0, x1 = &GUI_RECT::x1;
+			x0 = &RECT::x0, x1 = &RECT::x1;
 		/*
 		  Draw left Arrow
 		*/
@@ -167,7 +167,7 @@ struct SCROLLBAR_Obj : public WIDGET {
 		if (Status & WC_VISIBLE)
 			WM_NotifyParent(this, WM_NOTIFICATION_RELEASED);
 	}
-	void _OnTouch(const GUI_PID_STATE *pState) {
+	void _OnTouch(const PID_STATE *pState) {
 		if (!pState)
 			return;
 		if (!pState->Pressed) {
@@ -225,7 +225,7 @@ struct SCROLLBAR_Obj : public WIDGET {
 
 	void _InvalidatePartner() { /* Invalidate the partner, since it is also affected */
 		WM_Invalidate(WM_GetScrollPartner(this));
-		WM_SendMessageNoPara(WM_GetParent(this), WM_NOTIFY_CLIENTCHANGE);   /* Client area may have changed */
+		Parent()->Require(WM_NOTIFY_CLIENTCHANGE);   /* Client area may have changed */
 	}
 
 	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
@@ -241,7 +241,7 @@ struct SCROLLBAR_Obj : public WIDGET {
 				pObj->_InvalidatePartner();
 				return 0;
 			case WM_TOUCH:
-				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_KEY:
 				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
@@ -318,7 +318,7 @@ SCROLLBAR_Obj *SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *
 								  int WinFlags, int ExFlags, int Id) {
 	/* Set defaults if necessary */
 	if ((xsize == 0) && (ysize == 0)) {
-		GUI_RECT Rect = WM_GetInsideRect(hParent);
+		RECT Rect = WM_GetInsideRect(hParent);
 		if (ExFlags & SCROLLBAR_CF_VERTICAL) {
 			xsize = SCROLLBAR_Obj::DefaultWidth;
 			x0 = Rect.x1 + 1 - xsize;

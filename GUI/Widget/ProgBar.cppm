@@ -74,7 +74,7 @@ struct PROGBAR_Obj : public WIDGET {
 		}
 		return (const char *)pText;
 	}
-	void _GetTextRect(GUI_RECT *pRect, const char *pText) {
+	void _GetTextRect(RECT *pRect, const char *pText) {
 		int xSize = Rect.x1 - Rect.x0 + 1;
 		int ySize = Rect.y1 - Rect.y0 + 1;
 		int TextWidth = GUI_GetStringDistX(pText);
@@ -97,7 +97,7 @@ struct PROGBAR_Obj : public WIDGET {
 		pRect->y1 = pRect->y0 + TextHeight - 1;
 	}
 	void _OnPaint() {
-		GUI_RECT r, rInside, rText;
+		RECT r, rInside, rText;
 		const char *pText;
 		char ac[5];
 		int xPos;
@@ -171,13 +171,13 @@ public:
 	}
 	void SetText(const char *s) {
 		PCFONT pOldFont;
-		GUI_RECT r1;
+		RECT r1;
 		char acBuffer[5];
 
 		pOldFont = GUI_SetFont(Props.pFont);
 		_GetTextRect(&r1, _GetText(acBuffer));
 		if (GUI__SetText(&pText, s)) {
-			GUI_RECT r2;
+			RECT r2;
 			_GetTextRect(&r2, _GetText(acBuffer));
 			r1 |= r2;
 			WM_Invalidate(this, &r1);

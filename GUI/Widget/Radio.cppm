@@ -41,7 +41,7 @@ struct RADIO_Obj : public WIDGET {
 	uint16_t NumItems;
 	uint8_t  GroupId;
 
-	void _ResizeRect(GUI_RECT *pDest, const GUI_RECT *pSrc, int Diff) {
+	void _ResizeRect(RECT *pDest, const RECT *pSrc, int Diff) {
 		pDest->y0 = pSrc->y0 - Diff;
 		pDest->y1 = pSrc->y1 + Diff;
 		pDest->x0 = pSrc->x0 - Diff;
@@ -51,7 +51,7 @@ struct RADIO_Obj : public WIDGET {
 		PCBITMAP pBmRadio;
 		PCBITMAP pBmCheck;
 		const char *pText;
-		GUI_RECT Rect, r, rFocus;
+		RECT Rect, r, rFocus;
 		int i, y, HasFocus, FontDistY;
 		uint16_t SpaceAbove, CHeight, FocusBorder;
 		/* Init some data */
@@ -95,7 +95,7 @@ struct RADIO_Obj : public WIDGET {
 				if (*pText) {
 					r = Rect;
 					r.x1 = r.x0 + GUI_GetStringDistX(pText) - 2;
-					r += GUI_POINT{ 0, y };
+					r += POINT{ 0, y };
 					GUI_DispStringAt(pText, r.x0, r.y0 - SpaceAbove);
 					/* Calculate focus rect */
 					if (HasFocus && (this->Sel == i)) {
@@ -110,7 +110,7 @@ struct RADIO_Obj : public WIDGET {
 			GUI_DrawFocusRect(rFocus, 0);
 		}
 	}
-	void _OnTouch(const GUI_PID_STATE *pState) {
+	void _OnTouch(const PID_STATE *pState) {
 		int Notification;
 		int Hit = 0;
 		if (pState) {  /* Something happened in our area (pressed or released) */
@@ -168,7 +168,7 @@ struct RADIO_Obj : public WIDGET {
 			case WM_GET_RADIOGROUP:
 				return pObj->GroupId;
 			case WM_TOUCH:
-				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_KEY:
 				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
@@ -195,7 +195,7 @@ public:
 	}
 	static int _IsInGroup(WM_Obj *pWin, uint8_t GroupId) {
 		if (GroupId)
-			return pWin->SendMessage(WM_GET_RADIOGROUP, 0) == GroupId;
+			return pWin->Require(WM_GET_RADIOGROUP, 0) == GroupId;
 		return 0;
 	}
 	static RADIO_Obj *_GetPrevInGroup(WM_Obj *pWin, uint8_t GroupId) {
@@ -205,7 +205,7 @@ public:
 		return nullptr;
 	}
 	static RADIO_Obj *_GetNextInGroup(WM_Obj *pWin, uint8_t GroupId) {
-		for (; pWin; pWin = WM_GetNextSibling(pWin))
+		for (; pWin; pWin = pWin->NextSibling())
 			if (_IsInGroup(pWin, GroupId))
 				return (RADIO_Obj *)pWin;
 		return nullptr;
@@ -433,10 +433,10 @@ CBITMAP _abmRadio[]{
 };
 
 CBITMAP _bmCheck{
-  4, /* XSize */
-  4, /* YSize */
-  1, /* BytesPerLine */
-  1, /* BitsPerPixel */
-  _acCheck,  /* Pointer to picture data (indices) */
-  &_PalCheck  /* Pointer to palette */
+	4, /* XSize */
+	4, /* YSize */
+	1, /* BytesPerLine */
+	1, /* BitsPerPixel */
+	_acCheck,  /* Pointer to picture data (indices) */
+	&_PalCheck  /* Pointer to palette */
 };

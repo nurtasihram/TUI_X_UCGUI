@@ -51,11 +51,11 @@ struct LISTVIEW_Obj : public WIDGET {
 	WM_Obj *pOwner;
 
 	void _NotifyOwner(int Notification) {
-		auto pOwner = this->pOwner ? this->pOwner : WM_GetParent(this);
-		WM_NOTIFY_INFO Info;
+		auto pOwner = this->pOwner ? this->pOwner : Parent();
+		NOTIFY_INFO Info;
 		Info.Notification = Notification;
 		Info.pWinSrc = this;
-		pOwner->SendMessage(WM_NOTIFY_PARENT, (WM_PARAM)&Info);
+		pOwner->Require(WM_NOTIFY_PARENT, (WM_PARAM)&Info);
 	}
 
 	unsigned _GetRowDistY() {
@@ -73,7 +73,7 @@ struct LISTVIEW_Obj : public WIDGET {
 	}
 	unsigned _GetNumVisibleRows() {
 		unsigned RowDistY, ySize, r = 1;
-		GUI_RECT Rect;
+		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		ySize = Rect.y1 - Rect.y0 + 1 - pHeader->GetHeight();
 		RowDistY = _GetRowDistY();
@@ -83,9 +83,9 @@ struct LISTVIEW_Obj : public WIDGET {
 		}
 		return r;
 	}
-	void _OnPaint(const GUI_RECT *pClipRect) {
+	void _OnPaint(const RECT *pClipRect) {
 		const GUI_ARRAY *pRow;
-		GUI_RECT ClipRect, Rect;
+		RECT ClipRect, Rect;
 		int NumRows, NumVisRows, NumColumns;
 		int LBorder, RBorder, EffectSize;
 		int xPos, yPos, Width, RowDistY;
@@ -212,7 +212,7 @@ struct LISTVIEW_Obj : public WIDGET {
 	}
 	void _InvalidateRowAndBelow(int Sel) {
 		if (Sel >= 0) {
-			GUI_RECT Rect;
+			RECT Rect;
 			int HeaderHeight, RowDistY;
 			HeaderHeight = pHeader->GetHeight();
 			RowDistY = _GetRowDistY();
@@ -222,7 +222,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		}
 	}
 	void _InvalidateInsideArea() {
-		GUI_RECT Rect;
+		RECT Rect;
 		int HeaderHeight;
 		HeaderHeight = pHeader->GetHeight();
 		WM_GetInsideRectExScrollbar(this, &Rect);
@@ -231,7 +231,7 @@ struct LISTVIEW_Obj : public WIDGET {
 	}
 	void _InvalidateRow(int Sel) {
 		if (Sel >= 0) {
-			GUI_RECT Rect;
+			RECT Rect;
 			int HeaderHeight, RowDistY;
 			HeaderHeight = pHeader->GetHeight();
 			RowDistY = _GetRowDistY();
@@ -241,8 +241,8 @@ struct LISTVIEW_Obj : public WIDGET {
 			WM_Invalidate(this, &Rect);
 		}
 	}
-	void _SetSelFromPos(const GUI_PID_STATE *pState) {
-		GUI_RECT Rect;
+	void _SetSelFromPos(const PID_STATE *pState) {
+		RECT Rect;
 		int x, y, HeaderHeight;
 		HeaderHeight = pHeader->GetHeight();
 		WM_GetInsideRectExScrollbar(this, &Rect);
@@ -258,7 +258,7 @@ struct LISTVIEW_Obj : public WIDGET {
 			}
 		}
 	}
-	void _OnTouch(const GUI_PID_STATE *pState) {
+	void _OnTouch(const PID_STATE *pState) {
 		int Notification;
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
@@ -286,7 +286,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		return 0;
 	}
 	int _GetXSize() {
-		GUI_RECT Rect;
+		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		return Rect.x1 + 1;
 	}
@@ -378,7 +378,7 @@ struct LISTVIEW_Obj : public WIDGET {
 				pObj->_UpdateScrollParas();
 				return 0;
 			case WM_NOTIFY_PARENT: {
-				auto pInfo = (const WM_NOTIFY_INFO *)Data;
+				auto pInfo = (const NOTIFY_INFO *)Data;
 				auto pWinSrc = pInfo->pWinSrc;
 				switch (pInfo->Notification) {
 					case WM_NOTIFICATION_CHILD_DELETED:
@@ -410,10 +410,10 @@ struct LISTVIEW_Obj : public WIDGET {
 				return 0;
 			}
 			case WM_PAINT:
-				pObj->_OnPaint((const GUI_RECT *)Data);
+				pObj->_OnPaint((const RECT *)Data);
 				return 0;
 			case WM_TOUCH:
-				pObj->_OnTouch((const GUI_PID_STATE *)Data);
+				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_KEY:
 				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
@@ -676,7 +676,7 @@ LISTVIEW_Obj *LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hP
 	GUI_USE_PARA(ExFlags);
 	/* Create the window */
 	if ((xsize == 0) && (ysize == 0) && (x0 == 0) && (y0 == 0)) {
-		GUI_RECT Rect = WM_GetClientRect(hParent);
+		RECT Rect = WM_GetClientRect(hParent);
 		xsize = Rect.x1 - Rect.x0 + 1;
 		ysize = Rect.y1 - Rect.y0 + 1;
 	}

@@ -30,10 +30,10 @@ WM_Obj *WM_GetScrollPartner(WM_Obj *pScroll) {
 	else if (Id == GUI_ID_VSCROLL) {
 		Id = GUI_ID_HSCROLL;
 	}
-	return WM_GetParent(pScroll)->GetItem<SCROLLBAR_Obj>(Id);
+	return pScroll->Parent()->GetItem<SCROLLBAR_Obj>(Id);
 }
 void WM_GetScrollState(WM_Obj *pObj, WM_SCROLL_STATE *pScrollState) {
-	pObj->SendMessage(WM_GET_SCROLL_STATE, (WM_PARAM)pScrollState);
+	pObj->Require(WM_GET_SCROLL_STATE, (WM_PARAM)pScrollState);
 }
 /*********************************************************************
 *
@@ -45,7 +45,7 @@ void WM_GetScrollState(WM_Obj *pObj, WM_SCROLL_STATE *pScrollState) {
 	which typically reduces the rectangle by 0 - 3 pixels on either side
 	(2 for the standard 3D effect).
 */
-void WM_GetInsideRectExScrollbar(WM_Obj *pWin, GUI_RECT *pRect) {
+void WM_GetInsideRectExScrollbar(WM_Obj *pWin, RECT *pRect) {
 	if (pWin) {
 		if (pRect) {
 			auto rWin = pWin->GetRect();     /* The entire window in screen coordinates */
