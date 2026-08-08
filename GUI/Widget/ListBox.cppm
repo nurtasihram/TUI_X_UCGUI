@@ -83,10 +83,7 @@ struct LISTBOX_Obj : public WIDGET {
 	}
 	const char *_GetpString(int Index) {
 		const char *s = nullptr;
-		auto pItem = ItemArray.GetItem(Index);
-		if (pItem) {
-			s = pItem->pText;
-		}
+		s = ItemArray[Index].pText;
 		return s;
 	}
 	int _GetYSize() {
@@ -95,35 +92,25 @@ struct LISTBOX_Obj : public WIDGET {
 		return (Rect.y1 - Rect.y0 + 1);
 	}
 	int _GetItemSizeX(uint16_t Index) {
-		auto pItem = ItemArray.GetItem(Index);
-		int xSize = 0;
-		if (pItem) {
-			xSize = pItem->xSize;
-		}
+		auto &pItem = ItemArray[Index];
+		int xSize = pItem.xSize;
 		if (xSize == 0) {
 			PCFONT pOldFont = GUI_SetFont(Props.pFont);
 			xSize = _CallOwnerDraw(WIDGET_ITEM_GET_XSIZE, Index, {});
 			GUI_SetFont(pOldFont);
 		}
-		if (pItem) {
-			pItem->xSize = xSize;
-		}
+		pItem.xSize = xSize;
 		return xSize;
 	}
 	int _GetItemSizeY(uint16_t Index) {
-		auto pItem = ItemArray.GetItem(Index);
-		int ySize = 0;
-		if (pItem) {
-			ySize = pItem->ySize;
-		}
+		auto &pItem = ItemArray[Index];
+		int ySize = pItem.ySize;
 		if (ySize == 0) {
 			PCFONT pOldFont = GUI_SetFont(Props.pFont);
 			ySize = _CallOwnerDraw(WIDGET_ITEM_GET_YSIZE, Index, {});
 			GUI_SetFont(pOldFont);
 		}
-		if (pItem) {
-			pItem->ySize = ySize;
-		}
+		pItem.ySize = ySize;
 		return ySize;
 	}
 	int _GetContentsSizeX() {
@@ -204,12 +191,9 @@ struct LISTBOX_Obj : public WIDGET {
 		return ScrollStateV.v - PrevScrollStateV;
 	}
 	void _InvalidateItemSize(uint16_t Index) {
-		LISTBOX_ITEM *pItem;
-		pItem = ItemArray.GetItem(Index);
-		if (pItem) {
-			pItem->xSize = 0;
-			pItem->ySize = 0;
-		}
+		auto &pItem = ItemArray[Index];
+		pItem.xSize = 0;
+		pItem.ySize = 0;
 	}
 	void _InvalidateInsideArea() {
 		RECT Rect;
@@ -310,8 +294,7 @@ struct LISTBOX_Obj : public WIDGET {
 	}
 	void _FreeAttached() {
 		for (unsigned _i = 0, _n = ItemArray.GetNumItems(); _i < _n; _i++) {
-			auto _p = ItemArray.GetItem(_i);
-			GUI_ALLOC_FreePtr((void **)&_p->pText);
+			GUI_ALLOC_FreePtr((void **)&ItemArray[_i].pText);
 		}
 		ItemArray.Delete();
 	}
@@ -359,13 +342,11 @@ struct LISTBOX_Obj : public WIDGET {
 	}
 	void _ToggleMultiSel(int Sel) {
 		if (this->Flags & LISTBOX_SF_MULTISEL) {
-			auto pItem = ItemArray.GetItem(Sel);
-			if (pItem) {
-				if (!(pItem->Status & LISTBOX_ITEM_DISABLED)) {
-					pItem->Status ^= LISTBOX_ITEM_SELECTED;
-					_NotifyOwner(WM_NOTIFICATION_SEL_CHANGED);
-					_InvalidateItem(Sel);
-				}
+			auto &pItem = ItemArray[Sel];
+			if (!(pItem.Status & LISTBOX_ITEM_DISABLED)) {
+				pItem.Status ^= LISTBOX_ITEM_SELECTED;
+				_NotifyOwner(WM_NOTIFICATION_SEL_CHANGED);
+				_InvalidateItem(Sel);
 			}
 		}
 	}
@@ -424,11 +405,9 @@ struct LISTBOX_Obj : public WIDGET {
 			if ((Index < 0) || (Index >= NumItems)) {
 				break;
 			}
-			auto pItem = ItemArray.GetItem(Index);
-			if (pItem) {
-				if (!(pItem->Status & LISTBOX_ITEM_DISABLED)) {
-					NewSel = Index;
-				}
+			auto &pItem = ItemArray[Index];
+			if (!(pItem.Status & LISTBOX_ITEM_DISABLED)) {
+				NewSel = Index;
 			}
 		} while (NewSel < 0);
 		if (NewSel >= 0) {
@@ -572,12 +551,12 @@ public:
 			case WIDGET_ITEM_GET_YSIZE:
 				return pObj->Props.pFont->DistY() + pObj->ItemSpacing;
 			case WIDGET_ITEM_DRAW: {
-				auto pItem = pObj->ItemArray.GetItem(ItemIndex);
+				auto &pItem = pObj->ItemArray[ItemIndex];
 				auto r = WM_GetInsideRect();
 				auto FontDistY = pObj->Props.pFont->DistY();
 				/* Calculate color index */
-				bool IsDisabled = pItem->Status & LISTBOX_ITEM_DISABLED;
-				bool IsSelected = pItem->Status & LISTBOX_ITEM_SELECTED;
+				bool IsDisabled = pItem.Status & LISTBOX_ITEM_DISABLED;
+				bool IsSelected = pItem.Status & LISTBOX_ITEM_SELECTED;
 				int ColorIndex;
 				if (pObj->Flags & LISTBOX_SF_MULTISEL) {
 					ColorIndex = IsDisabled ? 3 : IsSelected ? 2 : 0;
@@ -610,7 +589,7 @@ public:
 
 	void InvalidateItem(int Index) {
 		int NumItems;
-		NumItems = this->_GetNumItems();
+		NumItems = _GetNumItems();
 		if (Index < NumItems) {
 			if (Index < 0) {
 				int i;
@@ -639,8 +618,7 @@ public:
 
 			if (this->ItemArray.AddItem(&Item) == 0) {
 				uint16_t ItemIndex = ItemArray.GetNumItems() - 1;
-				auto pItem = this->ItemArray.GetItem(ItemIndex);
-				GUI__SetText(&pItem->pText, s);
+				GUI__SetText(&ItemArray[ItemIndex].pText, s);
 				this->_InvalidateItemSize(ItemIndex);
 				UpdateScrollers();
 				this->_InvalidateItem(ItemIndex);
@@ -659,7 +637,7 @@ public:
 	}
 	void SetSel(int NewSel) {
 		int MaxSel;
-		MaxSel = this->_GetNumItems();
+		MaxSel = _GetNumItems();
 		MaxSel = MaxSel ? MaxSel - 1 : 0;
 		if (NewSel > MaxSel) {
 			NewSel = MaxSel;
@@ -668,12 +646,8 @@ public:
 			NewSel = -1;
 		}
 		else {
-			void *hItem = this->ItemArray.GetItem(NewSel);
-			if (hItem) {
-				auto pItem = (LISTBOX_ITEM *)(hItem);
-				if (pItem->Status & LISTBOX_ITEM_DISABLED) {
-					NewSel = -1;
-				}
+			if (ItemArray[NewSel].Status & LISTBOX_ITEM_DISABLED) {
+				NewSel = -1;
 			}
 		}
 		if (NewSel != this->Sel) {
@@ -705,10 +679,9 @@ public:
 	void DeleteItem(uint16_t Index) {
 		int Sel;
 		uint16_t NumItems;
-		NumItems = this->_GetNumItems();
+		NumItems = _GetNumItems();
 		if (Index < NumItems) {
-			if (auto pItem = this->ItemArray.GetItem(Index))
-				GUI_ALLOC_FreePtr((void **)&pItem->pText);
+			GUI_ALLOC_FreePtr((void **)&this->ItemArray[Index].pText);
 			this->ItemArray.DeleteItem(Index);
 			/*
 			 * Update selection
@@ -742,7 +715,7 @@ public:
 	}
 	void GetItemText(uint16_t Index, char *pBuffer, int MaxSize) {
 		uint16_t NumItems;
-		NumItems = this->_GetNumItems();
+		NumItems = _GetNumItems();
 		if (Index < NumItems) {
 			const char *pString;
 			int CopyLen;
@@ -756,18 +729,18 @@ public:
 		}
 	}
 	uint16_t GetNumItems() {
-		return this->_GetNumItems();
+		return _GetNumItems();
 	}
 	void InsertString(const char *s, uint16_t Index) {
 		if (s) {
 			uint16_t NumItems;
 
-			NumItems = this->_GetNumItems();
+			NumItems = _GetNumItems();
 			if (Index < NumItems) {
 				if (this->ItemArray.InsertItem(Index)) {
-					auto pItem = this->ItemArray.GetItem(Index);
-					pItem->Status = 0;
-					GUI__SetText(&pItem->pText, s);
+					auto &pItem = this->ItemArray[Index];
+					pItem.Status = 0;
+					GUI__SetText(&pItem.pText, s);
 					InvalidateItem(Index);
 				}
 			}
@@ -779,14 +752,10 @@ public:
 	int GetItemDisabled(uint16_t Index) {
 		int Ret = 0;
 		uint16_t NumItems;
-		NumItems = this->_GetNumItems();
+		NumItems = _GetNumItems();
 		if (Index < NumItems) {
-			void *hItem = this->ItemArray.GetItem(Index);
-			if (hItem) {
-				auto pItem = (LISTBOX_ITEM *)(hItem);
-				if (pItem->Status & LISTBOX_ITEM_DISABLED) {
-					Ret = 1;
-				}
+			if (ItemArray[Index].Status & LISTBOX_ITEM_DISABLED) {
+				Ret = 1;
 			}
 		}
 
@@ -794,22 +763,19 @@ public:
 	}
 	void SetItemDisabled(uint16_t Index, int OnOff) {
 		uint16_t NumItems;
-		NumItems = this->_GetNumItems();
+		NumItems = _GetNumItems();
 		if (Index < NumItems) {
-			void *hItem = this->ItemArray.GetItem(Index);
-			if (hItem) {
-				auto pItem = (LISTBOX_ITEM *)(hItem);
-				if (OnOff) {
-					if (!(pItem->Status & LISTBOX_ITEM_DISABLED)) {
-						pItem->Status |= LISTBOX_ITEM_DISABLED;
-						this->_InvalidateItem(Index);
-					}
+			auto &pItem = this->ItemArray[Index];
+			if (OnOff) {
+				if (!(pItem.Status & LISTBOX_ITEM_DISABLED)) {
+					pItem.Status |= LISTBOX_ITEM_DISABLED;
+					this->_InvalidateItem(Index);
 				}
-				else {
-					if (pItem->Status & LISTBOX_ITEM_DISABLED) {
-						pItem->Status &= ~LISTBOX_ITEM_DISABLED;
-						this->_InvalidateItem(Index);
-					}
+			}
+			else {
+				if (pItem.Status & LISTBOX_ITEM_DISABLED) {
+					pItem.Status &= ~LISTBOX_ITEM_DISABLED;
+					this->_InvalidateItem(Index);
 				}
 			}
 		}
@@ -852,14 +818,11 @@ public:
 	int GetItemSel(uint16_t Index) {
 		int Ret = 0;
 		uint16_t NumItems;
-		NumItems = this->_GetNumItems();
+		NumItems = _GetNumItems();
 		if ((Index < NumItems) && (this->Flags & LISTBOX_SF_MULTISEL)) {
-			void *hItem = this->ItemArray.GetItem(Index);
-			if (hItem) {
-				auto pItem = (LISTBOX_ITEM *)(hItem);
-				if (pItem->Status & LISTBOX_ITEM_SELECTED) {
-					Ret = 1;
-				}
+			auto &pItem = this->ItemArray[Index];
+			if (pItem.Status & LISTBOX_ITEM_SELECTED) {
+				Ret = 1;
 			}
 		}
 
@@ -867,22 +830,19 @@ public:
 	}
 	void SetItemSel(uint16_t Index, int OnOff) {
 		uint16_t NumItems;
-		NumItems = this->_GetNumItems();
+		NumItems = _GetNumItems();
 		if ((Index < NumItems) && (this->Flags & LISTBOX_SF_MULTISEL)) {
-			void *hItem = this->ItemArray.GetItem(Index);
-			if (hItem) {
-				auto pItem = (LISTBOX_ITEM *)(hItem);
-				if (OnOff) {
-					if (!(pItem->Status & LISTBOX_ITEM_SELECTED)) {
-						pItem->Status |= LISTBOX_ITEM_SELECTED;
-						this->_InvalidateItem(Index);
-					}
+			auto &pItem = this->ItemArray[Index];
+			if (OnOff) {
+				if (!(pItem.Status & LISTBOX_ITEM_SELECTED)) {
+					pItem.Status |= LISTBOX_ITEM_SELECTED;
+					this->_InvalidateItem(Index);
 				}
-				else {
-					if (pItem->Status & LISTBOX_ITEM_SELECTED) {
-						pItem->Status &= ~LISTBOX_ITEM_SELECTED;
-						this->_InvalidateItem(Index);
-					}
+			}
+			else {
+				if (pItem.Status & LISTBOX_ITEM_SELECTED) {
+					pItem.Status &= ~LISTBOX_ITEM_SELECTED;
+					this->_InvalidateItem(Index);
 				}
 			}
 		}
@@ -942,9 +902,8 @@ public:
 		}
 	}
 	void SetString(const char *s, uint16_t Index) {
-		if (Index < (uint16_t)this->_GetNumItems()) {
-			auto pItem = this->ItemArray.GetItem(Index);
-			if (pItem && GUI__SetText(&pItem->pText, s)) {
+		if (Index < (uint16_t)_GetNumItems()) {
+			if (GUI__SetText(&ItemArray[Index].pText, s)) {
 				this->_InvalidateItemSize(Index);
 				UpdateScrollers();
 				this->_InvalidateItem(Index);

@@ -84,7 +84,6 @@ struct LISTVIEW_Obj : public WIDGET {
 		return r;
 	}
 	void _OnPaint(const RECT *pClipRect) {
-		const GUI_ARRAY_T<Item> *pRow;
 		RECT ClipRect, Rect;
 		int NumRows, NumVisRows, NumColumns;
 		int LBorder, RBorder, EffectSize;
@@ -110,8 +109,8 @@ struct LISTVIEW_Obj : public WIDGET {
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		/* Do the drawing */
 		for (i = this->ScrollStateV.v; i < EndRow; i++) {
-			pRow = this->RowArray.GetItem(i);
-			if (pRow) {
+			auto &pRow = this->RowArray[i];
+			{
 				Rect.y0 = yPos;
 				/* Break when all other rows are outside the drawing area */
 				if (Rect.y0 > ClipRect.y1) {
@@ -144,10 +143,10 @@ struct LISTVIEW_Obj : public WIDGET {
 						Rect.x1 = xPos + Width - 1;
 						/* Make sure that we draw only when column is in drawing area */
 						if (Rect.x1 >= ClipRect.x0) {
-							auto pItem = pRow->GetItem(j);
-							if (pItem->hItemInfo) {
+							auto &pItem = pRow[j];
+							if (pItem.hItemInfo) {
 								ItemInfo *pItemInfo;
-								pItemInfo = (ItemInfo *)(pItem->hItemInfo);
+								pItemInfo = (ItemInfo *)(pItem.hItemInfo);
 								GUI.SetBkColor(pItemInfo->aBkColor[ColorIndex]);
 								GUI.SetColor(pItemInfo->aTextColor[ColorIndex]);
 							}
@@ -159,9 +158,9 @@ struct LISTVIEW_Obj : public WIDGET {
 							/* Draw text */
 							Rect.x0 += LBorder;
 							Rect.x1 -= RBorder;
-							Align = *this->AlignArray.GetItem(j);
-							GUI_DispStringInRect(pItem->pText, &Rect, Align);
-							if (pItem->hItemInfo)
+							Align = this->AlignArray[j];
+							GUI_DispStringInRect(pItem.pText, &Rect, Align);
+							if (pItem.hItemInfo)
 								GUI.SetBkColor(Props.aBkColor[ColorIndex]);
 						}
 						xPos += Width;
@@ -328,19 +327,18 @@ struct LISTVIEW_Obj : public WIDGET {
 		NumRows = RowArray.GetNumItems();
 		NumColumns = AlignArray.GetNumItems();
 		for (i = 0; i < NumRows; i++) {
-			auto pRow = this->RowArray.GetItem(i);
-			/* Delete attached info items */
-			for (j = 0; j < NumColumns; j++) {
-				Item *pItem;
-				pItem = pRow->GetItem(j);
-				GUI_ALLOC_FreePtr((void **)&pItem->pText);
-				if (pItem->hItemInfo) {
-					GUI_ALLOC_Free(pItem->hItemInfo);
+				auto &pRow = this->RowArray[i];
+				/* Delete attached info items */
+				for (j = 0; j < NumColumns; j++) {
+					auto &pItem = pRow[j];
+					GUI_ALLOC_FreePtr((void **)&pItem.pText);
+					if (pItem.hItemInfo) {
+						GUI_ALLOC_Free(pItem.hItemInfo);
+					}
 				}
+				/* Delete row */
+				pRow.Delete();
 			}
-			/* Delete row */
-			pRow->Delete();
-		}
 		this->AlignArray.Delete();
 		this->RowArray.Delete();
 	}
@@ -348,7 +346,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		ItemInfo *pItemInfo = 0;
 		Item *pItem;
 		if ((Column < GetNumColumns()) && (Row < GetNumRows()) && (Index < GUI_COUNTOF(pItemInfo->aTextColor))) {
-			pItem = RowArray.GetItem(Row)->GetItem(Column);
+			pItem = &RowArray[Row][Column];
 			if (!pItem->hItemInfo) {
 				int i;
 				pItem->hItemInfo = GUI_ALLOC_AllocZero(sizeof(ItemInfo));
@@ -443,7 +441,7 @@ public:
 		NumRows = GetNumRows();
 		if (NumRows) {
 			for (unsigned i = 0; i < NumRows; i++)
-				RowArray.GetItem(i)->AddItem();
+				RowArray[i].AddItem();
 		}
 		_UpdateScrollParas();
 		_InvalidateInsideArea();
@@ -458,13 +456,13 @@ public:
 			/* Add columns for the new row */
 			NumColumns = pHeader->GetNumItems();
 			for (i = 0; i < NumColumns; i++) {
-				auto pRow = RowArray.GetItem(NumRows);
+				auto &pRow = RowArray[NumRows];
 				s = (ppText) ? *ppText++ : 0;
 				if (s == 0) {
 					ppText = 0;
 				}
-				pRow->AddItem();
-				GUI__SetText(&pRow->GetItem(i)->pText, s);
+				pRow.AddItem();
+				GUI__SetText(&pRow[i].pText, s);
 			}
 			_UpdateScrollParas();
 			_InvalidateRow(NumRows);
@@ -477,15 +475,15 @@ public:
 			AlignArray.DeleteItem(Index);
 			NumRows = RowArray.GetNumItems();
 			for (i = 0; i < NumRows; i++) {
-				auto pRow = RowArray.GetItem(i);
+				auto &pRow = RowArray[i];
 				/* Delete attached info items */
-				auto pItem = pRow->GetItem(Index);
-				GUI_ALLOC_FreePtr((void **)&pItem->pText);
-				if (pItem->hItemInfo) {
-					GUI_ALLOC_Free(pItem->hItemInfo);
+				auto &pItem = pRow[Index];
+				GUI_ALLOC_FreePtr((void **)&pItem.pText);
+				if (pItem.hItemInfo) {
+					GUI_ALLOC_Free(pItem.hItemInfo);
 				}
 				/* Delete cell */
-				pRow->DeleteItem(Index);
+				pRow.DeleteItem(Index);
 			}
 			_UpdateScrollParas();
 			_InvalidateInsideArea();
@@ -494,17 +492,17 @@ public:
 	void DeleteRow(unsigned Index) {
 		unsigned NumRows = RowArray.GetNumItems();
 		if (Index < NumRows) {
-			auto pRow = RowArray.GetItem(Index);
+			auto &pRow = RowArray[Index];
 			/* Delete attached info items */
-			for (int i = 0, NumColumns = pRow->GetNumItems(); i < NumColumns; i++) {
-					auto pItem = pRow->GetItem(i);
-				GUI_ALLOC_FreePtr((void **)&pItem->pText);
-				if (pItem->hItemInfo) {
-					GUI_ALLOC_Free(pItem->hItemInfo);
+			for (int i = 0, NumColumns = pRow.GetNumItems(); i < NumColumns; i++) {
+					auto &pItem = pRow[i];
+				GUI_ALLOC_FreePtr((void **)&pItem.pText);
+				if (pItem.hItemInfo) {
+					GUI_ALLOC_Free(pItem.hItemInfo);
 				}
 			}
 			/* Delete row */
-			pRow->Delete();
+			pRow.Delete();
 			RowArray.DeleteItem(Index);
 			/* Adjust properties */
 			if (Sel == (signed int)Index)
@@ -589,10 +587,9 @@ public:
 	}
 	void SetItemText(unsigned Column, unsigned Row, const char *s) {
 		if ((Column < GetNumColumns()) && (Row < GetNumRows())) {
-			auto pRow = RowArray.GetItem(Row);
-			auto pItem = pRow->GetItem(Column);
-			if (pItem)
-				GUI__SetText(&pItem->pText, s);
+			auto &pRow = RowArray[Row];
+			auto &pItem = pRow[Column];
+			GUI__SetText(&pItem.pText, s);
 			_InvalidateRow(Row);
 		}
 	}
@@ -639,9 +636,8 @@ public:
 	}
 	void SetTextAlign(unsigned int Index, int Align) {
 		if (Index < AlignArray.GetNumItems()) {
-			int *pAlign = AlignArray.GetItem(Index);
-			if (Align != *pAlign) {
-				*pAlign = Align;
+			if (Align != AlignArray[Index]) {
+				AlignArray[Index] = Align;
 				_InvalidateInsideArea();
 			}
 		}

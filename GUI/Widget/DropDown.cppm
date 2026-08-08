@@ -60,8 +60,7 @@ struct DROPDOWN_Obj : public WIDGET {
 		return Handles.NumItems;
 	}
 	const char *_GetpItem(int Index) {
-		auto pp = Handles.GetItem(Index);
-		return pp ? *pp : nullptr;
+		return Handles[Index];
 	}
 	void _DrawTriangleDown(int x, int y, int Size) {
 		for (; Size >= 0; Size--, y++) {
@@ -201,7 +200,7 @@ struct DROPDOWN_Obj : public WIDGET {
 				return 0;
 			case WM_DELETE:
 				for (int i = 0; i < pObj->Handles.GetNumItems(); i++)
-					GUI__SetText(pObj->Handles.GetItem(i), nullptr);
+					GUI__SetText(&pObj->Handles[i], nullptr);
 				pObj->_FreeAttached();
 				return 0;
 			case WM_KEY:
@@ -284,7 +283,7 @@ public:
 		if (s) {
 			auto idx = this->Handles.GetNumItems();
 			if (this->Handles.AddItem() == 0)
-				GUI__SetText(this->Handles.GetItem(idx), s);
+					GUI__SetText(&this->Handles[idx], s);
 			WM_Invalidate(this);
 		}
 	}
@@ -368,7 +367,7 @@ public:
 		unsigned int NumItems;
 		NumItems = GetNumItems();
 		if (Index < NumItems) {
-			GUI__SetText(this->Handles.GetItem(Index), nullptr);
+			GUI__SetText(&this->Handles[Index], nullptr);
 			this->Handles.DeleteItem(Index);
 			WM_Invalidate(this);
 			if (this->pListWin) {

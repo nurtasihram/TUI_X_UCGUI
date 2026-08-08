@@ -90,7 +90,7 @@ struct RADIO_Obj : public WIDGET {
 							   RADIO_BORDER + ((pBmRadio->YSize - pBmCheck->YSize) / 2) + y);
 			}
 			/* Draw text if available */
-			pText = *this->TextArray.GetItem(i);
+			pText = this->TextArray[i];
 			if (pText) {
 				if (*pText) {
 					r = Rect;
@@ -176,7 +176,7 @@ struct RADIO_Obj : public WIDGET {
 				break;
 			case WM_DELETE:
 				for (int i = 0; i < pObj->TextArray.GetNumItems(); i++)
-					GUI__SetText(pObj->TextArray.GetItem(i), nullptr);
+					GUI__SetText(&pObj->TextArray[i], nullptr);
 				pObj->TextArray.Delete();
 				return 0;
 		}
@@ -321,7 +321,7 @@ public:
 	}
 	void SetText(const char *pText, unsigned Index) {
 		if (Index < (unsigned)NumItems) {
-			GUI__SetText(TextArray.GetItem(Index), pText);
+			GUI__SetText(&TextArray[Index], pText);
 			WM_Invalidate(this);
 		}
 	}

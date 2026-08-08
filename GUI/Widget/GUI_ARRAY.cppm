@@ -12,6 +12,27 @@ struct GUI_ARRAY {
 
 	auto GetNumItems() const { return NumItems; }
 
+	void Delete() {
+		if (!haHandle)
+			return;
+		auto pa = (WM_HMEM *)haHandle;
+		for (int i = 0; i < NumItems; i++)
+			GUI_ALLOC_FreePtr(pa + i);
+		GUI_ALLOC_FreePtr(&haHandle);
+		NumItems = 0;
+	}
+
+	void DeleteItem(unsigned int Index) {
+		if (Index >= (unsigned)NumItems || !haHandle)
+			return;
+		auto pa = (WM_HMEM *)haHandle;
+		GUI_ALLOC_FreePtr(pa + Index);
+		unsigned newCount = --NumItems;
+		for (unsigned i = Index; i < newCount; i++)
+			pa[i] = pa[i + 1];
+	}
+
+protected:
 	// Returns 0 on success, 1 on failure
 	int AddItem(const void *pData, int Len) {
 		WM_HMEM hItem = Len ? GUI_ALLOC_AllocInit(pData, Len) : nullptr;
@@ -26,16 +47,6 @@ struct GUI_ARRAY {
 		haHandle = ha;
 		NumItems++;
 		return 0;
-	}
-
-	void Delete() {
-		if (!haHandle)
-			return;
-		auto pa = (WM_HMEM *)haHandle;
-		for (int i = 0; i < NumItems; i++)
-			GUI_ALLOC_FreePtr(pa + i);
-		GUI_ALLOC_FreePtr(&haHandle);
-		NumItems = 0;
 	}
 
 	// Returns pointer to item data, or nullptr if index out of range
@@ -55,16 +66,6 @@ struct GUI_ARRAY {
 		if (*pa && pData)
 			GUI__memcpy(*pa, pData, Len);
 		return *pa;
-	}
-
-	void DeleteItem(unsigned int Index) {
-		if (Index >= (unsigned)NumItems || !haHandle)
-			return;
-		auto pa = (WM_HMEM *)haHandle;
-		GUI_ALLOC_FreePtr(pa + Index);
-		unsigned newCount = --NumItems;
-		for (unsigned i = Index; i < newCount; i++)
-			pa[i] = pa[i + 1];
 	}
 
 	// Inserts a blank slot at Index (Index must be < NumItems); returns 1 on success
@@ -99,11 +100,17 @@ struct GUI_ARRAY_T : GUI_ARRAY {
 	T *GetItem(unsigned int Index) const {
 		return (T *)GUI_ARRAY::GetItem(Index);
 	}
+	T &operator[](unsigned int Index) const {
+		return *GetItem(Index);
+	}
 	T *SetItem(unsigned int Index, const T *pData = nullptr) {
 		return (T *)GUI_ARRAY::SetItem(Index, pData, sizeof(T));
 	}
 	T *InsertItem(unsigned int Index) {
 		return (T *)GUI_ARRAY::InsertItem(Index, sizeof(T));
+	}
+	char InsertBlankItem(unsigned int Index) {
+		return GUI_ARRAY::InsertBlankItem(Index);
 	}
 };
 

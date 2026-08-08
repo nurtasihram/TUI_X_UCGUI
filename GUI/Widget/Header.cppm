@@ -45,21 +45,21 @@ struct HEADER_Obj : public WIDGET {
 		GUI_SetFont(Props.pFont);
 		GUI_Clear();
 		for (int i = 0; i < NumItems; i++) {
-			auto pColumn = Columns.GetItem(i);
+			auto &col = Columns[i];
 			Rect = WM_GetClientRect();
 			Rect.x0 = xPos;
-			Rect.x1 = Rect.x0 + pColumn->Width;
-			if (auto pDraw = pColumn->pDrawObj) {
+			Rect.x1 = Rect.x0 + col.Width;
+			if (auto pDraw = col.pDrawObj) {
 				int xOff = 0, yOff = 0;
-				switch (pColumn->Align & TEXTALIGN_HORIZONTAL) {
+				switch (col.Align & TEXTALIGN_HORIZONTAL) {
 					case TEXTALIGN_RIGHT:
-						xOff = (pColumn->Width - pDraw->GetXSize());
+						xOff = (col.Width - pDraw->GetXSize());
 						break;
 					case TEXTALIGN_HCENTER:
-						xOff = (pColumn->Width - pDraw->GetXSize()) / 2;
+						xOff = (col.Width - pDraw->GetXSize()) / 2;
 						break;
 				}
-				switch (pColumn->Align & TEXTALIGN_VERTICAL) {
+				switch (col.Align & TEXTALIGN_VERTICAL) {
 					case TEXTALIGN_BOTTOM:
 						yOff = ((Rect.y1 - Rect.y0 + 1) - pDraw->GetYSize());
 						break;
@@ -78,7 +78,7 @@ struct HEADER_Obj : public WIDGET {
 			Rect.y0 += EffectSize + Props.BorderV;
 			Rect.y1 -= EffectSize + Props.BorderV;
 			GUI.SetColor(Props.TextColor);
-			GUI_DispStringInRect(pColumn->pText, &Rect, pColumn->Align);
+			GUI_DispStringInRect(col.pText, &Rect, col.Align);
 		}
 		Rect = WM_GetClientRect();
 		Rect.x0 = xPos;
@@ -97,10 +97,10 @@ struct HEADER_Obj : public WIDGET {
 		int i, NumItems;
 		NumItems = Columns.GetNumItems();
 		for (i = 0; i < NumItems; i++) {
-			auto pColumn = Columns.GetItem(i);
-			GUI_ALLOC_FreePtr((void **)&pColumn->pText);
-			if (pColumn->pDrawObj) {
-				GUI_ALLOC_Free(pColumn->pDrawObj);
+			auto &col = Columns[i];
+			GUI_ALLOC_FreePtr((void **)&col.pText);
+			if (col.pDrawObj) {
+				GUI_ALLOC_Free(col.pDrawObj);
 			}
 		}
 		/* Delete attached objects (if any) */
@@ -112,12 +112,11 @@ struct HEADER_Obj : public WIDGET {
 		if ((y >= 0) && (y < GetSizeY())) {
 			int xPos = this->EffectSize();
 			for (int Index = 0, NumColumns = Columns.GetNumItems(); Index < NumColumns; ++Index) {
-				auto pColumn = Columns.GetItem(Index);
-				xPos += pColumn->Width;
+				auto &col = Columns[Index];
+				xPos += col.Width;
 				if (x - 4 <= xPos && xPos <= x + 4) {
 					if (Index < NumColumns && x < xPos) {
-						pColumn = Columns.GetItem(Index);
-						if (pColumn->Width)
+						if (Columns[Index].Width)
 							return Index;
 					}
 				}
@@ -224,10 +223,8 @@ public:
 		WM_Invalidate(this);
 	}
 	void SetTextAlign(unsigned int Index, int Align) {
-		if (Index <= Columns.GetNumItems()) {
-			Column *pColumn;
-			pColumn = Columns.GetItem(Index);
-			pColumn->Align = Align;
+		if (Index < Columns.GetNumItems()) {
+			Columns[Index].Align = Align;
 			WM_Invalidate(this);
 		}
 	}
@@ -252,16 +249,15 @@ public:
 		Col.pDrawObj = 0;
 		int Index = Columns.GetNumItems();
 		if (Columns.AddItem(&Col) == 0) {
-			auto pColumn = Columns.GetItem(Index);
-			GUI__SetText(&pColumn->pText, s);
+			auto &pColumn = Columns[Index];
+			GUI__SetText(&pColumn.pText, s);
 			WM_Invalidate(this);
 			WM_Invalidate(Parent());
 		}
 	}
 	void DeleteItem(unsigned Index) {
 		if (Index < Columns.GetNumItems()) {
-			if (auto pColumn = Columns.GetItem(Index))
-				GUI_ALLOC_FreePtr((void **)&pColumn->pText);
+			GUI_ALLOC_FreePtr((void **)&Columns[Index].pText);
 			Columns.DeleteItem(Index);
 			WM_Invalidate(this);
 			WM_Invalidate(Parent());
@@ -269,8 +265,7 @@ public:
 	}
 	void SetItemText(unsigned int Index, const char *s) {
 		if (Index < Columns.GetNumItems()) {
-			auto pColumn = Columns.GetItem(Index);
-			if (pColumn && GUI__SetText(&pColumn->pText, s))
+			if (GUI__SetText(&Columns[Index].pText, s))
 				WM_Invalidate(this);
 		}
 	}
@@ -278,13 +273,11 @@ public:
 		if ((Width >= 0)) {
 
 			if (Index <= Columns.GetNumItems()) {
-				auto pColumn = Columns.GetItem(Index);
-				if (pColumn) {
-					pColumn->Width = Width;
-					WM_Invalidate(this);
-					Parent()->Require(WM_NOTIFY_CLIENTCHANGE);
-					WM_Invalidate(Parent());
-				}
+				auto &pColumn = Columns[Index];
+				pColumn.Width = Width;
+				WM_Invalidate(this);
+				Parent()->Require(WM_NOTIFY_CLIENTCHANGE);
+				WM_Invalidate(Parent());
 			}
 		}
 	}
@@ -298,10 +291,8 @@ public:
 	}
 	int GetItemWidth(unsigned int Index) {
 		int Width = 0;
-		if (Index <= Columns.GetNumItems()) {
-			Column *pColumn;
-			pColumn = Columns.GetItem(Index);
-			Width = pColumn->Width;
+		if (Index < Columns.GetNumItems()) {
+			Width = Columns[Index].Width;
 		}
 
 		return Width;
@@ -313,12 +304,10 @@ public:
 	}
 
 	void _SetDrawObj(unsigned Index, GUI_DRAW *pDrawObj) {
-		if (Index <= Columns.GetNumItems()) {
-			auto pColumn = Columns.GetItem(Index);
-			if (pColumn) {
-				GUI_ALLOC_FreePtr((void **)&pColumn->pDrawObj);
-				pColumn->pDrawObj = pDrawObj;
-			}
+		if (Index < Columns.GetNumItems()) {
+			auto &col = Columns[Index];
+			GUI_ALLOC_FreePtr((void **)&col.pDrawObj);
+			col.pDrawObj = pDrawObj;
 		}
 	}
 	void SetBitmapEx(unsigned Index, PCBITMAP pBitmap, int x, int y) {
