@@ -40,17 +40,16 @@ void GUI_DrawBitmap(PCBITMAP pBM, int x0, int y0);
 
 void GUI_DrawHLine(int y0, int x0, int x1);
 void GUI_DrawVLine(int x0, int y0, int y1);
-void GUI_DrawPixel(int x, int y);
 
 #if GUI_SUPPORT_CURSOR
-void               GUI_CURSOR_Activate(void);
-void               GUI_CURSOR_Deactivate(void);
-void               GUI_CURSOR_SetPosition(int x, int y);
+void     GUI_CURSOR_Activate(void);
+void     GUI_CURSOR_Deactivate(void);
+void     GUI_CURSOR_SetPosition(int x, int y);
 PCCURSOR GUI_CURSOR_Select(PCCURSOR pCursor);
-void               GUI_CURSOR_Show(void);
-void               GUI_CURSOR_Hide(void);
-void               GUI_CURSOR__TempShow(void);
-bool               GUI_CURSOR__TempHide(RECT);
+void     GUI_CURSOR_Show(void);
+void     GUI_CURSOR_Hide(void);
+void     GUI_CURSOR__TempShow(void);
+bool     GUI_CURSOR__TempHide(RECT);
 #endif
 
 void  GUI_DispChar(uint16_t c);
@@ -133,28 +132,6 @@ int     GUI_MessageBox(const char *sMessage, const char *sCaption, int Flags);
 
 #define GUI_MB_OK                20
 #define GUI_MB_WARNING           21
-
-#if GUI_SUPPORT_TIMER
-typedef struct {
-	GUI_TIMER_TIME Time;
-	uintptr_t Context;
-} GUI_TIMER_MESSAGE;
-
-typedef void *GUI_TIMER_HANDLE;
-typedef void GUI_TIMER_CALLBACK(/*const */ GUI_TIMER_MESSAGE *pTM);
-
-GUI_TIMER_HANDLE GUI_TIMER_Create(GUI_TIMER_CALLBACK *cb, int Time, uint32_t Context, int Flags);
-void             GUI_TIMER_Delete(GUI_TIMER_HANDLE hObj);
-
-/* Methods changing properties */
-void GUI_TIMER_SetPeriod(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Period);
-void GUI_TIMER_SetTime(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Period);
-void GUI_TIMER_SetDelay(GUI_TIMER_HANDLE hObj, GUI_TIMER_TIME Delay);
-void GUI_TIMER_Restart(GUI_TIMER_HANDLE hObj);
-int  GUI_TIMER_Exec(void);
-
-void GUI_TIMER_Context(GUI_TIMER_HANDLE hObj, uintptr_t Context);	//houhh 20061020
-#endif
 
 /* Message layer */
 void GUI_StoreKeyMsg(int Key, int Pressed);

@@ -44,15 +44,15 @@ constexpr TEXTALIGN
 
 struct GUI_CONTEXT {
 	/* Variables in LCD module */
-	uint32_t aColor[2];
+	RGBC aColor[2];
 	RECT ClipRect;
-	uint8_t DrawMode;
+	DRAWMODE DrawMode;
 	/* Variables in GUICHAR module */
 	PCFONT pAFont;
 	const GUI_UC_ENC_APILIST *pUC_API; /* Unicode encoding API */
 	POINT DispPos;
-	int16_t TextMode = 0;
-	int16_t TextAlign = 0;
+	DRAWMODE TextMode = 0;
+	TEXTALIGN TextAlign = 0;
 	/* Variables in WM module */
 	const RECT *WM__pUserClipRect = nullptr;
 	POINT Off;
@@ -74,21 +74,19 @@ public:
 		return OldDM;
 	}
 
-	RGBC GetBkColor(void) { return aColor[0]; }
+	auto GetBkColor(void) { return aColor[0]; }
 	void SetBkColor(RGBC color) { aColor[(DrawMode & DRAWMODE_REV) ? 1 : 0] = color; }
 
-	RGBC GetColor(void) { return aColor[1]; }
+	auto GetColor(void) { return aColor[1]; }
 	void SetColor(RGBC color) { aColor[(DrawMode & DRAWMODE_REV) ? 0 : 1] = color; }
 
-	int GetTextAlign(void) { return TextAlign; }
+	auto GetTextAlign(void) { return TextAlign; }
 	void SetTextAlign(int Align) { TextAlign = Align; }
 
-	int GetTextMode(void) { return TextMode; }
+	auto GetTextMode(void) { return TextMode; }
 	void SetTextMode(int Mode) { TextMode = Mode; }
 
-	PCFONT GetFont(void) {
-		return pAFont;
-	}
+	auto GetFont(void) { return pAFont; }
 	PCFONT SetFont(PCFONT pNewFont) {
 		PCFONT pOldFont = pAFont;
 		if (pNewFont)

@@ -3,7 +3,10 @@
 
 #include "WM.h"
 
-GUI_tfTimer *GUI_pfTimerExec;
+
+#if GUI_SUPPORT_TIMER
+import TUX.Core.Timer;
+#endif
 
 void GUI_Init(void) {
 	GUI_X_Init();
@@ -35,10 +38,11 @@ void GUI_SelectLCD(void) {
 int GUI_Exec1(void) {
 	int r = 0;
 	/* Execute background jobs */
-	if (GUI_pfTimerExec)
-		if ((*GUI_pfTimerExec)())
-			r = 1; /* We have done something */
-	if (WM_Exec())
+#if GUI_SUPPORT_TIMER
+	if (Timer::Exec())
+		r = 1; /* We have done something */
+#endif
+		if (WM_Exec())
 		r = 1;
 	return r;
 }
@@ -49,6 +53,21 @@ int GUI_Exec(void) {
 	}
 	return r;
 }
+
+
+int GUI_GetTime(void) {
+	return GUI_X_GetTime();
+}
+
+void GUI_Delay(int Period) {
+	int EndTime = GUI_GetTime() + Period;
+	int tRem; /* remaining Time */
+	while (tRem = EndTime - GUI_GetTime(), tRem > 0) {
+		GUI_Exec();
+		GUI_X_Delay((tRem > 5) ? 5 : tRem);
+	}
+}
+
 
 void GUI_GotoXY(int x, int y) {
 	GUI.DispPos.x = x;

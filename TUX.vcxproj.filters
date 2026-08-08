@@ -96,12 +96,6 @@
     <ClCompile Include="GUI\Core\GUICurs.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUITime.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUITimer.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\LCD.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -210,6 +204,9 @@
     </ClCompile>
     <ClCompile Include="GUI\ScrollCtrl.cpp">
       <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUITimer.cppm">
+      <Filter>GUI\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

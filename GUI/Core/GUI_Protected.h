@@ -72,13 +72,10 @@ void GL_DispChar(uint16_t c);
 *************************************************************
 Dynamic linkage pointers reduces configuration hassles.
 */
-typedef int  GUI_tfTimer(void);
 
 extern const GUI_LOGPALETTE GUI_CursorPal;
 extern const GUI_LOGPALETTE GUI_CursorPalI;
 
 int GUI_GetBitmapPixel(PCBITMAP pBMP, unsigned x, unsigned y);
-
-extern GUI_tfTimer *GUI_pfTimerExec;
 
 extern const GUI_UC_ENC_APILIST GUI__API_TableNone;

@@ -6,6 +6,9 @@ module;
 export module TUX.Widget.Edit;
 
 import TUX.Widget;
+#if GUI_SUPPORT_TIMER
+import TUX.Core.Timer;
+#endif
 
 #define EDIT_XOFF 1
 #define EDIT_REALLOC_SIZE 16
@@ -64,13 +67,13 @@ struct EDIT_Obj : public WIDGET {
 
 #if GUI_SUPPORT_TIMER
 	static int CurrsorShow;
-	static GUI_TIMER_HANDLE Timer1;
+	static Timer *pTimer1;
 	static void ShowCurrsor(GUI_TIMER_MESSAGE *TimeMsg) {
 		auto pObj = (EDIT_Obj *)TimeMsg->Context;
 		WM_SelectWindow(pObj);
 		pObj->_OnPaint();
 		pObj->CurrsorShow++;
-		GUI_TIMER_Restart(Timer1);
+		pTimer1->Restart();
 	}
 #endif
 
@@ -129,12 +132,12 @@ struct EDIT_Obj : public WIDGET {
 				}
 			}
 #if GUI_SUPPORT_TIMER
-			if (!Timer1) {
-				Timer1 = GUI_TIMER_Create((GUI_TIMER_CALLBACK *)ShowCurrsor, 1000 * 2, 0, 0);
-				GUI_TIMER_SetTime(Timer1, 1000 * 2);
-				GUI_TIMER_SetPeriod(Timer1, 500);
+			if (!pTimer1) {
+				pTimer1 = new Timer(ShowCurrsor, 1000 * 2);
+				pTimer1->SetTime(1000 * 2);
+				pTimer1->SetPeriod(500);
 			}
-			if (Timer1) GUI_TIMER_Context(Timer1, (uintptr_t)this);
+			if (pTimer1) pTimer1->SetContext(this);
 			if (this->CurrsorShow % 2)
 #endif
 				GUI_DrawRect({ rInvert.x0, rInvert.y0, rInvert.x0 + CursorWidth, rInvert.y1 });
@@ -144,7 +147,8 @@ struct EDIT_Obj : public WIDGET {
 	void _Delete() {
 		GUI_ALLOC_FreePtr((void **)&this->pText);
 #if GUI_SUPPORT_TIMER
-		GUI_TIMER_Delete(Timer1);
+		delete pTimer1;
+		pTimer1 = nullptr;
 #endif
 	}
 	void _SetCursorPos(int CursorPos) {
@@ -552,7 +556,7 @@ EDIT_Obj::Properties EDIT_Obj::DefaultProps;
 
 #if GUI_SUPPORT_TIMER
 int EDIT_Obj::CurrsorShow = 0;
-GUI_TIMER_HANDLE EDIT_Obj::Timer1 = 0;
+Timer *EDIT_Obj::pTimer1 = nullptr;
 #endif
 
 EDIT_Obj *EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int WinFlags, int ExFlags,
