@@ -94,7 +94,7 @@ struct MENU_Obj : public WIDGET {
 		PCFONT pFont{ &FontProp13_1 };
 	} static DefaultProps;
 	Properties Props;
-	GUI_ARRAY   ItemArray;
+	GUI_ARRAY_T<MENU_ITEM> ItemArray;
 	WM_Obj *pOwner;
 	uint16_t Flags;
 	char IsSubmenuActive;
@@ -153,7 +153,7 @@ struct MENU_Obj : public WIDGET {
 			ItemWidth = this->Width - (this->_GetEffectSize() << 1);
 		}
 		else {
-			auto pItem = (MENU_ITEM *)this->ItemArray.GetItem(Index);
+			auto pItem = this->ItemArray.GetItem(Index);
 			if ((this->Flags & MENU_SF_VERTICAL) || !(pItem->Flags & MENU_IF_SEPARATOR)) {
 				ItemWidth = pItem->TextWidth;
 			}
@@ -172,7 +172,7 @@ struct MENU_Obj : public WIDGET {
 		else {
 			ItemHeight = Props.pFont->DistY();
 			if (this->Flags & MENU_SF_VERTICAL) {
-				auto pItem = (MENU_ITEM *)this->ItemArray.GetItem(Index);
+				auto pItem = this->ItemArray.GetItem(Index);
 				if (pItem->Flags & MENU_IF_SEPARATOR) {
 					ItemHeight = 3;
 				}
@@ -315,7 +315,7 @@ struct MENU_Obj : public WIDGET {
 	void _CloseSubmenu() {
 		if (this->Flags & MENU_SF_ACTIVE) {
 			if (this->IsSubmenuActive) {
-				auto pItem = (MENU_ITEM *)this->ItemArray.GetItem(this->Sel);
+				auto pItem = this->ItemArray.GetItem(this->Sel);
 				/* Inform submenu about its deactivation and detach it */
 				_SendMenuMessage(this, pItem->pSubmenu, MENU_ON_CLOSE, 0);
 				WM_DetachWindow(pItem->pSubmenu);
@@ -338,7 +338,7 @@ struct MENU_Obj : public WIDGET {
 			PrevActiveSubmenu = this->IsSubmenuActive;
 			/* Close previous submenu (if needed) */
 			this->_CloseSubmenu();
-			pItem = (MENU_ITEM *)this->ItemArray.GetItem(Index);
+			pItem = this->ItemArray.GetItem(Index);
 			if (pItem->pSubmenu) {
 				if ((pItem->Flags & MENU_IF_DISABLED) == 0) {
 					int x, y, EffectSize;
@@ -407,7 +407,7 @@ struct MENU_Obj : public WIDGET {
 	}
 	void _ActivateItem(unsigned Index) {
 		MENU_ITEM *pItem;
-		pItem = (MENU_ITEM *)this->ItemArray.GetItem(Index);
+		pItem = this->ItemArray.GetItem(Index);
 		if (!pItem->pSubmenu) {
 			if ((pItem->Flags & (MENU_IF_DISABLED | MENU_IF_SEPARATOR)) == 0) {
 				this->_ClosePopup();
@@ -418,7 +418,7 @@ struct MENU_Obj : public WIDGET {
 	}
 	void _ActivateMenu(unsigned Index) {
 		if ((this->Flags & MENU_SF_OPEN_ON_POINTEROVER) == 0) {
-			auto pItem = (MENU_ITEM *)this->ItemArray.GetItem(Index);
+			auto pItem = this->ItemArray.GetItem(Index);
 			if (pItem->pSubmenu) {
 				if ((pItem->Flags & MENU_IF_DISABLED) == 0) {
 					if ((this->Flags & MENU_SF_ACTIVE) == 0) {
@@ -637,7 +637,7 @@ struct MENU_Obj : public WIDGET {
 			FillRect.x1 = xSize - EffectSize - 1;
 			TextRect.x0 = FillRect.x0 + BorderLeft;
 			for (i = 0; i < NumItems; i++) {
-				pItem = (MENU_ITEM *)this->ItemArray.GetItem(i);
+				pItem = this->ItemArray.GetItem(i);
 				ItemHeight = this->_GetItemHeight(i);
 				this->_SetPaintColors(pItem, i);
 				FillRect.y1 = FillRect.y0 + ItemHeight - 1;
@@ -663,7 +663,7 @@ struct MENU_Obj : public WIDGET {
 			TextRect.y0 = FillRect.y0 + BorderTop;
 			TextRect.y1 = TextRect.y0 + FontHeight - 1;
 			for (i = 0; i < NumItems; i++) {
-				pItem = (MENU_ITEM *)this->ItemArray.GetItem(i);
+				pItem = this->ItemArray.GetItem(i);
 				ItemWidth = this->_GetItemWidth(i);
 				this->_SetPaintColors(pItem, i);
 				FillRect.x1 = FillRect.x0 + ItemWidth - 1;
@@ -718,7 +718,7 @@ struct MENU_Obj : public WIDGET {
 			case WM_DELETE: {
 				unsigned _n = pObj->ItemArray.GetNumItems();
 				for (unsigned _i = 0; _i < _n; _i++) {
-					auto _p = (MENU_ITEM *)pObj->ItemArray.GetItem(_i);
+					auto _p = pObj->ItemArray.GetItem(_i);
 					GUI_ALLOC_FreePtr((void **)&_p->pText);
 				}
 				pObj->ItemArray.Delete();
@@ -737,7 +737,7 @@ public:
 		NumItems = this->_GetNumItems();
 		pOldFont = GUI_SetFont(this->Props.pFont);
 		for (i = 0; i < NumItems; i++) {
-			pItem = (MENU_ITEM *)this->ItemArray.GetItem(i);
+			pItem = this->ItemArray.GetItem(i);
 			pItem->TextWidth = GUI_GetStringDistX(pItem->pText);
 		}
 		GUI_SetFont(pOldFont);
@@ -756,8 +756,7 @@ public:
 		if (Item.Flags & MENU_IF_SEPARATOR) {
 			Item.pSubmenu = nullptr;   /* Ensures that no separator is a submenu */
 		}
-		if (this->ItemArray.SetItem(Index, &Item, sizeof(MENU_ITEM) + 1) != 0) {
-			auto pItem = (MENU_ITEM *)this->ItemArray.GetItem(Index);
+		if (auto pItem = this->ItemArray.SetItem(Index, &Item)) {
 			GUI__SetText(&pItem->pText, pText);
 			if (Item.pSubmenu)
 				pItem->pSubmenu->SetOwner(this);
@@ -766,7 +765,7 @@ public:
 		return 0;
 	}
 	void _SetItemFlags(unsigned Index, uint16_t Mask, uint16_t Flags) {
-		auto pItem = (MENU_ITEM *)this->ItemArray.GetItem(Index);
+		auto pItem = this->ItemArray.GetItem(Index);
 		pItem->Flags &= ~Mask;
 		pItem->Flags |= Flags;
 	}
@@ -776,7 +775,7 @@ public:
 		unsigned NumItems, i;
 		NumItems = this->_GetNumItems();
 		for (i = 0; (i < NumItems) && (ItemIndex < 0); i++) {
-			pItem = (MENU_ITEM *)this->ItemArray.GetItem(i);
+			pItem = this->ItemArray.GetItem(i);
 			if (pItem->Id == ItemId) {
 				*pMenu = this;
 				ItemIndex = i;
@@ -793,7 +792,7 @@ public:
 
 	void AddItem(const MENU_ITEM_DATA *pItemData) {
 		if (pItemData) {
-			if (this->ItemArray.AddItem(nullptr, 0) == 0) {
+			if (this->ItemArray.AddItem() == 0) {
 				unsigned Index;
 				Index = this->_GetNumItems() - 1;
 				if (this->_SetItem(Index, pItemData) == 0) {
@@ -820,7 +819,7 @@ public:
 		MENU_Obj *pMenu;
 		int Index = _FindItem(ItemId, &pMenu);
 		if (Index >= 0) {
-			if (auto pItem = (MENU_ITEM *)pMenu->ItemArray.GetItem(Index))
+			if (auto pItem = pMenu->ItemArray.GetItem(Index))
 				GUI_ALLOC_FreePtr((void **)&pItem->pText);
 			this->ItemArray.DeleteItem(Index);
 			this->_ResizeMenu();
@@ -847,7 +846,7 @@ public:
 			MENU_Obj *pMenu;
 			int Index = _FindItem(ItemId, &pMenu);
 			if (Index >= 0) {
-				auto pItem = (MENU_ITEM *)this->ItemArray.GetItem(Index);
+				auto pItem = this->ItemArray.GetItem(Index);
 				pItemData->Flags = pItem->Flags;
 				pItemData->Id = pItem->Id;
 				pItemData->pSubmenu = pItem->pSubmenu;
@@ -860,7 +859,7 @@ public:
 			MENU_Obj *pMenu;
 			int Index = _FindItem(ItemId, &pMenu);
 			if (Index >= 0) {
-				auto pItem = (MENU_ITEM *)this->ItemArray.GetItem(Index);
+				auto pItem = this->ItemArray.GetItem(Index);
 				strncpy(pBuffer, pItem->pText, BufferSize);
 				pBuffer[BufferSize - 1] = 0;
 			}

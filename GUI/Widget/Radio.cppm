@@ -34,7 +34,7 @@ struct RADIO_Obj : public WIDGET {
 		PCBITMAP pBmCheck{ &_bmCheck };
 	} static DefaultProps;
 	Properties Props;
-	GUI_ARRAY TextArray;
+	GUI_ARRAY_T<char *> TextArray;
 	int16_t Sel; /* current selection */
 	uint16_t Spacing;
 	uint16_t Height;
@@ -90,7 +90,7 @@ struct RADIO_Obj : public WIDGET {
 							   RADIO_BORDER + ((pBmRadio->YSize - pBmCheck->YSize) / 2) + y);
 			}
 			/* Draw text if available */
-			pText = (const char *)this->TextArray.GetItem(i);
+			pText = *this->TextArray.GetItem(i);
 			if (pText) {
 				if (*pText) {
 					r = Rect;
@@ -175,6 +175,8 @@ struct RADIO_Obj : public WIDGET {
 					return 0;
 				break;
 			case WM_DELETE:
+				for (int i = 0; i < pObj->TextArray.GetNumItems(); i++)
+					GUI__SetText(pObj->TextArray.GetItem(i), nullptr);
 				pObj->TextArray.Delete();
 				return 0;
 		}
@@ -319,7 +321,7 @@ public:
 	}
 	void SetText(const char *pText, unsigned Index) {
 		if (Index < (unsigned)NumItems) {
-			TextArray.SetItem(Index, pText, pText ? (GUI__strlen(pText) + 1) : 0);
+			GUI__SetText(TextArray.GetItem(Index), pText);
 			WM_Invalidate(this);
 		}
 	}
@@ -355,7 +357,7 @@ RADIO_Obj *RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParent,
 	auto pObj = (RADIO_Obj *)WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent, WinFlags, RADIO_Obj::_Callback, sizeof(RADIO_Obj) - sizeof(WM_Obj));
 	if (pObj) {
 		for (int i = 0; i < NumItems; i++)
-			pObj->TextArray.AddItem(nullptr, 0);
+			pObj->TextArray.AddItem();
 		/* Init widget specific variables */
 		ExFlags &= RADIO_TEXTPOS_LEFT;
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | ExFlags);

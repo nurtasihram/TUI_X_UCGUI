@@ -91,4 +91,20 @@ struct GUI_ARRAY {
 	}
 };
 
+template<typename T>
+struct GUI_ARRAY_T : GUI_ARRAY {
+	int AddItem(const T *pData = nullptr) {
+		return GUI_ARRAY::AddItem(pData, sizeof(T));
+	}
+	T *GetItem(unsigned int Index) const {
+		return (T *)GUI_ARRAY::GetItem(Index);
+	}
+	T *SetItem(unsigned int Index, const T *pData = nullptr) {
+		return (T *)GUI_ARRAY::SetItem(Index, pData, sizeof(T));
+	}
+	T *InsertItem(unsigned int Index) {
+		return (T *)GUI_ARRAY::InsertItem(Index, sizeof(T));
+	}
+};
+
 }

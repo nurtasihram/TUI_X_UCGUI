@@ -39,7 +39,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 	} static DefaultProps;
 	Properties Props;
 	WM_Obj *pClient;
-	GUI_ARRAY Handles;
+	GUI_ARRAY_T<MULTIPAGE_PAGE> Handles;
 	unsigned Selection;
 	int ScrollState;
 
@@ -71,7 +71,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 		auto pClient = this->pClient;
 		if ((int)Index < this->Handles.NumItems) {
 			MULTIPAGE_PAGE *pPage;
-			pPage = (MULTIPAGE_PAGE *)this->Handles.GetItem(Index);
+			pPage = this->Handles.GetItem(Index);
 			hWin = pPage->hWin;
 		}
 		for (auto pChild = pClient->pFirstChild; pChild; pChild = pChild->pNext) {
@@ -86,7 +86,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 	void _SetEnable(unsigned Index, int State) {
 		if ((int)Index < this->Handles.NumItems) {
 			MULTIPAGE_PAGE *pPage;
-			pPage = (MULTIPAGE_PAGE *)this->Handles.GetItem(Index);
+			pPage = this->Handles.GetItem(Index);
 			if (State) {
 				pPage->Status |= MULTIPAGE_STATE_ENABLED;
 			}
@@ -99,7 +99,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 		int r = 0;
 		if ((int)Index < this->Handles.NumItems) {
 			MULTIPAGE_PAGE *pPage;
-			pPage = (MULTIPAGE_PAGE *)this->Handles.GetItem(Index);
+			pPage = this->Handles.GetItem(Index);
 			r = (pPage->Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0;
 		}
 		return r;
@@ -127,7 +127,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 		if ((int)Index < this->Handles.NumItems) {
 			MULTIPAGE_PAGE *pPage;
 			GUI_SetFont(this->Props.pFont);
-			pPage = (MULTIPAGE_PAGE *)this->Handles.GetItem(Index);
+			pPage = this->Handles.GetItem(Index);
 			r = GUI_GetStringDistX(pPage->pText) + 10;
 		}
 		return r;
@@ -261,7 +261,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 			WM_SetUserClipRect(&rClip);
 			GUI_SetFont(this->Props.pFont);
 			for (i = 0; i < this->Handles.NumItems; i++) {
-				pPage = (MULTIPAGE_PAGE *)this->Handles.GetItem(i);
+				pPage = this->Handles.GetItem(i);
 				x0 += w;
 				w = GUI_GetStringDistX(pPage->pText) + 10;
 				_DrawTextItem(pPage->pText, i, &rText, x0, w, (pPage->Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0);
@@ -353,7 +353,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 				return 0;
 			case WM_DELETE: {
 				for (int _i = 0; _i < pObj->Handles.NumItems; _i++) {
-					auto _p = (MULTIPAGE_PAGE *)pObj->Handles.GetItem(_i);
+					auto _p = pObj->Handles.GetItem(_i);
 					GUI_ALLOC_FreePtr((void **)&_p->pText);
 				}
 				pObj->Handles.Delete();
@@ -398,7 +398,7 @@ public:
 			for (auto pChild = pClient->pFirstChild; pChild && !hWin; pChild = pChild->pNext) {
 				hWin = pChild;
 				for (int i = 0; i < Handles.NumItems; i++) {
-					auto pPage = (MULTIPAGE_PAGE *)Handles.GetItem(i);
+					auto pPage = Handles.GetItem(i);
 					if (pPage->hWin == pChild) {
 						hWin = 0;
 						break;
@@ -418,9 +418,9 @@ public:
 			}
 			Page.hWin = hWin;
 			Page.Status = MULTIPAGE_STATE_ENABLED;
-			if (Handles.AddItem(&Page, sizeof(MULTIPAGE_PAGE)) == 0) {
+			if (Handles.AddItem(&Page) == 0) {
 				MULTIPAGE_PAGE *pPage;
-				pPage = (MULTIPAGE_PAGE *)Handles.GetItem(Handles.NumItems - 1);
+				pPage = Handles.GetItem(Handles.NumItems - 1);
 				GUI__SetText(&pPage->pText, pText);
 			}
 			SelectPage(Handles.NumItems - 1);
@@ -430,7 +430,7 @@ public:
 		if ((int)Index < Handles.NumItems) {
 			WM_Obj *hWin;
 			MULTIPAGE_PAGE *pPage;
-			pPage = (MULTIPAGE_PAGE *)Handles.GetItem(Index);
+			pPage = Handles.GetItem(Index);
 			hWin = pPage->hWin;
 			/* Remove the page from the multipage object */
 			if (Index == this->Selection) {
@@ -475,7 +475,7 @@ public:
 	}
 	void SetText(const char *pText, unsigned Index) {
 		if (pText && (int)Index < Handles.NumItems) {
-			auto pPage = (MULTIPAGE_PAGE *)Handles.GetItem(Index);
+			auto pPage = Handles.GetItem(Index);
 			if (pPage && GUI__SetText(&pPage->pText, pText))
 				this->_UpdatePositions();
 		}
@@ -513,7 +513,7 @@ public:
 		WM_Obj *r = 0;
 		if ((int)Index < Handles.NumItems) {
 			MULTIPAGE_PAGE *pPage;
-			pPage = (MULTIPAGE_PAGE *)Handles.GetItem(Index);
+			pPage = Handles.GetItem(Index);
 			r = pPage->hWin;
 		}
 

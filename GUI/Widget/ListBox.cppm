@@ -56,7 +56,7 @@ struct LISTBOX_Obj : public WIDGET {
 		uint8_t ScrollStepH{ 10 };
 	} static DefaultProps;
 	Properties Props;
-	GUI_ARRAY ItemArray;
+	GUI_ARRAY_T<LISTBOX_ITEM> ItemArray;
 	WIDGET_DRAW_ITEM_FUNC *pfDrawItem;
 	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
 	WM_Obj *pOwner;
@@ -83,7 +83,7 @@ struct LISTBOX_Obj : public WIDGET {
 	}
 	const char *_GetpString(int Index) {
 		const char *s = nullptr;
-		auto pItem = (LISTBOX_ITEM *)ItemArray.GetItem(Index);
+		auto pItem = ItemArray.GetItem(Index);
 		if (pItem) {
 			s = pItem->pText;
 		}
@@ -95,7 +95,7 @@ struct LISTBOX_Obj : public WIDGET {
 		return (Rect.y1 - Rect.y0 + 1);
 	}
 	int _GetItemSizeX(uint16_t Index) {
-		auto pItem = (LISTBOX_ITEM *)ItemArray.GetItem(Index);
+		auto pItem = ItemArray.GetItem(Index);
 		int xSize = 0;
 		if (pItem) {
 			xSize = pItem->xSize;
@@ -111,7 +111,7 @@ struct LISTBOX_Obj : public WIDGET {
 		return xSize;
 	}
 	int _GetItemSizeY(uint16_t Index) {
-		auto pItem = (LISTBOX_ITEM *)ItemArray.GetItem(Index);
+		auto pItem = ItemArray.GetItem(Index);
 		int ySize = 0;
 		if (pItem) {
 			ySize = pItem->ySize;
@@ -205,7 +205,7 @@ struct LISTBOX_Obj : public WIDGET {
 	}
 	void _InvalidateItemSize(uint16_t Index) {
 		LISTBOX_ITEM *pItem;
-		pItem = (LISTBOX_ITEM *)ItemArray.GetItem(Index);
+		pItem = ItemArray.GetItem(Index);
 		if (pItem) {
 			pItem->xSize = 0;
 			pItem->ySize = 0;
@@ -310,7 +310,7 @@ struct LISTBOX_Obj : public WIDGET {
 	}
 	void _FreeAttached() {
 		for (unsigned _i = 0, _n = ItemArray.GetNumItems(); _i < _n; _i++) {
-			auto _p = (LISTBOX_ITEM *)ItemArray.GetItem(_i);
+			auto _p = ItemArray.GetItem(_i);
 			GUI_ALLOC_FreePtr((void **)&_p->pText);
 		}
 		ItemArray.Delete();
@@ -359,7 +359,7 @@ struct LISTBOX_Obj : public WIDGET {
 	}
 	void _ToggleMultiSel(int Sel) {
 		if (this->Flags & LISTBOX_SF_MULTISEL) {
-			auto pItem = (LISTBOX_ITEM *)ItemArray.GetItem(Sel);
+			auto pItem = ItemArray.GetItem(Sel);
 			if (pItem) {
 				if (!(pItem->Status & LISTBOX_ITEM_DISABLED)) {
 					pItem->Status ^= LISTBOX_ITEM_SELECTED;
@@ -424,7 +424,7 @@ struct LISTBOX_Obj : public WIDGET {
 			if ((Index < 0) || (Index >= NumItems)) {
 				break;
 			}
-			auto pItem = (LISTBOX_ITEM *)ItemArray.GetItem(Index);
+			auto pItem = ItemArray.GetItem(Index);
 			if (pItem) {
 				if (!(pItem->Status & LISTBOX_ITEM_DISABLED)) {
 					NewSel = Index;
@@ -572,7 +572,7 @@ public:
 			case WIDGET_ITEM_GET_YSIZE:
 				return pObj->Props.pFont->DistY() + pObj->ItemSpacing;
 			case WIDGET_ITEM_DRAW: {
-				auto pItem = (LISTBOX_ITEM *)pObj->ItemArray.GetItem(ItemIndex);
+				auto pItem = pObj->ItemArray.GetItem(ItemIndex);
 				auto r = WM_GetInsideRect();
 				auto FontDistY = pObj->Props.pFont->DistY();
 				/* Calculate color index */
@@ -637,9 +637,9 @@ public:
 		if (s) {
 			LISTBOX_ITEM Item = { 0, 0 };
 
-			if (this->ItemArray.AddItem(&Item, sizeof(LISTBOX_ITEM)) == 0) {
+			if (this->ItemArray.AddItem(&Item) == 0) {
 				uint16_t ItemIndex = ItemArray.GetNumItems() - 1;
-				auto pItem = (LISTBOX_ITEM *)this->ItemArray.GetItem(ItemIndex);
+				auto pItem = this->ItemArray.GetItem(ItemIndex);
 				GUI__SetText(&pItem->pText, s);
 				this->_InvalidateItemSize(ItemIndex);
 				UpdateScrollers();
@@ -707,7 +707,7 @@ public:
 		uint16_t NumItems;
 		NumItems = this->_GetNumItems();
 		if (Index < NumItems) {
-			if (auto pItem = (LISTBOX_ITEM *)this->ItemArray.GetItem(Index))
+			if (auto pItem = this->ItemArray.GetItem(Index))
 				GUI_ALLOC_FreePtr((void **)&pItem->pText);
 			this->ItemArray.DeleteItem(Index);
 			/*
@@ -764,8 +764,8 @@ public:
 
 			NumItems = this->_GetNumItems();
 			if (Index < NumItems) {
-				if (this->ItemArray.InsertItem(Index, sizeof(LISTBOX_ITEM))) {
-					auto pItem = (LISTBOX_ITEM *)this->ItemArray.GetItem(Index);
+				if (this->ItemArray.InsertItem(Index)) {
+					auto pItem = this->ItemArray.GetItem(Index);
 					pItem->Status = 0;
 					GUI__SetText(&pItem->pText, s);
 					InvalidateItem(Index);
@@ -943,7 +943,7 @@ public:
 	}
 	void SetString(const char *s, uint16_t Index) {
 		if (Index < (uint16_t)this->_GetNumItems()) {
-			auto pItem = (LISTBOX_ITEM *)this->ItemArray.GetItem(Index);
+			auto pItem = this->ItemArray.GetItem(Index);
 			if (pItem && GUI__SetText(&pItem->pText, s)) {
 				this->_InvalidateItemSize(Index);
 				UpdateScrollers();

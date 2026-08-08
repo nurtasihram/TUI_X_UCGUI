@@ -41,7 +41,7 @@ struct DROPDOWN_Obj : public WIDGET {
 	int16_t    Sel;      /* current selection */
 	int16_t    ySizeEx;  /* Drop down size */
 	int16_t    TextHeight;
-	GUI_ARRAY Handles;
+	GUI_ARRAY_T<char *> Handles;
 	WM_SCROLL_STATE ScrollState;
 	LISTBOX_Obj *pListWin;
 	uint8_t  Flags;
@@ -59,21 +59,14 @@ struct DROPDOWN_Obj : public WIDGET {
 	int _GetNumItems() {
 		return Handles.NumItems;
 	}
-	WM_HMEM _GethItem(int Index) {
-		return Handles.GetItem(Index);
+	const char *_GetpItem(int Index) {
+		auto pp = Handles.GetItem(Index);
+		return pp ? *pp : nullptr;
 	}
 	void _DrawTriangleDown(int x, int y, int Size) {
 		for (; Size >= 0; Size--, y++) {
 			GUI_DrawHLine(y, x - Size, x + Size);
 		}
-	}
-	const char *_GetpItem(int Index) {
-		const char *s = nullptr;
-		WM_HMEM h = _GethItem(Index);
-		if (h) {
-			s = (const char *)(h);
-		}
-		return s;
 	}
 	void _SelectByKey(int Key) {
 		int i;
@@ -207,6 +200,8 @@ struct DROPDOWN_Obj : public WIDGET {
 				pObj->_OnPaint();
 				return 0;
 			case WM_DELETE:
+				for (int i = 0; i < pObj->Handles.GetNumItems(); i++)
+					GUI__SetText(pObj->Handles.GetItem(i), nullptr);
 				pObj->_FreeAttached();
 				return 0;
 			case WM_KEY:
@@ -287,7 +282,9 @@ public:
 	}
 	void AddString(const char *s) {
 		if (s) {
-			this->Handles.AddItem(s, GUI__strlen(s) + 1);
+			auto idx = this->Handles.GetNumItems();
+			if (this->Handles.AddItem() == 0)
+				GUI__SetText(this->Handles.GetItem(idx), s);
 			WM_Invalidate(this);
 		}
 	}
@@ -371,6 +368,7 @@ public:
 		unsigned int NumItems;
 		NumItems = GetNumItems();
 		if (Index < NumItems) {
+			GUI__SetText(this->Handles.GetItem(Index), nullptr);
 			this->Handles.DeleteItem(Index);
 			WM_Invalidate(this);
 			if (this->pListWin) {
@@ -384,12 +382,9 @@ public:
 
 			NumItems = GetNumItems();
 			if (Index < NumItems) {
-				WM_HMEM hItem;
-				hItem = this->Handles.InsertItem(Index, GUI__strlen(s) + 1);
-				if (hItem) {
-					auto pBuffer = (char *)(hItem);
-					GUI__strcpy(pBuffer, s);
-				}
+				auto pp = this->Handles.InsertItem(Index);
+				if (pp)
+					GUI__SetText(pp, s);
 				WM_Invalidate(this);
 				if (this->pListWin) {
 					this->pListWin->InsertString(s, Index);

@@ -42,8 +42,8 @@ struct LISTVIEW_Obj : public WIDGET {
 		char *pText;
 	};
 	HEADER_Obj *pHeader;
-	GUI_ARRAY   RowArray;         /* One entry per line. Every entry is a handle of GUI_ARRAY of strings */
-	GUI_ARRAY   AlignArray;       /* One entry per column */
+	GUI_ARRAY_T<GUI_ARRAY_T<Item>> RowArray; /* One entry per line. Every entry is a GUI_ARRAY_T<Item> */
+	GUI_ARRAY_T<int>       AlignArray; /* One entry per column */
 	int16_t     Sel;
 	bool        ShowGrid;
 	uint16_t    RowDistY, LBorder, RBorder;
@@ -84,7 +84,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		return r;
 	}
 	void _OnPaint(const RECT *pClipRect) {
-		const GUI_ARRAY *pRow;
+		const GUI_ARRAY_T<Item> *pRow;
 		RECT ClipRect, Rect;
 		int NumRows, NumVisRows, NumColumns;
 		int LBorder, RBorder, EffectSize;
@@ -110,7 +110,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		/* Do the drawing */
 		for (i = this->ScrollStateV.v; i < EndRow; i++) {
-			pRow = (const GUI_ARRAY *)this->RowArray.GetItem(i);
+			pRow = this->RowArray.GetItem(i);
 			if (pRow) {
 				Rect.y0 = yPos;
 				/* Break when all other rows are outside the drawing area */
@@ -144,8 +144,7 @@ struct LISTVIEW_Obj : public WIDGET {
 						Rect.x1 = xPos + Width - 1;
 						/* Make sure that we draw only when column is in drawing area */
 						if (Rect.x1 >= ClipRect.x0) {
-							Item *pItem;
-							pItem = (Item *)pRow->GetItem(j);
+							auto pItem = pRow->GetItem(j);
 							if (pItem->hItemInfo) {
 								ItemInfo *pItemInfo;
 								pItemInfo = (ItemInfo *)(pItem->hItemInfo);
@@ -160,7 +159,7 @@ struct LISTVIEW_Obj : public WIDGET {
 							/* Draw text */
 							Rect.x0 += LBorder;
 							Rect.x1 -= RBorder;
-							Align = *((int *)this->AlignArray.GetItem(j));
+							Align = *this->AlignArray.GetItem(j);
 							GUI_DispStringInRect(pItem->pText, &Rect, Align);
 							if (pItem->hItemInfo)
 								GUI.SetBkColor(Props.aBkColor[ColorIndex]);
@@ -329,12 +328,11 @@ struct LISTVIEW_Obj : public WIDGET {
 		NumRows = RowArray.GetNumItems();
 		NumColumns = AlignArray.GetNumItems();
 		for (i = 0; i < NumRows; i++) {
-			GUI_ARRAY *pRow;
-			pRow = (GUI_ARRAY *)this->RowArray.GetItem(i);
+			auto pRow = this->RowArray.GetItem(i);
 			/* Delete attached info items */
 			for (j = 0; j < NumColumns; j++) {
 				Item *pItem;
-				pItem = (Item *)pRow->GetItem(j);
+				pItem = pRow->GetItem(j);
 				GUI_ALLOC_FreePtr((void **)&pItem->pText);
 				if (pItem->hItemInfo) {
 					GUI_ALLOC_Free(pItem->hItemInfo);
@@ -350,7 +348,7 @@ struct LISTVIEW_Obj : public WIDGET {
 		ItemInfo *pItemInfo = 0;
 		Item *pItem;
 		if ((Column < GetNumColumns()) && (Row < GetNumRows()) && (Index < GUI_COUNTOF(pItemInfo->aTextColor))) {
-			pItem = (Item *)((GUI_ARRAY *)RowArray.GetItem(Row))->GetItem(Column);
+			pItem = RowArray.GetItem(Row)->GetItem(Column);
 			if (!pItem->hItemInfo) {
 				int i;
 				pItem->hItemInfo = GUI_ALLOC_AllocZero(sizeof(ItemInfo));
@@ -441,15 +439,11 @@ public:
 	void AddColumn(int Width, const char *s, int Align) {
 		unsigned NumRows;
 		pHeader->AddItem(Width, s, Align);   /* Modify header */
-		AlignArray.AddItem(&Align, sizeof(int));
+		AlignArray.AddItem(&Align);
 		NumRows = GetNumRows();
 		if (NumRows) {
-			GUI_ARRAY *pRow;
-			unsigned i;
-			for (i = 0; i < NumRows; i++) {
-				pRow = (GUI_ARRAY *)RowArray.GetItem(i);
-				pRow->AddItem(nullptr, sizeof(Item));
-			}
+			for (unsigned i = 0; i < NumRows; i++)
+				RowArray.GetItem(i)->AddItem();
 		}
 		_UpdateScrollParas();
 		_InvalidateInsideArea();
@@ -457,24 +451,20 @@ public:
 	void AddRow(const char **ppText) {
 		int NumRows;
 		NumRows = RowArray.GetNumItems();
-		/* Create GUI_ARRAY for the new row */
-		if (RowArray.AddItem(nullptr, sizeof(GUI_ARRAY)) == 0) {
-			int i, NumColumns, NumBytes;
-			GUI_ARRAY *pRow;
+		/* Create GUI_ARRAY_T<Item> for the new row */
+		if (RowArray.AddItem() == 0) {
+			int i, NumColumns;
 			const char *s;
 			/* Add columns for the new row */
 			NumColumns = pHeader->GetNumItems();
 			for (i = 0; i < NumColumns; i++) {
-				Item *pItem;
-				pRow = (GUI_ARRAY *)RowArray.GetItem(NumRows);
+				auto pRow = RowArray.GetItem(NumRows);
 				s = (ppText) ? *ppText++ : 0;
 				if (s == 0) {
 					ppText = 0;
 				}
-				NumBytes = GUI__strlen(s) + 1;     /* 0 if no string is specified (s == nullptr) */
-				pRow->AddItem(nullptr, sizeof(Item));
-				pItem = (Item *)pRow->GetItem(i);
-				GUI__SetText(&pItem->pText, s);
+				pRow->AddItem();
+				GUI__SetText(&pRow->GetItem(i)->pText, s);
 			}
 			_UpdateScrollParas();
 			_InvalidateRow(NumRows);
@@ -483,15 +473,13 @@ public:
 	void DeleteColumn(unsigned Index) {
 		if (Index < AlignArray.GetNumItems()) {
 			unsigned NumRows, i;
-			GUI_ARRAY *pRow;
 			pHeader->DeleteItem(Index);
 			AlignArray.DeleteItem(Index);
 			NumRows = RowArray.GetNumItems();
 			for (i = 0; i < NumRows; i++) {
-				Item *pItem;
-				pRow = (GUI_ARRAY *)RowArray.GetItem(i);
+				auto pRow = RowArray.GetItem(i);
 				/* Delete attached info items */
-				pItem = (Item *)pRow->GetItem(Index);
+				auto pItem = pRow->GetItem(Index);
 				GUI_ALLOC_FreePtr((void **)&pItem->pText);
 				if (pItem->hItemInfo) {
 					GUI_ALLOC_Free(pItem->hItemInfo);
@@ -506,11 +494,10 @@ public:
 	void DeleteRow(unsigned Index) {
 		unsigned NumRows = RowArray.GetNumItems();
 		if (Index < NumRows) {
-			auto pRow = (GUI_ARRAY *)RowArray.GetItem(Index);
+			auto pRow = RowArray.GetItem(Index);
 			/* Delete attached info items */
 			for (int i = 0, NumColumns = pRow->GetNumItems(); i < NumColumns; i++) {
-				Item *pItem;
-				pItem = (Item *)pRow->GetItem(i);
+					auto pItem = pRow->GetItem(i);
 				GUI_ALLOC_FreePtr((void **)&pItem->pText);
 				if (pItem->hItemInfo) {
 					GUI_ALLOC_Free(pItem->hItemInfo);
@@ -602,8 +589,8 @@ public:
 	}
 	void SetItemText(unsigned Column, unsigned Row, const char *s) {
 		if ((Column < GetNumColumns()) && (Row < GetNumRows())) {
-			auto pRow = (GUI_ARRAY *)RowArray.GetItem(Row);
-			auto pItem = (Item *)pRow->GetItem(Column);
+			auto pRow = RowArray.GetItem(Row);
+			auto pItem = pRow->GetItem(Column);
 			if (pItem)
 				GUI__SetText(&pItem->pText, s);
 			_InvalidateRow(Row);
@@ -652,7 +639,7 @@ public:
 	}
 	void SetTextAlign(unsigned int Index, int Align) {
 		if (Index < AlignArray.GetNumItems()) {
-			int *pAlign = (int *)AlignArray.GetItem(Index);
+			int *pAlign = AlignArray.GetItem(Index);
 			if (Align != *pAlign) {
 				*pAlign = Align;
 				_InvalidateInsideArea();
