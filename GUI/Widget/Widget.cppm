@@ -242,6 +242,40 @@ void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax
 	GUI_ClearRect(FillRect);
 }
 
+struct WIDGET_CREATE_INFO {
+
+	WIDGET *(*pfCreateIndirect)(const WIDGET_CREATE_INFO *pCreate, WObj *hWin, int x0, int y0, WM_CALLBACK *cb);
+
+	const char *pName; /* Text ... Not used on all widgets */
+	int16_t Id; /* ID ... should be unique in a dialog */
+	int16_t x0, y0, xSize, ySize; /* Define position and size */
+	uint16_t Flags; /* Widget specific create flags (opt.) */
+	int32_t Para; /* Widget specific parameter (opt.) */
+
+	WObj *CreateDialog(int NumWidgets, WM_CALLBACK *cb, WObj *hParent, int x0, int y0) const {
+		auto pDialog = pfCreateIndirect(this, hParent, x0, y0, cb);     /* Create parent window */
+		auto pDialogClient = WM_GetClientWindow(pDialog);
+		pDialog->AddStates(Flags);
+		pDialog->ShowWindow();
+		pDialogClient->ShowWindow();
+		auto paWidget = this;
+		while (--NumWidgets > 0) {
+			paWidget++;
+			auto pChild = paWidget->pfCreateIndirect(paWidget, pDialogClient, 0, 0, 0); /* Create child window */
+			pChild->ShowWindow();
+		}
+		WM_SetFocusOnNextChild(pDialog);     /* Set the focus to the first child */
+		pDialogClient->Require(WM_INIT_DIALOG);
+		return pDialog;
+	}
+
+	int ExecDialog(int NumWidgets, WM_CALLBACK *cb, WObj *pParent, int x0, int y0) const {
+		auto pDialog = CreateDialog(NumWidgets, cb, pParent, x0, y0);
+		return pDialog->DialogExec();
+	}
+
+};
+
 }
 
 PCWIDGET_EFFECT WIDGET::DefaultEffect = WIDGET_Effect_3D2L;

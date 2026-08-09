@@ -323,7 +323,7 @@ public:
 		WM_NotifyParent(pThis, WM_NOTIFICATION_SCROLLBAR_ADDED);
 		return pThis;
 	}
-	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
 					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 	}

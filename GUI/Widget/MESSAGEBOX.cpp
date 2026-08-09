@@ -47,7 +47,7 @@ static WM_PARAM _MESSAGEBOX_cbCallback(WObj *pWin, int MsgId, WM_PARAM Data) {
 	return WM_DefaultProc(pWin, MsgId, Data);
 }
 WObj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags) {
-	GUI_WIDGET_CREATE_INFO _aDialogCreate[3];                                     /* 0: FrameWin, 1: Text, 2: Button */
+	WIDGET_CREATE_INFO _aDialogCreate[3];                                     /* 0: FrameWin, 1: Text, 2: Button */
 	int BorderSize = 12; //Frame::DefaultProps.BorderSize;                       /* Default border size of frame window */
 	int xSizeFrame = MESSAGEBOX_XSIZEOK + 2 * BorderSize + MESSAGEBOX_BORDER * 2; /* XSize of frame window */
 	int ySizeFrame;                                                               /* YSize of frame window */
@@ -118,7 +118,7 @@ WObj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags) 
 	_aDialogCreate[2].xSize = MESSAGEBOX_XSIZEOK;
 	_aDialogCreate[2].ySize = MESSAGEBOX_YSIZEOK;
 	/* Create dialog */
-	return GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _MESSAGEBOX_cbCallback, 0, 0, 0);
+	return _aDialogCreate->CreateDialog(GUI_COUNTOF(_aDialogCreate), _MESSAGEBOX_cbCallback, 0, 0, 0);
 }
 int GUI_MessageBox(const char *sMessage, const char *sCaption, int Flags) {
 	WObj * pWin;

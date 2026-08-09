@@ -223,7 +223,7 @@ public:
 		pObj->Height = Height;
 		return pObj;
 	}
-	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		int NumItems = (pCreateInfo->Para) & 0xFF;
 		int Spacing = (pCreateInfo->Para >> 8) & 0xFF;
 		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,

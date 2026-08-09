@@ -214,7 +214,7 @@ public:
 	static Button *Create(int x0, int y0, int xsize, int ysize, WObj *hParent, int Id, int Flags) {
 		return Create(x0, y0, xsize, ysize, hParent, Flags, 0, Id);
 	}
-	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		auto pThis = Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,
 							pCreateInfo->xSize, pCreateInfo->ySize,
 							hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);

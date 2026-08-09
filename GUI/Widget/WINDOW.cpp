@@ -68,7 +68,7 @@ static WM_PARAM _cb(WObj * hWin, int MsgId, WM_PARAM Data) {
 		return cb(hWin, MsgId, Data);
 	return WM_DefaultProc(hWin, MsgId, Data);
 }
-WObj * WINDOW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+WObj * WINDOW_CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj * hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 	WObj * hObj;
 	hObj = WM_CreateWindowAsChild(
 		pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize, hWinParent,

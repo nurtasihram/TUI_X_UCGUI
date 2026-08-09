@@ -70,7 +70,7 @@ static const char *_ListBox[]{
 #define GUI_ID_MULTIEDIT0  GUI_ID_USER + 0x00
 #define GUI_ID_CHECK0      GUI_ID_USER + 0x01
 #define GUI_ID_CHECK1      GUI_ID_USER + 0x02
-static const GUI_WIDGET_CREATE_INFO _aDialogCreate[]{
+static const WIDGET_CREATE_INFO _aDialogCreate[]{
 	{ Frame   ::CreateIndirect, "Owner drawn list box" , 0                 , 50  , 50  , 220  , 175  , FRAMEWIN_CF_MOVEABLE | FRAMEWIN_CF_RESIZEABLE },
 	{ ListBox ::CreateIndirect, ""                     , GUI_ID_MULTIEDIT0 , 10  , 10  , 100  , 100  , 0                    , 100 },
 	{ CheckBox::CreateIndirect, ""                     , GUI_ID_CHECK0     , 120 , 10  , 0    , 0                                 },
@@ -399,7 +399,7 @@ void _Create() {
 
 #define ID_LISTVIEW_TEST    (GUI_ID_USER + 100)
 
-static const GUI_WIDGET_CREATE_INFO _aListViewDialogCreate[] = {
+static const WIDGET_CREATE_INFO _aListViewDialogCreate[] = {
 	{ Frame   ::CreateIndirect, "ListView Test"      , 0                 , 50  , 50  , 320 , 240 , FRAMEWIN_CF_MOVEABLE       },
 	{ ListView::CreateIndirect, ""                   , ID_LISTVIEW_TEST  , 10  , 10  , 290 , 160 , 0                          },
 	{ Button  ::CreateIndirect, "Add Row"            , GUI_ID_USER + 101 , 10  , 180 , 80  , 25                               },
@@ -472,7 +472,7 @@ static WM_PARAM _cbListViewTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 }
 
 void _TestListView() {
-	auto pDialog = GUI_CreateDialogBox(_aListViewDialogCreate, GUI_COUNTOF(_aListViewDialogCreate), &_cbListViewTest, 0, 0, 0);
+	auto pDialog = _aListViewDialogCreate->CreateDialog(GUI_COUNTOF(_aListViewDialogCreate), &_cbListViewTest, 0, 0, 0);
 	pDialog->DialogExec();
 }
 
@@ -510,7 +510,7 @@ static void _UpdateDropDownStatus(WObj *pWin) {
 	}
 }
 
-static const GUI_WIDGET_CREATE_INFO _aDropDownDialogCreate[] = {
+static const WIDGET_CREATE_INFO _aDropDownDialogCreate[] = {
 	{ Frame   ::CreateIndirect, "DropDown Test"      , 0                      , 50  , 40  , 390 , 230 , FRAMEWIN_CF_MOVEABLE       },
 	{ DropDown::CreateIndirect, ""                   , ID_DROPDOWN_TEST       , 10  , 10  , 220 , 96  , 0                          },
 	{ Text    ::CreateIndirect, "Use the DropDown or buttons below to interact."
@@ -624,7 +624,7 @@ static WM_PARAM _cbDropDownTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 }
 
 void _TestDropDown() {
-	WObj *pDialog = GUI_CreateDialogBox(_aDropDownDialogCreate, GUI_COUNTOF(_aDropDownDialogCreate), &_cbDropDownTest, 0, 0, 0);
+	WObj *pDialog = _aDropDownDialogCreate->CreateDialog(GUI_COUNTOF(_aDropDownDialogCreate), &_cbDropDownTest, 0, 0, 0);
 	pDialog->DialogExec();
 }
 
@@ -659,7 +659,7 @@ static void _UpdateMultiPageStatus(WObj *pWin) {
 	}
 }
 
-static const GUI_WIDGET_CREATE_INFO _aMultiPageDialogCreate[] = {
+static const WIDGET_CREATE_INFO _aMultiPageDialogCreate[] = {
 	{ Frame   ::CreateIndirect, "MultiPage Test"     , 0                         , 40  , 40  , 420 , 270 , FRAMEWIN_CF_MOVEABLE },
 	{ MultPage::CreateIndirect, ""                   , ID_MULTIPAGE_TEST         , 10  , 10  , 390 , 150 , 0                    },
 	{ Button  ::CreateIndirect, "Add Page"           , ID_MULTIPAGE_ADD          , 10  , 170 , 90  , 25                         },
@@ -774,7 +774,7 @@ static WM_PARAM _cbMultiPageTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 }
 
 void _TestMultiPage() {
-	auto pDialog = GUI_CreateDialogBox(_aMultiPageDialogCreate, GUI_COUNTOF(_aMultiPageDialogCreate), &_cbMultiPageTest, 0, 0, 0);
+	auto pDialog = _aMultiPageDialogCreate->CreateDialog(GUI_COUNTOF(_aMultiPageDialogCreate), &_cbMultiPageTest, 0, 0, 0);
 	pDialog->DialogExec();
 }
 
@@ -796,7 +796,7 @@ static void _UpdateRadioStatus(WObj *pWin) {
 	}
 }
 
-static const GUI_WIDGET_CREATE_INFO _aRadioDialogCreate[] = {
+static const WIDGET_CREATE_INFO _aRadioDialogCreate[] = {
 	{ Frame ::CreateIndirect, "Radio Test" , 0               , 60  , 50  , 360 , 220 , FRAMEWIN_CF_MOVEABLE },
 	{ Radio ::CreateIndirect, ""           , ID_RADIO_TEST   , 10  , 10  , 200 , 80  , 0, (3 | (24 << 8))   },
 	{ Button::CreateIndirect, "Prev"       , ID_RADIO_PREV   , 10  , 100 , 70  , 25                         },
@@ -865,7 +865,7 @@ static WM_PARAM _cbRadioTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 }
 
 void _TestRadio() {
-	auto pDialog = GUI_CreateDialogBox(_aRadioDialogCreate, GUI_COUNTOF(_aRadioDialogCreate), &_cbRadioTest, 0, 0, 0);
+	auto pDialog = _aRadioDialogCreate->CreateDialog(GUI_COUNTOF(_aRadioDialogCreate), &_cbRadioTest, 0, 0, 0);
 	pDialog->DialogExec();
 }
 
@@ -890,7 +890,7 @@ static void _UpdateProgBarStatus(WObj *pWin) {
 	}
 }
 
-static const GUI_WIDGET_CREATE_INFO _aProgBarDialogCreate[] = {
+static const WIDGET_CREATE_INFO _aProgBarDialogCreate[] = {
 	{ Frame  ::CreateIndirect, "ProgBar Test" , 0                      , 70  , 60  , 360 , 210 , FRAMEWIN_CF_MOVEABLE },
 	{ ProgBar::CreateIndirect, ""             , ID_PROGBAR_TEST        , 15  , 20  , 320 , 25  , 0                    },
 	{ Button ::CreateIndirect, "-10"          , ID_PROGBAR_DEC         , 15  , 60  , 60  , 25                         },
@@ -966,7 +966,7 @@ static WM_PARAM _cbProgBarTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 }
 
 void _TestProgBar() {
-	auto pDialog = GUI_CreateDialogBox(_aProgBarDialogCreate, GUI_COUNTOF(_aProgBarDialogCreate), &_cbProgBarTest, 0, 0, 0);
+	auto pDialog = _aProgBarDialogCreate->CreateDialog(GUI_COUNTOF(_aProgBarDialogCreate), &_cbProgBarTest, 0, 0, 0);
 	pDialog->DialogExec();
 }
 
@@ -997,7 +997,7 @@ static void _UpdateSliderStatus(WObj *pWin) {
 	}
 }
 
-static const GUI_WIDGET_CREATE_INFO _aSliderDialogCreate[] = {
+static const WIDGET_CREATE_INFO _aSliderDialogCreate[] = {
 	{ Frame ::CreateIndirect, "Slider Test"                               , 0                      , 70  , 60  , 470 , 250 , FRAMEWIN_CF_MOVEABLE },
 	{ Slider::CreateIndirect, ""                                          , ID_SLIDER_TEST         , 15  , 20  , 340 , 30                         },
 	{ Slider::CreateIndirect, ""                                          , ID_SLIDER_TEST_V       , 375 , 20  , 30  , 150 , SLIDER_CF_VERTICAL   },
@@ -1101,7 +1101,7 @@ static WM_PARAM _cbSliderTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 }
 
 void _TestSlider() {
-	auto pDialog = GUI_CreateDialogBox(_aSliderDialogCreate, GUI_COUNTOF(_aSliderDialogCreate), &_cbSliderTest, 0, 0, 0);
+	auto pDialog = _aSliderDialogCreate->CreateDialog(GUI_COUNTOF(_aSliderDialogCreate), &_cbSliderTest, 0, 0, 0);
 	pDialog->DialogExec();
 }
 
@@ -1144,7 +1144,7 @@ static void _ResetEditScenario(WObj *pWin) {
 	_UpdateEditStatus(pWin);
 }
 
-static const GUI_WIDGET_CREATE_INFO _aEditDialogCreate[] = {
+static const WIDGET_CREATE_INFO _aEditDialogCreate[] = {
 	{ Frame ::CreateIndirect, "Edit Interactive Test" , 0                   , 70  , 55  , 470 , 250 , FRAMEWIN_CF_MOVEABLE },
 	{ Edit  ::CreateIndirect, ""                      , ID_EDIT_TEST        , 15  , 20  , 438 , 24  , 0, 64                },
 	{ Text  ::CreateIndirect, "Focus on single-line cursor move/delete/insert behavior."
@@ -1236,7 +1236,7 @@ static WM_PARAM _cbEditTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 }
 
 void _TestEdit() {
-	auto pDialog = GUI_CreateDialogBox(_aEditDialogCreate, GUI_COUNTOF(_aEditDialogCreate), &_cbEditTest, 0, 0, 0);
+	auto pDialog = _aEditDialogCreate->CreateDialog(GUI_COUNTOF(_aEditDialogCreate), &_cbEditTest, 0, 0, 0);
 	pDialog->DialogExec();
 }
 
@@ -1261,7 +1261,7 @@ static void _UpdateMultiEditStatus(WObj *pWin) {
 	}
 }
 
-static const GUI_WIDGET_CREATE_INFO _aMultiEditDialogCreate[] = {
+static const WIDGET_CREATE_INFO _aMultiEditDialogCreate[] = {
 	{ Frame   ::CreateIndirect, "MultiEdit Test"  , 0                            , 60  , 60  , 420 , 280 , FRAMEWIN_CF_MOVEABLE },
 	{ MultEdit::CreateIndirect, ""                , ID_MULTEDIT_TEST            , 10  , 10  , 395 , 150 , 0, 512               },
 	{ Button  ::CreateIndirect, "Append"          , ID_MULTEDIT_APPEND          , 10  , 170 , 70  , 25                         },
@@ -1342,7 +1342,7 @@ static WM_PARAM _cbMultiEditTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 }
 
 void _TestMultiEdit() {
-	auto pDialog = GUI_CreateDialogBox(_aMultiEditDialogCreate, GUI_COUNTOF(_aMultiEditDialogCreate), &_cbMultiEditTest, 0, 0, 0);
+	auto pDialog = _aMultiEditDialogCreate->CreateDialog(GUI_COUNTOF(_aMultiEditDialogCreate), &_cbMultiEditTest, 0, 0, 0);
 	pDialog->DialogExec();
 }
 
@@ -1368,7 +1368,7 @@ int main(void) {
 	_TestDropDown();
 
 	for (;;) {
-		auto pDialog = (Frame *)GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
+		auto pDialog = (Frame *)_aDialogCreate->CreateDialog(GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
 		pDialog->AddMinButton();
 		pDialog->AddMaxButton();
 		_CreateMenu(pDialog);
