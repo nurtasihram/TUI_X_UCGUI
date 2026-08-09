@@ -81,7 +81,7 @@
     <ClCompile Include="GUI\Widget\Edit.cppm">
       <FileType>Document</FileType>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\FrameWin.cppm">
+    <ClCompile Include="GUI\Widget\Frame.cppm">
       <FileType>Document</FileType>
     </ClCompile>
     <ClCompile Include="GUI\Widget\GUI_ARRAY.cppm">
@@ -100,10 +100,10 @@
       <FileType>Document</FileType>
     </ClCompile>
     <ClInclude Include="GUI\Widget\MESSAGEBOX.h" />
-    <ClCompile Include="GUI\Widget\MultiEdit.cppm">
+    <ClCompile Include="GUI\Widget\MultEdit.cppm">
       <FileType>Document</FileType>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\MultiPage.cppm" />
+    <ClCompile Include="GUI\Widget\MultPage.cppm" />
     <ClCompile Include="GUI\Widget\ProgBar.cppm">
       <FileType>Document</FileType>
     </ClCompile>

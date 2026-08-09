@@ -133,7 +133,7 @@
     <ClCompile Include="GUI\Widget\ProgBar.cppm">
       <Filter>GUI\Widget\Leaf</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\MultiEdit.cppm">
+    <ClCompile Include="GUI\Widget\MultEdit.cppm">
       <Filter>GUI\Widget\Leaf</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\Edit.cppm">
@@ -145,13 +145,13 @@
     <ClCompile Include="GUI\Widget\ScrollBar.cppm">
       <Filter>GUI\Widget\Leaf</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\FrameWin.cppm">
+    <ClCompile Include="GUI\Widget\Frame.cppm">
       <Filter>GUI\Widget\Container</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\DropDown.cppm">
       <Filter>GUI\Widget\Container</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\MultiPage.cppm">
+    <ClCompile Include="GUI\Widget\MultPage.cppm">
       <Filter>GUI\Widget\Container</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\GUI_ARRAY.cppm">
