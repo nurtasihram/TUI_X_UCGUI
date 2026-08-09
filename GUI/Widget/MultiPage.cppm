@@ -107,7 +107,7 @@ private:
 	}
 	void _CalcClientRect(RECT *pRect) {
 		*pRect = WIDGET__GetInsideRect(this);
-		if (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
+		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
 			pRect->y1 -= Props.pFont->SizeY() + 6;
 		}
 		else {
@@ -116,7 +116,7 @@ private:
 	}
 	void _CalcBorderRect(RECT *pRect) {
 		*pRect = WM_GetClientRect(this);
-		if (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
+		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
 			pRect->y1 -= Props.pFont->SizeY() + 6;
 		}
 		else {
@@ -126,7 +126,7 @@ private:
 	int _GetPageSizeX(unsigned Index) {
 		int r = 0;
 		if ((int)Index < this->Handles.NumItems) {
-			GUI_SetFont(this->Props.pFont);
+			GUI_SetFont(Props.pFont);
 			r = GUI_GetStringDistX(this->Handles[Index].pText) + 10;
 		}
 		return r;
@@ -147,7 +147,7 @@ private:
 		Height = Props.pFont->SizeY() + 6;
 		_CalcBorderRect(&rBorder);
 		/* Calculate Y-Position of text item */
-		if (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
+		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
 			pRect->y0 = rBorder.y1;
 		}
 		else {
@@ -162,7 +162,7 @@ private:
 			Width = _GetTextWidth();
 		}
 		/* Calculate X-Position of text item */
-		if (this->Props.Align & MULTIPAGE_ALIGN_RIGHT) {
+		if (Props.Align & MULTIPAGE_ALIGN_RIGHT) {
 			pRect->x0 = rBorder.x1 - Width;
 			pRect->x1 = rBorder.x1;
 		}
@@ -181,8 +181,8 @@ private:
 			RECT rText;
 			int x0, y0, NumItems = 0;
 			auto Size = ((Props.pFont->SizeY() + 6) * 3) >> 2;
-			x0 = (this->Props.Align & MULTIPAGE_ALIGN_RIGHT) ? (rBorder.x0) : (rBorder.x1 - 2 * Size + 1);
-			y0 = (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) ? (rBorder.y1) : (rBorder.y0 - Size + 1);
+			x0 = (Props.Align & MULTIPAGE_ALIGN_RIGHT) ? (rBorder.x0) : (rBorder.x1 - 2 * Size + 1);
+			y0 = (Props.Align & MULTIPAGE_ALIGN_BOTTOM) ? (rBorder.y1) : (rBorder.y0 - Size + 1);
 			/* A scrollbar is required so we add one to the MultPage */
 			_AddScrollbar(x0, y0, 2 * Size, Size);
 			_GetTextRect(&rText);
@@ -210,7 +210,7 @@ private:
 		DrawUp(r);
 		r -= this->EffectSize();
 		if (this->Selection == Index) {
-			if (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
+			if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
 				r.y0 -= this->EffectSize() + 1;
 				if (this->EffectSize() > 1) {
 					GUI.SetColor(RGB_WHITE);
@@ -229,10 +229,10 @@ private:
 				}
 			}
 		}
-		GUI.SetColor(this->Props.aBkColor[ColorIndex]);
+		GUI.SetColor(Props.aBkColor[ColorIndex]);
 		GUI_FillRect(r);
-		GUI.SetBkColor(this->Props.aBkColor[ColorIndex]);
-		GUI.SetColor(this->Props.aTextColor[ColorIndex]);
+		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
+		GUI.SetColor(Props.aTextColor[ColorIndex]);
 		GUI_DispStringAt(pText, r.x0 + 4, pRect->y0 + 3);
 	}
 	void _OnPaint() {
@@ -245,7 +245,7 @@ private:
 			RECT rText, rClip;
 			int i, w = 0, x0 = 0;
 			if (this->State & MULTIPAGE_STATE_SCROLLMODE) {
-				if (this->Props.Align & MULTIPAGE_ALIGN_RIGHT) {
+				if (Props.Align & MULTIPAGE_ALIGN_RIGHT) {
 					x0 = -_GetPagePosX(this->ScrollState);
 				}
 				else {
@@ -257,7 +257,7 @@ private:
 			rClip.y0 = rText.y0 - 1;
 			rClip.y1 = rText.y1 + 1;
 			WM_SetUserClipRect(&rClip);
-			GUI_SetFont(this->Props.pFont);
+			GUI_SetFont(Props.pFont);
 			for (i = 0; i < this->Handles.NumItems; i++) {
 				auto &pPage = this->Handles[i];
 				x0 += w;
@@ -509,25 +509,25 @@ public:
 	}
 	void SetBkColor(RGBC Color, unsigned Index) {
 		if (((int)Index < MULTIPAGE_NUMCOLORS)) {
-			this->Props.aBkColor[Index] = Color;
+			Props.aBkColor[Index] = Color;
 			WM_Invalidate(this);
 		}
 	}
 	void SetTextColor(RGBC Color, unsigned Index) {
 		if (((int)Index < MULTIPAGE_NUMCOLORS)) {
-			this->Props.aTextColor[Index] = Color;
+			Props.aTextColor[Index] = Color;
 			WM_Invalidate(this);
 		}
 	}
 	void SetFont(PCFONT pFont) {
 		if (pFont) {
-			this->Props.pFont = pFont;
+			Props.pFont = pFont;
 			this->_UpdatePositions();
 		}
 	}
 	void SetAlign(unsigned Align) {
 		RECT rClient;
-		this->Props.Align = Align;
+		Props.Align = Align;
 		this->_CalcClientRect(&rClient);
 		WM_MoveTo(this->pClient, rClient.x0 + this->Rect.x0,
 				  rClient.y0 + this->Rect.y0);

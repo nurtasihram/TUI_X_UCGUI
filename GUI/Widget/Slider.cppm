@@ -76,7 +76,7 @@ private:
 		/* Draw slot */
 		DrawDown(rSlot);
 		/* Draw the slider itself */
-		GUI.SetColor(this->Props.Color);
+		GUI.SetColor(Props.Color);
 		GUI_FillRect(rSlider);
 		GUI.SetColor(RGB_BLACK);
 		DrawUp(rSlider);
@@ -190,6 +190,16 @@ public:
 	}
 
 public:
+
+#pragma region Properties
+	
+	void SetBkColor(RGBC Color) {
+		Props.BkColor = Color;
+		WM_Invalidate(this);
+	}
+
+#pragma endregion
+
 	void Dec() {
 		if (v > Min) {
 			v--;
@@ -240,10 +250,6 @@ public:
 			this->NumTicks = NumTicks;
 			WM_Invalidate(this);
 		}
-	}
-	void SetBkColor(RGBC Color) {
-		Props.BkColor = Color;
-		WM_Invalidate(this);
 	}
 	int  GetValue() {
 		return v;

@@ -22,27 +22,17 @@ import TUX.Array;
 #define MENU_EFFECT_DEFAULT WIDGET_Effect_3D1L
 
 export {
-constexpr uint16_t MENU_CF_HORIZONTAL               = 0 << 0;
-constexpr uint16_t MENU_CF_VERTICAL                 = 1 << 0;
-constexpr uint16_t MENU_CF_OPEN_ON_POINTEROVER      = 1 << 1;
-constexpr uint16_t MENU_CF_CLOSE_ON_SECOND_CLICK    = 1 << 2;
-constexpr uint16_t MENU_CF_HIDE_DISABLED_SEL        = 1 << 3;  /* Hides the selection when a disabled item is selected */
 
-constexpr uint16_t MENU_IF_DISABLED           = 1 << 0;
-constexpr uint16_t MENU_IF_SEPARATOR          = 1 << 1;
+constexpr uint16_t
+	MENU_CF_HORIZONTAL               = 0 << 0,
+	MENU_CF_VERTICAL                 = 1 << 0,
+	MENU_CF_OPEN_ON_POINTEROVER      = 1 << 1,
+	MENU_CF_CLOSE_ON_SECOND_CLICK    = 1 << 2,
+	MENU_CF_HIDE_DISABLED_SEL        = 1 << 3;  /* Hides the selection when a disabled item is selected */
 
-enum MENU_CI {
-	 MENU_CI_ENABLED           = 0,
-	 MENU_CI_SELECTED          = 1,
-	 MENU_CI_DISABLED          = 2,
-	 MENU_CI_DISABLED_SEL      = 3,
-	 MENU_CI_ACTIVE_SUBMENU    = 4
-};
-
-constexpr uint16_t MENU_BI_LEFT              = 0;
-constexpr uint16_t MENU_BI_RIGHT             = 1;
-constexpr uint16_t MENU_BI_TOP               = 2;
-constexpr uint16_t MENU_BI_BOTTOM            = 3;
+constexpr uint16_t
+	MENU_IF_DISABLED           = 1 << 0,
+	MENU_IF_SEPARATOR          = 1 << 1;
 
 constexpr uint16_t MENU_ON_ITEMSELECT        = 0;   /* Send to owner when selecting a menu item */
 constexpr uint16_t MENU_ON_INITMENU          = 1;   /* Send to owner when for the first time selecting a submenu */
@@ -50,29 +40,33 @@ constexpr uint16_t MENU_ON_INITSUBMENU       = 2;   /* Send to owner when select
 constexpr uint16_t MENU_ON_OPEN              = 3;   /* Internal message of menu widget (send to submenus) */
 constexpr uint16_t MENU_ON_CLOSE             = 4;   /* Internal message of menu widget (send to submenus) */
 constexpr uint16_t MENU_IS_MENU              = 5;   /* Internal message of menu widget. Owner must call   */
-									  /* WM_DefaultProc() when not handle the message.      */
 
-struct MENU_MSG_DATA {
-	uint16_t MsgType;
-	uint16_t ItemId;
+enum MENU_BI { 
+	 MENU_BI_LEFT = 0,
+	 MENU_BI_RIGHT,
+	 MENU_BI_TOP,
+	 MENU_BI_BOTTOM
 };
-struct MENU_ITEM_DATA {
-	const char *pText;
-	uint16_t    Id;
-	uint16_t    Flags;
-	struct Menu *pSubmenu;
+enum MENU_CI {
+	 MENU_CI_ENABLED = 0,
+	 MENU_CI_SELECTED,
+	 MENU_CI_DISABLED,
+	 MENU_CI_DISABLED_SEL,
+	 MENU_CI_ACTIVE_SUBMENU
 };
-struct MENU_ITEM {
-	struct Menu *pSubmenu;
-	uint16_t Id;
-	uint16_t Flags;
-	uint16_t TextWidth;
-	char *pText;
-};
+
 
 PCWIDGET_EFFECT MENU__pDefaultEffect = MENU_EFFECT_DEFAULT;
 
 class Menu : public WIDGET {
+	
+public:
+	struct ItemData {
+		const char *pText;
+		uint16_t    Id;
+		uint16_t    Flags;
+		Menu *pSubmenu;
+	};
 
 public:
 	struct Properties {
@@ -97,7 +91,14 @@ public:
 private:
 	Properties Props;
 
-	ARRAY<MENU_ITEM> ItemArray;
+	struct Item {
+		Menu *pSubmenu;
+		uint16_t Id;
+		uint16_t Flags;
+		uint16_t TextWidth;
+		char *pText;
+	};
+	ARRAY<Item> ItemArray;
 	WObj *pOwner;
 	uint16_t Flags;
 	char IsSubmenuActive;
@@ -105,14 +106,19 @@ private:
 	uint16_t Height;
 	uint16_t Sel;
 
+	struct MsgPack {
+		uint32_t MsgType : 16;
+		uint32_t ItemId : 16;
+	};
+
 	static int _SendMenuMessage(WObj *pSrcWin, WObj *pDestWin, uint16_t MsgType, uint16_t ItemId) {
 		if (!pDestWin)
 			pDestWin = pSrcWin->Parent();
 		if (pDestWin) {
-			MENU_MSG_DATA MsgData;
+			MsgPack MsgData;
 			MsgData.MsgType = MsgType;
 			MsgData.ItemId = ItemId;
-			return (int)WM__SendMessage(pDestWin, WM_MENU, (WM_PARAM)&MsgData);
+			return (int)WM__SendMessage(pDestWin, WM_MENU, *(WM_PARAM *)&MsgData);
 		}
 		return 0;
 	}
@@ -144,7 +150,7 @@ private:
 		int TextWidth = 0;
 		if (sText) {
 			PCFONT pOldFont;
-			pOldFont = GUI_SetFont(this->Props.pFont);
+			pOldFont = GUI_SetFont(Props.pFont);
 			TextWidth = GUI_GetStringDistX(sText);
 			GUI_SetFont(pOldFont);
 		}
@@ -163,7 +169,7 @@ private:
 			else {
 				ItemWidth = 3;
 			}
-			ItemWidth += this->Props.aBorder[MENU_BI_LEFT] + this->Props.aBorder[MENU_BI_RIGHT];
+			ItemWidth += Props.aBorder[MENU_BI_LEFT] + Props.aBorder[MENU_BI_RIGHT];
 		}
 		return ItemWidth;
 	}
@@ -180,7 +186,7 @@ private:
 					ItemHeight = 3;
 				}
 			}
-			ItemHeight += this->Props.aBorder[MENU_BI_TOP] + this->Props.aBorder[MENU_BI_BOTTOM];
+			ItemHeight += Props.aBorder[MENU_BI_TOP] + Props.aBorder[MENU_BI_BOTTOM];
 		}
 		return ItemHeight;
 	}
@@ -552,10 +558,8 @@ private:
 		WM_Invalidate(this);
 	}
 	WM_PARAM _OnMenu(WM_PARAM Data) {
-		auto pData = (const MENU_MSG_DATA *)Data;
-		if (!pData)
-			return 0;
-		switch (pData->MsgType) {
+		auto msg = *(MsgPack *)&Data;
+		switch (msg.MsgType) {
 			case MENU_ON_ITEMSELECT:
 				this->_DeactivateMenu();
 				this->_DeselectItem();
@@ -596,7 +600,7 @@ private:
 		return 0;
 	}
 #endif
-	void _SetPaintColors(const MENU_ITEM &pItem, int ItemIndex) {
+	void _SetPaintColors(const Item &pItem, int ItemIndex) {
 		char Selected;
 		unsigned ColorIndex;
 		Selected = (ItemIndex == this->Sel) ? 1 : 0;
@@ -617,20 +621,20 @@ private:
 				}
 			}
 		}
-		GUI.SetBkColor(this->Props.aBkColor[ColorIndex]);
-		GUI.SetColor(this->Props.aTextColor[ColorIndex]);
+		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
+		GUI.SetColor(Props.aTextColor[ColorIndex]);
 	}
 	void _OnPaint() {
 		RECT FillRect, TextRect;
 		unsigned TextWidth, NumItems, i;
-		uint8_t BorderLeft = this->Props.aBorder[MENU_BI_LEFT];
-		uint8_t BorderTop = this->Props.aBorder[MENU_BI_TOP];
+		uint8_t BorderLeft = Props.aBorder[MENU_BI_LEFT];
+		uint8_t BorderTop = Props.aBorder[MENU_BI_TOP];
 		int FontHeight = Props.pFont->DistY();
 		int EffectSize = this->_GetEffectSize();
 		NumItems = this->_GetNumItems();
 		FillRect = WM_GetClientRect(this);
 		FillRect -= EffectSize;
-		GUI_SetFont(this->Props.pFont);
+		GUI_SetFont(Props.pFont);
 		if (this->Flags & MENU_SF_VERTICAL) {
 			int ItemHeight, xSize;
 			xSize = this->_CalcMenuSizeX();
@@ -684,7 +688,7 @@ private:
 		if (this->Width || this->Height) {
 			RECT r = WM_GetClientRect(this);
 			r -= EffectSize;
-			GUI.SetBkColor(this->Props.aBkColor[MENU_CI_ENABLED]);
+			GUI.SetBkColor(Props.aBkColor[MENU_CI_ENABLED]);
 			GUI_ClearRect({ FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1 });
 			GUI_ClearRect({ EffectSize, FillRect.y1 + 1, r.x1, r.y1 });
 		}
@@ -767,35 +771,35 @@ private:
 		PCFONT pOldFont;
 		unsigned i, NumItems;
 		NumItems = this->_GetNumItems();
-		pOldFont = GUI_SetFont(this->Props.pFont);
+		pOldFont = GUI_SetFont(Props.pFont);
 		for (i = 0; i < NumItems; i++) {
 			auto &pItem = this->ItemArray[i];
 			pItem.TextWidth = GUI_GetStringDistX(pItem.pText);
 		}
 		GUI_SetFont(pOldFont);
 	}
-	char _SetItem(unsigned Index, const MENU_ITEM_DATA *pItemData) {
-		MENU_ITEM Item = { 0 };
+	char _SetItem(unsigned Index, const ItemData *pItemData) {
+		Item item = { 0 };
 		const char *pText;
 		pText = pItemData->pText;
 		if (!pText) {
 			pText = "";
 		}
-		Item.Id = pItemData->Id;
-		Item.Flags = pItemData->Flags;
-		Item.pSubmenu = pItemData->pSubmenu;
-		Item.TextWidth = this->_CalcTextWidth(pText);
-		if (Item.Flags & MENU_IF_SEPARATOR) {
-			Item.pSubmenu = nullptr;   /* Ensures that no separator is a submenu */
+		item.Id = pItemData->Id;
+		item.Flags = pItemData->Flags;
+		item.pSubmenu = pItemData->pSubmenu;
+		item.TextWidth = this->_CalcTextWidth(pText);
+		if (item.Flags & MENU_IF_SEPARATOR) {
+			item.pSubmenu = nullptr;   /* Ensures that no separator is a submenu */
 		}
 		if (Index < this->ItemArray.GetNumItems()) {
 			auto &pItem = this->ItemArray[Index];
 			GUI__SetText(&pItem.pText, pText);
-			pItem.Id       = Item.Id;
-			pItem.Flags    = Item.Flags;
-			pItem.pSubmenu = Item.pSubmenu;
-			pItem.TextWidth= Item.TextWidth;
-			if (Item.pSubmenu)
+			pItem.Id       = item.Id;
+			pItem.Flags    = item.Flags;
+			pItem.pSubmenu = item.pSubmenu;
+			pItem.TextWidth= item.TextWidth;
+			if (item.pSubmenu)
 				pItem.pSubmenu->SetOwner(this);
 			return 1;
 		}
@@ -826,7 +830,7 @@ private:
 
 public:
 
-	void AddItem(const MENU_ITEM_DATA *pItemData) {
+	void AddItem(const ItemData *pItemData) {
 		if (pItemData) {
 			if (this->ItemArray.AddItem() == 0) {
 				unsigned Index;
@@ -876,7 +880,7 @@ public:
 			this->_InvalidateItem(Index);
 		}
 	}
-	void GetItem(uint16_t ItemId, MENU_ITEM_DATA *pItemData) {
+	void GetItem(uint16_t ItemId, ItemData *pItemData) {
 		if (pItemData) {
 			Menu *pMenu;
 			int Index = _FindItem(ItemId, &pMenu);
@@ -905,7 +909,7 @@ public:
 		r = this->_GetNumItems();
 		return r;
 	}
-	void InsertItem(uint16_t ItemId, const MENU_ITEM_DATA *pItemData) {
+	void InsertItem(uint16_t ItemId, const ItemData *pItemData) {
 		if (pItemData) {
 			Menu *pMenu;
 			int Index = _FindItem(ItemId, &pMenu);
@@ -933,29 +937,29 @@ public:
 		}
 	}
 	void SetBkColor(unsigned ColorIndex, RGBC Color) {
-		if (ColorIndex < GUI_COUNTOF(this->Props.aBkColor)) {
-			if (Color != this->Props.aBkColor[ColorIndex]) {
-				this->Props.aBkColor[ColorIndex] = Color;
+		if (ColorIndex < GUI_COUNTOF(Props.aBkColor)) {
+			if (Color != Props.aBkColor[ColorIndex]) {
+				Props.aBkColor[ColorIndex] = Color;
 				WM_Invalidate(this);
 			}
 		}
 	}
 	void SetBorderSize(unsigned BorderIndex, uint8_t BorderSize) {
-		if (BorderIndex < GUI_COUNTOF(this->Props.aBorder)) {
-			if (BorderSize != this->Props.aBorder[BorderIndex]) {
-				this->Props.aBorder[BorderIndex] = BorderSize;
+		if (BorderIndex < GUI_COUNTOF(Props.aBorder)) {
+			if (BorderSize != Props.aBorder[BorderIndex]) {
+				Props.aBorder[BorderIndex] = BorderSize;
 				this->_ResizeMenu();
 			}
 		}
 	}
 	void SetFont(PCFONT pFont) {
-		if (pFont != this->Props.pFont) {
-			this->Props.pFont = pFont;
+		if (pFont != Props.pFont) {
+			Props.pFont = pFont;
 			this->_RecalcTextWidthOfItems();
 			this->_ResizeMenu();
 		}
 	}
-	void SetItem(uint16_t ItemId, const MENU_ITEM_DATA *pItemData) {
+	void SetItem(uint16_t ItemId, const ItemData *pItemData) {
 		if (pItemData) {
 			Menu *pMenu;
 			int Index = _FindItem(ItemId, &pMenu);
@@ -967,9 +971,9 @@ public:
 		}
 	}
 	void SetTextColor(unsigned ColorIndex, RGBC Color) {
-		if (ColorIndex < GUI_COUNTOF(this->Props.aTextColor)) {
-			if (Color != this->Props.aTextColor[ColorIndex]) {
-				this->Props.aTextColor[ColorIndex] = Color;
+		if (ColorIndex < GUI_COUNTOF(Props.aTextColor)) {
+			if (Color != Props.aTextColor[ColorIndex]) {
+				Props.aTextColor[ColorIndex] = Color;
 				WM_Invalidate(this);
 			}
 		}

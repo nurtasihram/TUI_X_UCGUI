@@ -9,26 +9,32 @@ import TUX.Widget.Menu;
 
 static int16_t FRAMEWIN__MinVisibility = 5;
 
-#define FRAMEWIN_REACT_BORDER 3
-#define FRAMEWIN_MINSIZE_X    20
-#define FRAMEWIN_MINSIZE_Y    20
-#define FRAMEWIN_RESIZE_X     (1<<0)
-#define FRAMEWIN_RESIZE_Y     (1<<1)
-#define FRAMEWIN_REPOS_X      (1<<2)
-#define FRAMEWIN_REPOS_Y      (1<<3)
-#define FRAMEWIN_MOUSEOVER    (1<<4)
-#define FRAMEWIN_RESIZE       (FRAMEWIN_RESIZE_X | FRAMEWIN_RESIZE_Y | FRAMEWIN_REPOS_X | FRAMEWIN_REPOS_Y)
+static int16_t FRAMEWIN_REACT_BORDER = 3;
+
+static int16_t
+	FRAMEWIN_MINSIZE_X = 20,
+	FRAMEWIN_MINSIZE_Y = 20;
+
+static int16_t
+	FRAMEWIN_RESIZE_X     = 1 << 0,
+	FRAMEWIN_RESIZE_Y     = 1 << 1,
+	FRAMEWIN_REPOS_X      = 1 << 2,
+	FRAMEWIN_REPOS_Y      = 1 << 3,
+	FRAMEWIN_MOUSEOVER    = 1 << 4,
+	FRAMEWIN_RESIZE       = FRAMEWIN_RESIZE_X | FRAMEWIN_RESIZE_Y | FRAMEWIN_REPOS_X | FRAMEWIN_REPOS_Y;
 
 export {
 
-constexpr uint16_t FRAMEWIN_CF_ACTIVE     = 1 << 3;
-constexpr uint16_t FRAMEWIN_CF_MOVEABLE   = 1 << 4;
-constexpr uint16_t FRAMEWIN_CF_RESIZEABLE = 1 << 5;
-constexpr uint16_t FRAMEWIN_CF_TITLEVIS   = 1 << 6;
-constexpr uint16_t FRAMEWIN_CF_MINIMIZED  = 1 << 7;
-constexpr uint16_t FRAMEWIN_CF_MAXIMIZED  = 1 << 8;
-constexpr uint16_t FRAMEWIN_BUTTON_RIGHT   = 1 << 0;
-constexpr uint16_t FRAMEWIN_BUTTON_LEFT    = 1 << 1;
+constexpr uint16_t
+	FRAMEWIN_CF_ACTIVE     = 1 << 3,
+	FRAMEWIN_CF_MOVEABLE   = 1 << 4,
+	FRAMEWIN_CF_RESIZEABLE = 1 << 5,
+	FRAMEWIN_CF_TITLEVIS   = 1 << 6,
+	FRAMEWIN_CF_MINIMIZED  = 1 << 7,
+	FRAMEWIN_CF_MAXIMIZED  = 1 << 8;
+constexpr uint16_t
+	FRAMEWIN_BUTTON_RIGHT   = 1 << 0,
+	FRAMEWIN_BUTTON_LEFT    = 1 << 1;
 
 class Frame : public WIDGET {
 
@@ -80,11 +86,11 @@ private:
 	}
 	void _CalcPositions(POSITIONS *pPos) {
 		WObj *pChild;
-		int BorderSize = this->Props.BorderSize;
+		int BorderSize = Props.BorderSize;
 		auto size = GetSize();
 		int IBorderSize = 0;
 		if (this->State & FRAMEWIN_CF_TITLEVIS)
-			IBorderSize = this->Props.IBorderSize;
+			IBorderSize = Props.IBorderSize;
 		int TitleHeight = _CalcTitleHeight();
 		int MenuHeight = 0;
 		if (pMenu)
@@ -143,7 +149,7 @@ private:
 				xRight = GUI_XMIN;
 				for (pChild = this->pFirstChild; pChild; pChild = pChild->pNext) {
 					auto r = pChild->Rect - this->Rect.LeftTop();
-					if ((r.y0 == this->Props.BorderSize) && ((r.y1 - r.y0 + 1) == OldHeight)) {
+					if ((r.y0 == Props.BorderSize) && ((r.y1 - r.y0 + 1) == OldHeight)) {
 						if (pChild->Status & WC_ANCHOR_RIGHT) {
 							if (r.x1 > xRight) {
 								pRight = pChild;
@@ -193,7 +199,7 @@ private:
 	void _OnPaint() {
 		const char *pText = nullptr;
 		auto size = GetSize();
-		auto BorderSize = this->Props.BorderSize;
+		auto BorderSize = Props.BorderSize;
 		POSITIONS Pos;
 		_CalcPositions(&Pos);
 		RECT r{
@@ -209,23 +215,23 @@ private:
 		Pos.rTitleText.y0++;
 		Pos.rTitleText.x0++;
 		Pos.rTitleText.x1--;
-		GUI_SetFont(this->Props.pFont);
+		GUI_SetFont(Props.pFont);
 		RECT rText;
-		GUI__CalcTextRect(pText, &Pos.rTitleText, &rText, this->Props.Align);
+		GUI__CalcTextRect(pText, &Pos.rTitleText, &rText, Props.Align);
 		auto y0 = Pos.TitleHeight + BorderSize;
 		/* Draw Title */
-		GUI.SetBkColor(this->Props.aBarColor[Index]);
-		GUI.SetColor(this->Props.aTextColor[Index]);
+		GUI.SetBkColor(Props.aBarColor[Index]);
+		GUI.SetColor(Props.aTextColor[Index]);
 		WIDGET__FillStringInRect(pText, r, Pos.rTitleText, rText);
 		/* Draw Frame */
-		GUI.SetColor(this->Props.FrameColor);
+		GUI.SetColor(Props.FrameColor);
 		GUI_FillRect({ 0, 0, size.x - 1, BorderSize - 1 });
 		GUI_FillRect({ 0, 0, Pos.rClient.x0 - 1, size.y - 1 });
 		GUI_FillRect({ Pos.rClient.x1 + 1, 0, size.x - 1, size.y - 1 });
 		GUI_FillRect({ 0, Pos.rClient.y1 + 1, size.x - 1, size.y - 1 });
-		GUI_FillRect({ 0, y0, size.x - 1, y0 + this->Props.IBorderSize - 1 });
+		GUI_FillRect({ 0, y0, size.x - 1, y0 + Props.IBorderSize - 1 });
 		/* Draw the 3D effect (if configured) */
-		if (this->Props.BorderSize >= 2)
+		if (Props.BorderSize >= 2)
 			DrawUp();
 	}
 	void _OnChildHasFocus(const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
@@ -425,23 +431,69 @@ public:
 	}
 
 public:
+
+#pragma region Properties
+
+
+	PCFONT GetFont() const { return Props.pFont; }
+	void SetFont(PCFONT pFont) {
+		if (Props.pFont == pFont)
+			return;
+		int OldHeight = _CalcTitleHeight();
+		Props.pFont = pFont;
+		_UpdatePositions();
+		_UpdateButtons(OldHeight);
+		WM_Invalidate(this);
+	}
+
+	int GetBorderSize() const { return Props.BorderSize; }
+
+	void SetTextAlign(TEXTALIGN Align) {
+		if (Props.Align == Align)
+			return;
+		Props.Align = Align;
+		WM_Invalidate(this);
+	}
+
+	void SetBarColor(unsigned Index, RGBC Color) {
+		if (Index >= GUI_COUNTOF(Props.aBarColor))
+			return;
+		if (Props.aBarColor[Index] == Color)
+			return;
+		Props.aBarColor[Index] = Color;
+		WM_Invalidate(this);
+	}
+
+	void SetTextColor(unsigned Index, RGBC Color) {
+		if (Index >= GUI_COUNTOF(Props.aTextColor))
+			return;
+		if (Props.aTextColor[Index] == Color)
+			return;
+		Props.aTextColor[Index] = Color;
+		WM_Invalidate(this);
+	}
+
+	void SetClientColor(RGBC Color) {
+		if (Props.ClientColor == Color)
+			return;
+		Props.ClientColor = Color;
+		WM_Invalidate(hClient);
+	}
+	
+#pragma endregion
+
 	void SetText(const char *s) {
 		if (GUI__SetText(&this->pText, s))
 			WM_Invalidate(this);
 	}
-	void SetTextAlign(int Align) {
-		if (Props.Align != Align) {
-			Props.Align = Align;
-			WM_Invalidate(this);
-		}
-	}
-	void SetMoveable(int State) {
+
+	void SetMoveable(bool State) {
 		if (State)
 			this->Flags |= FRAMEWIN_CF_MOVEABLE;
 		else
 			this->Flags &= ~FRAMEWIN_CF_MOVEABLE;
 	}
-	void SetActive(int State) {
+	void SetActive(bool State) {
 		if (State && !(this->Flags & FRAMEWIN_CF_ACTIVE)) {
 			this->Flags |= FRAMEWIN_CF_ACTIVE;
 			WM_Invalidate(this);
@@ -472,13 +524,6 @@ public:
 		WM_Invalidate(this);
 	}
 
-	PCFONT GetFont() {
-		PCFONT r = nullptr;
-		r = Props.pFont;
-		WM_Invalidate(this);
-
-		return r;
-	}
 	int GetTitleHeight() {
 		int r = 0;
 		POSITIONS Pos;
@@ -491,14 +536,7 @@ public:
 
 		return r;
 	}
-	int GetBorderSize() {
-		int r = 0;
-		/* Move client window accordingly */
-		r = Props.BorderSize;
-
-		return r;
-	}
-
+	
 	bool IsMinimized() {
 		return this->Flags & FRAMEWIN_CF_MINIMIZED;
 	}
@@ -596,38 +634,6 @@ public:
 		}
 		Props.BorderSize = Size;
 		_UpdatePositions();
-		WM_Invalidate(this);
-	}
-
-	void SetBarColor(unsigned Index, RGBC Color) {
-		if (Index < GUI_COUNTOF(Props.aBarColor)) {
-			Props.aBarColor[Index] = Color;
-			WM_Invalidate(this);
-		}
-	}
-	void SetTextColor(RGBC Color) {
-		for (int i = 0; i < GUI_COUNTOF(Props.aTextColor); i++)
-			Props.aTextColor[i] = Color;
-		WM_Invalidate(this);
-	}
-	void SetTextColorEx(unsigned Index, RGBC Color) {
-		if (Index < GUI_COUNTOF(Props.aTextColor)) {
-			Props.aTextColor[Index] = Color;
-			WM_Invalidate(this);
-		}
-	}
-	void SetClientColor(RGBC Color) {
-		if (Props.ClientColor != Color) {
-			Props.ClientColor = Color;
-			WM_Invalidate(hClient);
-		}
-	}
-
-	void SetFont(PCFONT pFont) {
-		int OldHeight = _CalcTitleHeight();
-		Props.pFont = pFont;
-		_UpdatePositions();
-		_UpdateButtons(OldHeight);
 		WM_Invalidate(this);
 	}
 
@@ -756,8 +762,7 @@ public:
 		};
 		PCCURSOR pNewCursor = nullptr;
 		if (Mode) {
-			int Direction;
-			Direction = Mode & (FRAMEWIN_RESIZE_X | FRAMEWIN_RESIZE_Y);
+			auto Direction = Mode & (FRAMEWIN_RESIZE_X | FRAMEWIN_RESIZE_Y);
 			if (Direction == FRAMEWIN_RESIZE_X) {
 				pNewCursor = &_ResizeCursorH;
 			}
@@ -1042,7 +1047,7 @@ public:
 
 	Button *AddCloseButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
 		auto pButton = AddButton(Flags, Off, GUI_ID_CLOSE);
-		pButton->SetSelfDraw(0, []() {
+		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, []() {
 			auto r = WM_GetInsideRect() + GUI.Off;
 			int Size = r.x1 - r.x0 - 2;
 			for (int i = 2; i < Size; i++) {
@@ -1079,13 +1084,13 @@ public:
 	}
 	Button *AddMaxButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
 		auto pButton = AddButton(Flags, Off, GUI_ID_MAXIMIZE);
-		pButton->SetSelfDraw(0, _DrawMax);
+		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, _DrawMax);
 		return pButton;
 	}
 
 	Button *AddMinButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
 		auto pButton = AddButton(Flags, Off, GUI_ID_MINIMIZE);
-		pButton->SetSelfDraw(0, [] {
+		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, [] {
 			auto pObj = (Frame *)WM_GetActiveWindow()->Parent();
 			auto r = WM_GetInsideRect() + GUI.Off;
 			int Size = (r.x1 - r.x0 + 1) >> 1;

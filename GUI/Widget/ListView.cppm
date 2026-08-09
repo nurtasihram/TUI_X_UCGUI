@@ -13,9 +13,9 @@ import TUX.Array;
 export {
 
 enum LISTVIEW_CI {
-	 LISTVIEW_CI_UNSEL     = 0,
-	 LISTVIEW_CI_SEL       = 1,
-	 LISTVIEW_CI_SELFOCUS  = 2
+	 LISTVIEW_CI_UNSEL = 0,
+	 LISTVIEW_CI_SEL,
+	 LISTVIEW_CI_SELFOCUS
 };
 
 class ListView : public WIDGET {
@@ -49,7 +49,7 @@ private:
 	};
 	Header *pHeader;
 	ARRAY<ARRAY<Item>> RowArray; /* One entry per line. Every entry is a ARRAY<Item> */
-	ARRAY<int>       AlignArray; /* One entry per column */
+	ARRAY<TEXTALIGN>   AlignArray; /* One entry per column */
 	int16_t     Sel;
 	bool        ShowGrid;
 	uint16_t    RowDistY, LBorder, RBorder;
@@ -64,30 +64,18 @@ private:
 		pOwner->Require(WM_NOTIFY_PARENT, (WM_PARAM)&Info);
 	}
 
-	unsigned _GetRowDistY() {
-		unsigned RowDistY;
-		if (this->RowDistY) {
-			RowDistY = this->RowDistY;
-		}
-		else {
-			RowDistY = Props.pFont->DistY();
-			if (this->ShowGrid) {
-				RowDistY++;
-			}
-		}
-		return RowDistY;
+	auto _GetRowDistY() {
+		return RowDistY ? RowDistY :
+			Props.pFont->DistY() + (ShowGrid ? 1 : 0);
 	}
-	unsigned _GetNumVisibleRows() {
-		unsigned RowDistY, ySize, r = 1;
+	auto _GetNumVisibleRows() {
 		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
-		ySize = Rect.y1 - Rect.y0 + 1 - pHeader->GetHeight();
-		RowDistY = _GetRowDistY();
-		if (RowDistY) {
-			r = ySize / RowDistY;
-			r = (r == 0) ? 1 : r;
+		if (auto RowDistY = _GetRowDistY()) {
+			auto r = (Rect.YSize() - pHeader->GetHeight()) / RowDistY;
+			return r ? r : 1;
 		}
-		return r;
+		return 1;
 	}
 	void _OnPaint(const RECT *pClipRect) {
 		RECT ClipRect, Rect;
@@ -255,11 +243,9 @@ private:
 		Rect.x1 -= Rect.x0;
 		Rect.y1 -= Rect.y0;
 		if ((x >= 0) && (x <= Rect.x1) && (y >= 0) && (y <= (Rect.y1 - HeaderHeight))) {
-			unsigned Sel;
-			Sel = (y / _GetRowDistY()) + this->ScrollStateV.v;
-			if (Sel < RowArray.GetNumItems()) {
+			auto Sel = (y / _GetRowDistY()) + this->ScrollStateV.v;
+			if (Sel < RowArray.GetNumItems())
 				SetSel(Sel);
-			}
 		}
 	}
 	void _OnTouch(const PID_STATE *pState) {
@@ -348,25 +334,21 @@ private:
 		this->AlignArray.Delete();
 		this->RowArray.Delete();
 	}
-	ItemInfo *_GetpItemInfo(unsigned Column, unsigned Row, unsigned int Index) {
-		ItemInfo *pItemInfo = 0;
-		Item *pItem;
-		if ((Column < GetNumColumns()) && (Row < GetNumRows()) && (Index < GUI_COUNTOF(pItemInfo->aTextColor))) {
-			pItem = &RowArray[Row][Column];
-			if (!pItem->hItemInfo) {
-				int i;
-				pItem->hItemInfo = GUI_ALLOC_AllocZero(sizeof(ItemInfo));
-				pItemInfo = (ItemInfo *)(pItem->hItemInfo);
-				for (i = 0; i < GUI_COUNTOF(pItemInfo->aTextColor); i++) {
-					pItemInfo->aTextColor[i] = GetTextColor(i);
-					pItemInfo->aBkColor[i] = GetBkColor(i);
-				}
-			}
-			else {
-				pItemInfo = (ItemInfo *)(pItem->hItemInfo);
-			}
-		}
 
+	ItemInfo *_GetpItemInfo(uint16_t Column, uint16_t Row, LISTVIEW_CI Index) {
+		if (Index >= GUI_COUNTOF(ItemInfo::aTextColor))
+			return nullptr;
+		if (Column >= GetNumColumns() || Row >= GetNumRows())
+			return nullptr;
+		auto pItem = &RowArray[Row][Column];
+		if (pItem->hItemInfo)
+			return (ItemInfo *)(pItem->hItemInfo);
+		pItem->hItemInfo = GUI_ALLOC_AllocZero(sizeof(ItemInfo));
+		auto pItemInfo = (ItemInfo *)(pItem->hItemInfo);
+		pItemInfo->aTextColor[0] = Props.aTextColor[0];
+		pItemInfo->aTextColor[1] = Props.aTextColor[1];
+		pItemInfo->aBkColor[0] = Props.aBkColor[0];
+		pItemInfo->aBkColor[1] = Props.aBkColor[1];
 		return pItemInfo;
 	}
 
@@ -465,203 +447,184 @@ public:
 	}
 
 public:
-	void IncSel() {
-		int Sel = GetSel();
-		SetSel(Sel + 1);
+
+#pragma region Properties
+
+	PCFONT GetFont() { return Props.pFont; }
+	void SetFont(PCFONT pFont) {
+		if (Props.pFont == pFont)
+			return;
+		Props.pFont = pFont;
+		_UpdateScrollParas();
+		_InvalidateInsideArea();
 	}
-	void DecSel() {
-		int Sel = GetSel();
-		if (Sel) {
-			SetSel(Sel - 1);
-		}
+
+	RGBC GetBkColor(LISTVIEW_CI Index) {
+		if (Index >= GUI_COUNTOF(Props.aBkColor))
+			return RGB_INVALID_COLOR;
+		return Props.aBkColor[Index];
 	}
-	void AddColumn(int Width, const char *s, int Align) {
-		unsigned NumRows;
-		pHeader->AddItem(Width, s, Align);   /* Modify header */
+	void SetBkColor(LISTVIEW_CI Index, RGBC Color) {
+		if (Index >= GUI_COUNTOF(Props.aBkColor))
+			return;
+		if (Props.aBkColor[Index] == Color)
+			return;
+		Props.aBkColor[Index] = Color;
+		_InvalidateInsideArea();
+	}
+
+	RGBC GetTextColor(LISTVIEW_CI Index) {
+		if (Index >= GUI_COUNTOF(Props.aTextColor))
+			return RGB_INVALID_COLOR;
+		return Props.aTextColor[Index];
+	}
+	void SetTextColor(LISTVIEW_CI Index, RGBC Color) {
+		if (Index >= GUI_COUNTOF(Props.aTextColor))
+			return;
+		if (Props.aTextColor[Index] == Color)
+			return;
+		Props.aTextColor[Index] = Color;
+		_InvalidateInsideArea();
+	}
+
+	void SetTextAlign(LISTVIEW_CI Index, TEXTALIGN Align) {
+		if (Index >= AlignArray.GetNumItems())
+			return;
+		if (AlignArray[Index] == Align)
+			return;
+		AlignArray[Index] = Align;
+		_InvalidateInsideArea();
+	}
+
+	void SetLBorder(uint16_t BorderSize) {
+		if (LBorder == BorderSize)
+			return;
+		LBorder = BorderSize;
+		_InvalidateInsideArea();
+	}
+	void SetRBorder(uint16_t BorderSize) {
+		if (RBorder == BorderSize)
+			return;
+		RBorder = BorderSize;
+		_InvalidateInsideArea();
+	}
+
+	void SetRowHeight(uint16_t RowHeight) {
+		if (RowDistY == RowHeight)
+			return;
+		RowDistY = RowHeight;
+		_UpdateScrollParas();
+		_InvalidateInsideArea();
+	}
+
+	void SetGridVis(bool Show) {
+		if (ShowGrid == Show)
+			return;
+		ShowGrid = Show;
+		_UpdateScrollParas();
+		_InvalidateInsideArea();
+	}
+
+#pragma endregion
+
+	void AddColumn(int Width, const char *s, TEXTALIGN Align) {
+		pHeader->AddItem(Width, s, Align); /* Modify header */
 		AlignArray.AddItem(&Align);
-		NumRows = GetNumRows();
-		if (NumRows) {
-			for (unsigned i = 0; i < NumRows; i++)
-				RowArray[i].AddItem();
-		}
+		for (int i = 0, NumRows = GetNumRows(); i < NumRows; i++)
+			RowArray[i].AddItem();
 		_UpdateScrollParas();
 		_InvalidateInsideArea();
 	}
 	void AddRow(const char **ppText) {
-		int NumRows;
-		NumRows = RowArray.GetNumItems();
+		auto NumRows = RowArray.GetNumItems();
 		/* Create ARRAY<Item> for the new row */
-		if (RowArray.AddItem() == 0) {
-			int i, NumColumns;
-			const char *s;
-			/* Add columns for the new row */
-			NumColumns = pHeader->GetNumItems();
-			for (i = 0; i < NumColumns; i++) {
-				auto &pRow = RowArray[NumRows];
-				s = (ppText) ? *ppText++ : 0;
-				if (s == 0) {
-					ppText = 0;
-				}
-				pRow.AddItem();
-				GUI__SetText(&pRow[i].pText, s);
-			}
-			_UpdateScrollParas();
-			_InvalidateRow(NumRows);
+		if (RowArray.AddItem())
+			return;
+		/* Add columns for the new row */
+		for (int i = 0, NumColumns = pHeader->GetNumItems(); i < NumColumns; i++) {
+			auto s = ppText ? *ppText++ : 0;
+			if (s == 0)
+				ppText = 0;
+			auto &row = RowArray[NumRows];
+			row.AddItem();
+			GUI__SetText(&row[i].pText, s);
 		}
+		_UpdateScrollParas();
+		_InvalidateRow(NumRows);
 	}
-	void DeleteColumn(unsigned Index) {
-		if (Index < AlignArray.GetNumItems()) {
-			unsigned NumRows, i;
-			pHeader->DeleteItem(Index);
-			AlignArray.DeleteItem(Index);
-			NumRows = RowArray.GetNumItems();
-			for (i = 0; i < NumRows; i++) {
-				auto &pRow = RowArray[i];
-				/* Delete attached info items */
-				auto &pItem = pRow[Index];
-				GUI_ALLOC_FreePtr((void **)&pItem.pText);
-				if (pItem.hItemInfo) {
-					GUI_ALLOC_Free(pItem.hItemInfo);
-				}
-				/* Delete cell */
-				pRow.DeleteItem(Index);
-			}
-			_UpdateScrollParas();
-			_InvalidateInsideArea();
-		}
-	}
-	void DeleteRow(unsigned Index) {
-		unsigned NumRows = RowArray.GetNumItems();
-		if (Index < NumRows) {
-			auto &pRow = RowArray[Index];
-			/* Delete attached info items */
-			for (int i = 0, NumColumns = pRow.GetNumItems(); i < NumColumns; i++) {
-					auto &pItem = pRow[i];
-				GUI_ALLOC_FreePtr((void **)&pItem.pText);
-				if (pItem.hItemInfo) {
-					GUI_ALLOC_Free(pItem.hItemInfo);
-				}
-			}
-			/* Delete row */
-			pRow.Delete();
-			RowArray.DeleteItem(Index);
-			/* Adjust properties */
-			if (Sel == (signed int)Index)
-				Sel = -1;
-			if (Sel > (signed int)Index)
-				Sel--;
-			if (_UpdateScrollParas())
-				_InvalidateInsideArea();
-			else
-				_InvalidateRowAndBelow(Index);
-		}
-	}
-	RGBC GetBkColor(unsigned Index) {
-		RGBC Color = RGB_INVALID_COLOR;
-		if (Index <= GUI_COUNTOF(Props.aBkColor)) {
-			Color = Props.aBkColor[Index];
-		}
-		return Color;
-	}
-	PCFONT GetFont() {
-		return Props.pFont;
-	}
-	Header *GetHeader() {
-		return pHeader;
-	}
-	unsigned GetNumColumns() {
-		return AlignArray.GetNumItems();
-	}
-	unsigned GetNumRows() {
-		return RowArray.GetNumItems();
-	}
-	int GetSel() {
-		return Sel;
-	}
-	RGBC GetTextColor(unsigned Index) {
-		RGBC Color = RGB_INVALID_COLOR;
-		if (Index <= GUI_COUNTOF(Props.aTextColor)) {
-			Color = Props.aTextColor[Index];
-		}
-		return Color;
-	}
-	void SetBkColor(unsigned int Index, RGBC Color) {
-		if (Index < GUI_COUNTOF(Props.aBkColor)) {
-			if (Color != Props.aBkColor[Index]) {
-				Props.aBkColor[Index] = Color;
-				_InvalidateInsideArea();
-			}
-		}
-	}
-	void SetColumnWidth(unsigned int Index, int Width) {
-		pHeader->SetItemWidth(Index, Width);
-	}
-	void SetFont(PCFONT pFont) {
-		if (pFont != Props.pFont) {
-			Props.pFont = pFont;
-			_UpdateScrollParas();
-			_InvalidateInsideArea();
-		}
-	}
-	int SetGridVis(bool Show) {
-		if (Show != ShowGrid) {
-			ShowGrid = Show;
-			_UpdateScrollParas();
-			_InvalidateInsideArea();
-		}
-		return ShowGrid;
-	}
-	void SetItemTextColor(unsigned Column, unsigned Row, unsigned int Index, RGBC Color) {
-		ItemInfo *pItemInfo;
-		pItemInfo = _GetpItemInfo(Column, Row, Index);
-		if (pItemInfo) {
-			pItemInfo->aTextColor[Index] = Color;
-		}
-	}
-	void SetItemBkColor(unsigned Column, unsigned Row, unsigned int Index, RGBC Color) {
-		ItemInfo *pItemInfo;
 
-		pItemInfo = _GetpItemInfo(Column, Row, Index);
-		if (pItemInfo) {
-			pItemInfo->aBkColor[Index] = Color;
+	void DeleteColumn(unsigned Index) {
+		if (Index >= AlignArray.GetNumItems())
+			return;
+		pHeader->DeleteItem(Index);
+		AlignArray.DeleteItem(Index);
+		for (int i = 0, NumRows = RowArray.GetNumItems(); i < NumRows; i++) {
+			auto &Row = RowArray[i];
+			/* Delete attached info items */
+			auto &item = Row[Index];
+			GUI_ALLOC_FreePtr((void **)&item.pText);
+			GUI_ALLOC_Free(item.hItemInfo);
+			/* Delete cell */
+			Row.DeleteItem(Index);
 		}
+		_UpdateScrollParas();
+		_InvalidateInsideArea();
 	}
-	void SetItemText(unsigned Column, unsigned Row, const char *s) {
-		if ((Column < GetNumColumns()) && (Row < GetNumRows())) {
-			auto &pRow = RowArray[Row];
-			auto &pItem = pRow[Column];
-			GUI__SetText(&pItem.pText, s);
+
+	void DeleteRow(int16_t Index) {
+		if (Index >= RowArray.GetNumItems())
+			return;
+		auto &Row = RowArray[Index];
+		/* Delete attached info items */
+		for (int i = 0, NumColumns = Row.GetNumItems(); i < NumColumns; i++) {
+			auto &pItem = Row[i];
+			GUI_ALLOC_FreePtr((void **)&pItem.pText);
+			GUI_ALLOC_Free(pItem.hItemInfo);
+		}
+		/* Delete row */
+		Row.Delete();
+		RowArray.DeleteItem(Index);
+		/* Adjust properties */
+		if (Sel == Index)
+			Sel = -1;
+		if (Sel > Index)
+			Sel--;
+		if (_UpdateScrollParas())
+			_InvalidateInsideArea();
+		else
+			_InvalidateRowAndBelow(Index);
+	}
+	
+	void SetItemTextColor(uint16_t Column, uint16_t Row, LISTVIEW_CI Index, RGBC Color) {
+		if (auto pItemInfo = _GetpItemInfo(Column, Row, Index))
+			pItemInfo->aTextColor[Index] = Color;
+	}
+	void SetItemBkColor(uint16_t Column, uint16_t Row, LISTVIEW_CI Index, RGBC Color) {
+		if (auto pItemInfo = _GetpItemInfo(Column, Row, Index))
+			pItemInfo->aBkColor[Index] = Color;
+	}
+	void SetItemText(uint16_t Column, uint16_t Row, const char *s) {
+		if (Column < GetNumColumns() && Row < GetNumRows()) {
+			auto &item = RowArray[Row][Column];
+			GUI__SetText(&item.pText, s);
 			_InvalidateRow(Row);
 		}
 	}
-	void SetLBorder(unsigned BorderSize) {
-		if (LBorder != BorderSize) {
-			LBorder = BorderSize;
-			_InvalidateInsideArea();
-		}
-	}
-	void SetRBorder(unsigned BorderSize) {
-		if (RBorder != BorderSize) {
-			RBorder = BorderSize;
-			_InvalidateInsideArea();
-		}
-	}
-	unsigned SetRowHeight(unsigned RowHeight) {
-		if (RowDistY != RowHeight) {
-			RowDistY = RowHeight;
-			_UpdateScrollParas();
-			_InvalidateInsideArea();
-		}
-		return RowDistY;
-	}
+
+	Header *GetHeader() { return pHeader; }
+	void SetColumnWidth(unsigned int Index, int Width)
+	{ pHeader->SetItemWidth(Index, Width); }
+
+	auto GetNumColumns() { return AlignArray.GetNumItems(); }
+	auto GetNumRows() { return RowArray.GetNumItems(); }
+
+	auto GetSel() { return Sel; }
 	void SetSel(int NewSel) {
 		int MaxSel = RowArray.GetNumItems() - 1;
-		if (NewSel > MaxSel) {
+		if (NewSel > MaxSel)
 			NewSel = MaxSel;
-		}
-		if (NewSel < 0) {
+		if (NewSel < 0)
 			NewSel = -1;
-		}
 		if (NewSel != Sel) {
 			int OldSel = Sel;
 			Sel = NewSel;
@@ -675,21 +638,10 @@ public:
 			WM_NotifyParent(this, WM_NOTIFICATION_SEL_CHANGED);
 		}
 	}
-	void SetTextAlign(unsigned int Index, int Align) {
-		if (Index < AlignArray.GetNumItems()) {
-			if (Align != AlignArray[Index]) {
-				AlignArray[Index] = Align;
-				_InvalidateInsideArea();
-			}
-		}
-	}
-	void SetTextColor(unsigned int Index, RGBC Color) {
-		if (Index < GUI_COUNTOF(Props.aTextColor)) {
-			if (Color != Props.aTextColor[Index]) {
-				Props.aTextColor[Index] = Color;
-				_InvalidateInsideArea();
-			}
-		}
+	void IncSel() { SetSel(GetSel() + 1); }
+	void DecSel() {
+		if (auto Sel = GetSel())
+			SetSel(Sel - 1);
 	}
 };
 

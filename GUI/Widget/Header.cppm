@@ -248,29 +248,39 @@ public:
 	}
 
 public:
+
+#pragma region Properties
+
 	void SetFont(PCFONT pFont) {
+		if (Props.pFont == pFont)
+			return;
 		Props.pFont = pFont;
 		WM_Invalidate(this);
 	}
-	void SetHeight(int Height) {
-		auto Rect = WM_GetClientRect(this);
-		WM_SetSize(this, Rect.x1 - Rect.x0 + 1, Height);
-		WM_Invalidate(Parent());
-	}
+
 	void SetTextColor(RGBC Color) {
+		if (Props.TextColor == Color)
+			return;
 		Props.TextColor = Color;
 		WM_Invalidate(this);
 	}
+
 	void SetBkColor(RGBC Color) {
+		if (Props.BkColor == Color)
+			return;
 		Props.BkColor = Color;
 		WM_Invalidate(this);
 	}
-	void SetTextAlign(unsigned int Index, int Align) {
-		if (Index < Columns.GetNumItems()) {
-			Columns[Index].Align = Align;
-			WM_Invalidate(this);
-		}
+
+#pragma endregion
+
+	int GetHeight() { return WM_GetClientRect(this).YSize(); }
+	void SetHeight(int Height) {
+		auto Rect = WM_GetClientRect(this);
+		WM_SetSize(this, Rect.XSize(), Height);
+		WM_Invalidate(Parent());
 	}
+
 	void SetScrollPos(int ScrollPos) {
 		if ((ScrollPos >= 0)) {
 			if (ScrollPos != ScrollPos) {
@@ -280,6 +290,8 @@ public:
 			}
 		}
 	}
+
+	auto GetNumItems() { return Columns.GetNumItems(); }
 	void AddItem(int Width, const char *s, int Align) {
 		Column Col = {};
 		if (!Width) {
@@ -298,7 +310,7 @@ public:
 			WM_Invalidate(Parent());
 		}
 	}
-	void DeleteItem(unsigned Index) {
+	void DeleteItem(uint16_t Index) {
 		if (Index < Columns.GetNumItems()) {
 			GUI_ALLOC_FreePtr((void **)&Columns[Index].pText);
 			Columns.DeleteItem(Index);
@@ -306,13 +318,13 @@ public:
 			WM_Invalidate(Parent());
 		}
 	}
-	void SetItemText(unsigned int Index, const char *s) {
+	void SetItemText(uint16_t Index, const char *s) {
 		if (Index < Columns.GetNumItems()) {
 			if (GUI__SetText(&Columns[Index].pText, s))
 				WM_Invalidate(this);
 		}
 	}
-	void SetItemWidth(unsigned int Index, int Width) {
+	void SetItemWidth(uint16_t Index, int Width) {
 		if ((Width >= 0)) {
 
 			if (Index <= Columns.GetNumItems()) {
@@ -324,40 +336,30 @@ public:
 			}
 		}
 	}
-	int GetHeight() {
-		int Height = 0;
-		RECT Rect = WM_GetClientRect(this);
-		Rect -= Rect.LeftTop();
-		Height = Rect.y1 - Rect.y0 + 1;
-
-		return Height;
+	int16_t GetItemWidth(uint16_t Index) {
+		if (Index < Columns.GetNumItems())
+			return Columns[Index].Width;
+		return 0;
 	}
-	int GetItemWidth(unsigned int Index) {
-		int Width = 0;
+	void SetTextAlign(uint16_t Index, TEXTALIGN Align) {
 		if (Index < Columns.GetNumItems()) {
-			Width = Columns[Index].Width;
+			Columns[Index].Align = Align;
+			WM_Invalidate(this);
 		}
-
-		return Width;
-	}
-	int  GetNumItems() {
-		int NumCols = 0;
-		NumCols = Columns.GetNumItems();
-		return NumCols;
 	}
 
-	void _SetDrawObj(unsigned Index, GUI_DRAW *pDrawObj) {
+	void SetDrawObj(uint16_t Index, GUI_DRAW *pDrawObj) {
 		if (Index < Columns.GetNumItems()) {
 			auto &col = Columns[Index];
 			GUI_ALLOC_FreePtr((void **)&col.pDrawObj);
 			col.pDrawObj = pDrawObj;
 		}
 	}
-	void SetBitmapEx(unsigned Index, PCBITMAP pBitmap, int x, int y) {
-		_SetDrawObj(Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
+	void SetBitmapEx(uint16_t Index, PCBITMAP pBitmap, int x, int y) {
+		SetDrawObj(Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
 		WM_Invalidate(this);
 	}
-	void SetBitmap(unsigned Index, PCBITMAP pBitmap) {
+	void SetBitmap(uint16_t Index, PCBITMAP pBitmap) {
 		SetBitmapEx(Index, pBitmap, 0, 0);
 	}
 };

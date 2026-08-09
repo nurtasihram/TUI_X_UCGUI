@@ -13,7 +13,15 @@ import TUX.Array;
 #define LISTBOX_ITEM_DISABLED (1 << 1)
 
 export {
+
 constexpr int LISTBOX_ALL_ITEMS  = -1;
+
+constexpr uint16_t LISTBOX_NOTIFICATION_LOST_FOCUS = WM_NOTIFICATION_WIDGET<0>;
+
+constexpr uint16_t
+	LISTBOX_CF_AUTOSCROLLBAR_H      = (1<<0),
+	LISTBOX_CF_AUTOSCROLLBAR_V      = (1<<1),
+	LISTBOX_CF_MULTISEL             = (1<<2);
 
 enum LISTBOX_CI {
 	 LISTBOX_CI_UNSEL = 0,
@@ -22,22 +30,9 @@ enum LISTBOX_CI {
 	 LISTBOX_CI_DISABLED
 };
 
-constexpr uint16_t LISTBOX_NOTIFICATION_LOST_FOCUS = WM_NOTIFICATION_WIDGET<0>;
-constexpr uint16_t LISTBOX_CF_AUTOSCROLLBAR_H      = (1<<0);
-constexpr uint16_t LISTBOX_CF_AUTOSCROLLBAR_V      = (1<<1);
-constexpr uint16_t LISTBOX_CF_MULTISEL             = (1<<2);
-constexpr uint16_t LISTBOX_SF_AUTOSCROLLBAR_H      = LISTBOX_CF_AUTOSCROLLBAR_H;
-constexpr uint16_t LISTBOX_SF_AUTOSCROLLBAR_V      = LISTBOX_CF_AUTOSCROLLBAR_V;
-constexpr uint16_t LISTBOX_SF_MULTISEL             = LISTBOX_CF_MULTISEL;
-
-struct LISTBOX_ITEM {
-	uint16_t xSize, ySize;
-	uint8_t Status;
-	char *pText;
-};
-
 class ListBox : public WIDGET {
-	
+	friend class DropDown;
+
 public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
@@ -59,7 +54,13 @@ public:
 private:
 	Properties Props;
 
-	ARRAY<LISTBOX_ITEM> ItemArray;
+	struct Item {
+		uint16_t xSize, ySize;
+		uint8_t Status;
+		char *pText;
+	};
+
+	ARRAY<Item> ItemArray;
 	WIDGET_DRAW_ITEM_FUNC *pfDrawItem;
 	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
 	WObj *pOwner;
@@ -252,11 +253,11 @@ private:
 	}
 	void _ManageAutoScroll() {
 		char IsRequired;
-		if (this->Flags & LISTBOX_SF_AUTOSCROLLBAR_V) {
+		if (this->Flags & LISTBOX_CF_AUTOSCROLLBAR_V) {
 			IsRequired = (_GetNumVisItems() < _GetNumItems());
 			WM_SetScrollbarV(this, IsRequired);
 		}
-		if (this->Flags & LISTBOX_SF_AUTOSCROLLBAR_H) {
+		if (this->Flags & LISTBOX_CF_AUTOSCROLLBAR_H) {
 			RECT Rect;
 			int xSize, xSizeContents;
 			xSizeContents = _GetContentsSizeX();
@@ -344,10 +345,10 @@ private:
 		DrawDown();
 	}
 	void _ToggleMultiSel(int Sel) {
-		if (this->Flags & LISTBOX_SF_MULTISEL) {
-			auto &pItem = ItemArray[Sel];
-			if (!(pItem.Status & LISTBOX_ITEM_DISABLED)) {
-				pItem.Status ^= LISTBOX_ITEM_SELECTED;
+		if (this->Flags & LISTBOX_CF_MULTISEL) {
+			auto &item = ItemArray[Sel];
+			if (!(item.Status & LISTBOX_ITEM_DISABLED)) {
+				item.Status ^= LISTBOX_ITEM_SELECTED;
 				_NotifyOwner(WM_NOTIFICATION_SEL_CHANGED);
 				_InvalidateItem(Sel);
 			}
@@ -570,6 +571,32 @@ public:
 
 public:
 
+#pragma region Properties
+
+	PCFONT GetFont() { return Props.pFont; }
+	void SetFont(PCFONT pFont) {
+		if (Props.pFont == pFont)
+			return;
+		Props.pFont = pFont;
+		InvalidateItem(LISTBOX_ALL_ITEMS);
+	}
+
+	void SetTextColor(LISTBOX_CI Index, RGBC Color) {
+		if (Index >= GUI_COUNTOF(Props.aBkColor))
+			return;
+		Props.aTextColor[Index] = Color;
+		_InvalidateInsideArea();
+	}
+
+	void SetBkColor(LISTBOX_CI Index, RGBC color) {
+		if (Index >= GUI_COUNTOF(Props.aBkColor))
+			return;
+		Props.aBkColor[Index] = color;
+		_InvalidateInsideArea();
+	}
+
+#pragma endregion
+
 	int UpdateScrollers() {
 		this->_ManageAutoScroll();
 		return this->_CalcScrollParas();
@@ -594,7 +621,7 @@ public:
 				bool IsDisabled = pItem.Status & LISTBOX_ITEM_DISABLED;
 				bool IsSelected = pItem.Status & LISTBOX_ITEM_SELECTED;
 				int ColorIndex;
-				if (pObj->Flags & LISTBOX_SF_MULTISEL) {
+				if (pObj->Flags & LISTBOX_CF_MULTISEL) {
 					ColorIndex = IsDisabled ? 3 : IsSelected ? 2 : 0;
 				}
 				else {
@@ -609,7 +636,7 @@ public:
 				GUI_Clear();
 				GUI_DispStringAt(s, Pos.x + 1, Pos.y);
 				/* Display focus rectangle */
-				if ((pObj->Flags & LISTBOX_SF_MULTISEL) && (ItemIndex == pObj->Sel)) {
+				if ((pObj->Flags & LISTBOX_CF_MULTISEL) && (ItemIndex == pObj->Sel)) {
 					RECT rFocus;
 					rFocus.LeftTop(Pos);
 					rFocus.x1 = r.x1;
@@ -650,9 +677,8 @@ public:
 	}
 	void AddString(const char *s) {
 		if (s) {
-			LISTBOX_ITEM Item = { 0, 0 };
-
-			if (this->ItemArray.AddItem(&Item) == 0) {
+			Item item = { 0, 0 };
+			if (this->ItemArray.AddItem(&item) == 0) {
 				uint16_t ItemIndex = ItemArray.GetNumItems() - 1;
 				GUI__SetText(&ItemArray[ItemIndex].pText, s);
 				this->_InvalidateItemSize(ItemIndex);
@@ -671,46 +697,31 @@ public:
 		}
 		InvalidateItem(LISTBOX_ALL_ITEMS);
 	}
+
+	auto GetSel() { return Sel; }
 	void SetSel(int NewSel) {
-		int MaxSel;
-		MaxSel = _GetNumItems();
+		auto MaxSel = _GetNumItems();
 		MaxSel = MaxSel ? MaxSel - 1 : 0;
-		if (NewSel > MaxSel) {
+		if (NewSel > MaxSel)
 			NewSel = MaxSel;
-		}
-		if (NewSel < 0) {
+		if (NewSel < 0)
 			NewSel = -1;
-		}
-		else {
-			if (ItemArray[NewSel].Status & LISTBOX_ITEM_DISABLED) {
-				NewSel = -1;
-			}
-		}
-		if (NewSel != this->Sel) {
-			int OldSel;
-			OldSel = this->Sel;
-			this->Sel = NewSel;
-			if (this->_UpdateScrollPos()) {
-				this->_InvalidateInsideArea();
-			}
+		else if (ItemArray[NewSel].Status & LISTBOX_ITEM_DISABLED)
+			NewSel = -1;
+		if (NewSel != Sel) {
+			auto OldSel = Sel;
+			Sel = NewSel;
+			if (_UpdateScrollPos())
+				_InvalidateInsideArea();
 			else {
-				this->_InvalidateItem(OldSel);
-				this->_InvalidateItem(NewSel);
+				_InvalidateItem(OldSel);
+				_InvalidateItem(NewSel);
 			}
-			this->_NotifyOwner(WM_NOTIFICATION_SEL_CHANGED);
+			_NotifyOwner(WM_NOTIFICATION_SEL_CHANGED);
 		}
 	}
-	int  GetSel() {
-		int r = -1;
-		r = this->Sel;
-		return r;
-	}
-	void IncSel() {
-		this->_MoveSel(1);
-	}
-	void DecSel() {
-		this->_MoveSel(-1);
-	}
+	void IncSel() { _MoveSel(1); }
+	void DecSel() { _MoveSel(-1); }
 
 	void DeleteItem(uint16_t Index) {
 		int Sel;
@@ -739,16 +750,7 @@ public:
 			}
 		}
 	}
-	void SetFont(PCFONT pFont) {
-		this->Props.pFont = pFont;
-		InvalidateItem(LISTBOX_ALL_ITEMS);
-	}
-	PCFONT GetFont() {
-		PCFONT pFont = nullptr;
-		pFont = this->Props.pFont;
 
-		return pFont;
-	}
 	void GetItemText(uint16_t Index, char *pBuffer, int MaxSize) {
 		uint16_t NumItems;
 		NumItems = _GetNumItems();
@@ -828,21 +830,21 @@ public:
 	}
 	void SetMulti(int Mode) {
 		if (Mode) {
-			if (!(this->Flags & LISTBOX_SF_MULTISEL)) {
-				this->Flags |= LISTBOX_SF_MULTISEL;
+			if (!(this->Flags & LISTBOX_CF_MULTISEL)) {
+				this->Flags |= LISTBOX_CF_MULTISEL;
 				this->_InvalidateInsideArea();
 			}
 		}
 		else {
-			if (this->Flags & LISTBOX_SF_MULTISEL) {
-				this->Flags &= ~LISTBOX_SF_MULTISEL;
+			if (this->Flags & LISTBOX_CF_MULTISEL) {
+				this->Flags &= ~LISTBOX_CF_MULTISEL;
 				this->_InvalidateInsideArea();
 			}
 		}
 	}
 	int GetMulti() {
 		int Multi = 0;
-		if (!(this->Flags & LISTBOX_SF_MULTISEL)) {
+		if (!(this->Flags & LISTBOX_CF_MULTISEL)) {
 			Multi = 0;
 		}
 		else {
@@ -855,7 +857,7 @@ public:
 		int Ret = 0;
 		uint16_t NumItems;
 		NumItems = _GetNumItems();
-		if ((Index < NumItems) && (this->Flags & LISTBOX_SF_MULTISEL)) {
+		if ((Index < NumItems) && (this->Flags & LISTBOX_CF_MULTISEL)) {
 			auto &pItem = this->ItemArray[Index];
 			if (pItem.Status & LISTBOX_ITEM_SELECTED) {
 				Ret = 1;
@@ -867,7 +869,7 @@ public:
 	void SetItemSel(uint16_t Index, int OnOff) {
 		uint16_t NumItems;
 		NumItems = _GetNumItems();
-		if ((Index < NumItems) && (this->Flags & LISTBOX_SF_MULTISEL)) {
+		if ((Index < NumItems) && (this->Flags & LISTBOX_CF_MULTISEL)) {
 			auto &pItem = this->ItemArray[Index];
 			if (OnOff) {
 				if (!(pItem.Status & LISTBOX_ITEM_SELECTED)) {
@@ -884,20 +886,20 @@ public:
 		}
 	}
 	void SetScrollStepH(int Value) {
-		this->Props.ScrollStepH = Value;
+		Props.ScrollStepH = Value;
 	}
 	int GetScrollStepH() {
 		int Value = 0;
-		Value = this->Props.ScrollStepH;
+		Value = Props.ScrollStepH;
 
 		return Value;
 	}
 	void SetAutoScrollH(int State) {
 		char Flags;
 
-		Flags = this->Flags & (~LISTBOX_SF_AUTOSCROLLBAR_H);
+		Flags = this->Flags & (~LISTBOX_CF_AUTOSCROLLBAR_H);
 		if (State) {
-			Flags |= LISTBOX_SF_AUTOSCROLLBAR_H;
+			Flags |= LISTBOX_CF_AUTOSCROLLBAR_H;
 		}
 		if (this->Flags != Flags) {
 			this->Flags = Flags;
@@ -907,19 +909,13 @@ public:
 	void SetAutoScrollV(int State) {
 		char Flags;
 
-		Flags = this->Flags & (~LISTBOX_SF_AUTOSCROLLBAR_V);
+		Flags = this->Flags & (~LISTBOX_CF_AUTOSCROLLBAR_V);
 		if (State) {
-			Flags |= LISTBOX_SF_AUTOSCROLLBAR_V;
+			Flags |= LISTBOX_CF_AUTOSCROLLBAR_V;
 		}
 		if (this->Flags != Flags) {
 			this->Flags = Flags;
 			UpdateScrollers();
-		}
-	}
-	void SetBkColor(uint16_t Index, RGBC color) {
-		if ((uint16_t)Index < GUI_COUNTOF(this->Props.aBkColor)) {
-			this->Props.aBkColor[Index] = color;
-			this->_InvalidateInsideArea();
 		}
 	}
 	void SetOwner(WObj *pOwner) {
@@ -945,16 +941,6 @@ public:
 				this->_InvalidateItem(Index);
 			}
 		}
-	}
-	RGBC SetTextColor(uint16_t Index, RGBC Color) {
-		RGBC r = RGB_INVALID_COLOR;
-		if (Index < GUI_COUNTOF(this->Props.aBkColor)) {
-			this->Props.aTextColor[Index] = Color;
-			r = this->Props.aTextColor[Index];
-			this->_InvalidateInsideArea();
-		}
-
-		return r;
 	}
 
 };

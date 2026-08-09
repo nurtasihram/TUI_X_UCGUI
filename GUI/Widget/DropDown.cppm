@@ -13,13 +13,14 @@ import TUX.Array;
 
 export {
   
-constexpr uint16_t DROPDOWN_CF_AUTOSCROLLBAR    = 1 << 0;
-constexpr uint16_t DROPDOWN_CF_UP               = 1 << 1;
-constexpr uint16_t DROPDOWN_CI_UNSEL     = 0;
-constexpr uint16_t DROPDOWN_CI_SEL       = 1;
-constexpr uint16_t DROPDOWN_CI_SELFOCUS  = 2;
+constexpr uint16_t
+	DROPDOWN_CF_AUTOSCROLLBAR    = 1 << 0,
+	DROPDOWN_CF_UP               = 1 << 1;
+
+using DROPDOWN_CI = LISTBOX_CI;
 
 class DropDown : public WIDGET {
+
 public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
@@ -60,9 +61,6 @@ private:
 		return Key;
 	}
 	
-	int _GetNumItems() {
-		return Handles.NumItems;
-	}
 	const char *_GetpItem(int Index) {
 		return Handles[Index];
 	}
@@ -74,7 +72,7 @@ private:
 	void _SelectByKey(int Key) {
 		int i;
 		Key = _Tolower(Key);
-		for (i = 0; i < _GetNumItems(); i++) {
+		for (i = 0; i < GetNumItems(); i++) {
 			char c = _Tolower(*_GetpItem(i));
 			if (c == Key) {
 				SetSel(i);
@@ -94,8 +92,8 @@ private:
 		int TextBorderSize;
 		/* Do some initial calculations */
 		Border = this->EffectSize();
-		TextBorderSize = this->Props.TextBorderSize;
-		GUI_SetFont(this->Props.pFont);
+		TextBorderSize = Props.TextBorderSize;
+		GUI_SetFont(Props.pFont);
 		ColorIndex = (this->State & WIDGET_STATE_FOCUS) ? 2 : 1;
 		s = _GetpItem(Sel);
 		auto r = WM_GetClientRect();
@@ -105,14 +103,14 @@ private:
 		DrawDown();
 		/* Draw the outer text frames */
 		r.x1 -= InnerSize;     /* Spare square area to the right */
-		GUI.SetColor(this->Props.aBkColor[ColorIndex]);
+		GUI.SetColor(Props.aBkColor[ColorIndex]);
 		/* Draw the text */
-		GUI.SetBkColor(this->Props.aBkColor[ColorIndex]);
+		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
 		GUI_FillRect(r);
 		r.x0 += TextBorderSize;
 		r.x1 -= TextBorderSize;
-		GUI.SetColor(this->Props.aTextColor[ColorIndex]);
-		GUI_DispStringInRect(s, &r, this->Props.Align);/**/
+		GUI.SetColor(Props.aTextColor[ColorIndex]);
+		GUI_DispStringInRect(s, &r, Props.Align);/**/
 		/* Draw arrow */
 		r = WM_GetClientRect();
 		r -= Border;
@@ -156,7 +154,7 @@ private:
 		if (!Height) {
 			Height = Props.pFont->DistY();
 		}
-		Height += this->EffectSize() + 2 * this->Props.TextBorderSize;
+		Height += this->EffectSize() + 2 * Props.TextBorderSize;
 		WM_SetSize(this, GetSizeX(), Height);
 	}
 
@@ -253,11 +251,11 @@ public:
 		}
 	}
 	void Expand() {
-		int xSize, ySize, i, NumItems;
+		int xSize, ySize, NumItems;
 		RECT r;
 		xSize = GetSizeX();
 		ySize = ySizeEx;
-		NumItems = _GetNumItems();
+		NumItems = GetNumItems();
 		r = GetRect();
 		if (Flags & DROPDOWN_CF_UP) {
 			r.y0 -= ySize;
@@ -285,14 +283,20 @@ public:
 		if (pLst) {
 			while (pLst->GetNumItems() > 0)
 				pLst->DeleteItem(0);
-			for (i = 0; i < NumItems; i++)
+			for (int i = 0; i < NumItems; i++)
 				pLst->AddString(_GetpItem(i));
-			for (i = 0; i < GUI_COUNTOF(this->Props.aBkColor); i++)
-				pLst->SetBkColor(i, this->Props.aBkColor[i]);
-			for (i = 0; i < GUI_COUNTOF(this->Props.aTextColor); i++)
-				pLst->SetTextColor(i, this->Props.aTextColor[i]);
+
+			pLst->Props.pFont = Props.pFont;
+			pLst->Props.aBkColor[0] = Props.aBkColor[0];
+			pLst->Props.aBkColor[1] = Props.aBkColor[1];
+			pLst->Props.aBkColor[2] = Props.aBkColor[2];
+			pLst->Props.aBkColor[3] = Props.aBkColor[3];
+			pLst->Props.aTextColor[0] = Props.aTextColor[0];
+			pLst->Props.aTextColor[1] = Props.aTextColor[1];
+			pLst->Props.aTextColor[2] = Props.aTextColor[2];
+			pLst->Props.aTextColor[3] = Props.aTextColor[3];
+
 			pLst->SetItemSpacing(this->ItemSpacing);
-			pLst->SetFont(this->Props.pFont);
 			pLst->SetSel(this->Sel);
 			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
 			WM_SetCapture(pLst, 0);
@@ -319,16 +323,11 @@ public:
 			WM_Invalidate(this);
 		}
 	}
-	int  GetNumItems() {
-		int r = 0;
-		r = _GetNumItems();
 
-		return r;
-	}
-	void SetFont(PCFONT pfont) {
-		int OldHeight;
-		OldHeight = Props.pFont->DistY();
-		this->Props.pFont = pfont;
+	auto GetNumItems() { return Handles.GetNumItems(); }
+	void SetFont(PCFONT pFont) {
+		auto OldHeight = Props.pFont->DistY();
+		Props.pFont = pFont;
 		_AdjustHeight();
 		WM_Invalidate(this);
 		if (this->pListWin) {
@@ -336,21 +335,21 @@ public:
 				Collapse();
 				Expand();
 			}
-			this->pListWin->SetFont(pfont);
+			this->pListWin->SetFont(pFont);
 		}
 	}
-	void SetBkColor(unsigned int Index, RGBC color) {
-		if (Index < GUI_COUNTOF(this->Props.aBkColor)) {
-			this->Props.aBkColor[Index] = color;
+	void SetBkColor(DROPDOWN_CI Index, RGBC color) {
+		if (Index < GUI_COUNTOF(Props.aBkColor)) {
+			Props.aBkColor[Index] = color;
 			WM_Invalidate(this);
 			if (this->pListWin) {
 				this->pListWin->SetBkColor(Index, color);
 			}
 		}
 	}
-	void SetTextColor(unsigned int Index, RGBC color) {
-		if (Index < GUI_COUNTOF(this->Props.aBkColor)) {
-			this->Props.aTextColor[Index] = color;
+	void SetTextColor(DROPDOWN_CI Index, RGBC color) {
+		if (Index < GUI_COUNTOF(Props.aTextColor)) {
+			Props.aTextColor[Index] = color;
 			WM_Invalidate(this);
 			if (this->pListWin) {
 				this->pListWin->SetTextColor(Index, color);
@@ -359,7 +358,7 @@ public:
 	}
 	void SetSel(int Sel) {
 		int NumItems, MaxSel;
-		NumItems = _GetNumItems();
+		NumItems = GetNumItems();
 		MaxSel = NumItems ? NumItems - 1 : 0;
 		if (Sel > MaxSel) {
 			Sel = MaxSel;
@@ -450,9 +449,11 @@ public:
 			}
 		}
 	}
-	void SetTextAlign(int Align) {
-		this->Props.Align = Align;
-		WM_Invalidate(this);
+	void SetTextAlign(TEXTALIGN Align) {
+		if (Props.Align != Align) {
+			Props.Align = Align;
+			WM_Invalidate(this);
+		}
 	}
 	void SetTextHeight(unsigned TextHeight) {
 		this->TextHeight = TextHeight;

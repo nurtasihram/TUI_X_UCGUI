@@ -12,9 +12,10 @@ import TUX.Widget;
 
 export {
 
-constexpr uint16_t BUTTON_CF_HIDE    = WC_HIDE;
-constexpr uint16_t BUTTON_CF_SHOW    = WC_VISIBLE;
-constexpr uint16_t BUTTON_CF_MEMDEV  = WC_MEMDEV;
+constexpr uint16_t
+	BUTTON_CF_HIDE    = WC_HIDE,
+	BUTTON_CF_SHOW    = WC_VISIBLE,
+	BUTTON_CF_MEMDEV  = WC_MEMDEV;
 
 constexpr uint16_t BUTTON_STATE_FOCUS       = WIDGET_STATE_FOCUS;
 constexpr uint16_t BUTTON_STATE_PRESSED     = WIDGET_STATE_USER<0>;
@@ -51,14 +52,14 @@ public:
 	
 private:
 	Properties Props;
-		
+
 	char *pText;
 	GUI_DRAW *aDrawObj[3];
 
 	void _OnPaint() {
 		bool IsPressed = State & BUTTON_STATE_PRESSED;
 		int ColorIndex = (IsEnabled()) ? IsPressed : 2;
-		GUI_SetFont(this->Props.pFont);
+		GUI_SetFont(Props.pFont);
 		auto rClient = WM_GetClientRect();
 		auto rInside = rClient;
 		auto EffectSize = this->EffectSize();
@@ -70,8 +71,8 @@ private:
 		rInside -= EffectSize;
 #endif
 		/* Draw background */
-		GUI.SetBkColor(this->Props.aBkColor[ColorIndex]);
-		GUI.SetColor(this->Props.aTextColor[ColorIndex]);
+		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
+		GUI.SetColor(Props.aTextColor[ColorIndex]);
 		WM_SetUserClipRect(&rInside);
 		GUI_Clear();
 		/* Draw bitmap.
@@ -93,7 +94,7 @@ private:
 			rInside -= EffectSize;
 #endif
 		GUI.SetTextMode(DRAWMODE_TRANS);
-		GUI_DispStringInRect(pText, &rInside, this->Props.Align);
+		GUI_DispStringInRect(pText, &rInside, Props.Align);
 		WM_SetUserClipRect(nullptr);
 		/* Draw focus */
 		if (State & BUTTON_STATE_FOCUS) {
@@ -223,14 +224,50 @@ public:
 
 public:
 
-	RGBC GetBkColor(unsigned int Index) {
-		if ((Index < 2))
-			return Props.aBkColor[Index];
-		return RGB_INVALID_COLOR;
+#pragma region Properties
+
+	PCFONT GetFont() { return Props.pFont; }
+	void SetFont(PCFONT pFont) {
+		if (Props.pFont == pFont)
+			return;
+		Props.pFont = pFont;
+		WM_Invalidate(this);
 	}
-	PCFONT GetFont() {
-		return Props.pFont;
+
+	RGBC GetBkColor(BUTTON_CI Index) {
+		if (Index > 2)
+			return RGB_INVALID_COLOR;
+		return Props.aBkColor[Index];
 	}
+	void SetBkColor(BUTTON_CI Index, RGBC Color) {
+		if (Index > 2)
+			return;
+		Props.aBkColor[Index] = Color;
+		WM_Invalidate(this);
+	}
+	
+	RGBC GetTextColor(BUTTON_CI Index) {
+		if (Index > 2)
+			return RGB_INVALID_COLOR;
+		return Props.aTextColor[Index];
+	}
+	void SetTextColor(BUTTON_CI Index, RGBC Color) {
+		if (Index > 2)
+			return;
+		Props.aTextColor[Index] = Color;
+		WM_Invalidate(this);
+	}
+
+	TEXTALIGN GetTextAlign() { return Props.Align; }
+	void SetTextAlign(TEXTALIGN Align) {
+		if (Props.Align == Align)
+			return;
+		Props.Align = Align;
+		WM_Invalidate(this);
+	}
+
+#pragma endregion
+
 	void GetText(char *pBuffer, int MaxLen) {
 		if (pText) {
 			int Len = GUI__strlen(pText);
@@ -243,62 +280,31 @@ public:
 			*pBuffer = 0; /* Empty string */
 		}
 	}
-	bool IsPressed() {
-		return State & BUTTON_STATE_PRESSED;
-	}
-
-	void _SetDrawObj(int Index, GUI_DRAW *pDrawObj) {
-		if ((unsigned int)Index <= GUI_COUNTOF(aDrawObj)) {
-			GUI_ALLOC_FreePtr((void **)&aDrawObj[Index]);
-			aDrawObj[Index] = pDrawObj;
-			WM_Invalidate(this);
-		}
-	}
-	void SetBitmapEx(unsigned int Index, PCBITMAP pBitmap, int x, int y) {
-		_SetDrawObj(Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
-	}
-	void SetBitmap(unsigned int Index, PCBITMAP pBitmap) {
-		SetBitmapEx(Index, pBitmap, 0, 0);
-	}
-	void SetSelfDrawEx(unsigned int Index, GUI_DRAW_SELF_CB *pDraw, int x, int y) {
-		_SetDrawObj(Index, GUI_DRAW_SELF_Create(pDraw, x, y));
-	}
-	void SetSelfDraw(unsigned int Index, GUI_DRAW_SELF_CB *pDraw) {
-		SetSelfDrawEx(Index, pDraw, 0, 0);
-	}
-
-	void SetTextAlign(int Align) {
-		Props.Align = Align;
-		WM_Invalidate(this);
-	}
-
 	void SetText(const char *s) {
 		if (GUI__SetText(&pText, s))
 			WM_Invalidate(this);
 	}
-	void SetFont(PCFONT pfont) {
-		Props.pFont = pfont;
+
+	void SetDrawObj(BUTTON_BI Index, GUI_DRAW *pDrawObj) {
+		if (Index > 2)
+			return;
+		GUI_ALLOC_FreePtr((void **)&aDrawObj[Index]);
+		aDrawObj[Index] = pDrawObj;
 		WM_Invalidate(this);
 	}
-	void SetBkColor(unsigned int Index, RGBC Color) {
-		if ((Index <= 2)) {
-			Props.aBkColor[Index] = Color;
-			WM_Invalidate(this);
-		}
-	}
-	void SetTextColor(unsigned int Index, RGBC Color) {
-		if ((Index <= 2)) {
-			Props.aTextColor[Index] = Color;
-			WM_Invalidate(this);
-		}
-	}
+	void SetBitmapEx(BUTTON_BI Index, PCBITMAP pBitmap, int x, int y)
+	{ SetDrawObj(Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y)); }
+	void SetBitmap(BUTTON_BI Index, PCBITMAP pBitmap)
+	{ SetBitmapEx(Index, pBitmap, 0, 0); }
+	void SetSelfDrawEx(BUTTON_BI Index, GUI_DRAW_SELF_CB *pDraw, int x, int y)
+	{ SetDrawObj(Index, GUI_DRAW_SELF_Create(pDraw, x, y)); }
+	void SetSelfDraw(BUTTON_BI Index, GUI_DRAW_SELF_CB *pDraw)
+	{ SetSelfDrawEx(Index, pDraw, 0, 0); }
 
-	void SetPressed(bool On) {
-		CtlStates(BUTTON_STATE_PRESSED, On);
-	}
-	void SetFocussable(bool On) {
-		CtlStates(WIDGET_STATE_FOCUSSABLE, On);
-	}
+	bool IsPressed() { return State & BUTTON_STATE_PRESSED; }
+	void SetPressed(bool On) { CtlStates(BUTTON_STATE_PRESSED, On); }
+
+	void SetFocussable(bool On) { CtlStates(WIDGET_STATE_FOCUSSABLE, On); }
 
 };
 

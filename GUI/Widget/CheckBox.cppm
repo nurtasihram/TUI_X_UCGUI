@@ -21,16 +21,17 @@ enum CHECKBOX_CI {
 };
 
 class CheckBox : public WIDGET {
-	static CBITMAP abmCheck[2];
+	static CBITMAP abmCheckEnabled[2];
+	static CBITMAP abmCheckDisabled[2];
 
 public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
 		PCBITMAP apBm[4]{
-			/* Inactive */	&abmCheck[0],
-			/* Active */	&abmCheck[1],
-			/* Inactive 3-State */	&abmCheck[2],
-			/* Active 3-State */	&abmCheck[1]
+			/* Inactive */	&abmCheckEnabled[0],
+			/* Active */	&abmCheckEnabled[1],
+			/* Inactive 3-State */	&abmCheckEnabled[2],
+			/* Active 3-State */	&abmCheckEnabled[1]
 		};
 		RGBC aBkColorBox[2]{
 			/* Inactive */	RGB_GRAYL(0x80),
@@ -40,7 +41,7 @@ public:
 		RGBC TextColor{ RGB_BLACK };
 		TEXTALIGN Align{ TEXTALIGN_LEFT | TEXTALIGN_VCENTER };
 		uint8_t Spacing{ 4 };
-		uint8_t NumStates = 2;
+		uint8_t NumStates{ 2 };
 	} static DefaultProps;
 	
 private:
@@ -49,6 +50,7 @@ private:
 	uint8_t NumStates;
 	uint8_t CurrentState;
 	char *pText;
+
 	void _OnPaint() {
 		int ColorIndex = IsEnabled(),
 			EffectSize = this->EffectSize();
@@ -58,14 +60,14 @@ private:
 		GUI_Clear();
 		/* Get size from bitmap */
 		RECT RectBox;
-		RectBox.x1 = this->Props.apBm[0]->XSize - 1 + 2 * EffectSize;
-		RectBox.y1 = this->Props.apBm[0]->YSize - 1 + 2 * EffectSize;
+		RectBox.x1 = Props.apBm[0]->XSize - 1 + 2 * EffectSize;
+		RectBox.y1 = Props.apBm[0]->YSize - 1 + 2 * EffectSize;
 		WM_SetUserClipRect(&RectBox);
 		/* Clear inside  ... Just in case */
-		GUI.SetBkColor(this->Props.aBkColorBox[ColorIndex]);
+		GUI.SetBkColor(Props.aBkColorBox[ColorIndex]);
 		GUI_Clear();
 		if (this->CurrentState)
-			GUI_DrawBitmap(this->Props.apBm[(this->CurrentState - 1) * 2 + ColorIndex], EffectSize, EffectSize);
+			GUI_DrawBitmap(Props.apBm[(this->CurrentState - 1) * 2 + ColorIndex], EffectSize, EffectSize);
 		/* Draw the effect arround the box */
 		DrawDown(RectBox);
 		WM_SetUserClipRect(nullptr);
@@ -74,17 +76,17 @@ private:
 			/* Draw the text */
 			auto s = this->pText;
 			auto RectText = WM_GetClientRect();
-			RectText.x0 += RectBox.x1 + 1 + this->Props.Spacing;
+			RectText.x0 += RectBox.x1 + 1 + Props.Spacing;
 			GUI.SetTextMode(0);
-			GUI.SetColor(this->Props.TextColor);
-			GUI_SetFont(this->Props.pFont);
-			GUI_DispStringInRect(s, &RectText, this->Props.Align);
+			GUI.SetColor(Props.TextColor);
+			GUI_SetFont(Props.pFont);
+			GUI_DispStringInRect(s, &RectText, Props.Align);
 			/* Draw focus rectangle */
 			if (this->State & WIDGET_STATE_FOCUS) {
 				int xSizeText = GUI_GetStringDistX(s);
 				int ySizeText = Props.pFont->SizeY();
 				RECT RectFocus = RectText;
-				switch (this->Props.Align & ~(TEXTALIGN_HORIZONTAL)) {
+				switch (Props.Align & ~(TEXTALIGN_HORIZONTAL)) {
 					case TEXTALIGN_VCENTER:
 						RectFocus.y0 = (RectText.y1 - ySizeText) / 2;
 						break;
@@ -92,7 +94,7 @@ private:
 						RectFocus.y0 = RectText.y1 - ySizeText;
 						break;
 				}
-				switch (this->Props.Align & ~(TEXTALIGN_VERTICAL)) {
+				switch (Props.Align & ~(TEXTALIGN_VERTICAL)) {
 					case TEXTALIGN_HCENTER:
 						RectFocus.x0 += ((RectText.x1 - RectText.x0) - xSizeText) / 2;
 						break;
@@ -205,109 +207,83 @@ public:
 	}
 
 public:
-	int GetState() {
-		return CurrentState;
-	}
-	bool IsChecked() {
-		return GetState() == 1;
-	}
-	void SetBkColor(RGBC Color) {
-		if (Props.BkColor != Color) {
-			Props.BkColor = Color;
-			WM_Invalidate(this);
-		}
-	}
+
+#pragma region Properties
 	void SetFont(PCFONT pFont) {
-		if (Props.pFont != pFont) {
-			Props.pFont = pFont;
-			WM_Invalidate(this);
-		}
+		if (Props.pFont == pFont)
+			return;
+		Props.pFont = pFont;
+		WM_Invalidate(this);
 	}
-	void SetImage(PCBITMAP pBitmap, unsigned int Index) {
-		if (Index <= GUI_COUNTOF(Props.apBm)) {
-			Props.apBm[Index] = pBitmap;
-		}
+
+	void SetTextAlign(TEXTALIGN Align) {
+		if (Props.Align == Align)
+			return;
+		Props.Align = Align;
+		WM_Invalidate(this);
 	}
-	void SetNumStates(unsigned NumStates) {
-		/* Colors */
-		static const RGBC _aColorDisabled[]{ RGB_GRAYL(0x10), RGB_GRAYL(0x80) };
-		static const RGBC _aColorEnabled[]{ RGB_BLACK, RGB_WHITE };
 
-		/* Palettes */
-		static const GUI_LOGPALETTE _PalCheckDisabled = {
-		  2,	/* number of entries */
-		  0, 	/* No transparency */
-		  _aColorDisabled
-		};
+	void SetTextColor(RGBC Color) {
+		if (Props.TextColor == Color)
+			return;
+		Props.TextColor = Color;
+		WM_Invalidate(this);
+	}
 
-		static const GUI_LOGPALETTE _PalCheckEnabled = {
-		  2,	/* number of entries */
-		  0, 	/* No transparency */
-		  _aColorEnabled
-		};
+	void SetBkColor(RGBC Color) {
+		if (Props.BkColor == Color)
+			return;
+		Props.BkColor = Color;
+		WM_Invalidate(this);
+	}
 
-		/* Pixel data */
-		static const uint8_t _acCheck[] = {
-		XXXXXXXXXXXXXXXX,XXXXXX__________,
-		XXXXXXXXXXXXXXXX,XXXXXX__________,
-		XXXXXXXXXXXXXXXX,__XXXX__________,
-		XXXXXXXXXXXXXX__,XXXXXX__________,
-		XXXX__XXXXXX__XX,__XXXX__________,
-		XXXXXX__XX__XX__,XXXXXX__________,
-		XXXX__XX__XX__XX,XXXXXX__________,
-		XXXXXX__XX__XXXX,XXXXXX__________,
-		XXXXXXXX__XXXXXX,XXXXXX__________,
-		XXXXXXXXXXXXXXXX,XXXXXX__________,
-		XXXXXXXXXXXXXXXX,XXXXXX__________
-		};
+	void SetImage(PCBITMAP pBitmap, CHECKBOX_BI Index) {
+		if (Index >= GUI_COUNTOF(Props.apBm))
+			return;
+		if (Props.apBm[Index] == pBitmap)
+			return;
+		Props.apBm[Index] = pBitmap;
+		WM_Invalidate(this);
+	}
 
-		/* Bitmaps */
-		static CBITMAP _abmCheck[2] = {
-		  { 11, 11, 2, 1, _acCheck,  &_PalCheckDisabled},
-		  { 11, 11, 2, 1, _acCheck,  &_PalCheckEnabled }
-		};
+	void SetSpacing(unsigned Spacing) {
+		if (Props.Spacing == Spacing)
+			return;
+		Props.Spacing = Spacing;
+		WM_Invalidate(this);
+	}
 
+	void SetNumStates(uint8_t NumStates) {
 		if (!CheckBox::DefaultProps.apBm[2])
-			CheckBox::DefaultProps.apBm[2] = &_abmCheck[0];
+			CheckBox::DefaultProps.apBm[2] = &abmCheckDisabled[0];
 		if (!CheckBox::DefaultProps.apBm[3])
-			CheckBox::DefaultProps.apBm[3] = &_abmCheck[1];
-		if ((NumStates == 2 || NumStates == 3)) {
+			CheckBox::DefaultProps.apBm[3] = &abmCheckDisabled[1];
+		if (NumStates == 2 || NumStates == 3) {
 			Props.apBm[2] = CheckBox::DefaultProps.apBm[2];
 			Props.apBm[3] = CheckBox::DefaultProps.apBm[3];
 			this->NumStates = NumStates;
 		}
 	}
-	void SetSpacing(unsigned Spacing) {
-		if ((unsigned)Props.Spacing != Spacing) {
-			Props.Spacing = Spacing;
-			WM_Invalidate(this);
-		}
+
+	void SetState(uint8_t State) {
+		if (NumStates < State)
+			return;
+		if (CurrentState == State)
+			return;
+		CurrentState = State;
+		WM_Invalidate(this);
 	}
-	void SetState(unsigned State) {
-		if (State <= (unsigned)NumStates) {
-			CurrentState = State;
-			WM_Invalidate(this);
-		}
-	}
+
+#pragma endregion
+
 	void SetText(const char *s) {
-		if (s) {
-			if (GUI__SetText(&pText, s)) {
-				WM_Invalidate(this);
-			}
-		}
-	}
-	void SetTextAlign(int Align) {
-		if (Props.Align != Align) {
-			Props.Align = Align;
+		if (GUI__SetText(&pText, s))
 			WM_Invalidate(this);
-		}
 	}
-	void SetTextColor(RGBC Color) {
-		if (Props.TextColor != Color) {
-			Props.TextColor = Color;
-			WM_Invalidate(this);
-		}
-	}
+
+	auto GetState() { return CurrentState; }
+	bool IsChecked() { return CurrentState == 1; }
+
 };
 
 CheckBox::Properties CheckBox::DefaultProps;
@@ -315,21 +291,14 @@ CheckBox::Properties CheckBox::DefaultProps;
 }
 
 /* Colors */
-static const RGBC _aColorDisabled[] = { RGB_GRAYL(0x10), RGB_GRAYL(0x80) };
-static const RGBC _aColorEnabled[] = { RGB_BLACK, RGB_WHITE };
+static const RGBC _aColorDisabled[]{ RGB_GRAYL(0x10), RGB_GRAYL(0x80) };
+static const RGBC _aColorEnabled[]{ RGB_BLACK, RGB_WHITE };
 /* Palettes */
-static const GUI_LOGPALETTE _PalCheckDisabled = {
-  2,	/* number of entries */
-  0, 	/* No transparency */
-  _aColorDisabled
-};
-static const GUI_LOGPALETTE _PalCheckEnabled = {
-  2,	/* number of entries */
-  0, 	/* No transparency */
-  _aColorEnabled
-};
+static const GUI_LOGPALETTE _PalCheckDisabled{ 2, 0, _aColorDisabled };
+static const GUI_LOGPALETTE _PalCheckEnabled{ 2, 0, _aColorEnabled };
+
 /* Pixel data */
-static const uint8_t _acCheck[] = {
+static const uint8_t _acCheckEnabled[] = {
 XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,__XXXX__________,
@@ -340,11 +309,28 @@ XXXX__________XX,XXXXXX__________,
 XXXXXX______XXXX,XXXXXX__________,
 XXXXXXXX__XXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,XXXXXX__________,
-XXXXXXXXXXXXXXXX,XXXXXX__________
+XXXXXXXXXXXXXXXX,XXXXXX__________};
+/* Bitmaps */
+CBITMAP CheckBox::abmCheckEnabled[2]{
+	{ 11, 11, 2, 1, _acCheckEnabled,  &_PalCheckDisabled },
+	{ 11, 11, 2, 1, _acCheckEnabled,  &_PalCheckEnabled  }
 };
 
+/* Pixel data */
+static const uint8_t _acCheckDisabled[]{
+XXXXXXXXXXXXXXXX,XXXXXX__________,
+XXXXXXXXXXXXXXXX,XXXXXX__________,
+XXXXXXXXXXXXXXXX,__XXXX__________,
+XXXXXXXXXXXXXX__,XXXXXX__________,
+XXXX__XXXXXX__XX,__XXXX__________,
+XXXXXX__XX__XX__,XXXXXX__________,
+XXXX__XX__XX__XX,XXXXXX__________,
+XXXXXX__XX__XXXX,XXXXXX__________,
+XXXXXXXX__XXXXXX,XXXXXX__________,
+XXXXXXXXXXXXXXXX,XXXXXX__________,
+XXXXXXXXXXXXXXXX,XXXXXX__________};
 /* Bitmaps */
-CBITMAP CheckBox::abmCheck[2] = {
-  { 11, 11, 2, 1, _acCheck,  &_PalCheckDisabled},
-  { 11, 11, 2, 1, _acCheck,  &_PalCheckEnabled }
+CBITMAP CheckBox::abmCheckDisabled[2]{
+	{ 11, 11, 2, 1, _acCheckDisabled,  &_PalCheckDisabled},
+	{ 11, 11, 2, 1, _acCheckDisabled,  &_PalCheckEnabled }
 };

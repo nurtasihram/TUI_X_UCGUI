@@ -17,14 +17,15 @@ extern CBITMAP _bmCheck;
 
 export {
 
+constexpr uint16_t
+	RADIO_TEXTPOS_RIGHT = 0,
+	RADIO_TEXTPOS_LEFT  = WIDGET_STATE_USER<0>; /* Not implemented, TBD */
+
 enum RADIO_CI {
 	 RADIO_BI_INACTIV = 0,
-	 RADIO_BI_ACTIV   = 1,
-	 RADIO_BI_CHECK   = 2
+	 RADIO_BI_ACTIV,
+	 RADIO_BI_CHECK
 };
-
-constexpr uint16_t RADIO_TEXTPOS_RIGHT = 0;
-constexpr uint16_t RADIO_TEXTPOS_LEFT  = WIDGET_STATE_USER<0>;/* Not implemented, TBD */
 
 class Radio : public WIDGET {
 
@@ -63,17 +64,17 @@ private:
 		/* Init some data */
 		rFocus = WM_GetClientRect(this);
 		HasFocus = (this->State & WIDGET_STATE_FOCUS) ? 1 : 0;
-		pBmRadio = this->Props.apBmRadio[IsEnabled()];
-		pBmCheck = this->Props.pBmCheck;
+		pBmRadio = Props.apBmRadio[IsEnabled()];
+		pBmCheck = Props.pBmCheck;
 		rFocus.x1 = pBmRadio->XSize + RADIO_BORDER * 2 - 1;
 		rFocus.y1 = this->Height + ((this->NumItems - 1) * this->Spacing) - 1;
 		/* Select font and text color */
-		GUI.SetColor(this->Props.TextColor);
-		GUI_SetFont(this->Props.pFont);
+		GUI.SetColor(Props.TextColor);
+		GUI_SetFont(Props.pFont);
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		FontDistY = Props.pFont->DistY();
-		CHeight = this->Props.pFont->CHeight;
-		SpaceAbove = this->Props.pFont->Baseline - CHeight;
+		CHeight = Props.pFont->CHeight;
+		SpaceAbove = Props.pFont->Baseline - CHeight;
 		Rect.x0 = pBmRadio->XSize + RADIO_BORDER * 2 + 2;
 		Rect.y0 = (CHeight <= this->Height) ? ((this->Height - CHeight) / 2) : 0;
 		Rect.y1 = Rect.y0 + CHeight - 1;
@@ -290,6 +291,32 @@ private:
 	}
 
 public:
+
+#pragma region Properties
+
+	void SetFont(PCFONT pFont) {
+		if (Props.pFont == pFont)
+			return;
+		Props.pFont = pFont;
+		WM_Invalidate(this);
+	}
+
+	void SetTextColor(RGBC Color) {
+		if (Props.TextColor == Color)
+			return;
+		Props.TextColor = Color;
+		WM_Invalidate(this);
+	}
+
+	void SetBkColor(RGBC Color) {
+		if (Props.BkColor == Color)
+			return;
+		Props.BkColor = Color;
+		WM_Invalidate(this);
+	}
+
+#pragma endregion
+
 	void AddValue(int Add) {
 		SetValue(Sel + Add);
 	}
@@ -313,19 +340,7 @@ public:
 	int  GetValue() {
 		return Sel;
 	}
-	void SetBkColor(RGBC Color) {
-		if (Props.BkColor != Color) {
-			Props.BkColor = Color;
-			WM_Invalidate(this);
-		}
-	}
-	void SetFont(PCFONT pFont) {
-		if (pFont != Props.pFont) {
-			Props.pFont = pFont;
-			if (TextArray.GetNumItems())
-				WM_Invalidate(this);
-		}
-	}
+
 	void SetGroupId(uint8_t NewGroupId) {
 		auto OldGroupId = GroupId;
 		if (NewGroupId != OldGroupId) {
@@ -371,14 +386,7 @@ public:
 			WM_Invalidate(this);
 		}
 	}
-	void SetTextColor(RGBC Color) {
-		if (Color != Props.TextColor) {
-			Props.TextColor = Color;
-			if (TextArray.GetNumItems()) {
-				WM_Invalidate(this);
-			}
-		}
-	}
+
 
 };
 

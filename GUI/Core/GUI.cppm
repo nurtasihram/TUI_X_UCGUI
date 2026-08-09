@@ -81,7 +81,7 @@ public:
 	void SetColor(RGBC color) { aColor[(DrawMode & DRAWMODE_REV) ? 0 : 1] = color; }
 
 	auto GetTextAlign(void) { return TextAlign; }
-	void SetTextAlign(int Align) { TextAlign = Align; }
+	void SetTextAlign(TEXTALIGN Align) { TextAlign = Align; }
 
 	auto GetTextMode(void) { return TextMode; }
 	void SetTextMode(int Mode) { TextMode = Mode; }

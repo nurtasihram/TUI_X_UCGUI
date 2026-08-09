@@ -308,7 +308,7 @@ static WM_PARAM _cbCallback(WObj *pWin, int MsgId, WM_PARAM Data) {
 #define ID_MENU_TEST_EDIT_INTERACTIVE (GUI_ID_USER + 16)
 
 static void _AddMenuItem(Menu *pMenu, Menu *pSubmenu, const char *pText, uint16_t Id, uint16_t Flags) {
-	MENU_ITEM_DATA Item;
+	Menu::ItemData Item;
 	Item.pText = pText;
 	Item.pSubmenu = pSubmenu;
 	Item.Flags = Flags;
@@ -1240,20 +1240,20 @@ void _TestEdit() {
 	pDialog->DialogExec();
 }
 
-#define ID_MULTIEDIT_TEST           (GUI_ID_USER + 200)
-#define ID_MULTIEDIT_STATUS         (GUI_ID_USER + 201)
-#define ID_MULTIEDIT_APPEND         (GUI_ID_USER + 202)
-#define ID_MULTIEDIT_CLEAR          (GUI_ID_USER + 203)
-#define ID_MULTIEDIT_TOGGLE_READONLY (GUI_ID_USER + 204)
-#define ID_MULTIEDIT_WRAP_WORD      (GUI_ID_USER + 205)
-#define ID_MULTIEDIT_WRAP_NONE      (GUI_ID_USER + 206)
+#define ID_MULTEDIT_TEST           (GUI_ID_USER + 200)
+#define ID_MULTEDIT_STATUS         (GUI_ID_USER + 201)
+#define ID_MULTEDIT_APPEND         (GUI_ID_USER + 202)
+#define ID_MULTEDIT_CLEAR          (GUI_ID_USER + 203)
+#define ID_MULTEDIT_TOGGLE_READONLY (GUI_ID_USER + 204)
+#define ID_MULTEDIT_WRAP_WORD      (GUI_ID_USER + 205)
+#define ID_MULTEDIT_WRAP_NONE      (GUI_ID_USER + 206)
 
 static bool _MultiEditReadOnly = false;
 static int _MultiEditLineNo = 1;
 
 static void _UpdateMultiEditStatus(WObj *pWin) {
-	auto pEdit = pWin->GetItem<MultEdit>(ID_MULTIEDIT_TEST);
-	auto pStatus = pWin->GetItem<Text>(ID_MULTIEDIT_STATUS);
+	auto pEdit = pWin->GetItem<MultEdit>(ID_MULTEDIT_TEST);
+	auto pStatus = pWin->GetItem<Text>(ID_MULTEDIT_STATUS);
 	if (pEdit && pStatus) {
 		char acStatus[96];
 		sprintf(acStatus, "Len: %d  ReadOnly: %s", pEdit->GetTextSize(), _MultiEditReadOnly ? "On" : "Off");
@@ -1263,20 +1263,20 @@ static void _UpdateMultiEditStatus(WObj *pWin) {
 
 static const GUI_WIDGET_CREATE_INFO _aMultiEditDialogCreate[] = {
 	{ Frame   ::CreateIndirect, "MultiEdit Test"  , 0                            , 60  , 60  , 420 , 280 , FRAMEWIN_CF_MOVEABLE },
-	{ MultEdit::CreateIndirect, ""                , ID_MULTIEDIT_TEST            , 10  , 10  , 395 , 150 , 0, 512               },
-	{ Button  ::CreateIndirect, "Append"          , ID_MULTIEDIT_APPEND          , 10  , 170 , 70  , 25                         },
-	{ Button  ::CreateIndirect, "Clear"           , ID_MULTIEDIT_CLEAR           , 85  , 170 , 70  , 25                         },
-	{ Button  ::CreateIndirect, "ReadOnly"        , ID_MULTIEDIT_TOGGLE_READONLY , 160 , 170 , 85  , 25                         },
-	{ Button  ::CreateIndirect, "Wrap Word"       , ID_MULTIEDIT_WRAP_WORD       , 250 , 170 , 75  , 25                         },
-	{ Button  ::CreateIndirect, "Wrap None"       , ID_MULTIEDIT_WRAP_NONE       , 330 , 170 , 75  , 25                         },
-	{ Text    ::CreateIndirect, ""                , ID_MULTIEDIT_STATUS          , 10  , 205 , 310 , 18  , TEXT_CF_LEFT         },
+	{ MultEdit::CreateIndirect, ""                , ID_MULTEDIT_TEST            , 10  , 10  , 395 , 150 , 0, 512               },
+	{ Button  ::CreateIndirect, "Append"          , ID_MULTEDIT_APPEND          , 10  , 170 , 70  , 25                         },
+	{ Button  ::CreateIndirect, "Clear"           , ID_MULTEDIT_CLEAR           , 85  , 170 , 70  , 25                         },
+	{ Button  ::CreateIndirect, "ReadOnly"        , ID_MULTEDIT_TOGGLE_READONLY , 160 , 170 , 85  , 25                         },
+	{ Button  ::CreateIndirect, "Wrap Word"       , ID_MULTEDIT_WRAP_WORD       , 250 , 170 , 75  , 25                         },
+	{ Button  ::CreateIndirect, "Wrap None"       , ID_MULTEDIT_WRAP_NONE       , 330 , 170 , 75  , 25                         },
+	{ Text    ::CreateIndirect, ""                , ID_MULTEDIT_STATUS          , 10  , 205 , 310 , 18  , TEXT_CF_LEFT         },
 	{ Button  ::CreateIndirect, "Close"           , GUI_ID_CANCEL                , 325 , 230 , 80  , 25                         }
 };
 
 static WM_PARAM _cbMultiEditTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pEdit = pWin->GetItem<MultEdit>(ID_MULTIEDIT_TEST);
+			auto pEdit = pWin->GetItem<MultEdit>(ID_MULTEDIT_TEST);
 			_MultiEditReadOnly = false;
 			_MultiEditLineNo = 1;
 			pEdit->SetText("Line 1");
@@ -1291,16 +1291,16 @@ static WM_PARAM _cbMultiEditTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			auto pInfo = (const NOTIFY_INFO *)Data;
 			auto pWinSrc = pInfo->pWinSrc;
 			int Id = pWinSrc->GetID();
-			auto pEdit = pWin->GetItem<MultEdit>(ID_MULTIEDIT_TEST);
+			auto pEdit = pWin->GetItem<MultEdit>(ID_MULTEDIT_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED:
-					if (Id == ID_MULTIEDIT_TEST) {
+					if (Id == ID_MULTEDIT_TEST) {
 						_UpdateMultiEditStatus(pWin);
 					}
 					break;
 				case WM_NOTIFICATION_RELEASED:
 					switch (Id) {
-						case ID_MULTIEDIT_APPEND: {
+						case ID_MULTEDIT_APPEND: {
 							char acOld[512];
 							char acNew[640];
 							char acLine[48];
@@ -1311,21 +1311,21 @@ static WM_PARAM _cbMultiEditTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 							_UpdateMultiEditStatus(pWin);
 							break;
 						}
-						case ID_MULTIEDIT_CLEAR:
+						case ID_MULTEDIT_CLEAR:
 							_MultiEditLineNo = 0;
 							pEdit->SetText("");
 							_UpdateMultiEditStatus(pWin);
 							break;
-						case ID_MULTIEDIT_TOGGLE_READONLY:
+						case ID_MULTEDIT_TOGGLE_READONLY:
 							_MultiEditReadOnly = !_MultiEditReadOnly;
 							pEdit->SetReadOnly(_MultiEditReadOnly ? 1 : 0);
 							_UpdateMultiEditStatus(pWin);
 							break;
-						case ID_MULTIEDIT_WRAP_WORD:
+						case ID_MULTEDIT_WRAP_WORD:
 							pEdit->SetWrapWord();
 							_UpdateMultiEditStatus(pWin);
 							break;
-						case ID_MULTIEDIT_WRAP_NONE:
+						case ID_MULTEDIT_WRAP_NONE:
 							pEdit->SetWrapNone();
 							_UpdateMultiEditStatus(pWin);
 							break;

@@ -9,6 +9,11 @@ import TUX.Widget;
 
 export {
 
+enum PROGBAR_CI {
+	 PROGBAR_CI_ACTIVE = 0,
+	 PROGBAR_CI_INACT
+};
+
 class ProgBar : public WIDGET {
 
 public:
@@ -172,8 +177,39 @@ public:
 								hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 	}
 
-
 public:
+
+#pragma region Properties
+	void SetFont(PCFONT pFont) {
+		if (Props.pFont == pFont)
+			return;
+		Props.pFont = pFont;
+		WM_Invalidate(this);
+	}
+	void SetBarColor(PROGBAR_CI Index, RGBC color) {
+		if (Index >= GUI_COUNTOF(Props.aBkColor))
+			return;
+		if (Props.aBkColor[Index] == color)
+			return;
+		Props.aBkColor[Index] = color;
+		WM_Invalidate(this);
+	}
+	void SetTextColor(PROGBAR_CI Index, RGBC color) {
+		if (Index >= GUI_COUNTOF(Props.aTextColor))
+			return;
+		if (Props.aTextColor[Index] == color)
+			return;
+		Props.aTextColor[Index] = color;
+		WM_Invalidate(this);
+	}
+	void SetTextAlign(TEXTALIGN Align) {
+		if (Props.Align == Align)
+			return;
+		Props.Align = Align;
+		WM_Invalidate(this);
+	}
+#pragma endregion
+
 	void SetValue(int v) {
 		/* Put v into legal range */
 		if (v < Min)
@@ -182,22 +218,6 @@ public:
 			v = Max;
 		if (this->v != v) {
 			this->v = v;
-			WM_Invalidate(this);
-		}
-	}
-	void SetFont(PCFONT pfont) {
-		Props.pFont = pfont;
-		WM_Invalidate(this);
-	}
-	void SetBarColor(unsigned int Index, RGBC color) {
-		if (Index < GUI_COUNTOF(Props.aBkColor)) {
-			Props.aBkColor[Index] = color;
-			WM_Invalidate(this);
-		}
-	}
-	void SetTextColor(unsigned int Index, RGBC color) {
-		if (Index < GUI_COUNTOF(Props.aTextColor)) {
-			Props.aTextColor[Index] = color;
 			WM_Invalidate(this);
 		}
 	}
@@ -215,10 +235,6 @@ public:
 			WM_Invalidate(this, &r1);
 		}
 		GUI_SetFont(pOldFont);
-	}
-	void SetTextAlign(int Align) {
-		Props.Align = Align;
-		WM_Invalidate(this);
 	}
 	void SetTextPos(int XOff, int YOff) {
 		this->XOff = XOff;

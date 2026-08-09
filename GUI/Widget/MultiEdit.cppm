@@ -10,7 +10,7 @@ import TUX.Widget;
 #define NUM_DISP_MODES 2
 
 /* Define character for password mode */
-#define MULTIEDIT_PASSWORD_CHAR   '*'
+#define MULTEDIT_PASSWORD_CHAR   '*'
 
 #define INVALID_NUMCHARS (1 << 0)
 #define INVALID_NUMLINES (1 << 1)
@@ -18,25 +18,24 @@ import TUX.Widget;
 #define INVALID_CURSORXY (1 << 3)
 #define INVALID_LINEPOSB (1 << 4)
 
-#define MULTIEDIT_REALLOC_SIZE  16
+#define MULTEDIT_REALLOC_SIZE  16
 
 export {
 
-constexpr uint16_t MULTIEDIT_CF_READONLY         = 1 << 0;
-constexpr uint16_t MULTIEDIT_CF_INSERT           = 1 << 2;
-constexpr uint16_t MULTIEDIT_CF_AUTOSCROLLBAR_V  = 1 << 3;
-constexpr uint16_t MULTIEDIT_CF_AUTOSCROLLBAR_H  = 1 << 4;
-constexpr uint16_t MULTIEDIT_CF_PASSWORD         = 1 << 5;
-constexpr uint16_t MULTIEDIT_SF_READONLY         = MULTIEDIT_CF_READONLY;
-constexpr uint16_t MULTIEDIT_SF_INSERT           = MULTIEDIT_CF_INSERT;
-constexpr uint16_t MULTIEDIT_SF_AUTOSCROLLBAR_V  = MULTIEDIT_CF_AUTOSCROLLBAR_V;
-constexpr uint16_t MULTIEDIT_SF_AUTOSCROLLBAR_H  = MULTIEDIT_CF_AUTOSCROLLBAR_H;
-constexpr uint16_t MULTIEDIT_SF_PASSWORD         = MULTIEDIT_CF_PASSWORD;
-constexpr uint16_t MULTIEDIT_CI_EDIT      = 0;
-constexpr uint16_t MULTIEDIT_CI_READONLY  = 1;
+constexpr uint16_t
+	MULTEDIT_CF_READONLY         = 1 << 0,
+	MULTEDIT_CF_INSERT           = 1 << 2,
+	MULTEDIT_CF_AUTOSCROLLBAR_V  = 1 << 3,
+	MULTEDIT_CF_AUTOSCROLLBAR_H  = 1 << 4,
+	MULTEDIT_CF_PASSWORD         = 1 << 5;
+
+enum MULTEDIT_CI {
+	 MULTEDIT_CI_EDITMODE = 0,
+	 MULTEDIT_CI_READONLY
+};
 
 class MultEdit : public WIDGET {
-	
+
 public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
@@ -64,14 +63,11 @@ private:
 	uint16_t CursorLine;          /* Number of current cursor line */
 	uint16_t CursorPosChar;       /* Character offset number of cursor */
 	uint16_t CursorPosByte;       /* Byte offset number of cursor */
-	uint16_t CursorPosX;          /* Cursor position in X */
-	uint16_t CursorPosY;          /* Cursor position in Y */
+	uint16_t CursorPosX, CursorPosY; /* Cursor position */
 	uint16_t CacheLinePosByte;    /*  */
 	uint16_t CacheLineNumber;     /*  */
-	uint16_t CacheFirstVisibleLine;
-	uint16_t CacheFirstVisibleByte;
-	WM_SCROLL_STATE ScrollStateV;
-	WM_SCROLL_STATE ScrollStateH;
+	uint16_t CacheFirstVisibleLine, CacheFirstVisibleByte;
+	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
 	uint8_t Flags;
 	uint8_t InvalidFlags;         /* Flags to save validation status */
 	uint8_t EditMode;
@@ -92,7 +88,7 @@ private:
 	int _GetXSize() {
 		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
-		return Rect.x1 - Rect.x0 - (this->Props.HBorder * 2) - 1;
+		return Rect.x1 - Rect.x0 - (Props.HBorder * 2) - 1;
 	}
 	int _GetNumCharsInPrompt(const char *pText) {
 		char *pString, *pEndPrompt;
@@ -116,7 +112,7 @@ private:
 	int _WrapGetNumCharsDisp(const char *pText) {
 		int xSize, r;
 		xSize = _GetXSize();
-		if (this->Flags & MULTIEDIT_SF_PASSWORD) {
+		if (this->Flags & MULTEDIT_CF_PASSWORD) {
 			int NumCharsPrompt;
 			NumCharsPrompt = _GetNumCharsInPrompt(pText);
 			r = GUI__WrapGetNumCharsDisp(pText, xSize, this->WrapMode);
@@ -131,7 +127,7 @@ private:
 						x = _NumChars2XSize(pText, NumCharsPrompt);
 						pText += GUI_UC__NumChars2NumBytes(pText, NumCharsPrompt);
 						while (GUI_UC__GetCharCodeInc(&pText) != 0) {
-							x += GUI_GetCharDistX(MULTIEDIT_PASSWORD_CHAR);
+							x += GUI_GetCharDistX(MULTEDIT_PASSWORD_CHAR);
 							if (r && (x > xSize)) {
 								break;
 							}
@@ -149,7 +145,7 @@ private:
 	int _WrapGetNumBytesToNextLine(const char *pText) {
 		int xSize, r;
 		xSize = _GetXSize();
-		if (this->Flags & MULTIEDIT_SF_PASSWORD) {
+		if (this->Flags & MULTEDIT_CF_PASSWORD) {
 			int NumChars, NumCharsPrompt;
 			NumCharsPrompt = _GetNumCharsInPrompt(pText);
 			NumChars = _WrapGetNumCharsDisp(pText);
@@ -167,8 +163,8 @@ private:
 	}
 	int _GetCharDistX(const char *pText) {
 		int r;
-		if ((this->Flags & MULTIEDIT_SF_PASSWORD) && (_GetNumCharsInPrompt(pText) == 0)) {
-			r = GUI_GetCharDistX(MULTIEDIT_PASSWORD_CHAR);
+		if ((this->Flags & MULTEDIT_CF_PASSWORD) && (_GetNumCharsInPrompt(pText) == 0)) {
+			r = GUI_GetCharDistX(MULTEDIT_PASSWORD_CHAR);
 		}
 		else {
 			uint16_t c;
@@ -180,7 +176,7 @@ private:
 	void _DispString(const char *pText, RECT *pRect) {
 		int NumCharsDisp;
 		NumCharsDisp = _WrapGetNumCharsDisp(pText);
-		if (this->Flags & MULTIEDIT_SF_PASSWORD) {
+		if (this->Flags & MULTEDIT_CF_PASSWORD) {
 			int x, NumCharsPrompt, NumCharsLeft = 0;
 			NumCharsPrompt = _GetNumCharsInPrompt(pText);
 			if (NumCharsDisp < NumCharsPrompt) {
@@ -192,8 +188,8 @@ private:
 			GUI_DispStringInRectMax(pText, pRect, TEXTALIGN_LEFT, NumCharsPrompt);
 			x = pRect->x0 + _NumChars2XSize(pText, NumCharsPrompt);
 			if (NumCharsLeft) {
-				GUI_DispCharAt(MULTIEDIT_PASSWORD_CHAR, x, pRect->y0);
-				GUI_DispChars(MULTIEDIT_PASSWORD_CHAR, NumCharsLeft - 1);
+				GUI_DispCharAt(MULTEDIT_PASSWORD_CHAR, x, pRect->y0);
+				GUI_DispChars(MULTEDIT_PASSWORD_CHAR, NumCharsLeft - 1);
 			}
 		}
 		else {
@@ -257,7 +253,7 @@ private:
 	void _GetCursorXY(int *px, int *py) {
 		if (this->InvalidFlags & INVALID_CURSORXY) {
 			int CursorLine = 0, x = 0;
-			GUI_SetFont(this->Props.pFont);
+			GUI_SetFont(Props.pFont);
 			if (this->hText) {
 				const char *pLine;
 				const char *pCursor;
@@ -297,7 +293,7 @@ private:
 			if (this->hText) {
 				int NumChars, xSizeLine;
 				char *pText, *pLine;
-				GUI_SetFont(this->Props.pFont);
+				GUI_SetFont(Props.pFont);
 				pText = (char *)(this->hText);
 				do {
 					NumChars = _WrapGetNumCharsDisp(pText);
@@ -330,7 +326,7 @@ private:
 				char *pText;
 				uint16_t Char;
 				pText = (char *)(this->hText);
-				GUI_SetFont(this->Props.pFont);
+				GUI_SetFont(Props.pFont);
 				do {
 					NumChars = _WrapGetNumCharsDisp(pText);
 					NumBytes = GUI_UC__NumChars2NumBytes(pText, NumChars);
@@ -362,7 +358,7 @@ private:
 		_CalcScrollPos();
 	}
 	void _ManageAutoScrollV() {
-		if (this->Flags & MULTIEDIT_SF_AUTOSCROLLBAR_V) {
+		if (this->Flags & MULTEDIT_CF_AUTOSCROLLBAR_V) {
 			auto IsRequired = _GetNumVisLines() < _GetNumLines();
 			if (WM_SetScrollbarV(this, IsRequired) != IsRequired) {
 				_InvalidateNumLines();
@@ -376,7 +372,7 @@ private:
 		/* 1. Step: Check if vertical scrollbar is required */
 		_ManageAutoScrollV();
 		/* 2. Step: Check if horizontal scrollbar is required */
-		if (this->Flags & MULTIEDIT_SF_AUTOSCROLLBAR_H) {
+		if (this->Flags & MULTEDIT_CF_AUTOSCROLLBAR_H) {
 			auto IsRequired = (_GetXSize() < _GetTextSizeX());
 			if (WM_SetScrollbarH(this, IsRequired) != IsRequired) {
 				/* 3. Step: Check vertical scrollbar again if horizontal has changed */
@@ -493,13 +489,13 @@ private:
 			int CursorLine, WrapChars;
 			int SizeX = 0;
 			uint16_t Char;
-			GUI_SetFont(this->Props.pFont);
+			GUI_SetFont(Props.pFont);
 			CursorLine = y / Props.pFont->DistY();
 			pLine = _GetpLine(CursorLine);
 			pText = (char *)(this->hText);
 			WrapChars = _WrapGetNumCharsDisp(pLine);
 			Char = GUI_UC__GetCharCode(pLine + GUI_UC__NumChars2NumBytes(pLine, WrapChars));
-			if (this->Flags & MULTIEDIT_SF_PASSWORD) {
+			if (this->Flags & MULTEDIT_CF_PASSWORD) {
 				if (!Char) {
 					WrapChars++;
 				}
@@ -551,7 +547,7 @@ private:
 	}
 	int _IsOverwriteAtThisChar() {
 		int r = 0;
-		if (this->hText && !(this->Flags & MULTIEDIT_CF_INSERT)) {
+		if (this->hText && !(this->Flags & MULTEDIT_CF_INSERT)) {
 			const char *pText;
 			int CurPos, Line1, Line2;
 			uint16_t Char;
@@ -562,7 +558,7 @@ private:
 			pText += this->CursorPosByte;
 			Char = GUI_UC_GetCharCode(pText);
 			if (Char) {
-				if ((Line1 == Line2) || (this->Flags & MULTIEDIT_SF_PASSWORD)) {
+				if ((Line1 == Line2) || (this->Flags & MULTEDIT_CF_PASSWORD)) {
 					r = 1;
 				}
 				else {
@@ -611,7 +607,7 @@ private:
 		}
 		BytesNeeded = (BytesNeeded + NumBytes + 1) - this->BufferSize;
 		if (BytesNeeded > 0) {
-			if (!_IncrementBuffer(BytesNeeded + MULTIEDIT_REALLOC_SIZE)) {
+			if (!_IncrementBuffer(BytesNeeded + MULTEDIT_REALLOC_SIZE)) {
 				return 0;
 			}
 		}
@@ -690,18 +686,18 @@ private:
 		RECT r, rClip;
 		const RECT *prOldClip;
 		/* Init some values */
-		GUI_SetFont(this->Props.pFont);
+		GUI_SetFont(Props.pFont);
 		FontSizeY = Props.pFont->DistY();
 		ScrollPosX = this->ScrollStateH.v;
 		ScrollPosY = this->ScrollStateV.v;
 		EffectSize = this->EffectSize();
-		HBorder = this->Props.HBorder;
+		HBorder = Props.HBorder;
 		xOff = EffectSize + HBorder - ScrollPosX;
 		yOff = EffectSize - ScrollPosY * FontSizeY;
-		ColorIndex = ((this->Flags & MULTIEDIT_SF_READONLY) ? 1 : 0);
+		ColorIndex = ((this->Flags & MULTEDIT_CF_READONLY) ? 1 : 0);
 		/* Set colors and draw the background */
-		GUI.SetBkColor(this->Props.aBkColor[ColorIndex]);
-		GUI.SetColor(this->Props.aColor[ColorIndex]);
+		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
+		GUI.SetColor(Props.aColor[ColorIndex]);
 		GUI_Clear();
 		/* Draw the text if necessary */
 		rClip.x0 = EffectSize + HBorder;
@@ -765,7 +761,7 @@ private:
 			if (pState->Pressed) {
 				int Effect, xPos, yPos;
 				Effect = this->EffectSize();
-				xPos = pState->x + this->ScrollStateH.v - Effect - this->Props.HBorder;
+				xPos = pState->x + this->ScrollStateH.v - Effect - Props.HBorder;
 				yPos = pState->y + this->ScrollStateV.v * Props.pFont->DistY() - Effect;
 				_SetCursorXY(xPos, yPos);
 				_Invalidate();
@@ -806,7 +802,7 @@ private:
 				r = 1;               /* Key has been consumed */
 				break;
 			case GUI_KEY_BACKSPACE:
-				if (!(this->Flags & MULTIEDIT_SF_READONLY)) {
+				if (!(this->Flags & MULTEDIT_CF_READONLY)) {
 					if (this->CursorPosChar > this->NumCharsPrompt) {
 						_SetCursorPos(CursorPosChar - 1);
 						_DeleteChar();
@@ -815,27 +811,27 @@ private:
 				}
 				break;
 			case GUI_KEY_DELETE:
-				if (!(this->Flags & MULTIEDIT_SF_READONLY)) {
+				if (!(this->Flags & MULTEDIT_CF_READONLY)) {
 					_DeleteChar();
 					r = 1;               /* Key has been consumed */
 				}
 				break;
 			case GUI_KEY_INSERT:
-				if (!(this->Flags & MULTIEDIT_CF_INSERT)) {
-					this->Flags |= MULTIEDIT_CF_INSERT;
+				if (!(this->Flags & MULTEDIT_CF_INSERT)) {
+					this->Flags |= MULTEDIT_CF_INSERT;
 				}
 				else {
-					this->Flags &= ~MULTIEDIT_CF_INSERT;
+					this->Flags &= ~MULTEDIT_CF_INSERT;
 				}
 				r = 1;               /* Key has been consumed */
 				break;
 			case GUI_KEY_ENTER:
-				if (this->Flags & MULTIEDIT_SF_READONLY) {
+				if (this->Flags & MULTEDIT_CF_READONLY) {
 					_MoveCursor2NextLine();
 				}
 				else {
 					if (_InsertChar((uint8_t)('\n'))) {
-						if (this->Flags & MULTIEDIT_SF_PASSWORD) {
+						if (this->Flags & MULTEDIT_CF_PASSWORD) {
 							_SetCursorPos(CursorPosChar + 1);
 						}
 						else {
@@ -848,7 +844,7 @@ private:
 			case GUI_KEY_ESCAPE:
 				break;
 			default:
-				if (!(this->Flags & MULTIEDIT_SF_READONLY) && (Key >= 0x20)) {
+				if (!(this->Flags & MULTEDIT_CF_READONLY) && (Key >= 0x20)) {
 					if (_IsOverwriteAtThisChar()) {
 						_DeleteChar();
 					}
@@ -867,7 +863,7 @@ private:
 			if (_AddKey(Key))
 				return 1;
 		}
-		else if (!(this->Flags & MULTIEDIT_SF_READONLY))
+		else if (!(this->Flags & MULTEDIT_CF_READONLY))
 			return 1; /* Key release is consumed (not sent to parent) */
 		return 0; /* Key release is not consumed (sent to parent) */
 	}
@@ -986,11 +982,51 @@ public:
 
 public:
 
+#pragma region Properties
+
+	void SetFont(PCFONT pFont) {
+		if (Props.pFont == pFont)
+			return;
+		Props.pFont = pFont;
+		_InvalidateTextArea();
+		_InvalidateCursorXY();
+		_InvalidateNumLines();
+		_InvalidateTextSizeX();
+	}
+
+	void SetBkColor(MULTEDIT_CI Index, RGBC color) {
+		if (Index >= GUI_COUNTOF(Props.aBkColor))
+			return;
+		if (Props.aBkColor[Index] == color)
+			return;
+		Props.aBkColor[Index] = color;
+		_InvalidateTextArea();
+	}
+
+	void SetTextColor(MULTEDIT_CI Index, RGBC color) {
+		if (Index >= GUI_COUNTOF(Props.aColor))
+			return;
+		if (Props.aColor[Index] == color)
+			return;
+		Props.aColor[Index] = color;
+		WM_Invalidate(this);
+	}
+
+	void SetHBorder(uint8_t HBorder) {
+		if (Props.HBorder == HBorder)
+			return;
+		Props.HBorder = HBorder;
+		_Invalidate();
+	}
+	
+#pragma endregion
+
 	int  AddKey(uint16_t Key) {
 		int r = 0;
 		r = _AddKey(Key);
 		return r;
 	}
+
 	void SetText(const char *pNew) {
 		int NumCharsNew = 0, NumCharsOld = 0;
 		int NumBytesNew = 0, NumBytesOld = 0;
@@ -1036,6 +1072,7 @@ public:
 		GUI__memcpy(sDest, pText, Len);
 		*(sDest + Len) = 0;
 	}
+
 	void GetPrompt(char *sDest, int MaxLen) {
 		auto sSource = (char *)(this->hText);
 		int Len = GUI_UC__NumChars2NumBytes(sSource, this->NumCharsPrompt);
@@ -1045,6 +1082,7 @@ public:
 		GUI__memcpy(sDest, sSource, Len);
 		*(sDest + Len) = 0;
 	}
+
 	void SetWrapWord() {
 		_SetWrapMode(GUI_WRAPMODE_WORD);
 	}
@@ -1054,54 +1092,30 @@ public:
 	void SetWrapNone() {
 		_SetWrapMode(GUI_WRAPMODE_NONE);
 	}
+
 	void SetInsertMode(int OnOff) {
-		_SetFlag(OnOff, MULTIEDIT_SF_INSERT);
+		_SetFlag(OnOff, MULTEDIT_CF_INSERT);
 	}
 	void SetReadOnly(int OnOff) {
-		_SetFlag(OnOff, MULTIEDIT_SF_READONLY);
+		_SetFlag(OnOff, MULTEDIT_CF_READONLY);
 	}
 	void SetPasswordMode(int OnOff) {
-		_SetFlag(OnOff, MULTIEDIT_SF_PASSWORD);
+		_SetFlag(OnOff, MULTEDIT_CF_PASSWORD);
 		_InvalidateCursorXY();
 		_InvalidateNumLines();
 		_InvalidateTextSizeX();
 	}
+
 	void SetAutoScrollV(int OnOff) {
-		_SetFlag(OnOff, MULTIEDIT_SF_AUTOSCROLLBAR_V);
+		_SetFlag(OnOff, MULTEDIT_CF_AUTOSCROLLBAR_V);
 	}
 	void SetAutoScrollH(int OnOff) {
-		_SetFlag(OnOff, MULTIEDIT_SF_AUTOSCROLLBAR_H);
+		_SetFlag(OnOff, MULTEDIT_CF_AUTOSCROLLBAR_H);
 	}
-	void SetHBorder(unsigned HBorder) {
-		if ((unsigned)this->Props.HBorder != HBorder) {
-			this->Props.HBorder = HBorder;
-			_Invalidate();
-		}
-	}
-	void SetFont(PCFONT pFont) {
-		if (this->Props.pFont != pFont) {
-			this->Props.pFont = pFont;
-			_InvalidateTextArea();
-			_InvalidateCursorXY();
-			_InvalidateNumLines();
-			_InvalidateTextSizeX();
-		}
-	}
-	void SetBkColor(unsigned Index, RGBC color) {
-		if ((Index < NUM_DISP_MODES)) {
-			this->Props.aBkColor[Index] = color;
-			_InvalidateTextArea();
-		}
-	}
+
 	void SetCursorOffset(int Offset) {
 		_SetCursorPos(Offset);
 		WM_Invalidate(this);
-	}
-	void SetTextColor(unsigned Index, RGBC color) {
-		if ((Index < NUM_DISP_MODES)) {
-			this->Props.aColor[Index] = color;
-			WM_Invalidate(this);
-		}
 	}
 	void SetPrompt(const char *pPrompt) {
 		int NumCharsNew = 0, NumCharsOld = 0;
@@ -1168,6 +1182,7 @@ public:
 			}
 		}
 	}
+
 	int  GetTextSize() {
 		int r = 0;
 		if (this->hText) {

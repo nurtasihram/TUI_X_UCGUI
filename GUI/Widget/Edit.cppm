@@ -16,20 +16,19 @@ import TUX.Core.Timer;
 ////////////////////////// !!! THIS VERSION'S TIMER IS NOT SAFE !!! ////////////////////////// 
 
 export {
+
+constexpr uint8_t
+	GUI_EDIT_NORMAL = 0,
+	GUI_EDIT_SIGNED = 1;
+
+constexpr uint8_t
+	GUI_EDIT_MODE_INSERT    = 0,
+	GUI_EDIT_MODE_OVERWRITE = 1;
 		
 enum EDIT_CI {
 	 EDIT_CI_DISABLED = 0,
 	 EDIT_CI_ENABLED
 };
-
-
-/* Signed or normal mode */
-constexpr uint8_t GUI_EDIT_NORMAL = 0;
-constexpr uint8_t GUI_EDIT_SIGNED = 1;
-
-/* Edit modes */
-constexpr uint8_t GUI_EDIT_MODE_INSERT    = 0;
-constexpr uint8_t GUI_EDIT_MODE_OVERWRITE = 1;
 
 class Edit : public WIDGET {
 
@@ -84,19 +83,19 @@ private:
 	void _OnPaint() {
 		const char *pText = nullptr;
 		/* Set colors and font */
-		GUI.SetBkColor(this->Props.aBkColor[IsEnabled() ? 1 : 0]);
-		GUI.SetColor(this->Props.aTextColor[0]);
-		GUI_SetFont(this->Props.pFont);
+		GUI.SetBkColor(Props.aBkColor[IsEnabled() ? 1 : 0]);
+		GUI.SetColor(Props.aTextColor[0]);
+		GUI_SetFont(Props.pFont);
 		/* Calculate size */
 		auto r = WM_GetClientRect(this);
 		auto rFillRect = WIDGET__GetInsideRect(this);
 		if (this->pText)
 			pText = this->pText;
 		auto rInside = rFillRect;
-		rInside.x0 += this->Props.Border + EDIT_XOFF;
-		rInside.x1 -= this->Props.Border + EDIT_XOFF;
+		rInside.x0 += Props.Border + EDIT_XOFF;
+		rInside.x1 -= Props.Border + EDIT_XOFF;
 		RECT rText;
-		GUI__CalcTextRect(pText, &rInside, &rText, this->Props.Align);
+		GUI__CalcTextRect(pText, &rInside, &rText, Props.Align);
 		WIDGET__FillStringInRect(pText, rFillRect, rInside, rText);
 		/* Calculate position and size of cursor */
 		if (this->State & WIDGET_STATE_FOCUS) {
@@ -177,18 +176,18 @@ private:
 			int xSize, TextWidth, NumChars;
 			const char *pText;
 			pText = this->pText;
-			pOldFont = GUI_SetFont(this->Props.pFont);
+			pOldFont = GUI_SetFont(Props.pFont);
 			xSize = GetSizeX();
 			TextWidth = GUI_GetStringDistX(pText);
-			switch (this->Props.Align & TEXTALIGN_HORIZONTAL) {
+			switch (Props.Align & TEXTALIGN_HORIZONTAL) {
 				case TEXTALIGN_HCENTER:
 					xPos -= (xSize - TextWidth + 1) / 2;
 					break;
 				case TEXTALIGN_RIGHT:
-					xPos -= xSize - TextWidth - (this->Props.Border + EDIT_XOFF);
+					xPos -= xSize - TextWidth - (Props.Border + EDIT_XOFF);
 					break;
 				default:
-					xPos -= (this->Props.Border + EDIT_XOFF) + this->EffectSize();
+					xPos -= (Props.Border + EDIT_XOFF) + this->EffectSize();
 			}
 			NumChars = GUI__GetNumChars(pText);
 			if (xPos < 0) {
@@ -376,14 +375,50 @@ public:
 
 public:
 
+#pragma region Properties
+
+	void SetFont(PCFONT pFont) {
+		if (Props.pFont == pFont)
+			return;
+		Props.pFont = pFont;
+		WM_Invalidate(this);
+	}
+
+	void SetTextAlign(TEXTALIGN Align) {
+		if (Props.Align == Align)
+			return;
+		Props.Align = Align;
+		WM_Invalidate(this);
+	}
+
+	void SetBkColor(EDIT_CI Index, RGBC color) {
+		if (Index >= GUI_COUNTOF(Props.aBkColor))
+			return;
+		if (Props.aBkColor[Index] == color)
+			return;
+		Props.aBkColor[Index] = color;
+		WM_Invalidate(this);
+	}
+
+	void SetTextColor(EDIT_CI Index, RGBC color) {
+		if (Index >= GUI_COUNTOF(Props.aTextColor))
+			return;
+		if (Props.aTextColor[Index] == color)
+			return;
+		Props.aTextColor[Index] = color;
+		WM_Invalidate(this);
+	}
+
+#pragma endregion
+
 	void AddKey(int Key) {
-		if (this->pfAddKeyEx) {
-			this->pfAddKeyEx(this, Key);
+		if (pfAddKeyEx) {
+			pfAddKeyEx(this, Key);
 		}
 		else {
 			switch (Key) {
 				case GUI_KEY_UP:
-					if (this->pText) {
+					if (pText) {
 						auto pText = this->pText;
 						uint16_t Char;
 						pText += GUI_UC__NumChars2NumBytes(pText, this->CursorPos);
@@ -395,7 +430,7 @@ public:
 					}
 					break;
 				case GUI_KEY_DOWN:
-					if (this->pText) {
+					if (pText) {
 						auto pText = this->pText;
 						pText += GUI_UC__NumChars2NumBytes(pText, this->CursorPos);
 						uint16_t Char = GUI_UC_GetCharCode(pText);
@@ -443,24 +478,7 @@ public:
 		}
 		WM_Invalidate(this);
 	}
-	void SetFont(PCFONT pfont) {
 
-		this->Props.pFont = pfont;
-		WM_Invalidate(this);
-	}
-	void SetBkColor(unsigned int Index, RGBC color) {
-
-		if (Index < GUI_COUNTOF(this->Props.aBkColor)) {
-			this->Props.aBkColor[Index] = color;
-			WM_Invalidate(this);
-		}
-	}
-	void SetTextColor(unsigned int Index, RGBC color) {
-		if (Index < GUI_COUNTOF(this->Props.aTextColor)) {
-			this->Props.aTextColor[Index] = color;
-			WM_Invalidate(this);
-		}
-	}
 	void SetText(const char *s) {
 		if (s) {
 			int NumBytesNew, NumBytesOld = 0;
@@ -506,6 +524,7 @@ public:
 			}
 		}
 	}
+
 	int32_t GetValue() {
 		int32_t r = 0;
 		r = this->CurrentValue;
@@ -526,6 +545,7 @@ public:
 			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
+
 	void SetMaxLen(int MaxLen) {
 		if (MaxLen != this->MaxLen) {
 			if (MaxLen < this->MaxLen) {
@@ -544,10 +564,7 @@ public:
 			WM_Invalidate(this);
 		}
 	}
-	void SetTextAlign(int Align) {
-		this->Props.Align = Align;
-		WM_Invalidate(this);
-	}
+
 	int GetNumChars() {
 		if (this->pText) {
 			return GUI__GetNumChars(this->pText);
@@ -555,23 +572,12 @@ public:
 
 		return 0;
 	}
+
 	void SetCursorAtChar(int Pos) {
 		_SetCursorPos(Pos);
 		WM_Invalidate(this);
 	}
-	int SetInsertMode(int OnOff) {
-		int PrevMode = 0;
-		PrevMode = this->EditMode;
-		this->EditMode = OnOff ? GUI_EDIT_MODE_INSERT : GUI_EDIT_MODE_OVERWRITE;
 
-		return PrevMode;
-	}
-	void SetpfAddKeyEx(tEDIT_AddKeyEx *pfAddKeyEx) {
-		this->pfAddKeyEx = pfAddKeyEx;
-	}
-	void SetpfUpdateBuffer(tEDIT_UpdateBuffer *pfUpdateBuffer) {
-		this->pfUpdateBuffer = pfUpdateBuffer;
-	}
 	void SetSel(int FirstChar, int LastChar) {
 		if (FirstChar == -1) {
 			this->SelSize = 0;
@@ -588,6 +594,20 @@ public:
 				this->SelSize = LastChar - FirstChar + 1;
 			}
 		}
+	}
+
+	int SetInsertMode(int OnOff) {
+		int PrevMode = 0;
+		PrevMode = this->EditMode;
+		this->EditMode = OnOff ? GUI_EDIT_MODE_INSERT : GUI_EDIT_MODE_OVERWRITE;
+
+		return PrevMode;
+	}
+	void SetpfAddKeyEx(tEDIT_AddKeyEx *pfAddKeyEx) {
+		this->pfAddKeyEx = pfAddKeyEx;
+	}
+	void SetpfUpdateBuffer(tEDIT_UpdateBuffer *pfUpdateBuffer) {
+		this->pfUpdateBuffer = pfUpdateBuffer;
 	}
 
 };

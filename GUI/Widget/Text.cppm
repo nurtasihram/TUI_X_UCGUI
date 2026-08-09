@@ -100,25 +100,42 @@ public:
 	}
 
 public:
-	void SetBkColor(RGBC Color) {
-		Props.BkColor = Color;
-		WM_Invalidate(this);
-	}
+
+#pragma region Properties
+
 	void SetFont(PCFONT pFont) {
+		if (Props.pFont == pFont)
+			return;
 		Props.pFont = pFont;
 		WM_Invalidate(this);
 	}
-	void SetText(const char *s) {
-		if (GUI__SetText(&pText, s))
-			WM_Invalidate(this);
+
+	void SetBkColor(RGBC Color) {
+		if (Props.BkColor == Color)
+			return;
+		Props.BkColor = Color;
+		WM_Invalidate(this);
 	}
-	void SetTextAlign(int Align) {
+
+	void SetTextAlign(TEXTALIGN Align) {
+		if (Props.Align == Align)
+			return;
 		Props.Align = Align;
 		WM_Invalidate(this);
 	}
+	
 	void SetTextColor(RGBC Color) {
+		if (Props.TextColor == Color)
+			return;
 		Props.TextColor = Color;
 		WM_Invalidate(this);
+	}
+
+#pragma endregion
+
+	void SetText(const char *s) {
+		if (GUI__SetText(&pText, s))
+			WM_Invalidate(this);
 	}
 
 };
