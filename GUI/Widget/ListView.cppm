@@ -11,13 +11,16 @@ import TUX.Widget.ScrollBar;
 import TUX.Array;
 
 export {
+
 enum LISTVIEW_CI {
 	 LISTVIEW_CI_UNSEL     = 0,
 	 LISTVIEW_CI_SEL       = 1,
 	 LISTVIEW_CI_SELFOCUS  = 2
 };
 
-struct LISTVIEW_Obj : public WIDGET {
+class ListView : public WIDGET {
+
+public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
 		RGBC aBkColor[3]{
@@ -32,7 +35,10 @@ struct LISTVIEW_Obj : public WIDGET {
 		};
 		RGBC GridColor{ RGB_LIGHTGRAY };
 	} static DefaultProps;
+	
+private:
 	Properties Props;
+
 	struct ItemInfo {
 		RGBC aBkColor[3];
 		RGBC aTextColor[3];
@@ -41,14 +47,14 @@ struct LISTVIEW_Obj : public WIDGET {
 		WM_HMEM hItemInfo;
 		char *pText;
 	};
-	HEADER_Obj *pHeader;
+	Header *pHeader;
 	ARRAY<ARRAY<Item>> RowArray; /* One entry per line. Every entry is a ARRAY<Item> */
 	ARRAY<int>       AlignArray; /* One entry per column */
 	int16_t     Sel;
 	bool        ShowGrid;
 	uint16_t    RowDistY, LBorder, RBorder;
 	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
-	WM_Obj *pOwner;
+	WObj *pOwner;
 
 	void _NotifyOwner(int Notification) {
 		auto pOwner = this->pOwner ? this->pOwner : Parent();
@@ -364,8 +370,8 @@ struct LISTVIEW_Obj : public WIDGET {
 		return pItemInfo;
 	}
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (LISTVIEW_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (ListView *)hWin;
 		/* Let widget handle the standard messages */
 		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 			return Data;
@@ -421,6 +427,41 @@ struct LISTVIEW_Obj : public WIDGET {
 				return 0;
 		}
 		return WM_DefaultProc(hWin, MsgId, Data);
+	}
+
+public:
+
+	static ListView *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
+							int WinFlags, int ExFlags, int Id) {
+		GUI_USE_PARA(ExFlags);
+		/* Create the window */
+		if (!(xsize | ysize | x0 | y0)) {
+			RECT Rect = WM_GetClientRect(hParent);
+			xsize = Rect.x1 - Rect.x0 + 1;
+			ysize = Rect.y1 - Rect.y0 + 1;
+		}
+		auto pObj = (ListView *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, ListView::_Callback,
+													   sizeof(ListView) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "ListView create failed");
+			return nullptr;
+		}
+		/* Init widget specific variables */
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
+		/* Init member variables */
+		pObj->Props = ListView::DefaultProps;
+		pObj->ShowGrid = 0;
+		pObj->RowDistY = 0;
+		pObj->Sel = -1;
+		pObj->LBorder = 1;
+		pObj->RBorder = 1;
+		pObj->pHeader = Header::Create(0, 0, 0, 0, pObj, WC_VISIBLE, 0, 0);
+		pObj->_UpdateScrollParas();
+		return pObj;
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 	}
 
 public:
@@ -525,7 +566,7 @@ public:
 	PCFONT GetFont() {
 		return Props.pFont;
 	}
-	HEADER_Obj *GetHeader() {
+	Header *GetHeader() {
 		return pHeader;
 	}
 	unsigned GetNumColumns() {
@@ -652,39 +693,6 @@ public:
 	}
 };
 
-LISTVIEW_Obj::Properties LISTVIEW_Obj::DefaultProps;
-
-LISTVIEW_Obj *LISTVIEW_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
-								  int WinFlags, int ExFlags, int Id) {
-	GUI_USE_PARA(ExFlags);
-	/* Create the window */
-	if ((xsize == 0) && (ysize == 0) && (x0 == 0) && (y0 == 0)) {
-		RECT Rect = WM_GetClientRect(hParent);
-		xsize = Rect.x1 - Rect.x0 + 1;
-		ysize = Rect.y1 - Rect.y0 + 1;
-	}
-	auto pObj = (LISTVIEW_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, LISTVIEW_Obj::_Callback,
-								  sizeof(LISTVIEW_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		/* Init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* Init member variables */
-		pObj->Props = LISTVIEW_Obj::DefaultProps;
-		pObj->ShowGrid = 0;
-		pObj->RowDistY = 0;
-		pObj->Sel = -1;
-		pObj->LBorder = 1;
-		pObj->RBorder = 1;
-		pObj->pHeader = HEADER_CreateEx(0, 0, 0, 0, pObj, WC_VISIBLE, 0, 0);
-		pObj->_UpdateScrollParas();
-	}
-	else {
-	}
-	return pObj;
-}
-WM_Obj *LISTVIEW_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	return LISTVIEW_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-}
+ListView::Properties ListView::DefaultProps;
 
 }

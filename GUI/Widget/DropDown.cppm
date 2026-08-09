@@ -19,7 +19,8 @@ constexpr uint16_t DROPDOWN_CI_UNSEL     = 0;
 constexpr uint16_t DROPDOWN_CI_SEL       = 1;
 constexpr uint16_t DROPDOWN_CI_SELFOCUS  = 2;
 
-struct DROPDOWN_Obj : public WIDGET {
+class DropDown : public WIDGET {
+public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
 		RGBC aBkColor[4]{
@@ -37,13 +38,16 @@ struct DROPDOWN_Obj : public WIDGET {
 		int16_t TextBorderSize{ 2 };
 		int16_t Align{ TEXTALIGN_LEFT };
 	} static DefaultProps;
+	
+private:
 	Properties Props;
+
 	int16_t    Sel;      /* current selection */
 	int16_t    ySizeEx;  /* Drop down size */
 	int16_t    TextHeight;
 	ARRAY<char *> Handles;
 	WM_SCROLL_STATE ScrollState;
-	LISTBOX_Obj *pListWin;
+	ListBox *pListWin;
 	uint8_t  Flags;
 	uint16_t ItemSpacing;
 	uint8_t  ScrollbarWidth;
@@ -156,8 +160,8 @@ struct DROPDOWN_Obj : public WIDGET {
 		WM_SetSize(this, GetSizeX(), Height);
 	}
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (DROPDOWN_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (DropDown *)hWin;
 		bool IsExpandedBeforeMsg = pObj->pListWin ? pObj->pListWin->IsVisible() : false;
 		/* Let widget handle the standard messages */
 		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -170,7 +174,7 @@ struct DROPDOWN_Obj : public WIDGET {
 						WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 						break;
 					case WM_NOTIFICATION_CLICKED: {
-						auto pListWin = (LISTBOX_Obj *)pInfo->pWinSrc;
+						auto pListWin = (ListBox *)pInfo->pWinSrc;
 						int Sel = pListWin->GetSel();
 						pObj->SetSel(Sel);
 						break;
@@ -212,6 +216,34 @@ struct DROPDOWN_Obj : public WIDGET {
 	}
 
 public:
+
+	static DropDown *Create(int x0, int y0, int xsize, int ysize,
+					 WObj *hParent, int WinFlags, int ExFlags, int Id) {
+		auto pObj = (DropDown *)WM_CreateWindowAsChild(
+			x0, y0, xsize, -1,
+			hParent, WinFlags, DropDown::_Callback,
+			sizeof(DropDown) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "DropDown create failed");
+			return nullptr;
+		}
+		/* init widget specific variables */
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
+		pObj->Props = DropDown::DefaultProps;
+		pObj->Flags = ExFlags;
+		pObj->ScrollbarWidth = 0;
+		pObj->ySizeEx = ysize;
+		pObj->_AdjustHeight();
+		return pObj;
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo,
+								WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,
+					  pCreateInfo->xSize, pCreateInfo->ySize,
+					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
+	}
+
+public:
 	void Collapse() {
 		if (this->pListWin) {
 			auto pListWin = this->pListWin;
@@ -235,7 +267,7 @@ public:
 		}
 		auto pLst = this->pListWin;
 		if (pLst == 0) {
-			pLst = LISTBOX_CreateAsChild(nullptr, WM_GetDesktopWindow(), r.x0, r.y0, xSize, ySize, WC_VISIBLE | WC_STAYONTOP | WC_ACTIVATE);
+			pLst = ListBox::Create(nullptr, WM_GetDesktopWindow(), r.x0, r.y0, xSize, ySize, WC_VISIBLE | WC_STAYONTOP | WC_ACTIVATE);
 			pLst->SetEffect(WIDGET_Effect_3D1L);
 			if (pLst) {
 				if (this->Flags & DROPDOWN_SF_AUTOSCROLLBAR) {
@@ -429,33 +461,6 @@ public:
 	}
 };
 
-DROPDOWN_Obj::Properties DROPDOWN_Obj::DefaultProps;
-
-DROPDOWN_Obj *DROPDOWN_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
-								int WinFlags, int ExFlags, int Id) {
-	auto pObj = (DROPDOWN_Obj *)WM_CreateWindowAsChild(
-		x0, y0, xsize, -1,
-		hParent, WinFlags, DROPDOWN_Obj::_Callback,
-		sizeof(DROPDOWN_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		pObj->Props = DROPDOWN_Obj::DefaultProps;
-		pObj->Flags = ExFlags;
-		pObj->ScrollbarWidth = 0;
-		pObj->ySizeEx = ysize;
-		pObj->_AdjustHeight();
-	}
-	return pObj;
-}
-DROPDOWN_Obj *DROPDOWN_Create(WM_Obj *hWinParent, int x0, int y0, int xsize, int ysize, int Flags) {
-	return DROPDOWN_CreateEx(x0, y0, xsize, ysize, hWinParent, Flags, 0, 0);
-}
-WM_Obj *DROPDOWN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo,
-								WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	return DROPDOWN_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,
-							 pCreateInfo->xSize, pCreateInfo->ySize,
-							 hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-}
+DropDown::Properties DropDown::DefaultProps;
 
 }

@@ -10,12 +10,12 @@ import TUX.Widget.ListView;
 import TUX.Widget.Frame;
 import TUX.Widget.Text;
 import TUX.Widget.DropDown;
-import TUX.Widget.MultiPage;
+import TUX.Widget.MultPage;
 import TUX.Widget.Radio;
 import TUX.Widget.ProgBar;
 import TUX.Widget.Slider;
 import TUX.Widget.Edit;
-import TUX.Widget.MultiEdit;
+import TUX.Widget.MultEdit;
 
 static bool _MultiSel = false, _OwnerDrawn = true;
 const RGBC ColorsSmilie0[]{ RGB_WHITE, RGB_BLACK, RGB_RED };
@@ -71,18 +71,18 @@ static const char *_ListBox[]{
 #define GUI_ID_CHECK0      GUI_ID_USER + 0x01
 #define GUI_ID_CHECK1      GUI_ID_USER + 0x02
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[]{
-	{ FRAMEWIN_CreateIndirect  , "Owner drawn list box" , 0                 , 50  , 50  , 220  , 175  , FRAMEWIN_CF_MOVEABLE | FRAMEWIN_CF_RESIZEABLE },
-	{ LISTBOX_CreateIndirect   , ""                     , GUI_ID_MULTIEDIT0 , 10  , 10  , 100  , 100  , 0                    , 100 },
-	{ CHECKBOX_CreateIndirect  , ""                     , GUI_ID_CHECK0     , 120 , 10  , 0    , 0                                 },
-	{ TEXT_CreateIndirect      , "Multi select"         , 0                 , 140 , 10  , 80   , 15   , TEXT_CF_LEFT               },
-	{ CHECKBOX_CreateIndirect  , ""                     , GUI_ID_CHECK1     , 120 , 35  , 0    , 0                                 },
-	{ TEXT_CreateIndirect      , "Owner drawn"          , 0                 , 140 , 35  , 80   , 15   , TEXT_CF_LEFT               },
-	{ BUTTON_CreateIndirect    , "OK"                   , GUI_ID_OK         , 120 , 65  , 80   , 20                                },
-	{ BUTTON_CreateIndirect    , "Cancel"               , GUI_ID_CANCEL     , 120 , 90  , 80   , 20                                }
+	{ Frame   ::CreateIndirect, "Owner drawn list box" , 0                 , 50  , 50  , 220  , 175  , FRAMEWIN_CF_MOVEABLE | FRAMEWIN_CF_RESIZEABLE },
+	{ ListBox ::CreateIndirect, ""                     , GUI_ID_MULTIEDIT0 , 10  , 10  , 100  , 100  , 0                    , 100 },
+	{ CheckBox::CreateIndirect, ""                     , GUI_ID_CHECK0     , 120 , 10  , 0    , 0                                 },
+	{ Text    ::CreateIndirect, "Multi select"         , 0                 , 140 , 10  , 80   , 15   , TEXT_CF_LEFT               },
+	{ CheckBox::CreateIndirect, ""                     , GUI_ID_CHECK1     , 120 , 35  , 0    , 0                                 },
+	{ Text    ::CreateIndirect, "Owner drawn"          , 0                 , 140 , 35  , 80   , 15   , TEXT_CF_LEFT               },
+	{ Button  ::CreateIndirect, "OK"                   , GUI_ID_OK         , 120 , 65  , 80   , 20                                },
+	{ Button  ::CreateIndirect, "Cancel"               , GUI_ID_CANCEL     , 120 , 90  , 80   , 20                                }
 };
 
-static int _GetItemSizeY(LISTBOX_Obj *pObj, int ItemIndex) {
-	int DistY = pObj->Props.pFont->DistY() + 1;
+static int _GetItemSizeY(ListBox *pObj, int ItemIndex) {
+	int DistY = pObj->GetFont()->DistY() + 1;
 	if (pObj->GetMulti()) {
 		if (pObj->GetItemSel(ItemIndex))
 			DistY += 8;
@@ -92,8 +92,8 @@ static int _GetItemSizeY(LISTBOX_Obj *pObj, int ItemIndex) {
 	return DistY;
 }
 
-static int _OwnerDraw(WM_Obj *pWin, int Cmd, int Index, POINT ItemPos) {
-	auto pObj = (LISTBOX_Obj *)pWin;
+static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
+	auto pObj = (ListBox *)pWin;
 	switch (Cmd) {
 		case WIDGET_ITEM_GET_XSIZE: {
 			char acBuffer[100];
@@ -149,21 +149,21 @@ static int _OwnerDraw(WM_Obj *pWin, int Cmd, int Index, POINT ItemPos) {
 			break;
 		}
 		default:
-			return LISTBOX_Obj::OwnerDraw(pWin, Cmd, Index, ItemPos);
+			return ListBox::OwnerDraw(pWin, Cmd, Index, ItemPos);
 	}
 	return 0;
 }
 
 
-static WM_Obj *_hMemDevFrame;
-static WM_Obj *_hMemDevPane;
-static WM_Obj *_hNoMemDevFrame;
-static WM_Obj *_hNoMemDevPane;
+static WObj *_hMemDevFrame;
+static WObj *_hMemDevPane;
+static WObj *_hNoMemDevFrame;
+static WObj *_hNoMemDevPane;
 static int _MemDevPhase;
 
 void _TestEdit();
 
-static WM_PARAM _cbMemDevPane(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbMemDevPane(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_PAINT:
 		{
@@ -199,20 +199,20 @@ static WM_PARAM _cbMemDevPane(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	return WM_DefaultProc(pWin, MsgId, Data);
 }
 
-static WM_Obj *_CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMemDev, WM_Obj **phPane) {
+static WObj *_CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMemDev, WObj **phPane) {
 	auto Flags = WC_VISIBLE;
 	if (UseMemDev)
 		Flags |= WC_MEMDEV;
-	auto pFrame = FRAMEWIN_CreateEx(x0, y0, 190, 180, 0, WC_VISIBLE, FRAMEWIN_CF_MOVEABLE, 0, pTitle, 0);
+	auto pFrame = Frame::Create(x0, y0, 190, 180, 0, WC_VISIBLE, FRAMEWIN_CF_MOVEABLE, 0, pTitle, 0);
 	auto pClient = WM_GetClientWindow(pFrame);
 	auto Size = pClient->GetSize();
 	*phPane = WM_CreateWindowAsChild(0, 0, Size.x, Size.y, pClient, Flags, _cbMemDevPane, 0);
 	return pFrame;
 }
 
-static WM_PARAM _cbCallback(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
-	CHECKBOX_Obj *pItem;
-	auto pListBox = pWin->GetItem<LISTBOX_Obj>(GUI_ID_MULTIEDIT0);
+static WM_PARAM _cbCallback(WObj *pWin, int MsgId, WM_PARAM Data) {
+	CheckBox *pItem;
+	auto pListBox = pWin->GetItem<ListBox>(GUI_ID_MULTIEDIT0);
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
 			pListBox->SetText(_ListBox);
@@ -228,7 +228,7 @@ static WM_PARAM _cbCallback(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 			pListBox->SetAutoScrollH(1);
 			pListBox->SetAutoScrollV(1);
 			pListBox->SetOwnerDraw(_OwnerDraw);
-			pItem = pWin->GetItem<CHECKBOX_Obj>(GUI_ID_CHECK1);
+			pItem = pWin->GetItem<CheckBox>(GUI_ID_CHECK1);
 			pItem->SetState(1);
 			return 0;
 		case WM_KEY: {
@@ -250,7 +250,7 @@ static WM_PARAM _cbCallback(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 			auto pInfo = (const NOTIFY_INFO *)Data;
 			auto pWinSrc = pInfo->pWinSrc;
 			int Id = pWinSrc->GetID(); /* Id of widget */
-			pItem = pWin->GetItem<CHECKBOX_Obj>(Id);
+			pItem = pWin->GetItem<CheckBox>(Id);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SEL_CHANGED:
 					pListBox->InvalidateItem(LISTBOX_ALL_ITEMS);
@@ -307,7 +307,7 @@ static WM_PARAM _cbCallback(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 #define ID_MENU_HELP_ABOUT  (GUI_ID_USER + 15)
 #define ID_MENU_TEST_EDIT_INTERACTIVE (GUI_ID_USER + 16)
 
-static void _AddMenuItem(MENU_Obj *pMenu, MENU_Obj *pSubmenu, const char *pText, uint16_t Id, uint16_t Flags) {
+static void _AddMenuItem(Menu *pMenu, Menu *pSubmenu, const char *pText, uint16_t Id, uint16_t Flags) {
 	MENU_ITEM_DATA Item;
 	Item.pText = pText;
 	Item.pSubmenu = pSubmenu;
@@ -323,66 +323,66 @@ static void _AddMenuItem(MENU_Obj *pMenu, MENU_Obj *pSubmenu, const char *pText,
 *
 **********************************************************************
 */
-static void _CreateMenu(FRAMEWIN_Obj *pParent) {
+static void _CreateMenu(Frame *pParent) {
 	//
 	// Create main menu
 	//
-	auto hMenu = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_HORIZONTAL, ID_MENU);
+	auto pMenu = Menu::Create(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_HORIZONTAL, ID_MENU);
 	//
 	// Create sub menus
 	//
-	auto hMenuFile = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
-	auto hMenuEdit = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
-	auto hMenuHelp = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
-	auto hMenuRecent = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
-	auto hMenuTests = MENU_CreateEx(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
+	auto pMenuFile = Menu::Create(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
+	auto pMenuEdit = Menu::Create(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
+	auto pMenuHelp = Menu::Create(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
+	auto pMenuRecent = Menu::Create(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
+	auto pMenuTests = Menu::Create(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
 	//
 	// Add menu items to menu &#39;Recent&#39;
 	//
-	_AddMenuItem(hMenuRecent, 0, "File 1", ID_MENU_RECENT_0, 0);
-	_AddMenuItem(hMenuRecent, 0, "File 2", ID_MENU_RECENT_1, 0);
-	_AddMenuItem(hMenuRecent, 0, "File 3", ID_MENU_RECENT_2, 0);
-	_AddMenuItem(hMenuRecent, 0, "File 4", ID_MENU_RECENT_3, 0);
-	_AddMenuItem(hMenuRecent, 0, "File 4", ID_MENU_RECENT_3, 0);
-	_AddMenuItem(hMenuRecent, 0, "File 4", ID_MENU_RECENT_3, 0);
+	_AddMenuItem(pMenuRecent, 0, "File 1", ID_MENU_RECENT_0, 0);
+	_AddMenuItem(pMenuRecent, 0, "File 2", ID_MENU_RECENT_1, 0);
+	_AddMenuItem(pMenuRecent, 0, "File 3", ID_MENU_RECENT_2, 0);
+	_AddMenuItem(pMenuRecent, 0, "File 4", ID_MENU_RECENT_3, 0);
+	_AddMenuItem(pMenuRecent, 0, "File 4", ID_MENU_RECENT_3, 0);
+	_AddMenuItem(pMenuRecent, 0, "File 4", ID_MENU_RECENT_3, 0);
 	//
 	// Add menu items to menu &#39;File&#39;
 	//
-	_AddMenuItem(hMenuFile, 0, "New", ID_MENU_FILE_NEW, 0);
-	_AddMenuItem(hMenuFile, 0, "Open", ID_MENU_FILE_OPEN, 0);
-	_AddMenuItem(hMenuFile, 0, "Close", ID_MENU_FILE_CLOSE, MENU_IF_DISABLED);
-	_AddMenuItem(hMenuFile, 0, 0, 0, MENU_IF_SEPARATOR);
-	_AddMenuItem(hMenuFile, hMenuRecent, "Files...", ID_MENU_FILE_RECENT, 0);
-	_AddMenuItem(hMenuFile, 0, 0, 0, MENU_IF_SEPARATOR);
-	_AddMenuItem(hMenuFile, 0, "Exit", ID_MENU_FILE_EXIT, 0);
+	_AddMenuItem(pMenuFile, 0, "New", ID_MENU_FILE_NEW, 0);
+	_AddMenuItem(pMenuFile, 0, "Open", ID_MENU_FILE_OPEN, 0);
+	_AddMenuItem(pMenuFile, 0, "Close", ID_MENU_FILE_CLOSE, MENU_IF_DISABLED);
+	_AddMenuItem(pMenuFile, 0, 0, 0, MENU_IF_SEPARATOR);
+	_AddMenuItem(pMenuFile, pMenuRecent, "Files...", ID_MENU_FILE_RECENT, 0);
+	_AddMenuItem(pMenuFile, 0, 0, 0, MENU_IF_SEPARATOR);
+	_AddMenuItem(pMenuFile, 0, "Exit", ID_MENU_FILE_EXIT, 0);
 	//
 	// Add menu items to menu &#39;Edit&#39;
 	//
-	_AddMenuItem(hMenuEdit, 0, "Undo", ID_MENU_EDIT_UNDO, 0);
-	_AddMenuItem(hMenuEdit, 0, "Redo", ID_MENU_EDIT_REDO, 0);
-	_AddMenuItem(hMenuEdit, 0, 0, 0, MENU_IF_SEPARATOR);
-	_AddMenuItem(hMenuEdit, 0, "Copy", ID_MENU_EDIT_COPY, 0);
-	_AddMenuItem(hMenuEdit, 0, "Paste", ID_MENU_EDIT_PASTE, 0);
-	_AddMenuItem(hMenuEdit, 0, "Delete", ID_MENU_EDIT_DELETE, 0);
+	_AddMenuItem(pMenuEdit, 0, "Undo", ID_MENU_EDIT_UNDO, 0);
+	_AddMenuItem(pMenuEdit, 0, "Redo", ID_MENU_EDIT_REDO, 0);
+	_AddMenuItem(pMenuEdit, 0, 0, 0, MENU_IF_SEPARATOR);
+	_AddMenuItem(pMenuEdit, 0, "Copy", ID_MENU_EDIT_COPY, 0);
+	_AddMenuItem(pMenuEdit, 0, "Paste", ID_MENU_EDIT_PASTE, 0);
+	_AddMenuItem(pMenuEdit, 0, "Delete", ID_MENU_EDIT_DELETE, 0);
 	//
 	// Add menu items to menu &#39;Help&#39;
 	//
-	_AddMenuItem(hMenuHelp, 0, "About", ID_MENU_HELP_ABOUT, 0);
+	_AddMenuItem(pMenuHelp, 0, "About", ID_MENU_HELP_ABOUT, 0);
 	//
 	// Add menu items to menu &#39;Tests&#39;
 	//
-	_AddMenuItem(hMenuTests, 0, "Edit Interactive", ID_MENU_TEST_EDIT_INTERACTIVE, 0);
+	_AddMenuItem(pMenuTests, 0, "Edit Interactive", ID_MENU_TEST_EDIT_INTERACTIVE, 0);
 	//
 	// Add menu items to main menu
 	//
-	_AddMenuItem(hMenu, hMenuFile, "File", 0, 0);
-	_AddMenuItem(hMenu, hMenuEdit, "Edit", 0, 0);
-	_AddMenuItem(hMenu, hMenuHelp, "Help", 0, 0);
-	_AddMenuItem(hMenu, hMenuTests, "Tests", 0, 0);
+	_AddMenuItem(pMenu, pMenuFile, "File", 0, 0);
+	_AddMenuItem(pMenu, pMenuEdit, "Edit", 0, 0);
+	_AddMenuItem(pMenu, pMenuHelp, "Help", 0, 0);
+	_AddMenuItem(pMenu, pMenuTests, "Tests", 0, 0);
 	//
 	// Attach menu to parent window
 	//
-	pParent->AddMenu(hMenu);
+	pParent->AddMenu(pMenu);
 }
 
 void _Create() {
@@ -400,17 +400,17 @@ void _Create() {
 #define ID_LISTVIEW_TEST    (GUI_ID_USER + 100)
 
 static const GUI_WIDGET_CREATE_INFO _aListViewDialogCreate[] = {
-	{ FRAMEWIN_CreateIndirect  , "ListView Test"      , 0                 , 50  , 50  , 320 , 240 , FRAMEWIN_CF_MOVEABLE       },
-	{ LISTVIEW_CreateIndirect  , ""                   , ID_LISTVIEW_TEST  , 10  , 10  , 290 , 160 , 0                          },
-	{ BUTTON_CreateIndirect    , "Add Row"            , GUI_ID_USER + 101 , 10  , 180 , 80  , 25                             },
-	{ BUTTON_CreateIndirect    , "Delete Row"         , GUI_ID_USER + 102 , 100 , 180 , 80  , 25                             },
-	{ BUTTON_CreateIndirect    , "Close"              , GUI_ID_CANCEL     , 190 , 180 , 80  , 25                             }
+	{ Frame   ::CreateIndirect, "ListView Test"      , 0                 , 50  , 50  , 320 , 240 , FRAMEWIN_CF_MOVEABLE       },
+	{ ListView::CreateIndirect, ""                   , ID_LISTVIEW_TEST  , 10  , 10  , 290 , 160 , 0                          },
+	{ Button  ::CreateIndirect, "Add Row"            , GUI_ID_USER + 101 , 10  , 180 , 80  , 25                               },
+	{ Button  ::CreateIndirect, "Delete Row"         , GUI_ID_USER + 102 , 100 , 180 , 80  , 25                               },
+	{ Button  ::CreateIndirect, "Close"              , GUI_ID_CANCEL     , 190 , 180 , 80  , 25                               }
 };
 
-static WM_PARAM _cbListViewTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbListViewTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pListView = pWin->GetItem<LISTVIEW_Obj>(ID_LISTVIEW_TEST);
+			auto pListView = pWin->GetItem<ListView>(ID_LISTVIEW_TEST);
 			// Add columns
 			pListView->AddColumn(80, "Name", TEXTALIGN_LEFT);
 			pListView->AddColumn(60, "Age", TEXTALIGN_RIGHT);
@@ -430,7 +430,7 @@ static WM_PARAM _cbListViewTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 			auto pInfo = (NOTIFY_INFO *)Data;
 			auto pWinSrc = pInfo->pWinSrc;
 			int Id = pWinSrc->GetID();
-			auto pListView = pWin->GetItem<LISTVIEW_Obj>(ID_LISTVIEW_TEST);
+			auto pListView = pWin->GetItem<ListView>(ID_LISTVIEW_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_RELEASED:
 					switch (Id) {
@@ -497,9 +497,9 @@ static const char *_DropDownInitialItems[] = {
 	nullptr
 };
 
-static void _UpdateDropDownStatus(WM_Obj *pWin) {
-	auto pDropDown = pWin->GetItem<DROPDOWN_Obj>(ID_DROPDOWN_TEST);
-	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_DROPDOWN_STATUS);
+static void _UpdateDropDownStatus(WObj *pWin) {
+	auto pDropDown = pWin->GetItem<DropDown>(ID_DROPDOWN_TEST);
+	auto pStatus = pWin->GetItem<Text>(ID_DROPDOWN_STATUS);
 	if (pDropDown && pStatus) {
 		char acStatus[96];
 		sprintf(acStatus, "Items: %d  Sel: %d  AutoScroll: %s",
@@ -511,26 +511,26 @@ static void _UpdateDropDownStatus(WM_Obj *pWin) {
 }
 
 static const GUI_WIDGET_CREATE_INFO _aDropDownDialogCreate[] = {
-	{ FRAMEWIN_CreateIndirect  , "DropDown Test"      , 0                      , 50  , 40  , 390 , 230 , FRAMEWIN_CF_MOVEABLE       },
-	{ DROPDOWN_CreateIndirect  , ""                   , ID_DROPDOWN_TEST       , 10  , 10  , 220 , 96  , 0                          },
-	{ TEXT_CreateIndirect      , "Use the DropDown or buttons below to interact."
-	                                                                           , 0   , 10  , 45 , 360 , 16 , TEXT_CF_LEFT },
-	{ BUTTON_CreateIndirect    , "Add Item"           , ID_DROPDOWN_ADD        , 10  , 70  , 80  , 25                  },
-	{ BUTTON_CreateIndirect    , "Insert"             , ID_DROPDOWN_INSERT     , 95  , 70  , 80  , 25                  },
-	{ BUTTON_CreateIndirect    , "Delete"             , ID_DROPDOWN_DELETE     , 180 , 70  , 80  , 25                  },
-	{ BUTTON_CreateIndirect    , "Next"               , ID_DROPDOWN_NEXT       , 265 , 70  , 80  , 25                  },
-	{ BUTTON_CreateIndirect    , "Prev"               , ID_DROPDOWN_PREV       , 10  , 105 , 80  , 25                  },
-	{ BUTTON_CreateIndirect    , "AutoScroll"         , ID_DROPDOWN_AUTOSCROLL , 95  , 105 , 80  , 25                   },
-	{ BUTTON_CreateIndirect    , "Expand"             , ID_DROPDOWN_EXPAND     , 180 , 105 , 80  , 25                  },
-	{ BUTTON_CreateIndirect    , "Collapse"           , ID_DROPDOWN_COLLAPSE   , 265 , 105 , 80  , 25                  },
-	{ TEXT_CreateIndirect      , ""                   , ID_DROPDOWN_STATUS     , 10  , 145 , 360 , 18 , TEXT_CF_LEFT   },
-	{ BUTTON_CreateIndirect    , "Close"              , GUI_ID_CANCEL          , 265 , 175 , 80  , 25                  }
+	{ Frame   ::CreateIndirect, "DropDown Test"      , 0                      , 50  , 40  , 390 , 230 , FRAMEWIN_CF_MOVEABLE       },
+	{ DropDown::CreateIndirect, ""                   , ID_DROPDOWN_TEST       , 10  , 10  , 220 , 96  , 0                          },
+	{ Text    ::CreateIndirect, "Use the DropDown or buttons below to interact."
+	                                                                            , 0   , 10  , 45  , 360 , 16 , TEXT_CF_LEFT          },
+	{ Button  ::CreateIndirect, "Add Item"           , ID_DROPDOWN_ADD        , 10  , 70  , 80  , 25                               },
+	{ Button  ::CreateIndirect, "Insert"             , ID_DROPDOWN_INSERT     , 95  , 70  , 80  , 25                               },
+	{ Button  ::CreateIndirect, "Delete"             , ID_DROPDOWN_DELETE     , 180 , 70  , 80  , 25                               },
+	{ Button  ::CreateIndirect, "Next"               , ID_DROPDOWN_NEXT       , 265 , 70  , 80  , 25                               },
+	{ Button  ::CreateIndirect, "Prev"               , ID_DROPDOWN_PREV       , 10  , 105 , 80  , 25                               },
+	{ Button  ::CreateIndirect, "AutoScroll"         , ID_DROPDOWN_AUTOSCROLL , 95  , 105 , 80  , 25                               },
+	{ Button  ::CreateIndirect, "Expand"             , ID_DROPDOWN_EXPAND     , 180 , 105 , 80  , 25                               },
+	{ Button  ::CreateIndirect, "Collapse"           , ID_DROPDOWN_COLLAPSE   , 265 , 105 , 80  , 25                               },
+	{ Text    ::CreateIndirect, ""                   , ID_DROPDOWN_STATUS     , 10  , 145 , 360 , 18  , TEXT_CF_LEFT               },
+	{ Button  ::CreateIndirect, "Close"              , GUI_ID_CANCEL          , 265 , 175 , 80  , 25                               }
 };
 
-static WM_PARAM _cbDropDownTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbDropDownTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pDropDown = pWin->GetItem<DROPDOWN_Obj>(ID_DROPDOWN_TEST);
+			auto pDropDown = pWin->GetItem<DropDown>(ID_DROPDOWN_TEST);
 			for (auto i = 0; _DropDownInitialItems[i]; ++i) {
 				pDropDown->AddString(_DropDownInitialItems[i]);
 			}
@@ -546,7 +546,7 @@ static WM_PARAM _cbDropDownTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 			auto pInfo = (const NOTIFY_INFO *)Data;
 			auto  pWinSrc = pInfo->pWinSrc;
 			int Id = pWinSrc->GetID();
-			auto pDropDown = pWin->GetItem<DROPDOWN_Obj>(ID_DROPDOWN_TEST);
+			auto pDropDown = pWin->GetItem<DropDown>(ID_DROPDOWN_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SEL_CHANGED:
 					if (Id == ID_DROPDOWN_TEST) {
@@ -624,7 +624,7 @@ static WM_PARAM _cbDropDownTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 }
 
 void _TestDropDown() {
-	WM_Obj *pDialog = GUI_CreateDialogBox(_aDropDownDialogCreate, GUI_COUNTOF(_aDropDownDialogCreate), &_cbDropDownTest, 0, 0, 0);
+	WObj *pDialog = GUI_CreateDialogBox(_aDropDownDialogCreate, GUI_COUNTOF(_aDropDownDialogCreate), &_cbDropDownTest, 0, 0, 0);
 	pDialog->DialogExec();
 }
 
@@ -640,15 +640,15 @@ void _TestDropDown() {
 static int _MultiPagePageCount = 0;
 static int _MultiPageNewPageIndex = 0;
 
-static WM_Obj *_CreateMultiPagePage(MULTIPAGE_Obj *pMultiPage, const char *pLabel) {
+static WObj *_CreateMultiPagePage(MultPage *pMultiPage, const char *pLabel) {
 	char acText[96];
 	sprintf(acText, "Content: %s", pLabel);
-	return TEXT_CreateAsChild(8, 8, 300, 20, pMultiPage, 0, WC_VISIBLE, acText, TEXT_CF_LEFT);
+	return Text::Create(8, 8, 300, 20, pMultiPage, WC_VISIBLE, TEXT_CF_LEFT, 0, acText);
 }
 
-static void _UpdateMultiPageStatus(WM_Obj *pWin) {
-	auto pMultiPage = pWin->GetItem<MULTIPAGE_Obj>(ID_MULTIPAGE_TEST);
-	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_MULTIPAGE_STATUS);
+static void _UpdateMultiPageStatus(WObj *pWin) {
+	auto pMultiPage = pWin->GetItem<MultPage>(ID_MULTIPAGE_TEST);
+	auto pStatus = pWin->GetItem<Text>(ID_MULTIPAGE_STATUS);
 	if (pMultiPage && pStatus) {
 		char acStatus[96];
 		int Sel = pMultiPage->GetSelection();
@@ -660,22 +660,22 @@ static void _UpdateMultiPageStatus(WM_Obj *pWin) {
 }
 
 static const GUI_WIDGET_CREATE_INFO _aMultiPageDialogCreate[] = {
-	{ FRAMEWIN_CreateIndirect  , "MultiPage Test"     , 0                         , 40  , 40  , 420 , 270 , FRAMEWIN_CF_MOVEABLE },
-	{ MULTIPAGE_CreateIndirect , ""                   , ID_MULTIPAGE_TEST         , 10  , 10  , 390 , 150 , 0                  },
-	{ BUTTON_CreateIndirect    , "Add Page"           , ID_MULTIPAGE_ADD          , 10  , 170 , 90  , 25                      },
-	{ BUTTON_CreateIndirect    , "Delete"             , ID_MULTIPAGE_DELETE       , 105 , 170 , 80  , 25                      },
-	{ BUTTON_CreateIndirect    , "Next"               , ID_MULTIPAGE_NEXT         , 190 , 170 , 65  , 25                      },
-	{ BUTTON_CreateIndirect    , "Prev"               , ID_MULTIPAGE_PREV         , 260 , 170 , 65  , 25                      },
-	{ BUTTON_CreateIndirect    , "Enable/Disable"     , ID_MULTIPAGE_TOGGLE_ENABLE, 10  , 200 , 120 , 25                      },
-	{ BUTTON_CreateIndirect    , "Rename"             , ID_MULTIPAGE_RENAME       , 135 , 200 , 80  , 25                      },
-	{ TEXT_CreateIndirect      , ""                   , ID_MULTIPAGE_STATUS       , 10  , 232 , 310 , 18  , TEXT_CF_LEFT      },
-	{ BUTTON_CreateIndirect    , "Close"              , GUI_ID_CANCEL             , 330 , 225 , 70  , 25                      }
+	{ Frame   ::CreateIndirect, "MultiPage Test"     , 0                         , 40  , 40  , 420 , 270 , FRAMEWIN_CF_MOVEABLE },
+	{ MultPage::CreateIndirect, ""                   , ID_MULTIPAGE_TEST         , 10  , 10  , 390 , 150 , 0                    },
+	{ Button  ::CreateIndirect, "Add Page"           , ID_MULTIPAGE_ADD          , 10  , 170 , 90  , 25                         },
+	{ Button  ::CreateIndirect, "Delete"             , ID_MULTIPAGE_DELETE       , 105 , 170 , 80  , 25                         },
+	{ Button  ::CreateIndirect, "Next"               , ID_MULTIPAGE_NEXT         , 190 , 170 , 65  , 25                         },
+	{ Button  ::CreateIndirect, "Prev"               , ID_MULTIPAGE_PREV         , 260 , 170 , 65  , 25                         },
+	{ Button  ::CreateIndirect, "Enable/Disable"     , ID_MULTIPAGE_TOGGLE_ENABLE, 10  , 200 , 120 , 25                         },
+	{ Button  ::CreateIndirect, "Rename"             , ID_MULTIPAGE_RENAME       , 135 , 200 , 80  , 25                         },
+	{ Text    ::CreateIndirect, ""                   , ID_MULTIPAGE_STATUS       , 10  , 232 , 310 , 18  , TEXT_CF_LEFT         },
+	{ Button  ::CreateIndirect, "Close"              , GUI_ID_CANCEL             , 330 , 225 , 70  , 25                         }
 };
 
-static WM_PARAM _cbMultiPageTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbMultiPageTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pMultiPage = pWin->GetItem<MULTIPAGE_Obj>(ID_MULTIPAGE_TEST);
+			auto pMultiPage = pWin->GetItem<MultPage>(ID_MULTIPAGE_TEST);
 			const char *aTitles[] = { "Home", "Settings", "About", nullptr };
 			_MultiPagePageCount = 0;
 			_MultiPageNewPageIndex = 0;
@@ -692,7 +692,7 @@ static WM_PARAM _cbMultiPageTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 			auto pInfo = (const NOTIFY_INFO *)Data;
 			auto pWinSrc = pInfo->pWinSrc;
 			int Id = pWinSrc->GetID();
-			auto pMultiPage = pWin->GetItem<MULTIPAGE_Obj>(ID_MULTIPAGE_TEST);
+			auto pMultiPage = pWin->GetItem<MultPage>(ID_MULTIPAGE_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_SEL_CHANGED:
 					if (Id == ID_MULTIPAGE_TEST) {
@@ -786,9 +786,9 @@ void _TestMultiPage() {
 #define ID_RADIO_SET1      (GUI_ID_USER + 165)
 #define ID_RADIO_SET2      (GUI_ID_USER + 166)
 
-static void _UpdateRadioStatus(WM_Obj *pWin) {
-	auto pRadio = pWin->GetItem<RADIO_Obj>(ID_RADIO_TEST);
-	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_RADIO_STATUS);
+static void _UpdateRadioStatus(WObj *pWin) {
+	auto pRadio = pWin->GetItem<Radio>(ID_RADIO_TEST);
+	auto pStatus = pWin->GetItem<Text>(ID_RADIO_STATUS);
 	if (pRadio && pStatus) {
 		char acStatus[64];
 		sprintf(acStatus, "Selected: %d", pRadio->GetValue());
@@ -797,21 +797,21 @@ static void _UpdateRadioStatus(WM_Obj *pWin) {
 }
 
 static const GUI_WIDGET_CREATE_INFO _aRadioDialogCreate[] = {
-	{ FRAMEWIN_CreateIndirect , "Radio Test" , 0               , 60  , 50  , 360 , 220 , FRAMEWIN_CF_MOVEABLE },
-	{ RADIO_CreateIndirect    , ""           , ID_RADIO_TEST   , 10  , 10  , 200 , 80  , 0, (3 | (24 << 8))   },
-	{ BUTTON_CreateIndirect   , "Prev"       , ID_RADIO_PREV   , 10  , 100 , 70  , 25                         },
-	{ BUTTON_CreateIndirect   , "Next"       , ID_RADIO_NEXT   , 85  , 100 , 70  , 25                         },
-	{ BUTTON_CreateIndirect   , "Set 0"      , ID_RADIO_SET0   , 160 , 100 , 60  , 25                         },
-	{ BUTTON_CreateIndirect   , "Set 1"      , ID_RADIO_SET1   , 225 , 100 , 60  , 25                         },
-	{ BUTTON_CreateIndirect   , "Set 2"      , ID_RADIO_SET2   , 290 , 100 , 60  , 25                         },
-	{ TEXT_CreateIndirect     , ""           , ID_RADIO_STATUS , 10  , 140 , 220 , 18  , TEXT_CF_LEFT         },
-	{ BUTTON_CreateIndirect   , "Close"      , GUI_ID_CANCEL   , 270 , 170 , 80  , 25                         }
+	{ Frame ::CreateIndirect, "Radio Test" , 0               , 60  , 50  , 360 , 220 , FRAMEWIN_CF_MOVEABLE },
+	{ Radio ::CreateIndirect, ""           , ID_RADIO_TEST   , 10  , 10  , 200 , 80  , 0, (3 | (24 << 8))   },
+	{ Button::CreateIndirect, "Prev"       , ID_RADIO_PREV   , 10  , 100 , 70  , 25                         },
+	{ Button::CreateIndirect, "Next"       , ID_RADIO_NEXT   , 85  , 100 , 70  , 25                         },
+	{ Button::CreateIndirect, "Set 0"      , ID_RADIO_SET0   , 160 , 100 , 60  , 25                         },
+	{ Button::CreateIndirect, "Set 1"      , ID_RADIO_SET1   , 225 , 100 , 60  , 25                         },
+	{ Button::CreateIndirect, "Set 2"      , ID_RADIO_SET2   , 290 , 100 , 60  , 25                         },
+	{ Text  ::CreateIndirect, ""           , ID_RADIO_STATUS , 10  , 140 , 220 , 18  , TEXT_CF_LEFT         },
+	{ Button::CreateIndirect, "Close"      , GUI_ID_CANCEL   , 270 , 170 , 80  , 25                         }
 };
 
-static WM_PARAM _cbRadioTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbRadioTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pRadio = pWin->GetItem<RADIO_Obj>(ID_RADIO_TEST);
+			auto pRadio = pWin->GetItem<Radio>(ID_RADIO_TEST);
 			pRadio->SetText("Option A", 0);
 			pRadio->SetText("Option B", 1);
 			pRadio->SetText("Option C", 2);
@@ -823,7 +823,7 @@ static WM_PARAM _cbRadioTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 			auto pInfo = (const NOTIFY_INFO *)Data;
 			auto pWinSrc = pInfo->pWinSrc;
 			int Id = pWinSrc->GetID();
-			auto pRadio = pWin->GetItem<RADIO_Obj>(ID_RADIO_TEST);
+			auto pRadio = pWin->GetItem<Radio>(ID_RADIO_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED:
 					if (Id == ID_RADIO_TEST) {
@@ -881,8 +881,8 @@ static int _ProgBarMax = 100;
 static int _ProgBarValue = 0;
 static bool _ProgBarCustomText = false;
 
-static void _UpdateProgBarStatus(WM_Obj *pWin) {
-	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_PROGBAR_STATUS);
+static void _UpdateProgBarStatus(WObj *pWin) {
+	auto pStatus = pWin->GetItem<Text>(ID_PROGBAR_STATUS);
 	if (pStatus) {
 		char acStatus[80];
 		sprintf(acStatus, "Range: %d-%d  Value: %d", _ProgBarMin, _ProgBarMax, _ProgBarValue);
@@ -891,20 +891,20 @@ static void _UpdateProgBarStatus(WM_Obj *pWin) {
 }
 
 static const GUI_WIDGET_CREATE_INFO _aProgBarDialogCreate[] = {
-	{ FRAMEWIN_CreateIndirect , "ProgBar Test", 0, 70, 60, 360, 210, FRAMEWIN_CF_MOVEABLE },
-	{ PROGBAR_CreateIndirect  , "", ID_PROGBAR_TEST, 15, 20, 320, 25, 0 },
-	{ BUTTON_CreateIndirect   , "-10", ID_PROGBAR_DEC, 15, 60, 60, 25 },
-	{ BUTTON_CreateIndirect   , "+10", ID_PROGBAR_INC, 80, 60, 60, 25 },
-	{ BUTTON_CreateIndirect   , "Reset", ID_PROGBAR_RESET, 145, 60, 70, 25 },
-	{ BUTTON_CreateIndirect   , "Text On/Off", ID_PROGBAR_TOGGLE_TEXT, 220, 60, 115, 25 },
-	{ TEXT_CreateIndirect     , "", ID_PROGBAR_STATUS, 15, 100, 320, 18, TEXT_CF_LEFT },
-	{ BUTTON_CreateIndirect   , "Close", GUI_ID_CANCEL, 255, 135, 80, 25 }
+	{ Frame  ::CreateIndirect, "ProgBar Test" , 0                      , 70  , 60  , 360 , 210 , FRAMEWIN_CF_MOVEABLE },
+	{ ProgBar::CreateIndirect, ""             , ID_PROGBAR_TEST        , 15  , 20  , 320 , 25  , 0                    },
+	{ Button ::CreateIndirect, "-10"          , ID_PROGBAR_DEC         , 15  , 60  , 60  , 25                         },
+	{ Button ::CreateIndirect, "+10"          , ID_PROGBAR_INC         , 80  , 60  , 60  , 25                         },
+	{ Button ::CreateIndirect, "Reset"        , ID_PROGBAR_RESET       , 145 , 60  , 70  , 25                         },
+	{ Button ::CreateIndirect, "Text On/Off"  , ID_PROGBAR_TOGGLE_TEXT , 220 , 60  , 115 , 25                         },
+	{ Text   ::CreateIndirect, ""             , ID_PROGBAR_STATUS      , 15  , 100 , 320 , 18  , TEXT_CF_LEFT         },
+	{ Button ::CreateIndirect, "Close"        , GUI_ID_CANCEL          , 255 , 135 , 80  , 25                         }
 };
 
-static WM_PARAM _cbProgBarTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbProgBarTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pProg = pWin->GetItem<PROGBAR_Obj>(ID_PROGBAR_TEST);
+			auto pProg = pWin->GetItem<ProgBar>(ID_PROGBAR_TEST);
 			_ProgBarMin = 0;
 			_ProgBarMax = 100;
 			_ProgBarValue = 30;
@@ -920,7 +920,7 @@ static WM_PARAM _cbProgBarTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 			auto pInfo = (const NOTIFY_INFO *)Data;
 			auto pWinSrc = pInfo->pWinSrc;
 			int Id = pWinSrc->GetID();
-			auto pProg = pWin->GetItem<PROGBAR_Obj>(ID_PROGBAR_TEST);
+			auto pProg = pWin->GetItem<ProgBar>(ID_PROGBAR_TEST);
 			if (pInfo->Notification == WM_NOTIFICATION_RELEASED) {
 				switch (Id) {
 					case ID_PROGBAR_DEC:
@@ -984,8 +984,8 @@ static int _SliderMax = 100;
 static int _SliderValue = 25;
 static bool _SliderAutoTicks = false;
 
-static void _UpdateSliderStatus(WM_Obj *pWin) {
-	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_SLIDER_STATUS);
+static void _UpdateSliderStatus(WObj *pWin) {
+	auto pStatus = pWin->GetItem<Text>(ID_SLIDER_STATUS);
 	if (pStatus) {
 		char acStatus[96];
 		sprintf(acStatus, "Range: %d-%d  Value: %d  Ticks: %s",
@@ -998,24 +998,24 @@ static void _UpdateSliderStatus(WM_Obj *pWin) {
 }
 
 static const GUI_WIDGET_CREATE_INFO _aSliderDialogCreate[] = {
-	{ FRAMEWIN_CreateIndirect , "Slider Test"                               , 0                      , 70  , 60  , 470 , 250 , FRAMEWIN_CF_MOVEABLE },
-	{ SLIDER_CreateIndirect   , ""                                          , ID_SLIDER_TEST         , 15  , 20  , 340 , 30                         },
-	{ SLIDER_CreateIndirect   , ""                                          , ID_SLIDER_TEST_V       , 375 , 20  , 30  , 150 , SLIDER_CF_VERTICAL      },
-	{ TEXT_CreateIndirect     , "Drag the horizontal or vertical slider."   , 0                      , 15  , 55  , 350 , 16  , TEXT_CF_LEFT         },
-	{ BUTTON_CreateIndirect   , "-10"                                       , ID_SLIDER_DEC          , 15  , 90  , 60  , 25                         },
-	{ BUTTON_CreateIndirect   , "+10"                                       , ID_SLIDER_INC          , 80  , 90  , 60  , 25                         },
-	{ BUTTON_CreateIndirect   , "Reset"                                     , ID_SLIDER_RESET        , 145 , 90  , 70  , 25                         },
-	{ BUTTON_CreateIndirect   , "Range"                                     , ID_SLIDER_TOGGLE_RANGE , 220 , 90  , 70  , 25                         },
-	{ BUTTON_CreateIndirect   , "Ticks"                                     , ID_SLIDER_TOGGLE_TICKS , 295 , 90  , 60  , 25                         },
-	{ TEXT_CreateIndirect     , ""                                          , ID_SLIDER_STATUS       , 15  , 130 , 350 , 18  , TEXT_CF_LEFT         },
-	{ BUTTON_CreateIndirect   , "Close"                                     , GUI_ID_CANCEL          , 375 , 200 , 80  , 25                         }
+	{ Frame ::CreateIndirect, "Slider Test"                               , 0                      , 70  , 60  , 470 , 250 , FRAMEWIN_CF_MOVEABLE },
+	{ Slider::CreateIndirect, ""                                          , ID_SLIDER_TEST         , 15  , 20  , 340 , 30                         },
+	{ Slider::CreateIndirect, ""                                          , ID_SLIDER_TEST_V       , 375 , 20  , 30  , 150 , SLIDER_CF_VERTICAL   },
+	{ Text  ::CreateIndirect, "Drag the horizontal or vertical slider."   , 0                      , 15  , 55  , 350 , 16  , TEXT_CF_LEFT         },
+	{ Button::CreateIndirect, "-10"                                       , ID_SLIDER_DEC          , 15  , 90  , 60  , 25                         },
+	{ Button::CreateIndirect, "+10"                                       , ID_SLIDER_INC          , 80  , 90  , 60  , 25                         },
+	{ Button::CreateIndirect, "Reset"                                     , ID_SLIDER_RESET        , 145 , 90  , 70  , 25                         },
+	{ Button::CreateIndirect, "Range"                                     , ID_SLIDER_TOGGLE_RANGE , 220 , 90  , 70  , 25                         },
+	{ Button::CreateIndirect, "Ticks"                                     , ID_SLIDER_TOGGLE_TICKS , 295 , 90  , 60  , 25                         },
+	{ Text  ::CreateIndirect, ""                                          , ID_SLIDER_STATUS       , 15  , 130 , 350 , 18  , TEXT_CF_LEFT         },
+	{ Button::CreateIndirect, "Close"                                     , GUI_ID_CANCEL          , 375 , 200 , 80  , 25                         }
 };
 
-static WM_PARAM _cbSliderTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbSliderTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pSliderH = pWin->GetItem<SLIDER_Obj>(ID_SLIDER_TEST);
-			auto pSliderV = pWin->GetItem<SLIDER_Obj>(ID_SLIDER_TEST_V);
+			auto pSliderH = pWin->GetItem<Slider>(ID_SLIDER_TEST);
+			auto pSliderV = pWin->GetItem<Slider>(ID_SLIDER_TEST_V);
 			_SliderMin = 0;
 			_SliderMax = 100;
 			_SliderValue = 25;
@@ -1033,8 +1033,8 @@ static WM_PARAM _cbSliderTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 			auto pInfo = (const NOTIFY_INFO *)Data;
 			auto pWinSrc = pInfo->pWinSrc;
 			int Id = pWinSrc->GetID();
-			auto pSliderH = pWin->GetItem<SLIDER_Obj>(ID_SLIDER_TEST);
-			auto pSliderV = pWin->GetItem<SLIDER_Obj>(ID_SLIDER_TEST_V);
+			auto pSliderH = pWin->GetItem<Slider>(ID_SLIDER_TEST);
+			auto pSliderV = pWin->GetItem<Slider>(ID_SLIDER_TEST_V);
 			auto pSlider = (Id == ID_SLIDER_TEST_V) ? pSliderV : pSliderH;
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED:
@@ -1118,27 +1118,22 @@ void _TestSlider() {
 #define ID_EDIT_INSERT_MARK        (GUI_ID_USER + 230)
 #define ID_EDIT_CLEAR              (GUI_ID_USER + 231)
 
-static void _UpdateEditStatus(WM_Obj *pWin) {
-	auto pEdit = pWin->GetItem<EDIT_Obj>(ID_EDIT_TEST);
-	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_EDIT_STATUS);
+static void _UpdateEditStatus(WObj *pWin) {
+	auto pEdit = pWin->GetItem<Edit>(ID_EDIT_TEST);
+	auto pStatus = pWin->GetItem<Text>(ID_EDIT_STATUS);
 	if (pEdit && pStatus) {
 		char acText[96];
 		char acStatus[192];
-		auto pEditObj = (EDIT_Obj *)pEdit;
-		const char *pMode = (pEditObj->EditMode == GUI_EDIT_MODE_OVERWRITE) ? "Overwrite" : "Insert";
 		pEdit->GetText(acText, sizeof(acText) - 1);
-		sprintf(acStatus, "Len:%d Cursor:%d Sel:%d Mode:%s Text:%s",
+		sprintf(acStatus, "Len:%d Text:%s",
 				pEdit->GetNumChars(),
-				pEditObj->CursorPos,
-				pEditObj->SelSize,
-				pMode,
 				acText[0] ? acText : "<empty>");
 		pStatus->SetText(acStatus);
 	}
 }
 
-static void _ResetEditScenario(WM_Obj *pWin) {
-	auto pEdit = pWin->GetItem<EDIT_Obj>(ID_EDIT_TEST);
+static void _ResetEditScenario(WObj *pWin) {
+	auto pEdit = pWin->GetItem<Edit>(ID_EDIT_TEST);
 	pEdit->SetMaxLen(64);
 	pEdit->SetText("EditInteractiveDemo");
 	pEdit->SetInsertMode(1);
@@ -1150,25 +1145,27 @@ static void _ResetEditScenario(WM_Obj *pWin) {
 }
 
 static const GUI_WIDGET_CREATE_INFO _aEditDialogCreate[] = {
-	{ FRAMEWIN_CreateIndirect, "Edit Interactive Test", 0, 70, 55, 470, 250, FRAMEWIN_CF_MOVEABLE },
-	{ EDIT_CreateIndirect, "", ID_EDIT_TEST, 15, 20, 438, 24, 0, 64 },
-	{ TEXT_CreateIndirect, "Focus on single-line cursor move/delete/insert behavior.", 0, 15, 52, 438, 16, TEXT_CF_LEFT },
-	{ BUTTON_CreateIndirect, "Load Sample", ID_EDIT_LOAD_SAMPLE, 15, 80, 90, 25 },
-	{ BUTTON_CreateIndirect, "Left", ID_EDIT_LEFT, 110, 80, 55, 25 },
-	{ BUTTON_CreateIndirect, "Right", ID_EDIT_RIGHT, 170, 80, 55, 25 },
-	{ BUTTON_CreateIndirect, "Home", ID_EDIT_HOME, 230, 80, 55, 25 },
-	{ BUTTON_CreateIndirect, "End", ID_EDIT_END, 290, 80, 55, 25 },
-	{ BUTTON_CreateIndirect, "Backspace", ID_EDIT_BACKSPACE, 350, 80, 103, 25 },
-	{ BUTTON_CreateIndirect, "Delete", ID_EDIT_DELETE, 15, 112, 80, 25 },
-	{ BUTTON_CreateIndirect, "Ins/Ovr", ID_EDIT_TOGGLE_MODE, 100, 112, 80, 25 },
-	{ BUTTON_CreateIndirect, "Insert #", ID_EDIT_INSERT_MARK, 185, 112, 80, 25 },
-	{ BUTTON_CreateIndirect, "Clear", ID_EDIT_CLEAR, 270, 112, 80, 25 },
-	{ TEXT_CreateIndirect, "", ID_EDIT_STATUS, 15, 155, 438, 18, TEXT_CF_LEFT },
-	{ TEXT_CreateIndirect, "Tips: use keyboard arrows/Home/End/Delete/Backspace and compare with buttons.", 0, 15, 180, 438, 16, TEXT_CF_LEFT },
-	{ BUTTON_CreateIndirect, "Close", GUI_ID_CANCEL, 373, 205, 80, 25 }
+	{ Frame ::CreateIndirect, "Edit Interactive Test" , 0                   , 70  , 55  , 470 , 250 , FRAMEWIN_CF_MOVEABLE },
+	{ Edit  ::CreateIndirect, ""                      , ID_EDIT_TEST        , 15  , 20  , 438 , 24  , 0, 64                },
+	{ Text  ::CreateIndirect, "Focus on single-line cursor move/delete/insert behavior."
+	                                                  , 0                   , 15  , 52  , 438 , 16  , TEXT_CF_LEFT         },
+	{ Button::CreateIndirect, "Load Sample"           , ID_EDIT_LOAD_SAMPLE , 15  , 80  , 90  , 25                         },
+	{ Button::CreateIndirect, "Left"                  , ID_EDIT_LEFT        , 110 , 80  , 55  , 25                         },
+	{ Button::CreateIndirect, "Right"                 , ID_EDIT_RIGHT       , 170 , 80  , 55  , 25                         },
+	{ Button::CreateIndirect, "Home"                  , ID_EDIT_HOME        , 230 , 80  , 55  , 25                         },
+	{ Button::CreateIndirect, "End"                   , ID_EDIT_END         , 290 , 80  , 55  , 25                         },
+	{ Button::CreateIndirect, "Backspace"             , ID_EDIT_BACKSPACE   , 350 , 80  , 103 , 25                         },
+	{ Button::CreateIndirect, "Delete"                , ID_EDIT_DELETE      , 15  , 112 , 80  , 25                         },
+	{ Button::CreateIndirect, "Ins/Ovr"               , ID_EDIT_TOGGLE_MODE , 100 , 112 , 80  , 25                         },
+	{ Button::CreateIndirect, "Insert #"              , ID_EDIT_INSERT_MARK , 185 , 112 , 80  , 25                         },
+	{ Button::CreateIndirect, "Clear"                 , ID_EDIT_CLEAR       , 270 , 112 , 80  , 25                         },
+	{ Text  ::CreateIndirect, ""                      , ID_EDIT_STATUS      , 15  , 155 , 438 , 18  , TEXT_CF_LEFT         },
+	{ Text  ::CreateIndirect, "Tips: use keyboard arrows/Home/End/Delete/Backspace and compare with buttons."
+	                                                  , 0                   , 15  , 180 , 438 , 16  , TEXT_CF_LEFT         },
+	{ Button::CreateIndirect, "Close", GUI_ID_CANCEL, 373, 205, 80, 25 }
 };
 
-static WM_PARAM _cbEditTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbEditTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
 			_ResetEditScenario(pWin);
@@ -1177,7 +1174,7 @@ static WM_PARAM _cbEditTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 			auto pInfo = (const NOTIFY_INFO *)Data;
 			auto pWinSrc = pInfo->pWinSrc;
 			int Id = pWinSrc->GetID();
-			auto pEdit = pWin->GetItem<EDIT_Obj>(ID_EDIT_TEST);
+			auto pEdit = pWin->GetItem<Edit>(ID_EDIT_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED:
 					if (Id == ID_EDIT_TEST) {
@@ -1254,9 +1251,9 @@ void _TestEdit() {
 static bool _MultiEditReadOnly = false;
 static int _MultiEditLineNo = 1;
 
-static void _UpdateMultiEditStatus(WM_Obj *pWin) {
-	auto pEdit = pWin->GetItem<MULTIEDIT_Obj>(ID_MULTIEDIT_TEST);
-	auto pStatus = pWin->GetItem<TEXT_Obj>(ID_MULTIEDIT_STATUS);
+static void _UpdateMultiEditStatus(WObj *pWin) {
+	auto pEdit = pWin->GetItem<MultEdit>(ID_MULTIEDIT_TEST);
+	auto pStatus = pWin->GetItem<Text>(ID_MULTIEDIT_STATUS);
 	if (pEdit && pStatus) {
 		char acStatus[96];
 		sprintf(acStatus, "Len: %d  ReadOnly: %s", pEdit->GetTextSize(), _MultiEditReadOnly ? "On" : "Off");
@@ -1265,21 +1262,21 @@ static void _UpdateMultiEditStatus(WM_Obj *pWin) {
 }
 
 static const GUI_WIDGET_CREATE_INFO _aMultiEditDialogCreate[] = {
-	{ FRAMEWIN_CreateIndirect  , "MultiEdit Test"  , 0                            , 60  , 60  , 420 , 280 , FRAMEWIN_CF_MOVEABLE },
-	{ MULTIEDIT_CreateIndirect , ""                , ID_MULTIEDIT_TEST            , 10  , 10  , 395 , 150 , 0, 512               },
-	{ BUTTON_CreateIndirect    , "Append"          , ID_MULTIEDIT_APPEND          , 10  , 170 , 70  , 25                         },
-	{ BUTTON_CreateIndirect    , "Clear"           , ID_MULTIEDIT_CLEAR           , 85  , 170 , 70  , 25                         },
-	{ BUTTON_CreateIndirect    , "ReadOnly"        , ID_MULTIEDIT_TOGGLE_READONLY , 160 , 170 , 85  , 25                         },
-	{ BUTTON_CreateIndirect    , "Wrap Word"       , ID_MULTIEDIT_WRAP_WORD       , 250 , 170 , 75  , 25                         },
-	{ BUTTON_CreateIndirect    , "Wrap None"       , ID_MULTIEDIT_WRAP_NONE       , 330 , 170 , 75  , 25                         },
-	{ TEXT_CreateIndirect      , ""                , ID_MULTIEDIT_STATUS          , 10  , 205 , 310 , 18  , TEXT_CF_LEFT         },
-	{ BUTTON_CreateIndirect    , "Close"           , GUI_ID_CANCEL                , 325 , 230 , 80  , 25                         }
+	{ Frame   ::CreateIndirect, "MultiEdit Test"  , 0                            , 60  , 60  , 420 , 280 , FRAMEWIN_CF_MOVEABLE },
+	{ MultEdit::CreateIndirect, ""                , ID_MULTIEDIT_TEST            , 10  , 10  , 395 , 150 , 0, 512               },
+	{ Button  ::CreateIndirect, "Append"          , ID_MULTIEDIT_APPEND          , 10  , 170 , 70  , 25                         },
+	{ Button  ::CreateIndirect, "Clear"           , ID_MULTIEDIT_CLEAR           , 85  , 170 , 70  , 25                         },
+	{ Button  ::CreateIndirect, "ReadOnly"        , ID_MULTIEDIT_TOGGLE_READONLY , 160 , 170 , 85  , 25                         },
+	{ Button  ::CreateIndirect, "Wrap Word"       , ID_MULTIEDIT_WRAP_WORD       , 250 , 170 , 75  , 25                         },
+	{ Button  ::CreateIndirect, "Wrap None"       , ID_MULTIEDIT_WRAP_NONE       , 330 , 170 , 75  , 25                         },
+	{ Text    ::CreateIndirect, ""                , ID_MULTIEDIT_STATUS          , 10  , 205 , 310 , 18  , TEXT_CF_LEFT         },
+	{ Button  ::CreateIndirect, "Close"           , GUI_ID_CANCEL                , 325 , 230 , 80  , 25                         }
 };
 
-static WM_PARAM _cbMultiEditTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _cbMultiEditTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
-			auto pEdit = pWin->GetItem<MULTIEDIT_Obj>(ID_MULTIEDIT_TEST);
+			auto pEdit = pWin->GetItem<MultEdit>(ID_MULTIEDIT_TEST);
 			_MultiEditReadOnly = false;
 			_MultiEditLineNo = 1;
 			pEdit->SetText("Line 1");
@@ -1294,7 +1291,7 @@ static WM_PARAM _cbMultiEditTest(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 			auto pInfo = (const NOTIFY_INFO *)Data;
 			auto pWinSrc = pInfo->pWinSrc;
 			int Id = pWinSrc->GetID();
-			auto pEdit = pWin->GetItem<MULTIEDIT_Obj>(ID_MULTIEDIT_TEST);
+			auto pEdit = pWin->GetItem<MultEdit>(ID_MULTIEDIT_TEST);
 			switch (pInfo->Notification) {
 				case WM_NOTIFICATION_VALUE_CHANGED:
 					if (Id == ID_MULTIEDIT_TEST) {
@@ -1371,7 +1368,7 @@ int main(void) {
 	_TestDropDown();
 
 	for (;;) {
-		auto pDialog = (FRAMEWIN_Obj *)GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
+		auto pDialog = (Frame *)GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
 		pDialog->AddMinButton();
 		pDialog->AddMaxButton();
 		_CreateMenu(pDialog);

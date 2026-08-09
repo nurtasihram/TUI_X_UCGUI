@@ -20,7 +20,7 @@ constexpr uint8_t
 	WIDGET_ITEM_DRAW          = 0,
 	WIDGET_ITEM_GET_XSIZE     = 1,
 	WIDGET_ITEM_GET_YSIZE     = 2;
-typedef int WIDGET_DRAW_ITEM_FUNC(WM_Obj *pWin, int Cmd, int ItemIndex, POINT ItemPos);
+typedef int WIDGET_DRAW_ITEM_FUNC(WObj *pWin, int Cmd, int ItemIndex, POINT ItemPos);
 
 #pragma region Widget Effect
 struct WIDGET_EFFECT {
@@ -92,7 +92,7 @@ GUI_DRAW *GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw, int x, int y) {
 }
 #pragma endregion
 
-struct WIDGET : public WM_Obj {
+struct WIDGET : public WObj {
 	static PCWIDGET_EFFECT DefaultEffect;
 	PCWIDGET_EFFECT pEffect = DefaultEffect;
 	uint16_t Id, State;
@@ -159,7 +159,7 @@ void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
 	pWidget->Id = Id;
 }
 
-bool WIDGET_HandleActive(WM_Obj *hObj, int MsgId, WM_PARAM *Data) {
+bool WIDGET_HandleActive(WObj *hObj, int MsgId, WM_PARAM *Data) {
 	auto pWidget = (WIDGET *)hObj;
 	switch (MsgId) {
 		case WM_WIDGET_SET_EFFECT: {

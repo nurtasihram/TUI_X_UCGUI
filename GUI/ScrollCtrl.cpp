@@ -3,11 +3,11 @@
 import TUX.Window;
 import TUX.Widget.ScrollBar;
 
-static bool _SetScrollbar(WM_Obj *pWin, int OnOff, int Id, int Flags) {
-	auto pBar = pWin->GetItem<SCROLLBAR_Obj>(Id);
+static bool _SetScrollbar(WObj *pWin, int OnOff, int Id, int Flags) {
+	auto pBar = pWin->GetItem<ScrollBar>(Id);
 	if (OnOff) {
 		if (!pBar)
-			SCROLLBAR_CreateAttached(pWin, Flags);
+			ScrollBar::Create(pWin, Flags);
 	}
 	else {
 		if (pBar)
@@ -15,14 +15,14 @@ static bool _SetScrollbar(WM_Obj *pWin, int OnOff, int Id, int Flags) {
 	}
 	return pBar;
 }
-bool WM_SetScrollbarV(WM_Obj *pWin, int OnOff) {
+bool WM_SetScrollbarV(WObj *pWin, int OnOff) {
 	return _SetScrollbar(pWin, OnOff, GUI_ID_VSCROLL, SCROLLBAR_CF_VERTICAL);
 }
-bool WM_SetScrollbarH(WM_Obj *pWin, int OnOff) {
+bool WM_SetScrollbarH(WObj *pWin, int OnOff) {
 	return _SetScrollbar(pWin, OnOff, GUI_ID_HSCROLL, 0);
 }
 
-WM_Obj *WM_GetScrollPartner(WM_Obj *pScroll) {
+WObj *WM_GetScrollPartner(WObj *pScroll) {
 	int Id = pScroll->GetID();
 	if (Id == GUI_ID_HSCROLL) {
 		Id = GUI_ID_VSCROLL;
@@ -30,9 +30,9 @@ WM_Obj *WM_GetScrollPartner(WM_Obj *pScroll) {
 	else if (Id == GUI_ID_VSCROLL) {
 		Id = GUI_ID_HSCROLL;
 	}
-	return pScroll->Parent()->GetItem<SCROLLBAR_Obj>(Id);
+	return pScroll->Parent()->GetItem<ScrollBar>(Id);
 }
-void WM_GetScrollState(WM_Obj *pObj, WM_SCROLL_STATE *pScrollState) {
+void WM_GetScrollState(WObj *pObj, WM_SCROLL_STATE *pScrollState) {
 	pObj->Require(WM_GET_SCROLL_STATE, (WM_PARAM)pScrollState);
 }
 /*********************************************************************
@@ -45,7 +45,7 @@ void WM_GetScrollState(WM_Obj *pObj, WM_SCROLL_STATE *pScrollState) {
 	which typically reduces the rectangle by 0 - 3 pixels on either side
 	(2 for the standard 3D effect).
 */
-void WM_GetInsideRectExScrollbar(WM_Obj *pWin, RECT *pRect) {
+void WM_GetInsideRectExScrollbar(WObj *pWin, RECT *pRect) {
 	if (pWin) {
 		if (pRect) {
 			auto rWin = pWin->GetRect();     /* The entire window in screen coordinates */

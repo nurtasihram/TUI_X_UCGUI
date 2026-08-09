@@ -23,7 +23,9 @@ struct SCROLLBAR_POSITIONS {
 	int16_t x1 = 0;
 };
 
-struct SCROLLBAR_Obj : public WIDGET {
+class ScrollBar : public WIDGET {
+	
+public:
 	struct Properties {
 		RGBC aBkColor[2]{
 			RGB_GRAYL(0x80),
@@ -32,7 +34,10 @@ struct SCROLLBAR_Obj : public WIDGET {
 		RGBC Color{ RGB_GRAYL(0xC0) };
 	} static DefaultProps;
 	static const int16_t DefaultWidth = 12;
+
+private:
 	Properties Props;
+
 	WM_SCROLL_STATE ScrollState;
 
 	int _GetArrowSize() {
@@ -228,8 +233,8 @@ struct SCROLLBAR_Obj : public WIDGET {
 		Parent()->Require(WM_NOTIFY_CLIENTCHANGE);   /* Client area may have changed */
 	}
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (SCROLLBAR_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (ScrollBar *)hWin;
 		/* Let widget handle the standard messages */
 		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 			return Data;
@@ -255,6 +260,72 @@ struct SCROLLBAR_Obj : public WIDGET {
 				break;
 		}
 		return WM_DefaultProc(hWin, MsgId, Data);
+	}
+
+public:
+
+	static ScrollBar *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
+							 int WinFlags, int ExFlags, int Id) {
+		/* Set defaults if necessary */
+		if (!(xsize | ysize)) {
+			auto Rect = WM_GetInsideRect(hParent);
+			if (ExFlags & SCROLLBAR_CF_VERTICAL) {
+				xsize = ScrollBar::DefaultWidth;
+				x0 = Rect.x1 + 1 - xsize;
+				y0 = Rect.y0;
+				ysize = Rect.y1 - Rect.y0 + 1;
+			}
+			else {
+				ysize = ScrollBar::DefaultWidth;
+				y0 = Rect.y1 + 1 - ysize;
+				x0 = Rect.x0;
+				xsize = Rect.x1 - Rect.x0 + 1;
+			}
+		}
+		/* Create the window */
+		auto pObj = (ScrollBar *)WM_CreateWindowAsChild(
+			x0, y0, xsize, ysize, hParent, WinFlags, ScrollBar::_Callback,
+			sizeof(ScrollBar) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "ScrollBar create failed");
+			return nullptr;
+		}
+		uint16_t InitState = 0;
+		/* Handle SpecialFlags */
+		if (ExFlags & SCROLLBAR_CF_VERTICAL)
+			InitState |= SCROLLBAR_CF_VERTICAL;
+		if (ExFlags & SCROLLBAR_CF_FOCUSSABLE)
+			InitState |= WIDGET_STATE_FOCUSSABLE;
+		if (Id != GUI_ID_HSCROLL && Id != GUI_ID_VSCROLL)
+			InitState |= WIDGET_STATE_FOCUSSABLE;
+		/* init widget specific variables */
+		WIDGET__Init(pObj, Id, InitState);
+		/* init member variables */
+		pObj->Props = ScrollBar::DefaultProps;
+		pObj->ScrollState.NumItems = 100;
+		pObj->ScrollState.PageSize = 10;
+		pObj->ScrollState.v = 0;
+		pObj->_InvalidatePartner();
+		return pObj;
+	}
+	static ScrollBar *Create(WObj *hParent, int SpecialFlags) {
+		int Id;
+		int WinFlags;
+		if (SpecialFlags & SCROLLBAR_CF_VERTICAL) {
+			Id = GUI_ID_VSCROLL;
+			WinFlags = WC_VISIBLE | WC_STAYONTOP | WC_ANCHOR_RIGHT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM;
+		}
+		else {
+			Id = GUI_ID_HSCROLL;
+			WinFlags = WC_VISIBLE | WC_STAYONTOP | WC_ANCHOR_BOTTOM | WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT;
+		}
+		auto pThis = Create(0, 0, 0, 0, hParent, WinFlags, SpecialFlags, Id);
+		WM_NotifyParent(pThis, WM_NOTIFICATION_SCROLLBAR_ADDED);
+		return pThis;
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 	}
 
 public:
@@ -312,78 +383,6 @@ public:
 
 };
 
-SCROLLBAR_Obj::Properties SCROLLBAR_Obj::DefaultProps;
-
-SCROLLBAR_Obj *SCROLLBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
-								  int WinFlags, int ExFlags, int Id) {
-	/* Set defaults if necessary */
-	if ((xsize == 0) && (ysize == 0)) {
-		RECT Rect = WM_GetInsideRect(hParent);
-		if (ExFlags & SCROLLBAR_CF_VERTICAL) {
-			xsize = SCROLLBAR_Obj::DefaultWidth;
-			x0 = Rect.x1 + 1 - xsize;
-			y0 = Rect.y0;
-			ysize = Rect.y1 - Rect.y0 + 1;
-		}
-		else {
-			ysize = SCROLLBAR_Obj::DefaultWidth;
-			y0 = Rect.y1 + 1 - ysize;
-			x0 = Rect.x0;
-			xsize = Rect.x1 - Rect.x0 + 1;
-		}
-	}
-	/* Create the window */
-	auto pObj = (SCROLLBAR_Obj *)WM_CreateWindowAsChild(
-		x0, y0, xsize, ysize, hParent, WinFlags, SCROLLBAR_Obj::_Callback,
-		sizeof(SCROLLBAR_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		uint16_t InitState;
-		/* Handle SpecialFlags */
-		InitState = 0;
-		if (ExFlags & SCROLLBAR_CF_VERTICAL) {
-			InitState |= SCROLLBAR_CF_VERTICAL;
-		}
-		if (ExFlags & SCROLLBAR_CF_FOCUSSABLE) {
-			InitState |= WIDGET_STATE_FOCUSSABLE;
-		}
-		if ((Id != GUI_ID_HSCROLL) && (Id != GUI_ID_VSCROLL)) {
-			InitState |= WIDGET_STATE_FOCUSSABLE;
-		}
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, InitState);
-		/* init member variables */
-		pObj->Props = SCROLLBAR_Obj::DefaultProps;
-		pObj->ScrollState.NumItems = 100;
-		pObj->ScrollState.PageSize = 10;
-		pObj->ScrollState.v = 0;
-		pObj->_InvalidatePartner();
-	}
-	else {
-	}
-
-	return pObj;
-}
-SCROLLBAR_Obj *SCROLLBAR_Create(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int WinFlags, int SpecialFlags) {
-	return SCROLLBAR_CreateEx(x0, y0, xsize, ysize, hParent, WinFlags, SpecialFlags, Id);
-}
-SCROLLBAR_Obj *SCROLLBAR_CreateAttached(WM_Obj *hParent, int SpecialFlags) {
-	int Id;
-	int WinFlags;
-	if (SpecialFlags & SCROLLBAR_CF_VERTICAL) {
-		Id = GUI_ID_VSCROLL;
-		WinFlags = WC_VISIBLE | WC_STAYONTOP | WC_ANCHOR_RIGHT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM;
-	}
-	else {
-		Id = GUI_ID_HSCROLL;
-		WinFlags = WC_VISIBLE | WC_STAYONTOP | WC_ANCHOR_BOTTOM | WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT;
-	}
-	auto pThis = SCROLLBAR_CreateEx(0, 0, 0, 0, hParent, WinFlags, SpecialFlags, Id);
-	WM_NotifyParent(pThis, WM_NOTIFICATION_SCROLLBAR_ADDED);
-	return pThis;
-}
-WM_Obj *SCROLLBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	return SCROLLBAR_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-}
+ScrollBar::Properties ScrollBar::DefaultProps;
 
 }

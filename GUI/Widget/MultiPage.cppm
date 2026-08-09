@@ -2,7 +2,7 @@
 
 #include "DIALOG_Intern.h"
 
-export module TUX.Widget.MultiPage;
+export module TUX.Widget.MultPage;
 
 import TUX.Widget;
 import TUX.Widget.ScrollBar;
@@ -20,11 +20,14 @@ constexpr uint16_t MULTIPAGE_ALIGN_TOP    = 0 << 2;
 constexpr uint16_t MULTIPAGE_ALIGN_BOTTOM = 1 << 2;
 
 struct MULTIPAGE_PAGE {
-	WM_Obj *hWin;
+	WObj *hWin;
 	uint8_t Status;
 	char *pText;
 };
-struct MULTIPAGE_Obj : public WIDGET {
+
+class MultPage : public WIDGET {
+
+public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
 		RGBC aBkColor[MULTIPAGE_NUMCOLORS]{
@@ -37,8 +40,11 @@ struct MULTIPAGE_Obj : public WIDGET {
 		};
 		unsigned Align{ MULTIPAGE_ALIGN_LEFT | MULTIPAGE_ALIGN_TOP };
 	} static DefaultProps;
+	
+private:
 	Properties Props;
-	WM_Obj *pClient;
+	
+	WObj *pClient;
 	ARRAY<MULTIPAGE_PAGE> Handles;
 	unsigned Selection;
 	int ScrollState;
@@ -49,13 +55,13 @@ struct MULTIPAGE_Obj : public WIDGET {
 			WM_SetSize(pScroll, w, h);
 		}
 		else {
-			auto pScrollbar = SCROLLBAR_Create(x, y, w, h, this, GUI_ID_HSCROLL, WC_VISIBLE, 0);
+			auto pScrollbar = ScrollBar::Create(x, y, w, h, this, GUI_ID_HSCROLL, WC_VISIBLE, 0);
 			pScrollbar->SetEffect(this->pEffect);
 		}
 		this->State |= MULTIPAGE_STATE_SCROLLMODE;
 	}
 	void _SetScrollbar(int NumItems) {
-		auto pScroll = (SCROLLBAR_Obj *)GetScrollbarH();
+		auto pScroll = (ScrollBar *)GetScrollbarH();
 		pScroll->SetNumItems(NumItems);
 		pScroll->SetPageSize(1);
 		if (ScrollState >= NumItems)
@@ -67,7 +73,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 		this->State &= ~MULTIPAGE_STATE_SCROLLMODE;
 	}
 	void _ShowPage(unsigned Index) {
-		WM_Obj *hWin = 0;
+		WObj *hWin = 0;
 		auto pClient = this->pClient;
 		if ((int)Index < this->Handles.NumItems) {
 			hWin = this->Handles[Index].hWin;
@@ -177,7 +183,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 			auto Size = ((Props.pFont->SizeY() + 6) * 3) >> 2;
 			x0 = (this->Props.Align & MULTIPAGE_ALIGN_RIGHT) ? (rBorder.x0) : (rBorder.x1 - 2 * Size + 1);
 			y0 = (this->Props.Align & MULTIPAGE_ALIGN_BOTTOM) ? (rBorder.y1) : (rBorder.y0 - Size + 1);
-			/* A scrollbar is required so we add one to the multipage */
+			/* A scrollbar is required so we add one to the MultPage */
 			_AddScrollbar(x0, y0, 2 * Size, Size);
 			_GetTextRect(&rText);
 			while (Width >= Max((rText.x1 - rText.x0 + 1), 1)) {
@@ -186,7 +192,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 			_SetScrollbar(NumItems + 1);
 		}
 		else {
-			/* Scrollbar is no longer required. We delete it if there was one */
+			/* ScrollBar is no longer required. We delete it if there was one */
 			_DeleteScrollbar();
 		}
 		/* Move and resize the client area to the updated positions */
@@ -231,7 +237,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 	}
 	void _OnPaint() {
 		RECT rBorder;
-		/* Draw border of multipage */
+		/* Draw border of MultPage */
 		_CalcBorderRect(&rBorder);
 		DrawUp(rBorder);
 		/* Draw text items */
@@ -311,8 +317,8 @@ struct MULTIPAGE_Obj : public WIDGET {
 		WM_NotifyParent(this, Notification);
 	}
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (MULTIPAGE_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (MultPage *)hWin;
 		auto Handled = WIDGET_HandleActive(pObj, MsgId, &Data);
 		switch (MsgId) {
 			case WM_PAINT:
@@ -326,7 +332,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 				auto pWinSrc = pInfo->pWinSrc;
 				if (pInfo->Notification == WM_NOTIFICATION_VALUE_CHANGED) {
 					if (pWinSrc->GetID() == GUI_ID_HSCROLL) {
-						pObj->ScrollState = ((SCROLLBAR_Obj *)pWinSrc)->GetValue();
+						pObj->ScrollState = ((ScrollBar *)pWinSrc)->GetValue();
 						WM_Invalidate(pObj);
 					}
 				}
@@ -338,7 +344,7 @@ struct MULTIPAGE_Obj : public WIDGET {
 				pObj->_CalcClientRect((RECT *)Data);
 				return 0;
 			case WM_WIDGET_SET_EFFECT:
-				if (auto pScroll = (SCROLLBAR_Obj *)pObj->GetScrollbarH())
+				if (auto pScroll = (ScrollBar *)pObj->GetScrollbarH())
 					pScroll->SetEffect((const WIDGET_EFFECT *)Data);
 			case WM_SIZE:
 				pObj->_UpdatePositions();
@@ -358,8 +364,8 @@ struct MULTIPAGE_Obj : public WIDGET {
 		}
 		return 0;
 	}
-	static WM_PARAM _ClientCallback(WM_Obj *pObj, int MsgId, WM_PARAM Data) {
-		auto pParent = (MULTIPAGE_Obj *)pObj->Parent();
+	static WM_PARAM _ClientCallback(WObj *pObj, int MsgId, WM_PARAM Data) {
+		auto pParent = (MultPage *)pObj->Parent();
 		switch (MsgId) {
 			case WM_PAINT:
 				GUI.SetBkColor(pParent->Props.aBkColor[1]);
@@ -380,7 +386,42 @@ struct MULTIPAGE_Obj : public WIDGET {
 	}
 
 public:
-	void AddPage(WM_Obj *hWin, const char *pText) {
+
+	static MultPage *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
+							int WinFlags, int ExFlags, int Id) {
+		/* Create the window */
+		auto pObj = (MultPage *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags | WC_HASTRANS, MultPage::_Callback,
+													   sizeof(MultPage) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "MultPage create failed");
+			return nullptr;
+		}
+		/* init widget specific variables */
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
+		/* init member variables */
+		pObj->Props = MultPage::DefaultProps;
+		pObj->Selection = 0xffff;
+		pObj->ScrollState = 0;
+		pObj->State = 0;
+		RECT rClient;
+		pObj->_CalcClientRect(&rClient);
+		pObj->pClient = (WObj *)WM_CreateWindowAsChild(
+			rClient.x0, rClient.y0,
+			rClient.x1 - rClient.x0 + 1,
+			rClient.y1 - rClient.y0 + 1,
+			pObj, WC_VISIBLE | WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM, MultPage::_ClientCallback, 0);
+		pObj->_UpdatePositions();
+		return pObj;
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo,
+								WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
+	}
+
+public:
+
+	void AddPage(WObj *hWin, const char *pText) {
 		GUI_USE_PARA(hWin);
 		if (!hWin) {
 			/* If we get no handle we must find it. To do this, we search      */
@@ -398,7 +439,7 @@ public:
 			}
 		}
 		else {
-			/* If we get a handle we must ensure that it was attached to the multipage */
+			/* If we get a handle we must ensure that it was attached to the MultPage */
 			WM_AttachWindowAt(hWin, this->pClient, 0, 0);
 		}
 		if (hWin) {
@@ -417,9 +458,9 @@ public:
 	}
 	void DeletePage(unsigned Index, int Delete) {
 		if ((int)Index < Handles.NumItems) {
-			WM_Obj *hWin;
+			WObj *hWin;
 			hWin = Handles[Index].hWin;
-			/* Remove the page from the multipage object */
+			/* Remove the page from the MultPage object */
 			if (Index == this->Selection) {
 				if (Index == ((unsigned)Handles.NumItems - 1)) {
 					this->_ShowPage(Index - 1);
@@ -495,8 +536,8 @@ public:
 	int  GetSelection() {
 		return Selection;
 	}
-	WM_Obj *GetWindow(unsigned Index) {
-		WM_Obj *r = 0;
+	WObj *GetWindow(unsigned Index) {
+		WObj *r = 0;
 		if ((int)Index < Handles.NumItems) {
 			r = Handles[Index].hWin;
 		}
@@ -512,43 +553,6 @@ public:
 
 };
 
-MULTIPAGE_Obj::Properties MULTIPAGE_Obj::DefaultProps;
-
-MULTIPAGE_Obj *MULTIPAGE_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
-								  int WinFlags, int ExFlags, int Id) {
-	/* Create the window */
-	auto pObj = (MULTIPAGE_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags | WC_HASTRANS, MULTIPAGE_Obj::_Callback,
-								  sizeof(MULTIPAGE_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		RECT rClient;
-		int Flags;
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* init member variables */
-		pObj->Props = MULTIPAGE_Obj::DefaultProps;
-		pObj->Selection = 0xffff;
-		pObj->ScrollState = 0;
-		pObj->State = 0;
-		pObj->_CalcClientRect(&rClient);
-		Flags = WC_VISIBLE | WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM;
-		pObj->pClient = (WM_Obj *)WM_CreateWindowAsChild(rClient.x0, rClient.y0,
-														 rClient.x1 - rClient.x0 + 1,
-														 rClient.y1 - rClient.y0 + 1,
-														 pObj, Flags, MULTIPAGE_Obj::_ClientCallback, 0);
-		pObj->_UpdatePositions();
-	}
-	else {
-	}
-	return pObj;
-}
-MULTIPAGE_Obj *MULTIPAGE_Create(int x0, int y0, int xsize, int ysize,
-								WM_Obj *hParent, int Id, int Flags, int ExFlags) {
-	return MULTIPAGE_CreateEx(x0, y0, xsize, ysize, hParent, Flags, ExFlags, Id);
-}
-WM_Obj *MULTIPAGE_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo,
-								 WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	return MULTIPAGE_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							   hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-}
+MultPage::Properties MultPage::DefaultProps;
 
 }

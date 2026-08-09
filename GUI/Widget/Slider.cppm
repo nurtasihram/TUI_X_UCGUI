@@ -7,15 +7,21 @@ export module TUX.Widget.Slider;
 import TUX.Widget;
 
 export {
+
 constexpr uint16_t SLIDER_CF_VERTICAL   = WIDGET_STATE_USER<0>;
 constexpr uint16_t SLIDER_STATE_PRESSED = WIDGET_STATE_USER<1>;
 
-struct SLIDER_Obj : public WIDGET {
+class Slider : public WIDGET {
+
+public:
 	struct Properties {
 		RGBC BkColor { RGB_INVALID_COLOR };
 		RGBC Color   { RGB_GRAYL(0xC0) };
 	} static DefaultProps;
+	
+private:
 	Properties Props;
+	
 	int16_t Min, Max, v;
 	int16_t NumTicks;
 	int16_t Width;
@@ -133,8 +139,8 @@ struct SLIDER_Obj : public WIDGET {
 		return 0;
 	}
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (SLIDER_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (Slider *)hWin;
 		/* Let widget handle the standard messages */
 		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 			return Data;
@@ -151,6 +157,36 @@ struct SLIDER_Obj : public WIDGET {
 				break;
 		}
 		return WM_DefaultProc(hWin, MsgId, Data);
+	}
+
+public:
+
+	static Slider *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
+						  int WinFlags, int ExFlags, int Id) {
+		auto pObj = (Slider *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, Slider::_Callback, sizeof(Slider) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Slider create failed");
+			return nullptr;
+		}
+		uint16_t InitState;
+		/* Handle SpecialFlags */
+		InitState = WIDGET_STATE_FOCUSSABLE;
+		if (ExFlags & SLIDER_CF_VERTICAL) {
+			InitState |= SLIDER_CF_VERTICAL;
+		}
+		/* init widget specific variables */
+		WIDGET__Init(pObj, Id, InitState);
+		/* init member variables */
+		pObj->Props = Slider::DefaultProps;
+		pObj->Width = 8;
+		pObj->Max = 100;
+		pObj->Min = 0;
+		pObj->NumTicks = -1;
+		return pObj;
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 	}
 
 public:
@@ -215,41 +251,6 @@ public:
 
 };
 
-SLIDER_Obj::Properties SLIDER_Obj::DefaultProps;
-
-SLIDER_Obj *SLIDER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
-							  int WinFlags, int ExFlags, int Id) {
-#if WM_SUPPORT_TRANSPARENCY
-	WinFlags |= WC_HASTRANS;
-#endif
-	auto pObj = (SLIDER_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, SLIDER_Obj::_Callback, sizeof(SLIDER_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		uint16_t InitState;
-		/* Handle SpecialFlags */
-		InitState = WIDGET_STATE_FOCUSSABLE;
-		if (ExFlags & SLIDER_CF_VERTICAL) {
-			InitState |= SLIDER_CF_VERTICAL;
-		}
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, InitState);
-		/* init member variables */
-		pObj->Props = SLIDER_Obj::DefaultProps;
-		pObj->Width = 8;
-		pObj->Max = 100;
-		pObj->Min = 0;
-		pObj->NumTicks = -1;
-	}
-	else {
-	}
-
-	return pObj;
-}
-SLIDER_Obj *SLIDER_Create(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int WinFlags, int SpecialFlags) {
-	return SLIDER_CreateEx(x0, y0, xsize, ysize, hParent, WinFlags, SpecialFlags, Id);
-}
-WM_Obj *SLIDER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	return SLIDER_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-}
+Slider::Properties Slider::DefaultProps;
 
 }

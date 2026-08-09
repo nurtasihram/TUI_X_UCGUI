@@ -3,7 +3,7 @@ module;
 #include "WM.h"
 #include "DIALOG_Intern.h" /* Req. for Create indirect data structure */
 
-export module TUX.Widget.MultiEdit;
+export module TUX.Widget.MultEdit;
 
 import TUX.Widget;
 
@@ -21,6 +21,7 @@ import TUX.Widget;
 #define MULTIEDIT_REALLOC_SIZE  16
 
 export {
+
 constexpr uint16_t MULTIEDIT_CF_READONLY         = 1 << 0;
 constexpr uint16_t MULTIEDIT_CF_INSERT           = 1 << 2;
 constexpr uint16_t MULTIEDIT_CF_AUTOSCROLLBAR_V  = 1 << 3;
@@ -34,7 +35,9 @@ constexpr uint16_t MULTIEDIT_SF_PASSWORD         = MULTIEDIT_CF_PASSWORD;
 constexpr uint16_t MULTIEDIT_CI_EDIT      = 0;
 constexpr uint16_t MULTIEDIT_CI_READONLY  = 1;
 
-struct MULTIEDIT_Obj : public WIDGET {
+class MultEdit : public WIDGET {
+	
+public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
 		RGBC aBkColor[NUM_DISP_MODES]{
@@ -47,7 +50,10 @@ struct MULTIEDIT_Obj : public WIDGET {
 		};
 		uint8_t HBorder{ 1 };
 	} static DefaultProps;
+	
+private:
 	Properties Props;
+
 	WM_HMEM hText;
 	uint16_t MaxNumChars;         /* Maximum number of characters including the prompt */
 	uint16_t NumChars;            /* Number of characters (text and prompt) in object */
@@ -866,8 +872,8 @@ struct MULTIEDIT_Obj : public WIDGET {
 		return 0; /* Key release is not consumed (sent to parent) */
 	}
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (MULTIEDIT_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (MultEdit *)hWin;
 		/* Let widget handle the standard messages */
 		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 			return Data;
@@ -928,7 +934,58 @@ struct MULTIEDIT_Obj : public WIDGET {
 		}
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
+
 public:
+
+	static MultEdit *Create(int x0, int y0, int xsize, int ysize,
+							WObj *hParent, int WinFlags, int ExFlags,
+							int Id, int BufferSize, const char *pText) {
+		/* Create the window */
+		if (!(xsize | ysize | x0 | y0)) {
+			RECT Rect = WM_GetClientRect(hParent);
+			xsize = Rect.x1 - Rect.x0 + 1;
+			ysize = Rect.y1 - Rect.y0 + 1;
+		}
+		auto pObj = (MultEdit *)WM_CreateWindowAsChild(
+			x0, y0, xsize, ysize, hParent, WinFlags, MultEdit::_Callback,
+			sizeof(MultEdit) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "MultEdit create failed");
+			return nullptr;
+		}
+		/* init widget specific variables */
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
+		/* init member variables */
+		pObj->Props = MultEdit::DefaultProps;
+		pObj->Flags = ExFlags;
+		pObj->CursorPosChar = 0;
+		pObj->CursorPosByte = 0;
+		pObj->MaxNumChars = 0;
+		pObj->NumCharsPrompt = 0;
+		pObj->BufferSize = 0;
+		pObj->hText = 0;
+		if (BufferSize > 0) {
+			WM_HMEM hText;
+			if ((hText = (WM_HMEM)GUI_ALLOC_AllocZero(BufferSize)) != 0) {
+				pObj->BufferSize = BufferSize;
+				pObj->hText = hText;
+			}
+			else {
+				WM_DeleteWindow(pObj);
+				pObj = 0;
+			}
+		}
+		pObj->SetText(pText);
+		pObj->_ManageScrollers();
+		return pObj;
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->Para, nullptr);
+	}
+
+public:
+
 	int  AddKey(uint16_t Key) {
 		int r = 0;
 		r = _AddKey(Key);
@@ -1125,54 +1182,6 @@ public:
 
 };
 
-MULTIEDIT_Obj::Properties MULTIEDIT_Obj::DefaultProps;
-
-MULTIEDIT_Obj *MULTIEDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int WinFlags, int ExFlags,
-									int Id, int BufferSize, const char *pText) {
-	/* Create the window */
-	if ((xsize == 0) && (ysize == 0) && (x0 == 0) && (y0 == 0)) {
-		RECT Rect = WM_GetClientRect(hParent);
-		xsize = Rect.x1 - Rect.x0 + 1;
-		ysize = Rect.y1 - Rect.y0 + 1;
-	}
-	auto pObj = (MULTIEDIT_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, MULTIEDIT_Obj::_Callback,
-								  sizeof(MULTIEDIT_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* init member variables */
-		pObj->Props = MULTIEDIT_Obj::DefaultProps;
-		pObj->Flags = ExFlags;
-		pObj->CursorPosChar = 0;
-		pObj->CursorPosByte = 0;
-		pObj->MaxNumChars = 0;
-		pObj->NumCharsPrompt = 0;
-		pObj->BufferSize = 0;
-		pObj->hText = 0;
-		if (BufferSize > 0) {
-			WM_HMEM hText;
-			if ((hText = (WM_HMEM)GUI_ALLOC_AllocZero(BufferSize)) != 0) {
-				pObj->BufferSize = BufferSize;
-				pObj->hText = hText;
-			}
-			else {
-				WM_DeleteWindow(pObj);
-				pObj = 0;
-			}
-		}
-		pObj->SetText(pText);
-		pObj->_ManageScrollers();
-	}
-	else {
-	}
-	return pObj;
-}
-MULTIEDIT_Obj *MULTIEDIT_Create(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int Flags, int ExFlags, const char *pText, int MaxLen) {
-	return MULTIEDIT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, ExFlags, Id, MaxLen, pText);
-}
-WM_Obj *MULTIEDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	return MULTIEDIT_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							   hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->Para, nullptr);
-}
+MultEdit::Properties MultEdit::DefaultProps;
 
 }

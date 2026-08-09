@@ -19,4 +19,4 @@ generate any code !
 #define WM_SUPPORT_OBSTRUCT 1
 #endif
 
-#define WM_UNATTACHED  ((WM_Obj *)-1) /* Do not attach to a window */
+#define WM_UNATTACHED  ((WObj *)-1) /* Do not attach to a window */

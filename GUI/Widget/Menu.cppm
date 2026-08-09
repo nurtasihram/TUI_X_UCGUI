@@ -56,16 +56,14 @@ struct MENU_MSG_DATA {
 	uint16_t MsgType;
 	uint16_t ItemId;
 };
-
 struct MENU_ITEM_DATA {
 	const char *pText;
 	uint16_t    Id;
 	uint16_t    Flags;
-	struct MENU_Obj *pSubmenu;
+	struct Menu *pSubmenu;
 };
-
 struct MENU_ITEM {
-	struct MENU_Obj *pSubmenu;
+	struct Menu *pSubmenu;
 	uint16_t Id;
 	uint16_t Flags;
 	uint16_t TextWidth;
@@ -74,7 +72,9 @@ struct MENU_ITEM {
 
 PCWIDGET_EFFECT MENU__pDefaultEffect = MENU_EFFECT_DEFAULT;
 
-struct MENU_Obj : public WIDGET {
+class Menu : public WIDGET {
+
+public:
 	struct Properties {
 		RGBC aTextColor[5]{
 			RGB_BLACK,          /* enabled, not selected */
@@ -93,16 +93,19 @@ struct MENU_Obj : public WIDGET {
 		uint8_t aBorder[4]{ 4, 4, 2, 2 }; /* Left, Right, Top, Bottom */
 		PCFONT pFont{ &FontProp13_1 };
 	} static DefaultProps;
+	
+private:
 	Properties Props;
+
 	ARRAY<MENU_ITEM> ItemArray;
-	WM_Obj *pOwner;
+	WObj *pOwner;
 	uint16_t Flags;
 	char IsSubmenuActive;
 	uint16_t Width;
 	uint16_t Height;
 	uint16_t Sel;
 
-	static int _SendMenuMessage(WM_Obj *pSrcWin, WM_Obj *pDestWin, uint16_t MsgType, uint16_t ItemId) {
+	static int _SendMenuMessage(WObj *pSrcWin, WObj *pDestWin, uint16_t MsgType, uint16_t ItemId) {
 		if (!pDestWin)
 			pDestWin = pSrcWin->Parent();
 		if (pDestWin) {
@@ -690,8 +693,8 @@ struct MENU_Obj : public WIDGET {
 			this->pEffect->DrawUp();
 	}
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (MENU_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (Menu *)hWin;
 		if (MsgId != WM_PID_STATE_CHANGED)
 			/* Let widget handle the standard messages */
 			if (!WIDGET_HandleActive(pObj, MsgId, &Data))
@@ -725,6 +728,40 @@ struct MENU_Obj : public WIDGET {
 	}
 
 public:
+
+	static Menu *Create(int x0, int y0, int xSize, int ySize, WObj *hParent, int WinFlags, int ExFlags, int Id) {
+		/* Create the window */
+		auto pObj = (Menu *)WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent,
+												   WC_VISIBLE | WC_STAYONTOP | WinFlags,
+												   Menu::_Callback, sizeof(Menu) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Menu create failed");
+			return nullptr;
+		}
+		/* init widget specific variables */
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
+		/* init member variables */
+		if (ExFlags & MENU_SF_OPEN_ON_POINTEROVER)
+			ExFlags |= MENU_SF_ACTIVE;
+		else
+			ExFlags &= ~(MENU_SF_ACTIVE);
+		pObj->Props = Menu::DefaultProps;
+		pObj->Flags = ExFlags;
+		pObj->Width = ((xSize > 0) ? xSize : 0);
+		pObj->Height = ((ySize > 0) ? ySize : 0);
+		pObj->Sel = -1;
+		pObj->pOwner = 0;
+		pObj->IsSubmenuActive = 0;
+		pObj->SetEffect(MENU__pDefaultEffect);
+		return pObj;
+	}
+	WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+							 hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
+	}
+
+
+private:
 
 	void _RecalcTextWidthOfItems() {
 		PCFONT pOldFont;
@@ -769,7 +806,7 @@ public:
 		pItem.Flags &= ~Mask;
 		pItem.Flags |= Flags;
 	}
-	int _FindItem(uint16_t ItemId, MENU_Obj **pMenu) {
+	int _FindItem(uint16_t ItemId, Menu **pMenu) {
 		int ItemIndex = -1;
 		unsigned NumItems, i;
 		NumItems = this->_GetNumItems();
@@ -803,10 +840,10 @@ public:
 			}
 		}
 	}
-	void SetOwner(WM_Obj *pOwner) {
+	void SetOwner(WObj *pOwner) {
 		this->pOwner = pOwner;
 	}
-	void Attach(WM_Obj *pDestWin, int x, int y, int xSize, int ySize, int Flags) {
+	void Attach(WObj *pDestWin, int x, int y, int xSize, int ySize, int Flags) {
 		GUI_USE_PARA(Flags);
 		this->Width = ((xSize > 0) ? xSize : 0);
 		this->Height = ((ySize > 0) ? ySize : 0);
@@ -815,7 +852,7 @@ public:
 	}
 
 	void DeleteItem(uint16_t ItemId) {
-		MENU_Obj *pMenu;
+		Menu *pMenu;
 		int Index = _FindItem(ItemId, &pMenu);
 		if (Index >= 0) {
 			GUI_ALLOC_FreePtr((void **)&pMenu->ItemArray[Index].pText);
@@ -824,7 +861,7 @@ public:
 		}
 	}
 	void DisableItem(uint16_t ItemId) {
-		MENU_Obj *pMenu;
+		Menu *pMenu;
 		int Index = _FindItem(ItemId, &pMenu);
 		if (Index >= 0) {
 			this->_SetItemFlags(Index, MENU_IF_DISABLED, MENU_IF_DISABLED);
@@ -832,7 +869,7 @@ public:
 		}
 	}
 	void EnableItem(uint16_t ItemId) {
-		MENU_Obj *pMenu;
+		Menu *pMenu;
 		int Index = _FindItem(ItemId, &pMenu);
 		if (Index >= 0) {
 			this->_SetItemFlags(Index, MENU_IF_DISABLED, 0);
@@ -841,7 +878,7 @@ public:
 	}
 	void GetItem(uint16_t ItemId, MENU_ITEM_DATA *pItemData) {
 		if (pItemData) {
-			MENU_Obj *pMenu;
+			Menu *pMenu;
 			int Index = _FindItem(ItemId, &pMenu);
 			if (Index >= 0) {
 				auto &pItem = this->ItemArray[Index];
@@ -854,7 +891,7 @@ public:
 	}
 	void GetItemText(uint16_t ItemId, char *pBuffer, unsigned BufferSize) {
 		if (pBuffer) {
-			MENU_Obj *pMenu;
+			Menu *pMenu;
 			int Index = _FindItem(ItemId, &pMenu);
 			if (Index >= 0) {
 				auto &pItem = this->ItemArray[Index];
@@ -870,7 +907,7 @@ public:
 	}
 	void InsertItem(uint16_t ItemId, const MENU_ITEM_DATA *pItemData) {
 		if (pItemData) {
-			MENU_Obj *pMenu;
+			Menu *pMenu;
 			int Index = _FindItem(ItemId, &pMenu);
 			if (Index >= 0) {
 				if (this->ItemArray.InsertBlankItem(Index) != 0) {
@@ -884,7 +921,7 @@ public:
 			}
 		}
 	}
-	void Popup(WM_Obj *pDestWin, int x, int y, int xSize, int ySize, int Flags) {
+	void Popup(WObj *pDestWin, int x, int y, int xSize, int ySize, int Flags) {
 		if (pDestWin) {
 			this->Flags |= MENU_SF_POPUP;
 			this->Width = ((xSize > 0) ? xSize : 0);
@@ -920,7 +957,7 @@ public:
 	}
 	void SetItem(uint16_t ItemId, const MENU_ITEM_DATA *pItemData) {
 		if (pItemData) {
-			MENU_Obj *pMenu;
+			Menu *pMenu;
 			int Index = _FindItem(ItemId, &pMenu);
 			if (Index >= 0) {
 				if (this->_SetItem(Index, pItemData) != 0) {
@@ -939,39 +976,6 @@ public:
 	}
 };
 
-MENU_Obj::Properties MENU_Obj::DefaultProps;
-
-MENU_Obj *MENU_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParent, int WinFlags, int ExFlags, int Id) {
-	/* Create the window */
-	auto pObj = (MENU_Obj *)WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent,
-												   WC_VISIBLE | WC_STAYONTOP | WinFlags,
-												   MENU_Obj::_Callback, sizeof(MENU_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* init member variables */
-		if (ExFlags & MENU_SF_OPEN_ON_POINTEROVER) {
-			ExFlags |= MENU_SF_ACTIVE;
-		}
-		else {
-			ExFlags &= ~(MENU_SF_ACTIVE);
-		}
-		pObj->Props = MENU_Obj::DefaultProps;
-		pObj->Flags = ExFlags;
-		pObj->Width = ((xSize > 0) ? xSize : 0);
-		pObj->Height = ((ySize > 0) ? ySize : 0);
-		pObj->Sel = -1;
-		pObj->pOwner = 0;
-		pObj->IsSubmenuActive = 0;
-		pObj->SetEffect(MENU__pDefaultEffect);
-	}
-	else {
-	}
-	return pObj;
-}
-WM_Obj *MENU_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	return MENU_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-						  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-}
+Menu::Properties Menu::DefaultProps;
 
 }

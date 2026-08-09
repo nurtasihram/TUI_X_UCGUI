@@ -22,8 +22,6 @@ enum LISTBOX_CI {
 	 LISTBOX_CI_DISABLED
 };
 
-typedef WM_Obj * LISTBOX_Handle;
-
 constexpr uint16_t LISTBOX_NOTIFICATION_LOST_FOCUS = WM_NOTIFICATION_WIDGET<0>;
 constexpr uint16_t LISTBOX_CF_AUTOSCROLLBAR_H      = (1<<0);
 constexpr uint16_t LISTBOX_CF_AUTOSCROLLBAR_V      = (1<<1);
@@ -38,7 +36,9 @@ struct LISTBOX_ITEM {
 	char *pText;
 };
 
-struct LISTBOX_Obj : public WIDGET {
+class ListBox : public WIDGET {
+	
+public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
 		RGBC aBkColor[4]{
@@ -55,11 +55,14 @@ struct LISTBOX_Obj : public WIDGET {
 		};
 		uint8_t ScrollStepH{ 10 };
 	} static DefaultProps;
+
+private:
 	Properties Props;
+
 	ARRAY<LISTBOX_ITEM> ItemArray;
 	WIDGET_DRAW_ITEM_FUNC *pfDrawItem;
 	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
-	WM_Obj *pOwner;
+	WObj *pOwner;
 	int16_t Sel; /* current selection */
 	uint8_t Flags;
 	uint16_t ScrollbarWidth;
@@ -231,9 +234,9 @@ struct LISTBOX_Obj : public WIDGET {
 		int Width = this->ScrollbarWidth;
 		//	if (Width == 0)
 		//		Width = SCROLLBAR_GetDefaultWidth();	////////////// FIX //////////////
-		if (auto pScroll = (SCROLLBAR_Obj *)GetScrollbarH())
+		if (auto pScroll = (ScrollBar *)GetScrollbarH())
 			pScroll->SetWidth(Width);
-		if (auto pScroll = (SCROLLBAR_Obj *)GetScrollbarV())
+		if (auto pScroll = (ScrollBar *)GetScrollbarV())
 			pScroll->SetWidth(Width);
 	}
 	int _CalcScrollParas() {
@@ -446,8 +449,8 @@ struct LISTBOX_Obj : public WIDGET {
 		return 0;
 	}
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (LISTBOX_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (ListBox *)hWin;
 		/* In popup mode (pOwner set), bypass WIDGET_HandleActive for WM_PID_STATE_CHANGED.
 		 * WIDGET_HandleActive internally calls WM_SetFocus on press, which would steal
 		 * focus from the dropdown and cause its parent window to flicker. */
@@ -534,12 +537,45 @@ struct LISTBOX_Obj : public WIDGET {
 
 public:
 
+	static ListBox *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
+							  int WinFlags, int ExFlags, int Id, const char **ppText) {
+		auto pObj = (ListBox *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, ListBox::_Callback,
+													  sizeof(ListBox) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "ListBox create failed");
+			return nullptr;
+		}
+		/* Init sub-classes */
+		/* init widget specific variables */
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
+		pObj->Props = ListBox::DefaultProps;
+		if (ppText) {
+			/* init member variables */
+			/* Set non-zero attributes */
+			pObj->SetText(ppText);
+		}
+		pObj->UpdateScrollers();
+		return pObj;
+	}
+	static ListBox *Create(const char **ppText, WObj *hWinParent,
+								   int x0, int y0, int xsize, int ysize, int Flags) {
+		return Create(x0, y0, xsize, ysize, hWinParent, Flags, 0, 0, ppText);
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		GUI_USE_PARA(cb);
+		auto hObj = Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+								hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, 0);
+		return hObj;
+	}
+
+public:
+
 	int UpdateScrollers() {
 		this->_ManageAutoScroll();
 		return this->_CalcScrollParas();
 	}
-	static int OwnerDraw(WM_Obj *pWin, int Cmd, int ItemIndex, POINT Pos) {
-		auto pObj = (LISTBOX_Obj *)pWin;
+	static int OwnerDraw(WObj *pWin, int Cmd, int ItemIndex, POINT Pos) {
+		auto pObj = (ListBox *)pWin;
 		switch (Cmd) {
 			case WIDGET_ITEM_GET_XSIZE: {
 				auto pOldFont = GUI_SetFont(pObj->Props.pFont);
@@ -886,7 +922,7 @@ public:
 			this->_InvalidateInsideArea();
 		}
 	}
-	void SetOwner(WM_Obj *pOwner) {
+	void SetOwner(WObj *pOwner) {
 		this->pOwner = pOwner;
 		this->_InvalidateInsideArea();
 	}
@@ -923,39 +959,6 @@ public:
 
 };
 
-LISTBOX_Obj::Properties LISTBOX_Obj::DefaultProps;
-
-LISTBOX_Obj *LISTBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
-								int WinFlags, int ExFlags, int Id, const char **ppText) {
-	auto pObj = (LISTBOX_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, LISTBOX_Obj::_Callback,
-								  sizeof(LISTBOX_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		/* Init sub-classes */
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		pObj->Props = LISTBOX_Obj::DefaultProps;
-		if (ppText) {
-			/* init member variables */
-			/* Set non-zero attributes */
-			pObj->SetText(ppText);
-		}
-		pObj->UpdateScrollers();
-	}
-	return pObj;
-}
-LISTBOX_Obj *LISTBOX_Create(const char **ppText, int x0, int y0, int xsize, int ysize, int Flags) {
-	return LISTBOX_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, 0, ppText);
-}
-LISTBOX_Obj *LISTBOX_CreateAsChild(const char **ppText, WM_Obj *hWinParent,
-									 int x0, int y0, int xsize, int ysize, int Flags) {
-	return LISTBOX_CreateEx(x0, y0, xsize, ysize, hWinParent, Flags, 0, 0, ppText);
-}
-WM_Obj *LISTBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	LISTBOX_Handle hObj;
-	GUI_USE_PARA(cb);
-	hObj = LISTBOX_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, 0);
-	return hObj;
-}
+ListBox::Properties ListBox::DefaultProps;
 
 }

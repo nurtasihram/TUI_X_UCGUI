@@ -15,7 +15,9 @@ static PCCURSOR _pOldCursor;
 
 export {
    
-struct HEADER_Obj : public WIDGET {
+class Header : public WIDGET {
+
+public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
 		RGBC BkColor{ RGB_GRAYL(0xAA) };
@@ -24,7 +26,10 @@ struct HEADER_Obj : public WIDGET {
 		int16_t BorderH{ 0 };
 		int16_t BorderV{ 2 };
 	} static DefaultProps;
+	
+private:
 	Properties Props;
+	
 	struct Column {
 		int16_t Width;
 		TEXTALIGN Align;
@@ -178,8 +183,8 @@ struct HEADER_Obj : public WIDGET {
 			_HandlePID(pState->x + ScrollPos, pState->y, -1);
 	}
 #endif
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (HEADER_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (Header *)hWin;
 		/* Let widget handle the standard messages */
 		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 			return Data;
@@ -202,6 +207,44 @@ struct HEADER_Obj : public WIDGET {
 				return 0;
 		}
 		return WM_DefaultProc(hWin, MsgId, Data);
+	}
+
+public:
+
+	static Header *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
+						  int WinFlags, int ExFlags, int Id) {
+		GUI_USE_PARA(ExFlags);
+		/* Create the window */
+		if (!(xsize | x0 | y0)) {
+			RECT Rect = WM_GetInsideRect(hParent);
+			xsize = Rect.x1 - Rect.x0 + 1;
+			x0 = Rect.x0;
+			y0 = Rect.y0;
+		}
+		if (!ysize) {
+			ysize = Header::DefaultProps.pFont->DistY();
+			ysize += 2 * Header::DefaultProps.BorderV;
+			ysize += 2 * WIDGET::DefaultEffect->EffectSize;
+		}
+		WinFlags |= WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT;
+		auto pObj = (Header *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, Header::_Callback,
+													 sizeof(Header) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Header create failed");
+			return nullptr;
+		}
+		/* init widget specific variables */
+		WIDGET__Init(pObj, Id, 0);
+		/* init member variables */
+		pObj->Props = Header::DefaultProps;
+		pObj->CapturePosX = -1;
+		pObj->CaptureItem = -1;
+		pObj->ScrollPos = 0;
+		return pObj;
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+					  hWinParent, pCreateInfo->Flags, 0, pCreateInfo->Id);
 	}
 
 public:
@@ -319,44 +362,6 @@ public:
 	}
 };
 
-HEADER_Obj::Properties HEADER_Obj::DefaultProps;
-
-HEADER_Obj *HEADER_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
-							  int WinFlags, int ExFlags, int Id) {
-	GUI_USE_PARA(ExFlags);
-	/* Create the window */
-	if ((xsize == 0) && (x0 == 0) && (y0 == 0)) {
-		RECT Rect = WM_GetInsideRect(hParent);
-		xsize = Rect.x1 - Rect.x0 + 1;
-		x0 = Rect.x0;
-		y0 = Rect.y0;
-	}
-	if (ysize == 0) {
-		ysize = HEADER_Obj::DefaultProps.pFont->DistY();
-		ysize += 2 * HEADER_Obj::DefaultProps.BorderV;
-		ysize += 2 * WIDGET::DefaultEffect->EffectSize;
-	}
-	WinFlags |= WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT;
-	auto pObj = (HEADER_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, HEADER_Obj::_Callback,
-								  sizeof(HEADER_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, 0);
-		/* init member variables */
-		pObj->Props = HEADER_Obj::DefaultProps;
-		pObj->CapturePosX = -1;
-		pObj->CaptureItem = -1;
-		pObj->ScrollPos = 0;
-	}
-	else {
-	}
-	return pObj;
-}
-
-WM_Obj *HEADER_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	GUI_USE_PARA(cb);
-	return HEADER_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							hWinParent, pCreateInfo->Flags, 0, pCreateInfo->Id);
-}
+Header::Properties Header::DefaultProps;
 
 }

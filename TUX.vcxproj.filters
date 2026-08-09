@@ -121,9 +121,6 @@
     <ClCompile Include="GUI\Widget\CheckBox.cppm">
       <Filter>GUI\Widget\Leaf</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\Button.cppm">
-      <Filter>GUI\Widget\Leaf</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\Header.cppm">
       <Filter>GUI\Widget\Leaf</Filter>
     </ClCompile>
@@ -208,7 +205,9 @@
     <ClCompile Include="GUI\Core\GUITimer.cppm">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI_ARRAY.cppm" />
+    <ClCompile Include="GUI\Widget\Button.cppm">
+      <Filter>GUI\Widget\Leaf</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">

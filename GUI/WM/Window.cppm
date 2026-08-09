@@ -10,19 +10,18 @@ export import TUX.WindowTypes;
 
 export {
 	
-typedef WM_PARAM WM_CALLBACK(struct WM_Obj *pWin, int MsgId, WM_PARAM Data);
+typedef WM_PARAM WM_CALLBACK(struct WObj *pWin, int MsgId, WM_PARAM Data);
 
 using WM_HMEM = GUI_HMEM;
 
-struct WM_Obj;
-
+struct WObj;
 
 struct NOTIFY_INFO {
 	int Notification;
-	WM_Obj *pWinSrc;
+	WObj *pWinSrc;
 };
 
-typedef void WM_tfForEach(WM_Obj *pWin, void *pData);
+typedef void WM_tfForEach(WObj *pWin, void *pData);
 
 void WM_Activate(void);
 void WM_Deactivate(void);
@@ -31,81 +30,81 @@ void WM_Init(void);
 int  WM_Exec(void);  /* Execute all jobs ... Return 0 if nothing was done. */
 int  WM_Exec1(void); /* Execute one job  ... Return 0 if nothing was done. */
 
-void WM_SetCapture(WM_Obj *pObj, int AutoRelease);
-void WM_SetCaptureMove(WM_Obj *pWin, const PID_STATE *pState, int MinVisibility); /* Not yet documented */
+void WM_SetCapture(WObj *pObj, int AutoRelease);
+void WM_SetCaptureMove(WObj *pWin, const PID_STATE *pState, int MinVisibility); /* Not yet documented */
 void WM_ReleaseCapture(void);
 
 uint16_t WM_SetCreateFlags(uint16_t Flags);
 
-void    WM_AttachWindow(WM_Obj *pWin, WM_Obj *pParent);
-void    WM_AttachWindowAt(WM_Obj *pWin, WM_Obj *pParent, int x, int y);
-void    WM_ClrHasTrans(WM_Obj *pWin);
-WM_Obj *WM_CreateWindow(int x0, int y0, int xSize, int ySize, uint16_t Style, WM_CALLBACK *cb, int NumExtraBytes);
-WM_Obj *WM_CreateWindowAsChild(int x0, int y0, int xSize, int ySize, WM_Obj *pWinParent, uint16_t Style, WM_CALLBACK *cb, int NumExtraBytes);
-void    WM_DeleteWindow(WM_Obj *pWin);
-void    WM_DetachWindow(WM_Obj *pWin);
-int     WM_GetHasTrans(WM_Obj *pWin);
-WM_Obj *WM_GetFocussedWindow(void);
+void    WM_AttachWindow(WObj *pWin, WObj *pParent);
+void    WM_AttachWindowAt(WObj *pWin, WObj *pParent, int x, int y);
+void    WM_ClrHasTrans(WObj *pWin);
+WObj *WM_CreateWindow(int x0, int y0, int xSize, int ySize, uint16_t Style, WM_CALLBACK *cb, int NumExtraBytes);
+WObj *WM_CreateWindowAsChild(int x0, int y0, int xSize, int ySize, WObj *pWinParent, uint16_t Style, WM_CALLBACK *cb, int NumExtraBytes);
+void    WM_DeleteWindow(WObj *pWin);
+void    WM_DetachWindow(WObj *pWin);
+int     WM_GetHasTrans(WObj *pWin);
+WObj *WM_GetFocussedWindow(void);
 void    WM_InvalidateArea(const RECT *pRect);
-void    WM_Invalidate(WM_Obj *pWin, const RECT *pRect = nullptr);
-void    WM_InvalidateDescs(WM_Obj *pWin);    /* not to be documented (may change in future version) */
-bool    WM_IsWindow(WM_Obj *pWin);    /* Check validity */
-void    WM_SetHasTrans(WM_Obj *pWin);
-void    WM_SetTransState(WM_Obj *pWin, unsigned State);
-void    WM_ValidateRect(WM_Obj *pWin, const RECT *pRect);
-void    WM_ValidateWindow(WM_Obj *pWin);
-int     WM_GetInvalidRect(WM_Obj *pWin, RECT *pRect);
-void    WM_SetStayOnTop(WM_Obj *pWin, int OnOff);
-int     WM_GetStayOnTop(WM_Obj *pWin);
-void    WM_SetAnchor(WM_Obj *pWin, uint16_t AnchorFlags);
+void    WM_Invalidate(WObj *pWin, const RECT *pRect = nullptr);
+void    WM_InvalidateDescs(WObj *pWin);    /* not to be documented (may change in future version) */
+bool    WM_IsWindow(WObj *pWin);    /* Check validity */
+void    WM_SetHasTrans(WObj *pWin);
+void    WM_SetTransState(WObj *pWin, unsigned State);
+void    WM_ValidateRect(WObj *pWin, const RECT *pRect);
+void    WM_ValidateWindow(WObj *pWin);
+int     WM_GetInvalidRect(WObj *pWin, RECT *pRect);
+void    WM_SetStayOnTop(WObj *pWin, int OnOff);
+int     WM_GetStayOnTop(WObj *pWin);
+void    WM_SetAnchor(WObj *pWin, uint16_t AnchorFlags);
 
 /* Move/resize windows */
-void WM_MoveWindow(WM_Obj *pWin, int dx, int dy);
-void WM_ResizeWindow(WM_Obj *pWin, int dx, int dy);
-void WM_MoveTo(WM_Obj *pWin, int x, int y);
-void WM_MoveChildTo(WM_Obj *pWin, int x, int y);
-void WM_SetSize(WM_Obj *pWin, int XSize, int YSize);
-int  WM_SetXSize(WM_Obj *pWin, int xSize);
-int  WM_SetYSize(WM_Obj *pWin, int ySize);
-int  WM_CreateTimer(WM_Obj *pWin, int UserID, int Period, int Mode); /* not to be documented (may change in future version) */
-void WM_DeleteTimer(WM_Obj *pWin, int UserId); /* not to be documented (may change in future version) */
+void WM_MoveWindow(WObj *pWin, int dx, int dy);
+void WM_ResizeWindow(WObj *pWin, int dx, int dy);
+void WM_MoveTo(WObj *pWin, int x, int y);
+void WM_MoveChildTo(WObj *pWin, int x, int y);
+void WM_SetSize(WObj *pWin, int XSize, int YSize);
+int  WM_SetXSize(WObj *pWin, int xSize);
+int  WM_SetYSize(WObj *pWin, int ySize);
+int  WM_CreateTimer(WObj *pWin, int UserID, int Period, int Mode); /* not to be documented (may change in future version) */
+void WM_DeleteTimer(WObj *pWin, int UserId); /* not to be documented (may change in future version) */
 
 /* Diagnostics */
 int WM_GetNumWindows(void);
 int WM_GetNumInvalidWindows(void);
 
 /* Set (new) callback function */
-WM_CALLBACK *WM_SetCallback(WM_Obj *Win, WM_CALLBACK *cb);
+WM_CALLBACK *WM_SetCallback(WObj *Win, WM_CALLBACK *cb);
 
 /* Get size/origin of a window */
 RECT WM_GetClientRect();
-RECT WM_GetClientRect(WM_Obj *pWin);
+RECT WM_GetClientRect(WObj *pWin);
 RECT WM_GetInsideRect();
-RECT WM_GetInsideRect(WM_Obj *pWin);
+RECT WM_GetInsideRect(WObj *pWin);
 
-WM_Obj *WM_GetPrevSibling(WM_Obj *pWin);
+WObj *WM_GetPrevSibling(WObj *pWin);
 
-WM_Obj *WM_GetClientWindow(WM_Obj *pObj);
+WObj *WM_GetClientWindow(WObj *pObj);
 
 /* Change Z-Order of windows */
-void WM_BringToBottom(WM_Obj *pWin);
-void WM_BringToTop(WM_Obj *pWin);
+void WM_BringToBottom(WObj *pWin);
+void WM_BringToTop(WObj *pWin);
 
 /* Desktop */
 void WM_SetDesktopColor(RGBC Color);
-WM_Obj *WM_GetDesktopWindow(void);
+WObj *WM_GetDesktopWindow(void);
 
 /* Select window used for drawing operations */
-WM_Obj *WM_SelectWindow(WM_Obj *pWin);
-WM_Obj *WM_GetActiveWindow(void);
-void    WM_Paint(WM_Obj *pObj);
+WObj *WM_SelectWindow(WObj *pWin);
+WObj *WM_GetActiveWindow(void);
+void    WM_Paint(WObj *pObj);
 
 /* Reduce clipping area of a window */
 const RECT *WM_SetUserClipRect(const RECT *pRect);
 
 /* Use of memory devices */
-void WM_EnableMemdev(WM_Obj *pWin);
-void WM_DisableMemdev(WM_Obj *pWin);
+void WM_EnableMemdev(WObj *pWin);
+void WM_DisableMemdev(WObj *pWin);
 
 int WM_OnKey(int Key, int Pressed);
 
@@ -118,27 +117,27 @@ int WM_OnKey(int Key, int Pressed);
 	documentation, as they should not be required by application program.
 */
 
-void      WM_NotifyParent(WM_Obj *pWin, int Notification);
+void      WM_NotifyParent(WObj *pWin, int Notification);
 
-WM_PARAM  WM_DefaultProc(WM_Obj *pWin, int MsgId, WM_PARAM Data);
+WM_PARAM  WM_DefaultProc(WObj *pWin, int MsgId, WM_PARAM Data);
 
-bool      WM_HasCaptured(WM_Obj *pWin);
-bool      WM_HasFocus(WM_Obj *pWin);
-int       WM_SetFocus(WM_Obj *pWin);
-WM_Obj *WM_SetFocusOnNextChild(WM_Obj *pParent);     /* Set the focus to the next child */
-WM_Obj *WM_SetFocusOnPrevChild(WM_Obj *pParent);     /* Set the focus to the previous child */
+bool      WM_HasCaptured(WObj *pWin);
+bool      WM_HasFocus(WObj *pWin);
+int       WM_SetFocus(WObj *pWin);
+WObj *WM_SetFocusOnNextChild(WObj *pParent);     /* Set the focus to the next child */
+WObj *WM_SetFocusOnPrevChild(WObj *pParent);     /* Set the focus to the previous child */
 
 /* Scroll functions */
-void WM_GetInsideRectExScrollbar(WM_Obj *pWin, RECT *pRect); /* not to be documented (may change in future version) */
-WM_Obj *WM_GetScrollPartner(WM_Obj *pWin);
-bool WM_SetScrollbarH(WM_Obj *pWin, int OnOff); /* not to be documented (may change in future version) */
-bool WM_SetScrollbarV(WM_Obj *pWin, int OnOff); /* not to be documented (may change in future version) */
-void      WM_GetScrollState(WM_Obj *pObj, WM_SCROLL_STATE *pScrollState);
+void WM_GetInsideRectExScrollbar(WObj *pWin, RECT *pRect); /* not to be documented (may change in future version) */
+WObj *WM_GetScrollPartner(WObj *pWin);
+bool WM_SetScrollbarH(WObj *pWin, int OnOff); /* not to be documented (may change in future version) */
+bool WM_SetScrollbarV(WObj *pWin, int OnOff); /* not to be documented (may change in future version) */
+void      WM_GetScrollState(WObj *pObj, WM_SCROLL_STATE *pScrollState);
 
 int       WM_HandlePID(void);
-WM_Obj *WM_Screen2hWin(int x, int y);
-WM_Obj *WM_Screen2hWinEx(WM_Obj *pStop, int x, int y);
-void      WM_ForEachDesc(WM_Obj *pWin, WM_tfForEach *pcb, void *pData);
+WObj *WM_Screen2hWin(int x, int y);
+WObj *WM_Screen2hWinEx(WObj *pStop, int x, int y);
+void      WM_ForEachDesc(WObj *pWin, WM_tfForEach *pcb, void *pData);
 
 #pragma region IVR
 bool WM__InitIVRSearch(RECT rcMax);
@@ -150,14 +149,14 @@ inline void WM_Iterate(RECT &r, auto fn) {
 }
 #pragma endregion
 
-struct WM_Obj {
+struct WObj {
 	RECT Rect;        /* outer dimensions of window */
 	RECT InvalidRect; /* invalid rectangle */
 	WM_CALLBACK *cb;      /* ptr to notification callback */
-	WM_Obj *pNextLin;     /* Next window in linear list */
-	WM_Obj *pParent;
-	WM_Obj *pFirstChild;
-	WM_Obj *pNext;
+	WObj *pNextLin;     /* Next window in linear list */
+	WObj *pParent;
+	WObj *pFirstChild;
+	WObj *pNext;
 	uint16_t Status; /* Some status flags */
 
 public:
@@ -189,13 +188,13 @@ public:
 	WM_PARAM Require(uint16_t MsgId, WM_PARAM Data = 0)
 	{ return cb ? cb(this, MsgId, Data) : (WM_PARAM)0; }
 	WM_PARAM Require(uint16_t MsgId, WM_PARAM Data = 0) const
-	{ return const_cast<WM_Obj *>(this)->Require(MsgId, Data); }
+	{ return const_cast<WObj *>(this)->Require(MsgId, Data); }
 
 #pragma region Scroll
 
-	WM_Obj *GetScrollbarH()
+	WObj *GetScrollbarH()
 	{ return GetItem(GUI_ID_HSCROLL); }
-	WM_Obj *GetScrollbarV()
+	WObj *GetScrollbarV()
 	{ return GetItem(GUI_ID_VSCROLL); }
 
 	void SetScrollState(const WM_SCROLL_STATE &State)
@@ -208,7 +207,7 @@ public:
 	uint16_t GetID() const { return (uint16_t)Require(WM_GET_ID); }
 	void SetID(uint16_t Id) { Require(WM_SET_ID, (WM_PARAM)Id); }
 
-	WM_Obj *GetItem(uint16_t Id) {
+	WObj *GetItem(uint16_t Id) {
 		for (auto i = pFirstChild; i; i = i->pNext)
 			if (i->GetID() == Id)
 				return i;
@@ -216,7 +215,7 @@ public:
 				return pItem;
 		return nullptr;
 	}
-	const WM_Obj *GetItem(uint16_t Id) const { return const_cast<WM_Obj *>(this)->GetItem(Id); }
+	const WObj *GetItem(uint16_t Id) const { return const_cast<WObj *>(this)->GetItem(Id); }
 	template<class Ret>
 	Ret *GetItem(uint16_t Id) { return (Ret *)GetItem(Id); }
 	template<class Ret>

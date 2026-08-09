@@ -6,30 +6,30 @@
 
 static uint16_t NumWindows, NumInvalidWindows;
 
-static WM_Obj *pWinFirst;
+static WObj *pWinFirst;
 static WM_CRITICAL_HANDLE *pFirstCriticalHandle;
 
-static WM_Obj *pWinActive = nullptr;
+static WObj *pWinActive = nullptr;
 
 static bool IsActive;
 uint16_t WM__CreateFlags;
-static WM_Obj *pWinFocus;
+static WObj *pWinFocus;
 
 uint8_t WM__PaintCallbackCnt;      /* Public for assertions only */
-static WM_Obj *pWinNextDraw;
+static WObj *pWinNextDraw;
 
 PID_STATE WM_PID__StateLast;
 
 #if WM_SUPPORT_TRANSPARENCY
 int WM__TransWindowCnt;
-WM_Obj *WM__hATransWindow;
+WObj *WM__hATransWindow;
 #endif
 
 
 #pragma region Desktop
-static WM_Obj *pWinDesktop = nullptr;
+static WObj *pWinDesktop = nullptr;
 static RGBC BkColorDesktop;
-WM_Obj *WM_GetDesktopWindow(void) {
+WObj *WM_GetDesktopWindow(void) {
 	return pWinDesktop;
 }
 void WM_SetDesktopColor(RGBC Color) {
@@ -37,7 +37,7 @@ void WM_SetDesktopColor(RGBC Color) {
 	if (pWinDesktop)
 		WM_Invalidate(pWinDesktop);
 }
-static WM_PARAM cbBackWin(WM_Obj * pWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM cbBackWin(WObj * pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_KEY: {
 			auto pKeyInfo = (const WM_KEY_INFO *)Data;
@@ -59,12 +59,12 @@ static WM_PARAM cbBackWin(WM_Obj * pWin, int MsgId, WM_PARAM Data) {
 #pragma endregion
 
 #pragma region Capture
-static WM_Obj *pWinCapture = nullptr;
+static WObj *pWinCapture = nullptr;
 bool WM__CaptureReleaseAuto = false;
-bool WM_HasCaptured(WM_Obj *pWin) {
+bool WM_HasCaptured(WObj *pWin) {
 	return (pWin == pWinCapture) ? true : false;
 }
-bool WM_HasFocus(WM_Obj *pWin) {
+bool WM_HasFocus(WObj *pWin) {
 	return (pWin == pWinFocus) ? true : false;
 }
 
@@ -74,14 +74,14 @@ void WM_ReleaseCapture(void) {
 		pWinCapture = nullptr;
 	}
 }
-void WM_SetCapture(WM_Obj *pObj, int AutoRelease) {
+void WM_SetCapture(WObj *pObj, int AutoRelease) {
 	if (pWinCapture != pObj)
 		WM_ReleaseCapture();
 	pWinCapture = pObj;
 	WM__CaptureReleaseAuto = AutoRelease;
 }
 static POINT WM__CapturePoint;
-void WM_SetCaptureMove(WM_Obj *pWin, const PID_STATE *pState, int MinVisibility) {
+void WM_SetCaptureMove(WObj *pWin, const PID_STATE *pState, int MinVisibility) {
 	if (!WM_HasCaptured(pWin)) {
 		WM_SetCapture(pWin, 1);        /* Set capture with auto release */
 		WM__CapturePoint.x = pState->x;
@@ -114,7 +114,7 @@ void WM_SetCaptureMove(WM_Obj *pWin, const PID_STATE *pState, int MinVisibility)
 * Purpose:
 *   Checks the critical handles and resets the matching one
 */
-static void _CheckCriticalHandles(WM_Obj * pWin) {
+static void _CheckCriticalHandles(WObj * pWin) {
 	WM_CRITICAL_HANDLE *pCH;
 	for (pCH = pFirstCriticalHandle; pCH; pCH = pCH->pNext)
 		if (pCH->pWin == pWin)
@@ -127,7 +127,7 @@ static void _CheckCriticalHandles(WM_Obj * pWin) {
 *
 *  Invalidate given window, using absolute coordinates
 */
-static void _Invalidate1Abs(WM_Obj * pWin, const RECT *pRect) {
+static void _Invalidate1Abs(WObj * pWin, const RECT *pRect) {
 	RECT r;
 	int Status;
 	Status = pWin->Status;
@@ -165,7 +165,7 @@ static void ResetNextDrawWin(void) {
 * Normally same as pAWin, except if overlaying transparent window is drawn
 *
 */
-static WM_Obj * _GethDrawWin(void) {
+static WObj * _GethDrawWin(void) {
 #if WM_SUPPORT_TRANSPARENCY
 	if (WM__hATransWindow) 
 		return WM__hATransWindow;
@@ -208,7 +208,7 @@ static void _SetClipRectUserIntersect(const RECT *prSrc) {
 *   1: Something is or may be visible.
 *   0: Nothing is visible (outside of ancestors, no desktop, hidden)
 */
-static bool _ClipAtParentBorders(RECT &r, WM_Obj * pWin) {
+static bool _ClipAtParentBorders(RECT &r, WObj * pWin) {
 	/* Iterate up the window hierarchy.
 	   If the window is invisible, we are done.
 	   Clip at parent boarders.
@@ -238,10 +238,10 @@ static bool _ClipAtParentBorders(RECT &r, WM_Obj * pWin) {
 *   a particular parent window.
 *   The window is placed on top of all siblings with the same level.
 */
-void WM__InsertWindowIntoList(WM_Obj * pWin, WM_Obj * pParent) {
+void WM__InsertWindowIntoList(WObj * pWin, WObj * pParent) {
 	int OnTop;
-	WM_Obj *pi;
-	WM_Obj *pFirstChild;
+	WObj *pi;
+	WObj *pFirstChild;
 	if (pParent) {
 		pWin->pNext = 0;
 		pWin->pParent = pParent;
@@ -263,7 +263,7 @@ void WM__InsertWindowIntoList(WM_Obj * pWin, WM_Obj * pParent) {
 		}
 		/* Put it at the end of the list or before the last non "STAY-ON-TOP" child */
 		do {
-			WM_Obj *pNext;
+			WObj *pNext;
 			if ((pNext = pi->pNext) == nullptr) {   /* End of sibling list ? */
 				pi->pNext = pWin;             /* Then modify this last element to point to new one and we are done */
 				break;
@@ -279,9 +279,9 @@ void WM__InsertWindowIntoList(WM_Obj * pWin, WM_Obj * pParent) {
 		} while (1);
 	}
 }
-void WM__RemoveWindowFromList(WM_Obj * pWin) {
-	WM_Obj *pParent, *pi;
-	WM_Obj *pChild;
+void WM__RemoveWindowFromList(WObj * pWin) {
+	WObj *pParent, *pi;
+	WObj *pChild;
 	pParent = pWin->pParent;
 	if (pParent) {
 		pChild = pParent->pFirstChild;
@@ -308,7 +308,7 @@ void WM__RemoveWindowFromList(WM_Obj * pWin) {
 * children, but it is no longer visible since it is taken out of
 * the tree of the desktop window.
 */
-void WM__DetachWindow(WM_Obj * pWin) {
+void WM__DetachWindow(WObj * pWin) {
 	if (pWin->pParent) {
 		WM__RemoveWindowFromList(pWin);
 		/* Clear area used by this window */
@@ -316,14 +316,14 @@ void WM__DetachWindow(WM_Obj * pWin) {
 		pWin->pParent = 0;
 	}
 }
-static void _DeleteAllChildren(WM_Obj * pFirstChild) {
+static void _DeleteAllChildren(WObj * pFirstChild) {
 	for (auto pChild = pFirstChild; pChild; ) {
 		auto pNext = pChild->pNext;
 		WM_DeleteWindow(pChild);
 		pChild = pNext;
 	}
 }
-bool WM_IsWindow(WM_Obj * pWin) {
+bool WM_IsWindow(WObj * pWin) {
 	for (auto pCur = pWinFirst; pCur; pCur = pCur->pNextLin)
 		if (pCur == pWin)
 			return true;
@@ -334,11 +334,11 @@ bool WM_IsWindow(WM_Obj * pWin) {
 *         WM__InvalidateAreaBelow
   Params: pRect  Rectangle in Absolute coordinates
 */
-void WM__InvalidateAreaBelow(const RECT *pRect, WM_Obj * StopWin) {
+void WM__InvalidateAreaBelow(const RECT *pRect, WObj * StopWin) {
 	GUI_USE_PARA(StopWin);
 	WM_InvalidateArea(pRect);      /* Can be optimized to spare windows above */
 }
-void WM__RemoveFromLinList(WM_Obj * pWin) {
+void WM__RemoveFromLinList(WObj * pWin) {
 	for (auto pCur = pWinFirst; pCur; ) {
 		auto pNext = pCur->pNextLin;
 		if (pNext == pWin) {
@@ -348,8 +348,8 @@ void WM__RemoveFromLinList(WM_Obj * pWin) {
 		pCur = pNext;
 	}
 }
-static void _AddToLinList(WM_Obj * pNew) {
-	WM_Obj *pFirst;
+static void _AddToLinList(WObj * pNew) {
+	WObj *pFirst;
 	if (pWinFirst) {
 		pFirst = pWinFirst;
 		pNew->pNextLin = pFirst->pNextLin;
@@ -358,7 +358,7 @@ static void _AddToLinList(WM_Obj * pNew) {
 	else
 		pWinFirst = pNew;
 }
-static void _Findy1(WM_Obj *pWin, RECT *pRect, RECT *pParentRect) {
+static void _Findy1(WObj *pWin, RECT *pRect, RECT *pParentRect) {
 	for (; pWin; pWin = pWin->pNext) {
 		int Status = pWin->Status;
 		/* Check if this window affects us at all */
@@ -383,7 +383,7 @@ static void _Findy1(WM_Obj *pWin, RECT *pRect, RECT *pParentRect) {
 				_Findy1(pChild, pRect, &rWinClipped);
 	}
 }
-static bool _Findx0(WM_Obj *pWin, RECT *pRect, RECT *pParentRect) {
+static bool _Findx0(WObj *pWin, RECT *pRect, RECT *pParentRect) {
 	for (; pWin; pWin = pWin->pNext) {
 		int Status = pWin->Status;
 		if (!(Status & WC_VISIBLE))
@@ -406,7 +406,7 @@ static bool _Findx0(WM_Obj *pWin, RECT *pRect, RECT *pParentRect) {
 	}
 	return false;
 }
-static void _Findx1(WM_Obj *pWin, RECT *pRect, RECT *pParentRect) {
+static void _Findx1(WObj *pWin, RECT *pRect, RECT *pParentRect) {
 	for (; pWin; pWin = pWin->pNext) {
 		int Status = pWin->Status;
 		if (!(Status & WC_VISIBLE))
@@ -434,7 +434,7 @@ static void _Findx1(WM_Obj *pWin, RECT *pRect, RECT *pParentRect) {
 *  contains client coordinates, which are independent of the
 *  position of the window on the logical desktop area.
 */
-void WM_Invalidate(WM_Obj *pWin, const RECT *pRect) {
+void WM_Invalidate(WObj *pWin, const RECT *pRect) {
 	RECT r;
 	int Status;
 	if (pWin) {
@@ -465,10 +465,10 @@ void WM_InvalidateArea(const RECT *pRect) {
 		_Invalidate1Abs(pWin, pRect);
 	}
 }
-WM_Obj * WM_CreateWindowAsChild(int x0, int y0, int width, int height
-							   , WM_Obj * pParent, uint16_t Style, WM_CALLBACK *cb
+WObj * WM_CreateWindowAsChild(int x0, int y0, int width, int height
+							   , WObj * pParent, uint16_t Style, WM_CALLBACK *cb
 							   , int NumExtraBytes) {
-	WM_Obj *pWin;
+	WObj *pWin;
 	WM_ASSERT_NOT_IN_PAINT();
 	Style |= WM__CreateFlags;
 	/* Default parent is Desktop 0 */
@@ -486,7 +486,7 @@ WM_Obj * WM_CreateWindowAsChild(int x0, int y0, int width, int height
 		if (height == 0)
 			height = pParent->Rect.y1 - pParent->Rect.y0 + 1;
 	}
-	if ((pWin = (WM_Obj *)GUI_ALLOC_AllocZero(NumExtraBytes + sizeof(WM_Obj))) == 0) {
+	if ((pWin = (WObj *)GUI_ALLOC_AllocZero(NumExtraBytes + sizeof(WObj))) == 0) {
 	}
 	else {
 		NumWindows++;
@@ -528,10 +528,10 @@ WM_Obj * WM_CreateWindowAsChild(int x0, int y0, int width, int height
 	}
 	return pWin;
 }
-WM_Obj * WM_CreateWindow(int x0, int y0, int width, int height, uint16_t Style, WM_CALLBACK *cb, int NumExtraBytes) {
+WObj * WM_CreateWindow(int x0, int y0, int width, int height, uint16_t Style, WM_CALLBACK *cb, int NumExtraBytes) {
 	return WM_CreateWindowAsChild(x0, y0, width, height, 0 /* No parent */, Style, cb, NumExtraBytes);
 }
-void WM_DeleteWindow(WM_Obj * pWin) {
+void WM_DeleteWindow(WObj * pWin) {
 	if (!pWin)
 		return;
 	WM_ASSERT_NOT_IN_PAINT();
@@ -575,7 +575,7 @@ void WM_DeleteWindow(WM_Obj * pWin) {
 *  Sets the active Window. The active Window is the one that is used for all
 *  drawing (and text) operations.
 */
-WM_Obj * WM_SelectWindow(WM_Obj * pWin) {
+WObj * WM_SelectWindow(WObj * pWin) {
 	auto pWinPrev = pWinActive;
 	WM_ASSERT_NOT_IN_PAINT();
 	if (pWin == 0) {
@@ -587,7 +587,7 @@ WM_Obj * WM_SelectWindow(WM_Obj * pWin) {
 	GUI.Off = pWin->Rect.LeftTop();
 	return pWinPrev;
 }
-WM_Obj * WM_GetActiveWindow(void) {
+WObj * WM_GetActiveWindow(void) {
 	return pWinActive;
 }
 
@@ -624,9 +624,9 @@ Function works as follows:
 */
 #if WM_SUPPORT_OBSTRUCT
 static int _FindNext_IVR(void) {
-	WM_Obj *pParent;
+	WObj *pParent;
 	RECT r;
-	WM_Obj *pAWin;
+	WObj *pAWin;
 	r = _ClipContext.CurRect;  /* temps  so we do not have to work with pointers too much */
 	/*
 	   STEP 1:
@@ -841,7 +841,7 @@ void WM__ActivateClipRect(void) {
 		_SetClipRectUserIntersect(&_ClipContext.CurRect);
 	else {    /* Window manager disabled, typically because meory device is active */
 		RECT r;
-		WM_Obj *pAWin;
+		WObj *pAWin;
 		pAWin = pWinActive;
 		r = pAWin->Rect;
 #if WM_SUPPORT_TRANSPARENCY
@@ -854,7 +854,7 @@ void WM__ActivateClipRect(void) {
 }
 #pragma endregion
 
-static void _Paint1(WM_Obj *pWin) {
+static void _Paint1(WObj *pWin) {
 	int Status = pWin->Status;
 	/* Send WM_PAINT if window is visible and a callback is defined */
 	if ((pWin->cb != nullptr) && (Status & WC_VISIBLE)) {
@@ -892,7 +892,7 @@ static void _Paint1(WM_Obj *pWin) {
 *   in the worst case.
 */
 #if WM_SUPPORT_TRANSPARENCY
-static int _Paint1Trans(WM_Obj *pWin) {
+static int _Paint1Trans(WObj *pWin) {
 	auto pAWin = pWinActive;
 	/* Check if we need to do any drawing */
 	if (pWin->Rect <= pAWin->InvalidRect) {
@@ -924,8 +924,8 @@ static int _Paint1Trans(WM_Obj *pWin) {
 * Returns:   ---
 */
 #if WM_SUPPORT_TRANSPARENCY
-static void _PaintTransChildren(WM_Obj *pWin) {
-	WM_Obj *pChild;
+static void _PaintTransChildren(WObj *pWin) {
+	WObj *pChild;
 	if (pWin->Status & WC_VISIBLE) {
 		for (pChild = pWin->pFirstChild; pChild; pChild = pChild->pNext) {
 			if ((pChild->Status & (WC_HASTRANS | WC_VISIBLE))   /* Transparent & visible ? */
@@ -954,7 +954,7 @@ static void _PaintTransChildren(WM_Obj *pWin) {
 * Returns:   ---
 */
 #if WM_SUPPORT_TRANSPARENCY
-static void _PaintTransTopSiblings(WM_Obj *pWin) {
+static void _PaintTransTopSiblings(WObj *pWin) {
 	auto pParent = pWin->pParent;
 	pWin = pWin->pNext;
 	while (pParent) { /* Go hierarchy up to desktop window */
@@ -982,7 +982,7 @@ static void _PaintTransTopSiblings(WM_Obj *pWin) {
 *   Paint the given window and all overlaying windows
 *   (transparent children and transparent top siblings)
 */
-void WM__PaintWinAndOverlays(WM_Obj *pWin) {
+void WM__PaintWinAndOverlays(WObj *pWin) {
 #if WM_SUPPORT_TRANSPARENCY
 	/* Transparent windows without const outline are drawn as part of the background and can be skipped. */
 	if ((pWin->Status & (WC_HASTRANS | WC_CONST_OUTLINE)) != WC_HASTRANS)
@@ -1013,7 +1013,7 @@ static void _cbPaintMemDev(void *p) {
 	auto pWin = pWinActive;
 	Rect = pWin->InvalidRect;
 	pWin->InvalidRect = GUI.ClipRect;
-	WM__PaintWinAndOverlays((WM_Obj *)p);
+	WM__PaintWinAndOverlays((WObj *)p);
 	pWin->InvalidRect = Rect;
 }
 #endif
@@ -1024,7 +1024,7 @@ static void _cbPaintMemDev(void *p) {
 	1: a window has been redrawn
 	0: No window has been drawn
 */
-static int _Paint(WM_Obj *pWin) {
+static int _Paint(WObj *pWin) {
 	if (!(pWin->Status & WC_ACTIVATE))
 		return 0;
 	int Ret = 0;
@@ -1096,7 +1096,7 @@ void WM_Deactivate(void) {
 	LCD_SetClipRectMax();
 }
 
-void WM_NotifyParent(WM_Obj * pWin, int Notification) {
+void WM_NotifyParent(WObj * pWin, int Notification) {
 	if (auto pParent = pWin->Parent()) {
 		NOTIFY_INFO NotifyInfo;
 		NotifyInfo.Notification = Notification;
@@ -1104,7 +1104,7 @@ void WM_NotifyParent(WM_Obj * pWin, int Notification) {
 		pParent->Require(WM_NOTIFY_PARENT, (WM_PARAM)&NotifyInfo);
 	}
 }
-WM_PARAM WM__SendMessage(WM_Obj * pWin, int MsgId, WM_PARAM Data) {
+WM_PARAM WM__SendMessage(WObj * pWin, int MsgId, WM_PARAM Data) {
 	if (pWin->cb)
 		return pWin->cb(pWin, MsgId, Data);
 	return WM_DefaultProc(pWin, MsgId, Data);
@@ -1120,7 +1120,7 @@ WM_PARAM WM__SendMessage(WM_Obj * pWin, int MsgId, WM_PARAM Data) {
 *   its callback function for messages it does not handle itself.
 *
 */
-WM_PARAM WM_DefaultProc(WM_Obj * pWin, int MsgId, WM_PARAM Data) {
+WM_PARAM WM_DefaultProc(WObj * pWin, int MsgId, WM_PARAM Data) {
 	/* Exec message */
 	switch (MsgId) {
 		case WM_GET_INSIDE_RECT: /* return client window in absolute (screen) coordinates */
@@ -1140,8 +1140,8 @@ WM_PARAM WM_DefaultProc(WM_Obj * pWin, int MsgId, WM_PARAM Data) {
 	/* Message not handled. If it queries something, we return 0 to be on the safe side. */
 	return 0;
 }
-void WM__ForEachDesc(WM_Obj * pWin, WM_tfForEach *pcb, void *pData) {
-	WM_Obj *pChild;
+void WM__ForEachDesc(WObj * pWin, WM_tfForEach *pcb, void *pData) {
+	WObj *pChild;
 	for (pChild = pWin->pFirstChild; pChild; pChild = pChild->pNext) {
 		pcb(pChild, pData);
 		WM_ForEachDesc(pChild, pcb, pData);
@@ -1152,15 +1152,15 @@ void WM__ForEachDesc(WM_Obj * pWin, WM_tfForEach *pcb, void *pData) {
 *       WM__GetFirstSibling
   Return value: Handle of parent, 0 if none
 */
-WM_Obj * WM__GetFirstSibling(WM_Obj * pWin) {
+WObj * WM__GetFirstSibling(WObj * pWin) {
 	pWin = pWin->Parent();
 	if (pWin) {
 		return pWin->pFirstChild;
 	}
 	return 0;
 }
-WM_Obj * WM__GetFocussedChild(WM_Obj * pWin) {
-	WM_Obj * r = 0;
+WObj * WM__GetFocussedChild(WObj * pWin) {
+	WObj * r = 0;
 	if (WM__IsChild(pWinFocus, pWin)) {
 		r = pWinFocus;
 	}
@@ -1171,7 +1171,7 @@ WM_Obj * WM__GetFocussedChild(WM_Obj * pWin) {
 *       WM__GetLastSibling
   Return value: Handle of last sibling
 */
-WM_Obj * WM__GetLastSibling(WM_Obj * pWin) {
+WObj * WM__GetLastSibling(WObj * pWin) {
 	for (; pWin; pWin = pWin->pNext) {
 		if (pWin->pNext == 0)
 			break;
@@ -1183,9 +1183,9 @@ WM_Obj * WM__GetLastSibling(WM_Obj * pWin) {
 *       WM_GetPrevSibling
   Return value: Handle of previous sibling (if any), otherwise 0
 */
-WM_Obj * WM_GetPrevSibling(WM_Obj * pWin) {
-	WM_Obj * pIter;
-	WM_Obj *pPrev;
+WObj * WM_GetPrevSibling(WObj * pWin) {
+	WObj * pIter;
+	WObj *pPrev;
 	for (pIter = WM__GetFirstSibling(pWin); pIter; pIter = pPrev->pNext) {
 		if (pIter == pWin) {
 			pIter = 0; /* There is no previous sibling. Return 0 */
@@ -1207,7 +1207,7 @@ WM_Obj * WM_GetPrevSibling(WM_Obj * pWin) {
 *
 *
 */
-bool WM__IsAncestor(WM_Obj * pChild, WM_Obj * pParent) {
+bool WM__IsAncestor(WObj * pChild, WObj * pParent) {
 	bool r = false;
 	if (pChild && pParent) {
 		while (pChild) {
@@ -1230,13 +1230,13 @@ bool WM__IsAncestor(WM_Obj * pChild, WM_Obj * pParent) {
 *
 *
 */
-bool WM__IsAncestorOrSelf(WM_Obj * pChild, WM_Obj * pParent) {
+bool WM__IsAncestorOrSelf(WObj * pChild, WObj * pParent) {
 	if (pChild == pParent) {
 		return true;
 	}
 	return WM__IsAncestor(pChild, pParent);
 }
-bool WM__IsChild(WM_Obj * pWin, WM_Obj * pParent) {
+bool WM__IsChild(WObj * pWin, WObj * pParent) {
 	bool r = false;
 	if (pWin) {
 		if (pWin->pParent == pParent)
@@ -1244,7 +1244,7 @@ bool WM__IsChild(WM_Obj * pWin, WM_Obj * pParent) {
 	}
 	return r;
 }
-void WM__Screen2Client(const WM_Obj *pWin, RECT *pRect) {
+void WM__Screen2Client(const WObj *pWin, RECT *pRect) {
 	*pRect -= pWin->Rect.LeftTop();
 }
 #define WM_DEBUG_LEVEL 1
@@ -1257,8 +1257,8 @@ void WM__Screen2Client(const WM_Obj *pWin, RECT *pRect) {
 *   What exactly happens to the window depends on how the edges are
 *   anchored.
 */
-void WM__UpdateChildPositions(WM_Obj *pObj, int dx0, int dy0, int dx1, int dy1) {
-	WM_Obj *pChild;
+void WM__UpdateChildPositions(WObj *pObj, int dx0, int dy0, int dx1, int dy1) {
+	WObj *pChild;
 	int dx, dy, dw, dh;
 	for (pChild = pObj->pFirstChild; pChild; pChild = pChild->pNext) {
 		int Status;
@@ -1307,7 +1307,7 @@ void WM__UpdateChildPositions(WM_Obj *pObj, int dx0, int dy0, int dx1, int dy1) 
 		}
 	}
 }
-void WM_DetachWindow(WM_Obj * pWin) {
+void WM_DetachWindow(WObj * pWin) {
 	if (pWin) {
 		auto pParent = pWin->pParent;
 		if (pParent) {
@@ -1317,7 +1317,7 @@ void WM_DetachWindow(WM_Obj * pWin) {
 		}
 	}
 }
-void WM_AttachWindow(WM_Obj * pWin, WM_Obj * pParent) {
+void WM_AttachWindow(WObj * pWin, WObj * pParent) {
 	if (pParent && (pParent != pWin)) {
 		if (pWin->pParent != pParent) {
 			WM_DetachWindow(pWin);
@@ -1326,12 +1326,12 @@ void WM_AttachWindow(WM_Obj * pWin, WM_Obj * pParent) {
 		}
 	}
 }
-void WM_AttachWindowAt(WM_Obj * pWin, WM_Obj * pParent, int x, int y) {
+void WM_AttachWindowAt(WObj * pWin, WObj * pParent, int x, int y) {
 	WM_DetachWindow(pWin);
 	WM_MoveTo(pWin, x, y);
 	WM_AttachWindow(pWin, pParent);
 }
-void WM_BringToBottom(WM_Obj * pWin) {
+void WM_BringToBottom(WObj * pWin) {
 	if (pWin) {
 		auto pPrev = WM_GetPrevSibling(pWin);
 		if (pPrev) {                   /* If there is no previous one, there is nothing to do ! */
@@ -1346,16 +1346,16 @@ void WM_BringToBottom(WM_Obj * pWin) {
 		}
 	}
 }
-static void _cbInvalidateOne(WM_Obj * pWin, void *p) {
+static void _cbInvalidateOne(WObj * pWin, void *p) {
 	GUI_USE_PARA(p);
 	WM_Invalidate(pWin);
 }
-static void _InvalidateWindowAndDescs(WM_Obj * pWin) {
+static void _InvalidateWindowAndDescs(WObj * pWin) {
 	WM_Invalidate(pWin);
 	WM_ForEachDesc(pWin, _cbInvalidateOne, 0);
 }
 
-void WM_BringToTop(WM_Obj * pWin) {
+void WM_BringToTop(WObj * pWin) {
 	if (pWin) {
 		auto pNext = pWin->pNext;
 		/* Is window alread on top ? If so, we are done. (Not required, just an optimization) */
@@ -1403,7 +1403,7 @@ void WM__RemoveCriticalHandle(WM_CRITICAL_HANDLE *pCriticalHandle) {
 * Function:
 *   Debug code: shows invalid areas
 */
-static void _ShowInvalid(WM_Obj * pWin) {
+static void _ShowInvalid(WObj * pWin) {
 	auto Context = GUI;
 	auto rClient = pWin->InvalidRect - pWin->Rect.LeftTop();
 	WM_SelectWindow(pWin);
@@ -1412,11 +1412,11 @@ static void _ShowInvalid(WM_Obj * pWin) {
 	GUI_FillRect(rClient);
 	GUI = Context;
 }
-void WM_ForEachDesc(WM_Obj * pWin, WM_tfForEach *pcb, void *pData) {
+void WM_ForEachDesc(WObj * pWin, WM_tfForEach *pcb, void *pData) {
 	WM__ForEachDesc(pWin, pcb, pData);
 }
 RECT WM_GetClientRect() {
-	WM_Obj * pWin;
+	WObj * pWin;
 #if WM_SUPPORT_TRANSPARENCY
 	pWin = WM__hATransWindow ? WM__hATransWindow : pWinActive;
 #else
@@ -1426,12 +1426,12 @@ RECT WM_GetClientRect() {
 }
 /*********************************************************************
 *
-*       WM_GetClientRect (overloaded with WM_Obj * parameter)
+*       WM_GetClientRect (overloaded with WObj * parameter)
 *
   Get client rectangle in windows coordinates. This means that the
   upper left corner is always at (0,0).
 */
-RECT WM_GetClientRect(WM_Obj * pWin) {
+RECT WM_GetClientRect(WObj * pWin) {
 	RECT Rect;
 	Rect.x0 = Rect.y0 = 0;
 	Rect.x1 = pWin->Rect.x1 - pWin->Rect.x0;
@@ -1440,7 +1440,7 @@ RECT WM_GetClientRect(WM_Obj * pWin) {
 }
 /*********************************************************************
 *
-*       WM_GetInsideRect (overloaded with WM_Obj * parameter)
+*       WM_GetInsideRect (overloaded with WObj * parameter)
 *
   Purpose:
 	Return the inside rectangle in client coordinates.
@@ -1448,7 +1448,7 @@ RECT WM_GetClientRect(WM_Obj * pWin) {
 	which typically reduces the rectangle by 0 - 3 pixels on either side
 	(2 for the standard 3D effect).
 */
-RECT WM_GetInsideRect(WM_Obj * pWin) {
+RECT WM_GetInsideRect(WObj * pWin) {
 	RECT Rect;
 	pWin->Require(WM_GET_INSIDE_RECT, (WM_PARAM)&Rect);
 	return Rect;
@@ -1456,8 +1456,8 @@ RECT WM_GetInsideRect(WM_Obj * pWin) {
 RECT WM_GetInsideRect() {
 	return WM_GetInsideRect(pWinActive);
 }
-WM_Obj * WM_GetClientWindow(WM_Obj * pObj) {
-	return (WM_Obj *)pObj->Require(WM_GET_CLIENT_WINDOW, 0);
+WObj * WM_GetClientWindow(WObj * pObj) {
+	return (WObj *)pObj->Require(WM_GET_CLIENT_WINDOW, 0);
 }
 int WM_GetNumWindows(void) {
 	return NumWindows;
@@ -1465,7 +1465,7 @@ int WM_GetNumWindows(void) {
 int WM_GetNumInvalidWindows(void) {
 	return NumInvalidWindows;
 }
-WM_Obj * WM_GetFocussedWindow(void) {
+WObj * WM_GetFocussedWindow(void) {
 	return pWinFocus;
 }
 
@@ -1478,7 +1478,7 @@ WM_Obj * WM_GetFocussedWindow(void) {
 *   1 if there is an invalid rectangle
 *
 */
-int WM_GetInvalidRect(WM_Obj * pWin, RECT *pRect) {
+int WM_GetInvalidRect(WObj * pWin, RECT *pRect) {
 	int IsInvalid = 0;
 	if (pWin) {
 		if (pWin->Status & WC_ACTIVATE) {
@@ -1488,8 +1488,8 @@ int WM_GetInvalidRect(WM_Obj * pWin, RECT *pRect) {
 	}
 	return IsInvalid;
 }
-static char _WindowSiblingsOverlapRect(WM_Obj * iWin, RECT *pRect) {
-	WM_Obj *pWin;
+static char _WindowSiblingsOverlapRect(WObj * iWin, RECT *pRect) {
+	WObj *pWin;
 	for (; iWin; iWin = pWin->pNext) {
 		int Status = (pWin = iWin)->Status;
 		/* Check if this window affects us at all */
@@ -1502,8 +1502,8 @@ static char _WindowSiblingsOverlapRect(WM_Obj * iWin, RECT *pRect) {
 	}
 	return 0;
 }
-static int _HasOverlap(WM_Obj *pWin, RECT *pRect) {
-	WM_Obj *pParent;
+static int _HasOverlap(WObj *pWin, RECT *pRect) {
+	WObj *pParent;
 	/* Step 1:
 	 Check if there are any visible children. If this is so, then the
 	 window has an overlap.
@@ -1539,7 +1539,7 @@ static int _HasOverlap(WM_Obj *pWin, RECT *pRect) {
 * Parameters
 *   hWin    The first of all descendents to be moved (first child)
 */
-static void _MoveDescendents(WM_Obj * pWin, int dx, int dy) {
+static void _MoveDescendents(WObj * pWin, int dx, int dy) {
 	for (; pWin; pWin = pWin->pNext) {
 		pWin->Rect += POINT{dx, dy};
 		pWin->InvalidRect += POINT{dx, dy};
@@ -1547,7 +1547,7 @@ static void _MoveDescendents(WM_Obj * pWin, int dx, int dy) {
 		pWin->Require(WM_MOVE);
 	}
 }
-void WM_MoveWindow(WM_Obj * pWin, int dx, int dy) {
+void WM_MoveWindow(WObj * pWin, int dx, int dy) {
 	RECT r;
 	if (pWin) {
 		r = pWin->Rect;
@@ -1562,14 +1562,14 @@ void WM_MoveWindow(WM_Obj * pWin, int dx, int dy) {
 		pWin->Require(WM_MOVE);             /* Notify window it has been moved */
 	}
 }
-void WM_MoveTo(WM_Obj * pWin, int x, int y) {
+void WM_MoveTo(WObj * pWin, int x, int y) {
 	if (pWin) {
 		x -= pWin->Rect.x0;
 		y -= pWin->Rect.y0;
 		WM_MoveWindow(pWin, x, y);
 	}
 }
-void WM_MoveChildTo(WM_Obj * pWin, int x, int y) {
+void WM_MoveChildTo(WObj * pWin, int x, int y) {
 	if (pWin) {
 		auto pParent = pWin->Parent();
 		if (pParent) {
@@ -1579,7 +1579,7 @@ void WM_MoveChildTo(WM_Obj * pWin, int x, int y) {
 		}
 	}
 }
-void WM_Paint(WM_Obj * pWin) {
+void WM_Paint(WObj * pWin) {
 	GUI_CONTEXT Context;
 	WM_ASSERT_NOT_IN_PAINT();
 	if (pWin) {
@@ -1595,7 +1595,7 @@ void WM_Paint(WM_Obj * pWin) {
 void WM_PID__GetPrevState(PID_STATE *pPrevState) {
 	*pPrevState = WM_PID__StateLast;
 }
-void WM_ResizeWindow(WM_Obj * pWin, int dx, int dy) {
+void WM_ResizeWindow(WObj * pWin, int dx, int dy) {
 	RECT rOld, rNew, rMerge;
 	if (((dx | dy) == 0) || (pWin == 0)) { /* Early out if there is nothing to do */
 		return;
@@ -1635,9 +1635,9 @@ void WM_ResizeWindow(WM_Obj * pWin, int dx, int dy) {
   !=0  Handle of the topmost visible decendent in which the given
 	   coordinate falls.
 */
-static WM_Obj * _Screen2hWin(WM_Obj * pWin, WM_Obj * pStop, int x, int y) {
-	WM_Obj * pChild;
-	WM_Obj * pHit;
+static WObj * _Screen2hWin(WObj * pWin, WObj * pStop, int x, int y) {
+	WObj * pChild;
+	WObj * pHit;
 	/* First check if the  coordinates are in the given window. If not, return 0 */
 	if (!WM__IsInWindow(pWin, x, y))
 		return 0;
@@ -1650,14 +1650,14 @@ static WM_Obj * _Screen2hWin(WM_Obj * pWin, WM_Obj * pStop, int x, int y) {
 	}
 	return pWin; /* No Child affected ... The parent is the right one */
 }
-WM_Obj * WM_Screen2hWin(int x, int y) {
+WObj * WM_Screen2hWin(int x, int y) {
 	return _Screen2hWin(pWinFirst, 0, x, y);
 }
-WM_Obj * WM_Screen2hWinEx(WM_Obj * pStop, int x, int y) {
+WObj * WM_Screen2hWinEx(WObj * pStop, int x, int y) {
 	return _Screen2hWin(pWinFirst, pStop, x, y);
 }
 
-bool WM__IsInWindow(WM_Obj *pWin, int x, int y) {
+bool WM__IsInWindow(WObj *pWin, int x, int y) {
 	if ((pWin->Status & WC_VISIBLE)
 		&& (x >= pWin->Rect.x0)
 		&& (x <= pWin->Rect.x1)
@@ -1667,7 +1667,7 @@ bool WM__IsInWindow(WM_Obj *pWin, int x, int y) {
 	}
 	return false;
 }
-void WM_SetAnchor(WM_Obj * pWin, uint16_t AnchorFlags) {
+void WM_SetAnchor(WObj * pWin, uint16_t AnchorFlags) {
 	if (pWin) {
 		uint16_t Mask;
 		Mask = (WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM);
@@ -1676,7 +1676,7 @@ void WM_SetAnchor(WM_Obj * pWin, uint16_t AnchorFlags) {
 		pWin->Status |= AnchorFlags;
 	}
 }
-WM_CALLBACK *WM_SetCallback(WM_Obj * pWin, WM_CALLBACK *cb) {
+WM_CALLBACK *WM_SetCallback(WObj * pWin, WM_CALLBACK *cb) {
 	WM_CALLBACK *r = nullptr;
 	if (pWin) {
 		r = pWin->cb;
@@ -1704,7 +1704,7 @@ uint16_t WM_SetCreateFlags(uint16_t Flags) {
 *   0    on success (Focus could be set)
 *   !=0  on failure (Windows could not take the focus)
 */
-int WM_SetFocus(WM_Obj * pWin) {
+int WM_SetFocus(WObj * pWin) {
 	int r;
 	if (pWin && pWin != pWinFocus) {
 		WM_NOTIFY_CHILD_HAS_FOCUS_INFO Info;
@@ -1746,8 +1746,8 @@ int WM_SetFocus(WM_Obj * pWin) {
 *   Handle to next child if we found one.
 *   0 if window has no other children.
 */
-static WM_Obj * _GetNextChild(WM_Obj * pParent, WM_Obj * pChild) {
-	WM_Obj *pObj = nullptr;
+static WObj * _GetNextChild(WObj * pParent, WObj * pChild) {
+	WObj *pObj = nullptr;
 	if (pChild)
 		pObj = pChild->pNext;
 	if (!pObj)
@@ -1767,7 +1767,7 @@ static WM_Obj * _GetNextChild(WM_Obj * pParent, WM_Obj * pChild) {
 *   Handle of focussed child, if we found an other focussable child
 *   as the current. Otherwise the return value is zero.
 */
-WM_Obj * WM_SetFocusOnNextChild(WM_Obj * pParent) {
+WObj * WM_SetFocusOnNextChild(WObj * pParent) {
 	if (auto pChild = WM__GetFocussedChild(pParent)) {
 		do {
 			if (!(pChild = _GetNextChild(pParent, pChild)))
@@ -1793,8 +1793,8 @@ WM_Obj * WM_SetFocusOnNextChild(WM_Obj * pParent) {
 *   Handle to previous child if we found one.
 *   0 if window has no other children.
 */
-static WM_Obj * _GetPrevChild(WM_Obj * pChild) {
-	WM_Obj * pObj = 0;
+static WObj * _GetPrevChild(WObj * pChild) {
+	WObj * pObj = 0;
 	if (pChild)
 		pObj = WM_GetPrevSibling(pChild);
 	if (!pObj) 
@@ -1814,9 +1814,9 @@ static WM_Obj * _GetPrevChild(WM_Obj * pChild) {
 *   Handle of focussed child, if we found an other focussable child
 *   as the current. Otherwise the return value is zero.
 */
-WM_Obj * WM_SetFocusOnPrevChild(WM_Obj * pParent) {
-	WM_Obj *pChild;
-	WM_Obj *pWin;
+WObj * WM_SetFocusOnPrevChild(WObj * pParent) {
+	WObj *pChild;
+	WObj *pWin;
 	pChild = WM__GetFocussedChild(pParent);
 	pChild = _GetPrevChild(pChild);
 	pWin = pChild;
@@ -1831,20 +1831,20 @@ WM_Obj * WM_SetFocusOnPrevChild(WM_Obj * pParent) {
 }
 
 
-void WM_Obj::ShowWindow() {
+void WObj::ShowWindow() {
 	if (!(Status & WC_VISIBLE)) {
 		Status |= WC_VISIBLE;
 		WM_InvalidateDescs(this);
 	}
 }
-void WM_Obj::HideWindow() {
+void WObj::HideWindow() {
 	if (Status & WC_VISIBLE) {
 		Status &= ~WC_VISIBLE;
 		WM__InvalidateAreaBelow(&Rect, this);
 	}
 }
 
-void WM_SetSize(WM_Obj * pWin, int xSize, int ySize) {
+void WM_SetSize(WObj * pWin, int xSize, int ySize) {
 	int dx, dy;
 	if (pWin) {
 		dx = xSize - (pWin->Rect.x1 - pWin->Rect.x0 + 1);
@@ -1853,7 +1853,7 @@ void WM_SetSize(WM_Obj * pWin, int xSize, int ySize) {
 	}
 }
 #if WM_SUPPORT_TRANSPARENCY   /* If 0, WM will not generate any code */
-void WM_SetHasTrans(WM_Obj * pWin) {
+void WM_SetHasTrans(WObj * pWin) {
 	if (pWin) {
 		/* First check if this is necessary at all */
 		if (!(pWin->Status & WC_HASTRANS)) {
@@ -1863,7 +1863,7 @@ void WM_SetHasTrans(WM_Obj * pWin) {
 		}
 	}
 }
-void WM_ClrHasTrans(WM_Obj * pWin) {
+void WM_ClrHasTrans(WObj * pWin) {
 	if (pWin) {
 		/* First check if this is necessary at all */
 		if (pWin->Status & WC_HASTRANS) {
@@ -1873,14 +1873,14 @@ void WM_ClrHasTrans(WM_Obj * pWin) {
 		}
 	}
 }
-int WM_GetHasTrans(WM_Obj * pWin) {
+int WM_GetHasTrans(WObj * pWin) {
 	int r = 0;
 	if (pWin) {
 		r = pWin->Status & WC_HASTRANS;
 	}
 	return r;
 }
-void WM_SetTransState(WM_Obj * pWin, unsigned State) {
+void WM_SetTransState(WObj * pWin, unsigned State) {
 	if (pWin) {
 		if (State & WC_HASTRANS)
 			WM_SetHasTrans(pWin);
@@ -1907,7 +1907,7 @@ const RECT *WM_SetUserClipRect(const RECT *pRect) {
 	WM__ActivateClipRect();
 	return pRectReturn;
 }
-int WM_SetXSize(WM_Obj * pWin, int XSize) {
+int WM_SetXSize(WObj * pWin, int XSize) {
 	int dx;
 	int r = 0;
 	if (pWin) {
@@ -1917,7 +1917,7 @@ int WM_SetXSize(WM_Obj * pWin, int XSize) {
 	}
 	return r;
 }
-int WM_SetYSize(WM_Obj * pWin, int YSize) {
+int WM_SetYSize(WObj * pWin, int YSize) {
 	int dy;
 	int r = 0;
 	if (pWin) {
@@ -1928,8 +1928,8 @@ int WM_SetYSize(WM_Obj * pWin, int YSize) {
 	return r;
 }
 
-void WM_InvalidateDescs(WM_Obj * pWin) {
-	WM_Obj * pChild;
+void WM_InvalidateDescs(WObj * pWin) {
+	WObj * pChild;
 	if (pWin) {
 		WM_Invalidate(pWin);    /* Invalidate window itself */
 		for (pChild = pWin->FirstChild(); pChild;) {
@@ -1940,7 +1940,7 @@ void WM_InvalidateDescs(WM_Obj * pWin) {
 	}
 }
 
-void WM_SetStayOnTop(WM_Obj * pWin, int OnOff) {
+void WM_SetStayOnTop(WObj * pWin, int OnOff) {
 	if (pWin) {
 		uint16_t OldStatus;
 		OldStatus = pWin->Status;
@@ -1954,7 +1954,7 @@ void WM_SetStayOnTop(WM_Obj * pWin, int OnOff) {
 			WM_AttachWindow(pWin, pWin->Parent());
 	}
 }
-int WM_GetStayOnTop(WM_Obj * pWin) {
+int WM_GetStayOnTop(WObj * pWin) {
 	int Result = 0;
 	if (pWin) {
 		if (pWin->Status & WC_STAYONTOP)
@@ -1998,7 +1998,7 @@ static void _SubRect(RECT *pDest, const RECT *pr0, const RECT *pr1) {
   part will not be included in the paint-command and could therefor not
   be updated.
 */
-void WM_ValidateRect(WM_Obj * pWin, const RECT *pRect) {
+void WM_ValidateRect(WObj * pWin, const RECT *pRect) {
 	if (pWin) {
 		if (pWin->Status & WC_ACTIVATE) {
 			if (pRect) {
@@ -2011,7 +2011,7 @@ void WM_ValidateRect(WM_Obj * pWin, const RECT *pRect) {
 		}
 	}
 }
-void WM_ValidateWindow(WM_Obj * pWin) {
+void WM_ValidateWindow(WObj * pWin) {
 	if (pWin) {
 		if (pWin->Status & WC_ACTIVATE) {
 			pWin->Status &= ~WC_ACTIVATE;
@@ -2033,18 +2033,18 @@ int WM_OnKey(int Key, int Pressed) {
 #pragma region Mouse/Touch
 static WM_CRITICAL_HANDLE WM__CHWinModal, WM__CHWinLast;
 
-static bool _IsInModalArea(WM_Obj * pWin) {
+static bool _IsInModalArea(WObj * pWin) {
 	return (!WM__CHWinModal.pWin ||
-		WM__IsAncestor(pWin, (WM_Obj *)WM__CHWinModal.pWin) ||
+		WM__IsAncestor(pWin, (WObj *)WM__CHWinModal.pWin) ||
 		WM__CHWinModal.pWin == pWin) ? true : false;
 }
 
-static void _SendMessageIfEnabled(WM_Obj * pWin, int MsgId, WM_PARAM Data) {
+static void _SendMessageIfEnabled(WObj * pWin, int MsgId, WM_PARAM Data) {
 	if (pWin->IsEnabled())
 		WM__SendMessage(pWin, MsgId, Data);
 }
 
-static void _SendTouchMessage(WM_Obj * pWin, int MsgId, PID_STATE *pState) {
+static void _SendTouchMessage(WObj * pWin, int MsgId, PID_STATE *pState) {
 	if (pState) {
 		pState->x -= pWin->Rect.x0;
 		pState->y -= pWin->Rect.y0;
@@ -2061,7 +2061,7 @@ static void _SendTouchMessage(WM_Obj * pWin, int MsgId, PID_STATE *pState) {
 	}
 }
 
-static WM_Obj * _Screen2Win(PID_STATE *pState) {
+static WObj * _Screen2Win(PID_STATE *pState) {
 	if (pWinCapture)
 		return pWinCapture;
 	return WM_Screen2hWin(pState->x, pState->y);
@@ -2089,7 +2089,7 @@ int WM_HandlePID(void) {
 		GUI_CURSOR_SetPosition(StateNew.x, StateNew.y);
 #endif
 		CHWin.pWin = _Screen2Win(&StateNew);
-		if (_IsInModalArea((WM_Obj *)CHWin.pWin)) {
+		if (_IsInModalArea((WObj *)CHWin.pWin)) {
 			/*
 			 * Send WM_PID_STATE_CHANGED message if state has changed (just pressed or just released)
 			 */
@@ -2100,7 +2100,7 @@ int WM_HandlePID(void) {
 				Info.StatePrev = WM_PID__StateLast.Pressed;
 				Info.x = StateNew.x - pWin->Rect.x0;
 				Info.y = StateNew.y - pWin->Rect.y0;
-				_SendMessageIfEnabled((WM_Obj *)CHWin.pWin, WM_PID_STATE_CHANGED, (WM_PARAM)&Info);
+				_SendMessageIfEnabled((WObj *)CHWin.pWin, WM_PID_STATE_CHANGED, (WM_PARAM)&Info);
 			}
 			/*
 			 * Send WM_TOUCH message(s)
@@ -2118,7 +2118,7 @@ int WM_HandlePID(void) {
 					if (WM__CHWinLast.pWin) {
 						GUI_DEBUG_LOG("\nSending WM_Touch to LastWindow %d (out of area)", WM__CHWinLast.pWin);
 						PID_STATE *pState = StateNew.Pressed ? nullptr : &WM_PID__StateLast;
-						_SendTouchMessage((WM_Obj *)WM__CHWinLast.pWin, WM_TOUCH, pState);
+						_SendTouchMessage((WObj *)WM__CHWinLast.pWin, WM_TOUCH, pState);
 						WM__CHWinLast.pWin = nullptr;
 					}
 				}
@@ -2133,7 +2133,7 @@ int WM_HandlePID(void) {
 							WM_ReleaseCapture();
 						WM__CHWinLast.pWin = nullptr;
 					}
-					_SendTouchMessage((WM_Obj *)CHWin.pWin, WM_TOUCH, &StateNew);
+					_SendTouchMessage((WObj *)CHWin.pWin, WM_TOUCH, &StateNew);
 				}
 			}
 #if GUI_SUPPORT_MOUSE
@@ -2141,7 +2141,7 @@ int WM_HandlePID(void) {
 			else if (CHWin.pWin)
 				/* Do not send messages to disabled windows */
 				if (CHWin.pWin->IsEnabled())
-					_SendTouchMessage((WM_Obj *)CHWin.pWin, WM_MOUSEOVER, &StateNew);
+					_SendTouchMessage((WObj *)CHWin.pWin, WM_MOUSEOVER, &StateNew);
 #endif
 		}
 		/* Store the new state */

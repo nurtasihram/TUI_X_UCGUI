@@ -9,7 +9,9 @@ import TUX.Widget;
 
 export {
 
-struct PROGBAR_Obj : public WIDGET {
+class ProgBar : public WIDGET {
+
+public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
 		RGBC aBkColor[2]{
@@ -22,7 +24,10 @@ struct PROGBAR_Obj : public WIDGET {
 		};
 		TEXTALIGN Align{ TEXTALIGN_HCENTER };
 	} static DefaultProps;
+	
+private:
 	Properties Props;
+
 	char *pText;
 	int16_t XOff, YOff;
 	int16_t v, Min, Max;
@@ -125,8 +130,8 @@ struct PROGBAR_Obj : public WIDGET {
 		_FreeText();
 	}
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (PROGBAR_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (ProgBar *)hWin;
 		/* Let widget handle the standard messages */
 		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 			return Data;
@@ -140,6 +145,33 @@ struct PROGBAR_Obj : public WIDGET {
 		}
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
+
+public:
+
+	static ProgBar *Create(int x0, int y0, int xsize, int ysize,
+						   WObj *hParent,
+							  int WinFlags, int ExFlags, int Id) {
+		auto pObj = (ProgBar *)WM_CreateWindowAsChild(
+			x0, y0, xsize, ysize, hParent, WinFlags, ProgBar::_Callback,
+			sizeof(ProgBar) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "ProgBar create failed");
+			return nullptr;
+		}
+		/* init widget specific variables */
+		WIDGET__Init(pObj, Id, 0);
+		pObj->SetEffect(WIDGET_Effect_None); /* Standard effect for progbar: None */
+		/* init member variables */
+		pObj->Props = DefaultProps;
+		pObj->Max = 100;
+		pObj->Min = 0;
+		return pObj;
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+								hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
+	}
+
 
 public:
 	void SetValue(int v) {
@@ -205,33 +237,6 @@ public:
 
 };
 
-PROGBAR_Obj::Properties PROGBAR_Obj::DefaultProps;
-
-PROGBAR_Obj *PROGBAR_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
-								int WinFlags, int ExFlags, int Id) {
-	auto pObj = (PROGBAR_Obj *)WM_CreateWindowAsChild(
-		x0, y0, xsize, ysize, hParent, WinFlags, PROGBAR_Obj::_Callback,
-		sizeof(PROGBAR_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, 0);
-		pObj->SetEffect(WIDGET_Effect_None); /* Standard effect for progbar: None */
-		/* init member variables */
-		pObj->Props = PROGBAR_Obj::DefaultProps;
-		pObj->Max = 100;
-		pObj->Min = 0;
-	}
-	return pObj;
-}
-PROGBAR_Obj *PROGBAR_Create(int x0, int y0, int xsize, int ysize, int Flags) {
-	return PROGBAR_CreateEx(x0, y0, xsize, ysize, 0, Flags, 0, 0);
-}
-PROGBAR_Obj *PROGBAR_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int Flags) {
-	return PROGBAR_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id);
-}
-WM_Obj *PROGBAR_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	return PROGBAR_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							 hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-}
+ProgBar::Properties ProgBar::DefaultProps;
 
 }

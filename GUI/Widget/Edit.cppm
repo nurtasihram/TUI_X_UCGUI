@@ -31,11 +31,13 @@ constexpr uint8_t GUI_EDIT_SIGNED = 1;
 constexpr uint8_t GUI_EDIT_MODE_INSERT    = 0;
 constexpr uint8_t GUI_EDIT_MODE_OVERWRITE = 1;
 
-struct EDIT_Obj : public WIDGET {
+class Edit : public WIDGET {
 
-	typedef void tEDIT_AddKeyEx(EDIT_Obj *pObj, int Key);
-	typedef void tEDIT_UpdateBuffer(EDIT_Obj *pObj);
+public:
+	typedef void tEDIT_AddKeyEx(Edit *pObj, int Key);
+	typedef void tEDIT_UpdateBuffer(Edit *pObj);
 
+public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
 		RGBC aTextColor[2]{
@@ -49,6 +51,8 @@ struct EDIT_Obj : public WIDGET {
 		TEXTALIGN Align{ TEXTALIGN_LEFT | TEXTALIGN_VCENTER };
 		int8_t Border{ 1 };
 	} static DefaultProps;
+	
+private:
 	Properties Props;
 
 	char *pText;
@@ -69,7 +73,7 @@ struct EDIT_Obj : public WIDGET {
 	static int CurrsorShow;
 	static Timer *pTimer1;
 	static void ShowCurrsor(GUI_TIMER_MESSAGE *TimeMsg) {
-		auto pObj = (EDIT_Obj *)TimeMsg->Context;
+		auto pObj = (Edit *)TimeMsg->Context;
 		WM_SelectWindow(pObj);
 		pObj->_OnPaint();
 		pObj->CurrsorShow++;
@@ -311,8 +315,8 @@ struct EDIT_Obj : public WIDGET {
 		return 0;
 	}
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (EDIT_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (Edit *)hWin;
 		/* Let widget handle the standard messages */
 		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 			return Data;
@@ -332,6 +336,42 @@ struct EDIT_Obj : public WIDGET {
 				break;
 		}
 		return WM_DefaultProc(hWin, MsgId, Data);
+	}
+
+public:
+
+	static Edit *Create(int x0, int y0, int xsize, int ysize,
+						WObj *hParent, int WinFlags, int ExFlags,
+						int Id, int MaxLen) {
+		/* Alloc memory for obj */
+		WinFlags |= WC_LATE_CLIP;    /* Always use late clipping since widget is optimized for it. */
+		auto pObj = (Edit *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WC_VISIBLE | WinFlags, Edit::_Callback,
+												   sizeof(Edit) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Edit create failed");
+			return nullptr;
+		}
+		/* init widget specific variables */
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
+		/* init member variables */
+		pObj->Props = Edit::DefaultProps;
+		pObj->XSizeCursor = 1;
+		pObj->MaxLen = (MaxLen == 0) ? 8 : MaxLen;
+		pObj->BufferSize = 0;
+		pObj->pText = nullptr;
+		if (pObj->_IncrementBuffer(pObj->MaxLen + 1) == 0) {
+			GUI_DEBUG_ERROROUT("Edit create failed to alloc buffer");
+			WM_DeleteWindow(pObj);
+			pObj = nullptr;
+		}
+		return pObj;
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		auto pEdit = Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+							hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->Para);
+		if (pEdit)
+			pEdit->SetTextAlign(pCreateInfo->Flags);
+		return pEdit;
 	}
 
 public:
@@ -552,48 +592,11 @@ public:
 
 };
 
-EDIT_Obj::Properties EDIT_Obj::DefaultProps;
+Edit::Properties Edit::DefaultProps;
 
 #if GUI_SUPPORT_TIMER
-int EDIT_Obj::CurrsorShow = 0;
-Timer *EDIT_Obj::pTimer1 = nullptr;
+int Edit::CurrsorShow = 0;
+Timer *Edit::pTimer1 = nullptr;
 #endif
-
-EDIT_Obj *EDIT_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int WinFlags, int ExFlags,
-						  int Id, int MaxLen) {
-	/* Alloc memory for obj */
-	WinFlags |= WC_LATE_CLIP;    /* Always use late clipping since widget is optimized for it. */
-	auto pObj = (EDIT_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WC_VISIBLE | WinFlags, EDIT_Obj::_Callback,
-								  sizeof(EDIT_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* init member variables */
-		pObj->Props = EDIT_Obj::DefaultProps;
-		pObj->XSizeCursor = 1;
-		pObj->MaxLen = (MaxLen == 0) ? 8 : MaxLen;
-		pObj->BufferSize = 0;
-		pObj->pText = nullptr;
-		if (pObj->_IncrementBuffer(pObj->MaxLen + 1) == 0) {
-			GUI_DEBUG_ERROROUT("EDIT_Create failed to alloc buffer");
-			WM_DeleteWindow(pObj);
-			pObj = nullptr;
-		}
-	}
-	return pObj;
-}
-EDIT_Obj *EDIT_Create(int x0, int y0, int xsize, int ysize, int Id, int MaxLen, int Flags) {
-	return EDIT_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, Id, MaxLen);
-}
-EDIT_Obj *EDIT_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int Flags, int MaxLen) {
-	return EDIT_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id, MaxLen);
-}
-WM_Obj *EDIT_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	auto pEdit = EDIT_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-						  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->Para);
-	if (pEdit)
-		pEdit->SetTextAlign(pCreateInfo->Flags);
-	return pEdit;
-}
 
 }

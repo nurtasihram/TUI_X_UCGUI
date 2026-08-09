@@ -8,6 +8,7 @@ export module TUX.Widget.CheckBox;
 import TUX.Widget;
 
 export {
+
 enum CHECKBOX_BI {
 	 CHECKBOX_BI_INACTIV = 0,
 	 CHECKBOX_BI_ACTIV,
@@ -19,8 +20,10 @@ enum CHECKBOX_CI {
 	 CHECKBOX_CI_ACTIV
 };
 
-struct CHECKBOX_Obj : public WIDGET {
+class CheckBox : public WIDGET {
 	static CBITMAP abmCheck[2];
+
+public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
 		PCBITMAP apBm[4]{
@@ -39,7 +42,10 @@ struct CHECKBOX_Obj : public WIDGET {
 		uint8_t Spacing{ 4 };
 		uint8_t NumStates = 2;
 	} static DefaultProps;
+	
+private:
 	Properties Props;
+
 	uint8_t NumStates;
 	uint8_t CurrentState;
 	char *pText;
@@ -141,8 +147,8 @@ struct CHECKBOX_Obj : public WIDGET {
 		return 0;
 	}
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (CHECKBOX_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (CheckBox *)hWin;
 		/* Let widget handle the standard messages */
 		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 			return Data;
@@ -160,6 +166,45 @@ struct CHECKBOX_Obj : public WIDGET {
 		}
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
+
+public:
+
+	static CheckBox *Create(int x0, int y0, int xsize, int ysize,
+							WObj *hParent, int WinFlags, int ExFlags, int Id) {
+		/* Calculate size if needed */
+		if (!(xsize | ysize)) {
+			auto EffectSize = WIDGET::DefaultEffect->EffectSize;
+			if (!xsize)
+				xsize = CheckBox::DefaultProps.apBm[0]->XSize + 2 * EffectSize;
+			if (!ysize)
+				ysize = CheckBox::DefaultProps.apBm[0]->YSize + 2 * EffectSize;
+		}
+#if WM_SUPPORT_TRANSPARENCY
+		if (CheckBox::DefaultProps.BkColor == RGB_INVALID_COLOR)
+			WinFlags |= WC_HASTRANS;
+#endif
+		/* Create the window */
+		auto pObj = (CheckBox *)WM_CreateWindowAsChild(
+			x0, y0, xsize, ysize,
+			hParent, WinFlags, CheckBox::_Callback,
+			sizeof(CheckBox) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "CheckBox create failed");
+			return nullptr;
+		}
+		/* init widget specific variables */
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
+		/* init member variables */
+		pObj->Props = CheckBox::DefaultProps;
+		pObj->NumStates = 2; /* Default behaviour is 2 states: checked and unchecked */
+		return pObj;
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
+	}
+
+public:
 	int GetState() {
 		return CurrentState;
 	}
@@ -222,13 +267,13 @@ struct CHECKBOX_Obj : public WIDGET {
 		  { 11, 11, 2, 1, _acCheck,  &_PalCheckEnabled }
 		};
 
-		if (!CHECKBOX_Obj::DefaultProps.apBm[2])
-			CHECKBOX_Obj::DefaultProps.apBm[2] = &_abmCheck[0];
-		if (!CHECKBOX_Obj::DefaultProps.apBm[3])
-			CHECKBOX_Obj::DefaultProps.apBm[3] = &_abmCheck[1];
+		if (!CheckBox::DefaultProps.apBm[2])
+			CheckBox::DefaultProps.apBm[2] = &_abmCheck[0];
+		if (!CheckBox::DefaultProps.apBm[3])
+			CheckBox::DefaultProps.apBm[3] = &_abmCheck[1];
 		if ((NumStates == 2 || NumStates == 3)) {
-			Props.apBm[2] = CHECKBOX_Obj::DefaultProps.apBm[2];
-			Props.apBm[3] = CHECKBOX_Obj::DefaultProps.apBm[3];
+			Props.apBm[2] = CheckBox::DefaultProps.apBm[2];
+			Props.apBm[3] = CheckBox::DefaultProps.apBm[3];
 			this->NumStates = NumStates;
 		}
 	}
@@ -265,41 +310,7 @@ struct CHECKBOX_Obj : public WIDGET {
 	}
 };
 
-CHECKBOX_Obj::Properties CHECKBOX_Obj::DefaultProps;
-
-CHECKBOX_Obj *CHECKBOX_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int WinFlags, int ExFlags, int Id) {
-	GUI_USE_PARA(ExFlags);
-	/* Calculate size if needed */
-	if ((xsize == 0) || (ysize == 0)) {
-		auto EffectSize = WIDGET::DefaultEffect->EffectSize;
-		if (xsize == 0)
-			xsize = CHECKBOX_Obj::DefaultProps.apBm[0]->XSize + 2 * EffectSize;
-		if (ysize == 0)
-			ysize = CHECKBOX_Obj::DefaultProps.apBm[0]->YSize + 2 * EffectSize;
-	}
-#if WM_SUPPORT_TRANSPARENCY
-	if (CHECKBOX_Obj::DefaultProps.BkColor == RGB_INVALID_COLOR)
-		WinFlags |= WC_HASTRANS;
-#endif
-	/* Create the window */
-	auto pObj = (CHECKBOX_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, CHECKBOX_Obj::_Callback,
-								  sizeof(CHECKBOX_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* init member variables */
-		pObj->Props = CHECKBOX_Obj::DefaultProps;
-		pObj->NumStates = 2; /* Default behaviour is 2 states: checked and unchecked */
-	}
-	else {
-		GUI_DEBUG_ERROROUT_IF(pObj == 0, "CHECKBOX_Create failed")
-	}
-	return pObj;
-}
-WM_Obj *CHECKBOX_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	return CHECKBOX_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-}
+CheckBox::Properties CheckBox::DefaultProps;
 
 }
 
@@ -333,7 +344,7 @@ XXXXXXXXXXXXXXXX,XXXXXX__________
 };
 
 /* Bitmaps */
-CBITMAP CHECKBOX_Obj::abmCheck[2] = {
+CBITMAP CheckBox::abmCheck[2] = {
   { 11, 11, 2, 1, _acCheck,  &_PalCheckDisabled},
   { 11, 11, 2, 1, _acCheck,  &_PalCheckEnabled }
 };

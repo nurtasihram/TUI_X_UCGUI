@@ -11,9 +11,11 @@ import TUX.Widget;
 #define BUTTON_USE_3D 1
 
 export {
+
 constexpr uint16_t BUTTON_CF_HIDE    = WC_HIDE;
 constexpr uint16_t BUTTON_CF_SHOW    = WC_VISIBLE;
 constexpr uint16_t BUTTON_CF_MEMDEV  = WC_MEMDEV;
+
 constexpr uint16_t BUTTON_STATE_FOCUS       = WIDGET_STATE_FOCUS;
 constexpr uint16_t BUTTON_STATE_PRESSED     = WIDGET_STATE_USER<0>;
 constexpr uint16_t BUTTON_STATE_HASFOCUS    = 0;
@@ -29,7 +31,9 @@ enum BUTTON_CI {
 	 BUTTON_CI_DISABLED
 };
 
-struct BUTTON_Obj : public WIDGET {
+class Button : public WIDGET {
+
+public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
 		RGBC aTextColor[3]{
@@ -44,7 +48,10 @@ struct BUTTON_Obj : public WIDGET {
 		};
 		TEXTALIGN Align{ TEXTALIGN_CENTER };
 	} static DefaultProps;
+	
+private:
 	Properties Props;
+		
 	char *pText;
 	GUI_DRAW *aDrawObj[3];
 
@@ -152,8 +159,8 @@ struct BUTTON_Obj : public WIDGET {
 	}
 #endif
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (BUTTON_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (Button *)hWin;
 		/* Let widget handle the standard messages */
 		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 			return Data;
@@ -182,6 +189,40 @@ struct BUTTON_Obj : public WIDGET {
 	}
 
 public:
+
+	static Button *Create(int x0, int y0, int xsize, int ysize,
+							  WObj *hParent, int WinFlags, int ExFlags, int Id) {
+		GUI_USE_PARA(ExFlags);
+		/* Create the window */
+		auto pObj = (Button *)WM_CreateWindowAsChild(
+			x0, y0, xsize, ysize, hParent, WinFlags, Button::_Callback,
+			sizeof(Button) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Button create failed");
+			return nullptr;
+		}
+		/* init widget specific variables */
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
+		/* init member variables */
+		pObj->Props = Button::DefaultProps;
+		return pObj;
+	}
+	static Button *Create(int x0, int y0, int xsize, int ysize, int Id, int Flags) {
+		return Create(x0, y0, xsize, ysize, nullptr, Flags, 0, Id);
+	}
+	static Button *Create(int x0, int y0, int xsize, int ysize, WObj *hParent, int Id, int Flags) {
+		return Create(x0, y0, xsize, ysize, hParent, Flags, 0, Id);
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		auto pThis = Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,
+							pCreateInfo->xSize, pCreateInfo->ySize,
+							hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
+		pThis->SetText(pCreateInfo->pName);
+		return pThis;
+	}
+
+public:
+
 	RGBC GetBkColor(unsigned int Index) {
 		if ((Index < 2))
 			return Props.aBkColor[Index];
@@ -258,38 +299,9 @@ public:
 	void SetFocussable(bool On) {
 		CtlStates(WIDGET_STATE_FOCUSSABLE, On);
 	}
+
 };
 
-BUTTON_Obj::Properties BUTTON_Obj::DefaultProps;
-
-BUTTON_Obj *BUTTON_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int WinFlags, int ExFlags, int Id) {
-	GUI_USE_PARA(ExFlags);
-	/* Create the window */
-	auto pObj = (BUTTON_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, BUTTON_Obj::_Callback,
-													 sizeof(BUTTON_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* init member variables */
-		pObj->Props = BUTTON_Obj::DefaultProps;
-	}
-	else {
-		GUI_DEBUG_ERROROUT_IF(pObj == 0, "BUTTON_Create failed")
-	}
-	return pObj;
-}
-WM_Obj *BUTTON_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	auto pThis = BUTTON_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,
-								 pCreateInfo->xSize, pCreateInfo->ySize,
-								 hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-	pThis->SetText(pCreateInfo->pName);
-	return pThis;
-}
-BUTTON_Obj *BUTTON_Create(int x0, int y0, int xsize, int ysize, int Id, int Flags) {
-	return BUTTON_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, Id);
-}
-BUTTON_Obj *BUTTON_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int Flags) {
-	return BUTTON_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id);
-}
+Button::Properties Button::DefaultProps;
 
 }

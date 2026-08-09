@@ -30,7 +30,9 @@ constexpr uint16_t FRAMEWIN_CF_MAXIMIZED  = 1 << 8;
 constexpr uint16_t FRAMEWIN_BUTTON_RIGHT   = 1 << 0;
 constexpr uint16_t FRAMEWIN_BUTTON_LEFT    = 1 << 1;
 
-struct FRAMEWIN_Obj : public WIDGET {
+class Frame : public WIDGET {
+
+public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
 		RGBC aTextColor[2]{
@@ -49,14 +51,17 @@ struct FRAMEWIN_Obj : public WIDGET {
 		TEXTALIGN Align{ TEXTALIGN_VCENTER };
 		uint8_t Border{ 0 };
 	} static DefaultProps;
+	
+private:
 	Properties Props;
+	
 	WM_CALLBACK *cb;
-	WM_Obj *hClient;
-	MENU_Obj *pMenu;
+	WObj *hClient;
+	Menu *pMenu;
 	char *pText;
 	RECT rRestore;
 	uint16_t Flags;
-	WM_Obj *hFocussedChild; /* Handle to focussed child .. default none (0) */
+	WObj *hFocussedChild; /* Handle to focussed child .. default none (0) */
 	DIALOG_STATUS *pDialogStatus;
 
 	struct POSITIONS {
@@ -74,7 +79,7 @@ struct FRAMEWIN_Obj : public WIDGET {
 			0;
 	}
 	void _CalcPositions(POSITIONS *pPos) {
-		WM_Obj *pChild;
+		WObj *pChild;
 		int BorderSize = this->Props.BorderSize;
 		auto size = GetSize();
 		int IBorderSize = 0;
@@ -130,7 +135,7 @@ struct FRAMEWIN_Obj : public WIDGET {
 		int TitleHeight = _CalcTitleHeight();
 		int Diff = TitleHeight - OldHeight;
 		if (Diff) {
-			WM_Obj *pLeft, *pRight, *pChild;
+			WObj *pLeft, *pRight, *pChild;
 			int xLeft, xRight, n = 0;
 			do {
 				pLeft = pRight = nullptr;
@@ -236,8 +241,8 @@ struct FRAMEWIN_Obj : public WIDGET {
 		}
 	}
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (FRAMEWIN_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (Frame *)hWin;
 		if (pObj->Flags & FRAMEWIN_CF_RESIZEABLE)
 			if (pObj->_HandleResizeable(MsgId, Data))
 				return 0;
@@ -326,8 +331,8 @@ struct FRAMEWIN_Obj : public WIDGET {
 			return Data;
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
-	static WM_PARAM _cbClient(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pParent = (FRAMEWIN_Obj *)hWin->Parent();
+	static WM_PARAM _cbClient(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pParent = (Frame *)hWin->Parent();
 		auto cb = pParent->cb;
 		switch (MsgId) {
 			case WM_PAINT:
@@ -367,6 +372,59 @@ struct FRAMEWIN_Obj : public WIDGET {
 	}
 
 public:
+
+	static Frame *Create(int x0, int y0, int xsize, int ysize,
+				  WObj *hParent,
+				  int WinFlags, int ExFlags, int Id, const char *pTitle, WM_CALLBACK *cb) {
+		/* Create the window */
+		WinFlags |= WC_LATE_CLIP;    /* Always use late clipping since widget is optimized for it. */
+		auto pObj = (Frame *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, Frame::_Callback,
+													sizeof(Frame) - sizeof(WObj));
+		if (!pObj) {
+			
+			return nullptr;
+		}
+		POSITIONS Pos;
+		/* init widget specific variables */
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS);
+		/* init member variables */
+		pObj->Props = DefaultProps;
+		pObj->cb = cb;
+		pObj->Flags = ExFlags;
+		pObj->hFocussedChild = 0;
+		pObj->pMenu = nullptr;
+		pObj->_CalcPositions(&Pos);
+		pObj->hClient = WM_CreateWindowAsChild(
+			Pos.rClient.x0, Pos.rClient.y0,
+			Pos.rClient.x1 - Pos.rClient.x0 + 1,
+			Pos.rClient.y1 - Pos.rClient.y0 + 1,
+			pObj,
+			WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM | WC_VISIBLE | WC_LATE_CLIP,
+			_cbClient, 0);
+		/* Normally we disable memory devices for the frame window:
+			* The frame window does not flicker, and not using memory devices is usually faster.
+			* You can still use memory by explicitly specifying the flag
+			*/
+		if (!(WinFlags & (WC_MEMDEV | WC_MEMDEV_ON_REDRAW)))
+			WM_DisableMemdev(pObj);
+		pObj->SetText(pTitle);
+		return pObj;
+	}
+	static Frame *Create(const char *pText, WM_CALLBACK *cb, int Flags,
+						   int x0, int y0, int xsize, int ysize) {
+		return Create(x0, y0, xsize, ysize, nullptr, Flags, 0, 0, pText, cb);
+	}
+	static Frame *CreateAsChild(int x0, int y0, int xsize, int ysize, WObj *hParent,
+								  const char *pText, WM_CALLBACK *cb, int Flags) {
+		return Create(x0, y0, xsize, ysize, hParent, Flags, 0, 0, pText, cb);
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent,
+								  int x0, int y0, WM_CALLBACK *cb) {
+		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+								 hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->pName, cb);
+	}
+
+public:
 	void SetText(const char *s) {
 		if (GUI__SetText(&this->pText, s))
 			WM_Invalidate(this);
@@ -393,7 +451,7 @@ public:
 			WM_Invalidate(this);
 		}
 	}
-	void AddMenu(MENU_Obj *pMenu) {
+	void AddMenu(Menu *pMenu) {
 		int TitleHeight, BorderSize, IBorderSize = 0;
 		int x0, y0, xSize;
 		TitleHeight = _CalcTitleHeight();
@@ -449,7 +507,7 @@ public:
 	}
 
 	void _InvalidateButton(int Id) {
-		WM_Obj *pChild;
+		WObj *pChild;
 		for (pChild = this->pFirstChild; pChild; pChild = pChild->pNext)
 			if (pChild->GetID() == Id)
 				WM_Invalidate(pChild);
@@ -925,7 +983,7 @@ public:
 	}
 
 	void _ShowHideButtons() {
-		WM_Obj *pChild;
+		WObj *pChild;
 		int y0;
 		for (pChild = pFirstChild; pChild; pChild = pChild->pNext) {
 			y0 = pChild->Rect.y0 - Rect.y0;
@@ -963,7 +1021,7 @@ public:
 		}
 	}
 
-	BUTTON_Obj *AddButton(int Flags, int Off, int Id) {
+	Button *AddButton(int Flags, int Off, int Id) {
 		POSITIONS Pos;
 		int Size = GetTitleHeight();
 		int BorderSize = GetBorderSize();
@@ -977,12 +1035,12 @@ public:
 			x = Pos.rTitleText.x0 + Off;
 			WinFlags = WC_VISIBLE;
 		}
-		auto r = BUTTON_CreateAsChild(x, BorderSize, Size, Size, this, Id, WinFlags);
+		auto r = Button::Create(x, BorderSize, Size, Size, this, Id, WinFlags);
 		r->SetFocussable(0);
 		return r;
 	}
 
-	BUTTON_Obj *AddCloseButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
+	Button *AddCloseButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
 		auto pButton = AddButton(Flags, Off, GUI_ID_CLOSE);
 		pButton->SetSelfDraw(0, []() {
 			auto r = WM_GetInsideRect() + GUI.Off;
@@ -996,7 +1054,7 @@ public:
 	}
 
 	static void _DrawMax(void) {
-		auto pObj = (FRAMEWIN_Obj *)WM_GetActiveWindow()->Parent();
+		auto pObj = (Frame *)WM_GetActiveWindow()->Parent();
 		auto r = WM_GetInsideRect() + GUI.Off;
 		if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED) {
 			int Size = ((r.x1 - r.x0 + 1) << 1) / 3;
@@ -1019,16 +1077,16 @@ public:
 			LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 1);
 		}
 	}
-	BUTTON_Obj *AddMaxButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
+	Button *AddMaxButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
 		auto pButton = AddButton(Flags, Off, GUI_ID_MAXIMIZE);
 		pButton->SetSelfDraw(0, _DrawMax);
 		return pButton;
 	}
 
-	BUTTON_Obj *AddMinButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
+	Button *AddMinButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
 		auto pButton = AddButton(Flags, Off, GUI_ID_MINIMIZE);
 		pButton->SetSelfDraw(0, [] {
-			auto pObj = (FRAMEWIN_Obj *)WM_GetActiveWindow()->Parent();
+			auto pObj = (Frame *)WM_GetActiveWindow()->Parent();
 			auto r = WM_GetInsideRect() + GUI.Off;
 			int Size = (r.x1 - r.x0 + 1) >> 1;
 			if (pObj->Flags & FRAMEWIN_CF_MINIMIZED) {
@@ -1044,57 +1102,9 @@ public:
 	}
 };
 
-FRAMEWIN_Obj::Properties FRAMEWIN_Obj::DefaultProps;
+Frame::Properties Frame::DefaultProps;
 
-int FRAMEWIN_Obj::_CaptureX = 0, FRAMEWIN_Obj::_CaptureY = 0;
-int FRAMEWIN_Obj::_CaptureFlags = 0;
-
-FRAMEWIN_Obj *FRAMEWIN_CreateEx(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
-								  int WinFlags, int ExFlags, int Id, const char *pTitle, WM_CALLBACK *cb) {
-	/* Create the window */
-	WinFlags |= WC_LATE_CLIP;    /* Always use late clipping since widget is optimized for it. */
-	auto pObj = (FRAMEWIN_Obj *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, FRAMEWIN_Obj::_Callback,
-								  sizeof(FRAMEWIN_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		FRAMEWIN_Obj::POSITIONS Pos;
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS);
-		/* init member variables */
-		pObj->Props = FRAMEWIN_Obj::DefaultProps;
-		pObj->cb = cb;
-		pObj->Flags = ExFlags;
-		pObj->hFocussedChild = 0;
-		pObj->pMenu = nullptr;
-		pObj->_CalcPositions(&Pos);
-		pObj->hClient = WM_CreateWindowAsChild(Pos.rClient.x0, Pos.rClient.y0,
-											   Pos.rClient.x1 - Pos.rClient.x0 + 1,
-											   Pos.rClient.y1 - Pos.rClient.y0 + 1,
-											   pObj,
-											   WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM | WC_VISIBLE | WC_LATE_CLIP,
-											   FRAMEWIN_Obj::_cbClient, 0);
-		/* Normally we disable memory devices for the frame window:
-		 * The frame window does not flicker, and not using memory devices is usually faster.
-		 * You can still use memory by explicitly specifying the flag
-		 */
-		if ((WinFlags & (WC_MEMDEV | (WC_MEMDEV_ON_REDRAW))) == 0) {
-			WM_DisableMemdev(pObj);
-		}
-		pObj->SetText(pTitle);
-	}
-	return pObj;
-}
-FRAMEWIN_Obj *FRAMEWIN_Create(const char *pText, WM_CALLBACK *cb, int Flags,
-								int x0, int y0, int xsize, int ysize) {
-	return FRAMEWIN_CreateEx(x0, y0, xsize, ysize, nullptr, Flags, 0, 0, pText, cb);
-}
-FRAMEWIN_Obj *FRAMEWIN_CreateAsChild(int x0, int y0, int xsize, int ysize, WM_Obj *hParent,
-									   const char *pText, WM_CALLBACK *cb, int Flags) {
-	return FRAMEWIN_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, 0, pText, cb);
-}
-WM_Obj *FRAMEWIN_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent,
-										int x0, int y0, WM_CALLBACK *cb) {
-	return FRAMEWIN_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							 hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->pName, cb);
-}
+int Frame::_CaptureX = 0, Frame::_CaptureY = 0;
+int Frame::_CaptureFlags = 0;
 
 }

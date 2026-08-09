@@ -4,7 +4,7 @@
 import TUX.Widget;
 
 #pragma region Dialog
-WM_Obj * GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidgets, WM_CALLBACK *cb, WM_Obj * hParent,
+WObj * GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidgets, WM_CALLBACK *cb, WObj * hParent,
 							int x0, int y0) {
 	auto pDialog = paWidget->pfCreateIndirect(paWidget, hParent, x0, y0, cb);     /* Create parent window */
 	auto pDialogClient = WM_GetClientWindow(pDialog);
@@ -31,7 +31,7 @@ WM_Obj * GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidg
 *
 */
 int GUI_ExecDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget,
-					  int NumWidgets, WM_CALLBACK *cb, WM_Obj *pParent, int x0, int y0) {
+					  int NumWidgets, WM_CALLBACK *cb, WObj *pParent, int x0, int y0) {
 	auto pDialog = GUI_CreateDialogBox(paWidget, NumWidgets, cb, pParent, x0, y0);
 	return pDialog->DialogExec();
 }

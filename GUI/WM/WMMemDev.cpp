@@ -1,6 +1,6 @@
 #include "WM_Intern.h"
 #include "GUIDebug.h"
-void WM_EnableMemdev(WM_Obj * pWin) {
+void WM_EnableMemdev(WObj * pWin) {
 	GUI_USE_PARA(pWin);
 #if GUI_SUPPORT_MEMDEV
 	if (pWin) {
@@ -11,7 +11,7 @@ void WM_EnableMemdev(WM_Obj * pWin) {
 #endif
 }
 
-void WM_DisableMemdev(WM_Obj * pWin) {
+void WM_DisableMemdev(WObj * pWin) {
 	GUI_USE_PARA(pWin);
 #if GUI_SUPPORT_MEMDEV
 	if (pWin) {

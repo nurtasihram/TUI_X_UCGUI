@@ -10,7 +10,7 @@
 #define MESSAGEBOX_YSIZEOK 20
 #define MESSAGEBOX_BKCOLOR RGB_WHITE
 
-static void _OnKey(WM_Obj *pWin, const WM_KEY_INFO *pInfo) {
+static void _OnKey(WObj *pWin, const WM_KEY_INFO *pInfo) {
 	int Key = pInfo->Key;
 	if (pInfo->PressedCnt) {
 		switch (Key) {
@@ -23,10 +23,10 @@ static void _OnKey(WM_Obj *pWin, const WM_KEY_INFO *pInfo) {
 		}
 	}
 }
-static WM_PARAM _MESSAGEBOX_cbCallback(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
+static WM_PARAM _MESSAGEBOX_cbCallback(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG:
-			((FRAMEWIN_Obj *)pWin)->SetClientColor(MESSAGEBOX_BKCOLOR);
+			((Frame *)pWin)->SetClientColor(MESSAGEBOX_BKCOLOR);
 			return 0;
 		case WM_KEY:
 			_OnKey(pWin, (const WM_KEY_INFO *)Data);
@@ -46,9 +46,9 @@ static WM_PARAM _MESSAGEBOX_cbCallback(WM_Obj *pWin, int MsgId, WM_PARAM Data) {
 	}
 	return WM_DefaultProc(pWin, MsgId, Data);
 }
-WM_Obj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags) {
+WObj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags) {
 	GUI_WIDGET_CREATE_INFO _aDialogCreate[3];                                     /* 0: FrameWin, 1: Text, 2: Button */
-	int BorderSize = 12; //FRAMEWIN_Obj::DefaultProps.BorderSize;                       /* Default border size of frame window */
+	int BorderSize = 12; //Frame::DefaultProps.BorderSize;                       /* Default border size of frame window */
 	int xSizeFrame = MESSAGEBOX_XSIZEOK + 2 * BorderSize + MESSAGEBOX_BORDER * 2; /* XSize of frame window */
 	int ySizeFrame;                                                               /* YSize of frame window */
 	int x0, y0;                                                                   /* Position of frame window */
@@ -67,7 +67,7 @@ WM_Obj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags
 	if (xSizeFrame < (xSizeMessage + 4 + MESSAGEBOX_BORDER * 2)) {
 		xSizeFrame = xSizeMessage + 4 + MESSAGEBOX_BORDER * 2;
 	}
-	ySizeCaption = (GUI_DEFAULT_FONT)->SizeY();//FRAMEWIN_Obj::DefaultProps.pFont);
+	ySizeCaption = (GUI_DEFAULT_FONT)->SizeY();//Frame::DefaultProps.pFont);
 	ySizeFrame = ySizeMessage +            /* size of message */
 		MESSAGEBOX_YSIZEOK +      /* size of button */
 		ySizeCaption +            /* caption size */
@@ -92,7 +92,7 @@ WM_Obj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags
 	/* restore modified Context */
 	//GUI_SetFont(pOldFont); /////////// FIX ///////////
 	/* Fill frame win resource */
-	_aDialogCreate[0].pfCreateIndirect = FRAMEWIN_CreateIndirect;
+	_aDialogCreate[0].pfCreateIndirect = Frame::CreateIndirect;
 	_aDialogCreate[0].pName = sCaption;
 	_aDialogCreate[0].x0 = x0;
 	_aDialogCreate[0].y0 = y0;
@@ -102,7 +102,7 @@ WM_Obj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags
 		_aDialogCreate[0].Flags = FRAMEWIN_CF_MOVEABLE;
 	}
 	/* Fill text resource */
-	_aDialogCreate[1].pfCreateIndirect = TEXT_CreateIndirect;
+	_aDialogCreate[1].pfCreateIndirect = Text::CreateIndirect;
 	_aDialogCreate[1].pName = sMessage;
 	_aDialogCreate[1].x0 = (xSizeFrame - xSizeMessage - BorderSize * 2) / 2;
 	_aDialogCreate[1].y0 = MESSAGEBOX_BORDER;
@@ -110,7 +110,7 @@ WM_Obj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags
 	_aDialogCreate[1].ySize = ySizeMessage;
 	_aDialogCreate[1].Para = TEXTALIGN_TOP | TEXTALIGN_HCENTER;
 	/* Fill button resource */
-	_aDialogCreate[2].pfCreateIndirect = BUTTON_CreateIndirect;
+	_aDialogCreate[2].pfCreateIndirect = Button::CreateIndirect;
 	_aDialogCreate[2].pName = "OK";
 	_aDialogCreate[2].Id = GUI_ID_OK;
 	_aDialogCreate[2].x0 = (xSizeFrame - MESSAGEBOX_XSIZEOK - BorderSize * 2) / 2;
@@ -121,7 +121,7 @@ WM_Obj * MESSAGEBOX_Create(const char *sMessage, const char *sCaption, int Flags
 	return GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), _MESSAGEBOX_cbCallback, 0, 0, 0);
 }
 int GUI_MessageBox(const char *sMessage, const char *sCaption, int Flags) {
-	WM_Obj * pWin;
+	WObj * pWin;
 	pWin = MESSAGEBOX_Create(sMessage, sCaption, Flags);
 	/* Exec dialog */
 	return pWin->DialogExec();

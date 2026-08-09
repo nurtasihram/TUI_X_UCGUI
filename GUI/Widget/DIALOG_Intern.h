@@ -5,7 +5,7 @@
 #include "WM_Intern.h"
 
 typedef struct GUI_WIDGET_CREATE_INFO_struct GUI_WIDGET_CREATE_INFO;
-typedef WM_Obj *GUI_WIDGET_CREATE_FUNC(const GUI_WIDGET_CREATE_INFO *pCreate, WM_Obj * hWin, int x0, int y0, WM_CALLBACK *cb);
+typedef WObj *GUI_WIDGET_CREATE_FUNC(const GUI_WIDGET_CREATE_INFO *pCreate, WObj * hWin, int x0, int y0, WM_CALLBACK *cb);
 struct GUI_WIDGET_CREATE_INFO_struct {
 	GUI_WIDGET_CREATE_FUNC *pfCreateIndirect;
 	const char *pName; /* Text ... Not used on all widgets */
@@ -15,5 +15,5 @@ struct GUI_WIDGET_CREATE_INFO_struct {
 	int32_t Para; /* Widget specific parameter (opt.) */
 };
 
-int     GUI_ExecDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidgets, WM_CALLBACK *cb, WM_Obj * hParent, int x0, int y0);
-WM_Obj * GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidgets, WM_CALLBACK *cb, WM_Obj * hParent, int x0, int y0);
+int     GUI_ExecDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidgets, WM_CALLBACK *cb, WObj * hParent, int x0, int y0);
+WObj * GUI_CreateDialogBox(const GUI_WIDGET_CREATE_INFO *paWidget, int NumWidgets, WM_CALLBACK *cb, WObj * hParent, int x0, int y0);

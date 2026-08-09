@@ -10,12 +10,13 @@ import TUX.Array;
 
 /* Define default background color */
 #define RADIO_DEFAULT_BKCOLOR       RGB_GRAYL(0xC0)
-#define RADIO_BORDER                  2
+#define RADIO_BORDER                2
 
 extern CBITMAP _abmRadio[2];
 extern CBITMAP _bmCheck;
 
 export {
+
 enum RADIO_CI {
 	 RADIO_BI_INACTIV = 0,
 	 RADIO_BI_ACTIV   = 1,
@@ -25,7 +26,9 @@ enum RADIO_CI {
 constexpr uint16_t RADIO_TEXTPOS_RIGHT = 0;
 constexpr uint16_t RADIO_TEXTPOS_LEFT  = WIDGET_STATE_USER<0>;/* Not implemented, TBD */
 
-struct RADIO_Obj : public WIDGET {
+class Radio : public WIDGET {
+
+public:
 	struct Properties {
 		PCFONT pFont{ &FontProp13_1 };
 		RGBC TextColor{ RGB_BLACK };
@@ -33,7 +36,10 @@ struct RADIO_Obj : public WIDGET {
 		PCBITMAP apBmRadio[2]{ &_abmRadio[0], &_abmRadio[1] };
 		PCBITMAP pBmCheck{ &_bmCheck };
 	} static DefaultProps;
+	
+private:
 	Properties Props;
+
 	ARRAY<char *> TextArray;
 	int16_t Sel; /* current selection */
 	uint16_t Spacing;
@@ -156,8 +162,8 @@ struct RADIO_Obj : public WIDGET {
 		return 0;
 	}
 
-	static WM_PARAM _Callback(WM_Obj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (RADIO_Obj *)hWin;
+	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (Radio *)hWin;
 		/* Let widget handle the standard messages */
 		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
 			return Data;
@@ -185,6 +191,45 @@ struct RADIO_Obj : public WIDGET {
 
 public:
 
+	static Radio *Create(int x0, int y0, int xSize, int ySize, WObj *hParent,
+						 int WinFlags, int ExFlags, int Id, int NumItems, int Spacing) {
+		/* Calculate helper variables */
+		auto Height = Radio::DefaultProps.apBmRadio[0]->YSize + RADIO_BORDER * 2;
+		Spacing = (Spacing <= 0) ? 20 : Spacing;
+		NumItems = (NumItems <= 0) ? 2 : NumItems;
+		if (!ySize)
+			ySize = Height + ((NumItems - 1) * Spacing);
+		if (!xSize)
+			xSize = Radio::DefaultProps.apBmRadio[0]->XSize + RADIO_BORDER * 2;
+#if WM_SUPPORT_TRANSPARENCY
+		WinFlags |= WC_HASTRANS;
+#endif
+		/* Create the window */
+		auto pObj = (Radio *)WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent, WinFlags, Radio::_Callback, sizeof(Radio) - sizeof(WObj));
+		if (!pObj) {
+			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Radio create failed");
+			return nullptr;
+		}
+		for (int i = 0; i < NumItems; i++)
+			pObj->TextArray.AddItem();
+		/* Init widget specific variables */
+		ExFlags &= RADIO_TEXTPOS_LEFT;
+		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | ExFlags);
+		/* Init member variables */
+		pObj->Props = Radio::DefaultProps;
+		pObj->NumItems = NumItems;
+		pObj->Spacing = Spacing;
+		pObj->Height = Height;
+		return pObj;
+	}
+	static WObj *CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		int NumItems = (pCreateInfo->Para) & 0xFF;
+		int Spacing = (pCreateInfo->Para >> 8) & 0xFF;
+		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
+					  hWinParent, pCreateInfo->Flags, 0, pCreateInfo->Id, NumItems, Spacing);
+	}
+
+private:
 	void _SetValue(int v) {
 		if (v >= NumItems) {
 			v = NumItems - 1;
@@ -195,28 +240,28 @@ public:
 			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
-	static int _IsInGroup(WM_Obj *pWin, uint8_t GroupId) {
+	static int _IsInGroup(WObj *pWin, uint8_t GroupId) {
 		if (GroupId)
 			return pWin->Require(WM_GET_RADIOGROUP, 0) == GroupId;
 		return 0;
 	}
-	static RADIO_Obj *_GetPrevInGroup(WM_Obj *pWin, uint8_t GroupId) {
+	static Radio *_GetPrevInGroup(WObj *pWin, uint8_t GroupId) {
 		for (pWin = WM_GetPrevSibling(pWin); pWin; pWin = WM_GetPrevSibling(pWin))
 			if (_IsInGroup(pWin, GroupId))
-				return (RADIO_Obj *)pWin;
+				return (Radio *)pWin;
 		return nullptr;
 	}
-	static RADIO_Obj *_GetNextInGroup(WM_Obj *pWin, uint8_t GroupId) {
+	static Radio *_GetNextInGroup(WObj *pWin, uint8_t GroupId) {
 		for (; pWin; pWin = pWin->NextSibling())
 			if (_IsInGroup(pWin, GroupId))
-				return (RADIO_Obj *)pWin;
+				return (Radio *)pWin;
 		return nullptr;
 	}
 	void _ClearSelection(uint8_t GroupId) {
-		for (auto pWin = (WM_Obj *)WM__GetFirstSibling(this); pWin; pWin = pWin->pNext) {
+		for (auto pWin = (WObj *)WM__GetFirstSibling(this); pWin; pWin = pWin->pNext) {
 			if (pWin != this)
 				if (_IsInGroup(pWin, GroupId))
-					((RADIO_Obj *)pWin)->_SetValue(-1);
+					((Radio *)pWin)->_SetValue(-1);
 		}
 	}
 	void _HandleSetValue(int v) {
@@ -244,6 +289,7 @@ public:
 		}
 	}
 
+public:
 	void AddValue(int Add) {
 		SetValue(Sel + Add);
 	}
@@ -336,50 +382,7 @@ public:
 
 };
 
-RADIO_Obj::Properties RADIO_Obj::DefaultProps;
-
-RADIO_Obj *RADIO_CreateEx(int x0, int y0, int xSize, int ySize, WM_Obj *hParent,
-							int WinFlags, int ExFlags, int Id, int NumItems, int Spacing) {
-	/* Calculate helper variables */
-	auto Height = RADIO_Obj::DefaultProps.apBmRadio[0]->YSize + RADIO_BORDER * 2;
-	Spacing = (Spacing <= 0) ? 20 : Spacing;
-	NumItems = (NumItems <= 0) ? 2 : NumItems;
-	if (ySize == 0) {
-		ySize = Height + ((NumItems - 1) * Spacing);
-	}
-	if (xSize == 0) {
-		xSize = RADIO_Obj::DefaultProps.apBmRadio[0]->XSize + RADIO_BORDER * 2;
-	}
-#if WM_SUPPORT_TRANSPARENCY
-	WinFlags |= WC_HASTRANS;
-#endif
-	/* Create the window */
-	auto pObj = (RADIO_Obj *)WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent, WinFlags, RADIO_Obj::_Callback, sizeof(RADIO_Obj) - sizeof(WM_Obj));
-	if (pObj) {
-		for (int i = 0; i < NumItems; i++)
-			pObj->TextArray.AddItem();
-		/* Init widget specific variables */
-		ExFlags &= RADIO_TEXTPOS_LEFT;
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | ExFlags);
-		/* Init member variables */
-		pObj->Props = RADIO_Obj::DefaultProps;
-		pObj->NumItems = NumItems;
-		pObj->Spacing = Spacing;
-		pObj->Height = Height;
-	}
-	else {
-	}
-	return pObj;
-}
-RADIO_Obj *RADIO_Create(int x0, int y0, int xsize, int ysize, WM_Obj *hParent, int Id, int Flags, unsigned Para) {
-	return RADIO_CreateEx(x0, y0, xsize, ysize, hParent, Flags, 0, Id, Para & 0xFF, (Para >> 8) & 0xFF);
-}
-WM_Obj *RADIO_CreateIndirect(const GUI_WIDGET_CREATE_INFO *pCreateInfo, WM_Obj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-	int NumItems = (pCreateInfo->Para) & 0xFF;
-	int Spacing = (pCreateInfo->Para >> 8) & 0xFF;
-	return RADIO_CreateEx(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-						   hWinParent, pCreateInfo->Flags, 0, pCreateInfo->Id, NumItems, Spacing);
-}
+Radio::Properties Radio::DefaultProps;
 
 }
 
@@ -391,21 +394,9 @@ static const RGBC _aColorDisabled[]{ RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK
 static const RGBC _aColorEnabled[]{ RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
 static const RGBC _ColorsCheck[]{ RGB_WHITE, RGB_BLACK };
 /* Palettes */
-static const GUI_LOGPALETTE _PalRadioDisabled{
-  4,	/* number of entries */
-  1, 	/* Transparency */
-  _aColorDisabled
-};
-static const GUI_LOGPALETTE _PalRadioEnabled{
-  4,	/* number of entries */
-  1, 	/* Transparency */
-  _aColorEnabled
-};
-static const GUI_LOGPALETTE _PalCheck{
-  2,	/* number of entries */
-  1, 	/* Transparency */
-  &_ColorsCheck[0]
-};
+static const GUI_LOGPALETTE _PalRadioDisabled{ 4, 1, _aColorDisabled };
+static const GUI_LOGPALETTE _PalRadioEnabled{ 4, 1, _aColorEnabled };
+static const GUI_LOGPALETTE _PalCheck{ 2, 1, _ColorsCheck };
 
 /* Pixel data */
 static const uint8_t _acRadio[]{
@@ -423,15 +414,15 @@ ____dddd,________,dddd____,
 ________,dddddddd,________,
 };
 static const uint8_t _acCheck[]{
-  __XXXX__________,
-  XXXXXXXX________,
-  XXXXXXXX________,
-  __XXXX__________
+__XXXX__________,
+XXXXXXXX________,
+XXXXXXXX________,
+__XXXX__________
 };
 /* Bitmaps */
 CBITMAP _abmRadio[]{
-  { 12, 12, 3, 2, _acRadio, &_PalRadioDisabled},
-  { 12, 12, 3, 2, _acRadio, &_PalRadioEnabled}
+	{ 12, 12, 3, 2, _acRadio, &_PalRadioDisabled},
+	{ 12, 12, 3, 2, _acRadio, &_PalRadioEnabled}
 };
 
 CBITMAP _bmCheck{
