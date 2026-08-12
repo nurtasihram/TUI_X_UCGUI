@@ -1,7 +1,6 @@
 module;
 
-#include "WM.h"
-#include "DIALOG_Intern.h" /* Req. for Create indirect data structure */
+#include "GUI_Protected.h"
 
 export module TUX.Widget.CheckBox;
 
@@ -79,7 +78,7 @@ private:
 			RectText.x0 += RectBox.x1 + 1 + Props.Spacing;
 			GUI.SetTextMode(0);
 			GUI.SetColor(Props.TextColor);
-			GUI_SetFont(Props.pFont);
+			GUI.SetFont(Props.pFont);
 			GUI_DispStringInRect(s, &RectText, Props.Align);
 			/* Draw focus rectangle */
 			if (this->State & WIDGET_STATE_FOCUS) {

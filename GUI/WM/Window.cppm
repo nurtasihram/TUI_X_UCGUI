@@ -21,6 +21,10 @@ struct NOTIFY_INFO {
 	WObj *pWinSrc;
 };
 
+struct NOTIFY_CHILD_HAS_FOCUS_INFO {
+	WObj *pOld, *pNew;
+};
+
 typedef void WM_tfForEach(WObj *pWin, void *pData);
 
 void WM_Activate(void);

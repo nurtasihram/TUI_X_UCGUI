@@ -2,7 +2,8 @@
 
 #include <string.h>
 
-#include "DIALOG_Intern.h"
+#include "WM_Intern.h"
+#include "GUI_Protected.h"
 
 export module TUX.Widget.Menu;
 
@@ -150,9 +151,9 @@ private:
 		int TextWidth = 0;
 		if (sText) {
 			PCFONT pOldFont;
-			pOldFont = GUI_SetFont(Props.pFont);
+			pOldFont = GUI.SetFont(Props.pFont);
 			TextWidth = GUI_GetStringDistX(sText);
-			GUI_SetFont(pOldFont);
+			GUI.SetFont(pOldFont);
 		}
 		return TextWidth;
 	}
@@ -634,7 +635,7 @@ private:
 		NumItems = this->_GetNumItems();
 		FillRect = WM_GetClientRect(this);
 		FillRect -= EffectSize;
-		GUI_SetFont(Props.pFont);
+		GUI.SetFont(Props.pFont);
 		if (this->Flags & MENU_SF_VERTICAL) {
 			int ItemHeight, xSize;
 			xSize = this->_CalcMenuSizeX();
@@ -771,12 +772,12 @@ private:
 		PCFONT pOldFont;
 		unsigned i, NumItems;
 		NumItems = this->_GetNumItems();
-		pOldFont = GUI_SetFont(Props.pFont);
+		pOldFont = GUI.SetFont(Props.pFont);
 		for (i = 0; i < NumItems; i++) {
 			auto &pItem = this->ItemArray[i];
 			pItem.TextWidth = GUI_GetStringDistX(pItem.pText);
 		}
-		GUI_SetFont(pOldFont);
+		GUI.SetFont(pOldFont);
 	}
 	char _SetItem(unsigned Index, const ItemData *pItemData) {
 		Item item = { 0 };

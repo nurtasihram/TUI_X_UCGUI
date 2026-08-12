@@ -1,6 +1,6 @@
 ﻿module;
 
-#include "DIALOG_Intern.h"
+#include "GUI_Protected.h"
 
 export module TUX.Widget.ListBox;
 
@@ -16,7 +16,7 @@ export {
 
 constexpr int LISTBOX_ALL_ITEMS  = -1;
 
-constexpr uint16_t LISTBOX_NOTIFICATION_LOST_FOCUS = WM_NOTIFICATION_WIDGET<0>;
+constexpr auto LISTBOX_NOTIFICATION_LOST_FOCUS = WM_NOTIFICATION_WIDGET<0>;
 
 constexpr uint16_t
 	LISTBOX_CF_AUTOSCROLLBAR_H      = (1<<0),
@@ -99,9 +99,9 @@ private:
 		auto &pItem = ItemArray[Index];
 		int xSize = pItem.xSize;
 		if (xSize == 0) {
-			PCFONT pOldFont = GUI_SetFont(Props.pFont);
+			PCFONT pOldFont = GUI.SetFont(Props.pFont);
 			xSize = _CallOwnerDraw(WIDGET_ITEM_GET_XSIZE, Index, {});
-			GUI_SetFont(pOldFont);
+			GUI.SetFont(pOldFont);
 		}
 		pItem.xSize = xSize;
 		return xSize;
@@ -110,9 +110,9 @@ private:
 		auto &pItem = ItemArray[Index];
 		int ySize = pItem.ySize;
 		if (ySize == 0) {
-			PCFONT pOldFont = GUI_SetFont(Props.pFont);
+			PCFONT pOldFont = GUI.SetFont(Props.pFont);
 			ySize = _CallOwnerDraw(WIDGET_ITEM_GET_YSIZE, Index, {});
-			GUI_SetFont(pOldFont);
+			GUI.SetFont(pOldFont);
 		}
 		pItem.ySize = ySize;
 		return ySize;
@@ -305,7 +305,7 @@ private:
 	void _OnPaint(const RECT *pClipRect) {
 		RECT RectInside, RectItem, ClipRect;
 		int ItemDistY;
-		GUI_SetFont(Props.pFont);
+		GUI.SetFont(Props.pFont);
 		/* Calculate clipping rectangle */
 		ClipRect = *pClipRect - this->Rect.LeftTop();
 		WM_GetInsideRectExScrollbar(this, &RectInside);
@@ -605,10 +605,10 @@ public:
 		auto pObj = (ListBox *)pWin;
 		switch (Cmd) {
 			case WIDGET_ITEM_GET_XSIZE: {
-				auto pOldFont = GUI_SetFont(pObj->Props.pFont);
+				auto pOldFont = GUI.SetFont(pObj->Props.pFont);
 				auto s = pObj->_GetpString(ItemIndex);
 				auto DistX = GUI_GetStringDistX(s);
-				GUI_SetFont(pOldFont);
+				GUI.SetFont(pOldFont);
 				return DistX;
 			}
 			case WIDGET_ITEM_GET_YSIZE:

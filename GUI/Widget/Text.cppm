@@ -1,7 +1,6 @@
 module;
 
-#include "GUIDebug.h"      /* Req. for GUI_DEBUG_LEVEL */
-#include "DIALOG_Intern.h" /* Req. for Create indirect data structure */
+#include "GUI_Protected.h"
 
 export module TUX.Widget.Text;
 
@@ -36,7 +35,7 @@ private:
 	void _OnPaint() {
 		const char *s;
 		GUI.SetColor(Props.TextColor);
-		GUI_SetFont(Props.pFont);
+		GUI.SetFont(Props.pFont);
 		/* Fill with parents background color */
 		SetBkColorPrefer(Props.BkColor);
 		GUI_Clear();

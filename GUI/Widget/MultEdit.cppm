@@ -1,7 +1,6 @@
 module;
 
-#include "WM.h"
-#include "DIALOG_Intern.h" /* Req. for Create indirect data structure */
+#include "GUI_Protected.h"
 
 export module TUX.Widget.MultEdit;
 
@@ -253,7 +252,7 @@ private:
 	void _GetCursorXY(int *px, int *py) {
 		if (this->InvalidFlags & INVALID_CURSORXY) {
 			int CursorLine = 0, x = 0;
-			GUI_SetFont(Props.pFont);
+			GUI.SetFont(Props.pFont);
 			if (this->hText) {
 				const char *pLine;
 				const char *pCursor;
@@ -293,7 +292,7 @@ private:
 			if (this->hText) {
 				int NumChars, xSizeLine;
 				char *pText, *pLine;
-				GUI_SetFont(Props.pFont);
+				GUI.SetFont(Props.pFont);
 				pText = (char *)(this->hText);
 				do {
 					NumChars = _WrapGetNumCharsDisp(pText);
@@ -326,7 +325,7 @@ private:
 				char *pText;
 				uint16_t Char;
 				pText = (char *)(this->hText);
-				GUI_SetFont(Props.pFont);
+				GUI.SetFont(Props.pFont);
 				do {
 					NumChars = _WrapGetNumCharsDisp(pText);
 					NumBytes = GUI_UC__NumChars2NumBytes(pText, NumChars);
@@ -489,7 +488,7 @@ private:
 			int CursorLine, WrapChars;
 			int SizeX = 0;
 			uint16_t Char;
-			GUI_SetFont(Props.pFont);
+			GUI.SetFont(Props.pFont);
 			CursorLine = y / Props.pFont->DistY();
 			pLine = _GetpLine(CursorLine);
 			pText = (char *)(this->hText);
@@ -686,7 +685,7 @@ private:
 		RECT r, rClip;
 		const RECT *prOldClip;
 		/* Init some values */
-		GUI_SetFont(Props.pFont);
+		GUI.SetFont(Props.pFont);
 		FontSizeY = Props.pFont->DistY();
 		ScrollPosX = this->ScrollStateH.v;
 		ScrollPosY = this->ScrollStateV.v;

@@ -1,6 +1,6 @@
 ﻿module;
 
-#include "DIALOG_Intern.h"
+#include "GUI_Protected.h"
 
 export module TUX.Widget.DropDown;
 
@@ -93,7 +93,7 @@ private:
 		/* Do some initial calculations */
 		Border = this->EffectSize();
 		TextBorderSize = Props.TextBorderSize;
-		GUI_SetFont(Props.pFont);
+		GUI.SetFont(Props.pFont);
 		ColorIndex = (this->State & WIDGET_STATE_FOCUS) ? 2 : 1;
 		s = _GetpItem(Sel);
 		auto r = WM_GetClientRect();

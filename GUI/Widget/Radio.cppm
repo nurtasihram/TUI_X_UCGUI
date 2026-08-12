@@ -1,6 +1,7 @@
 ﻿module;
 
-#include "DIALOG_Intern.h"
+#include "WM_Intern.h"
+#include "GUI_Protected.h"
 
 export module TUX.Widget.Radio;
 
@@ -70,7 +71,7 @@ private:
 		rFocus.y1 = this->Height + ((this->NumItems - 1) * this->Spacing) - 1;
 		/* Select font and text color */
 		GUI.SetColor(Props.TextColor);
-		GUI_SetFont(Props.pFont);
+		GUI.SetFont(Props.pFont);
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		FontDistY = Props.pFont->DistY();
 		CHeight = Props.pFont->CHeight;

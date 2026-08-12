@@ -57,12 +57,6 @@
     <ClCompile Include="GUI\LCDDriver\LCD9325.cpp">
       <Filter>GUI\LCDDriver</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\DIALOG.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MESSAGEBOX.cpp">
-      <Filter>GUI\Widget</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
@@ -221,15 +215,6 @@
     </ClInclude>
     <ClInclude Include="GUI_X\resource.h">
       <Filter>GUI_X</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\DIALOG.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\DIALOG_Intern.h">
-      <Filter>GUI\Widget</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Widget\MESSAGEBOX.h">
-      <Filter>GUI\Widget</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\GUI.h">
       <Filter>GUI\Core</Filter>

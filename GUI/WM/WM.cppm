@@ -96,7 +96,7 @@ enum WM_NOTIFICATION : int {
 	WM_NOTIFICATION_SCROLL_CHANGED		,
 	WM_NOTIFICATION_END
 };
-template<auto code> constexpr int WM_NOTIFICATION_WIDGET = (int)WM_NOTIFICATION_END + code;
+template<int code> constexpr int WM_NOTIFICATION_WIDGET = (static_cast<int>(WM_NOTIFICATION_END) + code);
 
 #pragma endregion
 

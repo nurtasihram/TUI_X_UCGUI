@@ -1,6 +1,6 @@
 ﻿module;
 
-#include "DIALOG_Intern.h"
+#include "GUI_Protected.h"
 
 export module TUX.Widget.MultPage;
 
@@ -18,12 +18,6 @@ constexpr uint16_t MULTIPAGE_ALIGN_LEFT   = 0 << 0;
 constexpr uint16_t MULTIPAGE_ALIGN_RIGHT  = 1 << 0;
 constexpr uint16_t MULTIPAGE_ALIGN_TOP    = 0 << 2;
 constexpr uint16_t MULTIPAGE_ALIGN_BOTTOM = 1 << 2;
-
-struct MULTIPAGE_PAGE {
-	WObj *hWin;
-	uint8_t Status;
-	char *pText;
-};
 
 class MultPage : public WIDGET {
 
@@ -43,9 +37,14 @@ public:
 	
 private:
 	Properties Props;
-	
+
+	struct Page {
+		WObj *hWin;
+		uint8_t Status;
+		char *pText;
+	};
+	ARRAY<Page> Handles;
 	WObj *pClient;
-	ARRAY<MULTIPAGE_PAGE> Handles;
 	unsigned Selection;
 	int ScrollState;
 
@@ -126,7 +125,7 @@ private:
 	int _GetPageSizeX(unsigned Index) {
 		int r = 0;
 		if ((int)Index < this->Handles.NumItems) {
-			GUI_SetFont(Props.pFont);
+			GUI.SetFont(Props.pFont);
 			r = GUI_GetStringDistX(this->Handles[Index].pText) + 10;
 		}
 		return r;
@@ -257,7 +256,7 @@ private:
 			rClip.y0 = rText.y0 - 1;
 			rClip.y1 = rText.y1 + 1;
 			WM_SetUserClipRect(&rClip);
-			GUI_SetFont(Props.pFont);
+			GUI.SetFont(Props.pFont);
 			for (i = 0; i < this->Handles.NumItems; i++) {
 				auto &pPage = this->Handles[i];
 				x0 += w;
@@ -443,14 +442,14 @@ public:
 			WM_AttachWindowAt(hWin, this->pClient, 0, 0);
 		}
 		if (hWin) {
-			MULTIPAGE_PAGE Page = {};
+			Page page = {};
 			char NullByte = 0;
 			if (!pText) {
 				pText = &NullByte;
 			}
-			Page.hWin = hWin;
-			Page.Status = MULTIPAGE_STATE_ENABLED;
-			if (Handles.AddItem(&Page) == 0) {
+			page.hWin = hWin;
+			page.Status = MULTIPAGE_STATE_ENABLED;
+			if (Handles.AddItem(&page) == 0) {
 				GUI__SetText(&Handles[Handles.NumItems - 1].pText, pText);
 			}
 			SelectPage(Handles.NumItems - 1);

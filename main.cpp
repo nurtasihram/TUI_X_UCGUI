@@ -1,12 +1,13 @@
 #include <stdio.h>
 
 #include "GUI.h"
-#include "DIALOG.h"
+#include "WM.h"
 
 import TUX.Widget;
 import TUX.Widget.CheckBox;
 import TUX.Widget.Menu;
 import TUX.Widget.ListView;
+import TUX.Widget.ListBox;
 import TUX.Widget.Frame;
 import TUX.Widget.Text;
 import TUX.Widget.DropDown;

@@ -1,7 +1,6 @@
 module;
 
-#include "WM.h"
-#include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
+#include "GUI_Protected.h"
 
 export module TUX.Widget.Button;
 
@@ -11,11 +10,6 @@ import TUX.Widget;
 #define BUTTON_USE_3D 1
 
 export {
-
-constexpr uint16_t
-	BUTTON_CF_HIDE    = WC_HIDE,
-	BUTTON_CF_SHOW    = WC_VISIBLE,
-	BUTTON_CF_MEMDEV  = WC_MEMDEV;
 
 constexpr uint16_t BUTTON_STATE_FOCUS       = WIDGET_STATE_FOCUS;
 constexpr uint16_t BUTTON_STATE_PRESSED     = WIDGET_STATE_USER<0>;
@@ -59,16 +53,17 @@ private:
 	void _OnPaint() {
 		bool IsPressed = State & BUTTON_STATE_PRESSED;
 		int ColorIndex = (IsEnabled()) ? IsPressed : 2;
-		GUI_SetFont(Props.pFont);
+		GUI.SetFont(Props.pFont);
 		auto rClient = WM_GetClientRect();
 		auto rInside = rClient;
 		auto EffectSize = this->EffectSize();
 #if BUTTON_USE_3D
 		if (IsPressed)
 			DrawDown();
-		else 
+		else {
 			DrawUp();
-		rInside -= EffectSize;
+			rInside -= EffectSize;
+		}
 #endif
 		/* Draw background */
 		GUI.SetBkColor(Props.aBkColor[ColorIndex]);

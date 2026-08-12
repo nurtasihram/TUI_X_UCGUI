@@ -1,7 +1,6 @@
 module;
 
-#include "WM.h"
-#include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
+#include "GUI_Protected.h"
 
 export module TUX.Widget.Edit;
 
@@ -85,7 +84,7 @@ private:
 		/* Set colors and font */
 		GUI.SetBkColor(Props.aBkColor[IsEnabled() ? 1 : 0]);
 		GUI.SetColor(Props.aTextColor[0]);
-		GUI_SetFont(Props.pFont);
+		GUI.SetFont(Props.pFont);
 		/* Calculate size */
 		auto r = WM_GetClientRect(this);
 		auto rFillRect = WIDGET__GetInsideRect(this);
@@ -176,7 +175,7 @@ private:
 			int xSize, TextWidth, NumChars;
 			const char *pText;
 			pText = this->pText;
-			pOldFont = GUI_SetFont(Props.pFont);
+			pOldFont = GUI.SetFont(Props.pFont);
 			xSize = GetSizeX();
 			TextWidth = GUI_GetStringDistX(pText);
 			switch (Props.Align & TEXTALIGN_HORIZONTAL) {
@@ -208,7 +207,7 @@ private:
 				}
 				_SetCursorPos(i);
 			}
-			GUI_SetFont(pOldFont);
+			GUI.SetFont(pOldFont);
 			WM_Invalidate(this);
 		}
 	}
@@ -369,7 +368,7 @@ public:
 		auto pEdit = Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
 							hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->Para);
 		if (pEdit)
-			pEdit->SetTextAlign(pCreateInfo->Flags);
+			pEdit->SetTextAlign((TEXTALIGN)pCreateInfo->Flags);
 		return pEdit;
 	}
 

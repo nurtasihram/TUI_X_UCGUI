@@ -1,7 +1,6 @@
 module;
 
-#include "WM.h"
-#include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
+#include "GUI_Protected.h"
 
 export module TUX.Widget.ProgBar;
 
@@ -115,7 +114,7 @@ private:
 		rInside = rClient - EffectSize();
 		xPos = _Value2X(v);
 		pText = _GetText(ac);
-		GUI_SetFont(Props.pFont);
+		GUI.SetFont(Props.pFont);
 		_GetTextRect(&rText, pText);
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		/* Draw left bar */
@@ -226,7 +225,7 @@ public:
 		RECT r1;
 		char acBuffer[5];
 
-		pOldFont = GUI_SetFont(Props.pFont);
+		pOldFont = GUI.SetFont(Props.pFont);
 		_GetTextRect(&r1, _GetText(acBuffer));
 		if (GUI__SetText(&pText, s)) {
 			RECT r2;
@@ -234,7 +233,7 @@ public:
 			r1 |= r2;
 			WM_Invalidate(this, &r1);
 		}
-		GUI_SetFont(pOldFont);
+		GUI.SetFont(pOldFont);
 	}
 	void SetTextPos(int XOff, int YOff) {
 		this->XOff = XOff;

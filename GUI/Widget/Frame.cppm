@@ -1,5 +1,7 @@
 module;
-#include "DIALOG_Intern.h"
+
+#include "WM_Intern.h"
+#include "GUI_Protected.h"
 
 export module TUX.Widget.Frame;
 
@@ -215,7 +217,7 @@ private:
 		Pos.rTitleText.y0++;
 		Pos.rTitleText.x0++;
 		Pos.rTitleText.x1--;
-		GUI_SetFont(Props.pFont);
+		GUI.SetFont(Props.pFont);
 		RECT rText;
 		GUI__CalcTextRect(pText, &Pos.rTitleText, &rText, Props.Align);
 		auto y0 = Pos.TitleHeight + BorderSize;
@@ -234,7 +236,7 @@ private:
 		if (Props.BorderSize >= 2)
 			DrawUp();
 	}
-	void _OnChildHasFocus(const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
+	void _OnChildHasFocus(const NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
 		if (pInfo) {
 			if (WM__IsAncestorOrSelf(pInfo->pNew, this)) /* A child has received the focus, Framewindow needs to be activated */
 				SetActive(1);
@@ -324,7 +326,7 @@ private:
 				}
 				break;
 			case WM_NOTIFY_CHILD_HAS_FOCUS:
-				pObj->_OnChildHasFocus((const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *)Data);
+				pObj->_OnChildHasFocus((const NOTIFY_CHILD_HAS_FOCUS_INFO *)Data);
 				break;
 			case WM_DELETE:
 				GUI_DEBUG_LOG("FRAMEWIN: _FRAMEWIN_Callback(WM_DELETE)\n");

@@ -1,4 +1,4 @@
-#include "DIALOG_Intern.h"
+#include "WM_Intern.h"
 
 import TUX.Widget;
 
@@ -16,7 +16,7 @@ struct Window : public WIDGET {
 
 Window::Properties Window::DefaultProps;
 
-static void _OnChildHasFocus(Window *pObj, const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
+static void _OnChildHasFocus(Window *pObj, const NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
 	if (pInfo)
 		if (!WM__IsAncestorOrSelf(pInfo->pNew, pObj)) /* A child has received the focus, Framewindow needs to be activated */
 			/* Remember the child which had the focus so we can reactive this child */
@@ -52,7 +52,7 @@ static WM_PARAM _cb(WObj * hWin, int MsgId, WM_PARAM Data) {
 			WIDGET_HandleActive(pObj, MsgId, &Data);
 			return Data;
 		case WM_NOTIFY_CHILD_HAS_FOCUS:
-			_OnChildHasFocus(pObj, (const WM_NOTIFY_CHILD_HAS_FOCUS_INFO *)Data);
+			_OnChildHasFocus(pObj, (const NOTIFY_CHILD_HAS_FOCUS_INFO *)Data);
 			return 0;
 		case WM_KEY:
 			_OnKey(pObj, (const WM_KEY_INFO *)Data);

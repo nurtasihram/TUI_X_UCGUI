@@ -65,7 +65,6 @@ void  GUI_GetTextExtend(RECT *pRect, const char *s, int Len);
 int   GUI_GetYAdjust(void);
 int   GUI_GetCharDistX(uint16_t c);
 int   GUI_GetStringDistX(const char *s);
-PCFONT GUI_SetFont(PCFONT pNewFont);
 void  GUI_GotoXY(int x, int y);
 void  GUI_DispNextLine(void);
 

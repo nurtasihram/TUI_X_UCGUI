@@ -11,10 +11,6 @@
 #define WM_ASSERT_NOT_IN_PAINT()
 #endif
 
-struct WM_NOTIFY_CHILD_HAS_FOCUS_INFO {
-	WObj *pOld, *pNew;
-};
-
 struct WM_CRITICAL_HANDLE {
 	WM_CRITICAL_HANDLE *pNext;
 	WObj *pWin; 

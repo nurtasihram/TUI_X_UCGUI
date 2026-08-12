@@ -1,6 +1,6 @@
 ﻿module;
 
-#include "DIALOG_Intern.h"
+#include "GUI_Protected.h"
 
 export module TUX.Widget.ListView;
 
@@ -99,7 +99,7 @@ private:
 		ClipRect &= Rect;
 		/* Set drawing color, font and text mode */
 		GUI.SetColor(Props.aTextColor[0]);
-		GUI_SetFont(Props.pFont);
+		GUI.SetFont(Props.pFont);
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		/* Do the drawing */
 		for (i = this->ScrollStateV.v; i < EndRow; i++) {

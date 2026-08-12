@@ -50,8 +50,6 @@
     <ClCompile Include="GUI\ScrollCtrl.cpp" />
     <ClCompile Include="GUI\Widget\Button.cppm" />
     <ClCompile Include="GUI\Widget\CheckBox.cppm" />
-    <ClCompile Include="GUI\Widget\DIALOG.cpp" />
-    <ClCompile Include="GUI\Widget\MESSAGEBOX.cpp" />
     <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp" />
     <ClCompile Include="GUI\Widget\WINDOW.cpp" />
     <ClCompile Include="GUI\WM\Window.cppm" />
@@ -73,8 +71,6 @@
     <ClInclude Include="GUI\Core\LCD.h" />
     <ClInclude Include="GUI\Core\LCD_Private.h" />
     <ClInclude Include="GUI\Core\LCD_Protected.h" />
-    <ClInclude Include="GUI\Widget\DIALOG.h" />
-    <ClInclude Include="GUI\Widget\DIALOG_Intern.h" />
     <ClCompile Include="GUI\Widget\DropDown.cppm">
       <FileType>Document</FileType>
     </ClCompile>
@@ -99,7 +95,6 @@
     <ClCompile Include="GUI\Widget\Menu.cppm">
       <FileType>Document</FileType>
     </ClCompile>
-    <ClInclude Include="GUI\Widget\MESSAGEBOX.h" />
     <ClCompile Include="GUI\Widget\MultEdit.cppm">
       <FileType>Document</FileType>
     </ClCompile>

@@ -157,13 +157,6 @@ void GUI_DrawBitmap(PCBITMAP pBitmap, int x0, int y0) {
 #pragma endregion
 
 #pragma region Font&String
-PCFONT GUI_SetFont(PCFONT pNewFont) {
-	PCFONT pOldFont = GUI.pAFont;
-	if (pNewFont)
-		GUI.pAFont = pNewFont;
-	return pOldFont;
-}
-
 void GUI_GetTextExtend(RECT *pRect, const char *s, int MaxNumChars) {
 	int xMax = 0;
 	int NumLines = 0;

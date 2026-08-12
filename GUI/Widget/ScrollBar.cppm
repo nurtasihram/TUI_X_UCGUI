@@ -1,6 +1,6 @@
 module;
 
-#include "DIALOG_Intern.h" /* Req. for Create indirect data structure */
+#include "GUI_Protected.h"
 
 export module TUX.Widget.ScrollBar;
 

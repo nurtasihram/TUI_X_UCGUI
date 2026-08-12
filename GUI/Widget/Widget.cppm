@@ -1,11 +1,17 @@
 module;
 
-#include "DIALOG_Intern.h"
 #include <memory>
+
+#include "WM_Intern.h"
+#include "GUI_Protected.h"
 
 export module TUX.Widget;
 
+export import TUX.Window;
+export import TUX.WindowTypes;
+
 export {
+
 constexpr uint16_t
 	WIDGET_STATE_FOCUS       = 1 << 0,
 	WIDGET_STATE_FOCUSSABLE  = 1 << 1,

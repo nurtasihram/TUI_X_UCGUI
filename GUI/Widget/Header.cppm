@@ -1,6 +1,6 @@
 ﻿module;
 
-#include "DIALOG_Intern.h"
+#include "GUI_Protected.h"
 
 export module TUX.Widget.Header;
 
@@ -47,7 +47,7 @@ private:
 		int EffectSize = this->EffectSize();
 		RECT Rect;
 		GUI.SetBkColor(Props.BkColor);
-		GUI_SetFont(Props.pFont);
+		GUI.SetFont(Props.pFont);
 		GUI_Clear();
 		for (int i = 0; i < NumItems; i++) {
 			auto &col = Columns[i];
@@ -295,9 +295,9 @@ public:
 	void AddItem(int Width, const char *s, int Align) {
 		Column Col = {};
 		if (!Width) {
-			PCFONT pFont = GUI_SetFont(Props.pFont);
+			PCFONT pFont = GUI.SetFont(Props.pFont);
 			Width = GUI_GetStringDistX(s) + 2 * (this->EffectSize() + Props.BorderH);
-			GUI_SetFont(pFont);
+			GUI.SetFont(pFont);
 		}
 		Col.Width = Width;
 		Col.Align = Align;

@@ -1707,7 +1707,7 @@ uint16_t WM_SetCreateFlags(uint16_t Flags) {
 int WM_SetFocus(WObj * pWin) {
 	int r;
 	if (pWin && pWin != pWinFocus) {
-		WM_NOTIFY_CHILD_HAS_FOCUS_INFO Info;
+		NOTIFY_CHILD_HAS_FOCUS_INFO Info;
 		Info.pOld = pWinFocus;
 		Info.pNew = pWin;
 		/* Send a "no more focus" message to window losing focus */
