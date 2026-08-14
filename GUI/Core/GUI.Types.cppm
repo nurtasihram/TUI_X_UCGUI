@@ -25,6 +25,8 @@ struct RECT {
 	int16_t x0 = 0, y0 = 0, x1 = 0, y1 = 0;
 
 	constexpr RECT() {}
+	constexpr RECT(POINT LeftTop, POINT RightBottom) :
+		x0(LeftTop.x), y0(LeftTop.y), x1(RightBottom.x), y1(RightBottom.y) {}
 	constexpr RECT(int x0, int y0, int x1, int y1) :
 		x0(x0), y0(y0), x1(x1), y1(y1) {}
 

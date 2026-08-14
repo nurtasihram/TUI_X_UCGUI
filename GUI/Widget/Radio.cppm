@@ -63,7 +63,7 @@ private:
 		int i, y, HasFocus, FontDistY;
 		uint16_t SpaceAbove, CHeight, FocusBorder;
 		/* Init some data */
-		rFocus = WM_GetClientRect(this);
+		rFocus = GetClientRect();
 		HasFocus = (this->State & WIDGET_STATE_FOCUS) ? 1 : 0;
 		pBmRadio = Props.apBmRadio[IsEnabled()];
 		pBmCheck = Props.pBmCheck;
@@ -183,7 +183,7 @@ private:
 					return 0;
 				break;
 			case WM_DELETE:
-				for (int i = 0; i < pObj->TextArray.GetNumItems(); i++)
+				for (int i = 0; i < pObj->TextArray.NumItems(); i++)
 					GUI__SetText(&pObj->TextArray[i], nullptr);
 				pObj->TextArray.Delete();
 				return 0;

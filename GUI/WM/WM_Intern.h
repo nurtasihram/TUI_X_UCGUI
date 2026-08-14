@@ -36,7 +36,6 @@ bool    WM__IsInModalArea           (WObj * pWin);
 bool    WM__IsInWindow              (WObj * pWin, int x, int y);
 void    WM__LeaveIVRSearch          (void);
 void    WM__RemoveWindowFromList    (WObj * pWin);
-void    WM__RemoveFromLinList       (WObj * pWin);
 void    WM__Screen2Client           (const WObj *pWin, RECT *pRect);
 void    WM__UpdateChildPositions    (WObj *pObj, int dx0, int dy0, int dx1, int dy1);
 

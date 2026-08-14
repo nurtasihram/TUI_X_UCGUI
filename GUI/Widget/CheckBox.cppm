@@ -112,9 +112,9 @@ private:
 		int Notification = 0;
 		int Hit = 0;
 		if (pState) {  /* Something happened in our area (pressed or released) */
-			if (!WM_HasCaptured(this)) {
+			if (!HasCaptured()) {
 				if (pState->Pressed) {
-					WM_SetCapture(this, 1);
+					SetCapture(1);
 					this->CurrentState = (this->CurrentState + 1) % this->NumStates;
 					WM_Invalidate(this);
 					Notification = WM_NOTIFICATION_CLICKED;

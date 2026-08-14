@@ -933,16 +933,16 @@ private:
 public:
 
 	static MultEdit *Create(int x0, int y0, int xsize, int ysize,
-							WObj *hParent, int WinFlags, int ExFlags,
+							WObj *pParent, int WinFlags, int ExFlags,
 							int Id, int BufferSize, const char *pText) {
 		/* Create the window */
 		if (!(xsize | ysize | x0 | y0)) {
-			RECT Rect = WM_GetClientRect(hParent);
+			auto Rect = pParent->GetClientRect();
 			xsize = Rect.x1 - Rect.x0 + 1;
 			ysize = Rect.y1 - Rect.y0 + 1;
 		}
 		auto pObj = (MultEdit *)WM_CreateWindowAsChild(
-			x0, y0, xsize, ysize, hParent, WinFlags, MultEdit::_Callback,
+			x0, y0, xsize, ysize, pParent, WinFlags, MultEdit::_Callback,
 			sizeof(MultEdit) - sizeof(WObj));
 		if (!pObj) {
 			GUI_DEBUG_ERROROUT_IF(pObj == 0, "MultEdit create failed");

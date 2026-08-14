@@ -69,7 +69,7 @@ private:
 	char *pText;
 	RECT rRestore;
 	uint16_t Flags;
-	WObj *hFocussedChild; /* Handle to focussed child .. default none (0) */
+	WObj *pFocussedChild; /* Handle to focussed child .. default none (0) */
 	DIALOG_STATUS *pDialogStatus;
 
 	struct POSITIONS {
@@ -183,7 +183,7 @@ private:
 					WM_SetFocus(this);
 				WM_BringToTop(this);
 				if (this->Flags & FRAMEWIN_CF_MOVEABLE)
-					WM_SetCaptureMove(this, pState, FRAMEWIN__MinVisibility);
+					SetCaptureMove(*pState, FRAMEWIN__MinVisibility);
 			}
 		}
 	}
@@ -192,7 +192,7 @@ private:
 			int Key = pInfo->Key;
 			switch (Key) {
 				case GUI_KEY_TAB:
-					this->hFocussedChild = WM_SetFocusOnNextChild(this);
+					this->pFocussedChild = WM_SetFocusOnNextChild(this);
 					return 1;
 			}
 		}
@@ -244,7 +244,7 @@ private:
 				SetActive(0);
 				/* Remember the child which had the focus so we can reactive this child */
 				if (WM__IsAncestor(pInfo->pOld, this))
-					this->hFocussedChild = pInfo->pOld;
+					this->pFocussedChild = pInfo->pOld;
 			}
 		}
 	}
@@ -304,10 +304,10 @@ private:
 			}
 			case WM_SET_FOCUS: /* We have received or lost focus */
 				if (Data) {
-					if (WM_IsWindow(pObj->hFocussedChild))
-						WM_SetFocus(pObj->hFocussedChild);
+					if (::IsWindow(pObj->pFocussedChild))
+						WM_SetFocus(pObj->pFocussedChild);
 					else
-						pObj->hFocussedChild = WM_SetFocusOnNextChild(pObj->hClient);
+						pObj->pFocussedChild = WM_SetFocusOnNextChild(pObj->hClient);
 					pObj->SetActive(1);
 					return 0; /* Focus could be accepted */
 				}
@@ -356,10 +356,10 @@ private:
 				return 0;
 			case WM_SET_FOCUS:
 				if (Data) { /* Focus received */
-					if (pParent->hFocussedChild && pParent->hFocussedChild != hWin)
-						WM_SetFocus(pParent->hFocussedChild);
+					if (pParent->pFocussedChild && pParent->pFocussedChild != hWin)
+						WM_SetFocus(pParent->pFocussedChild);
 					else
-						pParent->hFocussedChild = WM_SetFocusOnNextChild(hWin);
+						pParent->pFocussedChild = WM_SetFocusOnNextChild(hWin);
 					return 0; /* Focus change accepted */
 				}
 				return 0;
@@ -399,7 +399,7 @@ public:
 		pObj->Props = DefaultProps;
 		pObj->cb = cb;
 		pObj->Flags = ExFlags;
-		pObj->hFocussedChild = 0;
+		pObj->pFocussedChild = 0;
 		pObj->pMenu = nullptr;
 		pObj->_CalcPositions(&Pos);
 		pObj->hClient = WM_CreateWindowAsChild(
@@ -804,8 +804,8 @@ public:
 			_CaptureY = y;
 		}
 		if (Mode) {
-			if (!WM_HasCaptured(this))
-				WM_SetCapture(this, 0);
+			if (!HasCaptured())
+				SetCapture(0);
 #if GUI_SUPPORT_CURSOR
 			_SetResizeCursor(Mode);
 #endif
@@ -816,7 +816,7 @@ public:
 	}
 	void _ChangeWindowPosSize(int *px, int *py) {
 		int dx = 0, dy = 0;
-		RECT Rect = WM_GetClientRect(this);
+		RECT Rect = GetClientRect();
 		/* Calculate new size of window */
 		if (_CaptureFlags & FRAMEWIN_RESIZE_X)
 			dx = (_CaptureFlags & FRAMEWIN_REPOS_X) ? _CaptureX - *px : *px - _CaptureX;
@@ -863,7 +863,7 @@ public:
 	}
 	int _CheckReactBorder(int x, int y) {
 		int Mode = 0;
-		RECT r = WM_GetClientRect(this);
+		RECT r = GetClientRect();
 		if ((x >= 0) && (y >= 0) && (x <= r.x1) && (y <= r.y1)) {
 			Mode |= _CheckBorderX(x, r.x1, FRAMEWIN_REACT_BORDER);
 			if (Mode) {
@@ -896,18 +896,18 @@ public:
 				}
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 				else if (_CaptureFlags) {
-					WM_ReleaseCapture();
+					ReleaseCapture();
 					return 1;
 				}
 #endif
 			}
-			else if (WM_HasCaptured(this)) {
+			else if (HasCaptured()) {
 				_CaptureFlags &= ~(FRAMEWIN_RESIZE);
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 				if (!Mode)
 #endif
 				{
-					WM_ReleaseCapture();
+					ReleaseCapture();
 				}
 				return 1;
 			}
@@ -918,7 +918,7 @@ public:
 	int _ForwardMouseOverMsg(const PID_STATE *pState) {
 		PID_STATE StateBelow = *pState;
 		StateBelow += GetOrg();
-		auto pBelow = WM_Screen2hWin(StateBelow.x, StateBelow.y);
+		auto pBelow = WM_Screen2Win(StateBelow);
 		if (pBelow && pBelow != this) {
 			StateBelow -= pBelow->GetOrg();
 			WM__SendMessage(pBelow, WM_MOUSEOVER, (WM_PARAM)&StateBelow);
@@ -935,9 +935,9 @@ public:
 					_SetCapture(x, y, Mode | FRAMEWIN_MOUSEOVER);
 				return 1;
 			}
-			else if (WM_HasCaptured(this)) {
+			else if (HasCaptured()) {
 				if ((_CaptureFlags & FRAMEWIN_RESIZE) == 0) {
-					WM_ReleaseCapture();
+					ReleaseCapture();
 					_ForwardMouseOverMsg(pState);
 				}
 				return 1;
@@ -947,7 +947,7 @@ public:
 	}
 #endif
 	int _HandleResizeable(int MsgId, WM_PARAM Data) {
-		if (WM_HasCaptured(this) && _CaptureFlags == 0)
+		if (HasCaptured() && _CaptureFlags == 0)
 			return 0;
 		if (IsMinimized() || IsMaximized())
 			return 0;

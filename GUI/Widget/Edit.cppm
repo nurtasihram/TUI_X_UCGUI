@@ -86,7 +86,7 @@ private:
 		GUI.SetColor(Props.aTextColor[0]);
 		GUI.SetFont(Props.pFont);
 		/* Calculate size */
-		auto r = WM_GetClientRect(this);
+		auto r = GetClientRect();
 		auto rFillRect = WIDGET__GetInsideRect(this);
 		if (this->pText)
 			pText = this->pText;

@@ -83,7 +83,7 @@ private:
 		return OwnerDraw(this, Cmd, ItemIndex, Pos);
 	}
 	uint16_t _GetNumItems() {
-		return ItemArray.GetNumItems();
+		return ItemArray.NumItems();
 	}
 	const char *_GetpString(int Index) {
 		const char *s = nullptr;
@@ -297,7 +297,7 @@ private:
 		}
 	}
 	void _FreeAttached() {
-		for (unsigned _i = 0, _n = ItemArray.GetNumItems(); _i < _n; _i++) {
+		for (unsigned _i = 0, _n = ItemArray.NumItems(); _i < _n; _i++) {
 			GUI_ALLOC_FreePtr((void **)&ItemArray[_i].pText);
 		}
 		ItemArray.Delete();
@@ -506,7 +506,7 @@ private:
 			case WM_TOUCH: {
 				auto pState = (const PID_STATE *)Data;
 				if (pObj->pOwner && pState) {
-					RECT r = WM_GetClientRect(pObj);
+					auto r = pObj->GetClientRect();
 					if (pState->x < 0 || pState->y < 0 || pState->x > r.x1 || pState->y > r.y1) {
 						if (pState->Pressed)
 							pObj->_NotifyOwner(LISTBOX_NOTIFICATION_LOST_FOCUS);
@@ -679,7 +679,7 @@ public:
 		if (s) {
 			Item item = { 0, 0 };
 			if (this->ItemArray.AddItem(&item) == 0) {
-				uint16_t ItemIndex = ItemArray.GetNumItems() - 1;
+				uint16_t ItemIndex = ItemArray.NumItems() - 1;
 				GUI__SetText(&ItemArray[ItemIndex].pText, s);
 				this->_InvalidateItemSize(ItemIndex);
 				UpdateScrollers();

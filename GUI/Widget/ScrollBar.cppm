@@ -103,7 +103,7 @@ private:
 		/*
 		  Get / calc position info
 		*/
-		auto r = WM_GetClientRect(this);
+		auto r = GetClientRect();
 		auto Pos = _CalcPositions();
 		auto Height = State & SCROLLBAR_CF_VERTICAL ? r.DistX() : r.DistY();
 		auto CenterH = Height >> 1;
@@ -201,7 +201,7 @@ private:
 		else  if (x <= Pos.x1_RightArrow)
 			Sel++;
 		/* WM_SetFocus(hObj); */
-		WM_SetCapture(this, 1);
+		SetCapture(1);
 		SetValue(Sel);
 		if (!(State & SCROLLBAR_STATE_PRESSED))
 			_ScrollbarPressed();

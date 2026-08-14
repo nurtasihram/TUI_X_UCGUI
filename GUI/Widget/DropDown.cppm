@@ -201,7 +201,7 @@ private:
 				pObj->_OnPaint();
 				return 0;
 			case WM_DELETE:
-				for (int i = 0; i < pObj->Handles.GetNumItems(); i++)
+				for (int i = 0; i < pObj->Handles.NumItems(); i++)
 					GUI__SetText(&pObj->Handles[i], nullptr);
 				pObj->_FreeAttached();
 				return 0;
@@ -246,7 +246,7 @@ public:
 		if (this->pListWin) {
 			auto pListWin = this->pListWin;
 			this->pListWin = nullptr;
-			WM_ReleaseCapture();
+			ReleaseCapture();
 			WM_DeleteWindow(pListWin);
 		}
 	}
@@ -299,7 +299,7 @@ public:
 			pLst->SetItemSpacing(this->ItemSpacing);
 			pLst->SetSel(this->Sel);
 			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
-			WM_SetCapture(pLst, 0);
+			pLst->SetCapture(0);
 		}
 	}
 	void AddKey(int Key) {
@@ -317,14 +317,14 @@ public:
 	}
 	void AddString(const char *s) {
 		if (s) {
-			auto idx = this->Handles.GetNumItems();
-			if (this->Handles.AddItem() == 0)
-					GUI__SetText(&this->Handles[idx], s);
+			auto idx = Handles.NumItems();
+			if (Handles.AddItem() == 0)
+					GUI__SetText(&Handles[idx], s);
 			WM_Invalidate(this);
 		}
 	}
 
-	auto GetNumItems() { return Handles.GetNumItems(); }
+	auto GetNumItems() { return Handles.NumItems(); }
 	void SetFont(PCFONT pFont) {
 		auto OldHeight = Props.pFont->DistY();
 		Props.pFont = pFont;
@@ -398,8 +398,8 @@ public:
 		unsigned int NumItems;
 		NumItems = GetNumItems();
 		if (Index < NumItems) {
-			GUI__SetText(&this->Handles[Index], nullptr);
-			this->Handles.DeleteItem(Index);
+			GUI__SetText(&Handles[Index], nullptr);
+			Handles.DeleteItem(Index);
 			WM_Invalidate(this);
 			if (this->pListWin) {
 				this->pListWin->DeleteItem(Index);
@@ -412,7 +412,7 @@ public:
 
 			NumItems = GetNumItems();
 			if (Index < NumItems) {
-				auto pp = this->Handles.InsertItem(Index);
+				auto pp = Handles.InsertItem(Index);
 				if (pp)
 					GUI__SetText(pp, s);
 				WM_Invalidate(this);

@@ -28,7 +28,7 @@ private:
 	uint8_t Flags;
 
 	void _OnPaint() {
-		auto r = State & SLIDER_CF_VERTICAL ? ~WM_GetClientRect(this) : WM_GetClientRect(this);
+		auto r = State & SLIDER_CF_VERTICAL ? ~GetClientRect() : GetClientRect();
 		auto xsize = r.x1 - r.x0 + 1 - this->Width;
 		auto x0 = r.x0 + this->Width / 2;
 		auto Range = this->Max - this->Min;
@@ -83,7 +83,7 @@ private:
 		/* Draw focus */
 		if (this->State & WIDGET_STATE_FOCUS) {
 			GUI.SetColor(RGB_BLACK);
-			GUI_DrawFocusRect(WM_GetClientRect(this), 0);
+			GUI_DrawFocusRect(GetClientRect(), 0);
 		}
 	}
 	void _SliderPressed() {
@@ -120,7 +120,7 @@ private:
 		}
 		if (IsFocussable())
 			WM_SetFocus(this);
-		WM_SetCapture(this, 1);
+		SetCapture(1);
 		SetValue(Sel);
 		if (!(State & SLIDER_STATE_PRESSED))
 			_SliderPressed();

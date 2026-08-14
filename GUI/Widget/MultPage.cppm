@@ -74,8 +74,8 @@ private:
 	void _ShowPage(unsigned Index) {
 		WObj *hWin = 0;
 		auto pClient = this->pClient;
-		if ((int)Index < this->Handles.NumItems) {
-			hWin = this->Handles[Index].hWin;
+		if ((int)Index < Handles.NumItems()) {
+			hWin = Handles[Index].hWin;
 		}
 		for (auto pChild = pClient->pFirstChild; pChild; pChild = pChild->pNext) {
 			if (pChild == hWin) {
@@ -87,8 +87,8 @@ private:
 		}
 	}
 	void _SetEnable(unsigned Index, int State) {
-		if ((int)Index < this->Handles.NumItems) {
-			auto &pPage = this->Handles[Index];
+		if ((int)Index < Handles.NumItems()) {
+			auto &pPage = Handles[Index];
 			if (State) {
 				pPage.Status |= MULTIPAGE_STATE_ENABLED;
 			}
@@ -99,8 +99,8 @@ private:
 	}
 	int _GetEnable(unsigned Index) {
 		int r = 0;
-		if ((int)Index < this->Handles.NumItems) {
-			r = (this->Handles[Index].Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0;
+		if ((int)Index < Handles.NumItems()) {
+			r = (Handles[Index].Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0;
 		}
 		return r;
 	}
@@ -114,7 +114,7 @@ private:
 		}
 	}
 	void _CalcBorderRect(RECT *pRect) {
-		*pRect = WM_GetClientRect(this);
+		*pRect = GetClientRect();
 		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
 			pRect->y1 -= Props.pFont->SizeY() + 6;
 		}
@@ -124,9 +124,9 @@ private:
 	}
 	int _GetPageSizeX(unsigned Index) {
 		int r = 0;
-		if ((int)Index < this->Handles.NumItems) {
+		if ((int)Index < Handles.NumItems()) {
 			GUI.SetFont(Props.pFont);
-			r = GUI_GetStringDistX(this->Handles[Index].pText) + 10;
+			r = GUI_GetStringDistX(Handles[Index].pText) + 10;
 		}
 		return r;
 	}
@@ -138,7 +138,7 @@ private:
 		return r;
 	}
 	int _GetTextWidth() {
-		return _GetPagePosX(this->Handles.NumItems);
+		return _GetPagePosX(Handles.NumItems());
 	}
 	void _GetTextRect(RECT *pRect) {
 		RECT rBorder;
@@ -240,7 +240,7 @@ private:
 		_CalcBorderRect(&rBorder);
 		DrawUp(rBorder);
 		/* Draw text items */
-		if (this->Handles.NumItems > 0) {
+		if (Handles.NumItems() > 0) {
 			RECT rText, rClip;
 			int i, w = 0, x0 = 0;
 			if (this->State & MULTIPAGE_STATE_SCROLLMODE) {
@@ -257,8 +257,8 @@ private:
 			rClip.y1 = rText.y1 + 1;
 			WM_SetUserClipRect(&rClip);
 			GUI.SetFont(Props.pFont);
-			for (i = 0; i < this->Handles.NumItems; i++) {
-				auto &pPage = this->Handles[i];
+			for (i = 0; i < Handles.NumItems(); i++) {
+				auto &pPage = Handles[i];
 				x0 += w;
 				w = GUI_GetStringDistX(pPage.pText) + 10;
 				_DrawTextItem(pPage.pText, i, &rText, x0, w, (pPage.Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0);
@@ -270,13 +270,13 @@ private:
 		RECT rText;
 		_GetTextRect(&rText);
 		if ((y >= rText.y0) && (y <= rText.y1)) {
-			if ((this->Handles.NumItems > 0) && (x >= rText.x0) && (x <= rText.x1)) {
+			if ((Handles.NumItems() > 0) && (x >= rText.x0) && (x <= rText.x1)) {
 				int i, w = 0, x0 = rText.x0;
 				/* Check if another page must be selected */
 				if (this->State & MULTIPAGE_STATE_SCROLLMODE) {
 					x0 -= _GetPagePosX(this->ScrollState);
 				}
-				for (i = 0; i < this->Handles.NumItems; i++) {
+				for (i = 0; i < Handles.NumItems(); i++) {
 					x0 += w;
 					w = _GetPageSizeX(i);
 					if (x >= x0 && x <= (x0 + w - 1)) {
@@ -297,7 +297,7 @@ private:
 				POINT Pos = *pState;
 				if (!_ClickedOnMultipage(Pos.x, Pos.y)) {
 					Pos += GetOrg();
-					if (auto pBelow = WM_Screen2hWinEx(this, Pos.x, Pos.y)) {
+					if (auto pBelow = WM_Screen2Win(Pos, this)) {
 						PID_STATE State;
 						State = Pos - pBelow->GetOrg();
 						State.Pressed = pState->Pressed;
@@ -349,7 +349,7 @@ private:
 				pObj->_UpdatePositions();
 				return 0;
 			case WM_DELETE: {
-				for (int _i = 0; _i < pObj->Handles.NumItems; _i++) {
+				for (int _i = 0; _i < pObj->Handles.NumItems(); _i++) {
 					GUI_ALLOC_FreePtr((void **)&pObj->Handles[_i].pText);
 				}
 				pObj->Handles.Delete();
@@ -428,7 +428,7 @@ public:
 			auto pClient = this->pClient;
 			for (auto pChild = pClient->pFirstChild; pChild && !hWin; pChild = pChild->pNext) {
 				hWin = pChild;
-				for (int i = 0; i < Handles.NumItems; i++) {
+				for (int i = 0; i < Handles.NumItems(); i++) {
 					auto &pPage = Handles[i];
 						if (pPage.hWin == pChild) {
 						hWin = 0;
@@ -450,18 +450,18 @@ public:
 			page.hWin = hWin;
 			page.Status = MULTIPAGE_STATE_ENABLED;
 			if (Handles.AddItem(&page) == 0) {
-				GUI__SetText(&Handles[Handles.NumItems - 1].pText, pText);
+				GUI__SetText(&Handles[Handles.NumItems() - 1].pText, pText);
 			}
-			SelectPage(Handles.NumItems - 1);
+			SelectPage(Handles.NumItems() - 1);
 		}
 	}
 	void DeletePage(unsigned Index, int Delete) {
-		if ((int)Index < Handles.NumItems) {
+		if ((int)Index < Handles.NumItems()) {
 			WObj *hWin;
 			hWin = Handles[Index].hWin;
 			/* Remove the page from the MultPage object */
 			if (Index == this->Selection) {
-				if (Index == ((unsigned)Handles.NumItems - 1)) {
+				if (Index == ((unsigned)Handles.NumItems() - 1)) {
 					this->_ShowPage(Index - 1);
 					this->Selection--;
 				}
@@ -484,7 +484,7 @@ public:
 		}
 	}
 	void SelectPage(unsigned Index) {
-		if ((int)Index < Handles.NumItems) {
+		if ((int)Index < Handles.NumItems()) {
 			if (Index != this->Selection && this->_GetEnable(Index)) {
 				this->_ShowPage(Index);
 				this->Selection = Index;
@@ -501,7 +501,7 @@ public:
 		WM_Invalidate(this);
 	}
 	void SetText(const char *pText, unsigned Index) {
-		if (pText && (int)Index < Handles.NumItems) {
+		if (pText && (int)Index < Handles.NumItems()) {
 			if (GUI__SetText(&Handles[Index].pText, pText))
 				this->_UpdatePositions();
 		}
@@ -537,7 +537,7 @@ public:
 	}
 	WObj *GetWindow(unsigned Index) {
 		WObj *r = 0;
-		if ((int)Index < Handles.NumItems) {
+		if ((int)Index < Handles.NumItems()) {
 			r = Handles[Index].hWin;
 		}
 

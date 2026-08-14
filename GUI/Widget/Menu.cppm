@@ -192,7 +192,7 @@ private:
 		return ItemHeight;
 	}
 	unsigned _GetNumItems() {
-		return ItemArray.GetNumItems();
+		return ItemArray.NumItems();
 	}
 	int _CalcMenuSizeX() {
 		unsigned i, NumItems = this->_GetNumItems();
@@ -310,15 +310,15 @@ private:
 	}
 	void _SetCapture() {
 		if (this->IsSubmenuActive == 0) {
-			if (WM_HasCaptured(this) == 0) {
-				WM_SetCapture(this, 0);
+			if (!HasCaptured()) {
+				SetCapture(0);
 			}
 		}
 	}
 	void _ReleaseCapture() {
-		if (WM_HasCaptured(this)) {
+		if (HasCaptured()) {
 			if (this->_IsTopLevelMenu() && !(this->Flags & MENU_SF_POPUP)) {
-				WM_ReleaseCapture();
+				ReleaseCapture();
 			}
 		}
 	}
@@ -391,7 +391,7 @@ private:
 		if (this->Flags & MENU_SF_POPUP) {
 			this->Flags &= ~(MENU_SF_POPUP);
 			WM_DetachWindow(this);
-			WM_ReleaseCapture();
+			ReleaseCapture();
 		}
 	}
 	void _SetSelection(int Index) {
@@ -455,7 +455,7 @@ private:
 		if (!IsSubmenuActive && !(Flags & MENU_SF_POPUP)) {
 			if (_IsTopLevelMenu()) {
 				Pos += GetOrg();
-				if (auto pBelow = WM_Screen2hWin(Pos.x, Pos.y); pBelow && (pBelow != this)) {
+				if (auto pBelow = WM_Screen2Win(Pos); pBelow && (pBelow != this)) {
 					PID_STATE State;
 					State = Pos - pBelow->GetOrg();
 					State.Pressed = 0;
@@ -475,7 +475,7 @@ private:
 		 * Check if coordinates are inside the widget.
 		 */
 		if ((x >= 0) && (y >= 0)) {
-			RECT r = WM_GetClientRect(this);
+			RECT r = GetClientRect();
 			if (x <= r.x1 && y <= r.y1)
 				XYInWidget = 1;
 		}
@@ -633,7 +633,7 @@ private:
 		int FontHeight = Props.pFont->DistY();
 		int EffectSize = this->_GetEffectSize();
 		NumItems = this->_GetNumItems();
-		FillRect = WM_GetClientRect(this);
+		FillRect = GetClientRect();
 		FillRect -= EffectSize;
 		GUI.SetFont(Props.pFont);
 		if (this->Flags & MENU_SF_VERTICAL) {
@@ -687,7 +687,7 @@ private:
 				}
 		}
 		if (this->Width || this->Height) {
-			RECT r = WM_GetClientRect(this);
+			RECT r = GetClientRect();
 			r -= EffectSize;
 			GUI.SetBkColor(Props.aBkColor[MENU_CI_ENABLED]);
 			GUI_ClearRect({ FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1 });
@@ -721,7 +721,7 @@ private:
 				pObj->_OnPaint();
 				return 0;
 			case WM_DELETE: {
-				unsigned _n = pObj->ItemArray.GetNumItems();
+				unsigned _n = pObj->ItemArray.NumItems();
 				for (unsigned _i = 0; _i < _n; _i++) {
 					GUI_ALLOC_FreePtr((void **)&pObj->ItemArray[_i].pText);
 				}
@@ -793,7 +793,7 @@ private:
 		if (item.Flags & MENU_IF_SEPARATOR) {
 			item.pSubmenu = nullptr;   /* Ensures that no separator is a submenu */
 		}
-		if (Index < this->ItemArray.GetNumItems()) {
+		if (Index < this->ItemArray.NumItems()) {
 			auto &pItem = this->ItemArray[Index];
 			GUI__SetText(&pItem.pText, pText);
 			pItem.Id       = item.Id;

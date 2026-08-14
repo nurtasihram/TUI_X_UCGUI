@@ -156,7 +156,7 @@ struct WIDGET : public WObj {
 };
 
 RECT WIDGET__GetInsideRect(WIDGET *pWidget) {
-	return WM_GetClientRect(pWidget) - pWidget->EffectSize();
+	return pWidget->GetClientRect() - pWidget->EffectSize();
 }
 
 void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {

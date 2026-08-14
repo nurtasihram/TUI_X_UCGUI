@@ -10,7 +10,7 @@ struct Window : public WIDGET {
 	} static DefaultProps;
 	Properties Props;
 	WM_CALLBACK *cb;
-	WObj *hFocussedChild;
+	WObj *pFocussedChild;
 	DIALOG_STATUS *pDialogStatus;
 };
 
@@ -21,13 +21,13 @@ static void _OnChildHasFocus(Window *pObj, const NOTIFY_CHILD_HAS_FOCUS_INFO *pI
 		if (!WM__IsAncestorOrSelf(pInfo->pNew, pObj)) /* A child has received the focus, Framewindow needs to be activated */
 			/* Remember the child which had the focus so we can reactive this child */
 			if (WM__IsAncestor(pInfo->pOld, pObj))
-				pObj->hFocussedChild = pInfo->pOld;
+				pObj->pFocussedChild = pInfo->pOld;
 }
 static void _OnKey(Window *pObj, const WM_KEY_INFO *pInfo) {
 	if (pInfo->PressedCnt > 0) {
 		switch (pInfo->Key) {
 			case GUI_KEY_TAB:
-				pObj->hFocussedChild = WM_SetFocusOnNextChild(pObj);
+				pObj->pFocussedChild = WM_SetFocusOnNextChild(pObj);
 				break; /* Send to parent by not doing anything */
 		}
 	}
@@ -42,10 +42,10 @@ static WM_PARAM _cb(WObj * hWin, int MsgId, WM_PARAM Data) {
 			return (WM_PARAM)pObj->pDialogStatus;
 		case WM_SET_FOCUS:
 			if (Data) { /* Focus received */
-				if (pObj->hFocussedChild && pObj->hFocussedChild != pObj)
-					WM_SetFocus(pObj->hFocussedChild);
+				if (pObj->pFocussedChild && pObj->pFocussedChild != pObj)
+					WM_SetFocus(pObj->pFocussedChild);
 				else
-					pObj->hFocussedChild = WM_SetFocusOnNextChild(pObj);
+					pObj->pFocussedChild = WM_SetFocusOnNextChild(pObj);
 			}
 			return 0;
 		case WM_GET_ACCEPT_FOCUS:
@@ -78,7 +78,7 @@ WObj * WINDOW_CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj * hWinP
 		WIDGET__Init(pObj, pCreateInfo->Id, WIDGET_STATE_FOCUSSABLE);
 		pObj->Props = Window::DefaultProps;
 		pObj->cb = cb;
-		pObj->hFocussedChild = 0;
+		pObj->pFocussedChild = 0;
 	}
 	return hObj;
 }

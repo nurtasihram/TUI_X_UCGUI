@@ -8,25 +8,25 @@ export {
 
 template<typename T>
 struct ARRAY {
-	uint16_t NumItems = 0;
+	uint16_t nItems = 0;
 	T* pArray = nullptr;
 
 	ARRAY() = default;
-	ARRAY(uint16_t nItems) : NumItems(nItems) {
-		pArray = (T*)GUI_ALLOC_AllocZero((size_t)NumItems * sizeof(T));
+	ARRAY(uint16_t nItems) : nItems(nItems) {
+		pArray = (T*)GUI_ALLOC_AllocZero((size_t)nItems * sizeof(T));
 	}
 	~ARRAY() { Delete(); }
 
-	auto GetNumItems() const { return NumItems; }
+	auto GetnItems() const { return nItems; }
 
 	void Delete() {
 		if (pArray) {
-			for (uint16_t i = 0; i < NumItems; ++i)
+			for (uint16_t i = 0; i < nItems; ++i)
 				pArray[i].~T();
 			GUI_ALLOC_Free(pArray);
 			pArray = nullptr;
 		}
-		NumItems = 0;
+		nItems = 0;
 	}
 
 	void Resize(uint16_t num) {
@@ -34,17 +34,17 @@ struct ARRAY {
 			pArray = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)num * sizeof(T));
 		else
 			pArray = (T*)GUI_ALLOC_Alloc((size_t)num * sizeof(T));
-		NumItems = num;
+		nItems = num;
 	}
 
 	void Delete(uint16_t Index) {
-		if (Index >= NumItems || !pArray)
+		if (Index >= nItems || !pArray)
 			return;
 		pArray[Index].~T();
-		for (uint16_t i = Index; i + 1 < NumItems; ++i)
+		for (uint16_t i = Index; i + 1 < nItems; ++i)
 			pArray[i] = pArray[i + 1];
-		if (--NumItems)
-			pArray = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)NumItems * sizeof(T));
+		if (--nItems)
+			pArray = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)nItems * sizeof(T));
 		else {
 			GUI_ALLOC_Free(pArray);
 			pArray = nullptr;
@@ -52,41 +52,41 @@ struct ARRAY {
 	}
 
 	inline T &Add() {
-		pArray = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)(NumItems + 1) * sizeof(T));
-		auto &item = pArray[NumItems++];
+		pArray = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
+		auto &item = pArray[nItems++];
 		item = {};
 		return item;
 	}
 
 	inline T &Insert(unsigned Index) {
-		if (NumItems == 0)
+		if (nItems == 0)
 			Index = 0;
-		else if (Index >= NumItems)
-			Index = NumItems - 1;
-		pArray = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)(NumItems + 1) * sizeof(T));
-		++NumItems;
-		for (uint16_t i = NumItems - 1; i > Index; --i)
+		else if (Index >= nItems)
+			Index = nItems - 1;
+		pArray = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
+		++nItems;
+		for (uint16_t i = nItems - 1; i > Index; --i)
 			pArray[i] = pArray[i - 1];
 		return pArray[Index];
 	}
 
 	inline auto begin() { return pArray; }
 	inline auto begin() const { return pArray; }
-	inline auto end() { return pArray + NumItems; }
-	inline auto end() const { return pArray + NumItems; }
+	inline auto end() { return pArray + nItems; }
+	inline auto end() const { return pArray + nItems; }
 
-	inline uint16_t NumItems_() const { return NumItems; }
+	inline uint16_t NumItems() const { return nItems; }
 
 	int AddItem(const T *pData = nullptr) {
-		auto pNew = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)(NumItems + 1) * sizeof(T));
+		auto pNew = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
 		if (!pNew)
 			return 1;
 		pArray = pNew;
 		if (pData)
-			GUI__memcpy(pArray + NumItems, pData, sizeof(T));
+			GUI__memcpy(pArray + nItems, pData, sizeof(T));
 		else
-			pArray[NumItems] = {};
-		++NumItems;
+			pArray[nItems] = {};
+		++nItems;
 		return 0;
 	}
 
@@ -95,16 +95,16 @@ struct ARRAY {
 	}
 
 	char InsertBlankItem(unsigned int Index) {
-		if (Index > NumItems)
+		if (Index > nItems)
 			return 0;
-		auto pNew = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)(NumItems + 1) * sizeof(T));
+		auto pNew = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
 		if (!pNew)
 			return 0;
 		pArray = pNew;
-		for (uint16_t i = NumItems; i > Index; --i)
+		for (uint16_t i = nItems; i > Index; --i)
 			pArray[i] = pArray[i - 1];
 		pArray[Index] = {};
-		++NumItems;
+		++nItems;
 		return 1;
 	}
 

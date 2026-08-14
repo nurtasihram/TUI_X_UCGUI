@@ -60,10 +60,9 @@ private:
 #if BUTTON_USE_3D
 		if (IsPressed)
 			DrawDown();
-		else {
+		else
 			DrawUp();
-			rInside -= EffectSize;
-		}
+		rInside -= EffectSize;
 #endif
 		/* Draw background */
 		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
@@ -121,12 +120,12 @@ private:
 			if (pState->Pressed) {
 				if (!(State & BUTTON_STATE_PRESSED))
 					_ButtonPressed();
-				WM_SetCapture(this, 1);
+				SetCapture(1);
 			}
 			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
 			else if (State & BUTTON_STATE_PRESSED)
 				_ButtonReleased(
-					WM_GetClientRect(this) <= *pState ? WM_NOTIFICATION_RELEASED :
+					GetClientRect() <= *pState ? WM_NOTIFICATION_RELEASED :
 					WM_NOTIFICATION_MOVED_OUT);
 		}
 		else

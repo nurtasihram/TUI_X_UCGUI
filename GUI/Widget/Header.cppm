@@ -43,7 +43,7 @@ private:
 
 	void _OnPaint() {
 		int xPos = -ScrollPos;
-		int NumItems = Columns.GetNumItems();
+		int NumItems = Columns.NumItems();
 		int EffectSize = this->EffectSize();
 		RECT Rect;
 		GUI.SetBkColor(Props.BkColor);
@@ -100,7 +100,7 @@ private:
 	}
 	void _FreeAttached() {
 		int i, NumItems;
-		NumItems = Columns.GetNumItems();
+		NumItems = Columns.NumItems();
 		for (i = 0; i < NumItems; i++) {
 			auto &col = Columns[i];
 			GUI_ALLOC_FreePtr((void **)&col.pText);
@@ -116,7 +116,7 @@ private:
 	int _GetItemIndex(int x, int y) {
 		if ((y >= 0) && (y < GetSizeY())) {
 			int xPos = this->EffectSize();
-			for (int Index = 0, NumColumns = Columns.GetNumItems(); Index < NumColumns; ++Index) {
+			for (int Index = 0, NumColumns = Columns.NumItems(); Index < NumColumns; ++Index) {
 				auto &col = Columns[Index];
 				xPos += col.Width;
 				if (x - 4 <= xPos && xPos <= x + 4) {
@@ -138,7 +138,7 @@ private:
 		}
 		/* set mouse cursor and capture () */
 		if (Hit >= 0) {
-			WM_SetCapture(this, 1);
+			SetCapture(1);
 #if GUI_SUPPORT_CURSOR
 			if (!_pOldCursor) {
 				_pOldCursor = GUI_CURSOR_Select(Props.pCursor);
@@ -161,7 +161,7 @@ private:
 			{
 				_RestoreOldCursor();
 				CapturePosX = -1;
-				WM_ReleaseCapture();
+				ReleaseCapture();
 			}
 		}
 	}
@@ -274,9 +274,9 @@ public:
 
 #pragma endregion
 
-	int GetHeight() { return WM_GetClientRect(this).YSize(); }
+	int GetHeight() { return GetClientRect().YSize(); }
 	void SetHeight(int Height) {
-		auto Rect = WM_GetClientRect(this);
+		auto Rect = GetClientRect();
 		WM_SetSize(this, Rect.XSize(), Height);
 		WM_Invalidate(Parent());
 	}
@@ -291,7 +291,7 @@ public:
 		}
 	}
 
-	auto GetNumItems() { return Columns.GetNumItems(); }
+	auto GetNumItems() { return Columns.NumItems(); }
 	void AddItem(int Width, const char *s, int Align) {
 		Column Col = {};
 		if (!Width) {
@@ -302,7 +302,7 @@ public:
 		Col.Width = Width;
 		Col.Align = Align;
 		Col.pDrawObj = 0;
-		int Index = Columns.GetNumItems();
+		int Index = Columns.NumItems();
 		if (Columns.AddItem(&Col) == 0) {
 			auto &pColumn = Columns[Index];
 			GUI__SetText(&pColumn.pText, s);
@@ -311,7 +311,7 @@ public:
 		}
 	}
 	void DeleteItem(uint16_t Index) {
-		if (Index < Columns.GetNumItems()) {
+		if (Index < Columns.NumItems()) {
 			GUI_ALLOC_FreePtr((void **)&Columns[Index].pText);
 			Columns.DeleteItem(Index);
 			WM_Invalidate(this);
@@ -319,7 +319,7 @@ public:
 		}
 	}
 	void SetItemText(uint16_t Index, const char *s) {
-		if (Index < Columns.GetNumItems()) {
+		if (Index < Columns.NumItems()) {
 			if (GUI__SetText(&Columns[Index].pText, s))
 				WM_Invalidate(this);
 		}
@@ -327,7 +327,7 @@ public:
 	void SetItemWidth(uint16_t Index, int Width) {
 		if ((Width >= 0)) {
 
-			if (Index <= Columns.GetNumItems()) {
+			if (Index <= Columns.NumItems()) {
 				auto &pColumn = Columns[Index];
 				pColumn.Width = Width;
 				WM_Invalidate(this);
@@ -337,19 +337,19 @@ public:
 		}
 	}
 	int16_t GetItemWidth(uint16_t Index) {
-		if (Index < Columns.GetNumItems())
+		if (Index < Columns.NumItems())
 			return Columns[Index].Width;
 		return 0;
 	}
 	void SetTextAlign(uint16_t Index, TEXTALIGN Align) {
-		if (Index < Columns.GetNumItems()) {
+		if (Index < Columns.NumItems()) {
 			Columns[Index].Align = Align;
 			WM_Invalidate(this);
 		}
 	}
 
 	void SetDrawObj(uint16_t Index, GUI_DRAW *pDrawObj) {
-		if (Index < Columns.GetNumItems()) {
+		if (Index < Columns.NumItems()) {
 			auto &col = Columns[Index];
 			GUI_ALLOC_FreePtr((void **)&col.pDrawObj);
 			col.pDrawObj = pDrawObj;

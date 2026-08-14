@@ -34,10 +34,6 @@ void WM_Init(void);
 int  WM_Exec(void);  /* Execute all jobs ... Return 0 if nothing was done. */
 int  WM_Exec1(void); /* Execute one job  ... Return 0 if nothing was done. */
 
-void WM_SetCapture(WObj *pObj, int AutoRelease);
-void WM_SetCaptureMove(WObj *pWin, const PID_STATE *pState, int MinVisibility); /* Not yet documented */
-void WM_ReleaseCapture(void);
-
 uint16_t WM_SetCreateFlags(uint16_t Flags);
 
 void    WM_AttachWindow(WObj *pWin, WObj *pParent);
@@ -49,18 +45,16 @@ void    WM_DeleteWindow(WObj *pWin);
 void    WM_DetachWindow(WObj *pWin);
 int     WM_GetHasTrans(WObj *pWin);
 WObj *WM_GetFocussedWindow(void);
-void    WM_InvalidateArea(const RECT *pRect);
-void    WM_Invalidate(WObj *pWin, const RECT *pRect = nullptr);
-void    WM_InvalidateDescs(WObj *pWin);    /* not to be documented (may change in future version) */
-bool    WM_IsWindow(WObj *pWin);    /* Check validity */
-void    WM_SetHasTrans(WObj *pWin);
-void    WM_SetTransState(WObj *pWin, unsigned State);
-void    WM_ValidateRect(WObj *pWin, const RECT *pRect);
-void    WM_ValidateWindow(WObj *pWin);
-int     WM_GetInvalidRect(WObj *pWin, RECT *pRect);
-void    WM_SetStayOnTop(WObj *pWin, int OnOff);
-int     WM_GetStayOnTop(WObj *pWin);
-void    WM_SetAnchor(WObj *pWin, uint16_t AnchorFlags);
+void  WM_InvalidateArea(const RECT *pRect);
+void  WM_Invalidate(WObj *pWin, const RECT *pRect = nullptr);
+void  WM_InvalidateDescs(WObj *pWin);    /* not to be documented (may change in future version) */
+void  WM_SetHasTrans(WObj *pWin);
+void  WM_SetTransState(WObj *pWin, unsigned State);
+void  WM_ValidateWindow(WObj *pWin);
+int   WM_GetInvalidRect(WObj *pWin, RECT *pRect);
+void  WM_SetStayOnTop(WObj *pWin, int OnOff);
+int   WM_GetStayOnTop(WObj *pWin);
+void  WM_SetAnchor(WObj *pWin, uint16_t AnchorFlags);
 
 /* Move/resize windows */
 void WM_MoveWindow(WObj *pWin, int dx, int dy);
@@ -82,7 +76,6 @@ WM_CALLBACK *WM_SetCallback(WObj *Win, WM_CALLBACK *cb);
 
 /* Get size/origin of a window */
 RECT WM_GetClientRect();
-RECT WM_GetClientRect(WObj *pWin);
 RECT WM_GetInsideRect();
 RECT WM_GetInsideRect(WObj *pWin);
 
@@ -125,7 +118,6 @@ void      WM_NotifyParent(WObj *pWin, int Notification);
 
 WM_PARAM  WM_DefaultProc(WObj *pWin, int MsgId, WM_PARAM Data);
 
-bool      WM_HasCaptured(WObj *pWin);
 bool      WM_HasFocus(WObj *pWin);
 int       WM_SetFocus(WObj *pWin);
 WObj *WM_SetFocusOnNextChild(WObj *pParent);     /* Set the focus to the next child */
@@ -136,12 +128,10 @@ void WM_GetInsideRectExScrollbar(WObj *pWin, RECT *pRect); /* not to be document
 WObj *WM_GetScrollPartner(WObj *pWin);
 bool WM_SetScrollbarH(WObj *pWin, int OnOff); /* not to be documented (may change in future version) */
 bool WM_SetScrollbarV(WObj *pWin, int OnOff); /* not to be documented (may change in future version) */
-void      WM_GetScrollState(WObj *pObj, WM_SCROLL_STATE *pScrollState);
+void WM_GetScrollState(WObj *pObj, WM_SCROLL_STATE *pScrollState);
 
-int       WM_HandlePID(void);
-WObj *WM_Screen2hWin(int x, int y);
-WObj *WM_Screen2hWinEx(WObj *pStop, int x, int y);
-void      WM_ForEachDesc(WObj *pWin, WM_tfForEach *pcb, void *pData);
+bool WM_HandlePID(void);
+void WM_ForEachDesc(WObj *pWin, WM_tfForEach *pcb, void *pData);
 
 #pragma region IVR
 bool WM__InitIVRSearch(RECT rcMax);
@@ -154,19 +144,50 @@ inline void WM_Iterate(RECT &r, auto fn) {
 #pragma endregion
 
 struct WObj {
-	RECT Rect;        /* outer dimensions of window */
-	RECT InvalidRect; /* invalid rectangle */
-	WM_CALLBACK *cb;      /* ptr to notification callback */
-	WObj *pNextLin;     /* Next window in linear list */
-	WObj *pParent;
-	WObj *pFirstChild;
-	WObj *pNext;
+	RECT Rect, InvalidRect;
+	WM_CALLBACK *cb; /* ptr to notification callback */
+	WObj *pNextLin, *pNext,
+		 *pParent, *pFirstChild;
 	uint16_t Status; /* Some status flags */
 
+#pragma region Window list
+	static WObj *pWinFirst;
+	void _RemoveFromLinList() {
+		for (auto pCur = pWinFirst; pCur; ) {
+			auto pNext = pCur->pNextLin;
+			if (pNext == this) {
+				pCur->pNextLin = pNextLin;
+				break;
+			}
+			pCur = pNext;
+		}
+	}
+	void _AddToLinList() {
+		if (!pWinFirst) {
+			pWinFirst = this;
+			return;
+		}
+		auto pFirst = pWinFirst;
+		pNextLin = pFirst->pNextLin;
+		pFirst->pNextLin = this;
+	}
 public:
-	auto GetFlags() const { return Status; }
+	bool IsWindow() const {
+		for (auto i = pWinFirst; i; i = i->pNextLin)
+			if (i == this)
+				return true;
+		return false;
+	}
+#pragma endregion
 
 public:
+
+	auto GetFlags() const { return Status; }
+
+	WM_PARAM Require(uint16_t MsgId, WM_PARAM Data = 0)
+	{ return cb ? cb(this, MsgId, Data) : (WM_PARAM)0; }
+	WM_PARAM Require(uint16_t MsgId, WM_PARAM Data = 0) const
+	{ return const_cast<WObj *>(this)->Require(MsgId, Data); }
 
 	auto FirstChild() { return pFirstChild; }
 	auto FirstChild() const { return pFirstChild; }
@@ -187,19 +208,66 @@ public:
 	auto GetSizeX() const { return Rect.XSize(); }
 	auto GetSizeY() const { return Rect.YSize(); }
 
+	RECT GetClientRect() const { return{ 0, Rect.Dist() }; }
+
+	WObj *Screen2Win(POINT Pos, WObj *pStop = nullptr) {
+		/* First check if the  coordinates are in the given window. If not, return 0 */
+		if (!(Rect <= Pos))
+			return nullptr;
+		/* If the coordinates are in a child, search deeper ... */
+		auto pWin = this;
+		for (auto pChild = pWin->pFirstChild; pChild && (pChild != pStop); ) {
+			auto pNextChild = pChild->pNext;
+			if (auto pHit = pChild->Screen2Win(Pos, pStop))
+				pWin = pHit; /* Found a window */
+			pChild = pNextChild;
+		}
+		return pWin; /* No Child affected ... The parent is the right one */
+	}
 #pragma endregion
 
-	WM_PARAM Require(uint16_t MsgId, WM_PARAM Data = 0)
-	{ return cb ? cb(this, MsgId, Data) : (WM_PARAM)0; }
-	WM_PARAM Require(uint16_t MsgId, WM_PARAM Data = 0) const
-	{ return const_cast<WObj *>(this)->Require(MsgId, Data); }
+#pragma region Capture
+	static WObj *pWinCapture;
+	static bool WM__CaptureReleaseAuto;
+	bool HasCaptured() const { return this == pWinCapture ? true : false; }
+	static void ReleaseCapture(void) {
+		if (pWinCapture) {
+			pWinCapture->Require(WM_CAPTURE_RELEASED, 0);
+			pWinCapture = nullptr;
+		}
+	}
+	void SetCapture(int AutoRelease) {
+		if (pWinCapture != this)
+			ReleaseCapture();
+		pWinCapture = this;
+		WM__CaptureReleaseAuto = AutoRelease;
+	}
+	static POINT WM__CapturePoint;
+	void SetCaptureMove(POINT Pos, int MinVisibility) {
+		if (!HasCaptured()) {
+			SetCapture(1); /* Set capture with auto release */
+			WM__CapturePoint = Pos;
+			return;
+		}
+		/* Moving ... let the window move ! */
+		POINT d = Pos - WM__CapturePoint;
+		/* make sure at least a part of the windows stays inside of its parent */
+		if (!MinVisibility) {
+			WM_MoveWindow(this, d.x, d.y);
+			return;
+		}
+		/* make sure at least a part of the windows stays inside of its parent */
+		auto Rect = GetRect() + d,
+			 RectParent = Parent()->GetRect() - MinVisibility;
+		if (RectParent <= Rect)
+			WM_MoveWindow(this, d.x, d.y);
+	}
+#pragma endregion 
 
 #pragma region Scroll
 
-	WObj *GetScrollbarH()
-	{ return GetItem(GUI_ID_HSCROLL); }
-	WObj *GetScrollbarV()
-	{ return GetItem(GUI_ID_VSCROLL); }
+	WObj *GetScrollbarH() { return GetItem(GUI_ID_HSCROLL); }
+	WObj *GetScrollbarV() { return GetItem(GUI_ID_VSCROLL); }
 
 	void SetScrollState(const WM_SCROLL_STATE &State)
 	{ Require(WM_SET_SCROLL_STATE, (WM_PARAM)&State); }
@@ -229,11 +297,8 @@ public:
 
 #pragma region Dialog
 
-	void DialogStatus(DIALOG_STATUS *Status)
-	{ Require(WM_HANDLE_DIALOG_STATUS, (WM_PARAM)Status); }
-
-	auto DialogStatus() const
-	{ return (DIALOG_STATUS *)Require(WM_HANDLE_DIALOG_STATUS); }
+	void DialogStatus(DIALOG_STATUS *Status) { Require(WM_HANDLE_DIALOG_STATUS, (WM_PARAM)Status); }
+	auto DialogStatus() const { return (DIALOG_STATUS *)Require(WM_HANDLE_DIALOG_STATUS); }
 
 	int DialogExec() {
 		DIALOG_STATUS Status;
@@ -273,4 +338,16 @@ public:
 
 };
 
+WObj *WM_Screen2Win(POINT Pos, WObj *pStop = nullptr) {
+	return WObj::pWinFirst->Screen2Win(Pos, pStop);
 }
+
+bool IsWindow(WObj *pWin) { return pWin ? pWin->IsWindow() : false; }
+
+}
+
+WObj *WObj::pWinFirst = nullptr;
+
+WObj *WObj::pWinCapture = nullptr;
+bool  WObj::WM__CaptureReleaseAuto = false;
+POINT WObj::WM__CapturePoint = { 0, 0 };

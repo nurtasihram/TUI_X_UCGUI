@@ -85,7 +85,7 @@ private:
 		int Align, i, j, EndRow;
 		/* Init some values */
 		NumColumns = pHeader->GetNumItems();
-		NumRows = RowArray.GetNumItems();
+		NumRows = RowArray.NumItems();
 		NumVisRows = _GetNumVisibleRows();
 		RowDistY = _GetRowDistY();
 		LBorder = this->LBorder;
@@ -244,7 +244,7 @@ private:
 		Rect.y1 -= Rect.y0;
 		if ((x >= 0) && (x <= Rect.x1) && (y >= 0) && (y <= (Rect.y1 - HeaderHeight))) {
 			auto Sel = (y / _GetRowDistY()) + this->ScrollStateV.v;
-			if (Sel < RowArray.GetNumItems())
+			if (Sel < RowArray.NumItems())
 				SetSel(Sel);
 		}
 	}
@@ -305,7 +305,7 @@ private:
 	}
 	int _UpdateScrollParas() {
 		int NumRows;
-		NumRows = RowArray.GetNumItems();
+		NumRows = RowArray.NumItems();
 		/* update vertical scrollbar */
 		this->ScrollStateV.PageSize = _GetNumVisibleRows();
 		this->ScrollStateV.NumItems = (NumRows) ? NumRows : 1;
@@ -316,8 +316,8 @@ private:
 	}
 	void _FreeAttached() {
 		int i, j, NumRows, NumColumns;
-		NumRows = RowArray.GetNumItems();
-		NumColumns = AlignArray.GetNumItems();
+		NumRows = RowArray.NumItems();
+		NumColumns = AlignArray.NumItems();
 		for (i = 0; i < NumRows; i++) {
 				auto &pRow = this->RowArray[i];
 				/* Delete attached info items */
@@ -413,16 +413,16 @@ private:
 
 public:
 
-	static ListView *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
+	static ListView *Create(int x0, int y0, int xsize, int ysize, WObj *pParent,
 							int WinFlags, int ExFlags, int Id) {
 		GUI_USE_PARA(ExFlags);
 		/* Create the window */
 		if (!(xsize | ysize | x0 | y0)) {
-			RECT Rect = WM_GetClientRect(hParent);
+			RECT Rect = pParent->GetClientRect();
 			xsize = Rect.x1 - Rect.x0 + 1;
 			ysize = Rect.y1 - Rect.y0 + 1;
 		}
-		auto pObj = (ListView *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, ListView::_Callback,
+		auto pObj = (ListView *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, pParent, WinFlags, ListView::_Callback,
 													   sizeof(ListView) - sizeof(WObj));
 		if (!pObj) {
 			GUI_DEBUG_ERROROUT_IF(pObj == 0, "ListView create failed");
@@ -488,7 +488,7 @@ public:
 	}
 
 	void SetTextAlign(LISTVIEW_CI Index, TEXTALIGN Align) {
-		if (Index >= AlignArray.GetNumItems())
+		if (Index >= AlignArray.NumItems())
 			return;
 		if (AlignArray[Index] == Align)
 			return;
@@ -536,7 +536,7 @@ public:
 		_InvalidateInsideArea();
 	}
 	void AddRow(const char **ppText) {
-		auto NumRows = RowArray.GetNumItems();
+		auto NumRows = RowArray.NumItems();
 		/* Create ARRAY<Item> for the new row */
 		if (RowArray.AddItem())
 			return;
@@ -554,11 +554,11 @@ public:
 	}
 
 	void DeleteColumn(unsigned Index) {
-		if (Index >= AlignArray.GetNumItems())
+		if (Index >= AlignArray.NumItems())
 			return;
 		pHeader->DeleteItem(Index);
 		AlignArray.DeleteItem(Index);
-		for (int i = 0, NumRows = RowArray.GetNumItems(); i < NumRows; i++) {
+		for (int i = 0, NumRows = RowArray.NumItems(); i < NumRows; i++) {
 			auto &Row = RowArray[i];
 			/* Delete attached info items */
 			auto &item = Row[Index];
@@ -572,11 +572,11 @@ public:
 	}
 
 	void DeleteRow(int16_t Index) {
-		if (Index >= RowArray.GetNumItems())
+		if (Index >= RowArray.NumItems())
 			return;
 		auto &Row = RowArray[Index];
 		/* Delete attached info items */
-		for (int i = 0, NumColumns = Row.GetNumItems(); i < NumColumns; i++) {
+		for (int i = 0, NumColumns = Row.NumItems(); i < NumColumns; i++) {
 			auto &pItem = Row[i];
 			GUI_ALLOC_FreePtr((void **)&pItem.pText);
 			GUI_ALLOC_Free(pItem.hItemInfo);
@@ -615,12 +615,12 @@ public:
 	void SetColumnWidth(unsigned int Index, int Width)
 	{ pHeader->SetItemWidth(Index, Width); }
 
-	auto GetNumColumns() { return AlignArray.GetNumItems(); }
-	auto GetNumRows() { return RowArray.GetNumItems(); }
+	auto GetNumColumns() { return AlignArray.NumItems(); }
+	auto GetNumRows() { return RowArray.NumItems(); }
 
 	auto GetSel() { return Sel; }
 	void SetSel(int NewSel) {
-		int MaxSel = RowArray.GetNumItems() - 1;
+		int MaxSel = RowArray.NumItems() - 1;
 		if (NewSel > MaxSel)
 			NewSel = MaxSel;
 		if (NewSel < 0)
