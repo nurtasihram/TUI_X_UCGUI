@@ -123,7 +123,7 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 			else if (IsDisabled)
 				ColorIndex = 3;
 			else if (Index == Sel)
-				ColorIndex = WM_HasFocus(pObj) ? 2 : 1;
+				ColorIndex = pObj->HasFocus() ? 2 : 1;
 			else
 				ColorIndex = 0;
 			/* Draw item */
@@ -267,7 +267,7 @@ static WM_PARAM _cbCallback(WObj *pWin, int MsgId, WM_PARAM Data) {
 						case GUI_ID_CHECK0:
 							_MultiSel = !_MultiSel;
 							pListBox->SetMulti(_MultiSel);
-							WM_SetFocus(pListBox);
+							pListBox->SetFocus();
 							pListBox->InvalidateItem(LISTBOX_ALL_ITEMS);
 							break;
 						case GUI_ID_CHECK1:
@@ -1140,7 +1140,7 @@ static void _ResetEditScenario(WObj *pWin) {
 	pEdit->SetInsertMode(1);
 	pEdit->SetSel(-1, -1);
 	pEdit->SetCursorAtChar(4);
-	WM_SetFocus(pEdit);
+	pEdit->SetFocus();
 	WM_Invalidate(pEdit);
 	_UpdateEditStatus(pWin);
 }

@@ -254,7 +254,7 @@ private:
 			if (pState->Pressed) {
 				_SetSelFromPos(pState);
 				Notification = WM_NOTIFICATION_CLICKED;
-				WM_SetFocus(this);
+				SetFocus();
 			}
 			else
 				Notification = WM_NOTIFICATION_RELEASED;
@@ -355,7 +355,7 @@ private:
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (ListView *)hWin;
 		/* Let widget handle the standard messages */
-		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
 		switch (MsgId) {
 			case WM_NOTIFY_CLIENTCHANGE:

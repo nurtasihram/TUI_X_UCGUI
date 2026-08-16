@@ -162,7 +162,7 @@ private:
 		auto pObj = (DropDown *)hWin;
 		bool IsExpandedBeforeMsg = pObj->pListWin ? pObj->pListWin->IsVisible() : false;
 		/* Let widget handle the standard messages */
-		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
 		switch (MsgId) {
 			case WM_NOTIFY_PARENT: {
@@ -179,7 +179,7 @@ private:
 					}
 					case WM_NOTIFICATION_RELEASED:
 						pObj->Collapse();
-						WM_SetFocus(pObj);
+						pObj->SetFocus();
 						break;
 					case LISTBOX_NOTIFICATION_LOST_FOCUS:
 						pObj->Collapse();

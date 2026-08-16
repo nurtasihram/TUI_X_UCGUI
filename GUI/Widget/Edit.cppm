@@ -87,7 +87,7 @@ private:
 		GUI.SetFont(Props.pFont);
 		/* Calculate size */
 		auto r = GetClientRect();
-		auto rFillRect = WIDGET__GetInsideRect(this);
+		auto rFillRect = _GetInsideRect();
 		if (this->pText)
 			pText = this->pText;
 		auto rInside = rFillRect;
@@ -316,7 +316,7 @@ private:
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (Edit *)hWin;
 		/* Let widget handle the standard messages */
-		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
 		switch (MsgId) {
 			case WM_TOUCH:

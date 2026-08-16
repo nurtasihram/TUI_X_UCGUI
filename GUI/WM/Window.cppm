@@ -44,7 +44,6 @@ WObj *WM_CreateWindowAsChild(int x0, int y0, int xSize, int ySize, WObj *pWinPar
 void    WM_DeleteWindow(WObj *pWin);
 void    WM_DetachWindow(WObj *pWin);
 int     WM_GetHasTrans(WObj *pWin);
-WObj *WM_GetFocussedWindow(void);
 void  WM_InvalidateArea(const RECT *pRect);
 void  WM_Invalidate(WObj *pWin, const RECT *pRect = nullptr);
 void  WM_InvalidateDescs(WObj *pWin);    /* not to be documented (may change in future version) */
@@ -118,8 +117,6 @@ void      WM_NotifyParent(WObj *pWin, int Notification);
 
 WM_PARAM  WM_DefaultProc(WObj *pWin, int MsgId, WM_PARAM Data);
 
-bool      WM_HasFocus(WObj *pWin);
-int       WM_SetFocus(WObj *pWin);
 WObj *WM_SetFocusOnNextChild(WObj *pParent);     /* Set the focus to the next child */
 WObj *WM_SetFocusOnPrevChild(WObj *pParent);     /* Set the focus to the previous child */
 
@@ -178,6 +175,7 @@ public:
 				return true;
 		return false;
 	}
+	static bool IsWindow(WObj *pWin) { return pWin ? pWin->IsWindow() : false; }
 #pragma endregion
 
 public:
@@ -322,8 +320,34 @@ public:
 
 #pragma region Focus
 
+	static WObj *pWinFocus;
+	static auto GetFocussedWindow() { return pWinFocus; }
+	bool HasFocus() const { return this == pWinFocus; }
 	bool IsFocussable() const { return Require(WM_GET_ACCEPT_FOCUS); }
-
+	bool SetFocus() {
+		if (HasFocus())
+			return true;
+		NOTIFY_CHILD_HAS_FOCUS_INFO Info;
+		Info.pOld = pWinFocus;
+		Info.pNew = this;
+		/* Send a "no more focus" message to window losing focus */
+		if (pWinFocus)
+			pWinFocus->Require(WM_SET_FOCUS, 0);
+		/* Send "You have the focus now" message to the window */
+		pWinFocus = this;
+		if (Require(WM_SET_FOCUS, 1))
+			return true;
+		/* Set message to ancestors of window getting the focus */
+		WObj *pWin = this;
+		while ((pWin = pWin->Parent()))
+			pWin->Require(WM_NOTIFY_CHILD_HAS_FOCUS, (WM_PARAM)&Info);
+		/* Set message to ancestors of window loosing the focus */
+		pWin = Info.pOld;
+		if (IsWindow(pWin)) /* Make sure window has not been deleted in the mean time. Can be optimized: _DeleteWindow could clear the handle to avoid this check (RS) */
+			while ((pWin = pWin->Parent()))
+				pWin->Require(WM_NOTIFY_CHILD_HAS_FOCUS, (WM_PARAM)&Info);
+		return false;
+	}
 #pragma endregion
 
 #pragma region Visibility
@@ -342,8 +366,6 @@ WObj *WM_Screen2Win(POINT Pos, WObj *pStop = nullptr) {
 	return WObj::pWinFirst->Screen2Win(Pos, pStop);
 }
 
-bool IsWindow(WObj *pWin) { return pWin ? pWin->IsWindow() : false; }
-
 }
 
 WObj *WObj::pWinFirst = nullptr;
@@ -351,3 +373,4 @@ WObj *WObj::pWinFirst = nullptr;
 WObj *WObj::pWinCapture = nullptr;
 bool  WObj::WM__CaptureReleaseAuto = false;
 POINT WObj::WM__CapturePoint = { 0, 0 };
+WObj *WObj::pWinFocus = nullptr;

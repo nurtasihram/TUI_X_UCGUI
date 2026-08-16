@@ -702,7 +702,7 @@ private:
 		auto pObj = (Menu *)hWin;
 		if (MsgId != WM_PID_STATE_CHANGED)
 			/* Let widget handle the standard messages */
-			if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+			if (!pObj->HandleActive(MsgId, &Data))
 				return Data;
 		switch (MsgId) {
 			case WM_MENU:

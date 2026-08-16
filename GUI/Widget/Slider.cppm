@@ -119,7 +119,7 @@ private:
 			Sel = Min + ((uint32_t)Range * (uint32_t)x + Div / 2) / Div;
 		}
 		if (IsFocussable())
-			WM_SetFocus(this);
+			SetFocus();
 		SetCapture(1);
 		SetValue(Sel);
 		if (!(State & SLIDER_STATE_PRESSED))
@@ -142,7 +142,7 @@ private:
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (Slider *)hWin;
 		/* Let widget handle the standard messages */
-		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
 		switch (MsgId) {
 			case WM_PAINT:

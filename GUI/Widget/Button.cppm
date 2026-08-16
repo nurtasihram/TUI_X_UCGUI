@@ -157,7 +157,7 @@ private:
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (Button *)hWin;
 		/* Let widget handle the standard messages */
-		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
 		switch (MsgId) {
 #if BUTTON_REACT_ON_LEVEL

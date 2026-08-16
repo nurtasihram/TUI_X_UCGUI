@@ -200,7 +200,7 @@ private:
 			Sel += ScrollState.PageSize;
 		else  if (x <= Pos.x1_RightArrow)
 			Sel++;
-		/* WM_SetFocus(hObj); */
+		/* hObj->SetFocus(); */
 		SetCapture(1);
 		SetValue(Sel);
 		if (!(State & SCROLLBAR_STATE_PRESSED))
@@ -236,7 +236,7 @@ private:
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (ScrollBar *)hWin;
 		/* Let widget handle the standard messages */
-		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
 		switch (MsgId) {
 			case WM_PAINT:

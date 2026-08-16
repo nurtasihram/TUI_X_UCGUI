@@ -180,7 +180,7 @@ private:
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
 				if (!(this->Flags & FRAMEWIN_CF_ACTIVE))
-					WM_SetFocus(this);
+					SetFocus();
 				WM_BringToTop(this);
 				if (this->Flags & FRAMEWIN_CF_MOVEABLE)
 					SetCaptureMove(*pState, FRAMEWIN__MinVisibility);
@@ -304,8 +304,8 @@ private:
 			}
 			case WM_SET_FOCUS: /* We have received or lost focus */
 				if (Data) {
-					if (::IsWindow(pObj->pFocussedChild))
-						WM_SetFocus(pObj->pFocussedChild);
+					if (IsWindow(pObj->pFocussedChild))
+						pObj->pFocussedChild->SetFocus();
 					else
 						pObj->pFocussedChild = WM_SetFocusOnNextChild(pObj->hClient);
 					pObj->SetActive(1);
@@ -322,7 +322,7 @@ private:
 					auto pState = (const PID_STATE *)Data;
 					if (pState) /* Message may not have a valid pointer (moved out) ! */
 						if (pState->Pressed)
-							WM_SetFocus(pObj);
+							pObj->SetFocus();
 				}
 				break;
 			case WM_NOTIFY_CHILD_HAS_FOCUS:
@@ -335,7 +335,7 @@ private:
 				break;
 		}
 		/* Let widget handle the standard messages */
-		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
@@ -357,14 +357,14 @@ private:
 			case WM_SET_FOCUS:
 				if (Data) { /* Focus received */
 					if (pParent->pFocussedChild && pParent->pFocussedChild != hWin)
-						WM_SetFocus(pParent->pFocussedChild);
+						pParent->pFocussedChild->SetFocus();
 					else
 						pParent->pFocussedChild = WM_SetFocusOnNextChild(hWin);
 					return 0; /* Focus change accepted */
 				}
 				return 0;
 			case WM_GET_ACCEPT_FOCUS:
-				WIDGET_HandleActive(pParent, MsgId, &Data);
+				pParent->HandleActive(MsgId, &Data);
 				return Data;
 			case WM_GET_BKCOLOR:
 				return pParent->Props.ClientColor;
@@ -889,7 +889,7 @@ public:
 					return 1;
 				}
 				else if (Mode) {
-					WM_SetFocus(this);
+					SetFocus();
 					WM_BringToTop(this);
 					_SetCapture(x, y, Mode);
 					return 1;

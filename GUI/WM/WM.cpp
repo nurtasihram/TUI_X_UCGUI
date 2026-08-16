@@ -14,40 +14,6 @@ static bool IsActive;
 uint16_t WM__CreateFlags;
 
 #pragma region Focus
-static WObj *pWinFocus;
-WObj *WM_GetFocussedWindow(void) {
-	return pWinFocus;
-}
-bool WM_HasFocus(WObj * pWin) {
-	return (pWin == pWinFocus) ? true : false;
-}
-int WM_SetFocus(WObj * pWin) {
-	int r;
-	if (pWin && pWin != pWinFocus) {
-		NOTIFY_CHILD_HAS_FOCUS_INFO Info;
-		Info.pOld = pWinFocus;
-		Info.pNew = pWin;
-		/* Send a "no more focus" message to window losing focus */
-		if (pWinFocus)
-			pWinFocus->Require(WM_SET_FOCUS, 0);
-		/* Send "You have the focus now" message to the window */
-		r = (int)(pWinFocus = pWin)->Require(WM_SET_FOCUS, 1);
-		if (!r) { /* On success only */
-			/* Set message to ancestors of window getting the focus */
-			while ((pWin = pWin->Parent()))
-				pWin->Require(WM_NOTIFY_CHILD_HAS_FOCUS, (WM_PARAM)&Info);
-			/* Set message to ancestors of window loosing the focus */
-			pWin = Info.pOld;
-			if (IsWindow(pWin)) /* Make sure window has not been deleted in the mean time. Can be optimized: _DeleteWindow could clear the handle to avoid this check (RS) */
-				while ((pWin = pWin->Parent()))
-					pWin->Require(WM_NOTIFY_CHILD_HAS_FOCUS, (WM_PARAM)&Info);
-		}
-	}
-	else {
-		r = 1;
-	}
-	return r;
-}
 static WObj *_GetNextChild(WObj * pParent, WObj * pChild) {
 	WObj *pObj = nullptr;
 	if (pChild)
@@ -64,20 +30,20 @@ WObj *WM_SetFocusOnNextChild(WObj * pParent) {
 			if (!(pChild = _GetNextChild(pParent, pChild)))
 				return nullptr;
 		} while (pChild->IsFocussable());
-		if (!WM_SetFocus(pChild))
+		if (!pChild->SetFocus())
 			return pChild;
 	}
 	return nullptr;
 }
 static WObj *_GetPrevChild(WObj * pChild) {
-	WObj *pObj = 0;
+	WObj *pObj = nullptr;
 	if (pChild)
 		pObj = WM_GetPrevSibling(pChild);
 	if (!pObj)
 		pObj = WM__GetLastSibling(pChild);
 	if (pObj != pChild)
 		return pObj;
-	return 0;
+	return nullptr;
 }
 WObj *WM_SetFocusOnPrevChild(WObj * pParent) {
 	WObj *pChild;
@@ -90,7 +56,7 @@ WObj *WM_SetFocusOnPrevChild(WObj * pParent) {
 		if (pWin == pChild)
 			break;
 	}
-	if (!WM_SetFocus(pWin))
+	if (!pWin->SetFocus())
 		return pWin;
 	return 0;
 }
@@ -541,11 +507,11 @@ void WM_DeleteWindow(WObj * pWin) {
 	if (!pWin)
 		return;
 	WM_ASSERT_NOT_IN_PAINT();
-	if (IsWindow(pWin)) {
+	if (WObj::IsWindow(pWin)) {
 		ResetNextDrawWin(); /* Make sure the window will no longer receive drawing messages */
 		/* Make sure that focus is set to an existing window */
-		if (pWinFocus == pWin)
-			pWinFocus = nullptr;
+		if (WObj::pWinFocus == pWin)
+			WObj::pWinFocus = nullptr;
 		WObj::ReleaseCapture(); /* Make sure the window does not have capture */
 		/* check if critical handles are affected. If so, reset the window handle to 0 */
 		_CheckCriticalHandles(pWin);
@@ -1165,8 +1131,8 @@ WObj * WM__GetFirstSibling(WObj * pWin) {
 }
 WObj * WM__GetFocussedChild(WObj * pWin) {
 	WObj * r = 0;
-	if (WM__IsChild(pWinFocus, pWin)) {
-		r = pWinFocus;
+	if (WM__IsChild(WObj::pWinFocus, pWin)) {
+		r = WObj::pWinFocus;
 	}
 	return r;
 }
@@ -1185,14 +1151,14 @@ WObj * WM__GetLastSibling(WObj * pWin) {
 /*********************************************************************
 *
 *       WM_GetPrevSibling
-  Return value: Handle of previous sibling (if any), otherwise 0
+  Return value: Handle of previous sibling (if any), otherwise nullptr
 */
 WObj * WM_GetPrevSibling(WObj * pWin) {
 	WObj * pIter;
 	WObj *pPrev;
 	for (pIter = WM__GetFirstSibling(pWin); pIter; pIter = pPrev->pNext) {
 		if (pIter == pWin) {
-			pIter = 0; /* There is no previous sibling. Return 0 */
+			pIter = nullptr; /* There is no previous sibling. Return nullptr */
 			break;
 		}
 		pPrev = pIter;
@@ -1806,11 +1772,11 @@ void WM_ValidateWindow(WObj * pWin) {
 	}
 }
 int WM_OnKey(int Key, int Pressed) {
-	if (pWinFocus) {
+	if (WObj::pWinFocus) {
 		WM_KEY_INFO Info;
 		Info.Key = Key;
 		Info.PressedCnt = Pressed;
-		WM__SendMessage(pWinFocus, WM_KEY, (WM_PARAM)&Info);
+		WM__SendMessage(WObj::pWinFocus, WM_KEY, (WM_PARAM)&Info);
 		return 1;
 	}
 	return 0;
@@ -1840,7 +1806,7 @@ static void _SendTouchMessage(WObj * pWin, int MsgId, PID_STATE *pState) {
 	   We need to check if the window which has received the last message still exists,
 	   since it may have deleted itself and its parent as result of the message.
 	*/
-	while (IsWindow(pWin)) {
+	while (WObj::IsWindow(pWin)) {
 		pWin = pWin->Parent();
 		if (pWin)
 			_SendMessageIfEnabled(pWin, WM_TOUCH_CHILD, (WM_PARAM)pState); /* Send message to the ancestors */

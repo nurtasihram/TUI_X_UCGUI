@@ -43,13 +43,13 @@ static WM_PARAM _cb(WObj * hWin, int MsgId, WM_PARAM Data) {
 		case WM_SET_FOCUS:
 			if (Data) { /* Focus received */
 				if (pObj->pFocussedChild && pObj->pFocussedChild != pObj)
-					WM_SetFocus(pObj->pFocussedChild);
+					pObj->pFocussedChild->SetFocus();
 				else
 					pObj->pFocussedChild = WM_SetFocusOnNextChild(pObj);
 			}
 			return 0;
 		case WM_GET_ACCEPT_FOCUS:
-			WIDGET_HandleActive(pObj, MsgId, &Data);
+			pObj->HandleActive(MsgId, &Data);
 			return Data;
 		case WM_NOTIFY_CHILD_HAS_FOCUS:
 			_OnChildHasFocus(pObj, (const NOTIFY_CHILD_HAS_FOCUS_INFO *)Data);

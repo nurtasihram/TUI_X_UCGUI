@@ -80,7 +80,7 @@ private:
 		for (auto pChild = pClient->pFirstChild; pChild; pChild = pChild->pNext) {
 			if (pChild == hWin) {
 				pChild->ShowWindow();
-				WM_SetFocus(pChild);
+				pChild->SetFocus();
 			}
 			else
 				pChild->HideWindow();
@@ -105,7 +105,7 @@ private:
 		return r;
 	}
 	void _CalcClientRect(RECT *pRect) {
-		*pRect = WIDGET__GetInsideRect(this);
+		*pRect = _GetInsideRect();
 		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
 			pRect->y1 -= Props.pFont->SizeY() + 6;
 		}
@@ -318,7 +318,7 @@ private:
 
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (MultPage *)hWin;
-		auto Handled = WIDGET_HandleActive(pObj, MsgId, &Data);
+		auto Handled = pObj->HandleActive(MsgId, &Data);
 		switch (MsgId) {
 			case WM_PAINT:
 				pObj->_OnPaint();
@@ -373,7 +373,7 @@ private:
 			case WM_GET_BKCOLOR:
 				return (WM_PARAM)pParent->Props.aBkColor[1];
 			case WM_TOUCH:
-				WM_SetFocus(pParent);
+				pParent->SetFocus();
 				WM_BringToTop(pParent);
 				return 0;
 			case WM_GET_CLIENT_WINDOW:

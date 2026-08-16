@@ -131,7 +131,7 @@ private:
 					SetValue( Sel);
 				}
 				if (IsFocussable()) {
-					WM_SetFocus(this);
+					SetFocus();
 				}
 				Notification = WM_NOTIFICATION_CLICKED;
 			}
@@ -167,7 +167,7 @@ private:
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (Radio *)hWin;
 		/* Let widget handle the standard messages */
-		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
 		switch (MsgId) {
 			case WM_PAINT:
@@ -270,7 +270,7 @@ private:
 		if (v < 0) {
 			auto hWin = _GetPrevInGroup(this, GroupId);
 			if (hWin) {
-				WM_SetFocus(hWin);
+				hWin->SetFocus();
 				hWin->_SetValue(0x7FFF);
 				_SetValue(-1);
 			}
@@ -278,7 +278,7 @@ private:
 		else if (v >= NumItems) {
 			auto hWin = _GetNextInGroup(this, GroupId);
 			if (hWin) {
-				WM_SetFocus(hWin);
+				hWin->SetFocus();
 				hWin->_SetValue(0);
 				_SetValue(-1);
 			}

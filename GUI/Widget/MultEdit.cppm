@@ -742,7 +742,7 @@ private:
 			} while (GUI_UC_GetCharCode(pText) && ((Line - ScrollPosY) <= NumVisLines));
 		}
 		/* Draw cursor if necessary */
-		if (WM_HasFocus(this)) {
+		if (HasFocus()) {
 			_GetCursorXY(&x, &y);
 			r.x0 = x + xOff;
 			r.y0 = y + yOff;
@@ -870,7 +870,7 @@ private:
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (MultEdit *)hWin;
 		/* Let widget handle the standard messages */
-		if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
 		switch (MsgId) {
 			case WM_NOTIFY_CLIENTCHANGE:

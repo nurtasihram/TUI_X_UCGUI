@@ -453,11 +453,11 @@ private:
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (ListBox *)hWin;
 		/* In popup mode (pOwner set), bypass WIDGET_HandleActive for WM_PID_STATE_CHANGED.
-		 * WIDGET_HandleActive internally calls WM_SetFocus on press, which would steal
+		 * WIDGET_HandleActive internally calls SetFocus on press, which would steal
 		 * focus from the dropdown and cause its parent window to flicker. */
 		if (!(pObj->pOwner && MsgId == WM_PID_STATE_CHANGED)) {
 			/* Let widget handle the standard messages */
-			if (!WIDGET_HandleActive(pObj, MsgId, &Data))
+			if (!pObj->HandleActive(MsgId, &Data))
 				return Data;
 		}
 		switch (MsgId) {

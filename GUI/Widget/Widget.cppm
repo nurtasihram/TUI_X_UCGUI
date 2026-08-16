@@ -153,77 +153,75 @@ struct WIDGET : public WObj {
 	void CtlStates(uint16_t States, bool On) {
 		SetStates(On ? State | States : State & ~States);
 	}
-};
+	
+	RECT _GetInsideRect() { return GetClientRect() - EffectSize(); }
 
-RECT WIDGET__GetInsideRect(WIDGET *pWidget) {
-	return pWidget->GetClientRect() - pWidget->EffectSize();
-}
+	bool HandleActive(int MsgId, WM_PARAM *Data) {
+		switch (MsgId) {
+			case WM_WIDGET_SET_EFFECT: {
+				auto Diff = EffectSize();
+				pEffect = (const WIDGET_EFFECT *)*Data;
+				Diff -= EffectSize();
+				WM__UpdateChildPositions(this, -Diff, -Diff, Diff, Diff);
+				WM_Invalidate(this);
+				return false; /* Message handled -> Return */
+			}
+			case WM_GET_ID:
+				*Data = Id;
+				return false; /* Message handled -> Return */
+			case WM_PID_STATE_CHANGED:
+				if (State & WIDGET_STATE_FOCUSSABLE) {
+					auto pInfo = (const PID_CHANGED_INFO *)*Data;
+					if (pInfo->State)
+						SetFocus();
+				}
+				break;
+			case WM_TOUCH_CHILD: {
+				/* A descendent (child) has been touched or released.
+				   If it has been touched, we need to get to top.
+				 */
+				auto pState = (const PID_STATE *)*Data;
+				if (pState) { /* Message may not have a valid pointer (moved out) ! */
+					if (pState->Pressed) {
+						WM_BringToTop(this);
+						return false; /* Message handled -> Return */
+					}
+				}
+				break;
+			}
+			case WM_SET_ID:
+				Id = (int16_t)*Data;
+				return false; /* Message handled -> Return */
+			case WM_SET_FOCUS: {
+				int Notification;
+				if (*Data) {
+					SetStates(State | WIDGET_STATE_FOCUS);
+					Notification = WM_NOTIFICATION_GOT_FOCUS;
+				}
+				else {
+					SetStates(State & ~WIDGET_STATE_FOCUS);
+					Notification = WM_NOTIFICATION_LOST_FOCUS;
+				}
+				WM_NotifyParent(this, Notification);
+				*Data = 0;   /* Focus change accepted */
+				return false;
+			}
+			case WM_GET_ACCEPT_FOCUS:
+				*(bool *)Data = State & WIDGET_STATE_FOCUSSABLE; /* Can handle focus */
+				return false; /* Message handled */
+			case WM_GET_INSIDE_RECT:
+				*(RECT *)*Data = _GetInsideRect();
+				return false; /* Message handled */
+		}
+		return true; /* Message NOT handled */
+	}
+
+};
 
 void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
 	pWidget->pEffect = WIDGET::DefaultEffect;
 	pWidget->State = State;
 	pWidget->Id = Id;
-}
-
-bool WIDGET_HandleActive(WObj *hObj, int MsgId, WM_PARAM *Data) {
-	auto pWidget = (WIDGET *)hObj;
-	switch (MsgId) {
-		case WM_WIDGET_SET_EFFECT: {
-			auto Diff = pWidget->EffectSize();
-			pWidget->pEffect = (const WIDGET_EFFECT *)*Data;
-			Diff -= pWidget->EffectSize();
-			WM__UpdateChildPositions(hObj, -Diff, -Diff, Diff, Diff);
-			WM_Invalidate(hObj);
-			return false; /* Message handled -> Return */
-		}
-		case WM_GET_ID:
-			*Data = pWidget->Id;
-			return false; /* Message handled -> Return */
-		case WM_PID_STATE_CHANGED:
-			if (pWidget->State & WIDGET_STATE_FOCUSSABLE) {
-				auto pInfo = (const PID_CHANGED_INFO *)*Data;
-				if (pInfo->State)
-					WM_SetFocus(hObj);
-			}
-			break;
-		case WM_TOUCH_CHILD: {
-			/* A descendent (child) has been touched or released.
-			   If it has been touched, we need to get to top.
-			 */
-			auto pState = (const PID_STATE *)*Data;
-			if (pState) { /* Message may not have a valid pointer (moved out) ! */
-				if (pState->Pressed) {
-					WM_BringToTop(hObj);
-					return false; /* Message handled -> Return */
-				}
-			}
-			break;
-		}
-		case WM_SET_ID:
-			pWidget->Id = (int16_t)*Data;
-			return false; /* Message handled -> Return */
-		case WM_SET_FOCUS: {
-			int Notification;
-			if (*Data) {
-				pWidget->SetStates(pWidget->State | WIDGET_STATE_FOCUS);
-				Notification = WM_NOTIFICATION_GOT_FOCUS;
-			}
-			else {
-				pWidget->SetStates(pWidget->State & ~WIDGET_STATE_FOCUS);
-				Notification = WM_NOTIFICATION_LOST_FOCUS;
-			}
-			WM_NotifyParent(hObj, Notification);
-			*Data = 0;   /* Focus change accepted */
-			return false;
-		}
-		case WM_GET_ACCEPT_FOCUS:
-			*(bool *)Data = pWidget->State & WIDGET_STATE_FOCUSSABLE; /* Can handle focus */
-			return false; /* Message handled */
-		case WM_GET_INSIDE_RECT:
-			*(RECT *)*Data = WIDGET__GetInsideRect(pWidget);
-			return false; /* Message handled */
-	}
-	return true; /* Message NOT handled */
 }
 
 void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax, RECT TextRectAct) {
