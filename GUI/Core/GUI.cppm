@@ -9,6 +9,7 @@ export module TUX;
 
 export import TUX.Types;
 export import TUX.Resources;
+export import TUX.String;
 
 export {
 

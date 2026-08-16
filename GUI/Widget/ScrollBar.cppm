@@ -224,12 +224,13 @@ private:
 	void _OnSetScrollState(const WM_SCROLL_STATE *pState) {
 		if (ScrollState != *pState) {
 			ScrollState = *pState;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 
 	void _InvalidatePartner() { /* Invalidate the partner, since it is also affected */
-		WM_Invalidate(WM_GetScrollPartner(this));
+		if (auto pScroll = WM_GetScrollPartner(this))
+			pScroll->Invalidate();
 		Parent()->Require(WM_NOTIFY_CLIENTCHANGE);   /* Client area may have changed */
 	}
 
@@ -350,20 +351,20 @@ public:
 			v = Max;
 		if (ScrollState.v != v) {
 			ScrollState.v = v;
-			WM_Invalidate(this);
+			Invalidate();
 			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
 	void SetNumItems(int NumItems) {
 		if (ScrollState.NumItems != NumItems) {
 			ScrollState.NumItems = NumItems;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 	void SetPageSize(int PageSize) {
 		if (ScrollState.PageSize != PageSize) {
 			ScrollState.PageSize = PageSize;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 	void SetState(const WM_SCROLL_STATE *pState) {

@@ -183,7 +183,7 @@ public:
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void SetBarColor(PROGBAR_CI Index, RGBC color) {
 		if (Index >= GUI_COUNTOF(Props.aBkColor))
@@ -191,7 +191,7 @@ public:
 		if (Props.aBkColor[Index] == color)
 			return;
 		Props.aBkColor[Index] = color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void SetTextColor(PROGBAR_CI Index, RGBC color) {
 		if (Index >= GUI_COUNTOF(Props.aTextColor))
@@ -199,13 +199,13 @@ public:
 		if (Props.aTextColor[Index] == color)
 			return;
 		Props.aTextColor[Index] = color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void SetTextAlign(TEXTALIGN Align) {
 		if (Props.Align == Align)
 			return;
 		Props.Align = Align;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 #pragma endregion
 
@@ -217,35 +217,24 @@ public:
 			v = Max;
 		if (this->v != v) {
 			this->v = v;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 	void SetText(const char *s) {
-		PCFONT pOldFont;
-		RECT r1;
-		char acBuffer[5];
-
-		pOldFont = GUI.SetFont(Props.pFont);
-		_GetTextRect(&r1, _GetText(acBuffer));
-		if (GUI__SetText(&pText, s)) {
-			RECT r2;
-			_GetTextRect(&r2, _GetText(acBuffer));
-			r1 |= r2;
-			WM_Invalidate(this, &r1);
-		}
-		GUI.SetFont(pOldFont);
+		if (GUI__SetText(&pText, s))
+			Invalidate();
 	}
 	void SetTextPos(int XOff, int YOff) {
 		this->XOff = XOff;
 		this->YOff = YOff;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void SetMinMax(int Min, int Max) {
 		if (Max > Min) {
 			if (Max != this->Max || Min != this->Min) {
 				this->Min = Min;
 				this->Max = Max;
-				WM_Invalidate(this);
+				Invalidate();
 			}
 		}
 	}

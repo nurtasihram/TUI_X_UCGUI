@@ -203,9 +203,6 @@ public:
 			ySize = Height + ((NumItems - 1) * Spacing);
 		if (!xSize)
 			xSize = Radio::DefaultProps.apBmRadio[0]->XSize + RADIO_BORDER * 2;
-#if WM_SUPPORT_TRANSPARENCY
-		WinFlags |= WC_HASTRANS;
-#endif
 		/* Create the window */
 		auto pObj = (Radio *)WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent, WinFlags, Radio::_Callback, sizeof(Radio) - sizeof(WObj));
 		if (!pObj) {
@@ -238,7 +235,7 @@ private:
 		}
 		if (Sel != v) {
 			Sel = v;
-			WM_Invalidate(this);
+			Invalidate();
 			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
@@ -299,21 +296,21 @@ public:
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetTextColor(RGBC Color) {
 		if (Props.TextColor == Color)
 			return;
 		Props.TextColor = Color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetBkColor(RGBC Color) {
 		if (Props.BkColor == Color)
 			return;
 		Props.BkColor = Color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 #pragma endregion
@@ -379,12 +376,12 @@ public:
 				Props.pBmCheck = pBitmap;
 				break;
 		}
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void SetText(const char *pText, unsigned Index) {
 		if (Index < (unsigned)NumItems) {
 			GUI__SetText(&TextArray[Index], pText);
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 

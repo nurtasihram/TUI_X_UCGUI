@@ -198,7 +198,7 @@ private:
 		_CalcClientRect(&rBorder);
 		WM_MoveChildTo(this->pClient, rBorder.x0, rBorder.y0);
 		WM_SetSize(this->pClient, rBorder.x1 - rBorder.x0 + 1, rBorder.y1 - rBorder.y0 + 1);
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void _DrawTextItem(const char *pText, unsigned Index,
 					   const RECT *pRect, int x0, int w, int ColorIndex) {
@@ -332,7 +332,7 @@ private:
 				if (pInfo->Notification == WM_NOTIFICATION_VALUE_CHANGED) {
 					if (pWinSrc->GetID() == GUI_ID_HSCROLL) {
 						pObj->ScrollState = ((ScrollBar *)pWinSrc)->GetValue();
-						WM_Invalidate(pObj);
+						pObj->Invalidate();
 					}
 				}
 				return 0;
@@ -494,11 +494,11 @@ public:
 	}
 	void DisablePage(unsigned Index) {
 		this->_SetEnable(Index, 0);
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void EnablePage(unsigned Index) {
 		this->_SetEnable(Index, 1);
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void SetText(const char *pText, unsigned Index) {
 		if (pText && (int)Index < Handles.NumItems()) {
@@ -509,13 +509,13 @@ public:
 	void SetBkColor(RGBC Color, unsigned Index) {
 		if (((int)Index < MULTIPAGE_NUMCOLORS)) {
 			Props.aBkColor[Index] = Color;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 	void SetTextColor(RGBC Color, unsigned Index) {
 		if (((int)Index < MULTIPAGE_NUMCOLORS)) {
 			Props.aTextColor[Index] = Color;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 	void SetFont(PCFONT pFont) {

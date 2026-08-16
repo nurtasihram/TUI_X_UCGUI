@@ -17,6 +17,7 @@ import TUX.Widget.ProgBar;
 import TUX.Widget.Slider;
 import TUX.Widget.Edit;
 import TUX.Widget.MultEdit;
+import TUX.Core.Timer;
 
 static bool _MultiSel = false, _OwnerDrawn = true;
 const RGBC ColorsSmilie0[]{ RGB_WHITE, RGB_BLACK, RGB_RED };
@@ -161,8 +162,20 @@ static WObj *_hMemDevPane;
 static WObj *_hNoMemDevFrame;
 static WObj *_hNoMemDevPane;
 static int _MemDevPhase;
+static Timer *_pMemDevTimer;
 
 void _TestEdit();
+
+static void _OnMemDevTimer(GUI_TIMER_MESSAGE *pTM) {
+	(void)pTM;
+	++_MemDevPhase;
+	if (_hMemDevPane)
+		_hMemDevPane->Invalidate();
+	if (_hNoMemDevPane)
+		_hNoMemDevPane->Invalidate();
+	if (_pMemDevTimer)
+		_pMemDevTimer->SetTime(GUI_GetTime() + 20);
+}
 
 static WM_PARAM _cbMemDevPane(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
@@ -386,7 +399,65 @@ static void _CreateMenu(Frame *pParent) {
 	pParent->AddMenu(pMenu);
 }
 
-void _Create() {
+void _TestListBox() {
+	auto pDialog = (Frame *)_aDialogCreate->CreateDialog(GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
+	pDialog->AddMinButton();
+	pDialog->AddMaxButton();
+	_CreateMenu(pDialog);
+	pDialog->DialogExec();
+}
+
+static const WIDGET_CREATE_INFO _aMemDevDialogCreate[] = {
+	{ Frame ::CreateIndirect, "MemDev Test"                           , 0             , 80  , 260 , 460 , 90                     , FRAMEWIN_CF_MOVEABLE },
+	{ Text  ::CreateIndirect, "Compare redraw with and without MemDev", 0             , 10  , 10  , 310 , 16                     , TEXT_CF_LEFT         },
+	{ Button::CreateIndirect, "Close"                                 , GUI_ID_CANCEL , 370 , 35  , 70  , 20                                        }
+};
+
+static WM_PARAM _cbMemDevTest(WObj *pWin, int MsgId, WM_PARAM Data) {
+	switch (MsgId) {
+		case WM_KEY: {
+			const WM_KEY_INFO *pInfo = (const WM_KEY_INFO *)Data;
+			switch (pInfo->Key) {
+				case GUI_KEY_ESCAPE:
+				case GUI_KEY_ENTER:
+					pWin->DialogEnd(0);
+					break;
+			}
+			return 0;
+		}
+		case WM_NOTIFY_PARENT: {
+			auto pInfo = (const NOTIFY_INFO *)Data;
+			if ((pInfo->Notification == WM_NOTIFICATION_RELEASED) && (pInfo->pWinSrc->GetID() == GUI_ID_CANCEL)) {
+				pWin->DialogEnd(0);
+				return 0;
+			}
+			break;
+		}
+	}
+	return WM_DefaultProc(pWin, MsgId, Data);
+}
+
+void _TestMemDev() {
+	_MemDevPhase = 0;
+	auto pDialog = (Frame *)_aMemDevDialogCreate->CreateDialog(GUI_COUNTOF(_aMemDevDialogCreate), &_cbMemDevTest, 0, 0, 0);
+	_hMemDevFrame = _CreateMemDevFrame(80, 50, "MemDev ON", 1, &_hMemDevPane);
+	_hNoMemDevFrame = _CreateMemDevFrame(280, 50, "MemDev OFF", 0, &_hNoMemDevPane);
+	_pMemDevTimer = new Timer(_OnMemDevTimer, GUI_GetTime() + 20);
+
+	pDialog->DialogExec();
+
+	if (_pMemDevTimer) {
+		delete _pMemDevTimer;
+		_pMemDevTimer = nullptr;
+	}
+	if (WObj::IsWindow(_hMemDevFrame))
+		WM_DeleteWindow(_hMemDevFrame);
+	if (WObj::IsWindow(_hNoMemDevFrame))
+		WM_DeleteWindow(_hNoMemDevFrame);
+	_hMemDevFrame = 0;
+	_hMemDevPane = 0;
+	_hNoMemDevFrame = 0;
+	_hNoMemDevPane = 0;
 }
 
 /*********************************************************************
@@ -1141,7 +1212,7 @@ static void _ResetEditScenario(WObj *pWin) {
 	pEdit->SetSel(-1, -1);
 	pEdit->SetCursorAtChar(4);
 	pEdit->SetFocus();
-	WM_Invalidate(pEdit);
+	pEdit->Invalidate();
 	_UpdateEditStatus(pWin);
 }
 
@@ -1241,13 +1312,13 @@ void _TestEdit() {
 	pDialog->DialogExec();
 }
 
-#define ID_MULTEDIT_TEST           (GUI_ID_USER + 200)
-#define ID_MULTEDIT_STATUS         (GUI_ID_USER + 201)
-#define ID_MULTEDIT_APPEND         (GUI_ID_USER + 202)
-#define ID_MULTEDIT_CLEAR          (GUI_ID_USER + 203)
+#define ID_MULTEDIT_TEST            (GUI_ID_USER + 200)
+#define ID_MULTEDIT_STATUS          (GUI_ID_USER + 201)
+#define ID_MULTEDIT_APPEND          (GUI_ID_USER + 202)
+#define ID_MULTEDIT_CLEAR           (GUI_ID_USER + 203)
 #define ID_MULTEDIT_TOGGLE_READONLY (GUI_ID_USER + 204)
-#define ID_MULTEDIT_WRAP_WORD      (GUI_ID_USER + 205)
-#define ID_MULTEDIT_WRAP_NONE      (GUI_ID_USER + 206)
+#define ID_MULTEDIT_WRAP_WORD       (GUI_ID_USER + 205)
+#define ID_MULTEDIT_WRAP_NONE       (GUI_ID_USER + 206)
 
 static bool _MultiEditReadOnly = false;
 static int _MultiEditLineNo = 1;
@@ -1263,7 +1334,7 @@ static void _UpdateMultiEditStatus(WObj *pWin) {
 }
 
 static const WIDGET_CREATE_INFO _aMultiEditDialogCreate[] = {
-	{ Frame   ::CreateIndirect, "MultiEdit Test"  , 0                            , 60  , 60  , 420 , 280 , FRAMEWIN_CF_MOVEABLE },
+	{ Frame   ::CreateIndirect, "MultiEdit Test"  , 0                           , 60  , 60  , 420 , 280 , FRAMEWIN_CF_MOVEABLE },
 	{ MultEdit::CreateIndirect, ""                , ID_MULTEDIT_TEST            , 10  , 10  , 395 , 150 , 0, 512               },
 	{ Button  ::CreateIndirect, "Append"          , ID_MULTEDIT_APPEND          , 10  , 170 , 70  , 25                         },
 	{ Button  ::CreateIndirect, "Clear"           , ID_MULTEDIT_CLEAR           , 85  , 170 , 70  , 25                         },
@@ -1271,7 +1342,7 @@ static const WIDGET_CREATE_INFO _aMultiEditDialogCreate[] = {
 	{ Button  ::CreateIndirect, "Wrap Word"       , ID_MULTEDIT_WRAP_WORD       , 250 , 170 , 75  , 25                         },
 	{ Button  ::CreateIndirect, "Wrap None"       , ID_MULTEDIT_WRAP_NONE       , 330 , 170 , 75  , 25                         },
 	{ Text    ::CreateIndirect, ""                , ID_MULTEDIT_STATUS          , 10  , 205 , 310 , 18  , TEXT_CF_LEFT         },
-	{ Button  ::CreateIndirect, "Close"           , GUI_ID_CANCEL                , 325 , 230 , 80  , 25                         }
+	{ Button  ::CreateIndirect, "Close"           , GUI_ID_CANCEL               , 325 , 230 , 80  , 25                         }
 };
 
 static WM_PARAM _cbMultiEditTest(WObj *pWin, int MsgId, WM_PARAM Data) {
@@ -1350,7 +1421,6 @@ void _TestMultiEdit() {
 int main(void) {
 	GUI_Init();
 	GUI_CURSOR_Show();
-	WM_SetDesktopColor(RGB_GRAY);
 
 	_TestListView();
 
@@ -1368,33 +1438,9 @@ int main(void) {
 
 	_TestDropDown();
 
-	for (;;) {
-		auto pDialog = (Frame *)_aDialogCreate->CreateDialog(GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);
-		pDialog->AddMinButton();
-		pDialog->AddMaxButton();
-		_CreateMenu(pDialog);
-		_MemDevPhase = 0;
-		_hMemDevFrame = _CreateMemDevFrame(280, 50, "MemDev ON", 1, &_hMemDevPane);
-		_hNoMemDevFrame = _CreateMemDevFrame(480, 50, "MemDev OFF", 0, &_hNoMemDevPane);
+	_TestListBox();
 
-		DIALOG_STATUS DialogStatus;
-		pDialog->DialogStatus(&DialogStatus);
-		while (!DialogStatus.Done) {
-			_MemDevPhase = GUI_GetTime() / 20;
-			if (_hMemDevPane)
-				WM_Invalidate(_hMemDevPane);
-			if (_hNoMemDevPane)
-				WM_Invalidate(_hNoMemDevPane);
-			GUI_Exec();
-		}
-		if (_hMemDevFrame)
-			WM_DeleteWindow(_hMemDevFrame);
-		if (_hNoMemDevFrame)
-			WM_DeleteWindow(_hNoMemDevFrame);
-		_hMemDevFrame = 0;
-		_hMemDevPane = 0;
-		_hNoMemDevFrame = 0;
-		_hNoMemDevPane = 0;
-	}
+	_TestMemDev();
+
 	return 0;
 }

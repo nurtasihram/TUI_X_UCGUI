@@ -4,14 +4,11 @@
 
 #define ASSIGN_IF_LESS(v0,v1) if (v1<v0) v0=v1
 
-static uint16_t NumWindows, NumInvalidWindows;
-
-static WM_CRITICAL_HANDLE *pFirstCriticalHandle;
+static uint16_t NumWindows;
 
 static WObj *pWinActive = nullptr;
 
 static bool IsActive;
-uint16_t WM__CreateFlags;
 
 #pragma region Focus
 static WObj *_GetNextChild(WObj * pParent, WObj * pChild) {
@@ -72,81 +69,41 @@ int WM__TransWindowCnt;
 WObj *WM__hATransWindow;
 #endif
 
-
-#pragma region Desktop
-static WObj *pWinDesktop = nullptr;
-static RGBC BkColorDesktop;
-WObj *WM_GetDesktopWindow(void) {
-	return pWinDesktop;
-}
-void WM_SetDesktopColor(RGBC Color) {
-	BkColorDesktop = Color;
-	if (pWinDesktop)
-		WM_Invalidate(pWinDesktop);
-}
-static WM_PARAM cbBackWin(WObj * pWin, int MsgId, WM_PARAM Data) {
-	switch (MsgId) {
-		case WM_KEY: {
-			auto pKeyInfo = (const WM_KEY_INFO *)Data;
-			if (pKeyInfo->PressedCnt == 1)
-				GUI_StoreKey(pKeyInfo->Key);
-			return 0;
-		}
-		case WM_PAINT:
-			if (BkColorDesktop != RGB_INVALID_COLOR) {
-				GUI.SetBkColor(BkColorDesktop);
-				GUI_Clear();
-			}
-			return 0;
-		default:
-			return WM_DefaultProc(pWin, MsgId, Data);
-	}
-	return 0;
-}
-#pragma endregion
-
-/*********************************************************************
-*
-*       _CheckCriticalHandles
-*
-* Purpose:
-*   Checks the critical handles and resets the matching one
-*/
+#pragma region CriticalHandles
+struct WM_CRITICAL_HANDLE {
+	WM_CRITICAL_HANDLE *pNext;
+	WObj *pWin;
+};
+static WM_CRITICAL_HANDLE *pFirstCriticalHandle;
 static void _CheckCriticalHandles(WObj * pWin) {
 	WM_CRITICAL_HANDLE *pCH;
 	for (pCH = pFirstCriticalHandle; pCH; pCH = pCH->pNext)
 		if (pCH->pWin == pWin)
 			pCH->pWin = 0;
 }
-
-/*********************************************************************
-*
-*       _Invalidate1Abs
-*
-*  Invalidate given window, using absolute coordinates
-*/
-static void _Invalidate1Abs(WObj * pWin, const RECT *pRect) {
-	RECT r;
-	int Status;
-	Status = pWin->Status;
-	if (!(Status & WC_VISIBLE))
-		return; /* Window is not visible... we are done */
-	if ((Status & (WC_HASTRANS | WC_CONST_OUTLINE)) == WC_HASTRANS)
-		return; /* Window is transparent; transparency may change... we are done, since background will be invalidated */
-	if (!*pRect)
-		return; /* Nothing to do ... */
-	/* Calc affected area */
-	r = *pRect & pWin->Rect;
-	if (r) {
-		if (pWin->Status & WC_ACTIVATE)
-			pWin->InvalidRect |= r;
-		else {
-			pWin->InvalidRect = r;
-			pWin->Status |= WC_ACTIVATE;
-			NumInvalidWindows++;
+void WM__AddCriticalHandle(WM_CRITICAL_HANDLE *pCriticalHandle) {
+	pCriticalHandle->pNext = pFirstCriticalHandle;
+	pFirstCriticalHandle = pCriticalHandle;
+}
+void WM__RemoveCriticalHandle(WM_CRITICAL_HANDLE *pCriticalHandle) {
+	if (pFirstCriticalHandle) {
+		WM_CRITICAL_HANDLE *pCH, *pLast = 0;
+		for (pCH = pFirstCriticalHandle; pCH; pCH = pCH->pNext) {
+			if (pCH == pCriticalHandle) {
+				if (pLast)
+					pLast->pNext = pCH->pNext;
+				else if (pCH->pNext)
+					pFirstCriticalHandle = pCH->pNext;
+				else
+					pFirstCriticalHandle = 0;
+				break;
+			}
+			pLast = pCH;
 		}
 	}
 }
+#pragma endregion
+
 /*********************************************************************
 *
 *       ResetNextDrawWin
@@ -183,137 +140,6 @@ static void _SetClipRectUserIntersect(const RECT *prSrc) {
 		LCD_SetClipRectEx(&r);
 	}
 }
-/*********************************************************************
-*
-*       _ClipAtParentBorders
-*
-* Function:
-*   Iterates over the window itself and all its ancestors.
-*   Intersects all rectangles to
-*   find out which part is actually visible.
-*   Reduces the rectangle to the visible area.
-*   This routines takes into account both the rectangles of the
-*   ancestors as well as the WC_VISIBLE flag.
-*
-* Parameters
-*   pWin    Obvious
-*   pRect   Pointer to the rectangle to be clipped. May not be nullptr.
-*           The parameter is IN/OUT.
-*           Note that the rectangle is clipped only if the return
-*           value indicates a valid rectangle remains.
-*
-* Return value:
-*   1: Something is or may be visible.
-*   0: Nothing is visible (outside of ancestors, no desktop, hidden)
-*/
-static bool _ClipAtParentBorders(RECT &r, WObj * pWin) {
-	/* Iterate up the window hierarchy.
-	   If the window is invisible, we are done.
-	   Clip at parent boarders.
-	   We are done with iterating if pWin has no parent.
-	*/
-	for (;; pWin = pWin->pParent) {
-		if (!(pWin->Status & WC_VISIBLE))
-			return false; /* Invisible */
-		r &= pWin->Rect;  /* And clip on borders */
-		if (!pWin->pParent)
-			break; /* pWin is now the top level window which has no parent */
-		/* Go one level up (parent)*/
-	} /* Only way out is in the loop. Required for efficiency, no bug, even though some compilers may complain. */
-	/* Now check if the top level window is a desktop window. If it is not,
-	  then the window is not visible.
-	*/
-	if (pWin != pWinDesktop)
-		return false; /* No desktop - (unattached) - Nothing to draw */
-	return true; /* Something may be visible */
-}
-/*********************************************************************
-*
-*       WM__InsertWindowIntoList
-*
-* Routine describtion
-*   This routine inserts the window in the list of child windows for
-*   a particular parent window.
-*   The window is placed on top of all siblings with the same level.
-*/
-void WM__InsertWindowIntoList(WObj * pWin, WObj * pParent) {
-	int OnTop;
-	WObj *pi;
-	WObj *pFirstChild;
-	if (pParent) {
-		pWin->pNext = 0;
-		pWin->pParent = pParent;
-		OnTop = pWin->Status & WC_STAYONTOP;
-		pFirstChild = pParent->pFirstChild;
-		/* Put it at beginning of the list if there is no child */
-		if (pFirstChild == nullptr) {   /* No child yet ... Makes things easy ! */
-			pParent->pFirstChild = pWin;
-			return;                         /* Early out ... We are done */
-		}
-		/* Put it at beginning of the list if first child is a TOP window and new one is not */
-		pi = pFirstChild;
-		if (!OnTop) {
-			if (pi->Status & WC_STAYONTOP) {
-				pWin->pNext = pFirstChild;
-				pParent->pFirstChild = pWin;
-				return;                         /* Early out ... We are done */
-			}
-		}
-		/* Put it at the end of the list or before the last non "STAY-ON-TOP" child */
-		do {
-			WObj *pNext;
-			if ((pNext = pi->pNext) == nullptr) {   /* End of sibling list ? */
-				pi->pNext = pWin;             /* Then modify this last element to point to new one and we are done */
-				break;
-			}
-			if (!OnTop) {
-				if (pNext->Status & WC_STAYONTOP) {
-					pi->pNext = pWin;
-					pWin->pNext = pNext;
-					break;
-				}
-			}
-			pi = pNext;
-		} while (1);
-	}
-}
-void WM__RemoveWindowFromList(WObj * pWin) {
-	WObj *pParent, *pi;
-	WObj *pChild;
-	pParent = pWin->pParent;
-	if (pParent) {
-		pChild = pParent->pFirstChild;
-		if (pChild == pWin) {
-			pParent->pFirstChild = pChild->pNext;
-		}
-		else {
-			while (pChild) {
-				pi = pChild;
-				if (pi->pNext == pWin) {
-					pi->pNext = pWin->pNext;
-					break;
-				}
-				pChild = pi->pNext;
-			}
-		}
-	}
-}
-/*********************************************************************
-*
-*       WM__DetachWindow
-*
-* Detaches the given window. The window still exists, it keeps all
-* children, but it is no longer visible since it is taken out of
-* the tree of the desktop window.
-*/
-void WM__DetachWindow(WObj * pWin) {
-	if (pWin->pParent) {
-		WM__RemoveWindowFromList(pWin);
-		/* Clear area used by this window */
-		WM_InvalidateArea(&pWin->Rect);
-		pWin->pParent = 0;
-	}
-}
 static void _DeleteAllChildren(WObj * pFirstChild) {
 	for (auto pChild = pFirstChild; pChild; ) {
 		auto pNext = pChild->pNext;
@@ -321,15 +147,125 @@ static void _DeleteAllChildren(WObj * pFirstChild) {
 		pChild = pNext;
 	}
 }
-/*********************************************************************
-*
-*         WM__InvalidateAreaBelow
-  Params: pRect  Rectangle in Absolute coordinates
-*/
-void WM__InvalidateAreaBelow(const RECT *pRect, WObj * StopWin) {
-	GUI_USE_PARA(StopWin);
-	WM_InvalidateArea(pRect);      /* Can be optimized to spare windows above */
+
+WObj * WM_CreateWindowAsChild(int x0, int y0, int width, int height
+							   , WObj * pParent, uint16_t Style, WM_CALLBACK *cb
+							   , int NumExtraBytes) {
+	WObj *pWin;
+	WM_ASSERT_NOT_IN_PAINT();
+	/* Default parent is Desktop 0 */
+	if (!pParent) {
+		if (NumWindows)
+			pParent = WObj::pWinDesktop;
+	}
+	if (pParent == WM_UNATTACHED)
+		pParent = nullptr;
+	if (pParent) {
+		x0 += pParent->Rect.x0;
+		y0 += pParent->Rect.y0;
+		if (width == 0)
+			width = pParent->Rect.x1 - pParent->Rect.x0 + 1;
+		if (height == 0)
+			height = pParent->Rect.y1 - pParent->Rect.y0 + 1;
+	}
+	if ((pWin = (WObj *)GUI_ALLOC_AllocZero(NumExtraBytes + sizeof(WObj))) == 0) {
+	}
+	else {
+		NumWindows++;
+		pWin->Rect.x0 = x0;
+		pWin->Rect.y0 = y0;
+		pWin->Rect.x1 = x0 + width - 1;
+		pWin->Rect.y1 = y0 + height - 1;
+		pWin->cb = cb;
+		/* Copy the flags which can simply be accepted */
+		pWin->Status |= (Style & (WC_VISIBLE |
+								  WC_MEMDEV |
+								  WC_MEMDEV_ON_REDRAW |
+								  WC_STAYONTOP |
+								  WC_CONST_OUTLINE |
+								  WC_HASTRANS |
+								  WC_ANCHOR_RIGHT |
+								  WC_ANCHOR_BOTTOM |
+								  WC_ANCHOR_LEFT |
+								  WC_ANCHOR_TOP |
+								  WC_LATE_CLIP));
+		/* Add to linked lists */
+		pWin->_AddToLinList();
+		pWin->_InsertWindowIntoList(pParent);
+		/* Activate window if WC_ACTIVATE is specified */
+		if (Style & WC_ACTIVATE)
+			WM_SelectWindow(pWin);  /* This is not needed if callbacks are being used, but it does not cost a lot and makes life easier ... */
+		/* Handle the Style flags, one at a time */
+#if WM_SUPPORT_TRANSPARENCY
+		if (Style & WC_HASTRANS)
+			WM__TransWindowCnt++; /* Increment counter for transparency windows */
+#endif
+		if (Style & WC_BGND)
+			WM_BringToBottom(pWin);
+		if (Style & WC_VISIBLE) {
+			pWin->Status |= WC_VISIBLE;  /* Set Visibility flag */
+			pWin->Invalidate();    /* Mark content as invalid */
+		}
+		pWin->Require(WM_CREATE);
+	}
+	return pWin;
 }
+WObj * WM_CreateWindow(int x0, int y0, int width, int height, uint16_t Style, WM_CALLBACK *cb, int NumExtraBytes) {
+	return WM_CreateWindowAsChild(x0, y0, width, height, 0 /* No parent */, Style, cb, NumExtraBytes);
+}
+void WM_DeleteWindow(WObj * pWin) {
+	if (!pWin)
+		return;
+	WM_ASSERT_NOT_IN_PAINT();
+	if (WObj::IsWindow(pWin)) {
+		ResetNextDrawWin(); /* Make sure the window will no longer receive drawing messages */
+		/* Make sure that focus is set to an existing window */
+		if (WObj::pWinFocus == pWin)
+			WObj::pWinFocus = nullptr;
+		WObj::ReleaseCapture(); /* Make sure the window does not have capture */
+		/* check if critical handles are affected. If so, reset the window handle to 0 */
+		_CheckCriticalHandles(pWin);
+		/* Inform parent */
+		WM_NotifyParent(pWin, WM_NOTIFICATION_CHILD_DELETED);
+		/* Delete all children */
+		_DeleteAllChildren(pWin->pFirstChild);
+		/* Send WM_DELETE message to window in order to inform window itself */
+		pWin->Require(WM_DELETE);     /* tell window about it */
+		pWin->_DetachWindow();
+		/* Remove window from window stack */
+		pWin->_RemoveFromLinList();
+		/* Handle transparency counter if necessary */
+#if WM_SUPPORT_TRANSPARENCY
+		if (pWin->Status & WC_HASTRANS)
+			WM__TransWindowCnt--;
+#endif
+		/* Make sure window is no longer counted as invalid */
+		if (pWin->Status & WC_ACTIVATE)
+			WObj::NumInvalidWindows--;
+		/* Free window memory */
+		NumWindows--;
+		GUI_ALLOC_Free(pWin);
+		/* Select a valid window */
+		WM_SelectWindow(WObj::pWinFirst);
+	}
+}
+WObj * WM_SelectWindow(WObj * pWin) {
+	auto pWinPrev = pWinActive;
+	WM_ASSERT_NOT_IN_PAINT();
+	if (pWin == 0) {
+		pWin = WObj::pWinFirst;
+	}
+	/* Select new window */
+	pWinActive = pWin;
+	LCD_SetClipRectMax();             /* Drawing operations will clip ... If WM is deactivated, allow all */
+	GUI.Off = pWin->Rect.LeftTop();
+	return pWinPrev;
+}
+WObj * WM_GetActiveWindow(void) {
+	return pWinActive;
+}
+
+#pragma region IVR
 static void _Findy1(WObj *pWin, RECT *pRect, RECT *pParentRect) {
 	for (; pWin; pWin = pWin->pNext) {
 		int Status = pWin->Status;
@@ -398,171 +334,6 @@ static void _Findx1(WObj *pWin, RECT *pRect, RECT *pParentRect) {
 	}
 }
 
-/*********************************************************************
-*
-*       WM_Invalidate
-*
-*  Invalidate a section of the window. The optional rectangle
-*  contains client coordinates, which are independent of the
-*  position of the window on the logical desktop area.
-*/
-void WM_Invalidate(WObj *pWin, const RECT *pRect) {
-	RECT r;
-	int Status;
-	if (pWin) {
-		Status = pWin->Status;
-		if (Status & WC_VISIBLE) {
-			r = pWin->Rect;
-			if (pRect)
-				r &= *pRect + pWin->GetOrg();
-			if (_ClipAtParentBorders(r, pWin)) {      /* Optimization that saves invalidation if window area is not visible ... Not required */
-				if ((Status & (WC_HASTRANS | WC_CONST_OUTLINE)) == WC_HASTRANS)
-					WM__InvalidateAreaBelow(&r, pWin);        /* Can be optimized to spare windows above */
-				else
-					_Invalidate1Abs(pWin, &r);
-			}
-		}
-	}
-}
-/*********************************************************************
-*
-*        WM_InvalidateArea
-  Invalidate a certain section of the display. One main reason for this is
-  that the top window has been moved or destroyed.
-  The coordinates given are absolute coordinates (desktop coordinates)
-*/
-void WM_InvalidateArea(const RECT *pRect) {
-	/* Iterate over all windows */
-	for (auto pWin = WObj::pWinFirst; pWin; pWin = pWin->pNextLin) {
-		_Invalidate1Abs(pWin, pRect);
-	}
-}
-WObj * WM_CreateWindowAsChild(int x0, int y0, int width, int height
-							   , WObj * pParent, uint16_t Style, WM_CALLBACK *cb
-							   , int NumExtraBytes) {
-	WObj *pWin;
-	WM_ASSERT_NOT_IN_PAINT();
-	Style |= WM__CreateFlags;
-	/* Default parent is Desktop 0 */
-	if (!pParent) {
-		if (NumWindows)
-			pParent = pWinDesktop;
-	}
-	if (pParent == WM_UNATTACHED)
-		pParent = nullptr;
-	if (pParent) {
-		x0 += pParent->Rect.x0;
-		y0 += pParent->Rect.y0;
-		if (width == 0)
-			width = pParent->Rect.x1 - pParent->Rect.x0 + 1;
-		if (height == 0)
-			height = pParent->Rect.y1 - pParent->Rect.y0 + 1;
-	}
-	if ((pWin = (WObj *)GUI_ALLOC_AllocZero(NumExtraBytes + sizeof(WObj))) == 0) {
-	}
-	else {
-		NumWindows++;
-		pWin->Rect.x0 = x0;
-		pWin->Rect.y0 = y0;
-		pWin->Rect.x1 = x0 + width - 1;
-		pWin->Rect.y1 = y0 + height - 1;
-		pWin->cb = cb;
-		/* Copy the flags which can simply be accepted */
-		pWin->Status |= (Style & (WC_VISIBLE |
-								  WC_MEMDEV |
-								  WC_MEMDEV_ON_REDRAW |
-								  WC_STAYONTOP |
-								  WC_CONST_OUTLINE |
-								  WC_HASTRANS |
-								  WC_ANCHOR_RIGHT |
-								  WC_ANCHOR_BOTTOM |
-								  WC_ANCHOR_LEFT |
-								  WC_ANCHOR_TOP |
-								  WC_LATE_CLIP));
-		/* Add to linked lists */
-		pWin->_AddToLinList();
-		WM__InsertWindowIntoList(pWin, pParent);
-		/* Activate window if WC_ACTIVATE is specified */
-		if (Style & WC_ACTIVATE)
-			WM_SelectWindow(pWin);  /* This is not needed if callbacks are being used, but it does not cost a lot and makes life easier ... */
-		/* Handle the Style flags, one at a time */
-#if WM_SUPPORT_TRANSPARENCY
-		if (Style & WC_HASTRANS)
-			WM__TransWindowCnt++; /* Increment counter for transparency windows */
-#endif
-		if (Style & WC_BGND)
-			WM_BringToBottom(pWin);
-		if (Style & WC_VISIBLE) {
-			pWin->Status |= WC_VISIBLE;  /* Set Visibility flag */
-			WM_Invalidate(pWin);    /* Mark content as invalid */
-		}
-		pWin->Require(WM_CREATE);
-	}
-	return pWin;
-}
-WObj * WM_CreateWindow(int x0, int y0, int width, int height, uint16_t Style, WM_CALLBACK *cb, int NumExtraBytes) {
-	return WM_CreateWindowAsChild(x0, y0, width, height, 0 /* No parent */, Style, cb, NumExtraBytes);
-}
-void WM_DeleteWindow(WObj * pWin) {
-	if (!pWin)
-		return;
-	WM_ASSERT_NOT_IN_PAINT();
-	if (WObj::IsWindow(pWin)) {
-		ResetNextDrawWin(); /* Make sure the window will no longer receive drawing messages */
-		/* Make sure that focus is set to an existing window */
-		if (WObj::pWinFocus == pWin)
-			WObj::pWinFocus = nullptr;
-		WObj::ReleaseCapture(); /* Make sure the window does not have capture */
-		/* check if critical handles are affected. If so, reset the window handle to 0 */
-		_CheckCriticalHandles(pWin);
-		/* Inform parent */
-		WM_NotifyParent(pWin, WM_NOTIFICATION_CHILD_DELETED);
-		/* Delete all children */
-		_DeleteAllChildren(pWin->pFirstChild);
-		/* Send WM_DELETE message to window in order to inform window itself */
-		pWin->Require(WM_DELETE);     /* tell window about it */
-		WM__DetachWindow(pWin);
-		/* Remove window from window stack */
-		pWin->_RemoveFromLinList();
-		/* Handle transparency counter if necessary */
-#if WM_SUPPORT_TRANSPARENCY
-		if (pWin->Status & WC_HASTRANS)
-			WM__TransWindowCnt--;
-#endif
-		/* Make sure window is no longer counted as invalid */
-		if (pWin->Status & WC_ACTIVATE)
-			NumInvalidWindows--;
-		/* Free window memory */
-		NumWindows--;
-		GUI_ALLOC_Free(pWin);
-		/* Select a valid window */
-		WM_SelectWindow(WObj::pWinFirst);
-	}
-}
-/*********************************************************************
-*
-*       WM_SelectWindow
-*
-*  Sets the active Window. The active Window is the one that is used for all
-*  drawing (and text) operations.
-*/
-WObj * WM_SelectWindow(WObj * pWin) {
-	auto pWinPrev = pWinActive;
-	WM_ASSERT_NOT_IN_PAINT();
-	if (pWin == 0) {
-		pWin = WObj::pWinFirst;
-	}
-	/* Select new window */
-	pWinActive = pWin;
-	LCD_SetClipRectMax();             /* Drawing operations will clip ... If WM is deactivated, allow all */
-	GUI.Off = pWin->Rect.LeftTop();
-	return pWinPrev;
-}
-WObj * WM_GetActiveWindow(void) {
-	return pWinActive;
-}
-
-#pragma region IVR
 struct {
 	RECT ClientRect;
 	RECT CurRect;
@@ -703,17 +474,6 @@ static bool _FindNext_IVR(void) {
 	return false;  /* Nothing left to draw */
 }
 #endif
-/*********************************************************************
-*
-*       WM_GetNextIVR
-  Sets the next clipping rectangle. If a valid one has
-  been found (and set), 1 is returned in order to indicate
-  that the drawing operation needs to be executed.
-  Returning 0 signals that we have iterated over all
-  rectangles.
-  Returns: 0 if no valid rectangle is found
-		   1 if rectangle has been found
-*/
 bool WM__GetNextIVR(void) {
 #if GUI_SUPPORT_CURSOR
 	static char _CursorHidden;
@@ -744,16 +504,6 @@ bool WM__GetNextIVR(void) {
 #endif
 	return true;
 }
-/*********************************************************************
-*
-*       WM__InitIVRSearch
-  This routine is called from the clipping level
-  when starting an iteration over the
-  visible rectangles.
-  Return value:
-	0 : There is no valid rectangle (nothing to do ...)
-	1 : There is a valid rectangle
-*/
 bool WM__InitIVRSearch(RECT rcMax) {
 	/* If WM is not active -> nothing to do, leave cliprect alone */
 	if (!IsActive) {
@@ -792,13 +542,13 @@ bool WM__InitIVRSearch(RECT rcMax) {
 	/* For transparent windows, we need to further reduce the rectangle */
 #if WM_SUPPORT_TRANSPARENCY
 	if (WM__hATransWindow)
-		if (_ClipAtParentBorders(r, WM__hATransWindow) == 0) {
+		if (!WM__hATransWindow->_ClipAtParentBorders(r)) {
 			--_ClipContext.EntranceCnt;
 			return false;           /* Nothing to draw */
 		}
 #endif
 	/* Iterate over all ancestors and clip at their borders. If there is no visible part, we are done */
-	if (_ClipAtParentBorders(r, pWinActive) == 0) {
+	if (!pWinActive->_ClipAtParentBorders(r)) {
 		--_ClipContext.EntranceCnt;
 		return false;           /* Nothing to draw */
 	}
@@ -816,7 +566,7 @@ void WM__ActivateClipRect(void) {
 		r = pAWin->Rect;
 #if WM_SUPPORT_TRANSPARENCY
 		if (WM__hATransWindow)
-			_ClipAtParentBorders(r, WM__hATransWindow);
+			WM__hATransWindow->_ClipAtParentBorders(r);
 #endif
 		/* Take UserClipRect into account */
 		_SetClipRectUserIntersect(&r);
@@ -881,19 +631,6 @@ static int _Paint1Trans(WObj *pWin) {
 	}
 	return 0; /* No invalid area, so nothing was drawn */
 }
-#endif
-/*********************************************************************
-*
-*       _PaintTransChildren
-*
-* Purpose:
-*   Paint transparent children. This function is obviously required
-*   only if there are transparent windows.
-* Function:  Obvious
-* Parameter: Obvious
-* Returns:   ---
-*/
-#if WM_SUPPORT_TRANSPARENCY
 static void _PaintTransChildren(WObj *pWin) {
 	WObj *pChild;
 	if (pWin->Status & WC_VISIBLE) {
@@ -911,19 +648,6 @@ static void _PaintTransChildren(WObj *pWin) {
 		}
 	}
 }
-#endif
-/*********************************************************************
-*
-*       _PaintTransTopSiblings
-*
-* Purpose:
-*   Paint transparent top siblings. This function is obviously required
-*   only if there are transparent windows.
-* Function:  Obvious
-* Parameter: Obvious
-* Returns:   ---
-*/
-#if WM_SUPPORT_TRANSPARENCY
 static void _PaintTransTopSiblings(WObj *pWin) {
 	auto pParent = pWin->pParent;
 	pWin = pWin->pNext;
@@ -999,7 +723,7 @@ static int _Paint(WObj *pWin) {
 		return 0;
 	int Ret = 0;
 	if (pWin->cb) {
-		if (_ClipAtParentBorders(pWin->InvalidRect, pWin)) {
+		if (pWin->_ClipAtParentBorders(pWin->InvalidRect)) {
 			WM_SelectWindow(pWin);
 #if GUI_SUPPORT_MEMDEV
 			if (pWin->Status & WC_MEMDEV) {
@@ -1024,7 +748,7 @@ static int _Paint(WObj *pWin) {
 	pWin->Status &= ~WC_ACTIVATE; /* Clear invalid flag */
 	if (pWin->Status & WC_MEMDEV_ON_REDRAW)
 		pWin->Status |= WC_MEMDEV;
-	NumInvalidWindows--;
+	WObj::NumInvalidWindows--;
 	return Ret;      /* Nothing done */
 }
 static void _DrawNext(void) {
@@ -1045,7 +769,7 @@ int WM_Exec1(void) {
 		return 1; /* We have done something ... */
 	if (GUI_PollKeyMsg())
 		return 1; /* We have done something ... */
-	if (IsActive && NumInvalidWindows) {
+	if (IsActive && WObj::NumInvalidWindows) {
 		_DrawNext();
 		return 1; /* We have done something ... */
 	}
@@ -1104,7 +828,7 @@ WM_PARAM WM_DefaultProc(WObj * pWin, int MsgId, WM_PARAM Data) {
 		case WM_GET_BKCOLOR:
 			return RGB_INVALID_COLOR;
 		case WM_NOTIFY_ENABLE:
-			WM_Invalidate(pWin);
+			pWin->Invalidate();
 			return 0;
 	}
 	/* Message not handled. If it queries something, we return 0 to be on the safe side. */
@@ -1274,7 +998,7 @@ void WM_DetachWindow(WObj * pWin) {
 	if (pWin) {
 		auto pParent = pWin->pParent;
 		if (pParent) {
-			WM__DetachWindow(pWin);
+			pWin->_DetachWindow();
 			WM_MoveWindow(pWin, -pParent->Rect.x0, -pParent->Rect.y0);   /* Convert screen coordinates -> parent coordinates */
 			/* ToDo: Invalidate. If Parent window is located at (0,0). */
 		}
@@ -1284,7 +1008,7 @@ void WM_AttachWindow(WObj * pWin, WObj * pParent) {
 	if (pParent && (pParent != pWin)) {
 		if (pWin->pParent != pParent) {
 			WM_DetachWindow(pWin);
-			WM__InsertWindowIntoList(pWin, pParent);
+			pWin->_InsertWindowIntoList(pParent);
 			WM_MoveWindow(pWin, pParent->Rect.x0, pParent->Rect.y0);    /* Convert parent coordinates -> screen coordinates */
 		}
 	}
@@ -1304,16 +1028,16 @@ void WM_BringToBottom(WObj * pWin) {
 			pWin->pNext = pParent->pFirstChild;
 			pParent->pFirstChild = pWin;
 			/* Send message in order to make sure top window will be drawn */
-			WM_InvalidateArea(&pWin->Rect);
+			WObj::InvalidateArea(pWin->Rect);
 		}
 	}
 }
 static void _cbInvalidateOne(WObj * pWin, void *p) {
 	GUI_USE_PARA(p);
-	WM_Invalidate(pWin);
+	pWin->Invalidate();
 }
 static void _InvalidateWindowAndDescs(WObj * pWin) {
-	WM_Invalidate(pWin);
+	pWin->Invalidate();
 	WM_ForEachDesc(pWin, _cbInvalidateOne, 0);
 }
 
@@ -1331,33 +1055,12 @@ void WM_BringToTop(WObj * pWin) {
 			}
 		}
 		auto pParent = pWin->pParent;
-		WM__RemoveWindowFromList(pWin);
-		WM__InsertWindowIntoList(pWin, pParent);
+		pWin->_RemoveWindowFromList();
+		pWin->_InsertWindowIntoList(pParent);
 		_InvalidateWindowAndDescs(pWin);
 	}
 }
 
-void WM__AddCriticalHandle(WM_CRITICAL_HANDLE *pCriticalHandle) {
-	pCriticalHandle->pNext = pFirstCriticalHandle;
-	pFirstCriticalHandle = pCriticalHandle;
-}
-void WM__RemoveCriticalHandle(WM_CRITICAL_HANDLE *pCriticalHandle) {
-	if (pFirstCriticalHandle) {
-		WM_CRITICAL_HANDLE *pCH, *pLast = 0;
-		for (pCH = pFirstCriticalHandle; pCH; pCH = pCH->pNext) {
-			if (pCH == pCriticalHandle) {
-				if (pLast)
-					pLast->pNext = pCH->pNext;
-				else if (pCH->pNext)
-					pFirstCriticalHandle = pCH->pNext;
-				else
-					pFirstCriticalHandle = 0;
-				break;
-			}
-			pLast = pCH;
-		}
-	}
-}
 /*********************************************************************
 *
 *       _ShowInvalid
@@ -1409,9 +1112,6 @@ WObj * WM_GetClientWindow(WObj * pObj) {
 }
 int WM_GetNumWindows(void) {
 	return NumWindows;
-}
-int WM_GetNumInvalidWindows(void) {
-	return NumInvalidWindows;
 }
 
 /*********************************************************************
@@ -1501,8 +1201,8 @@ void WM_MoveWindow(WObj * pWin, int dx, int dy) {
 		_MoveDescendents(pWin->pFirstChild, dx, dy);  /* Children need to be moved along ...*/
 		/* Invalidate old and new area ... */
 		if (pWin->Status & WC_VISIBLE) {
-			WM_InvalidateArea(&pWin->Rect);     /* Invalidate new area */
-			WM_InvalidateArea(&r);     /* Invalidate old area */
+			WObj::InvalidateArea(pWin->Rect);     /* Invalidate new area */
+			WObj::InvalidateArea(r);     /* Invalidate old area */
 		}
 		pWin->Require(WM_MOVE);             /* Notify window it has been moved */
 	}
@@ -1530,10 +1230,10 @@ void WM_Paint(WObj * pWin) {
 	if (pWin) {
 		GUI_SaveContext(&Context);
 		WM_SelectWindow(pWin);
-		WM_Invalidate(pWin);  /* Important ... Window procedure is informed about invalid rect and may optimize */
+		pWin->Invalidate();  /* Important ... Window procedure is informed about invalid rect and may optimize */
 		/* Paint the window and its overlaying transparent windows */
 		WM__PaintWinAndOverlays(pWin);
-		WM_ValidateWindow(pWin);
+		pWin->Validate();
 		GUI_RestoreContext(&Context);
 	}
 }
@@ -1565,7 +1265,7 @@ void WM_ResizeWindow(WObj * pWin, int dx, int dy) {
 	}
 	rMerge = rOld | rNew;
 	pWin->Rect = rNew;
-	WM_InvalidateArea(&rMerge);
+	WObj::InvalidateArea(rMerge);
 	WM__UpdateChildPositions(pWin, rNew.x0 - rOld.x0, rNew.y0 - rOld.y0, rNew.x1 - rOld.x1, rNew.y1 - rOld.y1);
 	pWin->InvalidRect &= pWin->Rect; /* Make sure invalid area is not bigger than window itself */
 	pWin->Require(WM_SIZE); /* Send size message to the window */
@@ -1595,14 +1295,8 @@ WM_CALLBACK *WM_SetCallback(WObj * pWin, WM_CALLBACK *cb) {
 	if (pWin) {
 		r = pWin->cb;
 		pWin->cb = cb;
-		WM_Invalidate(pWin);
+		pWin->Invalidate();
 	}
-	return r;
-}
-
-uint16_t WM_SetCreateFlags(uint16_t Flags) {
-	uint16_t r = WM__CreateFlags;
-	WM__CreateFlags = Flags;
 	return r;
 }
 
@@ -1615,7 +1309,7 @@ void WObj::ShowWindow() {
 void WObj::HideWindow() {
 	if (Status & WC_VISIBLE) {
 		Status &= ~WC_VISIBLE;
-		WM__InvalidateAreaBelow(&Rect, this);
+		_InvalidateAreaBelow(Rect, this);
 	}
 }
 
@@ -1634,7 +1328,7 @@ void WM_SetHasTrans(WObj * pWin) {
 		if (!(pWin->Status & WC_HASTRANS)) {
 			pWin->Status |= WC_HASTRANS; /* Set Transparency flag */
 			WM__TransWindowCnt++;          /* Increment counter for transparency windows */
-			WM_Invalidate(pWin);      /* Mark content as invalid */
+			pWin->Invalidate();      /* Mark content as invalid */
 		}
 	}
 }
@@ -1644,7 +1338,7 @@ void WM_ClrHasTrans(WObj * pWin) {
 		if (pWin->Status & WC_HASTRANS) {
 			pWin->Status &= ~WC_HASTRANS;
 			WM__TransWindowCnt--;            /* Decrement counter for transparency windows */
-			WM_Invalidate(pWin);        /* Mark content as invalid */
+			pWin->Invalidate();        /* Mark content as invalid */
 		}
 	}
 }
@@ -1664,12 +1358,12 @@ void WM_SetTransState(WObj * pWin, unsigned State) {
 		if (State & WC_CONST_OUTLINE) {
 			if (!(pWin->Status & WC_CONST_OUTLINE)) {
 				pWin->Status |= WC_CONST_OUTLINE;
-				WM_Invalidate(pWin);
+				pWin->Invalidate();
 			}
 		}
 		else if (pWin->Status & WC_CONST_OUTLINE) {
 			pWin->Status &= ~WC_CONST_OUTLINE;
-			WM_Invalidate(pWin);
+			pWin->Invalidate();
 		}
 	}
 }
@@ -1706,7 +1400,7 @@ int WM_SetYSize(WObj * pWin, int YSize) {
 void WM_InvalidateDescs(WObj * pWin) {
 	WObj * pChild;
 	if (pWin) {
-		WM_Invalidate(pWin);    /* Invalidate window itself */
+		pWin->Invalidate();    /* Invalidate window itself */
 		for (pChild = pWin->FirstChild(); pChild;) {
 			auto pNextChild = pChild->pNext;
 			WM_InvalidateDescs(pChild);
@@ -1761,14 +1455,6 @@ static void _SubRect(RECT *pDest, const RECT *pr0, const RECT *pr1) {
 		&& (pr1->x1 >= pr0->x1)) {
 		pDest->y0 = Max(pr0->y0, pr1->y1);
 		pDest->y1 = Min(pr0->y1, pr1->y0);
-	}
-}
-void WM_ValidateWindow(WObj * pWin) {
-	if (pWin) {
-		if (pWin->Status & WC_ACTIVATE) {
-			pWin->Status &= ~WC_ACTIVATE;
-			NumInvalidWindows--;
-		}
 	}
 }
 int WM_OnKey(int Key, int Pressed) {
@@ -1905,17 +1591,16 @@ void WM_Init(void) {
 		return;
 	pWinNextDraw = WObj::pWinFirst = nullptr;
 	GUI.WM__pUserClipRect = nullptr;
-	NumWindows = NumInvalidWindows = 0;
+	NumWindows = 0;
 	/* Make sure we have at least one window. This greatly simplifies the
 		drawing routines as they do not have to check if the window is valid.
 	*/
-	pWinDesktop = WM_CreateWindow(0, 0, GUI_XMAX, GUI_YMAX, WC_VISIBLE, cbBackWin, 0);
-	BkColorDesktop = RGB_INVALID_COLOR;
-	WM_Invalidate(pWinDesktop); /* Required because a desktop window has no parent. */
+	WObj::pWinDesktop = WM_CreateWindow(0, 0, GUI_XMAX, GUI_YMAX, WC_VISIBLE, WObj::cbBackWin, 0);
+	WObj::pWinDesktop->Invalidate(); /* Required because a desktop window has no parent. */
 	/* Register the critical handles ... Note: This could be moved into the module setting the Window handle */
 	WM__AddCriticalHandle(&WM__CHWinModal);
 	WM__AddCriticalHandle(&WM__CHWinLast);
-	WM_SelectWindow(pWinDesktop);
+	WM_SelectWindow(WObj::pWinDesktop);
 	WM_Activate();
 	_IsInited = true;
 }

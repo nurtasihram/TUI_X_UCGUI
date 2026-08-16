@@ -202,7 +202,7 @@ private:
 	void _InvalidateInsideArea() {
 		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
-		WM_Invalidate(this, &Rect);
+		Invalidate(&Rect);
 	}
 	void _InvalidateItem(int Sel) {
 		if (Sel >= 0) {
@@ -215,7 +215,7 @@ private:
 				WM_GetInsideRectExScrollbar(this, &Rect);
 				Rect.y0 += ItemPosY;
 				Rect.y1 = Rect.y0 + ItemDistY - 1;
-				WM_Invalidate(this, &Rect);
+				Invalidate(&Rect);
 			}
 		}
 	}
@@ -227,7 +227,7 @@ private:
 				RECT Rect;
 				WM_GetInsideRectExScrollbar(this, &Rect);
 				Rect.y0 += ItemPosY;
-				WM_Invalidate(this, &Rect);
+				Invalidate(&Rect);
 			}
 		}
 	}
@@ -530,7 +530,7 @@ private:
 				break;
 			case WM_SIZE:
 				pObj->UpdateScrollers();
-				WM_Invalidate(pObj);
+				pObj->Invalidate();
 				return 0;
 		}
 		return WM_DefaultProc(hWin, MsgId, Data);
@@ -930,7 +930,7 @@ public:
 		if (Width != (uint16_t)this->ScrollbarWidth) {
 			this->ScrollbarWidth = Width;
 			this->_SetScrollbarWidth();
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 	void SetString(const char *s, uint16_t Index) {

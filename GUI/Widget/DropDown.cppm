@@ -265,7 +265,7 @@ public:
 		}
 		auto pLst = this->pListWin;
 		if (pLst == 0) {
-			pLst = ListBox::Create(nullptr, WM_GetDesktopWindow(), r.x0, r.y0, xSize, ySize, WC_VISIBLE | WC_STAYONTOP | WC_ACTIVATE);
+			pLst = ListBox::Create(nullptr, WObj::GetDesktopWindow(), r.x0, r.y0, xSize, ySize, WC_VISIBLE | WC_STAYONTOP | WC_ACTIVATE);
 			pLst->SetEffect(WIDGET_Effect_3D1L);
 			if (pLst) {
 				if (this->Flags & DROPDOWN_SF_AUTOSCROLLBAR) {
@@ -320,7 +320,7 @@ public:
 			auto idx = Handles.NumItems();
 			if (Handles.AddItem() == 0)
 					GUI__SetText(&Handles[idx], s);
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 
@@ -329,7 +329,7 @@ public:
 		auto OldHeight = Props.pFont->DistY();
 		Props.pFont = pFont;
 		_AdjustHeight();
-		WM_Invalidate(this);
+		Invalidate();
 		if (this->pListWin) {
 			if (OldHeight != Props.pFont->DistY()) {
 				Collapse();
@@ -341,7 +341,7 @@ public:
 	void SetBkColor(DROPDOWN_CI Index, RGBC color) {
 		if (Index < GUI_COUNTOF(Props.aBkColor)) {
 			Props.aBkColor[Index] = color;
-			WM_Invalidate(this);
+			Invalidate();
 			if (this->pListWin) {
 				this->pListWin->SetBkColor(Index, color);
 			}
@@ -350,7 +350,7 @@ public:
 	void SetTextColor(DROPDOWN_CI Index, RGBC color) {
 		if (Index < GUI_COUNTOF(Props.aTextColor)) {
 			Props.aTextColor[Index] = color;
-			WM_Invalidate(this);
+			Invalidate();
 			if (this->pListWin) {
 				this->pListWin->SetTextColor(Index, color);
 			}
@@ -365,7 +365,7 @@ public:
 		}
 		if (Sel != this->Sel) {
 			this->Sel = Sel;
-			WM_Invalidate(this);
+			Invalidate();
 			WM_NotifyParent(this, WM_NOTIFICATION_SEL_CHANGED);
 		}
 	}
@@ -400,7 +400,7 @@ public:
 		if (Index < NumItems) {
 			GUI__SetText(&Handles[Index], nullptr);
 			Handles.DeleteItem(Index);
-			WM_Invalidate(this);
+			Invalidate();
 			if (this->pListWin) {
 				this->pListWin->DeleteItem(Index);
 			}
@@ -415,7 +415,7 @@ public:
 				auto pp = Handles.InsertItem(Index);
 				if (pp)
 					GUI__SetText(pp, s);
-				WM_Invalidate(this);
+				Invalidate();
 				if (this->pListWin) {
 					this->pListWin->InsertString(s, Index);
 				}
@@ -452,13 +452,13 @@ public:
 	void SetTextAlign(TEXTALIGN Align) {
 		if (Props.Align != Align) {
 			Props.Align = Align;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 	void SetTextHeight(unsigned TextHeight) {
 		this->TextHeight = TextHeight;
 		_AdjustHeight();
-		WM_Invalidate(this);
+		Invalidate();
 	}
 };
 

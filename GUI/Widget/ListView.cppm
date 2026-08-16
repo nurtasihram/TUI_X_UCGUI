@@ -210,7 +210,7 @@ private:
 			RowDistY = _GetRowDistY();
 			WM_GetInsideRectExScrollbar(this, &Rect);
 			Rect.y0 += HeaderHeight + (Sel - this->ScrollStateV.v) * RowDistY;
-			WM_Invalidate(this, &Rect);
+			Invalidate(&Rect);
 		}
 	}
 	void _InvalidateInsideArea() {
@@ -219,7 +219,7 @@ private:
 		HeaderHeight = pHeader->GetHeight();
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		Rect.y0 += HeaderHeight;
-		WM_Invalidate(this, &Rect);
+		Invalidate(&Rect);
 	}
 	void _InvalidateRow(int Sel) {
 		if (Sel >= 0) {
@@ -230,7 +230,7 @@ private:
 			WM_GetInsideRectExScrollbar(this, &Rect);
 			Rect.y0 += HeaderHeight + (Sel - this->ScrollStateV.v) * RowDistY;
 			Rect.y1 = Rect.y0 + RowDistY - 1;
-			WM_Invalidate(this, &Rect);
+			Invalidate(&Rect);
 		}
 	}
 	void _SetSelFromPos(const PID_STATE *pState) {

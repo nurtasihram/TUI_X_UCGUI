@@ -382,13 +382,13 @@ private:
 	}
 	void _Invalidate() {
 		_ManageScrollers();
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void _InvalidateTextArea() {
 		RECT rInsideRect;
 		_ManageScrollers();
 		WM_GetInsideRectExScrollbar(this, &rInsideRect);
-		WM_Invalidate(this, &rInsideRect);
+		Invalidate(&rInsideRect);
 	}
 	int _InvalidateCursorPos() {
 		int Value;
@@ -896,13 +896,13 @@ private:
 						if (pWinSrc == pObj->GetScrollbarV()) {
 							WM_GetScrollState(pWinSrc, &ScrollState);
 							pObj->ScrollStateV.v = ScrollState.v;
-							WM_Invalidate(pObj);
+							pObj->Invalidate();
 							WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 						}
 						else if (pWinSrc == pObj->GetScrollbarH()) {
 							WM_GetScrollState(pWinSrc, &ScrollState);
 							pObj->ScrollStateH.v = ScrollState.v;
-							WM_Invalidate(pObj);
+							pObj->Invalidate();
 							WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
 						}
 						break;
@@ -1008,7 +1008,7 @@ public:
 		if (Props.aColor[Index] == color)
 			return;
 		Props.aColor[Index] = color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetHBorder(uint8_t HBorder) {
@@ -1114,7 +1114,7 @@ public:
 
 	void SetCursorOffset(int Offset) {
 		_SetCursorPos(Offset);
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void SetPrompt(const char *pPrompt) {
 		int NumCharsNew = 0, NumCharsOld = 0;

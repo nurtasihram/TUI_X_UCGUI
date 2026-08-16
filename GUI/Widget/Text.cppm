@@ -73,9 +73,6 @@ public:
 	static Text *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
 						int WinFlags, int ExFlags, int Id, const char *pText) {
 		/* Create the window */
-#if WM_SUPPORT_TRANSPARENCY
-		WinFlags |= WC_HASTRANS;
-#endif
 		auto pObj = (Text *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, Text::_Callback,
 												   sizeof(Text) - sizeof(WObj));
 		if (!pObj) {
@@ -106,35 +103,35 @@ public:
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetBkColor(RGBC Color) {
 		if (Props.BkColor == Color)
 			return;
 		Props.BkColor = Color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetTextAlign(TEXTALIGN Align) {
 		if (Props.Align == Align)
 			return;
 		Props.Align = Align;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	
 	void SetTextColor(RGBC Color) {
 		if (Props.TextColor == Color)
 			return;
 		Props.TextColor = Color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 #pragma endregion
 
 	void SetText(const char *s) {
 		if (GUI__SetText(&pText, s))
-			WM_Invalidate(this);
+			Invalidate();
 	}
 
 };

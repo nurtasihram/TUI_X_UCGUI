@@ -195,7 +195,7 @@ public:
 	
 	void SetBkColor(RGBC Color) {
 		Props.BkColor = Color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 #pragma endregion
@@ -203,21 +203,21 @@ public:
 	void Dec() {
 		if (v > Min) {
 			v--;
-			WM_Invalidate(this);
+			Invalidate();
 			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
 	void Inc() {
 		if (v < Max) {
 			v++;
-			WM_Invalidate(this);
+			Invalidate();
 			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
 	void SetWidth(int Width) {
 		if (this->Width != Width) {
 			this->Width = Width;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 	void SetValue(int v) {
@@ -228,7 +228,7 @@ public:
 			v = Max;
 		if (this->v != v) {
 			this->v = v;
-			WM_Invalidate(this);
+			Invalidate();
 			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
@@ -243,12 +243,12 @@ public:
 		if (v > Max) {
 			v = Max;
 		}
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void SetNumTicks(int NumTicks) {
 		if ((NumTicks >= 0)) {
 			this->NumTicks = NumTicks;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 	int  GetValue() {

@@ -202,6 +202,9 @@
     <ClCompile Include="GUI\Widget\Button.cppm">
       <Filter>GUI\Widget\Leaf</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\Core\String.cppm">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">

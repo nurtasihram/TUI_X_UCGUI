@@ -40,15 +40,14 @@ public:
 		RGBC TextColor{ RGB_BLACK };
 		TEXTALIGN Align{ TEXTALIGN_LEFT | TEXTALIGN_VCENTER };
 		uint8_t Spacing{ 4 };
-		uint8_t NumStates{ 2 };
 	} static DefaultProps;
 	
 private:
 	Properties Props;
 
-	uint8_t NumStates;
-	uint8_t CurrentState;
-	char *pText;
+	uint8_t NumStates : 2;
+	uint8_t CurrentState : 6;
+	String text;
 
 	void _OnPaint() {
 		int ColorIndex = IsEnabled(),
@@ -65,47 +64,45 @@ private:
 		/* Clear inside  ... Just in case */
 		GUI.SetBkColor(Props.aBkColorBox[ColorIndex]);
 		GUI_Clear();
-		if (this->CurrentState)
-			GUI_DrawBitmap(Props.apBm[(this->CurrentState - 1) * 2 + ColorIndex], EffectSize, EffectSize);
+		if (CurrentState)
+			GUI_DrawBitmap(Props.apBm[(CurrentState - 1) * 2 + ColorIndex], EffectSize, EffectSize);
 		/* Draw the effect arround the box */
 		DrawDown(RectBox);
 		WM_SetUserClipRect(nullptr);
 		/* Draw text if needed */
-		if (this->pText) {
-			/* Draw the text */
-			auto s = this->pText;
-			auto RectText = WM_GetClientRect();
-			RectText.x0 += RectBox.x1 + 1 + Props.Spacing;
-			GUI.SetTextMode(0);
-			GUI.SetColor(Props.TextColor);
-			GUI.SetFont(Props.pFont);
-			GUI_DispStringInRect(s, &RectText, Props.Align);
-			/* Draw focus rectangle */
-			if (this->State & WIDGET_STATE_FOCUS) {
-				int xSizeText = GUI_GetStringDistX(s);
-				int ySizeText = Props.pFont->SizeY();
-				RECT RectFocus = RectText;
-				switch (Props.Align & ~(TEXTALIGN_HORIZONTAL)) {
-					case TEXTALIGN_VCENTER:
-						RectFocus.y0 = (RectText.y1 - ySizeText) / 2;
-						break;
-					case TEXTALIGN_BOTTOM:
-						RectFocus.y0 = RectText.y1 - ySizeText;
-						break;
-				}
-				switch (Props.Align & ~(TEXTALIGN_VERTICAL)) {
-					case TEXTALIGN_HCENTER:
-						RectFocus.x0 += ((RectText.x1 - RectText.x0) - xSizeText) / 2;
-						break;
-					case TEXTALIGN_RIGHT:
-						RectFocus.x0 += (RectText.x1 - RectText.x0) - xSizeText;
-						break;
-				}
-				RectFocus.x1 = RectFocus.x0 + xSizeText;
-				RectFocus.y1 = RectFocus.y0 + ySizeText;
-				GUI.SetColor(RGB_BLACK);
-				GUI_DrawFocusRect(RectFocus, 0);
+		if (!text) return;
+		/* Draw the text */
+		auto RectText = WM_GetClientRect();
+		RectText.x0 += RectBox.x1 + 1 + Props.Spacing;
+		GUI.SetTextMode(0);
+		GUI.SetColor(Props.TextColor);
+		GUI.SetFont(Props.pFont);
+		GUI_DispStringInRect(text, &RectText, Props.Align);
+		/* Draw focus rectangle */
+		if (this->State & WIDGET_STATE_FOCUS) {
+			int xSizeText = GUI_GetStringDistX(text);
+			int ySizeText = Props.pFont->SizeY();
+			RECT RectFocus = RectText;
+			switch (Props.Align & ~(TEXTALIGN_HORIZONTAL)) {
+				case TEXTALIGN_VCENTER:
+					RectFocus.y0 = (RectText.y1 - ySizeText) / 2;
+					break;
+				case TEXTALIGN_BOTTOM:
+					RectFocus.y0 = RectText.y1 - ySizeText;
+					break;
 			}
+			switch (Props.Align & ~(TEXTALIGN_VERTICAL)) {
+				case TEXTALIGN_HCENTER:
+					RectFocus.x0 += ((RectText.x1 - RectText.x0) - xSizeText) / 2;
+					break;
+				case TEXTALIGN_RIGHT:
+					RectFocus.x0 += (RectText.x1 - RectText.x0) - xSizeText;
+					break;
+			}
+			RectFocus.x1 = RectFocus.x0 + xSizeText;
+			RectFocus.y1 = RectFocus.y0 + ySizeText;
+			GUI.SetColor(RGB_BLACK);
+			GUI_DrawFocusRect(RectFocus, 0);
 		}
 	}
 	void _OnTouch(const PID_STATE *pState) {
@@ -115,8 +112,8 @@ private:
 			if (!HasCaptured()) {
 				if (pState->Pressed) {
 					SetCapture(1);
-					this->CurrentState = (this->CurrentState + 1) % this->NumStates;
-					WM_Invalidate(this);
+					CurrentState = (CurrentState + 1) % NumStates;
+					Invalidate();
 					Notification = WM_NOTIFICATION_CLICKED;
 				}
 				else {
@@ -139,8 +136,8 @@ private:
 			if (pInfo->PressedCnt > 0) {
 				switch (pInfo->Key) {
 					case GUI_KEY_SPACE:
-						this->CurrentState = (this->CurrentState + 1) % this->NumStates;
-						WM_Invalidate(this);
+						CurrentState = (CurrentState + 1) % NumStates;
+						Invalidate();
 						return 1;
 				}
 			}
@@ -154,16 +151,20 @@ private:
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
 		switch (MsgId) {
-			case WM_KEY:
-				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
-					return 0;
-				break;
 			case WM_PAINT:
 				pObj->_OnPaint();
 				return 0;
 			case WM_TOUCH:
 				pObj->_OnTouch((const PID_STATE *)Data);
+				return 0;
+			case WM_KEY:
+				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+					return 0;
 				break;
+			case WM_DELETE:
+				GUI_DEBUG_LOG("CheckBox: _Callback(WM_DELETE)\n");
+				pObj->~CheckBox();
+				return 0;
 		}
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
@@ -180,10 +181,6 @@ public:
 			if (!ysize)
 				ysize = CheckBox::DefaultProps.apBm[0]->YSize + 2 * EffectSize;
 		}
-#if WM_SUPPORT_TRANSPARENCY
-		if (CheckBox::DefaultProps.BkColor == RGB_INVALID_COLOR)
-			WinFlags |= WC_HASTRANS;
-#endif
 		/* Create the window */
 		auto pObj = (CheckBox *)WM_CreateWindowAsChild(
 			x0, y0, xsize, ysize,
@@ -212,28 +209,28 @@ public:
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetTextAlign(TEXTALIGN Align) {
 		if (Props.Align == Align)
 			return;
 		Props.Align = Align;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetTextColor(RGBC Color) {
 		if (Props.TextColor == Color)
 			return;
 		Props.TextColor = Color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetBkColor(RGBC Color) {
 		if (Props.BkColor == Color)
 			return;
 		Props.BkColor = Color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetImage(PCBITMAP pBitmap, CHECKBOX_BI Index) {
@@ -242,14 +239,14 @@ public:
 		if (Props.apBm[Index] == pBitmap)
 			return;
 		Props.apBm[Index] = pBitmap;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetSpacing(unsigned Spacing) {
 		if (Props.Spacing == Spacing)
 			return;
 		Props.Spacing = Spacing;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetNumStates(uint8_t NumStates) {
@@ -260,7 +257,7 @@ public:
 		if (NumStates == 2 || NumStates == 3) {
 			Props.apBm[2] = CheckBox::DefaultProps.apBm[2];
 			Props.apBm[3] = CheckBox::DefaultProps.apBm[3];
-			this->NumStates = NumStates;
+			NumStates = NumStates;
 		}
 	}
 
@@ -270,14 +267,14 @@ public:
 		if (CurrentState == State)
 			return;
 		CurrentState = State;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 #pragma endregion
 
 	void SetText(const char *s) {
-		if (GUI__SetText(&pText, s))
-			WM_Invalidate(this);
+		if (text = s)
+			Invalidate();
 	}
 
 	auto GetState() { return CurrentState; }

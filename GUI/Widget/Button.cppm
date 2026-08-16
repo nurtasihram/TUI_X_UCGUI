@@ -47,8 +47,13 @@ public:
 private:
 	Properties Props;
 
-	char *pText;
+	String text;
 	GUI_DRAW *aDrawObj[3];
+
+	~Button() {
+		GUI_ALLOC_FreePtr((void **)&aDrawObj[0]);
+		GUI_ALLOC_FreePtr((void **)&aDrawObj[1]);
+	}
 
 	void _OnPaint() {
 		bool IsPressed = State & BUTTON_STATE_PRESSED;
@@ -75,10 +80,10 @@ private:
 		*/
 		unsigned int Index;
 		if (ColorIndex < 2)
-			Index = this->aDrawObj[BUTTON_BI_PRESSED] && IsPressed ? BUTTON_BI_PRESSED : BUTTON_BI_UNPRESSED;
+			Index = aDrawObj[BUTTON_BI_PRESSED] && IsPressed ? BUTTON_BI_PRESSED : BUTTON_BI_UNPRESSED;
 		else
-			Index = this->aDrawObj[BUTTON_BI_DISABLED] ? BUTTON_BI_DISABLED : BUTTON_BI_UNPRESSED;
-		if (auto pDraw = this->aDrawObj[Index])
+			Index = aDrawObj[BUTTON_BI_DISABLED] ? BUTTON_BI_DISABLED : BUTTON_BI_UNPRESSED;
+		if (auto pDraw = aDrawObj[Index])
 			pDraw->Draw(0, 0);
 		/* Draw the actual button (background and text) */
 #if BUTTON_USE_3D
@@ -88,18 +93,13 @@ private:
 			rInside -= EffectSize;
 #endif
 		GUI.SetTextMode(DRAWMODE_TRANS);
-		GUI_DispStringInRect(pText, &rInside, Props.Align);
+		GUI_DispStringInRect(text, &rInside, Props.Align);
 		WM_SetUserClipRect(nullptr);
 		/* Draw focus */
 		if (State & BUTTON_STATE_FOCUS) {
 			GUI.SetColor(RGB_BLACK);
 			GUI_DrawFocusRect(rClient, EffectSize + 1);
 		}
-	}
-	void _Delete() {
-		GUI_ALLOC_FreePtr((void **)&this->pText);
-		GUI_ALLOC_FreePtr((void **)&this->aDrawObj[0]);
-		GUI_ALLOC_FreePtr((void **)&this->aDrawObj[1]);
 	}
 	void _ButtonPressed() {
 		AddStates(BUTTON_STATE_PRESSED);
@@ -172,9 +172,9 @@ private:
 				pObj->_OnPaint();
 				return 0;
 			case WM_DELETE:
-				GUI_DEBUG_LOG("BUTTON: _BUTTON_Callback(WM_DELETE)\n");
-				pObj->_Delete();
-				break; /* No return here ... WM_DefaultProc needs to be called */
+				GUI_DEBUG_LOG("Button: _Callback(WM_DELETE)\n");
+				pObj->~Button();
+				return 0;
 			case WM_KEY:
 				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
 					return 0;
@@ -225,7 +225,7 @@ public:
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	RGBC GetBkColor(BUTTON_CI Index) {
@@ -237,7 +237,7 @@ public:
 		if (Index > 2)
 			return;
 		Props.aBkColor[Index] = Color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	
 	RGBC GetTextColor(BUTTON_CI Index) {
@@ -249,7 +249,7 @@ public:
 		if (Index > 2)
 			return;
 		Props.aTextColor[Index] = Color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	TEXTALIGN GetTextAlign() { return Props.Align; }
@@ -257,26 +257,14 @@ public:
 		if (Props.Align == Align)
 			return;
 		Props.Align = Align;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 #pragma endregion
 
-	void GetText(char *pBuffer, int MaxLen) {
-		if (pText) {
-			int Len = GUI__strlen(pText);
-			if (Len > (MaxLen - 1))
-				Len = MaxLen - 1;
-			GUI__memcpy((void *)pBuffer, pText, Len);
-			*(pBuffer + Len) = 0;
-		}
-		else {
-			*pBuffer = 0; /* Empty string */
-		}
-	}
 	void SetText(const char *s) {
-		if (GUI__SetText(&pText, s))
-			WM_Invalidate(this);
+		if (text = s)
+			Invalidate();
 	}
 
 	void SetDrawObj(BUTTON_BI Index, GUI_DRAW *pDrawObj) {
@@ -284,7 +272,7 @@ public:
 			return;
 		GUI_ALLOC_FreePtr((void **)&aDrawObj[Index]);
 		aDrawObj[Index] = pDrawObj;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void SetBitmapEx(BUTTON_BI Index, PCBITMAP pBitmap, int x, int y)
 	{ SetDrawObj(Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y)); }

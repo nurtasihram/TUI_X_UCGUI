@@ -445,7 +445,7 @@ public:
 		Props.pFont = pFont;
 		_UpdatePositions();
 		_UpdateButtons(OldHeight);
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	int GetBorderSize() const { return Props.BorderSize; }
@@ -454,7 +454,7 @@ public:
 		if (Props.Align == Align)
 			return;
 		Props.Align = Align;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetBarColor(unsigned Index, RGBC Color) {
@@ -463,7 +463,7 @@ public:
 		if (Props.aBarColor[Index] == Color)
 			return;
 		Props.aBarColor[Index] = Color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetTextColor(unsigned Index, RGBC Color) {
@@ -472,21 +472,21 @@ public:
 		if (Props.aTextColor[Index] == Color)
 			return;
 		Props.aTextColor[Index] = Color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetClientColor(RGBC Color) {
 		if (Props.ClientColor == Color)
 			return;
 		Props.ClientColor = Color;
-		WM_Invalidate(hClient);
+		hClient->Invalidate();
 	}
 	
 #pragma endregion
 
 	void SetText(const char *s) {
 		if (GUI__SetText(&this->pText, s))
-			WM_Invalidate(this);
+			Invalidate();
 	}
 
 	void SetMoveable(bool State) {
@@ -498,11 +498,11 @@ public:
 	void SetActive(bool State) {
 		if (State && !(this->Flags & FRAMEWIN_CF_ACTIVE)) {
 			this->Flags |= FRAMEWIN_CF_ACTIVE;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 		else if (!State && (this->Flags & FRAMEWIN_CF_ACTIVE)) {
 			this->Flags &= ~FRAMEWIN_CF_ACTIVE;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 	void AddMenu(Menu *pMenu) {
@@ -523,7 +523,7 @@ public:
 		pMenu->Attach(this, x0, y0, xSize, 0, 0);
 		WM_SetAnchor(pMenu, WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT);
 		_UpdatePositions();
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	int GetTitleHeight() {
@@ -550,7 +550,7 @@ public:
 		WObj *pChild;
 		for (pChild = this->pFirstChild; pChild; pChild = pChild->pNext)
 			if (pChild->GetID() == Id)
-				WM_Invalidate(pChild);
+				pChild->Invalidate();
 	}
 	void _RestoreMinimized() {
 		/* When window was minimized, restore it */
@@ -636,7 +636,7 @@ public:
 		}
 		Props.BorderSize = Size;
 		_UpdatePositions();
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 #if GUI_SUPPORT_CURSOR
@@ -983,7 +983,7 @@ public:
 			Props.TitleHeight = Height;
 			_UpdatePositions();
 			_UpdateButtons(OldHeight);
-			WM_Invalidate(this);
+			Invalidate();
 		}
 
 		return r;
@@ -1024,7 +1024,7 @@ public:
 					HideWindow();
 				}
 			}
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 

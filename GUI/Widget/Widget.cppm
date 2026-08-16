@@ -141,7 +141,7 @@ struct WIDGET : public WObj {
 	void SetStates(uint16_t States) {
 		if (this->State != States) {
 			this->State = States;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 	void AddStates(uint16_t States) {
@@ -163,7 +163,7 @@ struct WIDGET : public WObj {
 				pEffect = (const WIDGET_EFFECT *)*Data;
 				Diff -= EffectSize();
 				WM__UpdateChildPositions(this, -Diff, -Diff, Diff, Diff);
-				WM_Invalidate(this);
+				Invalidate();
 				return false; /* Message handled -> Return */
 			}
 			case WM_GET_ID:

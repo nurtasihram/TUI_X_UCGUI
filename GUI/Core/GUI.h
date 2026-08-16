@@ -83,6 +83,7 @@ void  GUI_ALLOC_Free(void *ptr);
 void  GUI_ALLOC_FreePtr(void **pptr);
 void *GUI_ALLOC_Realloc(void *ptr, size_t NewSize);
 size_t   GUI_ALLOC_GetMaxSize(void);
+
 void     GUI__memcpy(void *pDest, const void *pSrc, size_t NumBytes);
 void     GUI__memmove(void *pDest, const void *pSrc, size_t NumBytes);
 

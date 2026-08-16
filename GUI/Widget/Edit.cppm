@@ -208,7 +208,7 @@ private:
 				_SetCursorPos(i);
 			}
 			GUI.SetFont(pOldFont);
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 	int _IncrementBuffer(unsigned AddBytes) {
@@ -380,14 +380,14 @@ public:
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetTextAlign(TEXTALIGN Align) {
 		if (Props.Align == Align)
 			return;
 		Props.Align = Align;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetBkColor(EDIT_CI Index, RGBC color) {
@@ -396,7 +396,7 @@ public:
 		if (Props.aBkColor[Index] == color)
 			return;
 		Props.aBkColor[Index] = color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetTextColor(EDIT_CI Index, RGBC color) {
@@ -405,7 +405,7 @@ public:
 		if (Props.aTextColor[Index] == color)
 			return;
 		Props.aTextColor[Index] = color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 #pragma endregion
@@ -475,7 +475,7 @@ public:
 					}
 			}
 		}
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetText(const char *s) {
@@ -507,7 +507,7 @@ public:
 			this->BufferSize = 0;
 			this->CursorPos = 0;
 		}
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void GetText(char *sDest, int MaxLen) {
 		if (sDest) {
@@ -540,7 +540,7 @@ public:
 			this->CurrentValue = Value;
 			if (this->pfUpdateBuffer)
 				this->pfUpdateBuffer(this);
-			WM_Invalidate(this);
+			Invalidate();
 			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
@@ -560,7 +560,7 @@ public:
 			}
 			_IncrementBuffer(MaxLen - this->BufferSize + 1);
 			this->MaxLen = MaxLen;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 
@@ -574,7 +574,7 @@ public:
 
 	void SetCursorAtChar(int Pos) {
 		_SetCursorPos(Pos);
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetSel(int FirstChar, int LastChar) {

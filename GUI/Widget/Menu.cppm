@@ -124,7 +124,7 @@ private:
 		return 0;
 	}
 	void _InvalidateItem(unsigned Index) {
-		WM_Invalidate(this);  /* Can be optimized, no need to invalidate all items */
+		Invalidate();  /* Can be optimized, no need to invalidate all items */
 	}
 	char _IsTopLevelMenu() {
 		if (_SendMenuMessage(this, this->pOwner, MENU_IS_MENU, 0) == 0) {
@@ -378,7 +378,7 @@ private:
 					/* Set active menu as owner of submenu. */
 					pItem.pSubmenu->SetOwner(this);
 					/* Attach submenu and inform it about its activation. */
-					WM_AttachWindowAt(pItem.pSubmenu, WM_GetDesktopWindow(), x, y);
+					WM_AttachWindowAt(pItem.pSubmenu, WObj::GetDesktopWindow(), x, y);
 					_SendMenuMessage(this, pItem.pSubmenu, MENU_ON_OPEN, 0);
 					this->IsSubmenuActive = 1;
 					/* Invalidate menu item. This is needed because the appearance may have changed. */
@@ -556,7 +556,7 @@ private:
 		xSize = this->_CalcWindowSizeX();
 		ySize = this->_CalcWindowSizeY();
 		WM_SetSize(this, xSize, ySize);
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	WM_PARAM _OnMenu(WM_PARAM Data) {
 		auto msg = *(MsgPack *)&Data;
@@ -933,7 +933,7 @@ public:
 			this->Height = ((ySize > 0) ? ySize : 0);
 			auto Pos = pDestWin->GetOrg();
 			SetOwner(pDestWin);
-			WM_AttachWindowAt(this, WM_GetDesktopWindow(), Pos.x, Pos.y);
+			WM_AttachWindowAt(this, WObj::GetDesktopWindow(), Pos.x, Pos.y);
 			_SendMenuMessage(pDestWin, this, MENU_ON_OPEN, 0);
 		}
 	}
@@ -941,7 +941,7 @@ public:
 		if (ColorIndex < GUI_COUNTOF(Props.aBkColor)) {
 			if (Color != Props.aBkColor[ColorIndex]) {
 				Props.aBkColor[ColorIndex] = Color;
-				WM_Invalidate(this);
+				Invalidate();
 			}
 		}
 	}
@@ -975,7 +975,7 @@ public:
 		if (ColorIndex < GUI_COUNTOF(Props.aTextColor)) {
 			if (Color != Props.aTextColor[ColorIndex]) {
 				Props.aTextColor[ColorIndex] = Color;
-				WM_Invalidate(this);
+				Invalidate();
 			}
 		}
 	}

@@ -255,21 +255,21 @@ public:
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetTextColor(RGBC Color) {
 		if (Props.TextColor == Color)
 			return;
 		Props.TextColor = Color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 	void SetBkColor(RGBC Color) {
 		if (Props.BkColor == Color)
 			return;
 		Props.BkColor = Color;
-		WM_Invalidate(this);
+		Invalidate();
 	}
 
 #pragma endregion
@@ -278,15 +278,15 @@ public:
 	void SetHeight(int Height) {
 		auto Rect = GetClientRect();
 		WM_SetSize(this, Rect.XSize(), Height);
-		WM_Invalidate(Parent());
+		Parent()->Invalidate();
 	}
 
 	void SetScrollPos(int ScrollPos) {
-		if ((ScrollPos >= 0)) {
+		if (ScrollPos >= 0) {
 			if (ScrollPos != ScrollPos) {
 				ScrollPos = ScrollPos;
-				WM_Invalidate(this);
-				WM_Invalidate(Parent());
+				Invalidate();
+				Parent()->Invalidate();
 			}
 		}
 	}
@@ -306,33 +306,32 @@ public:
 		if (Columns.AddItem(&Col) == 0) {
 			auto &pColumn = Columns[Index];
 			GUI__SetText(&pColumn.pText, s);
-			WM_Invalidate(this);
-			WM_Invalidate(Parent());
+			Invalidate();
+			Parent()->Invalidate();
 		}
 	}
 	void DeleteItem(uint16_t Index) {
 		if (Index < Columns.NumItems()) {
 			GUI_ALLOC_FreePtr((void **)&Columns[Index].pText);
 			Columns.DeleteItem(Index);
-			WM_Invalidate(this);
-			WM_Invalidate(Parent());
+			Invalidate();
+			Parent()->Invalidate();
 		}
 	}
 	void SetItemText(uint16_t Index, const char *s) {
 		if (Index < Columns.NumItems()) {
 			if (GUI__SetText(&Columns[Index].pText, s))
-				WM_Invalidate(this);
+				Invalidate();
 		}
 	}
 	void SetItemWidth(uint16_t Index, int Width) {
-		if ((Width >= 0)) {
-
+		if (Width >= 0) {
 			if (Index <= Columns.NumItems()) {
 				auto &pColumn = Columns[Index];
 				pColumn.Width = Width;
-				WM_Invalidate(this);
+				Invalidate();
 				Parent()->Require(WM_NOTIFY_CLIENTCHANGE);
-				WM_Invalidate(Parent());
+				Parent()->Invalidate();
 			}
 		}
 	}
@@ -344,7 +343,7 @@ public:
 	void SetTextAlign(uint16_t Index, TEXTALIGN Align) {
 		if (Index < Columns.NumItems()) {
 			Columns[Index].Align = Align;
-			WM_Invalidate(this);
+			Invalidate();
 		}
 	}
 
@@ -357,7 +356,7 @@ public:
 	}
 	void SetBitmapEx(uint16_t Index, PCBITMAP pBitmap, int x, int y) {
 		SetDrawObj(Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
-		WM_Invalidate(this);
+		Invalidate();
 	}
 	void SetBitmap(uint16_t Index, PCBITMAP pBitmap) {
 		SetBitmapEx(Index, pBitmap, 0, 0);

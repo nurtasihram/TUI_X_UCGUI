@@ -34,8 +34,6 @@ void WM_Init(void);
 int  WM_Exec(void);  /* Execute all jobs ... Return 0 if nothing was done. */
 int  WM_Exec1(void); /* Execute one job  ... Return 0 if nothing was done. */
 
-uint16_t WM_SetCreateFlags(uint16_t Flags);
-
 void    WM_AttachWindow(WObj *pWin, WObj *pParent);
 void    WM_AttachWindowAt(WObj *pWin, WObj *pParent, int x, int y);
 void    WM_ClrHasTrans(WObj *pWin);
@@ -44,12 +42,9 @@ WObj *WM_CreateWindowAsChild(int x0, int y0, int xSize, int ySize, WObj *pWinPar
 void    WM_DeleteWindow(WObj *pWin);
 void    WM_DetachWindow(WObj *pWin);
 int     WM_GetHasTrans(WObj *pWin);
-void  WM_InvalidateArea(const RECT *pRect);
-void  WM_Invalidate(WObj *pWin, const RECT *pRect = nullptr);
 void  WM_InvalidateDescs(WObj *pWin);    /* not to be documented (may change in future version) */
 void  WM_SetHasTrans(WObj *pWin);
 void  WM_SetTransState(WObj *pWin, unsigned State);
-void  WM_ValidateWindow(WObj *pWin);
 int   WM_GetInvalidRect(WObj *pWin, RECT *pRect);
 void  WM_SetStayOnTop(WObj *pWin, int OnOff);
 int   WM_GetStayOnTop(WObj *pWin);
@@ -68,7 +63,6 @@ void WM_DeleteTimer(WObj *pWin, int UserId); /* not to be documented (may change
 
 /* Diagnostics */
 int WM_GetNumWindows(void);
-int WM_GetNumInvalidWindows(void);
 
 /* Set (new) callback function */
 WM_CALLBACK *WM_SetCallback(WObj *Win, WM_CALLBACK *cb);
@@ -85,10 +79,6 @@ WObj *WM_GetClientWindow(WObj *pObj);
 /* Change Z-Order of windows */
 void WM_BringToBottom(WObj *pWin);
 void WM_BringToTop(WObj *pWin);
-
-/* Desktop */
-void WM_SetDesktopColor(RGBC Color);
-WObj *WM_GetDesktopWindow(void);
 
 /* Select window used for drawing operations */
 WObj *WM_SelectWindow(WObj *pWin);
@@ -142,10 +132,10 @@ inline void WM_Iterate(RECT &r, auto fn) {
 
 struct WObj {
 	RECT Rect, InvalidRect;
-	WM_CALLBACK *cb; /* ptr to notification callback */
-	WObj *pNextLin, *pNext,
-		 *pParent, *pFirstChild;
-	uint16_t Status; /* Some status flags */
+	WM_CALLBACK *cb = nullptr; /* ptr to notification callback */
+	WObj *pNextLin = nullptr, *pNext = nullptr,
+		 *pParent = nullptr, *pFirstChild = nullptr;
+	uint16_t Status = 0; /* Some status flags */
 
 #pragma region Window list
 	static WObj *pWinFirst;
@@ -178,6 +168,126 @@ public:
 	static bool IsWindow(WObj *pWin) { return pWin ? pWin->IsWindow() : false; }
 #pragma endregion
 
+#pragma region Parent list
+	void _InsertWindowIntoList(WObj *pNewParent) {
+		if (!pNewParent)
+			return;
+		bool isStayOnTop = Status & WC_STAYONTOP;
+		auto pCurrent = pNewParent->pFirstChild;
+		pNext = nullptr;
+		pParent = pNewParent;
+		if (!pCurrent) {
+			pNewParent->pFirstChild = this;
+			return;
+		}
+		/* Insert before the first STAYONTOP child when the new window is not STAYONTOP. */
+		if (!isStayOnTop && (pCurrent->Status & WC_STAYONTOP)) {
+			pNext = pCurrent;
+			pNewParent->pFirstChild = this;
+			return;
+		}
+		/* Walk the sibling list until the correct insertion point is found. */
+		for (;;) {
+			auto pNext = pCurrent->pNext;
+			if (!pNext) {
+				pCurrent->pNext = this;
+				return;
+			}
+			if (!isStayOnTop && (pNext->Status & WC_STAYONTOP)) {
+				pCurrent->pNext = this;
+				this->pNext = pNext;
+				return;
+			}
+			pCurrent = pNext;
+		}
+	}
+	void _RemoveWindowFromList() {
+		if (!pParent)
+			return;
+		auto pChild = pParent->pFirstChild;
+		if (pChild == this) {
+			pParent->pFirstChild = pChild->pNext;
+			return;
+		}
+		while (pChild) {
+			auto pNext = pChild->pNext;
+			if (pNext == this) {
+				pChild->pNext = this->pNext;
+				return;
+			}
+			pChild = pNext;
+		}
+	}
+
+	void _DetachWindow() {
+		if (!pParent)
+			return;
+		_RemoveWindowFromList();
+		/* Clear area used by this window */
+		WObj::InvalidateArea(Rect);
+		pParent = nullptr;
+	}
+#pragma endregion 
+
+#pragma region Invalidation
+	static uint16_t NumInvalidWindows;
+//private:
+	bool _ClipAtParentBorders(RECT &r) const {
+		for (auto pWin = this; pWin->Status & WC_VISIBLE; pWin = pWin->pParent) {
+			r &= pWin->Rect;
+			if (!pWin->pParent)
+				return pWin == pWinDesktop;
+		}
+		return false;
+	}
+	void _Invalidate1Abs(RECT r) {
+		if (!(Status & WC_VISIBLE))
+			return; /* Window is not visible... we are done */
+		if ((Status & (WC_HASTRANS | WC_CONST_OUTLINE)) == WC_HASTRANS)
+			return; /* Window is transparent; transparency may change... we are done, since background will be invalidated */
+		/* Calc affected area */
+		if (r &= Rect) {
+			if (Status & WC_ACTIVATE)
+				InvalidRect |= r;
+			else {
+				InvalidRect = r;
+				Status |= WC_ACTIVATE;
+				NumInvalidWindows++;
+			}
+		}
+	}
+public:
+	static uint16_t GetNumInvalidWindows() { return NumInvalidWindows; }
+	static void InvalidateArea(const RECT &r) {
+		for (auto pWin = WObj::pWinFirst; pWin; pWin = pWin->pNextLin)
+			pWin->_Invalidate1Abs(r);
+	}
+	static void _InvalidateAreaBelow(const RECT &r, WObj *StopWin) {
+		InvalidateArea(r); /* Can be optimized to spare windows above */
+	}
+
+	void Invalidate(const RECT *pRect = nullptr) {
+		if (!(Status & WC_VISIBLE))
+			return;
+		auto r = Rect;
+		if (pRect)
+			r &= *pRect + GetOrg();
+		/* Optimization that saves invalidation if window area is not visible ... Not required */
+		if (!_ClipAtParentBorders(r))
+			return;
+		if ((Status & (WC_HASTRANS | WC_CONST_OUTLINE)) == WC_HASTRANS)
+			_InvalidateAreaBelow(r, this);        /* Can be optimized to spare windows above */
+		else
+			_Invalidate1Abs(r);
+	}
+	void Validate() {
+		if (Status & WC_ACTIVATE) {
+			Status &= ~WC_ACTIVATE;
+			NumInvalidWindows--;
+		}
+	}
+#pragma endregion
+
 public:
 
 	auto GetFlags() const { return Status; }
@@ -195,7 +305,6 @@ public:
 	auto NextSibling() const { return pNext; }
 
 #pragma region Coordinate
-
 	auto GetRect() const { return Rect; }
 	
 	auto GetOrg() const { return Rect.LeftTop(); }
@@ -221,6 +330,38 @@ public:
 			pChild = pNextChild;
 		}
 		return pWin; /* No Child affected ... The parent is the right one */
+	}
+#pragma endregion
+
+#pragma region Desktop
+//private:
+	static WObj *pWinDesktop;
+	static RGBC BkColorDesktop;
+	static WM_PARAM cbBackWin(WObj *pWin, int MsgId, WM_PARAM Data) {
+		switch (MsgId) {
+			case WM_KEY: {
+				auto pKeyInfo = (const WM_KEY_INFO *)Data;
+				if (pKeyInfo->PressedCnt == 1)
+					GUI_StoreKey(pKeyInfo->Key);
+				return 0;
+			}
+			case WM_PAINT:
+				if (BkColorDesktop != RGB_INVALID_COLOR) {
+					GUI.SetBkColor(BkColorDesktop);
+					GUI_Clear();
+				}
+				return 0;
+			default:
+				return WM_DefaultProc(pWin, MsgId, Data);
+		}
+		return 0;
+	}
+public:
+	static WObj *GetDesktopWindow() { return pWinDesktop; }
+	static void SetDesktopColor(RGBC Color) {
+		BkColorDesktop = Color;
+		if (pWinDesktop)
+			pWinDesktop->Invalidate();
 	}
 #pragma endregion
 
@@ -370,7 +511,13 @@ WObj *WM_Screen2Win(POINT Pos, WObj *pStop = nullptr) {
 
 WObj *WObj::pWinFirst = nullptr;
 
+uint16_t WObj::NumInvalidWindows = 0;
+
+WObj *WObj::pWinDesktop = nullptr;
+RGBC WObj::BkColorDesktop = RGB_GRAY;
+
 WObj *WObj::pWinCapture = nullptr;
 bool  WObj::WM__CaptureReleaseAuto = false;
 POINT WObj::WM__CapturePoint = { 0, 0 };
+
 WObj *WObj::pWinFocus = nullptr;

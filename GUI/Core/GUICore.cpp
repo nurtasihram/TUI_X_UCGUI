@@ -584,20 +584,17 @@ void GL_DispChar(uint16_t c) {
 bool GUI__SetText(char **ppText, const char *s) {
 	if (!ppText)
 		return false;
-	if (!s) {
+	auto size = GUI__strlen(s);
+	if (!size) {
 		if (*ppText) 
 			GUI_ALLOC_Free(*ppText);
 		*ppText = nullptr;
 		return true;
 	}
-	if (!GUI__strcmp(*ppText, s)) 
-		return false;	
-	auto pNewText = (char *)GUI_ALLOC_AllocNoInit(GUI__strlen(s) + 1);
-	if (!pNewText) 
+	auto pText = *ppText = (char *)GUI_ALLOC_Realloc(*ppText, ++size);
+	if (!pText)
 		return false;
-	GUI__strcpy(pNewText, s);
-	GUI_ALLOC_Free(*ppText);
-	*ppText = pNewText;
+	GUI__memcpy(pText, s, size);
 	return true;
 }
 bool GUI__strcmp(const char *s0, const char *s1) {
