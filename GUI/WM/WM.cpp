@@ -64,11 +64,6 @@ static WObj *pWinNextDraw;
 
 PID_STATE WM_PID__StateLast;
 
-#if WM_SUPPORT_TRANSPARENCY
-int WM__TransWindowCnt;
-WObj *WM__hATransWindow;
-#endif
-
 #pragma region CriticalHandles
 struct WM_CRITICAL_HANDLE {
 	WM_CRITICAL_HANDLE *pNext;
@@ -121,10 +116,6 @@ static void ResetNextDrawWin(void) {
 *
 */
 static WObj * _GethDrawWin(void) {
-#if WM_SUPPORT_TRANSPARENCY
-	if (WM__hATransWindow) 
-		return WM__hATransWindow;
-#endif
 	return pWinActive;
 }
 static void _SetClipRectUserIntersect(const RECT *prSrc) {
@@ -196,10 +187,6 @@ WObj * WM_CreateWindowAsChild(int x0, int y0, int width, int height
 		if (Style & WC_ACTIVATE)
 			WM_SelectWindow(pWin);  /* This is not needed if callbacks are being used, but it does not cost a lot and makes life easier ... */
 		/* Handle the Style flags, one at a time */
-#if WM_SUPPORT_TRANSPARENCY
-		if (Style & WC_HASTRANS)
-			WM__TransWindowCnt++; /* Increment counter for transparency windows */
-#endif
 		if (Style & WC_BGND)
 			WM_BringToBottom(pWin);
 		if (Style & WC_VISIBLE) {
@@ -234,11 +221,6 @@ void WM_DeleteWindow(WObj * pWin) {
 		pWin->_DetachWindow();
 		/* Remove window from window stack */
 		pWin->_RemoveFromLinList();
-		/* Handle transparency counter if necessary */
-#if WM_SUPPORT_TRANSPARENCY
-		if (pWin->Status & WC_HASTRANS)
-			WM__TransWindowCnt--;
-#endif
 		/* Make sure window is no longer counted as invalid */
 		if (pWin->Status & WC_ACTIVATE)
 			WObj::NumInvalidWindows--;
@@ -532,21 +514,9 @@ bool WM__InitIVRSearch(RECT rcMax) {
 	if (GUI.WM__pUserClipRect) {
 		auto pWin = pAWin;
 		auto rUser = *(GUI.WM__pUserClipRect);
-#if WM_SUPPORT_TRANSPARENCY
-		if (WM__hATransWindow)
-			pWin = WM__hATransWindow;
-#endif
 		rUser += pWin->GetOrg();
 		r &= rUser;
 	}
-	/* For transparent windows, we need to further reduce the rectangle */
-#if WM_SUPPORT_TRANSPARENCY
-	if (WM__hATransWindow)
-		if (!WM__hATransWindow->_ClipAtParentBorders(r)) {
-			--_ClipContext.EntranceCnt;
-			return false;           /* Nothing to draw */
-		}
-#endif
 	/* Iterate over all ancestors and clip at their borders. If there is no visible part, we are done */
 	if (!pWinActive->_ClipAtParentBorders(r)) {
 		--_ClipContext.EntranceCnt;
@@ -564,10 +534,6 @@ void WM__ActivateClipRect(void) {
 		WObj *pAWin;
 		pAWin = pWinActive;
 		r = pAWin->Rect;
-#if WM_SUPPORT_TRANSPARENCY
-		if (WM__hATransWindow)
-			WM__hATransWindow->_ClipAtParentBorders(r);
-#endif
 		/* Take UserClipRect into account */
 		_SetClipRectUserIntersect(&r);
 	}
@@ -590,80 +556,7 @@ static void _Paint1(WObj *pWin) {
 		WM__PaintCallbackCnt--;
 	}
 }
-/*********************************************************************
-*
-*       _Paint1Trans
-*
-* Purpose:
-*   Draw a transparent window as part of an other one (the active window: pAWin).
-*   This is required because transparent windows are drawn as part of their
-*   non-transparent parents.
-* Return value:
-*   0 if nothing was drawn (no invalid rect)
-*   1 if something was drawn (invalid rect exists)
-* Add. info:
-*   It is important to restore the modified settings, especially the invalid rectangle
-*   of the window. The invalid rectangle needs to be set, as it is passed as add. info
-*   to the callback on WM_PAINT.
-*   On traditional transparent windows, the transparent window is never drawn on its own,
-*   so there is no need to restore the invalid rectangle.
-*   However, with WC_CONST_OUTLINE, the window itself may need to be redrawn because it
-*   can be invalid. Modifying the invalid rectangle would lead to not updating the window
-*   in the worst case.
-*/
-#if WM_SUPPORT_TRANSPARENCY
-static int _Paint1Trans(WObj *pWin) {
-	auto pAWin = pWinActive;
-	/* Check if we need to do any drawing */
-	if (pWin->Rect <= pAWin->InvalidRect) {
-		/* Save old values */
-		auto Prev = GUI.Off;
-		/* Set values for the current (transparent) window, rather than the one below */
-		pWin->InvalidRect = pWin->Rect & pAWin->InvalidRect;
-		WM__hATransWindow = pWin;
-		GUI.Off = pWin->Rect.LeftTop();
-		/* Do the actual drawing ... */
-		_Paint1(pWin);
-		/* Restore settings */
-		WM__hATransWindow = 0;
-		GUI.Off = Prev;
-		return 1; /* Some drawing took place */
-	}
-	return 0; /* No invalid area, so nothing was drawn */
-}
-static void _PaintTransChildren(WObj *pWin) {
-	WObj *pChild;
-	if (pWin->Status & WC_VISIBLE) {
-		for (pChild = pWin->pFirstChild; pChild; pChild = pChild->pNext) {
-			if ((pChild->Status & (WC_HASTRANS | WC_VISIBLE))   /* Transparent & visible ? */
-				== (WC_HASTRANS | WC_VISIBLE)) {
-				/* Set invalid area of the window to draw */
-				if (pWin->InvalidRect <= pChild->Rect) {
-					RECT InvalidRectPrev = pWin->InvalidRect;
-					if (_Paint1Trans(pChild))
-						_PaintTransChildren(pChild);
-					pWin->InvalidRect = InvalidRectPrev;
-				}
-			}
-		}
-	}
-}
-static void _PaintTransTopSiblings(WObj *pWin) {
-	auto pParent = pWin->pParent;
-	pWin = pWin->pNext;
-	while (pParent) { /* Go hierarchy up to desktop window */
-		for (; pWin; pWin = pWin->pNext) {
-			/* paint window if it is transparent & visible */
-			if ((pWin->Status & (WC_HASTRANS | WC_VISIBLE)) == (WC_HASTRANS | WC_VISIBLE))
-				_Paint1Trans(pWin);
-			/* paint transparent & visible children */
-			_PaintTransChildren(pWin);
-		}
-		pWin = pParent->pNext;
-		pParent = pParent->pParent;
-	}
-}
-#endif
+
 /*********************************************************************
 *
 *       Callback for Paint message
@@ -677,17 +570,7 @@ static void _PaintTransTopSiblings(WObj *pWin) {
 *   (transparent children and transparent top siblings)
 */
 void WM__PaintWinAndOverlays(WObj *pWin) {
-#if WM_SUPPORT_TRANSPARENCY
-	/* Transparent windows without const outline are drawn as part of the background and can be skipped. */
-	if ((pWin->Status & (WC_HASTRANS | WC_CONST_OUTLINE)) != WC_HASTRANS)
-#endif
-		_Paint1(pWin); /* Draw the window itself */
-#if WM_SUPPORT_TRANSPARENCY
-	if (WM__TransWindowCnt != 0) {
-		_PaintTransChildren(pWin); /* Draw all transparent children */
-		_PaintTransTopSiblings(pWin); /* Draw all transparent top level siblings */
-	}
-#endif
+	_Paint1(pWin); /* Draw the window itself */
 }
 /*********************************************************************
 *
@@ -1081,13 +964,7 @@ void WM_ForEachDesc(WObj * pWin, WM_tfForEach *pcb, void *pData) {
 	WM__ForEachDesc(pWin, pcb, pData);
 }
 RECT WM_GetClientRect() {
-	WObj * pWin;
-#if WM_SUPPORT_TRANSPARENCY
-	pWin = WM__hATransWindow ? WM__hATransWindow : pWinActive;
-#else
-	pWin = pWinActive;
-#endif
-	return pWin->GetClientRect();
+	return pWinActive->GetClientRect();
 }
 /*********************************************************************
 *
@@ -1321,53 +1198,6 @@ void WM_SetSize(WObj * pWin, int xSize, int ySize) {
 		WM_ResizeWindow(pWin, dx, dy);
 	}
 }
-#if WM_SUPPORT_TRANSPARENCY   /* If 0, WM will not generate any code */
-void WM_SetHasTrans(WObj * pWin) {
-	if (pWin) {
-		/* First check if this is necessary at all */
-		if (!(pWin->Status & WC_HASTRANS)) {
-			pWin->Status |= WC_HASTRANS; /* Set Transparency flag */
-			WM__TransWindowCnt++;          /* Increment counter for transparency windows */
-			pWin->Invalidate();      /* Mark content as invalid */
-		}
-	}
-}
-void WM_ClrHasTrans(WObj * pWin) {
-	if (pWin) {
-		/* First check if this is necessary at all */
-		if (pWin->Status & WC_HASTRANS) {
-			pWin->Status &= ~WC_HASTRANS;
-			WM__TransWindowCnt--;            /* Decrement counter for transparency windows */
-			pWin->Invalidate();        /* Mark content as invalid */
-		}
-	}
-}
-int WM_GetHasTrans(WObj * pWin) {
-	int r = 0;
-	if (pWin) {
-		r = pWin->Status & WC_HASTRANS;
-	}
-	return r;
-}
-void WM_SetTransState(WObj * pWin, unsigned State) {
-	if (pWin) {
-		if (State & WC_HASTRANS)
-			WM_SetHasTrans(pWin);
-		else 
-			WM_ClrHasTrans(pWin);
-		if (State & WC_CONST_OUTLINE) {
-			if (!(pWin->Status & WC_CONST_OUTLINE)) {
-				pWin->Status |= WC_CONST_OUTLINE;
-				pWin->Invalidate();
-			}
-		}
-		else if (pWin->Status & WC_CONST_OUTLINE) {
-			pWin->Status &= ~WC_CONST_OUTLINE;
-			pWin->Invalidate();
-		}
-	}
-}
-#endif /* WM_SUPPORT_TRANSPARENCY */
 
 const RECT *WM_SetUserClipRect(const RECT *pRect) {
 	auto pRectReturn = GUI.WM__pUserClipRect;

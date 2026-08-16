@@ -5,11 +5,6 @@
 import TUX;
 import TUX.Window;
 
-/* Support for transparency. Switching it off makes Wm smaller and faster */
-#ifndef WM_SUPPORT_TRANSPARENCY
-#define WM_SUPPORT_TRANSPARENCY 1
-#endif
-
 /* Make sure we actually have configured windows. If we have not,
 there is no point for a windows manager and it will therefor not
 generate any code !
