@@ -342,50 +342,49 @@ private:
 		}
 	}
 	void _OpenSubmenu(unsigned Index) {
-		if (this->Flags & MENU_SF_ACTIVE) {
-			char PrevActiveSubmenu;
-			PrevActiveSubmenu = this->IsSubmenuActive;
-			/* Close previous submenu (if needed) */
-			this->_CloseSubmenu();
-			auto &pItem = this->ItemArray[Index];
-			if (pItem.pSubmenu) {
-				if ((pItem.Flags & MENU_IF_DISABLED) == 0) {
-					int x, y, EffectSize;
-					/* Calculate position of submenu */
-					EffectSize = this->_GetEffectSize();
-					this->_GetItemPos(Index, &x, &y);
-					if (this->Flags & MENU_SF_VERTICAL) {
-						x += this->_CalcMenuSizeX() - (this->_GetEffectSize() << 1);
-						y -= EffectSize;
-					}
-					else {
-						y += this->_CalcMenuSizeY() - (this->_GetEffectSize() << 1);
-						x -= EffectSize;
-					}
-					x += GetOrgX();
-					y += GetOrgY();
-					/*
-					 * Notify owner window when for the first time open a menu (when no
-					 * other submenu was open), so it can initialize the menu items.
-					 */
-					if (PrevActiveSubmenu == 0) {
-						if (this->_IsTopLevelMenu()) {
-							_SendMenuMessage(this, this->pOwner, MENU_ON_INITMENU, 0);
-						}
-					}
-					/* Notify owner window when a submenu opens, so it can initialize the menu items. */
-					_SendMenuMessage(this, this->pOwner, MENU_ON_INITSUBMENU, pItem.Id);
-					/* Set active menu as owner of submenu. */
-					pItem.pSubmenu->SetOwner(this);
-					/* Attach submenu and inform it about its activation. */
-					WM_AttachWindowAt(pItem.pSubmenu, WObj::GetDesktopWindow(), x, y);
-					_SendMenuMessage(this, pItem.pSubmenu, MENU_ON_OPEN, 0);
-					this->IsSubmenuActive = 1;
-					/* Invalidate menu item. This is needed because the appearance may have changed. */
-					this->_InvalidateItem(Index);
-				}
+		if (!(Flags & MENU_SF_ACTIVE))
+			return;
+		bool PrevActiveSubmenu = IsSubmenuActive;
+		/* Close previous submenu (if needed) */
+		this->_CloseSubmenu();
+		auto &pItem = this->ItemArray[Index];
+		if (!pItem.pSubmenu)
+			return;
+		if (pItem.Flags & MENU_IF_DISABLED)
+			return;
+		int x, y, EffectSize;
+		/* Calculate position of submenu */
+		EffectSize = this->_GetEffectSize();
+		this->_GetItemPos(Index, &x, &y);
+		if (this->Flags & MENU_SF_VERTICAL) {
+			x += this->_CalcMenuSizeX() - (this->_GetEffectSize() << 1);
+			y -= EffectSize;
+		}
+		else {
+			y += this->_CalcMenuSizeY() - (this->_GetEffectSize() << 1);
+			x -= EffectSize;
+		}
+		x += GetOrgX();
+		y += GetOrgY();
+		/*
+			* Notify owner window when for the first time open a menu (when no
+			* other submenu was open), so it can initialize the menu items.
+			*/
+		if (PrevActiveSubmenu == 0) {
+			if (this->_IsTopLevelMenu()) {
+				_SendMenuMessage(this, this->pOwner, MENU_ON_INITMENU, 0);
 			}
 		}
+		/* Notify owner window when a submenu opens, so it can initialize the menu items. */
+		_SendMenuMessage(this, this->pOwner, MENU_ON_INITSUBMENU, pItem.Id);
+		/* Set active menu as owner of submenu. */
+		pItem.pSubmenu->SetOwner(this);
+		/* Attach submenu and inform it about its activation. */
+		WM_AttachWindowAt(pItem.pSubmenu, WObj::GetDesktopWindow(), x, y);
+		_SendMenuMessage(this, pItem.pSubmenu, MENU_ON_OPEN, 0);
+		this->IsSubmenuActive = 1;
+		/* Invalidate menu item. This is needed because the appearance may have changed. */
+		this->_InvalidateItem(Index);
 	}
 	void _ClosePopup() {
 		if (this->Flags & MENU_SF_POPUP) {
@@ -734,15 +733,16 @@ private:
 
 public:
 
-	static Menu *Create(int x0, int y0, int xSize, int ySize, WObj *hParent, int WinFlags, int ExFlags, int Id) {
+	static Menu *Create(int ExFlags, int Id) {
 		/* Create the window */
-		auto pObj = (Menu *)WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent,
-												   WC_VISIBLE | WC_STAYONTOP | WinFlags,
+		auto pObj = (Menu *)WM_CreateWindowAsChild(0, 0, 0, 0, nullptr,
+												   WC_VISIBLE | WC_STAYONTOP,
 												   Menu::_Callback, sizeof(Menu) - sizeof(WObj));
 		if (!pObj) {
 			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Menu create failed");
 			return nullptr;
 		}
+		pObj->_DetachWindow();
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		/* init member variables */
@@ -752,19 +752,10 @@ public:
 			ExFlags &= ~(MENU_SF_ACTIVE);
 		pObj->Props = Menu::DefaultProps;
 		pObj->Flags = ExFlags;
-		pObj->Width = ((xSize > 0) ? xSize : 0);
-		pObj->Height = ((ySize > 0) ? ySize : 0);
 		pObj->Sel = -1;
-		pObj->pOwner = 0;
-		pObj->IsSubmenuActive = 0;
 		pObj->SetEffect(MENU__pDefaultEffect);
 		return pObj;
 	}
-	WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							 hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-	}
-
 
 private:
 
@@ -850,10 +841,11 @@ public:
 	}
 	void Attach(WObj *pDestWin, int x, int y, int xSize, int ySize, int Flags) {
 		GUI_USE_PARA(Flags);
-		this->Width = ((xSize > 0) ? xSize : 0);
-		this->Height = ((ySize > 0) ? ySize : 0);
+		Width = xSize > 0 ? xSize : 0;
+		Height = ySize > 0 ? ySize : 0;
 		WM_AttachWindowAt(this, pDestWin, x, y);
-		this->_ResizeMenu();
+		_ResizeMenu();
+		ShowWindow();
 	}
 
 	void DeleteItem(uint16_t ItemId) {

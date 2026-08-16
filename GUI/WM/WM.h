@@ -13,5 +13,3 @@ generate any code !
 #ifndef WM_SUPPORT_OBSTRUCT
 #define WM_SUPPORT_OBSTRUCT 1
 #endif
-
-#define WM_UNATTACHED  ((WObj *)-1) /* Do not attach to a window */

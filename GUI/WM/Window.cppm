@@ -138,6 +138,7 @@ struct WObj {
 	uint16_t Status = 0; /* Some status flags */
 
 #pragma region Window list
+	static uint16_t NumWindows;
 	static WObj *pWinFirst;
 	void _RemoveFromLinList() {
 		for (auto pCur = pWinFirst; pCur; ) {
@@ -165,6 +166,7 @@ public:
 				return true;
 		return false;
 	}
+	static auto GetNumWindows() { return NumWindows; }
 	static bool IsWindow(WObj *pWin) { return pWin ? pWin->IsWindow() : false; }
 #pragma endregion
 
@@ -228,6 +230,46 @@ public:
 		pParent = nullptr;
 	}
 #pragma endregion 
+
+public:
+	void *operator new(size_t size) {
+		return GUI_ALLOC_AllocNoInit(size);
+	}
+	void operator delete(void *p) {
+		GUI_ALLOC_Free(p);
+	}
+
+public:
+	WObj(RECT r, WM_CF Style, WM_CALLBACK *cb, WObj *pParent = nullptr) : Rect(r), cb(cb) {
+		//WM_ASSERT_NOT_IN_PAINT();
+		/* Default parent is Desktop 0 */
+		if (!pParent)
+			if (NumWindows)
+				pParent = pWinDesktop;
+		if (pParent) {
+			Rect += pParent->Rect.LeftTop();
+			if (!r.XSize())
+				Rect.x1 = pParent->Rect.x1;
+			if (!r.YSize())
+				Rect.y1 = pParent->Rect.y1;
+		}
+		NumWindows++;
+		/* Add to linked lists */
+		_AddToLinList();
+		_InsertWindowIntoList(pParent);
+		/* Activate window if WC_ACTIVATE is specified */
+		if (Style & WC_ACTIVATE)
+			WM_SelectWindow(this);  /* This is not needed if callbacks are being used, but it does not cost a lot and makes life easier ... */
+		/* Handle the Style flags, one at a time */
+		if (Style & WC_BGND)
+			WM_BringToBottom(this);
+		if (Style & WC_VISIBLE) {
+			Status |= WC_VISIBLE;  /* Set Visibility flag */
+			Invalidate();    /* Mark content as invalid */
+		}
+		Require(WM_CREATE);
+	}
+
 
 #pragma region Invalidation
 	static uint16_t NumInvalidWindows;
@@ -509,6 +551,7 @@ WObj *WM_Screen2Win(POINT Pos, WObj *pStop = nullptr) {
 
 }
 
+uint16_t WObj::NumWindows = 0;
 WObj *WObj::pWinFirst = nullptr;
 
 uint16_t WObj::NumInvalidWindows = 0;

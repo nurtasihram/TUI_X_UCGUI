@@ -517,9 +517,8 @@ public:
 		y0 = BorderSize + TitleHeight + IBorderSize;
 		xSize = GetSizeX() - BorderSize * 2;
 		this->pMenu = pMenu;
-		if (this->cb) {
+		if (this->cb)
 			pMenu->SetOwner(this->hClient);
-		}
 		pMenu->Attach(this, x0, y0, xSize, 0, 0);
 		WM_SetAnchor(pMenu, WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT);
 		_UpdatePositions();

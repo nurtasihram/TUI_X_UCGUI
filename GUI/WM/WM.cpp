@@ -65,38 +65,33 @@ static WObj *pWinNextDraw;
 PID_STATE WM_PID__StateLast;
 
 #pragma region CriticalHandles
-struct WM_CRITICAL_HANDLE {
-	WM_CRITICAL_HANDLE *pNext;
-	WObj *pWin;
-};
-static WM_CRITICAL_HANDLE *pFirstCriticalHandle;
-static void _CheckCriticalHandles(WObj * pWin) {
-	WM_CRITICAL_HANDLE *pCH;
-	for (pCH = pFirstCriticalHandle; pCH; pCH = pCH->pNext)
-		if (pCH->pWin == pWin)
-			pCH->pWin = 0;
-}
-void WM__AddCriticalHandle(WM_CRITICAL_HANDLE *pCriticalHandle) {
-	pCriticalHandle->pNext = pFirstCriticalHandle;
-	pFirstCriticalHandle = pCriticalHandle;
-}
-void WM__RemoveCriticalHandle(WM_CRITICAL_HANDLE *pCriticalHandle) {
-	if (pFirstCriticalHandle) {
-		WM_CRITICAL_HANDLE *pCH, *pLast = 0;
-		for (pCH = pFirstCriticalHandle; pCH; pCH = pCH->pNext) {
-			if (pCH == pCriticalHandle) {
+struct CriticalHandle {
+	static CriticalHandle *pFirst;
+	CriticalHandle *pNext = nullptr;
+	WObj *pWin = nullptr;
+	static void Check(WObj * pWin) {
+		for (auto pCH = pFirst; pCH; pCH = pCH->pNext)
+			if (pCH->pWin == pWin)
+				pCH->pWin = nullptr;
+	}
+	void Add() {
+		pNext = pFirst;
+		pFirst = this;
+	}
+	void Remove() {
+		CriticalHandle *pLast = nullptr;
+		for (auto pCH = pFirst; pCH; pCH = pCH->pNext) {
+			if (pCH == this) {
 				if (pLast)
 					pLast->pNext = pCH->pNext;
-				else if (pCH->pNext)
-					pFirstCriticalHandle = pCH->pNext;
-				else
-					pFirstCriticalHandle = 0;
+				pFirst = pCH->pNext;
 				break;
 			}
 			pLast = pCH;
 		}
 	}
-}
+};
+CriticalHandle *CriticalHandle::pFirst = nullptr;
 #pragma endregion
 
 /*********************************************************************
@@ -149,8 +144,6 @@ WObj * WM_CreateWindowAsChild(int x0, int y0, int width, int height
 		if (NumWindows)
 			pParent = WObj::pWinDesktop;
 	}
-	if (pParent == WM_UNATTACHED)
-		pParent = nullptr;
 	if (pParent) {
 		x0 += pParent->Rect.x0;
 		y0 += pParent->Rect.y0;
@@ -204,32 +197,32 @@ void WM_DeleteWindow(WObj * pWin) {
 	if (!pWin)
 		return;
 	WM_ASSERT_NOT_IN_PAINT();
-	if (WObj::IsWindow(pWin)) {
-		ResetNextDrawWin(); /* Make sure the window will no longer receive drawing messages */
-		/* Make sure that focus is set to an existing window */
-		if (WObj::pWinFocus == pWin)
-			WObj::pWinFocus = nullptr;
-		WObj::ReleaseCapture(); /* Make sure the window does not have capture */
-		/* check if critical handles are affected. If so, reset the window handle to 0 */
-		_CheckCriticalHandles(pWin);
-		/* Inform parent */
-		WM_NotifyParent(pWin, WM_NOTIFICATION_CHILD_DELETED);
-		/* Delete all children */
-		_DeleteAllChildren(pWin->pFirstChild);
-		/* Send WM_DELETE message to window in order to inform window itself */
-		pWin->Require(WM_DELETE);     /* tell window about it */
-		pWin->_DetachWindow();
-		/* Remove window from window stack */
-		pWin->_RemoveFromLinList();
-		/* Make sure window is no longer counted as invalid */
-		if (pWin->Status & WC_ACTIVATE)
-			WObj::NumInvalidWindows--;
-		/* Free window memory */
-		NumWindows--;
-		GUI_ALLOC_Free(pWin);
-		/* Select a valid window */
-		WM_SelectWindow(WObj::pWinFirst);
-	}
+	if (!WObj::IsWindow(pWin))
+		return;
+	ResetNextDrawWin(); /* Make sure the window will no longer receive drawing messages */
+	/* Make sure that focus is set to an existing window */
+	if (WObj::pWinFocus == pWin)
+		WObj::pWinFocus = nullptr;
+	WObj::ReleaseCapture(); /* Make sure the window does not have capture */
+	/* check if critical handles are affected. If so, reset the window handle to 0 */
+	CriticalHandle::Check(pWin);
+	/* Inform parent */
+	WM_NotifyParent(pWin, WM_NOTIFICATION_CHILD_DELETED);
+	/* Delete all children */
+	_DeleteAllChildren(pWin->pFirstChild);
+	/* Send WM_DELETE message to window in order to inform window itself */
+	pWin->Require(WM_DELETE);     /* tell window about it */
+	pWin->_DetachWindow();
+	/* Remove window from window stack */
+	pWin->_RemoveFromLinList();
+	/* Make sure window is no longer counted as invalid */
+	if (pWin->Status & WC_ACTIVATE)
+		WObj::NumInvalidWindows--;
+	/* Free window memory */
+	NumWindows--;
+	GUI_ALLOC_Free(pWin);
+	/* Select a valid window */
+	WM_SelectWindow(WObj::pWinFirst);
 }
 WObj * WM_SelectWindow(WObj * pWin) {
 	auto pWinPrev = pWinActive;
@@ -987,9 +980,6 @@ RECT WM_GetInsideRect() {
 WObj * WM_GetClientWindow(WObj * pObj) {
 	return (WObj *)pObj->Require(WM_GET_CLIENT_WINDOW, 0);
 }
-int WM_GetNumWindows(void) {
-	return NumWindows;
-}
 
 /*********************************************************************
 *
@@ -1299,8 +1289,7 @@ int WM_OnKey(int Key, int Pressed) {
 }
 
 #pragma region Mouse/Touch
-static WM_CRITICAL_HANDLE WM__CHWinModal, WM__CHWinLast;
-
+static CriticalHandle WM__CHWinModal, WM__CHWinLast;
 static bool _IsInModalArea(WObj * pWin) {
 	return (!WM__CHWinModal.pWin ||
 		WM__IsAncestor(pWin, (WObj *)WM__CHWinModal.pWin) ||
@@ -1342,10 +1331,10 @@ static void _SendTouchMessage(WObj * pWin, int MsgId, PID_STATE *pState) {
 */
 bool WM_HandlePID(void) {
 	bool r = false;
-	WM_CRITICAL_HANDLE CHWin;
+	CriticalHandle CHWin;
+	CHWin.Add();
 	PID_STATE StateNew;
 	GUI_PID_GetState(&StateNew);
-	WM__AddCriticalHandle(&CHWin);
 	if ((WM_PID__StateLast.x != StateNew.x) || (WM_PID__StateLast.y != StateNew.y) || (WM_PID__StateLast.Pressed != StateNew.Pressed)) {
 #if GUI_SUPPORT_CURSOR
 		GUI_CURSOR_SetPosition(StateNew.x, StateNew.y);
@@ -1410,7 +1399,7 @@ bool WM_HandlePID(void) {
 		GUI_PID_GetState(&StateNew);
 		WM_PID__StateLast = StateNew;
 	}
-	WM__RemoveCriticalHandle(&CHWin);
+	CHWin.Remove();
 	return r;
 }
 #pragma endregion
@@ -1421,15 +1410,14 @@ void WM_Init(void) {
 		return;
 	pWinNextDraw = WObj::pWinFirst = nullptr;
 	GUI.WM__pUserClipRect = nullptr;
-	NumWindows = 0;
 	/* Make sure we have at least one window. This greatly simplifies the
 		drawing routines as they do not have to check if the window is valid.
 	*/
 	WObj::pWinDesktop = WM_CreateWindow(0, 0, GUI_XMAX, GUI_YMAX, WC_VISIBLE, WObj::cbBackWin, 0);
 	WObj::pWinDesktop->Invalidate(); /* Required because a desktop window has no parent. */
 	/* Register the critical handles ... Note: This could be moved into the module setting the Window handle */
-	WM__AddCriticalHandle(&WM__CHWinModal);
-	WM__AddCriticalHandle(&WM__CHWinLast);
+	WM__CHWinModal.Add();
+	WM__CHWinLast.Add();
 	WM_SelectWindow(WObj::pWinDesktop);
 	WM_Activate();
 	_IsInited = true;

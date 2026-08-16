@@ -329,27 +329,19 @@ static void _AddMenuItem(Menu *pMenu, Menu *pSubmenu, const char *pText, uint16_
 	Item.Id = Id;
 	pMenu->AddItem(&Item);
 }
-/*********************************************************************
-*
-*       MainTask
-*
-*       Demonstrates a owner drawn list box
-*
-**********************************************************************
-*/
 static void _CreateMenu(Frame *pParent) {
 	//
 	// Create main menu
 	//
-	auto pMenu = Menu::Create(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_HORIZONTAL, ID_MENU);
+	auto pMenu = Menu::Create(MENU_CF_HORIZONTAL, ID_MENU);
 	//
 	// Create sub menus
 	//
-	auto pMenuFile = Menu::Create(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
-	auto pMenuEdit = Menu::Create(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
-	auto pMenuHelp = Menu::Create(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
-	auto pMenuRecent = Menu::Create(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
-	auto pMenuTests = Menu::Create(0, 0, 0, 0, WM_UNATTACHED, 0, MENU_CF_VERTICAL, 0);
+	auto pMenuFile = Menu::Create(MENU_CF_VERTICAL, 0);
+	auto pMenuEdit = Menu::Create(MENU_CF_VERTICAL, 0);
+	auto pMenuHelp = Menu::Create(MENU_CF_VERTICAL, 0);
+	auto pMenuRecent = Menu::Create(MENU_CF_VERTICAL, 0);
+	auto pMenuTests = Menu::Create(MENU_CF_VERTICAL, 0);
 	//
 	// Add menu items to menu &#39;Recent&#39;
 	//
@@ -1430,8 +1422,8 @@ int main(void) {
 	//_TestEdit();
 	//_TestMultiEdit();
 	//_TestDropDown();
-	//_TestListBox();
-	_TestMemDev();
+	_TestListBox();
+	//_TestMemDev();
 
 	return 0;
 }
