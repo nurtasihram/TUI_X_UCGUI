@@ -28,7 +28,7 @@ enum RADIO_CI {
 	 RADIO_BI_CHECK
 };
 
-class Radio : public WIDGET {
+class Radio : public Widget {
 
 public:
 	struct Properties {
@@ -40,14 +40,14 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 
 	ARRAY<char *> TextArray;
-	int16_t Sel; /* current selection */
+	int16_t Sel = -1;
 	uint16_t Spacing;
-	uint16_t Height;
 	uint16_t NumItems;
-	uint8_t  GroupId;
+	uint16_t Height = Props.apBmRadio[0]->YSize + RADIO_BORDER * 2;
+	uint8_t  GroupId = 0;
 
 	void _ResizeRect(RECT *pDest, const RECT *pSrc, int Diff) {
 		pDest->y0 = pSrc->y0 - Diff;
@@ -191,41 +191,31 @@ private:
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
 
-public:
-
-	static Radio *Create(int x0, int y0, int xSize, int ySize, WObj *hParent,
-						 int WinFlags, int ExFlags, int Id, int NumItems, int Spacing) {
-		/* Calculate helper variables */
-		auto Height = Radio::DefaultProps.apBmRadio[0]->YSize + RADIO_BORDER * 2;
-		Spacing = (Spacing <= 0) ? 20 : Spacing;
-		NumItems = (NumItems <= 0) ? 2 : NumItems;
-		if (!ySize)
-			ySize = Height + ((NumItems - 1) * Spacing);
-		if (!xSize)
-			xSize = Radio::DefaultProps.apBmRadio[0]->XSize + RADIO_BORDER * 2;
-		/* Create the window */
-		auto pObj = (Radio *)WM_CreateWindowAsChild(x0, y0, xSize, ySize, hParent, WinFlags, Radio::_Callback, sizeof(Radio) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Radio create failed");
-			return nullptr;
-		}
-		for (int i = 0; i < NumItems; i++)
-			pObj->TextArray.AddItem();
-		/* Init widget specific variables */
-		ExFlags &= RADIO_TEXTPOS_LEFT;
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | ExFlags);
-		/* Init member variables */
-		pObj->Props = Radio::DefaultProps;
-		pObj->NumItems = NumItems;
-		pObj->Spacing = Spacing;
-		pObj->Height = Height;
-		return pObj;
+private:
+	static void _AdjRect(RECT &r, uint16_t NumItems, uint16_t Spacing) {
+		auto Height = DefaultProps.apBmRadio[0]->YSize + RADIO_BORDER * 2;
+		if (r.x1 <= r.x0)
+			r.x1 += DefaultProps.apBmRadio[0]->XSize + RADIO_BORDER * 2;
+		if (r.y1 <= r.y0)
+			r.y1 += Height + (NumItems - 1) * Spacing;
 	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		int NumItems = (pCreateInfo->Para) & 0xFF;
-		int Spacing = (pCreateInfo->Para >> 8) & 0xFF;
-		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-					  hWinParent, pCreateInfo->Flags, 0, pCreateInfo->Id, NumItems, Spacing);
+public:
+	Radio(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
+		  uint16_t ExFlags,
+		  uint16_t NumItems, uint16_t Spacing) :
+		Widget((_AdjRect(r, NumItems, Spacing), r), Style, _Callback, pParent, Id, ExFlags | WIDGET_STATE_FOCUSSABLE),
+		Spacing(Spacing ? Spacing : 20),
+		NumItems(NumItems ? NumItems : 2) {
+		for (int i = 0; i < NumItems; i++)
+			TextArray.AddItem();
+	}
+	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		uint16_t NumItems = (pCreateInfo->Para) & 0xFF;
+		uint16_t Spacing = (pCreateInfo->Para >> 8) & 0xFF;
+		return new Radio(RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+									   { pCreateInfo->xSize, pCreateInfo->ySize }),
+						 pCreateInfo->Flags, hWinParent, pCreateInfo->Id,
+						 0, NumItems, Spacing);
 	}
 
 private:

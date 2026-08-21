@@ -23,7 +23,7 @@ struct SCROLLBAR_POSITIONS {
 	int16_t x1 = 0;
 };
 
-class ScrollBar : public WIDGET {
+class ScrollBar : public Widget {
 	
 public:
 	struct Properties {
@@ -36,9 +36,9 @@ public:
 	static const int16_t DefaultWidth = 12;
 
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 
-	WM_SCROLL_STATE ScrollState;
+	WM_SCROLL_STATE ScrollState{ 100, 10, 0 };
 
 	int _GetArrowSize() {
 		auto Size = GetSize();
@@ -263,70 +263,46 @@ private:
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
 
-public:
-
-	static ScrollBar *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
-							 int WinFlags, int ExFlags, int Id) {
-		/* Set defaults if necessary */
-		if (!(xsize | ysize)) {
-			auto Rect = WM_GetInsideRect(hParent);
-			if (ExFlags & SCROLLBAR_CF_VERTICAL) {
-				xsize = ScrollBar::DefaultWidth;
-				x0 = Rect.x1 + 1 - xsize;
-				y0 = Rect.y0;
-				ysize = Rect.y1 - Rect.y0 + 1;
-			}
-			else {
-				ysize = ScrollBar::DefaultWidth;
-				y0 = Rect.y1 + 1 - ysize;
-				x0 = Rect.x0;
-				xsize = Rect.x1 - Rect.x0 + 1;
-			}
-		}
-		/* Create the window */
-		auto pObj = (ScrollBar *)WM_CreateWindowAsChild(
-			x0, y0, xsize, ysize, hParent, WinFlags, ScrollBar::_Callback,
-			sizeof(ScrollBar) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "ScrollBar create failed");
-			return nullptr;
-		}
-		uint16_t InitState = 0;
-		/* Handle SpecialFlags */
-		if (ExFlags & SCROLLBAR_CF_VERTICAL)
-			InitState |= SCROLLBAR_CF_VERTICAL;
-		if (ExFlags & SCROLLBAR_CF_FOCUSSABLE)
-			InitState |= WIDGET_STATE_FOCUSSABLE;
-		if (Id != GUI_ID_HSCROLL && Id != GUI_ID_VSCROLL)
-			InitState |= WIDGET_STATE_FOCUSSABLE;
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, InitState);
-		/* init member variables */
-		pObj->Props = ScrollBar::DefaultProps;
-		pObj->ScrollState.NumItems = 100;
-		pObj->ScrollState.PageSize = 10;
-		pObj->ScrollState.v = 0;
-		pObj->_InvalidatePartner();
-		return pObj;
-	}
-	static ScrollBar *Create(WObj *hParent, int SpecialFlags) {
-		int Id;
-		int WinFlags;
-		if (SpecialFlags & SCROLLBAR_CF_VERTICAL) {
-			Id = GUI_ID_VSCROLL;
-			WinFlags = WC_VISIBLE | WC_STAYONTOP | WC_ANCHOR_RIGHT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM;
+private:
+	static void _AdjRect(RECT &r, WObj *pParent, bool bVertical) {
+		if (r.x1 > r.x0 && r.y1 > r.y0)
+			return;
+		auto Rect = WM_GetInsideRect(pParent);
+		if (bVertical) {
+			r.y0 = Rect.y0;
+			r.y1 = Rect.y1;
+			if (r.x1 <= r.x0)
+				r.x1 = Rect.x1;
+			r.x0 = r.x1 - ScrollBar::DefaultWidth;
 		}
 		else {
-			Id = GUI_ID_HSCROLL;
-			WinFlags = WC_VISIBLE | WC_STAYONTOP | WC_ANCHOR_BOTTOM | WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT;
+			r.x0 = Rect.x0;
+			r.x1 = Rect.x1;
+			if (r.y1 <= r.y0)
+				r.y1 = Rect.x1;
+			r.y0 = r.y1 - ScrollBar::DefaultWidth;
 		}
-		auto pThis = Create(0, 0, 0, 0, hParent, WinFlags, SpecialFlags, Id);
-		WM_NotifyParent(pThis, WM_NOTIFICATION_SCROLLBAR_ADDED);
-		return pThis;
 	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
+public:
+	ScrollBar(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
+			  uint16_t ExFlags) :
+		Widget((_AdjRect(r, pParent, ExFlags & SCROLLBAR_CF_VERTICAL), r),
+			   Style, _Callback, pParent, Id,
+			   Id != GUI_ID_HSCROLL && Id != GUI_ID_VSCROLL ?
+			   ExFlags | WIDGET_STATE_FOCUSSABLE : ExFlags) {
+		_InvalidatePartner();
+	}
+	static ScrollBar *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
+							 int WinFlags, int ExFlags, int Id) {
+		return new ScrollBar(RECT::LeftTop({ x0, y0 }, { xsize, ysize }),
+							  WinFlags, hParent, Id, ExFlags);
+	}
+	ScrollBar(WObj *pParent, int SpecialFlags) :
+		ScrollBar({},
+				  WC_VISIBLE | WC_STAYONTOP | WC_ANCHOR_RIGHT | WC_ANCHOR_BOTTOM |
+				  (SpecialFlags & SCROLLBAR_CF_VERTICAL ? WC_ANCHOR_TOP : WC_ANCHOR_LEFT),
+				  pParent, SpecialFlags &SCROLLBAR_CF_VERTICAL ? GUI_ID_VSCROLL : GUI_ID_HSCROLL, SpecialFlags) {
+		WM_NotifyParent(this, WM_NOTIFICATION_SCROLLBAR_ADDED);
 	}
 
 public:

@@ -15,7 +15,7 @@ static PCCURSOR _pOldCursor;
 
 export {
    
-class Header : public WIDGET {
+class Header : public Widget {
 
 public:
 	struct Properties {
@@ -28,7 +28,7 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 	
 	struct Column {
 		int16_t Width;
@@ -209,43 +209,24 @@ private:
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
 
+private:
+	static void _AdjRect(RECT &r, WObj *pParent) {
+		auto Rect = WM_GetInsideRect(pParent);
+		if (r.x0 <= 0)
+			r.x0 = Rect.x0;
+		if (r.y0 <= 0)
+			r.y0 = Rect.y0;
+		if (r.x1 <= r.x0)
+			r.x1 = Rect.x1;
+		if (r.y1 <= r.y0)
+			r.y1 = r.y0 + Header::DefaultProps.pFont->DistY()
+				+ 2 * Header::DefaultProps.BorderV
+				+ 2 * Widget::DefaultEffect->EffectSize;
+	}
 public:
-
-	static Header *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
-						  int WinFlags, int ExFlags, int Id) {
-		GUI_USE_PARA(ExFlags);
-		/* Create the window */
-		if (!(xsize | x0 | y0)) {
-			RECT Rect = WM_GetInsideRect(hParent);
-			xsize = Rect.x1 - Rect.x0 + 1;
-			x0 = Rect.x0;
-			y0 = Rect.y0;
-		}
-		if (!ysize) {
-			ysize = Header::DefaultProps.pFont->DistY();
-			ysize += 2 * Header::DefaultProps.BorderV;
-			ysize += 2 * WIDGET::DefaultEffect->EffectSize;
-		}
-		WinFlags |= WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT;
-		auto pObj = (Header *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, Header::_Callback,
-													 sizeof(Header) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Header create failed");
-			return nullptr;
-		}
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, 0);
-		/* init member variables */
-		pObj->Props = Header::DefaultProps;
-		pObj->CapturePosX = -1;
-		pObj->CaptureItem = -1;
-		pObj->ScrollPos = 0;
-		return pObj;
-	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-					  hWinParent, pCreateInfo->Flags, 0, pCreateInfo->Id);
-	}
+	Header(RECT r, WM_CF Style, WObj *pParent, uint16_t Id) :
+		Widget((_AdjRect(r, pParent), r),
+			   Style | WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT, _Callback, pParent, Id, 0) {}
 
 public:
 

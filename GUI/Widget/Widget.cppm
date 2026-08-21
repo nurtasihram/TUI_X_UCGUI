@@ -98,11 +98,16 @@ GUI_DRAW *GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw, int x, int y) {
 }
 #pragma endregion
 
-struct WIDGET : public WObj {
+struct Widget : public WObj {
 	static PCWIDGET_EFFECT DefaultEffect;
 	PCWIDGET_EFFECT pEffect = DefaultEffect;
 	uint16_t Id, State;
 
+public:
+	Widget(RECT r, WM_CF Style, WM_CALLBACK *cb, WObj *pParent, uint16_t Id, uint16_t State) :
+		WObj(r, Style, cb, pParent), Id(Id), State(State) {}
+
+public:
 	void SetBkColorPrefer(RGBC BkColor) {
 		while (BkColor == RGB_INVALID_COLOR) {
 			if (auto pParent = Parent())
@@ -218,8 +223,8 @@ struct WIDGET : public WObj {
 
 };
 
-void WIDGET__Init(WIDGET *pWidget, int Id, uint16_t State) {
-	pWidget->pEffect = WIDGET::DefaultEffect;
+void WIDGET__Init(Widget *pWidget, int Id, uint16_t State) {
+	pWidget->pEffect = Widget::DefaultEffect;
 	pWidget->State = State;
 	pWidget->Id = Id;
 }
@@ -248,7 +253,7 @@ void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax
 
 struct WIDGET_CREATE_INFO {
 
-	WIDGET *(*pfCreateIndirect)(const WIDGET_CREATE_INFO *pCreate, WObj *hWin, int x0, int y0, WM_CALLBACK *cb);
+	Widget *(*pfCreateIndirect)(const WIDGET_CREATE_INFO *pCreate, WObj *hWin, int x0, int y0, WM_CALLBACK *cb);
 
 	const char *pName; /* Text ... Not used on all widgets */
 	int16_t Id; /* ID ... should be unique in a dialog */
@@ -282,4 +287,4 @@ struct WIDGET_CREATE_INFO {
 
 }
 
-PCWIDGET_EFFECT WIDGET::DefaultEffect = WIDGET_Effect_3D2L;
+PCWIDGET_EFFECT Widget::DefaultEffect = WIDGET_Effect_3D2L;

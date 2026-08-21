@@ -29,7 +29,7 @@ enum EDIT_CI {
 	 EDIT_CI_ENABLED
 };
 
-class Edit : public WIDGET {
+class Edit : public Widget {
 
 public:
 	typedef void tEDIT_AddKeyEx(Edit *pObj, int Key);
@@ -51,21 +51,20 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 
-	char *pText;
-	int16_t MaxLen;
-	uint16_t BufferSize;
-	int32_t Min, Max;            /* Min max values as normalized floats (integers) */
-	uint8_t NumDecs;              /* Number of decimals */
-	uint32_t CurrentValue;        /* Current value */
-	int16_t CursorPos;           /* Cursor position. 0 means left most */
-	uint16_t SelSize;        /* Number of selected characters */
-	uint8_t EditMode;             /* Insert or overwrite mode */
-	uint8_t XSizeCursor;          /* Size of cursor when working in insert mode */
-	uint8_t Flags;
-	tEDIT_AddKeyEx *pfAddKeyEx;     /* Handle key input */
-	tEDIT_UpdateBuffer *pfUpdateBuffer;  /* Update textbuffer */
+	char *pText = nullptr;
+	uint16_t MaxLen;
+	uint16_t BufferSize = 0;
+	int32_t Min = 0, Max = 0;            /* Min max values as normalized floats (integers) */
+	uint8_t NumDecs = 0;              /* Number of decimals */
+	uint32_t CurrentValue = 0;        /* Current value */
+	int16_t CursorPos = 0;           /* Cursor position. 0 means left most */
+	uint16_t SelSize = 0;        /* Number of selected characters */
+	bool EditMode = 1; /* Insert or overwrite mode */
+	uint8_t XSizeCursor = 1;          /* Size of cursor when working in insert mode */
+	tEDIT_AddKeyEx *pfAddKeyEx = nullptr;     /* Handle key input */
+	tEDIT_UpdateBuffer *pfUpdateBuffer = nullptr;  /* Update textbuffer */
 
 #if GUI_SUPPORT_TIMER
 	static int CurrsorShow;
@@ -337,38 +336,21 @@ private:
 	}
 
 public:
-
-	static Edit *Create(int x0, int y0, int xsize, int ysize,
-						WObj *hParent, int WinFlags, int ExFlags,
-						int Id, int MaxLen) {
-		/* Alloc memory for obj */
-		WinFlags |= WC_LATE_CLIP;    /* Always use late clipping since widget is optimized for it. */
-		auto pObj = (Edit *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WC_VISIBLE | WinFlags, Edit::_Callback,
-												   sizeof(Edit) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Edit create failed");
-			return nullptr;
-		}
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* init member variables */
-		pObj->Props = Edit::DefaultProps;
-		pObj->XSizeCursor = 1;
-		pObj->MaxLen = (MaxLen == 0) ? 8 : MaxLen;
-		pObj->BufferSize = 0;
-		pObj->pText = nullptr;
-		if (pObj->_IncrementBuffer(pObj->MaxLen + 1) == 0) {
-			GUI_DEBUG_ERROROUT("Edit create failed to alloc buffer");
-			WM_DeleteWindow(pObj);
-			pObj = nullptr;
-		}
-		return pObj;
+	Edit(RECT r, WM_CF Style, WObj *pParent, uint16_t Id, uint16_t MaxLen) :
+		Widget(r, Style | WC_LATE_CLIP | WC_VISIBLE,
+			   _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE),
+		MaxLen(MaxLen ? MaxLen : 8) {
+		_IncrementBuffer(MaxLen + 1);
 	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		auto pEdit = Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-							hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->Para);
-		if (pEdit)
-			pEdit->SetTextAlign((TEXTALIGN)pCreateInfo->Flags);
+	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		auto pEdit = new Edit(
+			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+						  { pCreateInfo->xSize, pCreateInfo->ySize }),
+			pCreateInfo->Flags,
+			hWinParent, pCreateInfo->Id,
+			(uint16_t)pCreateInfo->Para
+		);
+		pEdit->SetTextAlign((TEXTALIGN)pCreateInfo->Flags);
 		return pEdit;
 	}
 

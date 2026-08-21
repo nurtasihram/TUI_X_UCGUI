@@ -30,7 +30,7 @@ enum LISTBOX_CI {
 	 LISTBOX_CI_DISABLED
 };
 
-class ListBox : public WIDGET {
+class ListBox : public Widget {
 	friend class DropDown;
 
 public:
@@ -52,7 +52,7 @@ public:
 	} static DefaultProps;
 
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 
 	struct Item {
 		uint16_t xSize, ySize;
@@ -61,13 +61,13 @@ private:
 	};
 
 	ARRAY<Item> ItemArray;
-	WIDGET_DRAW_ITEM_FUNC *pfDrawItem;
+	WIDGET_DRAW_ITEM_FUNC *pfDrawItem = nullptr;
 	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
-	WObj *pOwner;
-	int16_t Sel; /* current selection */
-	uint8_t Flags;
-	uint16_t ScrollbarWidth;
-	uint16_t ItemSpacing;
+	WObj *pOwner = nullptr;
+	int16_t Sel = 0; /* current selection */
+	uint8_t Flags = 0;
+	uint16_t ScrollbarWidth = 0;
+	uint16_t ItemSpacing = 0;
 
 	void _NotifyOwner(int Notification) {
 		auto pOwner = this->pOwner ? this->pOwner : Parent();
@@ -86,9 +86,7 @@ private:
 		return ItemArray.NumItems();
 	}
 	const char *_GetpString(int Index) {
-		const char *s = nullptr;
-		s = ItemArray[Index].pText;
-		return s;
+		return ItemArray[Index].pText;
 	}
 	int _GetYSize() {
 		RECT Rect;
@@ -537,9 +535,12 @@ private:
 	}
 
 public:
-
+	ListBox(RECT r, WM_CF Style, WObj *pParent, uint16_t Id) : 
+		Widget(r, Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE) {
+		UpdateScrollers();
+	}
 	static ListBox *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
-							  int WinFlags, int ExFlags, int Id, const char **ppText) {
+							  int WinFlags, int ExFlags, int Id) {
 		auto pObj = (ListBox *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, ListBox::_Callback,
 													  sizeof(ListBox) - sizeof(WObj));
 		if (!pObj) {
@@ -550,22 +551,18 @@ public:
 		/* init widget specific variables */
 		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
 		pObj->Props = ListBox::DefaultProps;
-		if (ppText) {
-			/* init member variables */
-			/* Set non-zero attributes */
-			pObj->SetText(ppText);
-		}
 		pObj->UpdateScrollers();
 		return pObj;
 	}
-	static ListBox *Create(const char **ppText, WObj *hWinParent,
-								   int x0, int y0, int xsize, int ysize, int Flags) {
-		return Create(x0, y0, xsize, ysize, hWinParent, Flags, 0, 0, ppText);
+	static ListBox *Create(WObj *hWinParent,
+						   int x0, int y0, int xsize, int ysize, int Flags) {
+		//return new ListBox(RECT::LeftTop({ x0, y0 }, { xsize, ysize }), Flags, hWinParent, 0);
+		return Create(x0, y0, xsize, ysize, hWinParent, Flags, 0, 0);
 	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		GUI_USE_PARA(cb);
 		auto hObj = Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-								hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, 0);
+						   hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
 		return hObj;
 	}
 
@@ -822,12 +819,7 @@ public:
 		this->ItemSpacing = Value;
 		InvalidateItem(LISTBOX_ALL_ITEMS);
 	}
-	uint16_t GetItemSpacing() {
-		uint16_t Value = 0;
-		Value = this->ItemSpacing;
-
-		return Value;
-	}
+	uint16_t GetItemSpacing() { return ItemSpacing; }
 	void SetMulti(int Mode) {
 		if (Mode) {
 			if (!(this->Flags & LISTBOX_CF_MULTISEL)) {
@@ -842,16 +834,8 @@ public:
 			}
 		}
 	}
-	int GetMulti() {
-		int Multi = 0;
-		if (!(this->Flags & LISTBOX_CF_MULTISEL)) {
-			Multi = 0;
-		}
-		else {
-			Multi = 1;
-		}
-
-		return Multi;
+	bool GetMulti() const {
+		return Flags & LISTBOX_CF_MULTISEL;
 	}
 	int GetItemSel(uint16_t Index) {
 		int Ret = 0;
@@ -888,12 +872,7 @@ public:
 	void SetScrollStepH(int Value) {
 		Props.ScrollStepH = Value;
 	}
-	int GetScrollStepH() {
-		int Value = 0;
-		Value = Props.ScrollStepH;
-
-		return Value;
-	}
+	int GetScrollStepH() { return Props.ScrollStepH; }
 	void SetAutoScrollH(int State) {
 		char Flags;
 

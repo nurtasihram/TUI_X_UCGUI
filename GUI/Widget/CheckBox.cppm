@@ -19,7 +19,7 @@ enum CHECKBOX_CI {
 	 CHECKBOX_CI_ACTIV
 };
 
-class CheckBox : public WIDGET {
+class CheckBox : public Widget {
 	static CBITMAP abmCheckEnabled[2];
 	static CBITMAP abmCheckDisabled[2];
 
@@ -43,7 +43,7 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 
 	uint8_t NumStates : 2;
 	uint8_t CurrentState : 6;
@@ -79,31 +79,31 @@ private:
 		GUI.SetFont(Props.pFont);
 		GUI_DispStringInRect(text, &RectText, Props.Align);
 		/* Draw focus rectangle */
-		if (this->State & WIDGET_STATE_FOCUS) {
-			int xSizeText = GUI_GetStringDistX(text);
-			int ySizeText = Props.pFont->SizeY();
-			RECT RectFocus = RectText;
-			switch (Props.Align & ~(TEXTALIGN_HORIZONTAL)) {
-				case TEXTALIGN_VCENTER:
-					RectFocus.y0 = (RectText.y1 - ySizeText) / 2;
-					break;
-				case TEXTALIGN_BOTTOM:
-					RectFocus.y0 = RectText.y1 - ySizeText;
-					break;
-			}
-			switch (Props.Align & ~(TEXTALIGN_VERTICAL)) {
-				case TEXTALIGN_HCENTER:
-					RectFocus.x0 += ((RectText.x1 - RectText.x0) - xSizeText) / 2;
-					break;
-				case TEXTALIGN_RIGHT:
-					RectFocus.x0 += (RectText.x1 - RectText.x0) - xSizeText;
-					break;
-			}
-			RectFocus.x1 = RectFocus.x0 + xSizeText;
-			RectFocus.y1 = RectFocus.y0 + ySizeText;
-			GUI.SetColor(RGB_BLACK);
-			GUI_DrawFocusRect(RectFocus, 0);
+		if (!(State & WIDGET_STATE_FOCUS))
+			return;
+		int xSizeText = GUI_GetStringDistX(text);
+		int ySizeText = Props.pFont->SizeY();
+		RECT RectFocus = RectText;
+		switch (Props.Align & ~(TEXTALIGN_HORIZONTAL)) {
+			case TEXTALIGN_VCENTER:
+				RectFocus.y0 = (RectText.y1 - ySizeText) / 2;
+				break;
+			case TEXTALIGN_BOTTOM:
+				RectFocus.y0 = RectText.y1 - ySizeText;
+				break;
 		}
+		switch (Props.Align & ~(TEXTALIGN_VERTICAL)) {
+			case TEXTALIGN_HCENTER:
+				RectFocus.x0 += ((RectText.x1 - RectText.x0) - xSizeText) / 2;
+				break;
+			case TEXTALIGN_RIGHT:
+				RectFocus.x0 += (RectText.x1 - RectText.x0) - xSizeText;
+				break;
+		}
+		RectFocus.x1 = RectFocus.x0 + xSizeText;
+		RectFocus.y1 = RectFocus.y0 + ySizeText;
+		GUI.SetColor(RGB_BLACK);
+		GUI_DrawFocusRect(RectFocus, 0);
 	}
 	void _OnTouch(const PID_STATE *pState) {
 		int Notification = 0;
@@ -169,39 +169,26 @@ private:
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
 
+private:
+	static void _AdjRect(RECT &r) {
+		auto EffectSize = Widget::DefaultEffect->EffectSize;
+		if (r.x1 <= r.x0)
+			r.x1 = r.x0 + DefaultProps.apBm[0]->XSize + 2 * EffectSize;
+		if (r.y1 <= r.y0)
+			r.y1 = r.y0 + DefaultProps.apBm[0]->YSize + 2 * EffectSize;
+	}
 public:
-
-	static CheckBox *Create(int x0, int y0, int xsize, int ysize,
-							WObj *hParent, int WinFlags, int ExFlags, int Id) {
-		/* Calculate size if needed */
-		if (!(xsize | ysize)) {
-			auto EffectSize = WIDGET::DefaultEffect->EffectSize;
-			if (!xsize)
-				xsize = CheckBox::DefaultProps.apBm[0]->XSize + 2 * EffectSize;
-			if (!ysize)
-				ysize = CheckBox::DefaultProps.apBm[0]->YSize + 2 * EffectSize;
-		}
-		/* Create the window */
-		auto pObj = (CheckBox *)WM_CreateWindowAsChild(
-			x0, y0, xsize, ysize,
-			hParent, WinFlags, CheckBox::_Callback,
-			sizeof(CheckBox) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "CheckBox create failed");
-			return nullptr;
-		}
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* init member variables */
-		pObj->Props = CheckBox::DefaultProps;
-		pObj->NumStates = 2; /* Default behaviour is 2 states: checked and unchecked */
-		return pObj;
+	CheckBox(RECT r, WM_CF Style, WObj *pParent, uint16_t Id) :
+		Widget((_AdjRect(r), r), Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE),
+		NumStates(2),
+		CurrentState(0) {}
+	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return new CheckBox(
+			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+						  { pCreateInfo->xSize, pCreateInfo->ySize }),
+			pCreateInfo->Flags,
+			hWinParent, pCreateInfo->Id);
 	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-	}
-
 public:
 
 #pragma region Properties

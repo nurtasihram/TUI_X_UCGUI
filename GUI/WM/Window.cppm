@@ -240,7 +240,7 @@ public:
 	}
 
 public:
-	WObj(RECT r, WM_CF Style, WM_CALLBACK *cb, WObj *pParent = nullptr) : Rect(r), cb(cb) {
+	WObj(RECT r, WM_CF Style, WM_CALLBACK *cb, WObj *pParent = nullptr) : Rect(r), cb(cb), Status(Style) {
 		//WM_ASSERT_NOT_IN_PAINT();
 		/* Default parent is Desktop 0 */
 		if (!pParent)
@@ -285,8 +285,6 @@ public:
 	void _Invalidate1Abs(RECT r) {
 		if (!(Status & WC_VISIBLE))
 			return; /* Window is not visible... we are done */
-		if ((Status & (WC_HASTRANS | WC_CONST_OUTLINE)) == WC_HASTRANS)
-			return; /* Window is transparent; transparency may change... we are done, since background will be invalidated */
 		/* Calc affected area */
 		if (r &= Rect) {
 			if (Status & WC_ACTIVATE)
@@ -304,10 +302,6 @@ public:
 		for (auto pWin = WObj::pWinFirst; pWin; pWin = pWin->pNextLin)
 			pWin->_Invalidate1Abs(r);
 	}
-	static void _InvalidateAreaBelow(const RECT &r, WObj *StopWin) {
-		InvalidateArea(r); /* Can be optimized to spare windows above */
-	}
-
 	void Invalidate(const RECT *pRect = nullptr) {
 		if (!(Status & WC_VISIBLE))
 			return;
@@ -317,10 +311,7 @@ public:
 		/* Optimization that saves invalidation if window area is not visible ... Not required */
 		if (!_ClipAtParentBorders(r))
 			return;
-		if ((Status & (WC_HASTRANS | WC_CONST_OUTLINE)) == WC_HASTRANS)
-			_InvalidateAreaBelow(r, this);        /* Can be optimized to spare windows above */
-		else
-			_Invalidate1Abs(r);
+		_Invalidate1Abs(r);
 	}
 	void Validate() {
 		if (Status & WC_ACTIVATE) {
@@ -537,7 +528,12 @@ public:
 
 	bool IsVisible() const { return Status & WC_VISIBLE; }
 	void ShowWindow();
-	void HideWindow();
+	void HideWindow() {
+		if (Status & WC_VISIBLE) {
+			Status &= ~WC_VISIBLE;
+			_Invalidate1Abs(Rect);
+		}
+	}
 
 #pragma endregion
 

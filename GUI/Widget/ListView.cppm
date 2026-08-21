@@ -18,7 +18,7 @@ enum LISTVIEW_CI {
 	 LISTVIEW_CI_SELFOCUS
 };
 
-class ListView : public WIDGET {
+class ListView : public Widget {
 
 public:
 	struct Properties {
@@ -37,7 +37,7 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 
 	struct ItemInfo {
 		RGBC aBkColor[3];
@@ -50,11 +50,11 @@ private:
 	Header *pHeader;
 	ARRAY<ARRAY<Item>> RowArray; /* One entry per line. Every entry is a ARRAY<Item> */
 	ARRAY<TEXTALIGN>   AlignArray; /* One entry per column */
-	int16_t     Sel;
-	bool        ShowGrid;
-	uint16_t    RowDistY, LBorder, RBorder;
+	int16_t     Sel = -1;
+	bool        ShowGrid = false;
+	uint16_t    RowDistY = 0, LBorder = 1, RBorder = 1;
 	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
-	WObj *pOwner;
+	WObj *pOwner = nullptr;
 
 	void _NotifyOwner(int Notification) {
 		auto pOwner = this->pOwner ? this->pOwner : Parent();
@@ -412,38 +412,17 @@ private:
 	}
 
 public:
-
-	static ListView *Create(int x0, int y0, int xsize, int ysize, WObj *pParent,
-							int WinFlags, int ExFlags, int Id) {
-		GUI_USE_PARA(ExFlags);
-		/* Create the window */
-		if (!(xsize | ysize | x0 | y0)) {
-			RECT Rect = pParent->GetClientRect();
-			xsize = Rect.x1 - Rect.x0 + 1;
-			ysize = Rect.y1 - Rect.y0 + 1;
-		}
-		auto pObj = (ListView *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, pParent, WinFlags, ListView::_Callback,
-													   sizeof(ListView) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "ListView create failed");
-			return nullptr;
-		}
-		/* Init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* Init member variables */
-		pObj->Props = ListView::DefaultProps;
-		pObj->ShowGrid = 0;
-		pObj->RowDistY = 0;
-		pObj->Sel = -1;
-		pObj->LBorder = 1;
-		pObj->RBorder = 1;
-		pObj->pHeader = Header::Create(0, 0, 0, 0, pObj, WC_VISIBLE, 0, 0);
-		pObj->_UpdateScrollParas();
-		return pObj;
+	ListView(RECT r, WM_CF Style, WObj *pParent, uint16_t Id) :
+		Widget(r, Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE) {
+		pHeader = new Header(RECT{}, WC_VISIBLE, this, 0);
+		_UpdateScrollParas();
 	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
+	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return new ListView(
+			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+						  { pCreateInfo->xSize, pCreateInfo->ySize }),
+			pCreateInfo->Flags, hWinParent, pCreateInfo->Id
+		);
 	}
 
 public:

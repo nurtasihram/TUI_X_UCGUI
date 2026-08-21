@@ -11,7 +11,7 @@ export {
 constexpr uint16_t SLIDER_CF_VERTICAL   = WIDGET_STATE_USER<0>;
 constexpr uint16_t SLIDER_STATE_PRESSED = WIDGET_STATE_USER<1>;
 
-class Slider : public WIDGET {
+class Slider : public Widget {
 
 public:
 	struct Properties {
@@ -20,12 +20,12 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 	
-	int16_t Min, Max, v;
-	int16_t NumTicks;
-	int16_t Width;
-	uint8_t Flags;
+	int16_t Min = 0, Max = 100, v = 0;
+	int16_t NumTicks = -1;
+	int16_t Width = 8;
+	uint8_t Flags = 0;
 
 	void _OnPaint() {
 		auto r = State & SLIDER_CF_VERTICAL ? ~GetClientRect() : GetClientRect();
@@ -160,33 +160,14 @@ private:
 	}
 
 public:
-
-	static Slider *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
-						  int WinFlags, int ExFlags, int Id) {
-		auto pObj = (Slider *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, Slider::_Callback, sizeof(Slider) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Slider create failed");
-			return nullptr;
-		}
-		uint16_t InitState;
-		/* Handle SpecialFlags */
-		InitState = WIDGET_STATE_FOCUSSABLE;
-		if (ExFlags & SLIDER_CF_VERTICAL) {
-			InitState |= SLIDER_CF_VERTICAL;
-		}
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, InitState);
-		/* init member variables */
-		pObj->Props = Slider::DefaultProps;
-		pObj->Width = 8;
-		pObj->Max = 100;
-		pObj->Min = 0;
-		pObj->NumTicks = -1;
-		return pObj;
+	Slider(RECT r, WM_CF Style, WObj *pParent, uint16_t Id, uint16_t ExFlags) :
+		Widget(r, Style, _Callback, pParent, Id, ExFlags | WIDGET_STATE_FOCUSSABLE) {
 	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
+	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return new Slider(
+			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+						  { pCreateInfo->xSize, pCreateInfo->ySize }),
+			0, hWinParent, pCreateInfo->Id, pCreateInfo->Flags);
 	}
 
 public:

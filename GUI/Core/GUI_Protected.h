@@ -20,7 +20,7 @@
 #define GUI_DEFAULT_COLOR   RGB_WHITE
 #endif
 
-typedef enum { GUI_WRAPMODE_NONE, GUI_WRAPMODE_WORD, GUI_WRAPMODE_CHAR } GUI_WRAPMODE;
+typedef enum { WRAPMODE_NONE, WRAPMODE_WORD, WRAPMODE_CHAR } WRAPMODE;
 
 #if GUI_SUPPORT_MEMDEV
 struct GUI_MEMDEV {
@@ -54,9 +54,9 @@ void GUI__DispLine(const char *s, int Len, const RECT *pr);
 void GUI__AddSpaceHex(uint32_t v, uint8_t Len, char **ps);
 void GUI__CalcTextRect(const char *pText, const RECT *pTextRectIn, RECT *pTextRectOut, int TextAlign);
 
-int GUI__WrapGetNumCharsDisp(const char *pText, int xSize, GUI_WRAPMODE WrapMode);
-int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, GUI_WRAPMODE WrapMode);
-int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, GUI_WRAPMODE WrapMode);
+int GUI__WrapGetNumCharsDisp(const char *pText, int xSize, WRAPMODE WrapMode);
+int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, WRAPMODE WrapMode);
+int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, WRAPMODE WrapMode);
 
 bool GUI__SetText(char **ppText, const char *s);
 bool GUI__strcmp(const char *s0, const char *s1);

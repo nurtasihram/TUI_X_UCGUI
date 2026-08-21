@@ -4,11 +4,11 @@ import TUX.Widget;
 
 #define WINDOW_BKCOLOR_DEFAULT RGB_GRAYL(0xC0)
 
-struct Window : public WIDGET {
+struct Window : public Widget {
 	struct Properties {
 		RGBC BkColor{ WINDOW_BKCOLOR_DEFAULT };
 	} static DefaultProps;
-	Properties Props;
+	Properties Props = DefaultProps;
 	WM_CALLBACK *cb;
 	WObj *pFocussedChild;
 	DIALOG_STATUS *pDialogStatus;

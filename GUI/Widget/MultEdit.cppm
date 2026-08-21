@@ -33,7 +33,7 @@ enum MULTEDIT_CI {
 	 MULTEDIT_CI_READONLY
 };
 
-class MultEdit : public WIDGET {
+class MultEdit : public Widget {
 
 public:
 	struct Properties {
@@ -50,31 +50,33 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 
-	WM_HMEM hText;
-	uint16_t MaxNumChars;         /* Maximum number of characters including the prompt */
-	uint16_t NumChars;            /* Number of characters (text and prompt) in object */
-	uint16_t NumCharsPrompt;      /* Number of prompt characters */
-	uint16_t NumLines;            /* Number of text lines needed to show all data */
-	uint16_t TextSizeX;           /* Size in X of text depending of wrapping mode */
-	uint16_t BufferSize;
-	uint16_t CursorLine;          /* Number of current cursor line */
-	uint16_t CursorPosChar;       /* Character offset number of cursor */
-	uint16_t CursorPosByte;       /* Byte offset number of cursor */
-	uint16_t CursorPosX, CursorPosY; /* Cursor position */
-	uint16_t CacheLinePosByte;    /*  */
-	uint16_t CacheLineNumber;     /*  */
-	uint16_t CacheFirstVisibleLine, CacheFirstVisibleByte;
+	WM_HMEM hText = nullptr;
+	uint16_t MaxNumChars = 0;         /* Maximum number of characters including the prompt */
+	uint16_t
+		NumChars = 0,
+		NumCharsPrompt = 0,
+		NumLines = 0;
+	uint16_t TextSizeX = 0; /* Size in X of text depending of wrapping mode */
+	uint16_t BufferSize = 0;
+	uint16_t
+		CursorLine = 0,
+		CursorPosChar = 0;
+	uint16_t CursorPosByte = 0; /* Byte offset number of cursor */
+	uint16_t CursorPosX = 0, CursorPosY = 0; /* Cursor position */
+	uint16_t
+		CacheLinePosByte = 0, CacheLineNumber = 0,
+		CacheFirstVisibleLine = 0, CacheFirstVisibleByte = 0;
 	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
 	uint8_t Flags;
-	uint8_t InvalidFlags;         /* Flags to save validation status */
-	uint8_t EditMode;
-	GUI_WRAPMODE WrapMode;
+	uint8_t InvalidFlags = 0;         /* Flags to save validation status */
+	uint8_t EditMode = 0;
+	WRAPMODE WrapMode = WRAPMODE_NONE;
 
 	void _InvalidateNumChars() {
 		this->InvalidFlags |= INVALID_NUMCHARS;
-	}
+	}	
 	int _GetNumChars() {
 		if (this->InvalidFlags & INVALID_NUMCHARS) {
 			char *pText;
@@ -118,7 +120,7 @@ private:
 			if (r >= NumCharsPrompt) {
 				int x;
 				switch (this->WrapMode) {
-					case GUI_WRAPMODE_NONE:
+					case WRAPMODE_NONE:
 						r = GUI__GetNumChars(pText);
 						break;
 					default:
@@ -461,7 +463,7 @@ private:
 			_CalcScrollPos();
 		}
 	}
-	int _SetWrapMode(GUI_WRAPMODE WrapMode) {
+	int _SetWrapMode(WRAPMODE WrapMode) {
 		int r;
 		r = 0;
 		r = this->WrapMode;
@@ -500,7 +502,7 @@ private:
 				}
 			}
 			else {
-				if (!Char || (Char == '\n') || ((Char == ' ') && (this->WrapMode == GUI_WRAPMODE_WORD))) {
+				if (!Char || (Char == '\n') || ((Char == ' ') && (this->WrapMode == WRAPMODE_WORD))) {
 					WrapChars++;
 				}
 			}
@@ -562,7 +564,7 @@ private:
 				}
 				else {
 					if (Char != '\n') {
-						if ((Char != ' ') || (this->WrapMode == GUI_WRAPMODE_CHAR)) {
+						if ((Char != ' ') || (this->WrapMode == WRAPMODE_CHAR)) {
 							r = 1;
 						}
 					}
@@ -930,53 +932,34 @@ private:
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
 
-public:
-
-	static MultEdit *Create(int x0, int y0, int xsize, int ysize,
-							WObj *pParent, int WinFlags, int ExFlags,
-							int Id, int BufferSize, const char *pText) {
-		/* Create the window */
-		if (!(xsize | ysize | x0 | y0)) {
-			auto Rect = pParent->GetClientRect();
-			xsize = Rect.x1 - Rect.x0 + 1;
-			ysize = Rect.y1 - Rect.y0 + 1;
-		}
-		auto pObj = (MultEdit *)WM_CreateWindowAsChild(
-			x0, y0, xsize, ysize, pParent, WinFlags, MultEdit::_Callback,
-			sizeof(MultEdit) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "MultEdit create failed");
-			return nullptr;
-		}
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* init member variables */
-		pObj->Props = MultEdit::DefaultProps;
-		pObj->Flags = ExFlags;
-		pObj->CursorPosChar = 0;
-		pObj->CursorPosByte = 0;
-		pObj->MaxNumChars = 0;
-		pObj->NumCharsPrompt = 0;
-		pObj->BufferSize = 0;
-		pObj->hText = 0;
-		if (BufferSize > 0) {
-			WM_HMEM hText;
-			if ((hText = (WM_HMEM)GUI_ALLOC_AllocZero(BufferSize)) != 0) {
-				pObj->BufferSize = BufferSize;
-				pObj->hText = hText;
-			}
-			else {
-				WM_DeleteWindow(pObj);
-				pObj = 0;
-			}
-		}
-		pObj->SetText(pText);
-		pObj->_ManageScrollers();
-		return pObj;
+private:
+	static void _AdjRect(RECT &r, WObj *pParent) {
+		auto Rect = pParent->GetClientRect();
+		if (!r.x0)
+			r.x0 = Rect.x0;
+		if (!r.y1)
+			r.y0 = Rect.y0;
+		if (r.x1 <= r.x0)
+			r.x1 = Rect.x1;
+		if (r.y1 <= r.y0)
+			r.y1 = Rect.y1;
 	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->Para, nullptr);
+public:
+	MultEdit(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
+			 uint8_t ExFlags, uint16_t BufferSize, const char *pText) :
+		Widget((_AdjRect(r, pParent), r), Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE),
+		BufferSize(BufferSize), Flags(Flags) {
+		if (BufferSize > 0)
+			this->hText = GUI_ALLOC_AllocZero(BufferSize);
+		SetText(pText);
+		_ManageScrollers();
+	}	
+	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return new MultEdit(
+			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+						  { pCreateInfo->xSize, pCreateInfo->ySize }),
+			pCreateInfo->Flags, hWinParent, pCreateInfo->Id,
+			0, (uint16_t)pCreateInfo->Para, nullptr);
 	}
 
 public:
@@ -1083,13 +1066,13 @@ public:
 	}
 
 	void SetWrapWord() {
-		_SetWrapMode(GUI_WRAPMODE_WORD);
+		_SetWrapMode(WRAPMODE_WORD);
 	}
 	void SetWrapChar() {
-		_SetWrapMode(GUI_WRAPMODE_CHAR);
+		_SetWrapMode(WRAPMODE_CHAR);
 	}
 	void SetWrapNone() {
-		_SetWrapMode(GUI_WRAPMODE_NONE);
+		_SetWrapMode(WRAPMODE_NONE);
 	}
 
 	void SetInsertMode(int OnOff) {

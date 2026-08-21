@@ -13,7 +13,7 @@ enum PROGBAR_CI {
 	 PROGBAR_CI_INACT
 };
 
-class ProgBar : public WIDGET {
+class ProgBar : public Widget {
 
 public:
 	struct Properties {
@@ -30,11 +30,11 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 
-	char *pText;
-	int16_t XOff, YOff;
-	int16_t v, Min, Max;
+	char *pText = nullptr;
+	int16_t XOff = 0, YOff = 0;
+	int16_t v = 0, Min = 0, Max = 0;
 
 	void _FreeText() {
 		GUI_ALLOC_FreePtr((void **)&pText);
@@ -151,29 +151,16 @@ private:
 	}
 
 public:
-
-	static ProgBar *Create(int x0, int y0, int xsize, int ysize,
-						   WObj *hParent,
-							  int WinFlags, int ExFlags, int Id) {
-		auto pObj = (ProgBar *)WM_CreateWindowAsChild(
-			x0, y0, xsize, ysize, hParent, WinFlags, ProgBar::_Callback,
-			sizeof(ProgBar) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "ProgBar create failed");
-			return nullptr;
-		}
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, 0);
-		pObj->SetEffect(WIDGET_Effect_None); /* Standard effect for progbar: None */
-		/* init member variables */
-		pObj->Props = DefaultProps;
-		pObj->Max = 100;
-		pObj->Min = 0;
-		return pObj;
+	ProgBar(RECT r, WM_CF Style, WObj *pParent, uint16_t Id) :
+		Widget(r, Style, _Callback, pParent, Id, 0) {
+		SetEffect(WIDGET_Effect_None); /* Standard effect for progbar: None */
 	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-								hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
+	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return new ProgBar(
+			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+						  { pCreateInfo->xSize, pCreateInfo->ySize }),
+			pCreateInfo->Flags,
+			hWinParent, pCreateInfo->Id);
 	}
 
 public:

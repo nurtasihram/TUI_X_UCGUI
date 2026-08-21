@@ -730,13 +730,13 @@ static int _GetNoWrap(const char *s) {
 *  Trailing spaces and line end character are
 *  not counted
 */
-int GUI__WrapGetNumCharsDisp(const char *pText, int xSize, GUI_WRAPMODE WrapMode) {
+int GUI__WrapGetNumCharsDisp(const char *pText, int xSize, WRAPMODE WrapMode) {
 	int r;
 	switch (WrapMode) {
-		case GUI_WRAPMODE_WORD:
+		case WRAPMODE_WORD:
 			r = _GetWordWrap(pText, xSize);
 			break;
-		case GUI_WRAPMODE_CHAR:
+		case WRAPMODE_CHAR:
 			r = _GetCharWrap(pText, xSize);
 			break;
 		default:
@@ -744,7 +744,7 @@ int GUI__WrapGetNumCharsDisp(const char *pText, int xSize, GUI_WRAPMODE WrapMode
 	}
 	return r;
 }
-int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, GUI_WRAPMODE WrapMode) {
+int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, WRAPMODE WrapMode) {
 	int NumChars;
 	uint16_t Char;
 	NumChars = GUI__WrapGetNumCharsDisp(pText, xSize, WrapMode);
@@ -754,7 +754,7 @@ int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, GUI_WRAPMODE Wr
 		NumChars++;
 	}
 	else {
-		if (WrapMode == GUI_WRAPMODE_WORD) {
+		if (WrapMode == WRAPMODE_WORD) {
 			while (Char == ' ') {
 				NumChars++;
 				Char = GUI_UC__GetCharCodeInc(&pText);
@@ -763,7 +763,7 @@ int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, GUI_WRAPMODE Wr
 	}
 	return NumChars;
 }
-int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, GUI_WRAPMODE WrapMode) {
+int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, WRAPMODE WrapMode) {
 	int NumChars, NumBytes;
 	NumChars = GUI__WrapGetNumCharsToNextLine(pText, xSize, WrapMode);
 	NumBytes = GUI_UC__NumChars2NumBytes(pText, NumChars);

@@ -26,7 +26,7 @@ enum BUTTON_CI {
 	 BUTTON_CI_DISABLED
 };
 
-class Button : public WIDGET {
+class Button : public Widget {
 
 public:
 	struct Properties {
@@ -45,10 +45,10 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 
 	String text;
-	GUI_DRAW *aDrawObj[3];
+	GUI_DRAW *aDrawObj[3]{ nullptr };
 
 	~Button() {
 		GUI_ALLOC_FreePtr((void **)&aDrawObj[0]);
@@ -184,34 +184,13 @@ private:
 	}
 
 public:
-
-	static Button *Create(int x0, int y0, int xsize, int ysize,
-							  WObj *hParent, int WinFlags, int ExFlags, int Id) {
-		GUI_USE_PARA(ExFlags);
-		/* Create the window */
-		auto pObj = (Button *)WM_CreateWindowAsChild(
-			x0, y0, xsize, ysize, hParent, WinFlags, Button::_Callback,
-			sizeof(Button) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Button create failed");
-			return nullptr;
-		}
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* init member variables */
-		pObj->Props = Button::DefaultProps;
-		return pObj;
-	}
-	static Button *Create(int x0, int y0, int xsize, int ysize, int Id, int Flags) {
-		return Create(x0, y0, xsize, ysize, nullptr, Flags, 0, Id);
-	}
-	static Button *Create(int x0, int y0, int xsize, int ysize, WObj *hParent, int Id, int Flags) {
-		return Create(x0, y0, xsize, ysize, hParent, Flags, 0, Id);
-	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		auto pThis = Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,
-							pCreateInfo->xSize, pCreateInfo->ySize,
-							hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
+	Button(RECT r, WM_CF Style, WObj *pParent, uint16_t Id) :
+		Widget(r, Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE) {}
+	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		auto pThis = new Button(
+			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+						  { pCreateInfo->xSize, pCreateInfo->ySize }),
+			pCreateInfo->Flags, hWinParent, pCreateInfo->Id);
 		pThis->SetText(pCreateInfo->pName);
 		return pThis;
 	}

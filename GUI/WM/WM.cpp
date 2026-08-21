@@ -167,7 +167,6 @@ WObj * WM_CreateWindowAsChild(int x0, int y0, int width, int height
 								  WC_MEMDEV_ON_REDRAW |
 								  WC_STAYONTOP |
 								  WC_CONST_OUTLINE |
-								  WC_HASTRANS |
 								  WC_ANCHOR_RIGHT |
 								  WC_ANCHOR_BOTTOM |
 								  WC_ANCHOR_LEFT |
@@ -253,17 +252,12 @@ static void _Findy1(WObj *pWin, RECT *pRect, RECT *pParentRect) {
 		/* Check if this window affects us at all */
 		if (!(rWinClipped <= *pRect))
 			continue;
-		if ((Status & WC_HASTRANS) == 0) {
-			if (pWin->Rect.y0 > pRect->y0) {
-				ASSIGN_IF_LESS(pRect->y1, rWinClipped.y0 - 1);      /* Check upper border of window */
-			}
-			else {
-				ASSIGN_IF_LESS(pRect->y1, rWinClipped.y1);        /* Check lower border of window */
-			}
+		if (pWin->Rect.y0 > pRect->y0) {
+			ASSIGN_IF_LESS(pRect->y1, rWinClipped.y0 - 1);      /* Check upper border of window */
 		}
-		else /* Check all children */
-			for (auto pChild = pWin->pFirstChild; pChild; pChild = pChild->pNext)
-				_Findy1(pChild, pRect, &rWinClipped);
+		else {
+			ASSIGN_IF_LESS(pRect->y1, rWinClipped.y1);        /* Check lower border of window */
+		}
 	}
 }
 static bool _Findx0(WObj *pWin, RECT *pRect, RECT *pParentRect) {
@@ -276,16 +270,10 @@ static bool _Findx0(WObj *pWin, RECT *pRect, RECT *pParentRect) {
 		if (pParentRect)
 			rWinClipped &= *pParentRect;
 		/* Check if this window affects us at all */
-		if (!(rWinClipped <= *pRect))
-			continue;
-		if (!(Status & WC_HASTRANS)) {
+		if (rWinClipped <= *pRect) {
 			pRect->x0 = rWinClipped.x1 + 1;
 			return true;
 		}
-		/* Check all children */
-		for (auto pChild = pWin->pFirstChild; pChild; pChild = pChild->pNext)
-			if (_Findx0(pChild, pRect, &rWinClipped))
-				return true;
 	}
 	return false;
 }
@@ -301,11 +289,7 @@ static void _Findx1(WObj *pWin, RECT *pRect, RECT *pParentRect) {
 		/* Check if this window affects us at all */
 		if (!(rWinClipped <= *pRect))
 			continue;
-		if (!(Status & WC_HASTRANS))
-			pRect->x1 = rWinClipped.x0 - 1;
-		else /* Check all children */
-			for (auto pChild = pWin->pFirstChild; pChild; pChild = pChild->pNext)
-				_Findx1(pChild, pRect, &rWinClipped);
+		pRect->x1 = rWinClipped.x0 - 1;
 	}
 }
 
@@ -605,7 +589,7 @@ static int _Paint(WObj *pWin) {
 			if (pWin->Status & WC_MEMDEV) {
 				int Flags;
 				RECT r = pWin->InvalidRect;
-				Flags = (pWin->Status & WC_HASTRANS) ? GUI_MEMDEV_HASTRANS : GUI_MEMDEV_NOTRANS;
+				Flags = GUI_MEMDEV_NOTRANS;
 				/*
 					* Currently we treat a desktop window as transparent, because per default it does not repaint itself.
 					*/
@@ -1171,12 +1155,6 @@ void WObj::ShowWindow() {
 	if (!(Status & WC_VISIBLE)) {
 		Status |= WC_VISIBLE;
 		WM_InvalidateDescs(this);
-	}
-}
-void WObj::HideWindow() {
-	if (Status & WC_VISIBLE) {
-		Status &= ~WC_VISIBLE;
-		_InvalidateAreaBelow(Rect, this);
 	}
 }
 

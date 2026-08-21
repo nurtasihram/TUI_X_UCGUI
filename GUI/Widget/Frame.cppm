@@ -38,7 +38,7 @@ constexpr uint16_t
 	FRAMEWIN_BUTTON_RIGHT   = 1 << 0,
 	FRAMEWIN_BUTTON_LEFT    = 1 << 1;
 
-class Frame : public WIDGET {
+class Frame : public Widget {
 
 public:
 	struct Properties {
@@ -61,16 +61,16 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 	
 	WM_CALLBACK *cb;
-	WObj *hClient;
-	Menu *pMenu;
-	char *pText;
+	WObj *pClient = nullptr;
+	Menu *pMenu = nullptr;
+	char *pText = nullptr;
 	RECT rRestore;
 	uint16_t Flags;
-	WObj *pFocussedChild; /* Handle to focussed child .. default none (0) */
-	DIALOG_STATUS *pDialogStatus;
+	WObj *pFocussedChild = nullptr; /* Handle to focussed child .. default none (0) */
+	DIALOG_STATUS *pDialogStatus = nullptr;
 
 	struct POSITIONS {
 		int16_t TitleHeight;
@@ -126,12 +126,12 @@ private:
 	}
 	void _UpdatePositions() {
 		/* Move client window accordingly */
-		if (this->hClient || this->pMenu) {
+		if (this->pClient || this->pMenu) {
 			POSITIONS Pos;
 			_CalcPositions(&Pos);
-			if (this->hClient) {
-				WM_MoveChildTo(this->hClient, Pos.rClient.x0, Pos.rClient.y0);
-				WM_SetSize(this->hClient,
+			if (this->pClient) {
+				WM_MoveChildTo(this->pClient, Pos.rClient.x0, Pos.rClient.y0);
+				WM_SetSize(this->pClient,
 						   Pos.rClient.x1 - Pos.rClient.x0 + 1,
 						   Pos.rClient.y1 - Pos.rClient.y0 + 1);
 			}
@@ -276,7 +276,7 @@ private:
 				return 0;
 			}
 			case WM_GET_CLIENT_WINDOW: /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
-				return (WM_PARAM)pObj->hClient;
+				return (WM_PARAM)pObj->pClient;
 			case WM_NOTIFY_PARENT: {
 				auto pInfo = (const NOTIFY_INFO *)Data;
 				auto pWinSrc = pInfo->pWinSrc;
@@ -307,7 +307,7 @@ private:
 					if (IsWindow(pObj->pFocussedChild))
 						pObj->pFocussedChild->SetFocus();
 					else
-						pObj->pFocussedChild = WM_SetFocusOnNextChild(pObj->hClient);
+						pObj->pFocussedChild = WM_SetFocusOnNextChild(pObj->pClient);
 					pObj->SetActive(1);
 					return 0; /* Focus could be accepted */
 				}
@@ -380,7 +380,19 @@ private:
 	}
 
 public:
-
+	Frame(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
+		  uint16_t ExFlags, const char *pTitle, WM_CALLBACK *cb) :
+		Widget(r, Style | WC_LATE_CLIP | WC_VISIBLE, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS),
+		cb(cb), Flags(ExFlags) {
+		POSITIONS Pos;
+		_CalcPositions(&Pos);
+		pClient = new WObj(
+			Pos.rClient,
+			WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM | WC_VISIBLE | WC_LATE_CLIP, _cbClient, this);
+		if (!(Style & (WC_MEMDEV | WC_MEMDEV_ON_REDRAW)))
+			WM_DisableMemdev(this);
+		SetText(pTitle);
+	}
 	static Frame *Create(int x0, int y0, int xsize, int ysize,
 				  WObj *hParent,
 				  int WinFlags, int ExFlags, int Id, const char *pTitle, WM_CALLBACK *cb) {
@@ -399,10 +411,8 @@ public:
 		pObj->Props = DefaultProps;
 		pObj->cb = cb;
 		pObj->Flags = ExFlags;
-		pObj->pFocussedChild = 0;
-		pObj->pMenu = nullptr;
 		pObj->_CalcPositions(&Pos);
-		pObj->hClient = WM_CreateWindowAsChild(
+		pObj->pClient = WM_CreateWindowAsChild(
 			Pos.rClient.x0, Pos.rClient.y0,
 			Pos.rClient.x1 - Pos.rClient.x0 + 1,
 			Pos.rClient.y1 - Pos.rClient.y0 + 1,
@@ -418,24 +428,22 @@ public:
 		pObj->SetText(pTitle);
 		return pObj;
 	}
-	static Frame *Create(const char *pText, WM_CALLBACK *cb, int Flags,
-						   int x0, int y0, int xsize, int ysize) {
-		return Create(x0, y0, xsize, ysize, nullptr, Flags, 0, 0, pText, cb);
-	}
-	static Frame *CreateAsChild(int x0, int y0, int xsize, int ysize, WObj *hParent,
-								  const char *pText, WM_CALLBACK *cb, int Flags) {
-		return Create(x0, y0, xsize, ysize, hParent, Flags, 0, 0, pText, cb);
-	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent,
+	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent,
 								  int x0, int y0, WM_CALLBACK *cb) {
-		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-								 hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->pName, cb);
+		/*return new Frame(RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+									   { pCreateInfo->xSize, pCreateInfo->ySize }),
+						 0, hWinParent, pCreateInfo->Id,
+						 pCreateInfo->Flags, pCreateInfo->pName, cb);*/
+		return Create(
+			pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,
+			pCreateInfo->xSize, pCreateInfo->ySize,
+			hWinParent, 0, pCreateInfo->Flags,
+			pCreateInfo->Id, pCreateInfo->pName, cb);
 	}
 
 public:
 
 #pragma region Properties
-
 
 	PCFONT GetFont() const { return Props.pFont; }
 	void SetFont(PCFONT pFont) {
@@ -479,7 +487,7 @@ public:
 		if (Props.ClientColor == Color)
 			return;
 		Props.ClientColor = Color;
-		hClient->Invalidate();
+		pClient->Invalidate();
 	}
 	
 #pragma endregion
@@ -518,7 +526,7 @@ public:
 		xSize = GetSizeX() - BorderSize * 2;
 		this->pMenu = pMenu;
 		if (this->cb)
-			pMenu->SetOwner(this->hClient);
+			pMenu->SetOwner(this->pClient);
 		pMenu->Attach(this, x0, y0, xSize, 0, 0);
 		WM_SetAnchor(pMenu, WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT);
 		_UpdatePositions();
@@ -557,7 +565,7 @@ public:
 			int OldHeight = 1 + this->Rect.y1 - this->Rect.y0;
 			int NewHeight = 1 + this->rRestore.y1 - this->rRestore.y0;
 			WM_ResizeWindow(this, 0, NewHeight - OldHeight);
-			hClient->ShowWindow();
+			pClient->ShowWindow();
 			pMenu->ShowWindow();
 			_UpdatePositions();
 			this->Flags &= ~FRAMEWIN_CF_MINIMIZED;
@@ -582,7 +590,7 @@ public:
 			int OldHeight = this->Rect.y1 - this->Rect.y0 + 1;
 			int NewHeight = _CalcTitleHeight() + this->EffectSize() * 2 + 2;
 			this->rRestore = this->Rect;
-			hClient->HideWindow();
+			pClient->HideWindow();
 			pMenu->HideWindow();
 			WM_ResizeWindow(this, 0, NewHeight - OldHeight);
 			_UpdatePositions();
@@ -993,7 +1001,7 @@ public:
 		int y0;
 		for (pChild = pFirstChild; pChild; pChild = pChild->pNext) {
 			y0 = pChild->Rect.y0 - Rect.y0;
-			if ((y0 == Props.BorderSize) && (pChild != hClient)) {
+			if ((y0 == Props.BorderSize) && (pChild != pClient)) {
 				if (State & FRAMEWIN_CF_TITLEVIS) {
 					pChild->ShowWindow();
 				}
@@ -1016,12 +1024,10 @@ public:
 			_UpdatePositions();
 			_ShowHideButtons();
 			if (this->Flags & FRAMEWIN_CF_MINIMIZED) {
-				if (State & FRAMEWIN_CF_TITLEVIS) {
+				if (State & FRAMEWIN_CF_TITLEVIS)
 					ShowWindow();
-				}
-				else {
+				else
 					HideWindow();
-				}
 			}
 			Invalidate();
 		}
@@ -1041,7 +1047,7 @@ public:
 			x = Pos.rTitleText.x0 + Off;
 			WinFlags = WC_VISIBLE;
 		}
-		auto r = Button::Create(x, BorderSize, Size, Size, this, Id, WinFlags);
+		auto r = new Button(RECT::LeftTop({ x, BorderSize }, { Size, Size }), WinFlags, this, Id);
 		r->SetFocussable(0);
 		return r;
 	}

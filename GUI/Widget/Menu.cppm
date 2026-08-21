@@ -59,7 +59,7 @@ enum MENU_CI {
 
 PCWIDGET_EFFECT MENU__pDefaultEffect = MENU_EFFECT_DEFAULT;
 
-class Menu : public WIDGET {
+class Menu : public Widget {
 	
 public:
 	struct ItemData {
@@ -90,7 +90,7 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 
 	struct Item {
 		Menu *pSubmenu;
@@ -100,12 +100,11 @@ private:
 		char *pText;
 	};
 	ARRAY<Item> ItemArray;
-	WObj *pOwner;
-	uint16_t Flags;
-	char IsSubmenuActive;
-	uint16_t Width;
-	uint16_t Height;
-	uint16_t Sel;
+	WObj *pOwner = nullptr;
+	uint16_t Flags = 0;
+	char IsSubmenuActive = 0;
+	uint16_t Width = 0, Height = 0;
+	uint16_t Sel = -1;
 
 	struct MsgPack {
 		uint32_t MsgType : 16;
@@ -732,29 +731,16 @@ private:
 	}
 
 public:
-
-	static Menu *Create(int ExFlags, int Id) {
-		/* Create the window */
-		auto pObj = (Menu *)WM_CreateWindowAsChild(0, 0, 0, 0, nullptr,
-												   WC_VISIBLE | WC_STAYONTOP,
-												   Menu::_Callback, sizeof(Menu) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Menu create failed");
-			return nullptr;
-		}
-		pObj->_DetachWindow();
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* init member variables */
+	Menu(int ExFlags, int Id) :
+		Widget({}, WC_VISIBLE | WC_STAYONTOP, _Callback, nullptr, Id, WIDGET_STATE_FOCUSSABLE) {
+		_DetachWindow();
 		if (ExFlags & MENU_SF_OPEN_ON_POINTEROVER)
 			ExFlags |= MENU_SF_ACTIVE;
 		else
 			ExFlags &= ~(MENU_SF_ACTIVE);
-		pObj->Props = Menu::DefaultProps;
-		pObj->Flags = ExFlags;
-		pObj->Sel = -1;
-		pObj->SetEffect(MENU__pDefaultEffect);
-		return pObj;
+		Flags = ExFlags;
+		Sel = -1;
+		SetEffect(MENU__pDefaultEffect);
 	}
 
 private:

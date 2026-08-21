@@ -19,7 +19,7 @@ constexpr uint16_t
 
 using DROPDOWN_CI = LISTBOX_CI;
 
-class DropDown : public WIDGET {
+class DropDown : public Widget {
 
 public:
 	struct Properties {
@@ -41,17 +41,17 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 
-	int16_t    Sel;      /* current selection */
+	int16_t    Sel = 0;      /* current selection */
 	int16_t    ySizeEx;  /* Drop down size */
-	int16_t    TextHeight;
+	int16_t    TextHeight = 0;
 	ARRAY<char *> Handles;
 	WM_SCROLL_STATE ScrollState;
-	ListBox *pListWin;
+	ListBox *pListWin = nullptr;
 	uint8_t  Flags;
-	uint16_t ItemSpacing;
-	uint8_t  ScrollbarWidth;
+	uint16_t ItemSpacing = 0;
+	uint8_t  ScrollbarWidth = 0;
 	char  IsPressed;
 
 	static int _Tolower(int Key) {
@@ -149,12 +149,10 @@ private:
 		return 0;
 	}
 	void _AdjustHeight() {
-		int Height;
-		Height = this->TextHeight;
-		if (!Height) {
+		auto Height = TextHeight;
+		if (!Height)
 			Height = Props.pFont->DistY();
-		}
-		Height += this->EffectSize() + 2 * Props.TextBorderSize;
+		Height += EffectSize() + 2 * Props.TextBorderSize;
 		WM_SetSize(this, GetSizeX(), Height);
 	}
 
@@ -234,7 +232,7 @@ public:
 		pObj->_AdjustHeight();
 		return pObj;
 	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo,
+	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo,
 								WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,
 					  pCreateInfo->xSize, pCreateInfo->ySize,
@@ -265,7 +263,7 @@ public:
 		}
 		auto pLst = this->pListWin;
 		if (pLst == 0) {
-			pLst = ListBox::Create(nullptr, WObj::GetDesktopWindow(), r.x0, r.y0, xSize, ySize, WC_VISIBLE | WC_STAYONTOP | WC_ACTIVATE);
+			pLst = ListBox::Create(WObj::GetDesktopWindow(), r.x0, r.y0, xSize, ySize, WC_VISIBLE | WC_STAYONTOP | WC_ACTIVATE);
 			pLst->SetEffect(WIDGET_Effect_3D1L);
 			if (pLst) {
 				if (this->Flags & DROPDOWN_SF_AUTOSCROLLBAR) {

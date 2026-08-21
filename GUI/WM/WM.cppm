@@ -108,46 +108,45 @@ template<int code> constexpr int WM_NOTIFICATION_WIDGET = (static_cast<int>(WM_N
  **********************************************************************/
 using WM_CF = uint16_t;
 constexpr WM_CF
-	 /* Has transparency. Needs to be defined for windows which do not fill the entire section of their (client) rectangle. */
-	 WC_HASTRANS         = 1 << 0, 
 	 /* Hide window after creation (default !) */
-	 WC_HIDE             = 0 << 1, 
+	 WC_HIDE             = 0 << 0, 
 	 /* Show window after creation */
-	 WC_VISIBLE          = 1 << 1, 
+	 WC_VISIBLE          = 1 << 0, 
 	 /* Use memory device for redraws */
-	 WC_MEMDEV           = 1 << 2, 
+	 WC_MEMDEV           = 1 << 1, 
 	 /* Stay on top */
-	 WC_STAYONTOP        = 1 << 3, 
+	 WC_STAYONTOP        = 1 << 2, 
 	 /* Disabled: Does not receive PID (mouse & touch) input */
-	 WC_DISABLED         = 1 << 4, 
+	 WC_DISABLED         = 1 << 3, 
 
 	 /* Create only flags ... Not available as status flags */
 	
 	 /* If automatic activation upon creation of window is desired */
-	 WC_ACTIVATE         = 1 << 5, 
+	 WC_ACTIVATE         = 1 << 4, 
 	 /* Put window in foreground after creation (default !) */
-	 WC_FGND             = 0 << 6, 
+	 WC_FGND             = 0 << 5, 
 	 /* Put window in background after creation */
-	 WC_BGND             = 1 << 6, 
+	 WC_BGND             = 1 << 5, 
 
 	 /* Anchor flags */
 	
 	 /* Right anchor ... If parent is resized, distance to right will remain const (left is default) */
-	 WC_ANCHOR_RIGHT     = 1 << 7, 
+	 WC_ANCHOR_RIGHT     = 1 << 6, 
 	 /* Bottom anchor ... If parent is resized, distance to bottom will remain const (top is default) */
-	 WC_ANCHOR_BOTTOM    = 1 << 8, 
+	 WC_ANCHOR_BOTTOM    = 1 << 7, 
 	 /* Left anchor ... If parent is resized, distance to left will remain const (left is default) */
-	 WC_ANCHOR_LEFT      = 1 << 9, 
+	 WC_ANCHOR_LEFT      = 1 << 8, 
 	 /* Top anchor ... If parent is resized, distance to top will remain const (top is default) */
-	 WC_ANCHOR_TOP       = 1 << 10,
+	 WC_ANCHOR_TOP       = 1 << 9,
 
 	 /* Constant outline. This is relevant for transparent windows only. If a window is transparent and does not have a constant outline, its background is invalided instead of the window itself. This causes add. computation time when redrawing. */
-	 WC_CONST_OUTLINE    = 1 << 11,
-	 WC_LATE_CLIP        = 1 << 12,
-	 WC_MEMDEV_ON_REDRAW = 1 << 13,
+	 WC_CONST_OUTLINE    = 1 << 10,
+	 WC_LATE_CLIP        = 1 << 11,
+	 WC_MEMDEV_ON_REDRAW = 1 << 12,
 
-	 WC_RESERVED3        = 1 << 14,
-	 WC_RESERVED4        = 1 << 15;
+	 WC_RESERVED3        = 1 << 13,
+	 WC_RESERVED4        = 1 << 14,
+	 WC_RESERVED5        = 1 << 15;
 #pragma endregion
 
 /************************************************************
@@ -208,7 +207,7 @@ struct WM_KEY_INFO {
 	int16_t Key, PressedCnt;
 };
 struct WM_SCROLL_STATE {
-	int16_t NumItems = 0, v = 0, PageSize = 0;
+	int16_t NumItems = 0, PageSize = 0, v = 0;
 	void Bounds() {
 		int Max = NumItems - PageSize;
 		if (Max < 0)

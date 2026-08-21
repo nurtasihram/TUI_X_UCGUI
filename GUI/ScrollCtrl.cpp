@@ -7,12 +7,10 @@ static bool _SetScrollbar(WObj *pWin, int OnOff, int Id, int Flags) {
 	auto pBar = pWin->GetItem<ScrollBar>(Id);
 	if (OnOff) {
 		if (!pBar)
-			ScrollBar::Create(pWin, Flags);
+			new ScrollBar(pWin, Flags);
 	}
-	else {
-		if (pBar)
-			WM_DeleteWindow(pBar);
-	}
+	else if (pBar)
+		WM_DeleteWindow(pBar);
 	return pBar;
 }
 bool WM_SetScrollbarV(WObj *pWin, int OnOff) {
@@ -69,7 +67,7 @@ void WM_GetInsideRectExScrollbar(WObj *pWin, RECT *pRect) {
 	}
 }
 
-void WIDGET::SetScrollState(const WM_SCROLL_STATE &VState, const WM_SCROLL_STATE &HState) {
+void Widget::SetScrollState(const WM_SCROLL_STATE &VState, const WM_SCROLL_STATE &HState) {
 	if (auto pScroll = GetScrollbarV())
 		pScroll->SetScrollState(VState);
 	if (auto pScroll = GetScrollbarH())

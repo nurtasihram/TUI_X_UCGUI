@@ -32,6 +32,8 @@ struct RECT {
 
 	inline POINT LeftTop() const { return{ x0, y0 }; }
 	inline void LeftTop(POINT Pos) { x0 = Pos.x, y0 = Pos.y; }
+	inline static RECT LeftTop(POINT Pos, POINT Size)
+	{ return { Pos.x, Pos.y, Pos.x + Size.x, Pos.y + Size.y }; }
 
 	inline auto XSize() const { return x1 - x0 + 1; }
 	inline auto YSize() const { return y1 - y0 + 1; }
@@ -39,7 +41,7 @@ struct RECT {
 
 	inline auto DistX() const { return x1 - x0; }
 	inline auto DistY() const { return y1 - y0; }
-	inline  auto Dist() const { return POINT{ DistX(), DistY() }; }
+	inline auto Dist() const { return POINT{ DistX(), DistY() }; }
 
 	inline RECT Rotate90L(int16_t XSize) const {
 		return{ XSize - y1, x0, XSize - y0, x1 };

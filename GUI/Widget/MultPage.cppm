@@ -19,7 +19,7 @@ constexpr uint16_t MULTIPAGE_ALIGN_RIGHT  = 1 << 0;
 constexpr uint16_t MULTIPAGE_ALIGN_TOP    = 0 << 2;
 constexpr uint16_t MULTIPAGE_ALIGN_BOTTOM = 1 << 2;
 
-class MultPage : public WIDGET {
+class MultPage : public Widget {
 
 public:
 	struct Properties {
@@ -36,7 +36,7 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 
 	struct Page {
 		WObj *hWin;
@@ -45,8 +45,8 @@ private:
 	};
 	ARRAY<Page> Handles;
 	WObj *pClient;
-	unsigned Selection;
-	int ScrollState;
+	uint16_t Selection = 0xffff;
+	int16_t ScrollState = 0;
 
 	void _AddScrollbar(int x, int y, int w, int h) {
 		if (auto pScroll = GetScrollbarH()) {
@@ -235,36 +235,39 @@ private:
 		GUI_DispStringAt(pText, r.x0 + 4, pRect->y0 + 3);
 	}
 	void _OnPaint() {
+		SetBkColorPrefer(RGB_INVALID_COLOR);
+		GUI_Clear();
 		RECT rBorder;
 		/* Draw border of MultPage */
 		_CalcBorderRect(&rBorder);
 		DrawUp(rBorder);
 		/* Draw text items */
-		if (Handles.NumItems() > 0) {
-			RECT rText, rClip;
-			int i, w = 0, x0 = 0;
-			if (this->State & MULTIPAGE_STATE_SCROLLMODE) {
-				if (Props.Align & MULTIPAGE_ALIGN_RIGHT) {
-					x0 = -_GetPagePosX(this->ScrollState);
-				}
-				else {
-					x0 = -_GetPagePosX(this->ScrollState);
-				}
+		auto NumItems = Handles.NumItems();
+		if (!NumItems)
+			return;
+		int w = 0, x0 = 0;
+		if (State & MULTIPAGE_STATE_SCROLLMODE) {
+			if (Props.Align & MULTIPAGE_ALIGN_RIGHT) {
+				x0 = -_GetPagePosX(ScrollState);
 			}
-			_GetTextRect(&rText);
-			rClip = rText;
-			rClip.y0 = rText.y0 - 1;
-			rClip.y1 = rText.y1 + 1;
-			WM_SetUserClipRect(&rClip);
-			GUI.SetFont(Props.pFont);
-			for (i = 0; i < Handles.NumItems(); i++) {
-				auto &pPage = Handles[i];
-				x0 += w;
-				w = GUI_GetStringDistX(pPage.pText) + 10;
-				_DrawTextItem(pPage.pText, i, &rText, x0, w, (pPage.Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0);
+			else {
+				x0 = -_GetPagePosX(ScrollState);
 			}
-			WM_SetUserClipRect(nullptr);
 		}
+		RECT rText, rClip;
+		_GetTextRect(&rText);
+		rClip = rText;
+		rClip.y0 = rText.y0 - 1;
+		rClip.y1 = rText.y1 + 1;
+		WM_SetUserClipRect(&rClip);
+		GUI.SetFont(Props.pFont);
+		for (int i = 0; i < NumItems; i++) {
+			auto &pPage = Handles[i];
+			x0 += w;
+			w = GUI_GetStringDistX(pPage.pText) + 10;
+			_DrawTextItem(pPage.pText, i, &rText, x0, w, (pPage.Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0);
+		}
+		WM_SetUserClipRect(nullptr);
 	}
 	int _ClickedOnMultipage(int x, int y) {
 		RECT rText;
@@ -273,7 +276,7 @@ private:
 			if ((Handles.NumItems() > 0) && (x >= rText.x0) && (x <= rText.x1)) {
 				int i, w = 0, x0 = rText.x0;
 				/* Check if another page must be selected */
-				if (this->State & MULTIPAGE_STATE_SCROLLMODE) {
+				if (State & MULTIPAGE_STATE_SCROLLMODE) {
 					x0 -= _GetPagePosX(this->ScrollState);
 				}
 				for (i = 0; i < Handles.NumItems(); i++) {
@@ -385,37 +388,22 @@ private:
 	}
 
 public:
-
-	static MultPage *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
-							int WinFlags, int ExFlags, int Id) {
-		/* Create the window */
-		auto pObj = (MultPage *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags | WC_HASTRANS, MultPage::_Callback,
-													   sizeof(MultPage) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "MultPage create failed");
-			return nullptr;
-		}
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		/* init member variables */
-		pObj->Props = MultPage::DefaultProps;
-		pObj->Selection = 0xffff;
-		pObj->ScrollState = 0;
-		pObj->State = 0;
+	MultPage(RECT r, WM_CF Style, WObj *pParent, uint16_t Id) :
+		Widget(r, Style | WC_LATE_CLIP, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE) {
 		RECT rClient;
-		pObj->_CalcClientRect(&rClient);
-		pObj->pClient = (WObj *)WM_CreateWindowAsChild(
-			rClient.x0, rClient.y0,
-			rClient.x1 - rClient.x0 + 1,
-			rClient.y1 - rClient.y0 + 1,
-			pObj, WC_VISIBLE | WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM, MultPage::_ClientCallback, 0);
-		pObj->_UpdatePositions();
-		return pObj;
+		_CalcClientRect(&rClient);
+		pClient = new WObj(
+			rClient,
+			WC_VISIBLE | WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM,
+			_ClientCallback, this);
+		_UpdatePositions();
 	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo,
+	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo,
 								WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
+		return new MultPage(
+			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+						  { pCreateInfo->xSize, pCreateInfo->ySize }),
+			pCreateInfo->Flags, hWinParent, pCreateInfo->Id);
 	}
 
 public:

@@ -333,15 +333,15 @@ static void _CreateMenu(Frame *pParent) {
 	//
 	// Create main menu
 	//
-	auto pMenu = Menu::Create(MENU_CF_HORIZONTAL, ID_MENU);
+	auto pMenu = new Menu(MENU_CF_HORIZONTAL, ID_MENU);
 	//
 	// Create sub menus
 	//
-	auto pMenuFile = Menu::Create(MENU_CF_VERTICAL, 0);
-	auto pMenuEdit = Menu::Create(MENU_CF_VERTICAL, 0);
-	auto pMenuHelp = Menu::Create(MENU_CF_VERTICAL, 0);
-	auto pMenuRecent = Menu::Create(MENU_CF_VERTICAL, 0);
-	auto pMenuTests = Menu::Create(MENU_CF_VERTICAL, 0);
+	auto pMenuFile = new Menu(MENU_CF_VERTICAL, 0);
+	auto pMenuEdit = new Menu(MENU_CF_VERTICAL, 0);
+	auto pMenuHelp = new Menu(MENU_CF_VERTICAL, 0);
+	auto pMenuRecent = new Menu(MENU_CF_VERTICAL, 0);
+	auto pMenuTests = new Menu(MENU_CF_VERTICAL, 0);
 	//
 	// Add menu items to menu &#39;Recent&#39;
 	//
@@ -707,7 +707,7 @@ static int _MultiPageNewPageIndex = 0;
 static WObj *_CreateMultiPagePage(MultPage *pMultiPage, const char *pLabel) {
 	char acText[96];
 	sprintf(acText, "Content: %s", pLabel);
-	return Text::Create(8, 8, 300, 20, pMultiPage, WC_VISIBLE, TEXT_CF_LEFT, 0, acText);
+	return new Text(RECT::LeftTop({ 8, 8 }, { 300, 20 }), WC_VISIBLE, pMultiPage, 0, acText, TEXT_CF_LEFT);
 }
 
 static void _UpdateMultiPageStatus(WObj *pWin) {
@@ -1414,16 +1414,16 @@ int main(void) {
 	GUI_Init();
 	GUI_CURSOR_Show();
 
-	//_TestListView();
-	//_TestMultiPage();
+	_TestListView();
+	_TestMultiPage();
 	//_TestRadio();
-	//_TestProgBar();
+	_TestProgBar();
 	//_TestSlider();
 	//_TestEdit();
 	//_TestMultiEdit();
-	//_TestDropDown();
+	_TestDropDown();
 	_TestListBox();
-	//_TestMemDev();
+	_TestMemDev();
 
 	return 0;
 }

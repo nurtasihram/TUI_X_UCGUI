@@ -14,7 +14,7 @@ constexpr uint16_t TEXT_CF_VCENTER = TEXTALIGN_VCENTER;
 constexpr uint16_t TEXT_CF_TOP     = TEXTALIGN_TOP;
 constexpr uint16_t TEXT_CF_BOTTOM  = TEXTALIGN_BOTTOM;
 
-class Text : public WIDGET {
+class Text : public Widget {
 
 public:
 	struct Properties {
@@ -25,9 +25,9 @@ public:
 	} static DefaultProps;
 	
 private:
-	Properties Props;
+	Properties Props = DefaultProps;
 
-	char *pText;
+	char *pText = nullptr;
 
 	void _FreeAttached() {
 		GUI_ALLOC_FreePtr((void **)&pText);
@@ -69,30 +69,20 @@ private:
 	}
 
 public:
-
-	static Text *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
-						int WinFlags, int ExFlags, int Id, const char *pText) {
-		/* Create the window */
-		auto pObj = (Text *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, Text::_Callback,
-												   sizeof(Text) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "Text create failed");
-			return nullptr;
-		}
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, 0);
-		/* init member variables */
-		pObj->Props = Text::DefaultProps;
-		pObj->Props.Align = ExFlags;
+	Text(RECT r, WM_CF Style, WObj *pParent, uint16_t Id, const char *pText, TEXTALIGN ExFlags) :
+		Widget(r, Style, _Callback, pParent, Id, 0) {
 		if (pText)
-			GUI__SetText(&pObj->pText, pText);
+			GUI__SetText(&this->pText, pText);
 		else
-			pObj->pText = nullptr;
-		return pObj;
+			this->pText = nullptr;
+		Props.Align = ExFlags;
 	}
-	static WIDGET *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-					  hWinParent, WC_VISIBLE, pCreateInfo->Flags, pCreateInfo->Id, pCreateInfo->pName);
+
+	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return new Text(
+			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+						  { pCreateInfo->xSize, pCreateInfo->ySize }),
+			WC_VISIBLE, hWinParent, pCreateInfo->Id, pCreateInfo->pName, pCreateInfo->Flags);
 	}
 
 public:
