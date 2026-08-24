@@ -47,7 +47,7 @@ void WM_GetInsideRectExScrollbar(WObj *pWin, RECT *pRect) {
 	if (pWin) {
 		if (pRect) {
 			auto rWin = pWin->GetRect();     /* The entire window in screen coordinates */
-			auto rInside = WM_GetInsideRect(pWin);
+			auto rInside = pWin->GetInsideRect();
 			if (auto pBarV = pWin->GetScrollbarV()) {
 				auto rScrollbar = pBarV->GetRect() - rWin.LeftTop();
 				auto WinFlags = pBarV->GetFlags();

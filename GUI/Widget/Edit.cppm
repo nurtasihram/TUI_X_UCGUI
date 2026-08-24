@@ -96,7 +96,7 @@ private:
 		GUI__CalcTextRect(pText, &rInside, &rText, Props.Align);
 		WIDGET__FillStringInRect(pText, rFillRect, rInside, rText);
 		/* Calculate position and size of cursor */
-		if (this->State & WIDGET_STATE_FOCUS) {
+		if (GetStates() & WIDGET_STATE_FOCUS) {
 			auto p = pText;
 			int CursorWidth = this->XSizeCursor > 0 ? this->XSizeCursor : 1;
 			RECT rInvert;
@@ -336,18 +336,18 @@ private:
 	}
 
 public:
-	Edit(RECT r, WM_CF Style, WObj *pParent, uint16_t Id, uint16_t MaxLen) :
+	Edit(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
+		 uint16_t MaxLen) :
 		Widget(r, Style | WC_LATE_CLIP | WC_VISIBLE,
 			   _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE),
 		MaxLen(MaxLen ? MaxLen : 8) {
 		_IncrementBuffer(MaxLen + 1);
 	}
-	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		auto pEdit = new Edit(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			pCreateInfo->Flags,
-			hWinParent, pCreateInfo->Id,
+			pCreateInfo->Flags, hWinParent, pCreateInfo->Id,
 			(uint16_t)pCreateInfo->Para
 		);
 		pEdit->SetTextAlign((TEXTALIGN)pCreateInfo->Flags);

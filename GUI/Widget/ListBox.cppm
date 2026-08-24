@@ -539,31 +539,12 @@ public:
 		Widget(r, Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE) {
 		UpdateScrollers();
 	}
-	static ListBox *Create(int x0, int y0, int xsize, int ysize, WObj *hParent,
-							  int WinFlags, int ExFlags, int Id) {
-		auto pObj = (ListBox *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, ListBox::_Callback,
-													  sizeof(ListBox) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "ListBox create failed");
-			return nullptr;
-		}
-		/* Init sub-classes */
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		pObj->Props = ListBox::DefaultProps;
-		pObj->UpdateScrollers();
-		return pObj;
-	}
-	static ListBox *Create(WObj *hWinParent,
-						   int x0, int y0, int xsize, int ysize, int Flags) {
-		//return new ListBox(RECT::LeftTop({ x0, y0 }, { xsize, ysize }), Flags, hWinParent, 0);
-		return Create(x0, y0, xsize, ysize, hWinParent, Flags, 0, 0);
-	}
-	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		GUI_USE_PARA(cb);
-		auto hObj = Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0, pCreateInfo->xSize, pCreateInfo->ySize,
-						   hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
-		return hObj;
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return new ListBox(
+			RECT(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,
+				 pCreateInfo->x0 + x0 + pCreateInfo->xSize - 1,
+				 pCreateInfo->y0 + y0 + pCreateInfo->ySize - 1),
+			pCreateInfo->Flags, hWinParent, pCreateInfo->Id);
 	}
 
 public:
@@ -612,7 +593,7 @@ public:
 				return pObj->Props.pFont->DistY() + pObj->ItemSpacing;
 			case WIDGET_ITEM_DRAW: {
 				auto &pItem = pObj->ItemArray[ItemIndex];
-				auto r = WM_GetInsideRect();
+				auto r = pObj->GetInsideRect();
 				auto FontDistY = pObj->Props.pFont->DistY();
 				/* Calculate color index */
 				bool IsDisabled = pItem.Status & LISTBOX_ITEM_DISABLED;
@@ -623,7 +604,7 @@ public:
 				}
 				else {
 					ColorIndex = IsDisabled ? 3 : ItemIndex != pObj->Sel ? 0	:
-						pObj->State & WIDGET_STATE_FOCUS || pObj->pOwner ? 2 : 1;
+						pObj->GetStates() & WIDGET_STATE_FOCUS || pObj->pOwner ? 2 : 1;
 				}
 				/* Display item */
 				GUI.SetBkColor(pObj->Props.aBkColor[ColorIndex]);

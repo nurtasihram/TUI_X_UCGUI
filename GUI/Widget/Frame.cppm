@@ -80,7 +80,7 @@ private:
 	};
 
 	int _CalcTitleHeight() {
-		return State & FRAMEWIN_CF_TITLEVIS ? 
+		return GetStates() & FRAMEWIN_CF_TITLEVIS ? 
 			Props.TitleHeight ?
 				Props.TitleHeight :
 				2 + Props.pFont->SizeY() :
@@ -91,7 +91,7 @@ private:
 		int BorderSize = Props.BorderSize;
 		auto size = GetSize();
 		int IBorderSize = 0;
-		if (this->State & FRAMEWIN_CF_TITLEVIS)
+		if (GetStates() & FRAMEWIN_CF_TITLEVIS)
 			IBorderSize = Props.IBorderSize;
 		int TitleHeight = _CalcTitleHeight();
 		int MenuHeight = 0;
@@ -382,7 +382,7 @@ private:
 public:
 	Frame(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
 		  uint16_t ExFlags, const char *pTitle, WM_CALLBACK *cb) :
-		Widget(r, Style | WC_LATE_CLIP | WC_VISIBLE, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS),
+		Widget(r, Style | WC_LATE_CLIP, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS),
 		cb(cb), Flags(ExFlags) {
 		POSITIONS Pos;
 		_CalcPositions(&Pos);
@@ -393,52 +393,13 @@ public:
 			WM_DisableMemdev(this);
 		SetText(pTitle);
 	}
-	static Frame *Create(int x0, int y0, int xsize, int ysize,
-				  WObj *hParent,
-				  int WinFlags, int ExFlags, int Id, const char *pTitle, WM_CALLBACK *cb) {
-		/* Create the window */
-		WinFlags |= WC_LATE_CLIP;    /* Always use late clipping since widget is optimized for it. */
-		auto pObj = (Frame *)WM_CreateWindowAsChild(x0, y0, xsize, ysize, hParent, WinFlags, Frame::_Callback,
-													sizeof(Frame) - sizeof(WObj));
-		if (!pObj) {
-			
-			return nullptr;
-		}
-		POSITIONS Pos;
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS);
-		/* init member variables */
-		pObj->Props = DefaultProps;
-		pObj->cb = cb;
-		pObj->Flags = ExFlags;
-		pObj->_CalcPositions(&Pos);
-		pObj->pClient = WM_CreateWindowAsChild(
-			Pos.rClient.x0, Pos.rClient.y0,
-			Pos.rClient.x1 - Pos.rClient.x0 + 1,
-			Pos.rClient.y1 - Pos.rClient.y0 + 1,
-			pObj,
-			WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM | WC_VISIBLE | WC_LATE_CLIP,
-			_cbClient, 0);
-		/* Normally we disable memory devices for the frame window:
-			* The frame window does not flicker, and not using memory devices is usually faster.
-			* You can still use memory by explicitly specifying the flag
-			*/
-		if (!(WinFlags & (WC_MEMDEV | WC_MEMDEV_ON_REDRAW)))
-			WM_DisableMemdev(pObj);
-		pObj->SetText(pTitle);
-		return pObj;
-	}
-	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent,
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent,
 								  int x0, int y0, WM_CALLBACK *cb) {
-		/*return new Frame(RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
-									   { pCreateInfo->xSize, pCreateInfo->ySize }),
-						 0, hWinParent, pCreateInfo->Id,
-						 pCreateInfo->Flags, pCreateInfo->pName, cb);*/
-		return Create(
-			pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,
-			pCreateInfo->xSize, pCreateInfo->ySize,
-			hWinParent, 0, pCreateInfo->Flags,
-			pCreateInfo->Id, pCreateInfo->pName, cb);
+		return new Frame(
+			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+						  { pCreateInfo->xSize, pCreateInfo->ySize }),
+			0, hWinParent, pCreateInfo->Id,
+			pCreateInfo->Flags, pCreateInfo->pName, cb);
 	}
 
 public:
@@ -518,7 +479,7 @@ public:
 		int x0, y0, xSize;
 		TitleHeight = _CalcTitleHeight();
 		BorderSize = Props.BorderSize;
-		if (this->State & FRAMEWIN_CF_TITLEVIS) {
+		if (GetStates() & FRAMEWIN_CF_TITLEVIS) {
 			IBorderSize = Props.IBorderSize;
 		}
 		x0 = BorderSize;
@@ -992,39 +953,24 @@ public:
 			_UpdateButtons(OldHeight);
 			Invalidate();
 		}
-
 		return r;
 	}
 
 	void _ShowHideButtons() {
-		WObj *pChild;
-		int y0;
-		for (pChild = pFirstChild; pChild; pChild = pChild->pNext) {
-			y0 = pChild->Rect.y0 - Rect.y0;
-			if ((y0 == Props.BorderSize) && (pChild != pClient)) {
-				if (State & FRAMEWIN_CF_TITLEVIS) {
+		for (auto pChild = pFirstChild; pChild; pChild = pChild->pNext)
+			if (pChild->Rect.y0 - Rect.y0 == Props.BorderSize && pChild != pClient) {
+				if (GetStates() & FRAMEWIN_CF_TITLEVIS)
 					pChild->ShowWindow();
-				}
-				else {
+				else
 					pChild->HideWindow();
-				}
 			}
-		}
 	}
-	void SetTitleVis(int Show) {
-		int State = this->State;
-		if (Show) {
-			State |= FRAMEWIN_CF_TITLEVIS;
-		}
-		else {
-			State &= ~FRAMEWIN_CF_TITLEVIS;
-		}
-		if (this->State != State) {
-			this->State = State;
+	void SetTitleVis(bool bShow) {
+		if (CtlStates(FRAMEWIN_CF_TITLEVIS, bShow)) {
 			_UpdatePositions();
 			_ShowHideButtons();
-			if (this->Flags & FRAMEWIN_CF_MINIMIZED) {
-				if (State & FRAMEWIN_CF_TITLEVIS)
+			if (Flags & FRAMEWIN_CF_MINIMIZED) {
+				if (bShow)
 					ShowWindow();
 				else
 					HideWindow();
@@ -1054,8 +1000,7 @@ public:
 
 	Button *AddCloseButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
 		auto pButton = AddButton(Flags, Off, GUI_ID_CLOSE);
-		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, []() {
-			auto r = WM_GetInsideRect() + GUI.Off;
+		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, [](RECT &r) {
 			int Size = r.x1 - r.x0 - 2;
 			for (int i = 2; i < Size; i++) {
 				LCD_DrawHLine(r.x0 + i, r.y0 + i, r.x0 + i + 1);
@@ -1065,41 +1010,38 @@ public:
 		return pButton;
 	}
 
-	static void _DrawMax(void) {
-		auto pObj = (Frame *)WM_GetActiveWindow()->Parent();
-		auto r = WM_GetInsideRect() + GUI.Off;
-		if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED) {
-			int Size = ((r.x1 - r.x0 + 1) << 1) / 3;
-			LCD_DrawHLine(r.x1 - Size, r.y0 + 1, r.x1 - 1);
-			LCD_DrawHLine(r.x1 - Size, r.y0 + 2, r.x1 - 1);
-			LCD_DrawHLine(r.x0 + Size, r.y0 + Size, r.x1 - 1);
-			LCD_DrawVLine(r.x1 - Size, r.y0 + 1, r.y1 - Size);
-			LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y0 + Size);
-			LCD_DrawHLine(r.x0 + 1, r.y1 - Size, r.x0 + Size);
-			LCD_DrawHLine(r.x0 + 1, r.y1 - Size + 1, r.x0 + Size);
-			LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x0 + Size);
-			LCD_DrawVLine(r.x0 + 1, r.y1 - Size, r.y1 - 1);
-			LCD_DrawVLine(r.x0 + Size, r.y1 - Size, r.y1 - 1);
-		}
-		else {
-			LCD_DrawHLine(r.x0 + 1, r.y0 + 1, r.x1 - 1);
-			LCD_DrawHLine(r.x0 + 1, r.y0 + 2, r.x1 - 1);
-			LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x1 - 1);
-			LCD_DrawVLine(r.x0 + 1, r.y0 + 1, r.y1 - 1);
-			LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 1);
-		}
-	}
 	Button *AddMaxButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
 		auto pButton = AddButton(Flags, Off, GUI_ID_MAXIMIZE);
-		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, _DrawMax);
+		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, [](RECT &r) {
+			auto pObj = (Frame*)WM_GetActiveWindow()->Parent();
+			if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED) {
+				int Size = ((r.x1 - r.x0 + 1) << 1) / 3;
+				LCD_DrawHLine(r.x1 - Size, r.y0 + 1, r.x1 - 1);
+				LCD_DrawHLine(r.x1 - Size, r.y0 + 2, r.x1 - 1);
+				LCD_DrawHLine(r.x0 + Size, r.y0 + Size, r.x1 - 1);
+				LCD_DrawVLine(r.x1 - Size, r.y0 + 1, r.y1 - Size);
+				LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y0 + Size);
+				LCD_DrawHLine(r.x0 + 1, r.y1 - Size, r.x0 + Size);
+				LCD_DrawHLine(r.x0 + 1, r.y1 - Size + 1, r.x0 + Size);
+				LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x0 + Size);
+				LCD_DrawVLine(r.x0 + 1, r.y1 - Size, r.y1 - 1);
+				LCD_DrawVLine(r.x0 + Size, r.y1 - Size, r.y1 - 1);
+			}
+			else {
+				LCD_DrawHLine(r.x0 + 1, r.y0 + 1, r.x1 - 1);
+				LCD_DrawHLine(r.x0 + 1, r.y0 + 2, r.x1 - 1);
+				LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x1 - 1);
+				LCD_DrawVLine(r.x0 + 1, r.y0 + 1, r.y1 - 1);
+				LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 1);
+			}
+		});
 		return pButton;
 	}
 
 	Button *AddMinButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
 		auto pButton = AddButton(Flags, Off, GUI_ID_MINIMIZE);
-		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, [] {
+		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, [](RECT &r) {
 			auto pObj = (Frame *)WM_GetActiveWindow()->Parent();
-			auto r = WM_GetInsideRect() + GUI.Off;
 			int Size = (r.x1 - r.x0 + 1) >> 1;
 			if (pObj->Flags & FRAMEWIN_CF_MINIMIZED) {
 				for (int i = 1; i < Size; i++)

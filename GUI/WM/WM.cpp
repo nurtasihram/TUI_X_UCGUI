@@ -4,10 +4,6 @@
 
 #define ASSIGN_IF_LESS(v0,v1) if (v1<v0) v0=v1
 
-static uint16_t NumWindows;
-
-static WObj *pWinActive = nullptr;
-
 static bool IsActive;
 
 #pragma region Focus
@@ -111,7 +107,7 @@ static void ResetNextDrawWin(void) {
 *
 */
 static WObj * _GethDrawWin(void) {
-	return pWinActive;
+	return WObj::pWinActive;
 }
 static void _SetClipRectUserIntersect(const RECT *prSrc) {
 	if (GUI.WM__pUserClipRect == nullptr) {
@@ -134,64 +130,6 @@ static void _DeleteAllChildren(WObj * pFirstChild) {
 	}
 }
 
-WObj * WM_CreateWindowAsChild(int x0, int y0, int width, int height
-							   , WObj * pParent, uint16_t Style, WM_CALLBACK *cb
-							   , int NumExtraBytes) {
-	WObj *pWin;
-	WM_ASSERT_NOT_IN_PAINT();
-	/* Default parent is Desktop 0 */
-	if (!pParent) {
-		if (NumWindows)
-			pParent = WObj::pWinDesktop;
-	}
-	if (pParent) {
-		x0 += pParent->Rect.x0;
-		y0 += pParent->Rect.y0;
-		if (width == 0)
-			width = pParent->Rect.x1 - pParent->Rect.x0 + 1;
-		if (height == 0)
-			height = pParent->Rect.y1 - pParent->Rect.y0 + 1;
-	}
-	if ((pWin = (WObj *)GUI_ALLOC_AllocZero(NumExtraBytes + sizeof(WObj))) == 0) {
-	}
-	else {
-		NumWindows++;
-		pWin->Rect.x0 = x0;
-		pWin->Rect.y0 = y0;
-		pWin->Rect.x1 = x0 + width - 1;
-		pWin->Rect.y1 = y0 + height - 1;
-		pWin->cb = cb;
-		/* Copy the flags which can simply be accepted */
-		pWin->Status |= (Style & (WC_VISIBLE |
-								  WC_MEMDEV |
-								  WC_MEMDEV_ON_REDRAW |
-								  WC_STAYONTOP |
-								  WC_CONST_OUTLINE |
-								  WC_ANCHOR_RIGHT |
-								  WC_ANCHOR_BOTTOM |
-								  WC_ANCHOR_LEFT |
-								  WC_ANCHOR_TOP |
-								  WC_LATE_CLIP));
-		/* Add to linked lists */
-		pWin->_AddToLinList();
-		pWin->_InsertWindowIntoList(pParent);
-		/* Activate window if WC_ACTIVATE is specified */
-		if (Style & WC_ACTIVATE)
-			WM_SelectWindow(pWin);  /* This is not needed if callbacks are being used, but it does not cost a lot and makes life easier ... */
-		/* Handle the Style flags, one at a time */
-		if (Style & WC_BGND)
-			WM_BringToBottom(pWin);
-		if (Style & WC_VISIBLE) {
-			pWin->Status |= WC_VISIBLE;  /* Set Visibility flag */
-			pWin->Invalidate();    /* Mark content as invalid */
-		}
-		pWin->Require(WM_CREATE);
-	}
-	return pWin;
-}
-WObj * WM_CreateWindow(int x0, int y0, int width, int height, uint16_t Style, WM_CALLBACK *cb, int NumExtraBytes) {
-	return WM_CreateWindowAsChild(x0, y0, width, height, 0 /* No parent */, Style, cb, NumExtraBytes);
-}
 void WM_DeleteWindow(WObj * pWin) {
 	if (!pWin)
 		return;
@@ -218,25 +156,25 @@ void WM_DeleteWindow(WObj * pWin) {
 	if (pWin->Status & WC_ACTIVATE)
 		WObj::NumInvalidWindows--;
 	/* Free window memory */
-	NumWindows--;
+	WObj::NumWindows--;
 	GUI_ALLOC_Free(pWin);
 	/* Select a valid window */
 	WM_SelectWindow(WObj::pWinFirst);
 }
 WObj * WM_SelectWindow(WObj * pWin) {
-	auto pWinPrev = pWinActive;
+	auto pWinPrev = WObj::pWinActive;
 	WM_ASSERT_NOT_IN_PAINT();
 	if (pWin == 0) {
 		pWin = WObj::pWinFirst;
 	}
 	/* Select new window */
-	pWinActive = pWin;
+	WObj::pWinActive = pWin;
 	LCD_SetClipRectMax();             /* Drawing operations will clip ... If WM is deactivated, allow all */
 	GUI.Off = pWin->Rect.LeftTop();
 	return pWinPrev;
 }
 WObj * WM_GetActiveWindow(void) {
-	return pWinActive;
+	return WObj::pWinActive;
 }
 
 #pragma region IVR
@@ -358,13 +296,13 @@ static bool _FindNext_IVR(void) {
 		 Since we are using the same height for all IVRs at the same y0,
 		 we do this only for the leftmost one.
 	*/
-	pAWin = pWinActive;
+	pAWin = WObj::pWinActive;
 	if (r.x0 == _ClipContext.ClientRect.x0) {
 		r.y1 = _ClipContext.ClientRect.y1;
 		r.x1 = _ClipContext.ClientRect.x1;
 		/* Iterate over all windows which are above */
 		/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
-		for (pParent = pWinActive; pParent; pParent = pParent->pParent) {
+		for (pParent = WObj::pWinActive; pParent; pParent = pParent->pParent) {
 			_Findy1(pParent->pNext, &r, nullptr);
 		}
 		/* Check all children */
@@ -384,7 +322,7 @@ Find_x0:
 		pParent = pAWin->pParent;
 	else
 #endif
-		pParent = pWinActive;
+		pParent = WObj::pWinActive;
 		for (; pParent; pParent = pParent->pParent) {
 			if (_Findx0(pParent->pNext, &r, nullptr))
 				goto Find_x0;
@@ -412,7 +350,7 @@ Find_x0:
 		pParent = pAWin->pParent;
 	else
 #endif
-		pParent = pWinActive;
+		pParent = WObj::pWinActive;
 		for (; pParent; pParent = pParent->pParent) {
 			_Findx1(pParent->pNext, &r, nullptr);
 		}
@@ -427,7 +365,7 @@ Find_x0:
 #else
 static bool _FindNext_IVR(void) {
 	if (!_ClipContext.Cnt) {
-		_ClipContext.CurRect = pWinActive->Rect;
+		_ClipContext.CurRect = WObj::pWinActive->Rect;
 		return true;  /* IVR is valid ! */
 	}
 	return false;  /* Nothing left to draw */
@@ -472,7 +410,7 @@ bool WM__InitIVRSearch(RECT rcMax) {
 	/* If we entered multiple times, leave Cliprect alone */
 	if (++_ClipContext.EntranceCnt > 1)
 		return true;
-	auto pAWin = pWinActive;
+	auto pAWin = WObj::pWinActive;
 	_ClipContext.Cnt = -1;
 	/* When using callback mechanism, it is legal to reduce drawing
 	   area to the invalid area ! */
@@ -495,7 +433,7 @@ bool WM__InitIVRSearch(RECT rcMax) {
 		r &= rUser;
 	}
 	/* Iterate over all ancestors and clip at their borders. If there is no visible part, we are done */
-	if (!pWinActive->_ClipAtParentBorders(r)) {
+	if (!WObj::pWinActive->_ClipAtParentBorders(r)) {
 		--_ClipContext.EntranceCnt;
 		return false;           /* Nothing to draw */
 	}
@@ -509,7 +447,7 @@ void WM__ActivateClipRect(void) {
 	else {    /* Window manager disabled, typically because meory device is active */
 		RECT r;
 		WObj *pAWin;
-		pAWin = pWinActive;
+		pAWin = WObj::pWinActive;
 		r = pAWin->Rect;
 		/* Take UserClipRect into account */
 		_SetClipRectUserIntersect(&r);
@@ -564,7 +502,7 @@ void WM__PaintWinAndOverlays(WObj *pWin) {
 #if GUI_SUPPORT_MEMDEV
 static void _cbPaintMemDev(void *p) {
 	RECT Rect;
-	auto pWin = pWinActive;
+	auto pWin = WObj::pWinActive;
 	Rect = pWin->InvalidRect;
 	pWin->InvalidRect = GUI.ClipRect;
 	WM__PaintWinAndOverlays((WObj *)p);
@@ -941,49 +879,16 @@ void WM_ForEachDesc(WObj * pWin, WM_tfForEach *pcb, void *pData) {
 	WM__ForEachDesc(pWin, pcb, pData);
 }
 RECT WM_GetClientRect() {
-	return pWinActive->GetClientRect();
+	return WObj::pWinActive->GetClientRect();
 }
-/*********************************************************************
-*
-*       WM_GetInsideRect (overloaded with WObj * parameter)
-*
-  Purpose:
-	Return the inside rectangle in client coordinates.
-	The inside rectangle is the client rectangle minus the effect,
-	which typically reduces the rectangle by 0 - 3 pixels on either side
-	(2 for the standard 3D effect).
-*/
-RECT WM_GetInsideRect(WObj * pWin) {
-	RECT Rect;
-	pWin->Require(WM_GET_INSIDE_RECT, (WM_PARAM)&Rect);
-	return Rect;
-}
+
 RECT WM_GetInsideRect() {
-	return WM_GetInsideRect(pWinActive);
+	return WObj::pWinActive->GetInsideRect();
 }
 WObj * WM_GetClientWindow(WObj * pObj) {
 	return (WObj *)pObj->Require(WM_GET_CLIENT_WINDOW, 0);
 }
 
-/*********************************************************************
-*
-*       WM_GetInvalidRect
-*
-* Return value:
-*   0 if window is valid (there is no invalid rectangle)
-*   1 if there is an invalid rectangle
-*
-*/
-int WM_GetInvalidRect(WObj * pWin, RECT *pRect) {
-	int IsInvalid = 0;
-	if (pWin) {
-		if (pWin->Status & WC_ACTIVATE) {
-			IsInvalid = 1;
-			*pRect = pWin->InvalidRect;
-		}
-	}
-	return IsInvalid;
-}
 static char _WindowSiblingsOverlapRect(WObj * iWin, RECT *pRect) {
 	WObj *pWin;
 	for (; iWin; iWin = pWin->pNext) {
@@ -1391,7 +1296,7 @@ void WM_Init(void) {
 	/* Make sure we have at least one window. This greatly simplifies the
 		drawing routines as they do not have to check if the window is valid.
 	*/
-	WObj::pWinDesktop = WM_CreateWindow(0, 0, GUI_XMAX, GUI_YMAX, WC_VISIBLE, WObj::cbBackWin, 0);
+	WObj::pWinDesktop = new WObj({ 0, 0, GUI_XMAX, GUI_YMAX }, WC_VISIBLE, WObj::cbBackWin);
 	WObj::pWinDesktop->Invalidate(); /* Required because a desktop window has no parent. */
 	/* Register the critical handles ... Note: This could be moved into the module setting the Window handle */
 	WM__CHWinModal.Add();

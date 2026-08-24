@@ -79,7 +79,7 @@ private:
 		GUI.SetFont(Props.pFont);
 		GUI_DispStringInRect(text, &RectText, Props.Align);
 		/* Draw focus rectangle */
-		if (!(State & WIDGET_STATE_FOCUS))
+		if (!(GetStates() & WIDGET_STATE_FOCUS))
 			return;
 		int xSizeText = GUI_GetStringDistX(text);
 		int ySizeText = Props.pFont->SizeY();
@@ -128,7 +128,7 @@ private:
 		WM_NotifyParent(this, Notification);
 		if (Hit == 1) {
 			GUI_DEBUG_LOG("CHECKBOX: Hit\n");
-			GUI_StoreKey(this->Id);
+			GUI_StoreKey(GetId());
 		}
 	}
 	char _OnKey(const WM_KEY_INFO *pInfo) {
@@ -182,12 +182,11 @@ public:
 		Widget((_AdjRect(r), r), Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE),
 		NumStates(2),
 		CurrentState(0) {}
-	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new CheckBox(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			pCreateInfo->Flags,
-			hWinParent, pCreateInfo->Id);
+			pCreateInfo->Flags, hWinParent, pCreateInfo->Id);
 	}
 public:
 

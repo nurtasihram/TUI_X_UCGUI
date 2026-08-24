@@ -73,7 +73,7 @@ private:
 						break;
 				}
 				WM_SetUserClipRect(&Rect);
-				pDraw->Draw(xPos + xOff, yOff);
+				pDraw->Draw(RECT::LeftTop(Rect.LeftTop(), { xPos + xOff, yOff }));
 				WM_SetUserClipRect(nullptr);
 			}
 			DrawUp(Rect);
@@ -211,7 +211,7 @@ private:
 
 private:
 	static void _AdjRect(RECT &r, WObj *pParent) {
-		auto Rect = WM_GetInsideRect(pParent);
+		auto Rect = pParent->GetInsideRect();
 		if (r.x0 <= 0)
 			r.x0 = Rect.x0;
 		if (r.y0 <= 0)
@@ -335,12 +335,12 @@ public:
 			col.pDrawObj = pDrawObj;
 		}
 	}
-	void SetBitmapEx(uint16_t Index, PCBITMAP pBitmap, int x, int y) {
-		SetDrawObj(Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y));
+	void SetBitmapEx(uint16_t Index, PCBITMAP pBitmap) {
+		SetDrawObj(Index, GUI_DRAW_BITMAP_Create(pBitmap));
 		Invalidate();
 	}
 	void SetBitmap(uint16_t Index, PCBITMAP pBitmap) {
-		SetBitmapEx(Index, pBitmap, 0, 0);
+		SetBitmapEx(Index, pBitmap);
 	}
 };
 

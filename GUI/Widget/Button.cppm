@@ -56,7 +56,7 @@ private:
 	}
 
 	void _OnPaint() {
-		bool IsPressed = State & BUTTON_STATE_PRESSED;
+		bool IsPressed = GetStates() & BUTTON_STATE_PRESSED;
 		int ColorIndex = (IsEnabled()) ? IsPressed : 2;
 		GUI.SetFont(Props.pFont);
 		auto rClient = WM_GetClientRect();
@@ -84,7 +84,7 @@ private:
 		else
 			Index = aDrawObj[BUTTON_BI_DISABLED] ? BUTTON_BI_DISABLED : BUTTON_BI_UNPRESSED;
 		if (auto pDraw = aDrawObj[Index])
-			pDraw->Draw(0, 0);
+			pDraw->Draw(GetInsideRect());
 		/* Draw the actual button (background and text) */
 #if BUTTON_USE_3D
 		if (IsPressed)
@@ -96,7 +96,7 @@ private:
 		GUI_DispStringInRect(text, &rInside, Props.Align);
 		WM_SetUserClipRect(nullptr);
 		/* Draw focus */
-		if (State & BUTTON_STATE_FOCUS) {
+		if (GetStates() & BUTTON_STATE_FOCUS) {
 			GUI.SetColor(RGB_BLACK);
 			GUI_DrawFocusRect(rClient, EffectSize + 1);
 		}
@@ -112,18 +112,18 @@ private:
 			WM_NotifyParent(this, Notification);
 		if (Notification == WM_NOTIFICATION_RELEASED) {
 			GUI_DEBUG_LOG("BUTTON: Hit\n");
-			GUI_StoreKey(this->Id);
+			GUI_StoreKey(GetId());
 		}
 	}
 	void _OnTouch(const PID_STATE *pState) {
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
-				if (!(State & BUTTON_STATE_PRESSED))
+				if (!(GetStates() & BUTTON_STATE_PRESSED))
 					_ButtonPressed();
 				SetCapture(1);
 			}
 			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
-			else if (State & BUTTON_STATE_PRESSED)
+			else if (GetStates() & BUTTON_STATE_PRESSED)
 				_ButtonReleased(
 					GetClientRect() <= *pState ? WM_NOTIFICATION_RELEASED :
 					WM_NOTIFICATION_MOVED_OUT);
@@ -145,11 +145,11 @@ private:
 #if BUTTON_REACT_ON_LEVEL
 	void _OnPidStateChange(const PID_CHANGED_INFO *pState) {
 		if (pState->StatePrev == 0 && pState->State == 1) {
-			if (!(this->State & BUTTON_STATE_PRESSED))
+			if (!(GetStates() & BUTTON_STATE_PRESSED))
 				_ButtonPressed();
 		}
 		else if (pState->StatePrev == 1 && pState->State == 0)
-			if (this->State & BUTTON_STATE_PRESSED)
+			if (GetStates() & BUTTON_STATE_PRESSED)
 				_ButtonReleased(WM_NOTIFICATION_RELEASED);
 	}
 #endif
@@ -186,7 +186,7 @@ private:
 public:
 	Button(RECT r, WM_CF Style, WObj *pParent, uint16_t Id) :
 		Widget(r, Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE) {}
-	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		auto pThis = new Button(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
@@ -253,16 +253,16 @@ public:
 		aDrawObj[Index] = pDrawObj;
 		Invalidate();
 	}
-	void SetBitmapEx(BUTTON_BI Index, PCBITMAP pBitmap, int x, int y)
-	{ SetDrawObj(Index, GUI_DRAW_BITMAP_Create(pBitmap, x, y)); }
+	void SetBitmapEx(BUTTON_BI Index, PCBITMAP pBitmap)
+	{ SetDrawObj(Index, GUI_DRAW_BITMAP_Create(pBitmap)); }
 	void SetBitmap(BUTTON_BI Index, PCBITMAP pBitmap)
-	{ SetBitmapEx(Index, pBitmap, 0, 0); }
-	void SetSelfDrawEx(BUTTON_BI Index, GUI_DRAW_SELF_CB *pDraw, int x, int y)
-	{ SetDrawObj(Index, GUI_DRAW_SELF_Create(pDraw, x, y)); }
+	{ SetBitmapEx(Index, pBitmap); }
+	void SetSelfDrawEx(BUTTON_BI Index, GUI_DRAW_SELF_CB *pDraw)
+	{ SetDrawObj(Index, GUI_DRAW_SELF_Create(pDraw)); }
 	void SetSelfDraw(BUTTON_BI Index, GUI_DRAW_SELF_CB *pDraw)
-	{ SetSelfDrawEx(Index, pDraw, 0, 0); }
+	{ SetSelfDrawEx(Index, pDraw); }
 
-	bool IsPressed() { return State & BUTTON_STATE_PRESSED; }
+	bool IsPressed() { return GetStates() & BUTTON_STATE_PRESSED; }
 	void SetPressed(bool On) { CtlStates(BUTTON_STATE_PRESSED, On); }
 
 	void SetFocussable(bool On) { CtlStates(WIDGET_STATE_FOCUSSABLE, On); }

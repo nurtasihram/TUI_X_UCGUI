@@ -72,7 +72,7 @@ static const char *_ListBox[]{
 #define GUI_ID_MULTIEDIT0  GUI_ID_USER + 0x00
 #define GUI_ID_CHECK0      GUI_ID_USER + 0x01
 #define GUI_ID_CHECK1      GUI_ID_USER + 0x02
-static const WIDGET_CREATE_INFO _aDialogCreate[]{
+static const Widget::CreateStruct _aDialogCreate[]{
 	{ Frame   ::CreateIndirect, "Owner drawn list box" , 0                 , 50  , 50  , 220  , 175  , FRAMEWIN_CF_MOVEABLE | FRAMEWIN_CF_RESIZEABLE },
 	{ ListBox ::CreateIndirect, ""                     , GUI_ID_MULTIEDIT0 , 10  , 10  , 100  , 100  , 0                    , 100 },
 	{ CheckBox::CreateIndirect, ""                     , GUI_ID_CHECK0     , 120 , 10  , 0    , 0                                 },
@@ -139,7 +139,7 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 			GUI_DrawBitmap(pBm, ItemPos.x + 7, ItemPos.y + (YSize - pBm->YSize) / 2);
 			/* Draw focus rectangle */
 			if (MultiSel && Index == Sel) {
-				auto rInside = WM_GetInsideRect(pObj);
+				auto rInside = pObj->GetInsideRect();
 				RECT rFocus;
 				rFocus.x0 = ItemPos.x;
 				rFocus.y0 = ItemPos.y;
@@ -217,10 +217,10 @@ static WObj *_CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMemDe
 	auto Flags = WC_VISIBLE;
 	if (UseMemDev)
 		Flags |= WC_MEMDEV;
-	auto pFrame = Frame::Create(x0, y0, 190, 180, 0, WC_VISIBLE, FRAMEWIN_CF_MOVEABLE, 0, pTitle, 0);
+	auto pFrame = new Frame(RECT::LeftTop({ x0, y0 }, { 190, 180 }), WC_VISIBLE, nullptr, 0, FRAMEWIN_CF_MOVEABLE, pTitle, nullptr);
 	auto pClient = WM_GetClientWindow(pFrame);
 	auto Size = pClient->GetSize();
-	*phPane = WM_CreateWindowAsChild(0, 0, Size.x, Size.y, pClient, Flags, _cbMemDevPane, 0);
+	*phPane = new WObj(RECT(0, 0, Size.x - 1, Size.y - 1), Flags, _cbMemDevPane, pClient);
 	return pFrame;
 }
 
@@ -399,7 +399,7 @@ void _TestListBox() {
 	pDialog->DialogExec();
 }
 
-static const WIDGET_CREATE_INFO _aMemDevDialogCreate[] = {
+static const Widget::CreateStruct _aMemDevDialogCreate[] = {
 	{ Frame ::CreateIndirect, "MemDev Test"                           , 0             , 80  , 260 , 460 , 90                     , FRAMEWIN_CF_MOVEABLE },
 	{ Text  ::CreateIndirect, "Compare redraw with and without MemDev", 0             , 10  , 10  , 310 , 16                     , TEXT_CF_LEFT         },
 	{ Button::CreateIndirect, "Close"                                 , GUI_ID_CANCEL , 370 , 35  , 70  , 20                                        }
@@ -463,7 +463,7 @@ void _TestMemDev() {
 
 #define ID_LISTVIEW_TEST    (GUI_ID_USER + 100)
 
-static const WIDGET_CREATE_INFO _aListViewDialogCreate[] = {
+static const Widget::CreateStruct _aListViewDialogCreate[] = {
 	{ Frame   ::CreateIndirect, "ListView Test"      , 0                 , 50  , 50  , 320 , 240 , FRAMEWIN_CF_MOVEABLE       },
 	{ ListView::CreateIndirect, ""                   , ID_LISTVIEW_TEST  , 10  , 10  , 290 , 160 , 0                          },
 	{ Button  ::CreateIndirect, "Add Row"            , GUI_ID_USER + 101 , 10  , 180 , 80  , 25                               },
@@ -574,7 +574,7 @@ static void _UpdateDropDownStatus(WObj *pWin) {
 	}
 }
 
-static const WIDGET_CREATE_INFO _aDropDownDialogCreate[] = {
+static const Widget::CreateStruct _aDropDownDialogCreate[] = {
 	{ Frame   ::CreateIndirect, "DropDown Test"      , 0                      , 50  , 40  , 390 , 230 , FRAMEWIN_CF_MOVEABLE       },
 	{ DropDown::CreateIndirect, ""                   , ID_DROPDOWN_TEST       , 10  , 10  , 220 , 96  , 0                          },
 	{ Text    ::CreateIndirect, "Use the DropDown or buttons below to interact."
@@ -707,7 +707,7 @@ static int _MultiPageNewPageIndex = 0;
 static WObj *_CreateMultiPagePage(MultPage *pMultiPage, const char *pLabel) {
 	char acText[96];
 	sprintf(acText, "Content: %s", pLabel);
-	return new Text(RECT::LeftTop({ 8, 8 }, { 300, 20 }), WC_VISIBLE, pMultiPage, 0, acText, TEXT_CF_LEFT);
+	return new Text(RECT::LeftTop({ 8, 8 }, { 300, 20 }), WC_VISIBLE, pMultiPage, 0, TEXT_CF_LEFT, acText);
 }
 
 static void _UpdateMultiPageStatus(WObj *pWin) {
@@ -723,7 +723,7 @@ static void _UpdateMultiPageStatus(WObj *pWin) {
 	}
 }
 
-static const WIDGET_CREATE_INFO _aMultiPageDialogCreate[] = {
+static const Widget::CreateStruct _aMultiPageDialogCreate[] = {
 	{ Frame   ::CreateIndirect, "MultiPage Test"     , 0                         , 40  , 40  , 420 , 270 , FRAMEWIN_CF_MOVEABLE },
 	{ MultPage::CreateIndirect, ""                   , ID_MULTIPAGE_TEST         , 10  , 10  , 390 , 150 , 0                    },
 	{ Button  ::CreateIndirect, "Add Page"           , ID_MULTIPAGE_ADD          , 10  , 170 , 90  , 25                         },
@@ -860,7 +860,7 @@ static void _UpdateRadioStatus(WObj *pWin) {
 	}
 }
 
-static const WIDGET_CREATE_INFO _aRadioDialogCreate[] = {
+static const Widget::CreateStruct _aRadioDialogCreate[] = {
 	{ Frame ::CreateIndirect, "Radio Test" , 0               , 60  , 50  , 360 , 220 , FRAMEWIN_CF_MOVEABLE },
 	{ Radio ::CreateIndirect, ""           , ID_RADIO_TEST   , 10  , 10  , 200 , 80  , 0, (3 | (24 << 8))   },
 	{ Button::CreateIndirect, "Prev"       , ID_RADIO_PREV   , 10  , 100 , 70  , 25                         },
@@ -954,7 +954,7 @@ static void _UpdateProgBarStatus(WObj *pWin) {
 	}
 }
 
-static const WIDGET_CREATE_INFO _aProgBarDialogCreate[] = {
+static const Widget::CreateStruct _aProgBarDialogCreate[] = {
 	{ Frame  ::CreateIndirect, "ProgBar Test" , 0                      , 70  , 60  , 360 , 210 , FRAMEWIN_CF_MOVEABLE },
 	{ ProgBar::CreateIndirect, ""             , ID_PROGBAR_TEST        , 15  , 20  , 320 , 25  , 0                    },
 	{ Button ::CreateIndirect, "-10"          , ID_PROGBAR_DEC         , 15  , 60  , 60  , 25                         },
@@ -1061,7 +1061,7 @@ static void _UpdateSliderStatus(WObj *pWin) {
 	}
 }
 
-static const WIDGET_CREATE_INFO _aSliderDialogCreate[] = {
+static const Widget::CreateStruct _aSliderDialogCreate[] = {
 	{ Frame ::CreateIndirect, "Slider Test"                               , 0                      , 70  , 60  , 470 , 250 , FRAMEWIN_CF_MOVEABLE },
 	{ Slider::CreateIndirect, ""                                          , ID_SLIDER_TEST         , 15  , 20  , 340 , 30                         },
 	{ Slider::CreateIndirect, ""                                          , ID_SLIDER_TEST_V       , 375 , 20  , 30  , 150 , SLIDER_CF_VERTICAL   },
@@ -1208,7 +1208,7 @@ static void _ResetEditScenario(WObj *pWin) {
 	_UpdateEditStatus(pWin);
 }
 
-static const WIDGET_CREATE_INFO _aEditDialogCreate[] = {
+static const Widget::CreateStruct _aEditDialogCreate[] = {
 	{ Frame ::CreateIndirect, "Edit Interactive Test" , 0                   , 70  , 55  , 470 , 250 , FRAMEWIN_CF_MOVEABLE },
 	{ Edit  ::CreateIndirect, ""                      , ID_EDIT_TEST        , 15  , 20  , 438 , 24  , 0, 64                },
 	{ Text  ::CreateIndirect, "Focus on single-line cursor move/delete/insert behavior."
@@ -1325,7 +1325,7 @@ static void _UpdateMultiEditStatus(WObj *pWin) {
 	}
 }
 
-static const WIDGET_CREATE_INFO _aMultiEditDialogCreate[] = {
+static const Widget::CreateStruct _aMultiEditDialogCreate[] = {
 	{ Frame   ::CreateIndirect, "MultiEdit Test"  , 0                           , 60  , 60  , 420 , 280 , FRAMEWIN_CF_MOVEABLE },
 	{ MultEdit::CreateIndirect, ""                , ID_MULTEDIT_TEST            , 10  , 10  , 395 , 150 , 0, 512               },
 	{ Button  ::CreateIndirect, "Append"          , ID_MULTEDIT_APPEND          , 10  , 170 , 70  , 25                         },
@@ -1416,11 +1416,11 @@ int main(void) {
 
 	_TestListView();
 	_TestMultiPage();
-	//_TestRadio();
+	_TestRadio();
 	_TestProgBar();
-	//_TestSlider();
-	//_TestEdit();
-	//_TestMultiEdit();
+	_TestSlider();
+	_TestEdit();
+	_TestMultiEdit();
 	_TestDropDown();
 	_TestListBox();
 	_TestMemDev();

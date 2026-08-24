@@ -132,8 +132,8 @@ private:
 		return 0;
 	}
 	int _HasEffect() {
-		if (!(this->Flags & MENU_SF_POPUP)) {
-			if (this->_IsTopLevelMenu()) {
+		if (!(Flags & MENU_SF_POPUP)) {
+			if (_IsTopLevelMenu()) {
 				return 0;
 			}
 		}
@@ -141,8 +141,8 @@ private:
 	}
 	int _GetEffectSize() {
 		int r = 0;
-		if (this->_HasEffect()) {
-			r = this->EffectSize();
+		if (_HasEffect()) {
+			r = EffectSize();
 		}
 		return r;
 	}
@@ -692,8 +692,8 @@ private:
 			GUI_ClearRect({ EffectSize, FillRect.y1 + 1, r.x1, r.y1 });
 		}
 		/* Draw 3D effect (if configured) */
-		if (this->_HasEffect())
-			this->pEffect->DrawUp();
+		if (_HasEffect())
+			DrawUp();
 	}
 
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {

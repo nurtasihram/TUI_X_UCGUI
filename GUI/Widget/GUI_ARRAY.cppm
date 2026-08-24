@@ -1,15 +1,18 @@
 module;
 
-#include "WM_Intern.h"
+#include "GUI.h"
 
 export module TUX.Array;
 
 export {
 
 template<typename T>
-struct ARRAY {
+class ARRAY {
+
 	uint16_t nItems = 0;
 	T* pArray = nullptr;
+
+public:
 
 	ARRAY() = default;
 	ARRAY(uint16_t nItems) : nItems(nItems) {

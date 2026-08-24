@@ -60,7 +60,7 @@
     <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\WINDOW.cpp">
+    <ClCompile Include="GUI\Widget\Window_.cppm">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_GetBitmapPixelIndex.cpp">

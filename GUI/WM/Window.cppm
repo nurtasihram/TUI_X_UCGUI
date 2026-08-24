@@ -37,15 +37,12 @@ int  WM_Exec1(void); /* Execute one job  ... Return 0 if nothing was done. */
 void    WM_AttachWindow(WObj *pWin, WObj *pParent);
 void    WM_AttachWindowAt(WObj *pWin, WObj *pParent, int x, int y);
 void    WM_ClrHasTrans(WObj *pWin);
-WObj *WM_CreateWindow(int x0, int y0, int xSize, int ySize, uint16_t Style, WM_CALLBACK *cb, int NumExtraBytes);
-WObj *WM_CreateWindowAsChild(int x0, int y0, int xSize, int ySize, WObj *pWinParent, uint16_t Style, WM_CALLBACK *cb, int NumExtraBytes);
 void    WM_DeleteWindow(WObj *pWin);
 void    WM_DetachWindow(WObj *pWin);
 int     WM_GetHasTrans(WObj *pWin);
 void  WM_InvalidateDescs(WObj *pWin);    /* not to be documented (may change in future version) */
 void  WM_SetHasTrans(WObj *pWin);
 void  WM_SetTransState(WObj *pWin, unsigned State);
-int   WM_GetInvalidRect(WObj *pWin, RECT *pRect);
 void  WM_SetStayOnTop(WObj *pWin, int OnOff);
 int   WM_GetStayOnTop(WObj *pWin);
 void  WM_SetAnchor(WObj *pWin, uint16_t AnchorFlags);
@@ -61,16 +58,12 @@ int  WM_SetYSize(WObj *pWin, int ySize);
 int  WM_CreateTimer(WObj *pWin, int UserID, int Period, int Mode); /* not to be documented (may change in future version) */
 void WM_DeleteTimer(WObj *pWin, int UserId); /* not to be documented (may change in future version) */
 
-/* Diagnostics */
-int WM_GetNumWindows(void);
-
 /* Set (new) callback function */
 WM_CALLBACK *WM_SetCallback(WObj *Win, WM_CALLBACK *cb);
 
 /* Get size/origin of a window */
 RECT WM_GetClientRect();
 RECT WM_GetInsideRect();
-RECT WM_GetInsideRect(WObj *pWin);
 
 WObj *WM_GetPrevSibling(WObj *pWin);
 
@@ -226,10 +219,12 @@ public:
 			return;
 		_RemoveWindowFromList();
 		/* Clear area used by this window */
-		WObj::InvalidateArea(Rect);
+		InvalidateArea(Rect);
 		pParent = nullptr;
 	}
-#pragma endregion 
+#pragma endregion
+
+	static WObj* pWinActive;
 
 public:
 	void *operator new(size_t size) {
@@ -240,7 +235,17 @@ public:
 	}
 
 public:
-	WObj(RECT r, WM_CF Style, WM_CALLBACK *cb, WObj *pParent = nullptr) : Rect(r), cb(cb), Status(Style) {
+	WObj(RECT r, WM_CF Style, WM_CALLBACK *cb, WObj *pParent = nullptr) :
+		Rect(r), cb(cb), Status(Style & (WC_VISIBLE |
+								  WC_MEMDEV |
+								  WC_MEMDEV_ON_REDRAW |
+								  WC_STAYONTOP |
+								  WC_CONST_OUTLINE |
+								  WC_ANCHOR_RIGHT |
+								  WC_ANCHOR_BOTTOM |
+								  WC_ANCHOR_LEFT |
+								  WC_ANCHOR_TOP |
+								  WC_LATE_CLIP)) {
 		//WM_ASSERT_NOT_IN_PAINT();
 		/* Default parent is Desktop 0 */
 		if (!pParent)
@@ -263,10 +268,8 @@ public:
 		/* Handle the Style flags, one at a time */
 		if (Style & WC_BGND)
 			WM_BringToBottom(this);
-		if (Style & WC_VISIBLE) {
-			Status |= WC_VISIBLE;  /* Set Visibility flag */
+		if (Style & WC_VISIBLE)
 			Invalidate();    /* Mark content as invalid */
-		}
 		Require(WM_CREATE);
 	}
 
@@ -299,7 +302,7 @@ public:
 public:
 	static uint16_t GetNumInvalidWindows() { return NumInvalidWindows; }
 	static void InvalidateArea(const RECT &r) {
-		for (auto pWin = WObj::pWinFirst; pWin; pWin = pWin->pNextLin)
+		for (auto pWin = pWinFirst; pWin; pWin = pWin->pNextLin)
 			pWin->_Invalidate1Abs(r);
 	}
 	void Invalidate(const RECT *pRect = nullptr) {
@@ -349,6 +352,11 @@ public:
 	auto GetSizeY() const { return Rect.YSize(); }
 
 	RECT GetClientRect() const { return{ 0, Rect.Dist() }; }
+	RECT GetInsideRect() const {
+		RECT r;
+		Require(WM_GET_INSIDE_RECT, (WM_PARAM)&r);
+		return r;
+	}
 
 	WObj *Screen2Win(POINT Pos, WObj *pStop = nullptr) {
 		/* First check if the  coordinates are in the given window. If not, return 0 */
@@ -437,17 +445,14 @@ public:
 #pragma endregion 
 
 #pragma region Scroll
-
 	WObj *GetScrollbarH() { return GetItem(GUI_ID_HSCROLL); }
 	WObj *GetScrollbarV() { return GetItem(GUI_ID_VSCROLL); }
 
 	void SetScrollState(const WM_SCROLL_STATE &State)
 	{ Require(WM_SET_SCROLL_STATE, (WM_PARAM)&State); }
-
 #pragma endregion
 
 #pragma region ID
-
 	uint16_t GetID() const { return (uint16_t)Require(WM_GET_ID); }
 	void SetID(uint16_t Id) { Require(WM_SET_ID, (WM_PARAM)Id); }
 
@@ -464,11 +469,9 @@ public:
 	Ret *GetItem(uint16_t Id) { return (Ret *)GetItem(Id); }
 	template<class Ret>
 	const Ret *GetItem(uint16_t Id) const { return (const Ret *)GetItem(Id); }
-
 #pragma endregion
 
 #pragma region Dialog
-
 	void DialogStatus(DIALOG_STATUS *Status) { Require(WM_HANDLE_DIALOG_STATUS, (WM_PARAM)Status); }
 	auto DialogStatus() const { return (DIALOG_STATUS *)Require(WM_HANDLE_DIALOG_STATUS); }
 
@@ -487,13 +490,11 @@ public:
 		}
 		WM_DeleteWindow(this);
 	}
-
 #pragma endregion 
 
 	RGBC GetBkColor() const { return (RGBC)Require(WM_GET_BKCOLOR); }
 
 #pragma region Focus
-
 	static WObj *pWinFocus;
 	static auto GetFocussedWindow() { return pWinFocus; }
 	bool HasFocus() const { return this == pWinFocus; }
@@ -525,7 +526,6 @@ public:
 #pragma endregion
 
 #pragma region Visibility
-
 	bool IsVisible() const { return Status & WC_VISIBLE; }
 	void ShowWindow();
 	void HideWindow() {
@@ -534,7 +534,6 @@ public:
 			_Invalidate1Abs(Rect);
 		}
 	}
-
 #pragma endregion
 
 	bool IsEnabled() const { return !(Status & WC_DISABLED); }
@@ -548,15 +547,16 @@ WObj *WM_Screen2Win(POINT Pos, WObj *pStop = nullptr) {
 }
 
 uint16_t WObj::NumWindows = 0;
-WObj *WObj::pWinFirst = nullptr;
+WObj* WObj::pWinFirst = nullptr;
+WObj* WObj::pWinActive = nullptr;
 
 uint16_t WObj::NumInvalidWindows = 0;
 
-WObj *WObj::pWinDesktop = nullptr;
+WObj* WObj::pWinDesktop = nullptr;
 RGBC WObj::BkColorDesktop = RGB_GRAY;
 
-WObj *WObj::pWinCapture = nullptr;
+WObj* WObj::pWinCapture = nullptr;
 bool  WObj::WM__CaptureReleaseAuto = false;
 POINT WObj::WM__CapturePoint = { 0, 0 };
 
-WObj *WObj::pWinFocus = nullptr;
+WObj* WObj::pWinFocus = nullptr;

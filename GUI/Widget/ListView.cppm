@@ -116,7 +116,7 @@ private:
 					int ColorIndex;
 					/* Set background color */
 					if (i == this->Sel) {
-						ColorIndex = (this->State & WIDGET_STATE_FOCUS) ? 2 : 1;
+						ColorIndex = (GetStates() & WIDGET_STATE_FOCUS) ? 2 : 1;
 					}
 					else {
 						ColorIndex = 0;
@@ -417,12 +417,11 @@ public:
 		pHeader = new Header(RECT{}, WC_VISIBLE, this, 0);
 		_UpdateScrollParas();
 	}
-	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new ListView(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			pCreateInfo->Flags, hWinParent, pCreateInfo->Id
-		);
+			pCreateInfo->Flags, hWinParent, pCreateInfo->Id);
 	}
 
 public:

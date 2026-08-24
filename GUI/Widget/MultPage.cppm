@@ -54,10 +54,13 @@ private:
 			WM_SetSize(pScroll, w, h);
 		}
 		else {
-			auto pScrollbar = ScrollBar::Create(x, y, w, h, this, GUI_ID_HSCROLL, WC_VISIBLE, 0);
-			pScrollbar->SetEffect(this->pEffect);
+			auto pScrollbar = new ScrollBar(
+				RECT::LeftTop({ x, y }, { w, h }),
+				WC_VISIBLE, this, GUI_ID_HSCROLL,
+				0);
+			pScrollbar->SetEffect(GetEffect());
 		}
-		this->State |= MULTIPAGE_STATE_SCROLLMODE;
+		AddStates(MULTIPAGE_STATE_SCROLLMODE);
 	}
 	void _SetScrollbar(int NumItems) {
 		auto pScroll = (ScrollBar *)GetScrollbarH();
@@ -69,8 +72,9 @@ private:
 	}
 	void _DeleteScrollbar() {
 		WM_DeleteWindow(GetScrollbarH());
-		this->State &= ~MULTIPAGE_STATE_SCROLLMODE;
+		DelStates(MULTIPAGE_STATE_SCROLLMODE);
 	}
+
 	void _ShowPage(unsigned Index) {
 		WObj *hWin = 0;
 		auto pClient = this->pClient;
@@ -154,7 +158,7 @@ private:
 		}
 		pRect->y1 = pRect->y0 + Height;
 		/* Calculate width of text items */
-		if (this->State & MULTIPAGE_STATE_SCROLLMODE) {
+		if (GetStates() & MULTIPAGE_STATE_SCROLLMODE) {
 			Width = rBorder.x1 - ((Height * 3) >> 1) - 3;
 		}
 		else {
@@ -246,13 +250,11 @@ private:
 		if (!NumItems)
 			return;
 		int w = 0, x0 = 0;
-		if (State & MULTIPAGE_STATE_SCROLLMODE) {
-			if (Props.Align & MULTIPAGE_ALIGN_RIGHT) {
+		if (GetStates() & MULTIPAGE_STATE_SCROLLMODE) {
+			if (Props.Align & MULTIPAGE_ALIGN_RIGHT)
 				x0 = -_GetPagePosX(ScrollState);
-			}
-			else {
+			else
 				x0 = -_GetPagePosX(ScrollState);
-			}
 		}
 		RECT rText, rClip;
 		_GetTextRect(&rText);
@@ -276,7 +278,7 @@ private:
 			if ((Handles.NumItems() > 0) && (x >= rText.x0) && (x <= rText.x1)) {
 				int i, w = 0, x0 = rText.x0;
 				/* Check if another page must be selected */
-				if (State & MULTIPAGE_STATE_SCROLLMODE) {
+				if (   & MULTIPAGE_STATE_SCROLLMODE) {
 					x0 -= _GetPagePosX(this->ScrollState);
 				}
 				for (i = 0; i < Handles.NumItems(); i++) {
@@ -398,8 +400,7 @@ public:
 			_ClientCallback, this);
 		_UpdatePositions();
 	}
-	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo,
-								WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new MultPage(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),

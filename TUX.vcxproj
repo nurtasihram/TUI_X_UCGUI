@@ -52,7 +52,7 @@
     <ClCompile Include="GUI\Widget\Button.cppm" />
     <ClCompile Include="GUI\Widget\CheckBox.cppm" />
     <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp" />
-    <ClCompile Include="GUI\Widget\WINDOW.cpp" />
+    <ClCompile Include="GUI\Widget\Window_.cppm" />
     <ClCompile Include="GUI\WM\Window.cppm" />
     <ClCompile Include="GUI\WM\WM.cpp" />
     <ClCompile Include="GUI\WM\WM.cppm" />

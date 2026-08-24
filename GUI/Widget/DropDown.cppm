@@ -94,7 +94,7 @@ private:
 		Border = this->EffectSize();
 		TextBorderSize = Props.TextBorderSize;
 		GUI.SetFont(Props.pFont);
-		ColorIndex = (this->State & WIDGET_STATE_FOCUS) ? 2 : 1;
+		ColorIndex = (GetStates() & WIDGET_STATE_FOCUS) ? 2 : 1;
 		s = _GetpItem(Sel);
 		auto r = WM_GetClientRect();
 		r -= Border;
@@ -158,7 +158,6 @@ private:
 
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (DropDown *)hWin;
-		bool IsExpandedBeforeMsg = pObj->pListWin ? pObj->pListWin->IsVisible() : false;
 		/* Let widget handle the standard messages */
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
@@ -186,11 +185,9 @@ private:
 				return 0;
 			}
 			case WM_PID_STATE_CHANGED:
-				if (!IsExpandedBeforeMsg) {    /* Make sure we do not react a second time */
-					auto pInfo = (const PID_CHANGED_INFO *)Data;
+				if (auto pInfo = (const PID_CHANGED_INFO *)Data)
 					if (pInfo->State)
 						pObj->Expand();
-				}
 				return 0;
 			case WM_TOUCH:
 				pObj->_OnTouch((const PID_STATE *)Data);
@@ -212,31 +209,19 @@ private:
 	}
 
 public:
-
-	static DropDown *Create(int x0, int y0, int xsize, int ysize,
-					 WObj *hParent, int WinFlags, int ExFlags, int Id) {
-		auto pObj = (DropDown *)WM_CreateWindowAsChild(
-			x0, y0, xsize, -1,
-			hParent, WinFlags, DropDown::_Callback,
-			sizeof(DropDown) - sizeof(WObj));
-		if (!pObj) {
-			GUI_DEBUG_ERROROUT_IF(pObj == 0, "DropDown create failed");
-			return nullptr;
-		}
-		/* init widget specific variables */
-		WIDGET__Init(pObj, Id, WIDGET_STATE_FOCUSSABLE);
-		pObj->Props = DropDown::DefaultProps;
-		pObj->Flags = ExFlags;
-		pObj->ScrollbarWidth = 0;
-		pObj->ySizeEx = ysize;
-		pObj->_AdjustHeight();
-		return pObj;
+	DropDown(RECT r, WM_CF Style, WObj* pParent, uint16_t Id,
+			 uint8_t ExFlags) :
+		Widget({ r.x0, r.y0, r.x1, r.y0 - 1 }, Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE),
+		ySizeEx(r.YSize()), Flags(ExFlags) {
+		_AdjustHeight();
 	}
-	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo,
-								WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
-		return Create(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,
-					  pCreateInfo->xSize, pCreateInfo->ySize,
-					  hWinParent, 0, pCreateInfo->Flags, pCreateInfo->Id);
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+		return new DropDown(
+			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+						  { pCreateInfo->xSize, pCreateInfo->ySize }),
+			0, hWinParent, pCreateInfo->Id,
+			(uint8_t)pCreateInfo->Flags
+		);
 	}
 
 public:
@@ -249,55 +234,47 @@ public:
 		}
 	}
 	void Expand() {
-		int xSize, ySize, NumItems;
-		RECT r;
-		xSize = GetSizeX();
-		ySize = ySizeEx;
-		NumItems = GetNumItems();
-		r = GetRect();
-		if (Flags & DROPDOWN_CF_UP) {
-			r.y0 -= ySize;
-		}
-		else {
+		auto NumItems = GetNumItems();
+		auto r = GetRect();
+		if (Flags & DROPDOWN_CF_UP)
+			r.y0 -= ySizeEx;
+		else
 			r.y0 = r.y1 + 1;
-		}
-		auto pLst = this->pListWin;
-		if (pLst == 0) {
-			pLst = ListBox::Create(WObj::GetDesktopWindow(), r.x0, r.y0, xSize, ySize, WC_VISIBLE | WC_STAYONTOP | WC_ACTIVATE);
-			pLst->SetEffect(WIDGET_Effect_3D1L);
-			if (pLst) {
-				if (this->Flags & DROPDOWN_SF_AUTOSCROLLBAR) {
-					pLst->SetScrollbarWidth(this->ScrollbarWidth);
-					pLst->SetAutoScrollV(1);
+		r.y1 = r.y0 + ySizeEx;
+		if (!pListWin) {
+			pListWin = new ListBox(r, WC_VISIBLE | WC_STAYONTOP | WC_ACTIVATE, nullptr, 0);
+			pListWin->SetEffect(WIDGET_Effect_3D1L);
+			if (pListWin) {
+				if (Flags & DROPDOWN_SF_AUTOSCROLLBAR) {
+					pListWin->SetScrollbarWidth(this->ScrollbarWidth);
+					pListWin->SetAutoScrollV(1);
 				}
-				this->pListWin = pLst;
-				pLst->SetOwner(this);
+				pListWin->SetOwner(this);
 			}
 		}
 		else {
-			WM_MoveTo(pLst, r.x0, r.y0);
-			pLst->ShowWindow();
+			WM_MoveTo(pListWin, r.x0, r.y0);
+			pListWin->ShowWindow();
 		}
-		if (pLst) {
-			while (pLst->GetNumItems() > 0)
-				pLst->DeleteItem(0);
+		if (pListWin) {
+			while (pListWin->GetNumItems() > 0)
+				pListWin->DeleteItem(0);
 			for (int i = 0; i < NumItems; i++)
-				pLst->AddString(_GetpItem(i));
+				pListWin->AddString(_GetpItem(i));
+			pListWin->Props.pFont = Props.pFont;
+			pListWin->Props.aBkColor[0] = Props.aBkColor[0];
+			pListWin->Props.aBkColor[1] = Props.aBkColor[1];
+			pListWin->Props.aBkColor[2] = Props.aBkColor[2];
+			pListWin->Props.aBkColor[3] = Props.aBkColor[3];
+			pListWin->Props.aTextColor[0] = Props.aTextColor[0];
+			pListWin->Props.aTextColor[1] = Props.aTextColor[1];
+			pListWin->Props.aTextColor[2] = Props.aTextColor[2];
+			pListWin->Props.aTextColor[3] = Props.aTextColor[3];
 
-			pLst->Props.pFont = Props.pFont;
-			pLst->Props.aBkColor[0] = Props.aBkColor[0];
-			pLst->Props.aBkColor[1] = Props.aBkColor[1];
-			pLst->Props.aBkColor[2] = Props.aBkColor[2];
-			pLst->Props.aBkColor[3] = Props.aBkColor[3];
-			pLst->Props.aTextColor[0] = Props.aTextColor[0];
-			pLst->Props.aTextColor[1] = Props.aTextColor[1];
-			pLst->Props.aTextColor[2] = Props.aTextColor[2];
-			pLst->Props.aTextColor[3] = Props.aTextColor[3];
-
-			pLst->SetItemSpacing(this->ItemSpacing);
-			pLst->SetSel(this->Sel);
+			pListWin->SetItemSpacing(this->ItemSpacing);
+			pListWin->SetSel(this->Sel);
 			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
-			pLst->SetCapture(0);
+			pListWin->SetCapture(0);
 		}
 	}
 	void AddKey(int Key) {

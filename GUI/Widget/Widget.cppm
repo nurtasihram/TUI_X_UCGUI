@@ -53,21 +53,24 @@ extern PCWIDGET_EFFECT
 #pragma endregion
 
 #pragma region Draw
-typedef void GUI_DRAW_SELF_CB(void);
+typedef void GUI_DRAW_SELF_CB(RECT &r);
 struct GUI_DRAW {
-	virtual void Draw(int x, int y) const = 0;
+	void Draw(RECT r) const {
+		r += GUI.Off;
+		Paint(r);
+	}
+	virtual void Paint(RECT &r) const = 0;
 	virtual int GetXSize() const { return 0; }
 	virtual int GetYSize() const { return 0; }
-	POINT Off;
-	GUI_DRAW(POINT Off = { 0, 0 }) : Off(Off) {}
+	GUI_DRAW() {}
 };
 
-GUI_DRAW *GUI_DRAW_BITMAP_Create(PCBITMAP pBitmap, int x, int y) {
+GUI_DRAW *GUI_DRAW_BITMAP_Create(PCBITMAP pBitmap) {
 	struct _GUI_DRAW : public GUI_DRAW {
 		PCBITMAP pBitmap;
-		_GUI_DRAW(PCBITMAP pBitmap, POINT Off = { 0, 0 }) : GUI_DRAW(Off), pBitmap(pBitmap) {}
-		void Draw(int x, int y) const override {
-			GUI_DrawBitmap(pBitmap, x + Off.x, y + Off.y);
+		_GUI_DRAW(PCBITMAP pBitmap) : GUI_DRAW(), pBitmap(pBitmap) {}
+		void Paint(RECT &r) const override {
+			GUI_DrawBitmap(pBitmap, r.x0, r.y0);
 		}
 		int GetXSize() const override {
 			return pBitmap ? pBitmap->XSize : 0;
@@ -78,28 +81,32 @@ GUI_DRAW *GUI_DRAW_BITMAP_Create(PCBITMAP pBitmap, int x, int y) {
 	};
 	auto pObj = (GUI_DRAW *)GUI_ALLOC_AllocZero(sizeof(_GUI_DRAW));
 	if (pObj)
-		new (pObj) _GUI_DRAW{ pBitmap, { x, y } };
+		new (pObj) _GUI_DRAW{ pBitmap };
 	return pObj;
 }
 
-GUI_DRAW *GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw, int x, int y) {
+GUI_DRAW *GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw) {
 	struct _GUI_DRAW : public GUI_DRAW {
 		GUI_DRAW_SELF_CB *pfDraw;
-		_GUI_DRAW(GUI_DRAW_SELF_CB *pfDraw, POINT Off = { 0, 0 }) : GUI_DRAW(Off), pfDraw(pfDraw) {}
-		void Draw(int x, int y) const override {
+		_GUI_DRAW(GUI_DRAW_SELF_CB *pfDraw) : GUI_DRAW(), pfDraw(pfDraw) {}
+		void Paint(RECT &r) const override {
 			if (pfDraw)
-				pfDraw();
+				pfDraw(r);
 		}
 	};
 	auto pObj = (GUI_DRAW *)GUI_ALLOC_AllocZero(sizeof(_GUI_DRAW));
 	if (pObj)
-		new (pObj) _GUI_DRAW{ pfDraw, { x, y } };
+		new (pObj) _GUI_DRAW{ pfDraw };
 	return pObj;
 }
 #pragma endregion
 
-struct Widget : public WObj {
+class Widget : public WObj {
+
+public:
 	static PCWIDGET_EFFECT DefaultEffect;
+
+private:
 	PCWIDGET_EFFECT pEffect = DefaultEffect;
 	uint16_t Id, State;
 
@@ -108,6 +115,14 @@ public:
 		WObj(r, Style, cb, pParent), Id(Id), State(State) {}
 
 public:
+	auto GetEffect() const { return pEffect; }
+	void SetEffect(const WIDGET_EFFECT *pEffect)
+	{ Require(WM_WIDGET_SET_EFFECT, (WM_PARAM)pEffect); }
+	auto EffectSize() const { return pEffect ? pEffect->EffectSize : 0; }
+
+	uint16_t GetId() const { return Id; }
+
+protected:
 	void SetBkColorPrefer(RGBC BkColor) {
 		while (BkColor == RGB_INVALID_COLOR) {
 			if (auto pParent = Parent())
@@ -119,12 +134,7 @@ public:
 	}
 
 	void SetScrollState(const WM_SCROLL_STATE &VState, const WM_SCROLL_STATE &HState);
-	void SetEffect(const WIDGET_EFFECT *pEffect) {
-		Require(WM_WIDGET_SET_EFFECT, (WM_PARAM)pEffect);
-	}
-	auto EffectSize() const {
-		return pEffect ? pEffect->EffectSize : 0;
-	}
+
 	void DrawUp() const {
 		if (pEffect)
 			pEffect->DrawUp();
@@ -143,21 +153,19 @@ public:
 	}
 
 	auto GetStates() const { return State; }
-	void SetStates(uint16_t States) {
-		if (this->State != States) {
-			this->State = States;
-			Invalidate();
-		}
+	bool SetStates(uint16_t States) {
+		if (State == States)
+			return false;
+		State = States;
+		Invalidate();
+		return true;
 	}
-	void AddStates(uint16_t States) {
-		SetStates(State | States);
-	}
-	void DelStates(uint16_t States) {
-		SetStates(State & ~States);
-	}
-	void CtlStates(uint16_t States, bool On) {
-		SetStates(On ? State | States : State & ~States);
-	}
+	bool AddStates(uint16_t States)
+	{ return SetStates(State | States); }
+	bool DelStates(uint16_t States)
+	{ return SetStates(State & ~States); }
+	bool CtlStates(uint16_t States, bool On)
+	{ return SetStates(On ? State | States : State & ~States); }
 	
 	RECT _GetInsideRect() { return GetClientRect() - EffectSize(); }
 
@@ -221,69 +229,61 @@ public:
 		return true; /* Message NOT handled */
 	}
 
-};
+public:
 
-void WIDGET__Init(Widget *pWidget, int Id, uint16_t State) {
-	pWidget->pEffect = Widget::DefaultEffect;
-	pWidget->State = State;
-	pWidget->Id = Id;
-}
+	struct CreateStruct {
+
+		Widget* (*pfCreateIndirect)(const CreateStruct* pCreate, WObj* hWin, int x0, int y0, WM_CALLBACK* cb);
+
+		const char* pName; /* Text ... Not used on all widgets */
+		int16_t Id; /* ID ... should be unique in a dialog */
+		int16_t x0, y0, xSize, ySize; /* Define position and size */
+		uint16_t Flags; /* Widget specific create flags (opt.) */
+		int32_t Para; /* Widget specific parameter (opt.) */
+
+		WObj* CreateDialog(int NumWidgets, WM_CALLBACK* cb, WObj* hParent, int x0, int y0) const {
+			auto pDialog = pfCreateIndirect(this, hParent, x0, y0, cb);     /* Create parent window */
+			auto pDialogClient = WM_GetClientWindow(pDialog);
+			pDialog->AddStates(Flags);
+			pDialog->ShowWindow();
+			pDialogClient->ShowWindow();
+			auto paWidget = this;
+			while (--NumWidgets > 0) {
+				paWidget++;
+				auto pChild = paWidget->pfCreateIndirect(paWidget, pDialogClient, 0, 0, 0); /* Create child window */
+				pChild->ShowWindow();
+			}
+			WM_SetFocusOnNextChild(pDialog);     /* Set the focus to the first child */
+			pDialogClient->Require(WM_INIT_DIALOG);
+			return pDialog;
+		}
+
+		int ExecDialog(int NumWidgets, WM_CALLBACK* cb, WObj* pParent, int x0, int y0) const {
+			auto pDialog = CreateDialog(NumWidgets, cb, pParent, x0, y0);
+			return pDialog->DialogExec();
+		}
+
+	};
+
+};
 
 void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax, RECT TextRectAct) {
 	/* Check if we have anything to do at all ... */
 	auto r = FillRect + GUI.Off;
 	if (!(r <= GUI.ClipRect))
 		return;
-	if (pText) {
-		if (*pText) { /* Speed optimization, not required */
-			/* Fill border */
-			GUI_ClearRect(FillRect);
-			/* Set clipping rectangle */
-			auto pOldClipRect = WM_SetUserClipRect(&TextRectMax);
-			/* Display text */
-			GUI.SetTextMode(DRAWMODE_NORMAL);
-			GUI_DispStringAt(pText, TextRectAct.x0, TextRectAct.y0);
-			/* Restore clipping rectangle */
-			WM_SetUserClipRect(pOldClipRect);
-			return;
-		}
-	}
+	/* Fill border */
 	GUI_ClearRect(FillRect);
+	if (!pText) return;
+	if (!*pText) return;
+	/* Set clipping rectangle */
+	auto pOldClipRect = WM_SetUserClipRect(&TextRectMax);
+	/* Display text */
+	GUI.SetTextMode(DRAWMODE_NORMAL);
+	GUI_DispStringAt(pText, TextRectAct.x0, TextRectAct.y0);
+	/* Restore clipping rectangle */
+	WM_SetUserClipRect(pOldClipRect);
 }
-
-struct WIDGET_CREATE_INFO {
-
-	Widget *(*pfCreateIndirect)(const WIDGET_CREATE_INFO *pCreate, WObj *hWin, int x0, int y0, WM_CALLBACK *cb);
-
-	const char *pName; /* Text ... Not used on all widgets */
-	int16_t Id; /* ID ... should be unique in a dialog */
-	int16_t x0, y0, xSize, ySize; /* Define position and size */
-	uint16_t Flags; /* Widget specific create flags (opt.) */
-	int32_t Para; /* Widget specific parameter (opt.) */
-
-	WObj *CreateDialog(int NumWidgets, WM_CALLBACK *cb, WObj *hParent, int x0, int y0) const {
-		auto pDialog = pfCreateIndirect(this, hParent, x0, y0, cb);     /* Create parent window */
-		auto pDialogClient = WM_GetClientWindow(pDialog);
-		pDialog->AddStates(Flags);
-		pDialog->ShowWindow();
-		pDialogClient->ShowWindow();
-		auto paWidget = this;
-		while (--NumWidgets > 0) {
-			paWidget++;
-			auto pChild = paWidget->pfCreateIndirect(paWidget, pDialogClient, 0, 0, 0); /* Create child window */
-			pChild->ShowWindow();
-		}
-		WM_SetFocusOnNextChild(pDialog);     /* Set the focus to the first child */
-		pDialogClient->Require(WM_INIT_DIALOG);
-		return pDialog;
-	}
-
-	int ExecDialog(int NumWidgets, WM_CALLBACK *cb, WObj *pParent, int x0, int y0) const {
-		auto pDialog = CreateDialog(NumWidgets, cb, pParent, x0, y0);
-		return pDialog->DialogExec();
-	}
-
-};
 
 }
 

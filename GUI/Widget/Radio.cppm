@@ -56,59 +56,52 @@ private:
 		pDest->x1 = pSrc->x1 + Diff;
 	}
 	void _OnPaint() {
-		PCBITMAP pBmRadio;
-		PCBITMAP pBmCheck;
 		const char *pText;
-		RECT Rect, r, rFocus;
-		int i, y, HasFocus, FontDistY;
-		uint16_t SpaceAbove, CHeight, FocusBorder;
 		/* Init some data */
-		rFocus = GetClientRect();
-		HasFocus = (this->State & WIDGET_STATE_FOCUS) ? 1 : 0;
-		pBmRadio = Props.apBmRadio[IsEnabled()];
-		pBmCheck = Props.pBmCheck;
+		auto rFocus = GetClientRect();
+		bool HasFocus = GetStates() & WIDGET_STATE_FOCUS;
+		auto pBmRadio = Props.apBmRadio[IsEnabled()],
+			 pBmCheck = Props.pBmCheck;
 		rFocus.x1 = pBmRadio->XSize + RADIO_BORDER * 2 - 1;
 		rFocus.y1 = this->Height + ((this->NumItems - 1) * this->Spacing) - 1;
 		/* Select font and text color */
 		GUI.SetColor(Props.TextColor);
 		GUI.SetFont(Props.pFont);
 		GUI.SetTextMode(DRAWMODE_TRANS);
-		FontDistY = Props.pFont->DistY();
-		CHeight = Props.pFont->CHeight;
-		SpaceAbove = Props.pFont->Baseline - CHeight;
+		auto FontDistY = Props.pFont->DistY();
+		auto CHeight = Props.pFont->CHeight;
+		auto SpaceAbove = Props.pFont->Baseline - CHeight;
+		RECT Rect;
 		Rect.x0 = pBmRadio->XSize + RADIO_BORDER * 2 + 2;
 		Rect.y0 = (CHeight <= this->Height) ? ((this->Height - CHeight) / 2) : 0;
 		Rect.y1 = Rect.y0 + CHeight - 1;
-		FocusBorder = (FontDistY <= 12) ? 2 : 3;
-		if (Rect.y0 < FocusBorder) {
+		auto FocusBorder = (FontDistY <= 12) ? 2 : 3;
+		if (Rect.y0 < FocusBorder)
 			FocusBorder = Rect.y0;
-		}
 		/* Clear inside ... Just in case      */
 		/* Fill with parents background color */
 		SetBkColorPrefer(Props.BkColor);
 		GUI_Clear();
 		/* Iterate over all items */
-		for (i = 0; i < this->NumItems; i++) {
-			y = i * this->Spacing;
+		for (int i = 0; i < NumItems; i++) {
+			auto y = i * Spacing;
 			/* Draw the radio button bitmap */
 			GUI_DrawBitmap(pBmRadio, RADIO_BORDER, RADIO_BORDER + y);
 			/* Draw the check bitmap */
-			if (this->Sel == i) {
+			if (Sel == i)
 				GUI_DrawBitmap(pBmCheck, RADIO_BORDER + (pBmRadio->XSize - pBmCheck->XSize) / 2,
 							   RADIO_BORDER + ((pBmRadio->YSize - pBmCheck->YSize) / 2) + y);
-			}
 			/* Draw text if available */
-			pText = this->TextArray[i];
+			pText = TextArray[i];
 			if (pText) {
 				if (*pText) {
-					r = Rect;
+					auto r = Rect;
 					r.x1 = r.x0 + GUI_GetStringDistX(pText) - 2;
 					r += POINT{ 0, y };
 					GUI_DispStringAt(pText, r.x0, r.y0 - SpaceAbove);
 					/* Calculate focus rect */
-					if (HasFocus && (this->Sel == i)) {
+					if (HasFocus && Sel == i)
 						_ResizeRect(&rFocus, &r, FocusBorder);
-					}
 				}
 			}
 		}
@@ -145,7 +138,7 @@ private:
 		}
 		WM_NotifyParent(this, Notification);
 		if (Hit == 1) {
-			GUI_StoreKey(this->Id);
+			GUI_StoreKey(GetId());
 		}
 	}
 	char _OnKey(const WM_KEY_INFO *pInfo) {
@@ -201,21 +194,21 @@ private:
 	}
 public:
 	Radio(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
-		  uint16_t ExFlags,
-		  uint16_t NumItems, uint16_t Spacing) :
+		  uint16_t ExFlags, uint16_t NumItems, uint16_t Spacing) :
 		Widget((_AdjRect(r, NumItems, Spacing), r), Style, _Callback, pParent, Id, ExFlags | WIDGET_STATE_FOCUSSABLE),
 		Spacing(Spacing ? Spacing : 20),
 		NumItems(NumItems ? NumItems : 2) {
 		for (int i = 0; i < NumItems; i++)
 			TextArray.AddItem();
 	}
-	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		uint16_t NumItems = (pCreateInfo->Para) & 0xFF;
 		uint16_t Spacing = (pCreateInfo->Para >> 8) & 0xFF;
-		return new Radio(RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
-									   { pCreateInfo->xSize, pCreateInfo->ySize }),
-						 pCreateInfo->Flags, hWinParent, pCreateInfo->Id,
-						 0, NumItems, Spacing);
+		return new Radio(
+			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
+						  { pCreateInfo->xSize, pCreateInfo->ySize }),
+			pCreateInfo->Flags, hWinParent, pCreateInfo->Id,
+			0, NumItems, Spacing);
 	}
 
 private:

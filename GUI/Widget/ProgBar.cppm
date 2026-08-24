@@ -155,12 +155,11 @@ public:
 		Widget(r, Style, _Callback, pParent, Id, 0) {
 		SetEffect(WIDGET_Effect_None); /* Standard effect for progbar: None */
 	}
-	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new ProgBar(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			pCreateInfo->Flags,
-			hWinParent, pCreateInfo->Id);
+			pCreateInfo->Flags, hWinParent, pCreateInfo->Id);
 	}
 
 public:

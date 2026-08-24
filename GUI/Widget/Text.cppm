@@ -69,7 +69,8 @@ private:
 	}
 
 public:
-	Text(RECT r, WM_CF Style, WObj *pParent, uint16_t Id, const char *pText, TEXTALIGN ExFlags) :
+	Text(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
+		 TEXTALIGN ExFlags, const char *pText) :
 		Widget(r, Style, _Callback, pParent, Id, 0) {
 		if (pText)
 			GUI__SetText(&this->pText, pText);
@@ -78,11 +79,12 @@ public:
 		Props.Align = ExFlags;
 	}
 
-	static Widget *CreateIndirect(const WIDGET_CREATE_INFO *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new Text(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			WC_VISIBLE, hWinParent, pCreateInfo->Id, pCreateInfo->pName, pCreateInfo->Flags);
+			WC_VISIBLE, hWinParent, pCreateInfo->Id,
+			(TEXTALIGN)pCreateInfo->Flags, pCreateInfo->pName);
 	}
 
 public:

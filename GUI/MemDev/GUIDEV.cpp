@@ -132,7 +132,7 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 		}
 		/* Calculate rectangle */
 		r.x1 = (r.x0 = x) + pDevData->XSize - 1;
-		r.y1 = (r.y0 = y) + pDevData->YSize - 1;;
+		r.y1 = (r.y0 = y) + pDevData->YSize - 1;
 		/* Do the drawing. Window manager has to be on */
 		WM_Activate();
 		WM_Iterate(r, [&] {
