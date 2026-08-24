@@ -15,6 +15,7 @@ struct POINT {
 	constexpr POINT(int x, int y) :
 		x(x), y(y) {}
 
+	inline operator bool() const { return x | y; }
 	inline POINT operator~() const { return{ y, x }; }
 	inline POINT operator+(const POINT &pt) const { return{ x + pt.x, y + pt.y }; }
 	inline POINT operator-(const POINT &pt) const { return{ x - pt.x, y - pt.y }; }
@@ -23,7 +24,7 @@ struct POINT {
 };
 struct RECT {
 	int16_t x0 = 0, y0 = 0, x1 = 0, y1 = 0;
-
+	
 	constexpr RECT() {}
 	constexpr RECT(POINT LeftTop, POINT RightBottom) :
 		x0(LeftTop.x), y0(LeftTop.y), x1(RightBottom.x), y1(RightBottom.y) {}
@@ -43,12 +44,10 @@ struct RECT {
 	inline auto DistY() const { return y1 - y0; }
 	inline auto Dist() const { return POINT{ DistX(), DistY() }; }
 
-	inline RECT Rotate90L(int16_t XSize) const {
-		return{ XSize - y1, x0, XSize - y0, x1 };
-	}
-	inline RECT Rotate90R(int16_t YSize) const {
-		return{ y0, YSize - x1, y1, YSize - x0 };
-	}
+	inline RECT Rotate90L(int16_t XSize) const
+	{ return{ XSize - y1, x0, XSize - y0, x1 }; }
+	inline RECT Rotate90R(int16_t YSize) const
+	{ return{ y0, YSize - x1, y1, YSize - x0 }; }
 
 	inline RECT operator~() const { return{ y0, x0, y1, x1 }; }
 
@@ -56,24 +55,40 @@ struct RECT {
 		x0 += pt.x, y0 += pt.y, x1 += pt.x, y1 += pt.y;
 		return *this;
 	}
-	inline RECT operator+(const POINT &pt) const {
-		return{ x0 + pt.x, y0 + pt.y, x1 + pt.x, y1 + pt.y };
-	}
+	inline RECT operator+(const POINT &pt) const
+	{ return{ x0 + pt.x, y0 + pt.y, x1 + pt.x, y1 + pt.y }; }
 	inline RECT &operator-=(const POINT &pt) {
 		x0 -= pt.x, y0 -= pt.y, x1 -= pt.x, y1 -= pt.y;
 		return *this;
 	}
-	inline RECT operator-(const POINT &pt) const {
-		return{ x0 - pt.x, y0 - pt.y, x1 - pt.x, y1 - pt.y };
-	}
+	inline RECT operator-(const POINT &pt) const
+	{ return{ x0 - pt.x, y0 - pt.y, x1 - pt.x, y1 - pt.y }; }
 
-	inline RECT &operator-=(int dist) {
+	inline RECT &operator/=(int dist) {
 		x0 += dist, y0 += dist, x1 -= dist, y1 -= dist;
 		return *this;
 	}
-	inline RECT operator-(int dist) const {
-		return{ x0 + dist, y0 + dist, x1 - dist, y1 - dist };
+	inline RECT operator/(int dist) const
+	{ return{ x0 + dist, y0 + dist, x1 - dist, y1 - dist }; }
+	inline RECT &operator*=(int dist) {
+		x0 -= dist, y0 -= dist, x1 += dist, y1 += dist;
+		return *this;
 	}
+	inline RECT operator*(int dist) const
+	{ return{ x0 - dist, y0 - dist, x1 + dist, y1 + dist }; }
+
+	inline RECT &operator*=(const RECT &r) {
+		x0 += r.x0, y0 += r.y0, x1 += r.x1, y1 += r.y1;
+		return *this;
+	}
+	inline RECT operator+(const RECT &r) const
+	{ return{ x0 + r.x0, y0 + r.y0, x1 + r.x1, y1 + r.y1 }; }
+	inline RECT &operator-=(const RECT &r) {
+		x0 -= r.x0, y0 -= r.y0, x1 -= r.x1, y1 -= r.y1;
+		return *this;
+	}
+	inline RECT operator-(const RECT &r) const
+	{ return{ x0 - r.x0, y0 - r.y0, x1 - r.x1, y1 - r.y1 }; }
 
 	inline RECT &operator&=(const RECT &r) {
 		if (x0 < r.x0) x0 = r.x0;
@@ -82,9 +97,8 @@ struct RECT {
 		if (y1 > r.y1) y1 = r.y1;
 		return *this;
 	}
-	inline RECT operator&(const RECT &r) const {
-		return{ Max(x0, r.x0), Max(y0, r.y0), Min(x1, r.x1), Min(y1, r.y1) };
-	}
+	inline RECT operator&(const RECT &r) const
+	{ return{ Max(x0, r.x0), Max(y0, r.y0), Min(x1, r.x1), Min(y1, r.y1) }; }
 
 	inline RECT &operator|=(const RECT &r) {
 		if (x0 > r.x0) x0 = r.x0;
@@ -93,24 +107,16 @@ struct RECT {
 		if (y1 < r.y1) y1 = r.y1;
 		return *this;
 	}
-	inline RECT operator|(const RECT &r) const {
-		return{ Min(x0, r.x0), Min(y0, r.y0), Max(x1, r.x1), Max(y1, r.y1) };
-	}
+	inline RECT operator|(const RECT &r) const
+	{ return{ Min(x0, r.x0), Min(y0, r.y0), Max(x1, r.x1), Max(y1, r.y1) }; }
 
-	bool operator<=(const RECT &r) {
-		return
-			r.x0 <= x1 && r.y0 <= y1 &&
-			r.x1 >= x0 && r.y1 >= y0;
-	}
-	bool operator<=(const POINT &pt) {
-		return
-			x0 <= pt.x && pt.x <= x1 &&
-			y0 <= pt.y && pt.y <= y1;
-	}
+	bool operator<=(const RECT &r)
+	{ return r.x0 <= x1 && r.y0 <= y1 && r.x1 >= x0 && r.y1 >= y0; }
+	bool operator<=(const POINT &pt)
+	{ return x0 <= pt.x && pt.x <= x1 && y0 <= pt.y && pt.y <= y1; }
 
-	inline operator bool() const {
-		return x0 <= x1 && y0 <= y1;
-	}
+	inline operator bool() const
+	{ return x0 <= x1 && y0 <= y1; }
 };
 #pragma endregion
 

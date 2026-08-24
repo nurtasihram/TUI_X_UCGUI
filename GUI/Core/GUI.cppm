@@ -16,7 +16,8 @@ export {
 typedef void *GUI_HMEM;
 
 struct PID_STATE : POINT {
-	uint8_t Pressed;
+	int8_t Pressed;
+	PID_STATE(POINT Pos, int8_t Pressed = 0) : POINT(Pos), Pressed(Pressed) {}
 	auto operator=(const POINT &p) {
 		this->x = p.x;
 		this->y = p.y;
@@ -33,15 +34,13 @@ constexpr TEXTALIGN
 /* Text alignment flags, horizontal */
 	TEXTALIGN_LEFT        = (0<<0),
 	TEXTALIGN_RIGHT       = (1<<0),
-	TEXTALIGN_CENTER      = (2<<0),
+	TEXTALIGN_HCENTER     = (2<<0),
 	TEXTALIGN_HORIZONTAL  = (3<<0),
-	TEXTALIGN_HCENTER     = TEXTALIGN_CENTER,
 /* Text alignment flags, vertical */
 	TEXTALIGN_TOP         = (0<<2),
 	TEXTALIGN_BOTTOM      = (1<<2),
-	TEXTALIGN_BASELINE    = (2<<2),
-	TEXTALIGN_VCENTER     = (3<<2),
-	TEXTALIGN_VERTICAL    = TEXTALIGN_VCENTER;
+	TEXTALIGN_VCENTER     = (2<<2),
+	TEXTALIGN_VERTICAL    = (3<<2);
 
 struct GUI_CONTEXT {
 	/* Variables in LCD module */

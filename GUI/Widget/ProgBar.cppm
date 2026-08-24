@@ -90,7 +90,7 @@ private:
 		int TextHeight = Props.pFont->SizeY();
 		int EffectSize = this->EffectSize();
 		switch (Props.Align & TEXTALIGN_HORIZONTAL) {
-			case TEXTALIGN_CENTER:
+			case TEXTALIGN_HCENTER:
 				pRect->x0 = (xSize - TextWidth) / 2;
 				break;
 			case TEXTALIGN_RIGHT:
@@ -106,19 +106,18 @@ private:
 		pRect->y1 = pRect->y0 + TextHeight - 1;
 	}
 	void _OnPaint() {
-		RECT r, rInside, rText;
-		const char *pText;
 		char ac[5];
 		int xPos;
 		auto rClient = WM_GetClientRect();
-		rInside = rClient - EffectSize();
+		auto rInside = rClient / EffectSize();
 		xPos = _Value2X(v);
-		pText = _GetText(ac);
+		auto pText = _GetText(ac);
 		GUI.SetFont(Props.pFont);
+		RECT rText;
 		_GetTextRect(&rText, pText);
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		/* Draw left bar */
-		r = rInside;
+		auto r = rInside;
 		r.x1 = xPos - 1;
 		WM_SetUserClipRect(&r);
 		_DrawPart(0, rText.x0, rText.y0, pText);

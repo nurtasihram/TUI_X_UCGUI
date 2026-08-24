@@ -576,8 +576,8 @@ public:
 #pragma endregion
 
 	int UpdateScrollers() {
-		this->_ManageAutoScroll();
-		return this->_CalcScrollParas();
+		_ManageAutoScroll();
+		return _CalcScrollParas();
 	}
 	static int OwnerDraw(WObj *pWin, int Cmd, int ItemIndex, POINT Pos) {
 		auto pObj = (ListBox *)pWin;
@@ -635,22 +635,22 @@ public:
 			if (Index < 0) {
 				int i;
 				for (i = 0; i < NumItems; i++) {
-					this->_InvalidateItemSize(i);
+					_InvalidateItemSize(i);
 				}
 				UpdateScrollers();
-				this->_InvalidateInsideArea();
+				_InvalidateInsideArea();
 			}
 			else {
-				this->_InvalidateItemSize(Index);
+				_InvalidateItemSize(Index);
 				UpdateScrollers();
-				this->_InvalidateItemAndBelow(Index);
+				_InvalidateItemAndBelow(Index);
 			}
 		}
 	}
 
 	int AddKey(int Key) {
 		int r = 0;
-		r = this->_AddKey(Key);
+		r = _AddKey(Key);
 		return r;
 	}
 	void AddString(const char *s) {
@@ -659,9 +659,9 @@ public:
 			if (this->ItemArray.AddItem(&item) == 0) {
 				uint16_t ItemIndex = ItemArray.NumItems() - 1;
 				GUI__SetText(&ItemArray[ItemIndex].pText, s);
-				this->_InvalidateItemSize(ItemIndex);
+				_InvalidateItemSize(ItemIndex);
 				UpdateScrollers();
-				this->_InvalidateItem(ItemIndex);
+				_InvalidateItem(ItemIndex);
 			}
 		}
 	}
@@ -721,10 +721,10 @@ public:
 				}
 			}
 			if (UpdateScrollers()) {
-				this->_InvalidateInsideArea();
+				_InvalidateInsideArea();
 			}
 			else {
-				this->_InvalidateItemAndBelow(Index);
+				_InvalidateItemAndBelow(Index);
 			}
 		}
 	}
@@ -735,7 +735,7 @@ public:
 		if (Index < NumItems) {
 			const char *pString;
 			int CopyLen;
-			pString = this->_GetpString(Index);
+			pString = _GetpString(Index);
 			CopyLen = GUI__strlen(pString);
 			if (CopyLen > (MaxSize - 1)) {
 				CopyLen = MaxSize - 1;
@@ -785,13 +785,13 @@ public:
 			if (OnOff) {
 				if (!(pItem.Status & LISTBOX_ITEM_DISABLED)) {
 					pItem.Status |= LISTBOX_ITEM_DISABLED;
-					this->_InvalidateItem(Index);
+					_InvalidateItem(Index);
 				}
 			}
 			else {
 				if (pItem.Status & LISTBOX_ITEM_DISABLED) {
 					pItem.Status &= ~LISTBOX_ITEM_DISABLED;
-					this->_InvalidateItem(Index);
+					_InvalidateItem(Index);
 				}
 			}
 		}
@@ -805,13 +805,13 @@ public:
 		if (Mode) {
 			if (!(this->Flags & LISTBOX_CF_MULTISEL)) {
 				this->Flags |= LISTBOX_CF_MULTISEL;
-				this->_InvalidateInsideArea();
+				_InvalidateInsideArea();
 			}
 		}
 		else {
 			if (this->Flags & LISTBOX_CF_MULTISEL) {
 				this->Flags &= ~LISTBOX_CF_MULTISEL;
-				this->_InvalidateInsideArea();
+				_InvalidateInsideArea();
 			}
 		}
 	}
@@ -839,13 +839,13 @@ public:
 			if (OnOff) {
 				if (!(pItem.Status & LISTBOX_ITEM_SELECTED)) {
 					pItem.Status |= LISTBOX_ITEM_SELECTED;
-					this->_InvalidateItem(Index);
+					_InvalidateItem(Index);
 				}
 			}
 			else {
 				if (pItem.Status & LISTBOX_ITEM_SELECTED) {
 					pItem.Status &= ~LISTBOX_ITEM_SELECTED;
-					this->_InvalidateItem(Index);
+					_InvalidateItem(Index);
 				}
 			}
 		}
@@ -880,7 +880,7 @@ public:
 	}
 	void SetOwner(WObj *pOwner) {
 		this->pOwner = pOwner;
-		this->_InvalidateInsideArea();
+		_InvalidateInsideArea();
 	}
 	void SetOwnerDraw(WIDGET_DRAW_ITEM_FUNC *pfDrawItem) {
 		this->pfDrawItem = pfDrawItem;
@@ -889,16 +889,16 @@ public:
 	void SetScrollbarWidth(uint16_t Width) {
 		if (Width != (uint16_t)this->ScrollbarWidth) {
 			this->ScrollbarWidth = Width;
-			this->_SetScrollbarWidth();
+			_SetScrollbarWidth();
 			Invalidate();
 		}
 	}
 	void SetString(const char *s, uint16_t Index) {
 		if (Index < (uint16_t)_GetNumItems()) {
 			if (GUI__SetText(&ItemArray[Index].pText, s)) {
-				this->_InvalidateItemSize(Index);
+				_InvalidateItemSize(Index);
 				UpdateScrollers();
-				this->_InvalidateItem(Index);
+				_InvalidateItem(Index);
 			}
 		}
 	}

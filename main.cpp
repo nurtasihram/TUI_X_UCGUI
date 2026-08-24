@@ -218,7 +218,7 @@ static WObj *_CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMemDe
 	if (UseMemDev)
 		Flags |= WC_MEMDEV;
 	auto pFrame = new Frame(RECT::LeftTop({ x0, y0 }, { 190, 180 }), WC_VISIBLE, nullptr, 0, FRAMEWIN_CF_MOVEABLE, pTitle, nullptr);
-	auto pClient = WM_GetClientWindow(pFrame);
+	auto pClient = pFrame->Client();
 	auto Size = pClient->GetSize();
 	*phPane = new WObj(RECT(0, 0, Size.x - 1, Size.y - 1), Flags, _cbMemDevPane, pClient);
 	return pFrame;
@@ -1414,13 +1414,13 @@ int main(void) {
 	GUI_Init();
 	GUI_CURSOR_Show();
 
-	_TestListView();
-	_TestMultiPage();
-	_TestRadio();
-	_TestProgBar();
-	_TestSlider();
-	_TestEdit();
-	_TestMultiEdit();
+	//_TestListView();
+	//_TestMultiPage();
+	//_TestRadio();
+	//_TestProgBar();
+	//_TestSlider();
+	//_TestEdit();
+	//_TestMultiEdit();
 	_TestDropDown();
 	_TestListBox();
 	_TestMemDev();

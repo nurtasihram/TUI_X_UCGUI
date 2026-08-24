@@ -125,7 +125,7 @@ private:
 		else {
 			Notification = WM_NOTIFICATION_MOVED_OUT;
 		}
-		WM_NotifyParent(this, Notification);
+		NotifyParent(Notification);
 		if (Hit == 1) {
 			GUI_DEBUG_LOG("CHECKBOX: Hit\n");
 			GUI_StoreKey(GetId());

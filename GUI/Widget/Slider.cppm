@@ -89,12 +89,12 @@ private:
 	void _SliderPressed() {
 		AddStates(SLIDER_STATE_PRESSED);
 		if (this->Status & WC_VISIBLE)
-			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
+			NotifyParent(WM_NOTIFICATION_CLICKED);
 	}
 	void _SliderReleased() {
 		DelStates(SLIDER_STATE_PRESSED);
 		if (this->Status & WC_VISIBLE)
-			WM_NotifyParent(this, WM_NOTIFICATION_RELEASED);
+			NotifyParent(WM_NOTIFICATION_RELEASED);
 	}
 	void _OnTouch(const PID_STATE *pState) {
 		if (!pState)
@@ -187,14 +187,14 @@ public:
 		if (v > Min) {
 			v--;
 			Invalidate();
-			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+			NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
 	void Inc() {
 		if (v < Max) {
 			v++;
 			Invalidate();
-			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+			NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
 	void SetWidth(int Width) {
@@ -212,7 +212,7 @@ public:
 		if (this->v != v) {
 			this->v = v;
 			Invalidate();
-			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+			NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
 	void SetRange(int Min, int Max) {

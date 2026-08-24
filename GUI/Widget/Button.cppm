@@ -7,7 +7,6 @@ export module TUX.Widget.Button;
 import TUX.Widget;
 
 #define BUTTON_REACT_ON_LEVEL 0
-#define BUTTON_USE_3D 1
 
 export {
 
@@ -41,7 +40,7 @@ public:
 			/* Pressed */	RGB_WHITE,
 			/* Disabled */	RGB_LIGHTGRAY
 		};
-		TEXTALIGN Align{ TEXTALIGN_CENTER };
+		TEXTALIGN Align{ TEXTALIGN_HCENTER | TEXTALIGN_VCENTER };
 	} static DefaultProps;
 	
 private:
@@ -62,13 +61,11 @@ private:
 		auto rClient = WM_GetClientRect();
 		auto rInside = rClient;
 		auto EffectSize = this->EffectSize();
-#if BUTTON_USE_3D
 		if (IsPressed)
 			DrawDown();
 		else
 			DrawUp();
-		rInside -= EffectSize;
-#endif
+		rInside /= EffectSize;
 		/* Draw background */
 		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
 		GUI.SetColor(Props.aTextColor[ColorIndex]);
@@ -78,38 +75,32 @@ private:
 		   If we have only one, we will use it.
 		   If we have to we will use the second one (Index 1) for the pressed state
 		*/
-		unsigned int Index;
-		if (ColorIndex < 2)
-			Index = aDrawObj[BUTTON_BI_PRESSED] && IsPressed ? BUTTON_BI_PRESSED : BUTTON_BI_UNPRESSED;
-		else
-			Index = aDrawObj[BUTTON_BI_DISABLED] ? BUTTON_BI_DISABLED : BUTTON_BI_UNPRESSED;
+		auto Index = ColorIndex < 2 ? 
+			aDrawObj[BUTTON_BI_PRESSED] && IsPressed ? BUTTON_BI_PRESSED : BUTTON_BI_UNPRESSED :
+			aDrawObj[BUTTON_BI_DISABLED] ? BUTTON_BI_DISABLED : BUTTON_BI_UNPRESSED;
 		if (auto pDraw = aDrawObj[Index])
 			pDraw->Draw(GetInsideRect());
 		/* Draw the actual button (background and text) */
-#if BUTTON_USE_3D
-		if (IsPressed)
-			rInside += EffectSize;
-		else
-			rInside -= EffectSize;
-#endif
+		if (!IsPressed)
+			rInside -= EffectSize / 2;
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		GUI_DispStringInRect(text, &rInside, Props.Align);
 		WM_SetUserClipRect(nullptr);
 		/* Draw focus */
 		if (GetStates() & BUTTON_STATE_FOCUS) {
 			GUI.SetColor(RGB_BLACK);
-			GUI_DrawFocusRect(rClient, EffectSize + 1);
+			GUI_DrawFocusRect(rClient, EffectSize);
 		}
 	}
 	void _ButtonPressed() {
 		AddStates(BUTTON_STATE_PRESSED);
 		if (this->Status & WC_VISIBLE)
-			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
+			NotifyParent(WM_NOTIFICATION_CLICKED);
 	}
 	void _ButtonReleased(int Notification) {
 		DelStates(BUTTON_STATE_PRESSED);
 		if (this->Status & WC_VISIBLE)
-			WM_NotifyParent(this, Notification);
+			NotifyParent(Notification);
 		if (Notification == WM_NOTIFICATION_RELEASED) {
 			GUI_DEBUG_LOG("BUTTON: Hit\n");
 			GUI_StoreKey(GetId());

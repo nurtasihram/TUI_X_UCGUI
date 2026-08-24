@@ -169,12 +169,12 @@ private:
 	void _ScrollbarPressed() {
 		AddStates(SCROLLBAR_STATE_PRESSED);
 		if (Status & WC_VISIBLE)
-			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
+			NotifyParent(WM_NOTIFICATION_CLICKED);
 	}
 	void _ScrollbarReleased() {
 		DelStates(SCROLLBAR_STATE_PRESSED);
 		if (Status & WC_VISIBLE)
-			WM_NotifyParent(this, WM_NOTIFICATION_RELEASED);
+			NotifyParent(WM_NOTIFICATION_RELEASED);
 	}
 	void _OnTouch(const PID_STATE *pState) {
 		if (!pState)
@@ -301,7 +301,7 @@ public:
 				  WC_VISIBLE | WC_STAYONTOP | WC_ANCHOR_RIGHT | WC_ANCHOR_BOTTOM |
 				  (SpecialFlags & SCROLLBAR_CF_VERTICAL ? WC_ANCHOR_TOP : WC_ANCHOR_LEFT),
 				  pParent, SpecialFlags &SCROLLBAR_CF_VERTICAL ? GUI_ID_VSCROLL : GUI_ID_HSCROLL, SpecialFlags) {
-		WM_NotifyParent(this, WM_NOTIFICATION_SCROLLBAR_ADDED);
+		NotifyParent(WM_NOTIFICATION_SCROLLBAR_ADDED);
 	}
 
 public:
@@ -327,7 +327,7 @@ public:
 		if (ScrollState.v != v) {
 			ScrollState.v = v;
 			Invalidate();
-			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+			NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
 	void SetNumItems(int NumItems) {
@@ -351,9 +351,10 @@ public:
 		return ScrollState.v;
 	}
 	void SetWidth(int Width) {
+		POINT Size{ ScrollState.PageSize, Width };
 		if (GetStates() & SCROLLBAR_CF_VERTICAL)
-			 WM_SetXSize(this, Width);
-		else WM_SetYSize(this, Width);
+			Size = ~Size;
+		SetSize(Size);
 		_InvalidatePartner(); /* Invalidate the partner, since it is also affected */
 	}
 

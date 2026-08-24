@@ -130,13 +130,11 @@ private:
 			POSITIONS Pos;
 			_CalcPositions(&Pos);
 			if (this->pClient) {
-				WM_MoveChildTo(this->pClient, Pos.rClient.x0, Pos.rClient.y0);
-				WM_SetSize(this->pClient,
-						   Pos.rClient.x1 - Pos.rClient.x0 + 1,
-						   Pos.rClient.y1 - Pos.rClient.y0 + 1);
+				pClient->MoveChildTo(Pos.rClient.LeftTop());
+				pClient->SetSize(Pos.rClient.Size());
 			}
 			if (this->pMenu)
-				WM_MoveChildTo(this->pMenu, Pos.rClient.x0, Pos.rClient.y0 - Pos.MenuHeight);
+				pMenu->MoveChildTo({ Pos.rClient.x0, Pos.rClient.y0 - Pos.MenuHeight });
 		}
 	}
 	void _UpdateButtons(int OldHeight) {
@@ -165,12 +163,12 @@ private:
 					}
 				}
 				if (pLeft) {
-					WM_ResizeWindow(pLeft, Diff, Diff);
-					WM_MoveWindow(pLeft, n * Diff, 0);
+					pLeft->Resize(Diff);
+					pLeft->Move({ n * Diff, 0 });
 				}
 				if (pRight) {
-					WM_ResizeWindow(pRight, Diff, Diff);
-					WM_MoveWindow(pRight, -(n * Diff), 0);
+					pRight->Resize(Diff);
+					pRight->Move({ -(n * Diff), 0 });
 				}
 				n++;
 			} while (pLeft || pRight);
@@ -187,16 +185,16 @@ private:
 			}
 		}
 	}
-	int _OnKey(const WM_KEY_INFO *pInfo) {
+	bool _OnKey(const WM_KEY_INFO *pInfo) {
 		if (pInfo->PressedCnt > 0) { /* Key pressed? */
 			int Key = pInfo->Key;
 			switch (Key) {
 				case GUI_KEY_TAB:
-					this->pFocussedChild = WM_SetFocusOnNextChild(this);
-					return 1;
+					pFocussedChild = WM_SetFocusOnNextChild(this);
+					return true;
 			}
 		}
-		return 0;
+		return false;
 	}
 	void _OnPaint() {
 		const char *pText = nullptr;
@@ -244,7 +242,7 @@ private:
 				SetActive(0);
 				/* Remember the child which had the focus so we can reactive this child */
 				if (WM__IsAncestor(pInfo->pOld, this))
-					this->pFocussedChild = pInfo->pOld;
+					pFocussedChild = pInfo->pOld;
 			}
 		}
 	}
@@ -488,7 +486,7 @@ public:
 		this->pMenu = pMenu;
 		if (this->cb)
 			pMenu->SetOwner(this->pClient);
-		pMenu->Attach(this, x0, y0, xSize, 0, 0);
+		pMenu->AttachMenu(this, x0, y0, xSize, 0);
 		WM_SetAnchor(pMenu, WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT);
 		_UpdatePositions();
 		Invalidate();
@@ -515,8 +513,7 @@ public:
 	}
 
 	void _InvalidateButton(int Id) {
-		WObj *pChild;
-		for (pChild = this->pFirstChild; pChild; pChild = pChild->pNext)
+		for (auto pChild = this->pFirstChild; pChild; pChild = pChild->pNext)
 			if (pChild->GetID() == Id)
 				pChild->Invalidate();
 	}
@@ -525,7 +522,7 @@ public:
 		if (this->Flags & FRAMEWIN_CF_MINIMIZED) {
 			int OldHeight = 1 + this->Rect.y1 - this->Rect.y0;
 			int NewHeight = 1 + this->rRestore.y1 - this->rRestore.y0;
-			WM_ResizeWindow(this, 0, NewHeight - OldHeight);
+			Resize({ 0, NewHeight - OldHeight });
 			pClient->ShowWindow();
 			pMenu->ShowWindow();
 			_UpdatePositions();
@@ -536,9 +533,9 @@ public:
 	void _RestoreMaximized() {
 		/* When window was maximized, restore it */
 		if (this->Flags & FRAMEWIN_CF_MAXIMIZED) {
-			RECT r = this->rRestore;
-			WM_MoveTo(this, r.x0, r.y0);
-			WM_SetSize(this, r.x1 - r.x0 + 1, r.y1 - r.y0 + 1);
+			auto r = this->rRestore;
+			MoveTo(r.LeftTop());
+			SetSize(r.Size());
 			_UpdatePositions();
 			this->Flags &= ~FRAMEWIN_CF_MAXIMIZED;
 			_InvalidateButton(GUI_ID_MAXIMIZE);
@@ -553,7 +550,7 @@ public:
 			this->rRestore = this->Rect;
 			pClient->HideWindow();
 			pMenu->HideWindow();
-			WM_ResizeWindow(this, 0, NewHeight - OldHeight);
+			Resize({ 0, NewHeight - OldHeight });
 			_UpdatePositions();
 			this->Flags |= FRAMEWIN_CF_MINIMIZED;
 			_InvalidateButton(GUI_ID_MINIMIZE);
@@ -570,8 +567,8 @@ public:
 				r.y1 = LCD_GetYSize();
 			}
 			this->rRestore = this->Rect;
-			WM_MoveTo(this, r.x0, r.y0);
-			WM_SetSize(this, r.x1 - r.x0 + 1, r.y1 - r.y0 + 1);
+			MoveTo(r.LeftTop());
+			SetSize(r.Size());
 			_UpdatePositions();
 			this->Flags |= FRAMEWIN_CF_MAXIMIZED;
 			_InvalidateButton(GUI_ID_MAXIMIZE);
@@ -597,9 +594,9 @@ public:
 			auto r = pChild->Rect - this->Rect.LeftTop();
 			if (r.y0 == Props.BorderSize && r.y1 - r.y0 + 1 == OldHeight) {
 				if (pChild->Status & WC_ANCHOR_RIGHT)
-					WM_MoveWindow(pChild, -Diff, Diff);
+					pChild->Move({ -Diff, Diff });
 				else
-					WM_MoveWindow(pChild, Diff, Diff);
+					pChild->Move(Diff);
 			}
 		}
 		Props.BorderSize = Size;
@@ -800,14 +797,12 @@ public:
 			*py = _CaptureY + dy;
 		}
 		/* Set new window position */
-		if (_CaptureFlags & FRAMEWIN_REPOS_X) {
-			WM_MoveWindow(this, -dx, 0);
-		}
-		if (_CaptureFlags & FRAMEWIN_REPOS_Y) {
-			WM_MoveWindow(this, 0, -dy);
-		}
+		Move({
+			(_CaptureFlags & FRAMEWIN_REPOS_X) ? -dx : 0,
+			(_CaptureFlags & FRAMEWIN_REPOS_Y) ? -dy : 0
+		});
 		/* Set new window size */
-		WM_ResizeWindow(this, dx, dy);
+		Resize({ dx, dy });
 	}
 	static int _CheckBorderX(int x, int x1, int Border) {
 		int Mode = 0;

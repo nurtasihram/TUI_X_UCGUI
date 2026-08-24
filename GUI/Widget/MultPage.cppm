@@ -9,7 +9,7 @@ import TUX.Widget.ScrollBar;
 
 import TUX.Array;
 
-	constexpr uint16_t MULTIPAGE_STATE_ENABLED     = (1<<0);
+constexpr uint16_t MULTIPAGE_STATE_ENABLED     = (1<<0);
 constexpr uint16_t MULTIPAGE_STATE_SCROLLMODE  = WIDGET_STATE_USER<0>;
 constexpr uint16_t MULTIPAGE_NUMCOLORS         = 2;
 
@@ -50,8 +50,8 @@ private:
 
 	void _AddScrollbar(int x, int y, int w, int h) {
 		if (auto pScroll = GetScrollbarH()) {
-			WM_MoveChildTo(pScroll, x, y);
-			WM_SetSize(pScroll, w, h);
+			pScroll->MoveChildTo({ x, y });
+			pScroll->SetSize({ w, h });
 		}
 		else {
 			auto pScrollbar = new ScrollBar(
@@ -200,8 +200,8 @@ private:
 		}
 		/* Move and resize the client area to the updated positions */
 		_CalcClientRect(&rBorder);
-		WM_MoveChildTo(this->pClient, rBorder.x0, rBorder.y0);
-		WM_SetSize(this->pClient, rBorder.x1 - rBorder.x0 + 1, rBorder.y1 - rBorder.y0 + 1);
+		pClient->MoveChildTo(rBorder.LeftTop());
+		pClient->SetSize(rBorder.Size());
 		Invalidate();
 	}
 	void _DrawTextItem(const char *pText, unsigned Index,
@@ -286,7 +286,7 @@ private:
 					w = _GetPageSizeX(i);
 					if (x >= x0 && x <= (x0 + w - 1)) {
 						SelectPage(i);
-						WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+						NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 						return 1;
 					}
 				}
@@ -303,9 +303,7 @@ private:
 				if (!_ClickedOnMultipage(Pos.x, Pos.y)) {
 					Pos += GetOrg();
 					if (auto pBelow = WM_Screen2Win(Pos, this)) {
-						PID_STATE State;
-						State = Pos - pBelow->GetOrg();
-						State.Pressed = pState->Pressed;
+						PID_STATE State{ Pos - pBelow->GetOrg(), pState->Pressed };
 						pBelow->cb(pBelow, WM_TOUCH, (WM_PARAM)&State);
 					}
 				}
@@ -318,7 +316,7 @@ private:
 		}
 		else
 			Notification = WM_NOTIFICATION_MOVED_OUT;
-		WM_NotifyParent(this, Notification);
+		NotifyParent(Notification);
 	}
 
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
@@ -428,7 +426,7 @@ public:
 		}
 		else {
 			/* If we get a handle we must ensure that it was attached to the MultPage */
-			WM_AttachWindowAt(hWin, this->pClient, 0, 0);
+			hWin->Attach(this->pClient);
 		}
 		if (hWin) {
 			Page page = {};
@@ -451,11 +449,11 @@ public:
 			/* Remove the page from the MultPage object */
 			if (Index == this->Selection) {
 				if (Index == ((unsigned)Handles.NumItems() - 1)) {
-					this->_ShowPage(Index - 1);
+					_ShowPage(Index - 1);
 					this->Selection--;
 				}
 				else {
-					this->_ShowPage(Index + 1);
+					_ShowPage(Index + 1);
 				}
 			}
 			else {
@@ -465,7 +463,7 @@ public:
 			}
 			GUI_ALLOC_FreePtr((void **)&Handles[Index].pText);
 			Handles.DeleteItem(Index);
-			this->_UpdatePositions();
+			_UpdatePositions();
 			/* Delete the window of the page */
 			if (Delete) {
 				WM_DeleteWindow(hWin);
@@ -474,25 +472,25 @@ public:
 	}
 	void SelectPage(unsigned Index) {
 		if ((int)Index < Handles.NumItems()) {
-			if (Index != this->Selection && this->_GetEnable(Index)) {
-				this->_ShowPage(Index);
+			if (Index != this->Selection && _GetEnable(Index)) {
+				_ShowPage(Index);
 				this->Selection = Index;
-				this->_UpdatePositions();
+				_UpdatePositions();
 			}
 		}
 	}
 	void DisablePage(unsigned Index) {
-		this->_SetEnable(Index, 0);
+		_SetEnable(Index, 0);
 		Invalidate();
 	}
 	void EnablePage(unsigned Index) {
-		this->_SetEnable(Index, 1);
+		_SetEnable(Index, 1);
 		Invalidate();
 	}
 	void SetText(const char *pText, unsigned Index) {
 		if (pText && (int)Index < Handles.NumItems()) {
 			if (GUI__SetText(&Handles[Index].pText, pText))
-				this->_UpdatePositions();
+				_UpdatePositions();
 		}
 	}
 	void SetBkColor(RGBC Color, unsigned Index) {
@@ -510,16 +508,15 @@ public:
 	void SetFont(PCFONT pFont) {
 		if (pFont) {
 			Props.pFont = pFont;
-			this->_UpdatePositions();
+			_UpdatePositions();
 		}
 	}
 	void SetAlign(unsigned Align) {
-		RECT rClient;
 		Props.Align = Align;
-		this->_CalcClientRect(&rClient);
-		WM_MoveTo(this->pClient, rClient.x0 + this->Rect.x0,
-				  rClient.y0 + this->Rect.y0);
-		this->_UpdatePositions();
+		RECT rClient;
+		_CalcClientRect(&rClient);
+		pClient->MoveTo(rClient.LeftTop() + GetRect().LeftTop());
+		_UpdatePositions();
 	}
 	int  GetSelection() {
 		return Selection;
@@ -534,7 +531,7 @@ public:
 	}
 	int IsPageEnabled(unsigned Index) {
 		int r = 0;
-		r = this->_GetEnable(Index);
+		r = _GetEnable(Index);
 
 		return r;
 	}

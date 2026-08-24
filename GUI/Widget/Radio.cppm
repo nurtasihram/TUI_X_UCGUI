@@ -136,7 +136,7 @@ private:
 		else {
 			Notification = WM_NOTIFICATION_MOVED_OUT;
 		}
-		WM_NotifyParent(this, Notification);
+		NotifyParent(Notification);
 		if (Hit == 1) {
 			GUI_StoreKey(GetId());
 		}
@@ -219,7 +219,7 @@ private:
 		if (Sel != v) {
 			Sel = v;
 			Invalidate();
-			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+			NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
 	static int _IsInGroup(WObj *pWin, uint8_t GroupId) {
@@ -228,7 +228,7 @@ private:
 		return 0;
 	}
 	static Radio *_GetPrevInGroup(WObj *pWin, uint8_t GroupId) {
-		for (pWin = WM_GetPrevSibling(pWin); pWin; pWin = WM_GetPrevSibling(pWin))
+		for (pWin = pWin->PrevSibling(); pWin; pWin = pWin->PrevSibling())
 			if (_IsInGroup(pWin, GroupId))
 				return (Radio *)pWin;
 		return nullptr;
@@ -240,7 +240,7 @@ private:
 		return nullptr;
 	}
 	void _ClearSelection(uint8_t GroupId) {
-		for (auto pWin = (WObj *)WM__GetFirstSibling(this); pWin; pWin = pWin->pNext) {
+		for (auto pWin = FirstSibling(); pWin; pWin = pWin->pNext) {
 			if (pWin != this)
 				if (_IsInGroup(pWin, GroupId))
 					((Radio *)pWin)->_SetValue(-1);
@@ -325,19 +325,17 @@ public:
 	void SetGroupId(uint8_t NewGroupId) {
 		auto OldGroupId = GroupId;
 		if (NewGroupId != OldGroupId) {
-			auto hFirst = WM__GetFirstSibling(this);
+			auto pFirst = FirstSibling();
 			/* Pass our selection, if we have one, to another radio button in */
 			/* our old group. So the group have a valid selection when we leave it. */
-			if (OldGroupId && (Sel >= 0)) {
+			if (OldGroupId && Sel >= 0) {
 				GroupId = 0; /* Leave group first, so _GetNextInGroup() could */
 				/* not find a handle to our own window. */
-				auto hWin = _GetNextInGroup(hFirst, OldGroupId);
-				if (hWin) {
-					hWin->_SetValue(0);
-				}
+				if (auto pWin = _GetNextInGroup(pFirst, OldGroupId))
+					pWin->_SetValue(0);
 			}
 			/* Make sure we have a valid selection according to our new group */
-			if (_GetNextInGroup(hFirst, NewGroupId) != 0) {
+			if (_GetNextInGroup(pFirst, NewGroupId) != 0) {
 				/* Join an existing group with an already valid selection, so clear our own one */
 				_SetValue(-1);
 			}

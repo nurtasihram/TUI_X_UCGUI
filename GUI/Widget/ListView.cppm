@@ -613,7 +613,7 @@ public:
 				_InvalidateRow(OldSel);
 				_InvalidateRow(NewSel);
 			}
-			WM_NotifyParent(this, WM_NOTIFICATION_SEL_CHANGED);
+			NotifyParent(WM_NOTIFICATION_SEL_CHANGED);
 		}
 	}
 	void IncSel() { SetSel(GetSel() + 1); }

@@ -32,7 +32,7 @@ typedef int WIDGET_DRAW_ITEM_FUNC(WObj *pWin, int Cmd, int ItemIndex, POINT Item
 struct WIDGET_EFFECT {
 	void DrawUp(void) const { DrawUp(WM_GetClientRect()); }
 	void DrawDown(void) const { DrawDown(WM_GetClientRect()); }
-	RECT GetRect() const { return WM_GetClientRect() - EffectSize; }
+	RECT GetRect() const { return WM_GetClientRect() / EffectSize; }
 
 	virtual void DrawUp(RECT r) const {}
 	virtual void DrawDown(RECT r) const {}
@@ -167,7 +167,7 @@ protected:
 	bool CtlStates(uint16_t States, bool On)
 	{ return SetStates(On ? State | States : State & ~States); }
 	
-	RECT _GetInsideRect() { return GetClientRect() - EffectSize(); }
+	RECT _GetInsideRect() { return GetClientRect() / EffectSize(); }
 
 	bool HandleActive(int MsgId, WM_PARAM *Data) {
 		switch (MsgId) {
@@ -175,7 +175,8 @@ protected:
 				auto Diff = EffectSize();
 				pEffect = (const WIDGET_EFFECT *)*Data;
 				Diff -= EffectSize();
-				WM__UpdateChildPositions(this, -Diff, -Diff, Diff, Diff);
+				if (Diff)
+					_UpdateChildPositions({ -Diff, Diff });
 				Invalidate();
 				return false; /* Message handled -> Return */
 			}
@@ -215,7 +216,7 @@ protected:
 					SetStates(State & ~WIDGET_STATE_FOCUS);
 					Notification = WM_NOTIFICATION_LOST_FOCUS;
 				}
-				WM_NotifyParent(this, Notification);
+				NotifyParent(Notification);
 				*Data = 0;   /* Focus change accepted */
 				return false;
 			}
@@ -243,7 +244,7 @@ public:
 
 		WObj* CreateDialog(int NumWidgets, WM_CALLBACK* cb, WObj* hParent, int x0, int y0) const {
 			auto pDialog = pfCreateIndirect(this, hParent, x0, y0, cb);     /* Create parent window */
-			auto pDialogClient = WM_GetClientWindow(pDialog);
+			auto pDialogClient = pDialog->Client();
 			pDialog->AddStates(Flags);
 			pDialog->ShowWindow();
 			pDialogClient->ShowWindow();

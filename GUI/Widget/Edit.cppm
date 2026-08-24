@@ -189,10 +189,10 @@ private:
 			}
 			NumChars = GUI__GetNumChars(pText);
 			if (xPos < 0) {
-				this->_SetCursorPos(0);
+				_SetCursorPos(0);
 			}
 			else if (xPos > TextWidth) {
-				this->_SetCursorPos(NumChars);
+				_SetCursorPos(NumChars);
 			}
 			else {
 				int i, x, xLenChar;
@@ -253,7 +253,7 @@ private:
 				pText += CursorOffset;
 				NumBytes = GUI_UC_GetCharSize(pText);
 				GUI__strcpy(pText, pText + NumBytes);
-				WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+				NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 			}
 		}
 	}
@@ -267,7 +267,7 @@ private:
 				pText += CursorOffset;
 				GUI__memmove(pText + BytesNeeded, pText, GUI__strlen(pText) + 1);
 				GUI_UC_Encode(pText, Char);
-				WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+				NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 				return 1;
 			}
 		}
@@ -406,7 +406,7 @@ public:
 						Char = GUI_UC_GetCharCode(pText);
 						if (Char < 0x7f) {
 							*pText = Char + 1;
-							WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+							NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 						}
 					}
 					break;
@@ -417,7 +417,7 @@ public:
 						uint16_t Char = GUI_UC_GetCharCode(pText);
 						if (Char > 0x20) {
 							*pText = Char - 1;
-							WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+							NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 						}
 					}
 					break;
@@ -523,7 +523,7 @@ public:
 			if (this->pfUpdateBuffer)
 				this->pfUpdateBuffer(this);
 			Invalidate();
-			WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+			NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
 

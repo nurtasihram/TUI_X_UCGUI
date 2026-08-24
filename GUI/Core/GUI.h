@@ -144,8 +144,8 @@ int  GUI_WaitKey(void);
 void GUI_StoreKey(int c);
 void GUI_ClearKeyBuffer(void);
 
-void GUI_PID_StoreState(const PID_STATE *pState);
-int  GUI_PID_GetState(PID_STATE *pState);
+void GUI_PID_StoreState(const PID_STATE &State);
+PID_STATE GUI_PID_GetState(void);
 
 int  GUI_MOUSE_GetState(PID_STATE *pState);
 void GUI_MOUSE_StoreState(const PID_STATE *pState);

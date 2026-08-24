@@ -66,9 +66,6 @@
     <ClCompile Include="GUI\Core\GUI_GetBitmapPixelIndex.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_MOUSE.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_OnKey.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -85,9 +82,6 @@
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_X_MEM.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUICurs.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\LCD.cpp">
@@ -203,6 +197,9 @@
       <Filter>GUI\Widget\Leaf</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\String.cppm">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUICurs.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
   </ItemGroup>

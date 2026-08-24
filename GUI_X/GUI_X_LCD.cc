@@ -39,11 +39,7 @@ extern int  LCD_L0_Init(void) {
 						   tSimDisp_MouseKey mk) {
 		if (xPos < 0 || yPos < 0)
 			return;
-		static PID_STATE _State;
-		_State.x = xPos;
-		_State.y = yPos;
-		_State.Pressed = mk.Left;
-		GUI_PID_StoreState(&_State);
+		GUI_PID_StoreState({ { xPos, yPos }, mk.Left });
 	});
 	SimDisp::SetOnDestroy([] {
 		ExitProcess(0);

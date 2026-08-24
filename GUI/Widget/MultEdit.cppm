@@ -649,7 +649,7 @@ private:
 				}
 				NumChars = GUI_UC__NumBytes2NumChars(pCursor, NumBytes);
 				GUI__strcpy(pCursor, pCursor + NumBytes);
-				WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+				NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 				this->NumChars -= NumChars;
 				_InvalidateNumLines();
 				_InvalidateTextSizeX();
@@ -671,7 +671,7 @@ private:
 				pText += CursorOffset;
 				GUI__memmove(pText + BytesNeeded, pText, GUI__strlen(pText) + 1);
 				GUI_UC_Encode(pText, Char);
-				WM_NotifyParent(this, WM_NOTIFICATION_VALUE_CHANGED);
+				NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 				this->NumChars += 1;
 				_InvalidateNumLines();
 				_InvalidateTextSizeX();
@@ -773,7 +773,7 @@ private:
 		}
 		else
 			Notification = WM_NOTIFICATION_MOVED_OUT;
-		WM_NotifyParent(this, Notification);
+		NotifyParent(Notification);
 	}
 	int _AddKey(uint16_t Key) {
 		int r = 0;               /* Key has not been consumed */
@@ -899,13 +899,13 @@ private:
 							WM_GetScrollState(pWinSrc, &ScrollState);
 							pObj->ScrollStateV.v = ScrollState.v;
 							pObj->Invalidate();
-							WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
+							pObj->NotifyParent(WM_NOTIFICATION_SCROLL_CHANGED);
 						}
 						else if (pWinSrc == pObj->GetScrollbarH()) {
 							WM_GetScrollState(pWinSrc, &ScrollState);
 							pObj->ScrollStateH.v = ScrollState.v;
 							pObj->Invalidate();
-							WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
+							pObj->NotifyParent(WM_NOTIFICATION_SCROLL_CHANGED);
 						}
 						break;
 					}

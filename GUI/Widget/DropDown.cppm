@@ -65,14 +65,12 @@ private:
 		return Handles[Index];
 	}
 	void _DrawTriangleDown(int x, int y, int Size) {
-		for (; Size >= 0; Size--, y++) {
-			GUI_DrawHLine(y, x - Size, x + Size);
-		}
+		while (Size--)
+			GUI_DrawHLine(y++, x - Size, x + Size);
 	}
 	void _SelectByKey(int Key) {
-		int i;
 		Key = _Tolower(Key);
-		for (i = 0; i < GetNumItems(); i++) {
+		for (int i = 0; i < GetNumItems(); i++) {
 			char c = _Tolower(*_GetpItem(i));
 			if (c == Key) {
 				SetSel(i);
@@ -86,19 +84,14 @@ private:
 		this->pListWin = nullptr;
 	}
 	void _OnPaint() {
-		int Border;
-		const char *s;
-		int InnerSize, ColorIndex;
-		int TextBorderSize;
 		/* Do some initial calculations */
-		Border = this->EffectSize();
-		TextBorderSize = Props.TextBorderSize;
+		auto Border = this->EffectSize();
+		auto TextBorderSize = Props.TextBorderSize;
 		GUI.SetFont(Props.pFont);
-		ColorIndex = (GetStates() & WIDGET_STATE_FOCUS) ? 2 : 1;
-		s = _GetpItem(Sel);
-		auto r = WM_GetClientRect();
-		r -= Border;
-		InnerSize = r.y1 - r.y0 + 1;
+		auto ColorIndex = (GetStates() & WIDGET_STATE_FOCUS) ? 2 : 1;
+		auto s = _GetpItem(Sel);
+		auto r = WM_GetClientRect() / Border;
+		auto InnerSize = r.YSize();
 		/* Draw the 3D effect (if configured) */
 		DrawDown();
 		/* Draw the outer text frames */
@@ -112,30 +105,27 @@ private:
 		GUI.SetColor(Props.aTextColor[ColorIndex]);
 		GUI_DispStringInRect(s, &r, Props.Align);/**/
 		/* Draw arrow */
-		r = WM_GetClientRect();
-		r -= Border;
+		r = WM_GetClientRect() / Border;
 		r.x0 = r.x1 + 1 - InnerSize;
 		GUI.SetColor(RGB_GRAYL(0xc0));
 		GUI_FillRect(r);
 		GUI.SetColor(RGB_BLACK);
-		_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.y1 - r.y0 - 8) / 2);
+		_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.YSize()) / 3);
 		DrawUp(r);
 	}
 	void _OnTouch(const PID_STATE *pState) {
 		if (pState) { /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
 				Expand();
-				WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
+				NotifyParent(WM_NOTIFICATION_CLICKED);
 			}
-			else {
-				WM_NotifyParent(this, WM_NOTIFICATION_RELEASED);
-			}
+			else
+				NotifyParent(WM_NOTIFICATION_RELEASED);
 		}
-		else { /* Mouse moved out */
-			WM_NotifyParent(this, WM_NOTIFICATION_MOVED_OUT);
-		}
+		else /* Mouse moved out */
+			NotifyParent(WM_NOTIFICATION_MOVED_OUT);
 	}
-	int _OnKey(const WM_KEY_INFO *pInfo) {
+	bool _OnKey(const WM_KEY_INFO *pInfo) {
 		if (pInfo->PressedCnt > 0) {
 			int Key = pInfo->Key;
 			switch (Key) {
@@ -143,17 +133,17 @@ private:
 					break; /* Send to parent by not doing anything */
 				default:
 					AddKey(Key);
-					return 1; /* Message handled */
+					return true; /* Message handled */
 			}
 		}
-		return 0;
+		return false;
 	}
 	void _AdjustHeight() {
 		auto Height = TextHeight;
 		if (!Height)
 			Height = Props.pFont->DistY();
 		Height += EffectSize() + 2 * Props.TextBorderSize;
-		WM_SetSize(this, GetSizeX(), Height);
+		SetSize({ GetSizeX(), Height });
 	}
 
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
@@ -166,7 +156,7 @@ private:
 				auto pInfo = (const NOTIFY_INFO *)Data;
 				switch (pInfo->Notification) {
 					case WM_NOTIFICATION_SCROLL_CHANGED:
-						WM_NotifyParent(pObj, WM_NOTIFICATION_SCROLL_CHANGED);
+						pObj->NotifyParent(WM_NOTIFICATION_SCROLL_CHANGED);
 						break;
 					case WM_NOTIFICATION_CLICKED: {
 						auto pListWin = (ListBox *)pInfo->pWinSrc;
@@ -253,7 +243,7 @@ public:
 			}
 		}
 		else {
-			WM_MoveTo(pListWin, r.x0, r.y0);
+			pListWin->MoveTo(r.LeftTop());
 			pListWin->ShowWindow();
 		}
 		if (pListWin) {
@@ -273,7 +263,7 @@ public:
 
 			pListWin->SetItemSpacing(this->ItemSpacing);
 			pListWin->SetSel(this->Sel);
-			WM_NotifyParent(this, WM_NOTIFICATION_CLICKED);
+			NotifyParent(WM_NOTIFICATION_CLICKED);
 			pListWin->SetCapture(0);
 		}
 	}
@@ -341,7 +331,7 @@ public:
 		if (Sel != this->Sel) {
 			this->Sel = Sel;
 			Invalidate();
-			WM_NotifyParent(this, WM_NOTIFICATION_SEL_CHANGED);
+			NotifyParent(WM_NOTIFICATION_SEL_CHANGED);
 		}
 	}
 	void IncSel() {

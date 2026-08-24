@@ -174,7 +174,7 @@ private:
 		}
 		else
 			Notification = WM_NOTIFICATION_MOVED_OUT;
-		WM_NotifyParent(this, Notification);
+		NotifyParent(Notification);
 	}
 #endif
 #if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
@@ -257,8 +257,7 @@ public:
 
 	int GetHeight() { return GetClientRect().YSize(); }
 	void SetHeight(int Height) {
-		auto Rect = GetClientRect();
-		WM_SetSize(this, Rect.XSize(), Height);
+		SetSize({ GetSize().x, Height });
 		Parent()->Invalidate();
 	}
 

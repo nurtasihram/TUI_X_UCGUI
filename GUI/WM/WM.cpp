@@ -31,9 +31,9 @@ WObj *WM_SetFocusOnNextChild(WObj * pParent) {
 static WObj *_GetPrevChild(WObj * pChild) {
 	WObj *pObj = nullptr;
 	if (pChild)
-		pObj = WM_GetPrevSibling(pChild);
+		pObj = pChild->PrevSibling();
 	if (!pObj)
-		pObj = WM__GetLastSibling(pChild);
+		pObj = pChild->LastSibling();
 	if (pObj != pChild)
 		return pObj;
 	return nullptr;
@@ -58,7 +58,7 @@ WObj *WM_SetFocusOnPrevChild(WObj * pParent) {
 uint8_t WM__PaintCallbackCnt;      /* Public for assertions only */
 static WObj *pWinNextDraw;
 
-PID_STATE WM_PID__StateLast;
+PID_STATE WM_PID__StateLast{ 0 };
 
 #pragma region CriticalHandles
 struct CriticalHandle {
@@ -90,33 +90,14 @@ struct CriticalHandle {
 CriticalHandle *CriticalHandle::pFirst = nullptr;
 #pragma endregion
 
-/*********************************************************************
-*
-*       ResetNextDrawWin
-  When drawing, we have to start at the bottom window !
-*/
-static void ResetNextDrawWin(void) {
-	pWinNextDraw = nullptr;
-}
-/*********************************************************************
-*
-*       _GethDrawWin
-*
-* Return Window being drawn.
-* Normally same as pAWin, except if overlaying transparent window is drawn
-*
-*/
-static WObj * _GethDrawWin(void) {
-	return WObj::pWinActive;
-}
 static void _SetClipRectUserIntersect(const RECT *prSrc) {
 	if (GUI.WM__pUserClipRect == nullptr) {
 		LCD_SetClipRectEx(prSrc);
 	}
 	else {
 		auto r = *GUI.WM__pUserClipRect;
-		if (auto pWinDraw = _GethDrawWin())
-			r += pWinDraw->GetOrg(); /* Convert User ClipRect into screen coordinates */
+		if (WObj::pWinActive)
+			r += WObj::pWinActive->GetOrg(); /* Convert User ClipRect into screen coordinates */
 		/* Set intersection as clip rect */
 		r &= *prSrc;
 		LCD_SetClipRectEx(&r);
@@ -136,7 +117,7 @@ void WM_DeleteWindow(WObj * pWin) {
 	WM_ASSERT_NOT_IN_PAINT();
 	if (!WObj::IsWindow(pWin))
 		return;
-	ResetNextDrawWin(); /* Make sure the window will no longer receive drawing messages */
+	pWinNextDraw = nullptr; /* Make sure the window will no longer receive drawing messages */
 	/* Make sure that focus is set to an existing window */
 	if (WObj::pWinFocus == pWin)
 		WObj::pWinFocus = nullptr;
@@ -144,12 +125,12 @@ void WM_DeleteWindow(WObj * pWin) {
 	/* check if critical handles are affected. If so, reset the window handle to 0 */
 	CriticalHandle::Check(pWin);
 	/* Inform parent */
-	WM_NotifyParent(pWin, WM_NOTIFICATION_CHILD_DELETED);
+	pWin->NotifyParent(WM_NOTIFICATION_CHILD_DELETED);
 	/* Delete all children */
 	_DeleteAllChildren(pWin->pFirstChild);
 	/* Send WM_DELETE message to window in order to inform window itself */
 	pWin->Require(WM_DELETE);     /* tell window about it */
-	pWin->_DetachWindow();
+	pWin->_Detach();
 	/* Remove window from window stack */
 	pWin->_RemoveFromLinList();
 	/* Make sure window is no longer counted as invalid */
@@ -588,14 +569,6 @@ void WM_Deactivate(void) {
 	LCD_SetClipRectMax();
 }
 
-void WM_NotifyParent(WObj * pWin, int Notification) {
-	if (auto pParent = pWin->Parent()) {
-		NOTIFY_INFO NotifyInfo;
-		NotifyInfo.Notification = Notification;
-		NotifyInfo.pWinSrc = pWin;
-		pParent->Require(WM_NOTIFY_PARENT, (WM_PARAM)&NotifyInfo);
-	}
-}
 WM_PARAM WM__SendMessage(WObj * pWin, int MsgId, WM_PARAM Data) {
 	if (pWin->cb)
 		return pWin->cb(pWin, MsgId, Data);
@@ -639,18 +612,7 @@ void WM__ForEachDesc(WObj * pWin, WM_tfForEach *pcb, void *pData) {
 		WM_ForEachDesc(pChild, pcb, pData);
 	}
 }
-/*********************************************************************
-*
-*       WM__GetFirstSibling
-  Return value: Handle of parent, 0 if none
-*/
-WObj * WM__GetFirstSibling(WObj * pWin) {
-	pWin = pWin->Parent();
-	if (pWin) {
-		return pWin->pFirstChild;
-	}
-	return 0;
-}
+
 WObj * WM__GetFocussedChild(WObj * pWin) {
 	WObj * r = 0;
 	if (WM__IsChild(WObj::pWinFocus, pWin)) {
@@ -658,37 +620,7 @@ WObj * WM__GetFocussedChild(WObj * pWin) {
 	}
 	return r;
 }
-/*********************************************************************
-*
-*       WM__GetLastSibling
-  Return value: Handle of last sibling
-*/
-WObj * WM__GetLastSibling(WObj * pWin) {
-	for (; pWin; pWin = pWin->pNext) {
-		if (pWin->pNext == 0)
-			break;
-	}
-	return pWin;
-}
-/*********************************************************************
-*
-*       WM_GetPrevSibling
-  Return value: Handle of previous sibling (if any), otherwise nullptr
-*/
-WObj * WM_GetPrevSibling(WObj * pWin) {
-	WObj * pIter;
-	WObj *pPrev;
-	for (pIter = WM__GetFirstSibling(pWin); pIter; pIter = pPrev->pNext) {
-		if (pIter == pWin) {
-			pIter = nullptr; /* There is no previous sibling. Return nullptr */
-			break;
-		}
-		pPrev = pIter;
-		if (pPrev->pNext == pWin)
-			break; /* We found the previous one ! */
-	}
-	return pIter;
-}
+
 /*********************************************************************
 *
 *       WM__IsAncestor
@@ -733,92 +665,10 @@ void WM__Screen2Client(const WObj *pWin, RECT *pRect) {
 	*pRect -= pWin->Rect.LeftTop();
 }
 #define WM_DEBUG_LEVEL 1
-/*********************************************************************
-*
-*       WM__UpdateChildPositions
-*
-* Purpose:
-*   Move and/or resize all children of a resized window.
-*   What exactly happens to the window depends on how the edges are
-*   anchored.
-*/
-void WM__UpdateChildPositions(WObj *pObj, int dx0, int dy0, int dx1, int dy1) {
-	WObj *pChild;
-	int dx, dy, dw, dh;
-	for (pChild = pObj->pFirstChild; pChild; pChild = pChild->pNext) {
-		int Status;
-		RECT rOld, rNew;
-		/* Compute size of new rectangle */
-		rOld = pChild->Rect;
-		rNew = rOld;
-		Status = pChild->Status & (WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT);
-		switch (Status) {
-			case WC_ANCHOR_RIGHT: /* Right ANCHOR : Move window with right side */
-				rNew.x0 += dx1;
-				rNew.x1 += dx1;
-				break;
-			case WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT: /* Left & Right ANCHOR: Resize window */
-				rNew.x0 += dx0;
-				rNew.x1 += dx1;
-				break;
-			default: /* Left ANCHOR: Move window with left side of parent */
-				rNew.x0 += dx0;
-				rNew.x1 += dx0;
-		}
-		Status = pChild->Status & (WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM);
-		switch (Status) {
-			case WC_ANCHOR_BOTTOM: /* Bottom ANCHOR */
-				rNew.y0 += dy1;
-				rNew.y1 += dy1;
-				break;
-			case WC_ANCHOR_BOTTOM | WC_ANCHOR_TOP: /* resize window */
-				rNew.y0 += dy0;
-				rNew.y1 += dy1;
-				break;
-			default: /* Top ANCHOR */
-				rNew.y0 += dy0;
-				rNew.y1 += dy0;
-		}
-		/* Set new window position using Move and Resize as required */
-		dx = rNew.x0 - rOld.x0;
-		dy = rNew.y0 - rOld.y0;
-		if (dx || dy) {
-			WM_MoveWindow(pChild, dx, dy);
-		}
-		dw = (rNew.x1 - rNew.x0) - (rOld.x1 - rOld.x0);
-		dh = (rNew.y1 - rNew.y0) - (rOld.y1 - rOld.y0);
-		if (dw || dh) {
-			WM_ResizeWindow(pChild, dw, dh);
-		}
-	}
-}
-void WM_DetachWindow(WObj * pWin) {
-	if (pWin) {
-		auto pParent = pWin->pParent;
-		if (pParent) {
-			pWin->_DetachWindow();
-			WM_MoveWindow(pWin, -pParent->Rect.x0, -pParent->Rect.y0);   /* Convert screen coordinates -> parent coordinates */
-			/* ToDo: Invalidate. If Parent window is located at (0,0). */
-		}
-	}
-}
-void WM_AttachWindow(WObj * pWin, WObj * pParent) {
-	if (pParent && (pParent != pWin)) {
-		if (pWin->pParent != pParent) {
-			WM_DetachWindow(pWin);
-			pWin->_InsertWindowIntoList(pParent);
-			WM_MoveWindow(pWin, pParent->Rect.x0, pParent->Rect.y0);    /* Convert parent coordinates -> screen coordinates */
-		}
-	}
-}
-void WM_AttachWindowAt(WObj * pWin, WObj * pParent, int x, int y) {
-	WM_DetachWindow(pWin);
-	WM_MoveTo(pWin, x, y);
-	WM_AttachWindow(pWin, pParent);
-}
+
 void WM_BringToBottom(WObj * pWin) {
 	if (pWin) {
-		if (auto pPrev = WM_GetPrevSibling(pWin)) { /* If there is no previous one, there is nothing to do ! */
+		if (auto pPrev = pWin->PrevSibling()) { /* If there is no previous one, there is nothing to do ! */
 			auto pParent = pWin->Parent();
 			/* unlink pWin */
 			pPrev->pNext = pWin->pNext;
@@ -878,15 +728,12 @@ static void _ShowInvalid(WObj * pWin) {
 void WM_ForEachDesc(WObj * pWin, WM_tfForEach *pcb, void *pData) {
 	WM__ForEachDesc(pWin, pcb, pData);
 }
+
 RECT WM_GetClientRect() {
 	return WObj::pWinActive->GetClientRect();
 }
-
 RECT WM_GetInsideRect() {
 	return WObj::pWinActive->GetInsideRect();
-}
-WObj * WM_GetClientWindow(WObj * pObj) {
-	return (WObj *)pObj->Require(WM_GET_CLIENT_WINDOW, 0);
 }
 
 static char _WindowSiblingsOverlapRect(WObj * iWin, RECT *pRect) {
@@ -928,58 +775,6 @@ static int _HasOverlap(WObj *pWin, RECT *pRect) {
 	return 0;
 }
 
-/*********************************************************************
-*
-*       _MoveDescendents
-*
-* Description
-*   Moves _MoveDescendents.
-*   Since the parent has already been moved, there is no need to
-*   take care of invalidation.
-*
-* Parameters
-*   hWin    The first of all descendents to be moved (first child)
-*/
-static void _MoveDescendents(WObj * pWin, int dx, int dy) {
-	for (; pWin; pWin = pWin->pNext) {
-		pWin->Rect += POINT{dx, dy};
-		pWin->InvalidRect += POINT{dx, dy};
-		_MoveDescendents(pWin->pFirstChild, dx, dy);  /* Children need to be moved along ...*/
-		pWin->Require(WM_MOVE);
-	}
-}
-void WM_MoveWindow(WObj * pWin, int dx, int dy) {
-	RECT r;
-	if (pWin) {
-		r = pWin->Rect;
-		pWin->Rect += POINT{dx, dy};
-		pWin->InvalidRect += POINT{dx, dy};
-		_MoveDescendents(pWin->pFirstChild, dx, dy);  /* Children need to be moved along ...*/
-		/* Invalidate old and new area ... */
-		if (pWin->Status & WC_VISIBLE) {
-			WObj::InvalidateArea(pWin->Rect);     /* Invalidate new area */
-			WObj::InvalidateArea(r);     /* Invalidate old area */
-		}
-		pWin->Require(WM_MOVE);             /* Notify window it has been moved */
-	}
-}
-void WM_MoveTo(WObj * pWin, int x, int y) {
-	if (pWin) {
-		x -= pWin->Rect.x0;
-		y -= pWin->Rect.y0;
-		WM_MoveWindow(pWin, x, y);
-	}
-}
-void WM_MoveChildTo(WObj * pWin, int x, int y) {
-	if (pWin) {
-		auto pParent = pWin->Parent();
-		if (pParent) {
-			x -= pWin->Rect.x0 - pParent->Rect.x0;
-			y -= pWin->Rect.y0 - pParent->Rect.y0;
-			WM_MoveWindow(pWin, x, y);
-		}
-	}
-}
 void WM_Paint(WObj * pWin) {
 	GUI_CONTEXT Context;
 	WM_ASSERT_NOT_IN_PAINT();
@@ -993,38 +788,8 @@ void WM_Paint(WObj * pWin) {
 		GUI_RestoreContext(&Context);
 	}
 }
-void WM_PID__GetPrevState(PID_STATE *pPrevState) {
-	*pPrevState = WM_PID__StateLast;
-}
-void WM_ResizeWindow(WObj * pWin, int dx, int dy) {
-	RECT rOld, rNew, rMerge;
-	if (((dx | dy) == 0) || (pWin == 0)) { /* Early out if there is nothing to do */
-		return;
-	}
-	rOld = pWin->Rect;
-	rNew = rOld;
-	if (dx) {
-		if ((pWin->Status & WC_ANCHOR_RIGHT) && (!(pWin->Status & WC_ANCHOR_LEFT))) {
-			rNew.x0 -= dx;
-		}
-		else {
-			rNew.x1 += dx;
-		}
-	}
-	if (dy) {
-		if ((pWin->Status & WC_ANCHOR_BOTTOM) && (!(pWin->Status & WC_ANCHOR_TOP))) {
-			rNew.y0 -= dy;
-		}
-		else {
-			rNew.y1 += dy;
-		}
-	}
-	rMerge = rOld | rNew;
-	pWin->Rect = rNew;
-	WObj::InvalidateArea(rMerge);
-	WM__UpdateChildPositions(pWin, rNew.x0 - rOld.x0, rNew.y0 - rOld.y0, rNew.x1 - rOld.x1, rNew.y1 - rOld.y1);
-	pWin->InvalidRect &= pWin->Rect; /* Make sure invalid area is not bigger than window itself */
-	pWin->Require(WM_SIZE); /* Send size message to the window */
+PID_STATE WM_PID__GetPrevState() {
+	return WM_PID__StateLast;
 }
 
 bool WM__IsInWindow(WObj *pWin, int x, int y) {
@@ -1063,14 +828,6 @@ void WObj::ShowWindow() {
 	}
 }
 
-void WM_SetSize(WObj * pWin, int xSize, int ySize) {
-	int dx, dy;
-	if (pWin) {
-		dx = xSize - (pWin->Rect.x1 - pWin->Rect.x0 + 1);
-		dy = ySize - (pWin->Rect.y1 - pWin->Rect.y0 + 1);
-		WM_ResizeWindow(pWin, dx, dy);
-	}
-}
 
 const RECT *WM_SetUserClipRect(const RECT *pRect) {
 	auto pRectReturn = GUI.WM__pUserClipRect;
@@ -1079,32 +836,11 @@ const RECT *WM_SetUserClipRect(const RECT *pRect) {
 	WM__ActivateClipRect();
 	return pRectReturn;
 }
-int WM_SetXSize(WObj * pWin, int XSize) {
-	int dx;
-	int r = 0;
-	if (pWin) {
-		dx = XSize - (pWin->Rect.x1 - pWin->Rect.x0 + 1);
-		WM_ResizeWindow(pWin, dx, 0);
-		r = pWin->Rect.x1 - pWin->Rect.x0 + 1;
-	}
-	return r;
-}
-int WM_SetYSize(WObj * pWin, int YSize) {
-	int dy;
-	int r = 0;
-	if (pWin) {
-		dy = YSize - (pWin->Rect.y1 - pWin->Rect.y0 + 1);
-		WM_ResizeWindow(pWin, 0, dy);
-		r = pWin->Rect.y1 - pWin->Rect.y0 + 1;
-	}
-	return r;
-}
 
 void WM_InvalidateDescs(WObj * pWin) {
-	WObj * pChild;
 	if (pWin) {
 		pWin->Invalidate();    /* Invalidate window itself */
-		for (pChild = pWin->FirstChild(); pChild;) {
+		for (auto pChild = pWin->FirstChild(); pChild;) {
 			auto pNextChild = pChild->pNext;
 			WM_InvalidateDescs(pChild);
 			pChild = pNextChild;
@@ -1123,7 +859,7 @@ void WM_SetStayOnTop(WObj * pWin, int OnOff) {
 		else if (pWin->Status & WC_STAYONTOP) /* First check if this is necessary at all */
 			pWin->Status &= ~WC_STAYONTOP;
 		if (pWin->Status != OldStatus)
-			WM_AttachWindow(pWin, pWin->Parent());
+			pWin->Attach(pWin->Parent());
 	}
 }
 int WM_GetStayOnTop(WObj * pWin) {
@@ -1216,8 +952,7 @@ bool WM_HandlePID(void) {
 	bool r = false;
 	CriticalHandle CHWin;
 	CHWin.Add();
-	PID_STATE StateNew;
-	GUI_PID_GetState(&StateNew);
+	auto StateNew = GUI_PID_GetState();
 	if ((WM_PID__StateLast.x != StateNew.x) || (WM_PID__StateLast.y != StateNew.y) || (WM_PID__StateLast.Pressed != StateNew.Pressed)) {
 #if GUI_SUPPORT_CURSOR
 		GUI_CURSOR_SetPosition(StateNew.x, StateNew.y);
@@ -1279,8 +1014,7 @@ bool WM_HandlePID(void) {
 #endif
 		}
 		/* Store the new state */
-		GUI_PID_GetState(&StateNew);
-		WM_PID__StateLast = StateNew;
+		WM_PID__StateLast = GUI_PID_GetState();
 	}
 	CHWin.Remove();
 	return r;

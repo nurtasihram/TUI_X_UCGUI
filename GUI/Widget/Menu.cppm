@@ -122,320 +122,238 @@ private:
 		}
 		return 0;
 	}
+
 	void _InvalidateItem(unsigned Index) {
 		Invalidate();  /* Can be optimized, no need to invalidate all items */
 	}
-	char _IsTopLevelMenu() {
-		if (_SendMenuMessage(this, this->pOwner, MENU_IS_MENU, 0) == 0) {
-			return 1;
-		}
-		return 0;
-	}
-	int _HasEffect() {
-		if (!(Flags & MENU_SF_POPUP)) {
-			if (_IsTopLevelMenu()) {
-				return 0;
-			}
-		}
-		return 1;
-	}
-	int _GetEffectSize() {
-		int r = 0;
-		if (_HasEffect()) {
-			r = EffectSize();
-		}
-		return r;
-	}
+
+	bool _IsTopLevelMenu() { return !_SendMenuMessage(this, pOwner, MENU_IS_MENU, 0); }
+	bool _HasEffect() { return (Flags & MENU_SF_POPUP) || !_IsTopLevelMenu(); }
+	int _GetEffectSize() { return _HasEffect() ? EffectSize() : 0; }
+
 	int _CalcTextWidth(const char *sText) {
-		int TextWidth = 0;
-		if (sText) {
-			PCFONT pOldFont;
-			pOldFont = GUI.SetFont(Props.pFont);
-			TextWidth = GUI_GetStringDistX(sText);
-			GUI.SetFont(pOldFont);
-		}
+		if (!sText)
+			return 0;
+		auto pOldFont = GUI.SetFont(Props.pFont);
+		auto TextWidth = GUI_GetStringDistX(sText);
+		GUI.SetFont(pOldFont);
 		return TextWidth;
 	}
 	int _GetItemWidth(unsigned Index) {
-		int ItemWidth;
-		if (this->Width && (this->Flags & MENU_SF_VERTICAL)) {
-			ItemWidth = this->Width - (this->_GetEffectSize() << 1);
-		}
-		else {
-			auto &pItem = this->ItemArray[Index];
-				if ((this->Flags & MENU_SF_VERTICAL) || !(pItem.Flags & MENU_IF_SEPARATOR)) {
-					ItemWidth = pItem.TextWidth;
-			}
-			else {
-				ItemWidth = 3;
-			}
-			ItemWidth += Props.aBorder[MENU_BI_LEFT] + Props.aBorder[MENU_BI_RIGHT];
-		}
-		return ItemWidth;
+		if (Width && (Flags & MENU_SF_VERTICAL))
+			return Width - (_GetEffectSize() << 1);
+		auto &pItem = ItemArray[Index];
+		auto ItemWidth = ((Flags & MENU_SF_VERTICAL) || !(pItem.Flags & MENU_IF_SEPARATOR))
+			? pItem.TextWidth : 3;
+		return ItemWidth + Props.aBorder[MENU_BI_LEFT] + Props.aBorder[MENU_BI_RIGHT];
 	}
 	int _GetItemHeight(unsigned Index) {
-		int ItemHeight;
-		if (this->Height && !(this->Flags & MENU_SF_VERTICAL)) {
-			ItemHeight = this->Height - (this->_GetEffectSize() << 1);
-		}
-		else {
-			ItemHeight = Props.pFont->DistY();
-			if (this->Flags & MENU_SF_VERTICAL) {
-				auto &pItem = this->ItemArray[Index];
-					if (pItem.Flags & MENU_IF_SEPARATOR) {
-					ItemHeight = 3;
-				}
-			}
-			ItemHeight += Props.aBorder[MENU_BI_TOP] + Props.aBorder[MENU_BI_BOTTOM];
-		}
-		return ItemHeight;
+		if (Height && !(Flags & MENU_SF_VERTICAL))
+			return Height - (_GetEffectSize() << 1);
+		auto ItemHeight = Props.pFont->DistY();
+		if ((Flags & MENU_SF_VERTICAL) && (ItemArray[Index].Flags & MENU_IF_SEPARATOR))
+			ItemHeight = 3;
+		return ItemHeight + Props.aBorder[MENU_BI_TOP] + Props.aBorder[MENU_BI_BOTTOM];
 	}
-	unsigned _GetNumItems() {
-		return ItemArray.NumItems();
-	}
+	auto _GetNumItems() { return ItemArray.NumItems(); }
 	int _CalcMenuSizeX() {
-		unsigned i, NumItems = this->_GetNumItems();
+		auto NumItems = _GetNumItems();
 		int xSize = 0;
-		if (this->Flags & MENU_SF_VERTICAL) {
-			int ItemWidth;
-			for (i = 0; i < NumItems; i++) {
-				ItemWidth = this->_GetItemWidth(i);
-				if (ItemWidth > xSize) {
+		if (Flags & MENU_SF_VERTICAL) {
+			for (unsigned i = 0; i < NumItems; i++) {
+				auto ItemWidth = _GetItemWidth(i);
+				if (ItemWidth > xSize)
 					xSize = ItemWidth;
-				}
 			}
 		}
 		else {
-			for (i = 0; i < NumItems; i++) {
-				xSize += this->_GetItemWidth(i);
-			}
+			for (unsigned i = 0; i < NumItems; i++)
+				xSize += _GetItemWidth(i);
 		}
-		xSize += (this->_GetEffectSize() << 1);
-		return xSize;
+		return xSize + (_GetEffectSize() << 1);
 	}
 	int _CalcMenuSizeY() {
-		unsigned i, NumItems = this->_GetNumItems();
+		auto NumItems = _GetNumItems();
 		int ySize = 0;
-		if (this->Flags & MENU_SF_VERTICAL) {
-			for (i = 0; i < NumItems; i++) {
-				ySize += this->_GetItemHeight(i);
-			}
+		if (Flags & MENU_SF_VERTICAL) {
+			for (unsigned i = 0; i < NumItems; i++)
+				ySize += _GetItemHeight(i);
 		}
 		else {
-			int ItemHeight;
-			for (i = 0; i < NumItems; i++) {
-				ItemHeight = this->_GetItemHeight(i);
-				if (ItemHeight > ySize) {
+			for (unsigned i = 0; i < NumItems; i++) {
+				auto ItemHeight = _GetItemHeight(i);
+				if (ItemHeight > ySize)
 					ySize = ItemHeight;
-				}
 			}
 		}
-		ySize += (this->_GetEffectSize() << 1);
-		return ySize;
+		return ySize + (_GetEffectSize() << 1);
 	}
-	int _CalcWindowSizeX() {
-		int xSize = this->Width;
-		if (xSize == 0) {
-			xSize = this->_CalcMenuSizeX();
-		}
-		return xSize;
-	}
-	int _CalcWindowSizeY() {
-		int ySize = this->Height;
-		if (ySize == 0) {
-			ySize = this->_CalcMenuSizeY();
-		}
-		return ySize;
-	}
+
+	int _CalcWindowSizeX() { return Width ? Width : _CalcMenuSizeX(); }
+	int _CalcWindowSizeY() { return Height ? Height : _CalcMenuSizeY(); }
+
 	int _GetItemFromPos(int x, int y) {
-		int xSize, ySize, EffectSize, r = -1;
-		ySize = this->_CalcMenuSizeY();
-		if ((this->Height) && (this->Height < ySize)) {
-			ySize = this->Height;
-		}
-		xSize = this->_CalcMenuSizeX();
-		if ((this->Width) && (this->Width < xSize)) {
-			xSize = this->Width;
-		}
-		EffectSize = this->_GetEffectSize();
+		auto EffectSize = _GetEffectSize();
+		auto ySize = _CalcMenuSizeY();
+		if (Height && Height < ySize)
+			ySize = Height;
+		auto xSize = _CalcMenuSizeX();
+		if (Width && Width < xSize)
+			xSize = Width;
 		x -= EffectSize;
 		y -= EffectSize;
 		xSize -= (EffectSize << 1);
 		ySize -= (EffectSize << 1);
-		if ((x >= 0) && (y >= 0) && (x < xSize) && (y < ySize)) {
-			unsigned i, NumItems = this->_GetNumItems();
-			if (this->Flags & MENU_SF_VERTICAL) {
-				int yPos = 0;
-				for (i = 0; i < NumItems; i++) {
-					yPos += this->_GetItemHeight(i);
-					if (y < yPos) {
-						r = i;
-						break;
-					}
-				}
-			}
-			else {
-				int xPos = 0;
-				for (i = 0; i < NumItems; i++) {
-					xPos += this->_GetItemWidth(i);
-					if (x < xPos) {
-						r = i;
-						break;
-					}
-				}
-			}
-		}
-		return r;
-	}
-	void _GetItemPos(unsigned Index, int *px, int *py) {
-		int i, EffectSize;
-		EffectSize = this->_GetEffectSize();
-		if (this->Flags & MENU_SF_VERTICAL) {
+		if ((x < 0) || (y < 0) || (x >= xSize) || (y >= ySize))
+			return -1;
+		auto NumItems = _GetNumItems();
+		if (Flags & MENU_SF_VERTICAL) {
 			int yPos = 0;
-			for (i = 0; i < (int)Index; i++) {
-				yPos += this->_GetItemHeight(i);
+			for (unsigned i = 0; i < NumItems; i++) {
+				yPos += _GetItemHeight(i);
+				if (y < yPos)
+					return i;
 			}
-			*px = EffectSize;
-			*py = EffectSize + yPos;
 		}
 		else {
 			int xPos = 0;
-			for (i = 0; i < (int)Index; i++) {
-				xPos += this->_GetItemWidth(i);
+			for (unsigned i = 0; i < NumItems; i++) {
+				xPos += _GetItemWidth(i);
+				if (x < xPos)
+					return i;
 			}
-			*px = EffectSize + xPos;
-			*py = EffectSize;
 		}
+		return -1;
+	}
+	POINT _GetItemPos(uint16_t Index) {
+		POINT Pos = _GetEffectSize();
+		if (Flags & MENU_SF_VERTICAL)
+			for (int i = 0; i < (int)Index; i++)
+				Pos.y += _GetItemHeight(i);
+		else 
+			for (int i = 0; i < Index; i++)
+				Pos.x += _GetItemWidth(i);
+		return Pos;
 	}
 	void _SetCapture() {
-		if (this->IsSubmenuActive == 0) {
-			if (!HasCaptured()) {
-				SetCapture(0);
-			}
-		}
+		if (!IsSubmenuActive && !HasCaptured())
+			SetCapture(0);
 	}
 	void _ReleaseCapture() {
-		if (HasCaptured()) {
-			if (this->_IsTopLevelMenu() && !(this->Flags & MENU_SF_POPUP)) {
-				ReleaseCapture();
-			}
-		}
+		if (HasCaptured() && _IsTopLevelMenu() && !(Flags & MENU_SF_POPUP))
+			ReleaseCapture();
 	}
 	void _CloseSubmenu() {
-		if (this->Flags & MENU_SF_ACTIVE) {
-			if (this->IsSubmenuActive) {
-				auto &pItem = this->ItemArray[this->Sel];
-					/* Inform submenu about its deactivation and detach it */
-					_SendMenuMessage(this, pItem.pSubmenu, MENU_ON_CLOSE, 0);
-					WM_DetachWindow(pItem.pSubmenu);
-				this->IsSubmenuActive = 0;
-				/*
-				 * Keep capture in menu widget. The capture may only released
-				 * by clicking outside the menu or when mouse moved out.
-				 * And it may only released from a top level menu.
-				 */
-				this->_SetCapture();
-				/* Invalidate menu item. This is needed because the appearance may have changed */
-				this->_InvalidateItem(this->Sel);
-			}
-		}
+		if (!(Flags & MENU_SF_ACTIVE))
+			return;
+		if (!IsSubmenuActive)
+			return;
+		auto &pItem = ItemArray[Sel];
+		/* Inform submenu about its deactivation and detach it */
+		_SendMenuMessage(this, pItem.pSubmenu, MENU_ON_CLOSE, 0);
+		pItem.pSubmenu->Detach();
+		IsSubmenuActive = 0;
+		/*
+		 * Keep capture in menu widget. The capture may only released
+		 * by clicking outside the menu or when mouse moved out.
+		 * And it may only released from a top level menu.
+		 */
+		_SetCapture();
+		/* Invalidate menu item. This is needed because the appearance may have changed */
+		_InvalidateItem(Sel);
 	}
-	void _OpenSubmenu(unsigned Index) {
+	void _OpenSubmenu(uint16_t Index) {
 		if (!(Flags & MENU_SF_ACTIVE))
 			return;
 		bool PrevActiveSubmenu = IsSubmenuActive;
 		/* Close previous submenu (if needed) */
-		this->_CloseSubmenu();
-		auto &pItem = this->ItemArray[Index];
+		_CloseSubmenu();
+		auto &pItem = ItemArray[Index];
 		if (!pItem.pSubmenu)
 			return;
 		if (pItem.Flags & MENU_IF_DISABLED)
 			return;
-		int x, y, EffectSize;
 		/* Calculate position of submenu */
-		EffectSize = this->_GetEffectSize();
-		this->_GetItemPos(Index, &x, &y);
-		if (this->Flags & MENU_SF_VERTICAL) {
-			x += this->_CalcMenuSizeX() - (this->_GetEffectSize() << 1);
-			y -= EffectSize;
+		auto EffectSize = _GetEffectSize();
+		auto Pos = _GetItemPos(Index);
+		if (Flags & MENU_SF_VERTICAL) {
+			Pos.x += _CalcMenuSizeX() - (_GetEffectSize() << 1);
+			Pos.y -= EffectSize;
 		}
 		else {
-			y += this->_CalcMenuSizeY() - (this->_GetEffectSize() << 1);
-			x -= EffectSize;
+			Pos.y += _CalcMenuSizeY() - (_GetEffectSize() << 1);
+			Pos.x -= EffectSize;
 		}
-		x += GetOrgX();
-		y += GetOrgY();
+		Pos += GetOrg();
 		/*
 			* Notify owner window when for the first time open a menu (when no
 			* other submenu was open), so it can initialize the menu items.
 			*/
-		if (PrevActiveSubmenu == 0) {
-			if (this->_IsTopLevelMenu()) {
-				_SendMenuMessage(this, this->pOwner, MENU_ON_INITMENU, 0);
-			}
-		}
+		if (!PrevActiveSubmenu)
+			if (_IsTopLevelMenu())
+				_SendMenuMessage(this, pOwner, MENU_ON_INITMENU, 0);
 		/* Notify owner window when a submenu opens, so it can initialize the menu items. */
-		_SendMenuMessage(this, this->pOwner, MENU_ON_INITSUBMENU, pItem.Id);
+		_SendMenuMessage(this, pOwner, MENU_ON_INITSUBMENU, pItem.Id);
 		/* Set active menu as owner of submenu. */
 		pItem.pSubmenu->SetOwner(this);
 		/* Attach submenu and inform it about its activation. */
-		WM_AttachWindowAt(pItem.pSubmenu, WObj::GetDesktopWindow(), x, y);
+		pItem.pSubmenu->Attach(WObj::GetDesktopWindow(), Pos);
 		_SendMenuMessage(this, pItem.pSubmenu, MENU_ON_OPEN, 0);
-		this->IsSubmenuActive = 1;
+		IsSubmenuActive = true;
 		/* Invalidate menu item. This is needed because the appearance may have changed. */
-		this->_InvalidateItem(Index);
+		_InvalidateItem(Index);
 	}
 	void _ClosePopup() {
-		if (this->Flags & MENU_SF_POPUP) {
-			this->Flags &= ~(MENU_SF_POPUP);
-			WM_DetachWindow(this);
-			ReleaseCapture();
-		}
+		if (!(Flags & MENU_SF_POPUP))
+			return;
+		Flags &= ~(MENU_SF_POPUP);
+		Detach();
+		ReleaseCapture();
 	}
 	void _SetSelection(int Index) {
-		if (Index != this->Sel) {
-			this->_InvalidateItem(this->Sel); /* Invalidate previous selection */
-			this->_InvalidateItem(Index);     /* Invalidate new selection */
-			this->Sel = Index;
+		if (Index != Sel) {
+			_InvalidateItem(Sel); /* Invalidate previous selection */
+			_InvalidateItem(Index);     /* Invalidate new selection */
+			Sel = Index;
 		}
 	}
-	void _SelectItem(unsigned Index) {
-		if (this->Sel != (int)Index) {
-			this->_SetCapture();
-			this->_OpenSubmenu(Index);
-			this->_SetSelection(Index);
+	void _SelectItem(uint16_t Index) {
+		if (Sel != (int)Index) {
+			_SetCapture();
+			_OpenSubmenu(Index);
+			_SetSelection(Index);
 		}
 	}
 	void _DeselectItem() {
-		if (this->IsSubmenuActive == 0) {
-			this->_SetSelection(-1);
-			this->_ReleaseCapture();
+		if (!IsSubmenuActive) {
+			_SetSelection(-1);
+			_ReleaseCapture();
 		}
 	}
 	void _ActivateItem(unsigned Index) {
-		auto &pItem = this->ItemArray[Index];
-		if (!pItem.pSubmenu) {
-			if ((pItem.Flags & (MENU_IF_DISABLED | MENU_IF_SEPARATOR)) == 0) {
-				this->_ClosePopup();
-				/* Send item select message to owner. */
-				_SendMenuMessage(this, this->pOwner, MENU_ON_ITEMSELECT, pItem.Id);
-			}
-		}
+		auto &pItem = ItemArray[Index];
+		if (pItem.pSubmenu)
+			return;
+		if (pItem.Flags & (MENU_IF_DISABLED | MENU_IF_SEPARATOR))
+			return;
+		_ClosePopup();
+		/* Send item select message to owner. */
+		_SendMenuMessage(this, pOwner, MENU_ON_ITEMSELECT, pItem.Id);
 	}
 	void _ActivateMenu(unsigned Index) {
-		if ((this->Flags & MENU_SF_OPEN_ON_POINTEROVER) == 0) {
-			auto &pItem = this->ItemArray[Index];
+		if (!(Flags & MENU_SF_OPEN_ON_POINTEROVER)) {
+			auto &pItem = ItemArray[Index];
 				if (pItem.pSubmenu) {
 					if ((pItem.Flags & MENU_IF_DISABLED) == 0) {
-					if ((this->Flags & MENU_SF_ACTIVE) == 0) {
-						this->Flags |= MENU_SF_ACTIVE;
-						this->_OpenSubmenu(Index);
-						this->_SetSelection(Index);
+					if (!(Flags & MENU_SF_ACTIVE)) {
+						Flags |= MENU_SF_ACTIVE;
+						_OpenSubmenu(Index);
+						_SetSelection(Index);
 					}
-					else if (this->Flags & MENU_SF_CLOSE_ON_SECOND_CLICK) {
-						if ((int)Index == this->Sel) {
-							this->_CloseSubmenu();
-							this->Flags &= ~MENU_SF_ACTIVE;
+					else if (Flags & MENU_SF_CLOSE_ON_SECOND_CLICK) {
+						if ((int)Index == Sel) {
+							_CloseSubmenu();
+							Flags &= ~MENU_SF_ACTIVE;
 						}
 					}
 				}
@@ -443,10 +361,9 @@ private:
 		}
 	}
 	void _DeactivateMenu() {
-		this->_CloseSubmenu();
-		if ((this->Flags & MENU_SF_OPEN_ON_POINTEROVER) == 0) {
-			this->Flags &= ~MENU_SF_ACTIVE;
-		}
+		_CloseSubmenu();
+		if (!(Flags & MENU_SF_OPEN_ON_POINTEROVER))
+			Flags &= ~MENU_SF_ACTIVE;
 	}
 	int _ForwardMouseOverMsg(POINT Pos) {
 #if (GUI_SUPPORT_MOUSE)
@@ -454,9 +371,7 @@ private:
 			if (_IsTopLevelMenu()) {
 				Pos += GetOrg();
 				if (auto pBelow = WM_Screen2Win(Pos); pBelow && (pBelow != this)) {
-					PID_STATE State;
-					State = Pos - pBelow->GetOrg();
-					State.Pressed = 0;
+					PID_STATE State = Pos - pBelow->GetOrg();
 					WM__SendMessage(pBelow, WM_MOUSEOVER, (WM_PARAM)&State);
 					return true;
 				}
@@ -465,81 +380,60 @@ private:
 #endif
 		return false;
 	}
-	char _HandlePID(int x, int y, int Pressed) {
-		PID_STATE PrevState;
-		char XYInWidget = 0;
-		WM_PID__GetPrevState(&PrevState);
-		/*
-		 * Check if coordinates are inside the widget.
-		 */
-		if ((x >= 0) && (y >= 0)) {
-			RECT r = GetClientRect();
-			if (x <= r.x1 && y <= r.y1)
-				XYInWidget = 1;
-		}
+	bool _HandlePID(PID_STATE State) {
+		auto PrevState = WM_PID__GetPrevState();
+		/* Check if coordinates are inside the widget */
+		bool XYInWidget = (State.x >= 0) && (State.y >= 0);
 		if (XYInWidget) {
-			int ItemIndex = this->_GetItemFromPos(x, y);
-			/*
-			 * Handle PID when coordinates are inside the widget.
-			 */
-			if (ItemIndex >= 0) {
-				/*
-				 * Coordinates are inside the menu.
-				 */
-				if (Pressed == 1) {
-					if (PrevState.Pressed == 0) /* Clicked */
-						_ActivateMenu(ItemIndex);
-					_SelectItem(ItemIndex);
-				}
-				else if (Pressed == 0 && PrevState.Pressed == 1) /* Released */
-					_ActivateItem(ItemIndex);
-				else if (Pressed < 0) {  /* Mouse moved */
-					if (!_ForwardMouseOverMsg({x, y}))
-						_SelectItem(ItemIndex);
-					else
-						_DeselectItem();
-				}
-			}
-			else {
-				/*
-				 * Coordinates are outside the menu but inside the widget.
-				 */
-				if (Pressed == 1) {
-					if (PrevState.Pressed == 0) /* Clicked */
-						/*
-						 * User has clicked outside the menu. Close the active submenu.
-						 * The widget itself must be closed (if needed) by the owner.
-						 */
-						_DeactivateMenu();
-					_DeselectItem();
-				}
-				else if (Pressed < 0) /* Moved out or mouse moved */
-					_DeselectItem();
-			}
-			return 0;
+			auto r = GetClientRect();
+			XYInWidget = (State.x <= r.x1) && (State.y <= r.y1);
 		}
-		else {
-			/*
-			 * Handle PID when coordinates are outside the widget.
-			 */
-			if (Pressed == 1 && PrevState.Pressed == 0) {
-				/*
-				 * User has clicked outside the menu. Close the active submenu.
-				 * The widget itself must be closed (if needed) by the owner.
-				 */
+		if (!XYInWidget) {
+			/* Handle PID when coordinates are outside the widget */
+			if (State.Pressed == 1 && PrevState.Pressed == 0) {
+				/* User has clicked outside the menu. Close the active submenu.
+				 * The widget itself must be closed (if needed) by the owner. */
 				_DeactivateMenu();
 				_ClosePopup();
 			}
 			_DeselectItem();
-			_ForwardMouseOverMsg({ x, y });
+			_ForwardMouseOverMsg(State);
+			return true;   /* Coordinates are not in widget, we need to forward PID message to owner */
 		}
-		return 1;   /* Coordinates are not in widget, we need to forward PID message to owner */
+		auto ItemIndex = _GetItemFromPos(State.x, State.y);
+		/* Handle PID when coordinates are inside the widget */
+		if (ItemIndex >= 0) {
+			/* Coordinates are inside the menu */
+			if (State.Pressed == 1) {
+				if (PrevState.Pressed == 0) /* Clicked */
+					_ActivateMenu(ItemIndex);
+				_SelectItem(ItemIndex);
+			}
+			else if (State.Pressed == 0 && PrevState.Pressed == 1) /* Released */
+				_ActivateItem(ItemIndex);
+			else if (State.Pressed < 0) {  /* Mouse moved */
+				if (!_ForwardMouseOverMsg(State))
+					_SelectItem(ItemIndex);
+				else
+					_DeselectItem();
+			}
+		}
+		/* Coordinates are outside the menu but inside the widget */
+		else if (State.Pressed == 1) {
+			if (PrevState.Pressed == 0) /* Clicked */
+				/* User has clicked outside the menu. Close the active submenu.
+					* The widget itself must be closed (if needed) by the owner. */
+				_DeactivateMenu();
+			_DeselectItem();
+		}
+		else if (State.Pressed < 0) /* Moved out or mouse moved */
+			_DeselectItem();
+		return false;
 	}
 	void _ForwardPIDMsgToOwner(int MsgId, const PID_STATE *pState) {
-		if (!this->_IsTopLevelMenu()) {
-			auto pOwner = this->pOwner ? this->pOwner : Parent();
-			if (pOwner) {
-				PID_STATE State;
+		if (!_IsTopLevelMenu()) {
+			if (auto pOwner = this->pOwner ? this->pOwner : Parent()) {
+				PID_STATE State{ 0 };
 				if (pState) {
 					State = *pState;
 					State += GetOrg() - pOwner->GetOrg();
@@ -550,37 +444,32 @@ private:
 		}
 	}
 	void _ResizeMenu() {
-		int xSize, ySize;
-		xSize = this->_CalcWindowSizeX();
-		ySize = this->_CalcWindowSizeY();
-		WM_SetSize(this, xSize, ySize);
+		SetSize({ _CalcWindowSizeX(), _CalcWindowSizeY() });
 		Invalidate();
 	}
 	WM_PARAM _OnMenu(WM_PARAM Data) {
 		auto msg = *(MsgPack *)&Data;
 		switch (msg.MsgType) {
 			case MENU_ON_ITEMSELECT:
-				this->_DeactivateMenu();
-				this->_DeselectItem();
-				this->_ClosePopup();
+				_DeactivateMenu();
+				_DeselectItem();
+				_ClosePopup();
 				/* No break here. We need to forward message to owner. */
 			case MENU_ON_INITMENU:
-			case MENU_ON_INITSUBMENU: {
+			case MENU_ON_INITSUBMENU:
 				/* Forward message to owner. */
-				auto pOwner = this->pOwner ? this->pOwner : Parent();
-				if (pOwner)
+				if (auto pOwner = this->pOwner ? this->pOwner : Parent())
 					WM__SendMessage(pOwner, WM_MENU, Data);
 				break;
-			}
 			case MENU_ON_OPEN:
-				this->Sel = -1;
-				this->IsSubmenuActive = 0;
-				this->Flags |= MENU_SF_ACTIVE | MENU_SF_OPEN_ON_POINTEROVER;
-				this->_SetCapture();
-				this->_ResizeMenu();
+				Sel = -1;
+				IsSubmenuActive = 0;
+				Flags |= MENU_SF_ACTIVE | MENU_SF_OPEN_ON_POINTEROVER;
+				_SetCapture();
+				_ResizeMenu();
 				break;
 			case MENU_ON_CLOSE:
-				this->_CloseSubmenu();
+				_CloseSubmenu();
 				break;
 			case MENU_IS_MENU:
 				return 1;
@@ -588,61 +477,46 @@ private:
 		return 0;
 	}
 	char _OnTouch(const PID_STATE *pState) {
-		if (pState) /* Something happened in our area (pressed or released) */
-			return this->_HandlePID(pState->x, pState->y, pState->Pressed);
-		return this->_HandlePID(-1, -1, -1); /* Moved out */
+		return pState ? _HandlePID(*pState) : _HandlePID({ -1, -1 });
 	}
 #if (GUI_SUPPORT_MOUSE)
 	char _OnMouseOver(const PID_STATE *pState) {
-		if (pState)
-			return this->_HandlePID(pState->x, pState->y, -1);
-		return 0;
+		return pState ? _HandlePID({ *pState, -1 }) : 0;
 	}
 #endif
 	void _SetPaintColors(const Item &pItem, int ItemIndex) {
-		char Selected;
+		bool Selected = (ItemIndex == Sel);
 		unsigned ColorIndex;
-		Selected = (ItemIndex == this->Sel) ? 1 : 0;
-		if (this->IsSubmenuActive && Selected) {
+		if (IsSubmenuActive && Selected)
 			ColorIndex = MENU_CI_ACTIVE_SUBMENU;
-		}
-		else if (pItem.Flags & MENU_IF_SEPARATOR) {
+		else if (pItem.Flags & MENU_IF_SEPARATOR)
 			ColorIndex = MENU_CI_ENABLED;
-		}
 		else {
-			ColorIndex = (Selected) ? MENU_CI_SELECTED : MENU_CI_ENABLED;
-			if (pItem.Flags & MENU_IF_DISABLED) {
-				if (this->Flags & MENU_CF_HIDE_DISABLED_SEL) {
-					ColorIndex = MENU_CI_DISABLED;
-				}
-				else {
-					ColorIndex += MENU_CI_DISABLED;
-				}
-			}
+			ColorIndex = Selected ? MENU_CI_SELECTED : MENU_CI_ENABLED;
+			if (pItem.Flags & MENU_IF_DISABLED)
+				ColorIndex = (Flags & MENU_CF_HIDE_DISABLED_SEL) ? MENU_CI_DISABLED : ColorIndex + MENU_CI_DISABLED;
 		}
 		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
 		GUI.SetColor(Props.aTextColor[ColorIndex]);
 	}
 	void _OnPaint() {
-		RECT FillRect, TextRect;
-		unsigned TextWidth, NumItems, i;
-		uint8_t BorderLeft = Props.aBorder[MENU_BI_LEFT];
-		uint8_t BorderTop = Props.aBorder[MENU_BI_TOP];
-		int FontHeight = Props.pFont->DistY();
-		int EffectSize = this->_GetEffectSize();
-		NumItems = this->_GetNumItems();
-		FillRect = GetClientRect();
+		auto NumItems = _GetNumItems();
+		auto BorderLeft = Props.aBorder[MENU_BI_LEFT];
+		auto BorderTop = Props.aBorder[MENU_BI_TOP];
+		auto FontHeight = Props.pFont->DistY();
+		auto EffectSize = _GetEffectSize();
+		auto FillRect = GetClientRect();
+		RECT TextRect;
 		FillRect -= EffectSize;
 		GUI.SetFont(Props.pFont);
-		if (this->Flags & MENU_SF_VERTICAL) {
-			int ItemHeight, xSize;
-			xSize = this->_CalcMenuSizeX();
+		if (Flags & MENU_SF_VERTICAL) {
+			auto xSize = _CalcMenuSizeX();
 			FillRect.x1 = xSize - EffectSize - 1;
 			TextRect.x0 = FillRect.x0 + BorderLeft;
-			for (i = 0; i < NumItems; i++) {
-					auto &pItem = this->ItemArray[i];
-					ItemHeight = this->_GetItemHeight(i);
-					this->_SetPaintColors(pItem, i);
+			for (unsigned i = 0; i < NumItems; i++) {
+					auto &pItem = ItemArray[i];
+					auto ItemHeight = _GetItemHeight(i);
+					_SetPaintColors(pItem, i);
 					FillRect.y1 = FillRect.y0 + ItemHeight - 1;
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
 						GUI_ClearRect(FillRect);
@@ -650,7 +524,7 @@ private:
 						GUI_DrawHLine(FillRect.y0 + BorderTop + 1, FillRect.x0 + 2, FillRect.x1 - 2);
 					}
 					else {
-						TextWidth = pItem.TextWidth;
+						auto TextWidth = pItem.TextWidth;
 						TextRect.x1 = TextRect.x0 + TextWidth - 1;
 						TextRect.y0 = FillRect.y0 + BorderTop;
 						TextRect.y1 = TextRect.y0 + FontHeight - 1;
@@ -660,15 +534,14 @@ private:
 				}
 		}
 		else {
-			int ItemWidth, ySize;
-			ySize = this->_CalcMenuSizeY();
+			auto ySize = _CalcMenuSizeY();
 			FillRect.y1 = ySize - EffectSize - 1;
 			TextRect.y0 = FillRect.y0 + BorderTop;
 			TextRect.y1 = TextRect.y0 + FontHeight - 1;
-			for (i = 0; i < NumItems; i++) {
-					auto &pItem = this->ItemArray[i];
-					ItemWidth = this->_GetItemWidth(i);
-					this->_SetPaintColors(pItem, i);
+			for (unsigned i = 0; i < NumItems; i++) {
+					auto &pItem = ItemArray[i];
+					auto ItemWidth = _GetItemWidth(i);
+					_SetPaintColors(pItem, i);
 					FillRect.x1 = FillRect.x0 + ItemWidth - 1;
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
 						GUI_ClearRect(FillRect);
@@ -676,7 +549,7 @@ private:
 						GUI_DrawVLine(FillRect.x0 + BorderLeft + 1, FillRect.y0 + 2, FillRect.y1 - 2);
 					}
 					else {
-						TextWidth = pItem.TextWidth;
+						auto TextWidth = pItem.TextWidth;
 						TextRect.x0 = FillRect.x0 + BorderLeft;
 						TextRect.x1 = TextRect.x0 + TextWidth - 1;
 						WIDGET__FillStringInRect(pItem.pText, FillRect, TextRect, TextRect);
@@ -684,8 +557,8 @@ private:
 					FillRect.x0 += ItemWidth;
 				}
 		}
-		if (this->Width || this->Height) {
-			RECT r = GetClientRect();
+		if (Width || Height) {
+			auto r = GetClientRect();
 			r -= EffectSize;
 			GUI.SetBkColor(Props.aBkColor[MENU_CI_ENABLED]);
 			GUI_ClearRect({ FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1 });
@@ -733,7 +606,7 @@ private:
 public:
 	Menu(int ExFlags, int Id) :
 		Widget({}, WC_VISIBLE | WC_STAYONTOP, _Callback, nullptr, Id, WIDGET_STATE_FOCUSSABLE) {
-		_DetachWindow();
+		_Detach();
 		if (ExFlags & MENU_SF_OPEN_ON_POINTEROVER)
 			ExFlags |= MENU_SF_ACTIVE;
 		else
@@ -746,216 +619,194 @@ public:
 private:
 
 	void _RecalcTextWidthOfItems() {
-		PCFONT pOldFont;
-		unsigned i, NumItems;
-		NumItems = this->_GetNumItems();
-		pOldFont = GUI.SetFont(Props.pFont);
-		for (i = 0; i < NumItems; i++) {
-			auto &pItem = this->ItemArray[i];
+		auto NumItems = _GetNumItems();
+		auto pOldFont = GUI.SetFont(Props.pFont);
+		for (unsigned i = 0; i < NumItems; i++) {
+			auto &pItem = ItemArray[i];
 			pItem.TextWidth = GUI_GetStringDistX(pItem.pText);
 		}
 		GUI.SetFont(pOldFont);
 	}
 	char _SetItem(unsigned Index, const ItemData *pItemData) {
-		Item item = { 0 };
-		const char *pText;
-		pText = pItemData->pText;
-		if (!pText) {
-			pText = "";
-		}
-		item.Id = pItemData->Id;
-		item.Flags = pItemData->Flags;
-		item.pSubmenu = pItemData->pSubmenu;
-		item.TextWidth = this->_CalcTextWidth(pText);
-		if (item.Flags & MENU_IF_SEPARATOR) {
-			item.pSubmenu = nullptr;   /* Ensures that no separator is a submenu */
-		}
-		if (Index < this->ItemArray.NumItems()) {
-			auto &pItem = this->ItemArray[Index];
-			GUI__SetText(&pItem.pText, pText);
-			pItem.Id       = item.Id;
-			pItem.Flags    = item.Flags;
-			pItem.pSubmenu = item.pSubmenu;
-			pItem.TextWidth= item.TextWidth;
-			if (item.pSubmenu)
-				pItem.pSubmenu->SetOwner(this);
-			return 1;
-		}
-		return 0;
+		auto pText = pItemData->pText ? pItemData->pText : "";
+		Item item{
+			.pSubmenu = (pItemData->Flags & MENU_IF_SEPARATOR) ? nullptr : pItemData->pSubmenu,
+			.Id = pItemData->Id,
+			.Flags = pItemData->Flags,
+			.TextWidth = (uint16_t)_CalcTextWidth(pText)
+		};
+		if (Index >= ItemArray.NumItems())
+			return 0;
+		auto &pItem = ItemArray[Index];
+		GUI__SetText(&pItem.pText, pText);
+		pItem.Id       = item.Id;
+		pItem.Flags    = item.Flags;
+		pItem.pSubmenu = item.pSubmenu;
+		pItem.TextWidth= item.TextWidth;
+		if (item.pSubmenu)
+			pItem.pSubmenu->SetOwner(this);
+		return 1;
 	}
 	void _SetItemFlags(unsigned Index, uint16_t Mask, uint16_t Flags) {
-		auto &pItem = this->ItemArray[Index];
+		auto &pItem = ItemArray[Index];
 		pItem.Flags &= ~Mask;
 		pItem.Flags |= Flags;
 	}
 	int _FindItem(uint16_t ItemId, Menu **pMenu) {
-		int ItemIndex = -1;
-		unsigned NumItems, i;
-		NumItems = this->_GetNumItems();
-		for (i = 0; (i < NumItems) && (ItemIndex < 0); i++) {
-			auto &pItem = this->ItemArray[i];
+		auto NumItems = _GetNumItems();
+		for (unsigned i = 0; i < NumItems; i++) {
+			auto &pItem = ItemArray[i];
 			if (pItem.Id == ItemId) {
 				*pMenu = this;
-				ItemIndex = i;
+				return i;
 			}
-			else if (pItem.pSubmenu) {
-				ItemIndex = pItem.pSubmenu->_FindItem(ItemId, pMenu);
+			if (pItem.pSubmenu) {
+				if (auto ItemIndex = pItem.pSubmenu->_FindItem(ItemId, pMenu); ItemIndex >= 0)
+					return ItemIndex;
 			}
 		}
-
-		return ItemIndex;
+		return -1;
 	}
 
 public:
 
 	void AddItem(const ItemData *pItemData) {
-		if (pItemData) {
-			if (this->ItemArray.AddItem() == 0) {
-				unsigned Index;
-				Index = this->_GetNumItems() - 1;
-				if (this->_SetItem(Index, pItemData) == 0) {
-					this->ItemArray.DeleteItem(Index);
-				}
-				else {
-					this->_ResizeMenu();
-				}
-			}
-		}
+		if (!pItemData)
+			return;
+		if (ItemArray.AddItem() != 0)
+			return;
+		auto Index = _GetNumItems() - 1;
+		if (_SetItem(Index, pItemData))
+			_ResizeMenu();
+		else
+			ItemArray.DeleteItem(Index);
 	}
 	void SetOwner(WObj *pOwner) {
 		this->pOwner = pOwner;
 	}
-	void Attach(WObj *pDestWin, int x, int y, int xSize, int ySize, int Flags) {
-		GUI_USE_PARA(Flags);
+	void AttachMenu(WObj *pDestWin, int x, int y, int xSize, int ySize) {
 		Width = xSize > 0 ? xSize : 0;
 		Height = ySize > 0 ? ySize : 0;
-		WM_AttachWindowAt(this, pDestWin, x, y);
+		Attach(pDestWin, {x, y});
 		_ResizeMenu();
 		ShowWindow();
 	}
 
 	void DeleteItem(uint16_t ItemId) {
 		Menu *pMenu;
-		int Index = _FindItem(ItemId, &pMenu);
-		if (Index >= 0) {
-			GUI_ALLOC_FreePtr((void **)&pMenu->ItemArray[Index].pText);
-			this->ItemArray.DeleteItem(Index);
-			this->_ResizeMenu();
-		}
+		auto Index = _FindItem(ItemId, &pMenu);
+		if (Index < 0)
+			return;
+		GUI_ALLOC_FreePtr((void **)&pMenu->ItemArray[Index].pText);
+		ItemArray.DeleteItem(Index);
+		_ResizeMenu();
 	}
 	void DisableItem(uint16_t ItemId) {
 		Menu *pMenu;
-		int Index = _FindItem(ItemId, &pMenu);
-		if (Index >= 0) {
-			this->_SetItemFlags(Index, MENU_IF_DISABLED, MENU_IF_DISABLED);
-			this->_InvalidateItem(Index);
-		}
+		auto Index = _FindItem(ItemId, &pMenu);
+		if (Index < 0)
+			return;
+		_SetItemFlags(Index, MENU_IF_DISABLED, MENU_IF_DISABLED);
+		_InvalidateItem(Index);
 	}
 	void EnableItem(uint16_t ItemId) {
 		Menu *pMenu;
-		int Index = _FindItem(ItemId, &pMenu);
-		if (Index >= 0) {
-			this->_SetItemFlags(Index, MENU_IF_DISABLED, 0);
-			this->_InvalidateItem(Index);
-		}
+		auto Index = _FindItem(ItemId, &pMenu);
+		if (Index < 0)
+			return;
+		_SetItemFlags(Index, MENU_IF_DISABLED, 0);
+		_InvalidateItem(Index);
 	}
 	void GetItem(uint16_t ItemId, ItemData *pItemData) {
-		if (pItemData) {
-			Menu *pMenu;
-			int Index = _FindItem(ItemId, &pMenu);
-			if (Index >= 0) {
-				auto &pItem = this->ItemArray[Index];
-				pItemData->Flags = pItem.Flags;
-				pItemData->Id = pItem.Id;
-				pItemData->pSubmenu = pItem.pSubmenu;
-				pItemData->pText = nullptr;
-			}
-		}
+		if (!pItemData)
+			return;
+		Menu *pMenu;
+		auto Index = _FindItem(ItemId, &pMenu);
+		if (Index < 0)
+			return;
+		auto &pItem = ItemArray[Index];
+		pItemData->Flags = pItem.Flags;
+		pItemData->Id = pItem.Id;
+		pItemData->pSubmenu = pItem.pSubmenu;
+		pItemData->pText = nullptr;
 	}
 	void GetItemText(uint16_t ItemId, char *pBuffer, unsigned BufferSize) {
-		if (pBuffer) {
-			Menu *pMenu;
-			int Index = _FindItem(ItemId, &pMenu);
-			if (Index >= 0) {
-				auto &pItem = this->ItemArray[Index];
-				strncpy(pBuffer, pItem.pText, BufferSize);
-				pBuffer[BufferSize - 1] = 0;
-			}
-		}
+		if (!pBuffer)
+			return;
+		Menu *pMenu;
+		auto Index = _FindItem(ItemId, &pMenu);
+		if (Index < 0)
+			return;
+		auto &pItem = ItemArray[Index];
+		strncpy(pBuffer, pItem.pText, BufferSize);
+		pBuffer[BufferSize - 1] = 0;
 	}
-	auto GetNumItems() {
-		unsigned r = 0;
-		r = this->_GetNumItems();
-		return r;
-	}
+	auto GetNumItems() { return _GetNumItems(); }
 	void InsertItem(uint16_t ItemId, const ItemData *pItemData) {
-		if (pItemData) {
-			Menu *pMenu;
-			int Index = _FindItem(ItemId, &pMenu);
-			if (Index >= 0) {
-				if (this->ItemArray.InsertBlankItem(Index) != 0) {
-					if (this->_SetItem(Index, pItemData) == 0) {
-						this->ItemArray.DeleteItem(Index);
-					}
-					else {
-						this->_ResizeMenu();
-					}
-				}
-			}
-		}
+		if (!pItemData)
+			return;
+		Menu *pMenu;
+		auto Index = _FindItem(ItemId, &pMenu);
+		if (Index < 0)
+			return;
+		if (ItemArray.InsertBlankItem(Index) != 0)
+			return;
+		if (_SetItem(Index, pItemData))
+			_ResizeMenu();
+		else
+			ItemArray.DeleteItem(Index);
 	}
 	void Popup(WObj *pDestWin, int x, int y, int xSize, int ySize, int Flags) {
-		if (pDestWin) {
-			this->Flags |= MENU_SF_POPUP;
-			this->Width = ((xSize > 0) ? xSize : 0);
-			this->Height = ((ySize > 0) ? ySize : 0);
-			auto Pos = pDestWin->GetOrg();
-			SetOwner(pDestWin);
-			WM_AttachWindowAt(this, WObj::GetDesktopWindow(), Pos.x, Pos.y);
-			_SendMenuMessage(pDestWin, this, MENU_ON_OPEN, 0);
-		}
+		if (!pDestWin)
+			return;
+		this->Flags |= MENU_SF_POPUP;
+		Width = xSize > 0 ? xSize : 0;
+		Height = ySize > 0 ? ySize : 0;
+		auto Pos = pDestWin->GetOrg();
+		SetOwner(pDestWin);
+		Attach(WObj::GetDesktopWindow(), Pos);
+		_SendMenuMessage(pDestWin, this, MENU_ON_OPEN, 0);
 	}
 	void SetBkColor(unsigned ColorIndex, RGBC Color) {
-		if (ColorIndex < GUI_COUNTOF(Props.aBkColor)) {
-			if (Color != Props.aBkColor[ColorIndex]) {
-				Props.aBkColor[ColorIndex] = Color;
-				Invalidate();
-			}
-		}
+		if (ColorIndex >= GUI_COUNTOF(Props.aBkColor))
+			return;
+		if (Color == Props.aBkColor[ColorIndex])
+			return;
+		Props.aBkColor[ColorIndex] = Color;
+		Invalidate();
 	}
 	void SetBorderSize(unsigned BorderIndex, uint8_t BorderSize) {
-		if (BorderIndex < GUI_COUNTOF(Props.aBorder)) {
-			if (BorderSize != Props.aBorder[BorderIndex]) {
-				Props.aBorder[BorderIndex] = BorderSize;
-				this->_ResizeMenu();
-			}
-		}
+		if (BorderIndex >= GUI_COUNTOF(Props.aBorder))
+			return;
+		if (BorderSize == Props.aBorder[BorderIndex])
+			return;
+		Props.aBorder[BorderIndex] = BorderSize;
+		_ResizeMenu();
 	}
 	void SetFont(PCFONT pFont) {
-		if (pFont != Props.pFont) {
-			Props.pFont = pFont;
-			this->_RecalcTextWidthOfItems();
-			this->_ResizeMenu();
-		}
+		if (pFont == Props.pFont)
+			return;
+		Props.pFont = pFont;
+		_RecalcTextWidthOfItems();
+		_ResizeMenu();
 	}
 	void SetItem(uint16_t ItemId, const ItemData *pItemData) {
-		if (pItemData) {
-			Menu *pMenu;
-			int Index = _FindItem(ItemId, &pMenu);
-			if (Index >= 0) {
-				if (this->_SetItem(Index, pItemData) != 0) {
-					this->_ResizeMenu();
-				}
-			}
-		}
+		if (!pItemData)
+			return;
+		Menu *pMenu;
+		auto Index = _FindItem(ItemId, &pMenu);
+		if (Index < 0)
+			return;
+		if (_SetItem(Index, pItemData))
+			_ResizeMenu();
 	}
 	void SetTextColor(unsigned ColorIndex, RGBC Color) {
-		if (ColorIndex < GUI_COUNTOF(Props.aTextColor)) {
-			if (Color != Props.aTextColor[ColorIndex]) {
-				Props.aTextColor[ColorIndex] = Color;
-				Invalidate();
-			}
-		}
+		if (ColorIndex >= GUI_COUNTOF(Props.aTextColor))
+			return;
+		if (Color == Props.aTextColor[ColorIndex])
+			return;
+		Props.aTextColor[ColorIndex] = Color;
+		Invalidate();
 	}
 };
 

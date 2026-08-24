@@ -3,13 +3,11 @@
 
 #include "WM.h"
 
-static PID_STATE _State;
-
-int GUI_PID_GetState(PID_STATE *pState) {
-	*pState = _State;
-	return (pState->Pressed != 0) ? 1 : 0;
+static PID_STATE _State{ 0 };
+PID_STATE GUI_PID_GetState(void) {
+	return _State;
 }
-
-void GUI_PID_StoreState(const PID_STATE *pState) {
-	_State = *pState;
+void GUI_PID_StoreState(const PID_STATE &State) {
+	_State = State;
 }
+	

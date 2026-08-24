@@ -112,7 +112,7 @@ void GUI_DrawRect(RECT r) {
 	});
 }
 void GUI_DrawFocusRect(RECT r, int Dist) {
-	r -= Dist;
+	r /= Dist;
 	r += GUI.Off;
 	WM_Iterate(r, [&] {
 		for (int i = r.x0; i <= r.x1; i += 2) {
@@ -216,7 +216,6 @@ void GUI__CalcTextRect(const char *pText, const RECT *pTextRectIn, RECT *pTextRe
 			case TEXTALIGN_BOTTOM:
 				yPos = pTextRectIn->y1 - TextHeight + 1;
 				break;
-			case TEXTALIGN_BASELINE:
 			default:
 				yPos = pTextRectIn->y0;
 		}
@@ -269,8 +268,6 @@ int GUI_GetYAdjust(void) {
 		case TEXTALIGN_VCENTER:
 			r = GUI.pAFont->YSize / 2;
 			break;
-		case TEXTALIGN_BASELINE:
-			r = GUI.pAFont->YSize / 2;
 	}
 	return r;
 }
@@ -413,7 +410,7 @@ void GUI_DispString(const char *s) {
 		int xLineSize = GUI__GetLineDistX(s, LineNumChars);
 		/* Check if x-position needs to be changed due to h-alignment */
 		switch (GUI.TextAlign & TEXTALIGN_HORIZONTAL) {
-			case TEXTALIGN_CENTER: xAdjust = xLineSize / 2; break;
+			case TEXTALIGN_HCENTER: xAdjust = xLineSize / 2; break;
 			case TEXTALIGN_RIGHT:  xAdjust = xLineSize; break;
 			default:            xAdjust = 0;
 		}
@@ -426,7 +423,7 @@ void GUI_DispString(const char *s) {
 		s += GUI_UC__NumChars2NumBytes(s, LineNumChars);
 		if ((*s == '\n') || (*s == '\r')) {
 			switch (GUI.TextAlign & TEXTALIGN_HORIZONTAL) {
-				case TEXTALIGN_CENTER:
+				case TEXTALIGN_HCENTER:
 				case TEXTALIGN_RIGHT:
 					GUI.DispPos.x = xOrg;
 					break;
@@ -484,7 +481,6 @@ void GUI__DispStringInRect(const char *s, RECT *pRect, int TextAlign, int MaxNum
 		}
 		/* Do the vertical alignment */
 		switch (TextAlign & TEXTALIGN_VERTICAL) {
-			case TEXTALIGN_BASELINE:
 			case TEXTALIGN_BOTTOM:
 				y = r.y1 - NumLines * FontYSize + 1;
 				break;

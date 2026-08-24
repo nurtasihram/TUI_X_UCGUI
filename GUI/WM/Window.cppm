@@ -34,12 +34,7 @@ void WM_Init(void);
 int  WM_Exec(void);  /* Execute all jobs ... Return 0 if nothing was done. */
 int  WM_Exec1(void); /* Execute one job  ... Return 0 if nothing was done. */
 
-void    WM_AttachWindow(WObj *pWin, WObj *pParent);
-void    WM_AttachWindowAt(WObj *pWin, WObj *pParent, int x, int y);
-void    WM_ClrHasTrans(WObj *pWin);
 void    WM_DeleteWindow(WObj *pWin);
-void    WM_DetachWindow(WObj *pWin);
-int     WM_GetHasTrans(WObj *pWin);
 void  WM_InvalidateDescs(WObj *pWin);    /* not to be documented (may change in future version) */
 void  WM_SetHasTrans(WObj *pWin);
 void  WM_SetTransState(WObj *pWin, unsigned State);
@@ -48,13 +43,6 @@ int   WM_GetStayOnTop(WObj *pWin);
 void  WM_SetAnchor(WObj *pWin, uint16_t AnchorFlags);
 
 /* Move/resize windows */
-void WM_MoveWindow(WObj *pWin, int dx, int dy);
-void WM_ResizeWindow(WObj *pWin, int dx, int dy);
-void WM_MoveTo(WObj *pWin, int x, int y);
-void WM_MoveChildTo(WObj *pWin, int x, int y);
-void WM_SetSize(WObj *pWin, int XSize, int YSize);
-int  WM_SetXSize(WObj *pWin, int xSize);
-int  WM_SetYSize(WObj *pWin, int ySize);
 int  WM_CreateTimer(WObj *pWin, int UserID, int Period, int Mode); /* not to be documented (may change in future version) */
 void WM_DeleteTimer(WObj *pWin, int UserId); /* not to be documented (may change in future version) */
 
@@ -64,10 +52,6 @@ WM_CALLBACK *WM_SetCallback(WObj *Win, WM_CALLBACK *cb);
 /* Get size/origin of a window */
 RECT WM_GetClientRect();
 RECT WM_GetInsideRect();
-
-WObj *WM_GetPrevSibling(WObj *pWin);
-
-WObj *WM_GetClientWindow(WObj *pObj);
 
 /* Change Z-Order of windows */
 void WM_BringToBottom(WObj *pWin);
@@ -95,8 +79,6 @@ int WM_OnKey(int Key, int Pressed);
 	Please note that some of these functions do not yet show up in the
 	documentation, as they should not be required by application program.
 */
-
-void      WM_NotifyParent(WObj *pWin, int Notification);
 
 WM_PARAM  WM_DefaultProc(WObj *pWin, int MsgId, WM_PARAM Data);
 
@@ -164,6 +146,7 @@ public:
 #pragma endregion
 
 #pragma region Parent list
+// private:
 	void _InsertWindowIntoList(WObj *pNewParent) {
 		if (!pNewParent)
 			return;
@@ -214,7 +197,8 @@ public:
 		}
 	}
 
-	void _DetachWindow() {
+//protected:
+	void _Detach() {
 		if (!pParent)
 			return;
 		_RemoveWindowFromList();
@@ -222,6 +206,21 @@ public:
 		InvalidateArea(Rect);
 		pParent = nullptr;
 	}
+public:
+	void Detach() {
+		_Detach();
+		if (pParent)
+			Move(-pParent->Rect.LeftTop()); /* Convert screen coordinates -> parent coordinates */
+		/* ToDo: Invalidate. If Parent window is located at (0,0). */
+	}
+	void Attach(WObj *pParent, POINT Pos = {}) {
+		Detach();
+		if (pParent && pParent != this) {
+			_InsertWindowIntoList(pParent);
+			MoveTo(pParent->Rect.LeftTop() + Pos); /* Convert parent coordinates -> screen coordinates */
+		}
+	}
+
 #pragma endregion
 
 	static WObj* pWinActive;
@@ -272,7 +271,6 @@ public:
 			Invalidate();    /* Mark content as invalid */
 		Require(WM_CREATE);
 	}
-
 
 #pragma region Invalidation
 	static uint16_t NumInvalidWindows;
@@ -332,24 +330,136 @@ public:
 	{ return cb ? cb(this, MsgId, Data) : (WM_PARAM)0; }
 	WM_PARAM Require(uint16_t MsgId, WM_PARAM Data = 0) const
 	{ return const_cast<WObj *>(this)->Require(MsgId, Data); }
+	void NotifyParent(int Notification) {
+		if (pParent) {
+			NOTIFY_INFO NotifyInfo;
+			NotifyInfo.Notification = Notification;
+			NotifyInfo.pWinSrc = this;
+			pParent->Require(WM_NOTIFY_PARENT, (WM_PARAM)&NotifyInfo);
+		}
+	}
+
+	auto Client() { return (WObj *)Require(WM_GET_CLIENT_WINDOW); }
 
 	auto FirstChild() { return pFirstChild; }
 	auto FirstChild() const { return pFirstChild; }
 	auto Parent() { return pParent; }
 	auto Parent() const { return pParent; }
+
 	auto NextSibling() { return pNext; }
 	auto NextSibling() const { return pNext; }
+	auto FirstSibling() { return pParent ? pParent->pFirstChild : nullptr; }
+	auto LastSibling() {
+		for (auto pWin = this; pWin; pWin = pWin->pNext)
+			if (!pWin->pNext)
+				return pWin;
+		return this;
+	}
+
+	WObj *PrevSibling() {
+		for (WObj *pWin = FirstSibling(), *pPrev = nullptr; pWin; pPrev = pWin, pWin = pWin->pNext)
+			if (pWin == this)
+				return pPrev;
+		return nullptr;
+	}
 
 #pragma region Coordinate
 	auto GetRect() const { return Rect; }
 	
 	auto GetOrg() const { return Rect.LeftTop(); }
-	auto GetOrgX() const { return Rect.x0; }
-	auto GetOrgY() const { return Rect.y0; }
+
+	void _MoveDescendents(POINT d) {
+		for (auto pWin = this; pWin; pWin = pWin->pNext) {
+			pWin->Rect += d;
+			pWin->InvalidRect += d;
+			pWin->pFirstChild->_MoveDescendents(d);  /* Children need to be moved along ...*/
+			pWin->Require(WM_MOVE);
+		}
+	}
+	void Move(POINT d) {
+		if (!d) return;
+		auto r = Rect;
+		Rect += d;
+		InvalidRect += d;
+		pFirstChild->_MoveDescendents(d);  /* Children need to be moved along ...*/
+		Require(WM_MOVE); /* Notify window it has been moved */
+		/* Invalidate old and new area ... */
+		if (Status & WC_VISIBLE) {
+			InvalidateArea(Rect);     /* Invalidate new area */
+			InvalidateArea(r);        /* Invalidate old area */
+		}
+	}
+	void MoveTo(POINT Pos) {
+		Move(Pos - Rect.LeftTop());
+	}
+	void MoveChildTo(POINT Pos) {
+		if (pParent)
+			Move(Pos - Rect.LeftTop() + pParent->Rect.LeftTop());
+	}
+
+	void _UpdateChildPositions(RECT d) {
+		for (auto pChild = pFirstChild; pChild; pChild = pChild->pNext) {
+			/* Compute size of new rectangle */
+			auto rOld = pChild->Rect, rNew = rOld;
+			switch (pChild->Status & (WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT)) {
+			case WC_ANCHOR_RIGHT: /* Right ANCHOR : Move window with right side */
+				rNew.x0 += d.x1;
+				rNew.x1 += d.x1;
+				break;
+			case WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT: /* Left & Right ANCHOR: Resize window */
+				rNew.x0 += d.x0;
+				rNew.x1 += d.x1;
+				break;
+			default: /* Left ANCHOR: Move window with left side of parent */
+				rNew.x0 += d.x0;
+				rNew.x1 += d.x0;
+			}
+			switch (pChild->Status & (WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM)) {
+			case WC_ANCHOR_BOTTOM: /* Bottom ANCHOR */
+				rNew.y0 += d.y1;
+				rNew.y1 += d.y1;
+				break;
+			case WC_ANCHOR_BOTTOM | WC_ANCHOR_TOP: /* resize window */
+				rNew.y0 += d.y0;
+				rNew.y1 += d.y1;
+				break;
+			default: /* Top ANCHOR */
+				rNew.y0 += d.y0;
+				rNew.y1 += d.y0;
+			}
+			/* Set new window position using Move and Resize as required */
+			pChild->Move(rNew.LeftTop() - rOld.LeftTop());
+			pChild->Resize(rNew.Size() - rOld.Size());
+		}
+	}
+	void Resize(POINT d) {
+		if (!d) return;
+		auto rOld = Rect, rNew = rOld;
+		if (d.x) {
+			if ((Status & WC_ANCHOR_RIGHT) && !(Status & WC_ANCHOR_LEFT))
+				rNew.x0 -= d.x;
+			else
+				rNew.x1 += d.x;
+		}
+		if (d.y) {
+			if ((Status & WC_ANCHOR_BOTTOM) && !(Status & WC_ANCHOR_TOP))
+				rNew.y0 -= d.y;
+			else
+				rNew.y1 += d.y;
+		}
+		Rect = rNew;
+		InvalidateArea(rOld | rNew);
+		_UpdateChildPositions(rNew - rOld);
+		InvalidRect &= Rect; /* Make sure invalid area is not bigger than window itself */
+		Require(WM_SIZE); /* Send size message to the window */
+	}
 
 	auto GetSize() const { return Rect.Size(); }
 	auto GetSizeX() const { return Rect.XSize(); }
 	auto GetSizeY() const { return Rect.YSize(); }
+	void SetSize(POINT Size) {
+		Resize(Size - GetSize());
+	}
 
 	RECT GetClientRect() const { return{ 0, Rect.Dist() }; }
 	RECT GetInsideRect() const {
@@ -433,14 +543,14 @@ public:
 		POINT d = Pos - WM__CapturePoint;
 		/* make sure at least a part of the windows stays inside of its parent */
 		if (!MinVisibility) {
-			WM_MoveWindow(this, d.x, d.y);
+			Move(d);
 			return;
 		}
 		/* make sure at least a part of the windows stays inside of its parent */
 		auto Rect = GetRect() + d,
-			 RectParent = Parent()->GetRect() - MinVisibility;
+			 RectParent = Parent()->GetRect() / MinVisibility;
 		if (RectParent <= Rect)
-			WM_MoveWindow(this, d.x, d.y);
+			Move(d);
 	}
 #pragma endregion 
 
