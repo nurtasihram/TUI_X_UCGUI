@@ -30,7 +30,7 @@ struct BaseOf_Thread(Graphics) {
 	}
 } p;
 
-Ayxandar SimDisp::Ayx;
+Ayxandar Ayx;
 void test_host() {
 	SimDisp::LoadDll(_T("SimClient.dll"));
 	assert(SimDisp::Open(L"TUI", 400, 300));
@@ -41,11 +41,14 @@ void test_host() {
 		con[{ 0, 1 }].Log(_T("Y: "), (int)y, _T("    "));
 		con[{ 0, 2 }].Log(_T("Z: "), (int)z, _T("    "));
 	});
+	SimDisp::SetOnKey([](uint16_t vk, uint8_t pressed) {
+		con[{ 0, 3 }].Log(_T("Keys: "), vk);
+	});
 	SimDisp::AutoFlush(true);
 	//SimDisp::Resizeable(true);
-	SimDisp::Ayx.Init();
-	SimDisp::Ayx.Fill(0xff0000);
-	SimDisp::Ayx.Fill(0xff, { LPoint{ 0, 0 }, LPoint{ 70, 70 } });
+	Ayx.Init();
+	Ayx.Fill(0xff0000);
+	Ayx.Fill(0xff, { LPoint{ 0, 0 }, LPoint{ 70, 70 } });
 //	assert(p.Create());
 //	SimDisp::SetOnDestroy([] { p.Terminate(); });
 	for (;;) {}

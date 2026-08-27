@@ -17,6 +17,16 @@ template<class AnyChild>
 using WindowShim = RefAs<WindowBase<AnyChild>>;
 
 #pragma region Misc
+struct KEY_FLAGS {
+	uint16_t wScanCode : 8;
+	uint16_t bExtend : 1;
+	uint16_t ___reserved : 4;
+	uint16_t bContext : 1;
+	uint16_t bPrevious : 1;
+	uint16_t bTranslated : 1;
+	KEY_FLAGS(WORD w = 0) { (*(WORD *)this) = w; }
+};
+
 enum_flags(TrackMouseFlag, DWORD,
 	Hover    = TME_HOVER,
 	Leave    = TME_LEAVE,

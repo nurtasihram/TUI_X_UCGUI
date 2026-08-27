@@ -13,7 +13,9 @@ typedef struct {
 
 typedef void(*tSimDisp_OnDestroy)(void);
 typedef void(*tSimDisp_OnMouse)(int16_t xPos, int16_t yPos, int16_t zPos, tSimDisp_MouseKey MouseKeys);
+typedef void(*tSimDisp_OnKey)(uint16_t vk, uint8_t bPressed);
 typedef BOOL(*tSimDisp_OnResize)(uint16_t nSizeX, uint16_t nSizeY);
+typedef void(*tSimDisp_OnKey)(uint16_t vk, uint8_t bPressed);
 
 #ifdef     DLL_EXPORTS
 #	undef  DLL_EXPORTS

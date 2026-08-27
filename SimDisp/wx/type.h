@@ -174,7 +174,7 @@ public:
 	Heap() : super(GetProcessHeap()) {}
 	Heap(Null) {}
 	Heap(Heap &h) : super(h) {}
-	Heap(Heap &&h) : super(h) {}
+	Heap(Heap &&h) noexcept : super(h) {}
 	Heap(const Heap &) = delete;
 	~Heap() reflect_to(Destroy());
 
@@ -328,7 +328,7 @@ public:
 	StringBase(Null) : Len(0), Flags(0) {}
 	StringBase(const StringBase &) = delete;
 	StringBase(StringBase &str) : StringBase(str.Len, str.Flags, str.lpsz) { str.Len = 0, str.Flags = STR_DEF, str.lpsz = 0; }
-	StringBase(StringBase &&str) : StringBase(str.Len, str.Flags, str.lpsz) { str.Len = 0, str.Flags = STR_DEF, str.lpsz = 0; }
+	StringBase(StringBase &&str) noexcept : StringBase(str.Len, str.Flags, str.lpsz) { str.Len = 0, str.Flags = STR_DEF, str.lpsz = 0; }
 
 	explicit StringBase(size_t Len) : lpsz(Alloc(Len)), Len(Len), Flags(STR_MOVABLE | STR_RELEASE) {}
 	StringBase(size_t Len, CharType *lpBuffer) : StringBase(Len, STR_MOVABLE | STR_RELEASE, lpBuffer) {}

@@ -38,17 +38,18 @@
     <ClCompile Include="..\SimDisp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\GUI_X\resource.h" />
+    <ClInclude Include="..\resource.h" />
     <ClInclude Include="..\SimDisp.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\SimDisp.inl" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\GUI_X\SimDisp.rc" />
+    <Image Include="..\SimDisp.ico" />
+    <Image Include="SimDisp.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\GUI_X\SimDisp.ico" />
+    <ResourceCompile Include="..\SimDisp.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -141,28 +142,28 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir);$(SolutionDir)\WX;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\;$(ProjectDir)..\WX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug LLVM|Win32'">
-    <IncludePath>$(SolutionDir);$(SolutionDir)\WX;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\;$(ProjectDir)..\WX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir);$(SolutionDir)\WX;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\;$(ProjectDir)..\WX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release LLVM|Win32'">
-    <IncludePath>$(SolutionDir);$(SolutionDir)\WX;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\;$(ProjectDir)..\WX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir);$(SolutionDir)\WX;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\;$(ProjectDir)..\WX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug LLVM|x64'">
-    <IncludePath>$(SolutionDir);$(SolutionDir)\WX;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\;$(ProjectDir)..\WX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir);$(SolutionDir)\WX;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\;$(ProjectDir)..\WX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release LLVM|x64'">
-    <IncludePath>$(SolutionDir);$(SolutionDir)\WX;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\;$(ProjectDir)..\WX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -1,16 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\SimHost.cpp" />
+    <Filter Include="Resources">
+      <UniqueIdentifier>{7c031896-a1ac-4c86-9b1b-e14df2e2276f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\SimHost.h" />
-    <ClInclude Include="..\..\GUI_X\resource.h" />
+    <ClInclude Include="..\Remote\resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Remote\SimHost.h" />
+    <ClInclude Include="..\SimDisp.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\GUI_X\SimDisp.rc" />
+    <ResourceCompile Include="..\Remote\SimRemote.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\GUI_X\SimDisp.ico" />
+    <Image Include="..\SimDisp.ico">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Remote\SimHost.cpp" />
   </ItemGroup>
 </Project>

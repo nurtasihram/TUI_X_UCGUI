@@ -19,6 +19,7 @@ protected:
 public:
 	CommCtl() { static_assert(!std::is_void_v<AnyChild>); }
 protected:
+	CommCtl(HWND hwnd) : super(hwnd) { static_assert(!std::is_void_v<AnyChild>); }
 	static WndProc DefProc;
 	struct xClass : super::template ClassBase<xClass> {
 		xClass() {
@@ -198,6 +199,7 @@ protected:
 	SFINAE_CommCtl(ButtonBase);
 	def_memberof(wmailBox);
 	static constexpr auto CtlClassName = WC_BUTTON;
+	using ChainExtend<ButtonBase<AnyChild>, AnyChild>::child_;
 public:
 	using super = CommCtl<KChain<ButtonBase<AnyChild>, AnyChild>>;
 	using Style = ButtonStyle;
@@ -206,9 +208,11 @@ public:
 	using BImageList = ButtonImageList;
 public:
 	ButtonBase() {}
+	ButtonBase(HWND hwnd) : super(hwnd) {}
 
 #pragma region Callback
 protected:
+
 #define MSG_TRANS(msgid, ret, name, ...) \
 	def_memberof(name);
 #define WX_BUTTON

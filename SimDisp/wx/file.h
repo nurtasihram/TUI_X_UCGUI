@@ -143,7 +143,7 @@ public:
 	File() {}
 	File(Null) {}
 	File(File &f) : super(f) {}
-	File(File &&f) : super(f) {}
+	File(File &&f) noexcept : super(f) {}
 
 	using super::operator=;
 
@@ -224,7 +224,7 @@ public:
 		MapPointer() {}
 		MapPointer(Null) {}
 		MapPointer(MapPointer &p) : ptr(p.ptr) reflect_to(p.ptr = O);
-		MapPointer(MapPointer &&p) : ptr(p.ptr) reflect_to(p.ptr = O);
+		MapPointer(MapPointer &&p) noexcept : ptr(p.ptr) reflect_to(p.ptr = O);
 		~MapPointer() {
 			if (ptr)
 				UnmapViewOfFile(ptr);

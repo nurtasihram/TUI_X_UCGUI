@@ -236,7 +236,7 @@ public:
 	Pen() {}
 	Pen(Null) {}
 	Pen(Pen &p) : super(p) {}
-	Pen(Pen &&p) : super(p) {}
+	Pen(Pen &&p) noexcept : super(p) {}
 
 	using super::operator=;
 
@@ -309,7 +309,7 @@ public:
 	Brush() {}
 	Brush(Null) {}
 	Brush(Brush &b) : super(b) {}
-	Brush(Brush &&b) : super(b) {}
+	Brush(Brush &&b) noexcept : super(b) {}
 
 	using super::operator=;
 
@@ -464,7 +464,7 @@ public:
 	DeviceCap() {}
 	DeviceCap(Null) {}
 	DeviceCap(DeviceCap &dc) : super(dc) {}
-	DeviceCap(DeviceCap &&dc) : super(dc) {}
+	DeviceCap(DeviceCap &&dc) noexcept : super(dc) {}
 	~DeviceCap() reflect_to(Delete());
 
 	using super::operator=;
@@ -606,7 +606,7 @@ public:
 	Icon() {}
 	Icon(Null) {}
 	Icon(Icon &i) : hIcon(i.hIcon) reflect_to(i.hIcon = O);
-	Icon(Icon &&i) : hIcon(i.hIcon) reflect_to(i.hIcon = O);
+	Icon(Icon &&i) noexcept : hIcon(i.hIcon) reflect_to(i.hIcon = O);
 	~Icon() reflect_to(Destroy());
 
 	class CreateStruct {
@@ -670,7 +670,7 @@ public: // Property - Colors
 	inline Icon operator+() const assert_reflect_as(auto h = CopyIcon(hIcon), h);
 
 	inline auto &operator=(Icon &i) reflect_to_self(std::swap(hIcon, i.hIcon));
-	inline auto &operator=(Icon &&i) reflect_to_self(std::swap(hIcon, i.hIcon));
+	inline auto &operator=(Icon &&i) noexcept reflect_to_self(std::swap(hIcon, i.hIcon));
 	inline auto &operator=(const Icon &i) const reflect_to_self(std::swap(hIcon, i.hIcon));
 
 	static inline Icon &Attach(HICON &hIcon) reflect_as(reuse_as<Icon>(hIcon));
@@ -691,7 +691,7 @@ public:
 	Cursor() {}
 	Cursor(Null) {}
 	Cursor(Cursor &i) : super(i) {}
-	Cursor(Cursor &&i) : super(i) {}
+	Cursor(Cursor &&i) noexcept : super(i) {}
 	~Cursor() reflect_to(Destroy());
 
 	class CreateStruct {
@@ -731,7 +731,7 @@ public: // Property - Hotspot
 	inline Cursor operator+() const assert_reflect_as(auto h = CopyCursor(super::hIcon), h);
 
 	inline auto &operator=(Cursor &i) reflect_to_self(std::swap(hIcon, i.hIcon));
-	inline auto &operator=(Cursor &&i) reflect_to_self(std::swap(hIcon, i.hIcon));
+	inline auto &operator=(Cursor &&i) noexcept reflect_to_self(std::swap(hIcon, i.hIcon));
 	inline auto &operator=(const Cursor &i) const reflect_to_self(std::swap(hIcon, i.hIcon));
 
 	static inline Cursor &Attach(HCURSOR &hCursor) reflect_as(reuse_as<Cursor>(hCursor));
@@ -855,7 +855,7 @@ public:
 	Menu() {}
 	Menu(Null) {}
 	Menu(Menu &m) : hMenu(m) reflect_to(m.hMenu = O);
-	Menu(Menu &&m) : hMenu(m) reflect_to(m.hMenu = O);
+	Menu(Menu &&m) noexcept : hMenu(m) reflect_to(m.hMenu = O);
 	~Menu() reflect_to(Destroy());
 
 #pragma region Methods
@@ -958,7 +958,7 @@ protected:
 public:
 	Module(Null) {}
 	Module(Module &m) : hInst(m) reflect_to(m.hInst = O);
-	Module(Module &&m) : hInst(m) reflect_to(m.hInst = O);
+	Module(Module &&m) noexcept : hInst(m) reflect_to(m.hInst = O);
 	Module(LPCTSTR lpModuleName = O) : hInst(GetModuleHandle(lpModuleName)) {}
 	~Module() reflect_to(Free());
 
@@ -1000,7 +1000,7 @@ public:
 	inline operator LPARAM() const reflect_as((LPARAM)hInst);
 
 	inline auto &operator=(Module &m) reflect_to_self(std::swap(hInst, m.hInst));
-	inline auto &operator=(Module &&m) reflect_to_self(std::swap(hInst, m.hInst));
+	inline auto &operator=(Module &&m) noexcept reflect_to_self(std::swap(hInst, m.hInst));
 	inline auto &operator=(const Module &m) const reflect_to_self(std::swap(hInst, m.hInst));
 
 	static inline Module &Attach(HINSTANCE &hInst) reflect_as(reuse_as<Module>(hInst));
@@ -1118,7 +1118,7 @@ protected:
 public:
 	Font() {}
 	Font(Font &f) : super(f) {}
-	Font(Font &&f) : super(f) {}
+	Font(Font &&f) noexcept : super(f) {}
 
 	using super::operator=;
 

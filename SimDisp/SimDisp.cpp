@@ -16,14 +16,16 @@
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
 
-#include "./wx/window.h"
-#include "./wx/control.h"
-#include "./wx/dialog.h"
-#include "./wx/realtime.h"
-#include "./wx/file.h"
+#include "window.h"
+#include "control.h"
+#include "dialog.h"
+#include "realtime.h"
+#include "file.h"
 
 #define DLL_EXPORTS
 #include "SimDisp.h"
+
+#include "resource.h"
 
 #pragma region SimDisp
 
@@ -32,6 +34,8 @@ using namespace WX;
 auto
 &&d02_ = "02d"_nx,
 &&d4_ = " 4d"_nx;
+
+HINSTANCE hinst;
 
 static DC &TayKit(DC &dc, LPoint org, int r) {
 	auto &&brushWhite = Brush::White(),
@@ -155,6 +159,7 @@ private:
 			UINT size;
 			LPBYTE lpBits;
 			assert(SUCCEEDED(bmpItf.GetDataPointer(&size, &lpBits)));
+			if (!lpBits) return 0;
 			memset(lpBits, ~0, size);
 			return 1;
 		}
@@ -224,11 +229,14 @@ private:
 		inline LSize MaxSize() const reflect_as(bmpItf.Size());
 	} panel = self;
 #pragma region Precreate
-	enum eMenu {
+	enum {
+		IDM_NULL,
 		IDM_PRINTSCREEN,
 		IDM_EXIT,
 		IDM_RESIZE,
 		IDM_INVERT,
+		IDM_HIDECONSOLE,
+		IDM_KEYBOARDMAP,
 		IDM_HIDECURSOR,
 		IDM_LOCKCURSOR,
 		IDM_MASK_MOUSE,
@@ -268,6 +276,9 @@ private:
 						 .String(_T("&Resize Screen"), IDM_RESIZE, bResizeable)
 						 .String(_T("&Invert Screen"), IDM_INVERT, bResizeable)
 						 .Separator()
+						 //.String(_T("Show C&onsole"), IDM_HIDECONSOLE, bConsole)
+						 .String(_T("Show &Keyboard Map"), IDM_KEYBOARDMAP)
+						 .Separator()
 						 .Popup(_T("&Cursor Control"), Menu::CreatePopup()
 								.Check(_T("&Hide Cursor On Screen"), IDM_HIDECURSOR, false)
 								.Check(_T("&Lock Mouse On Screen"), IDM_LOCKCURSOR))
@@ -298,6 +309,7 @@ private:
 			pfnOnDestroy();
 		PostQuitMessage(0);
 	}
+#pragma region Resize
 	inline void OnSize(UINT state, int cx, int cy) {
 		auto sz = Size();
 		sbar.SetParts({ sz.cx / 6, 2 * sz.cx / 6, 3 * sz.cx / 6, 4 * sz.cx / 6, -1 });
@@ -305,7 +317,8 @@ private:
 		sbar.Text(0, Cats(sz.cx, _T("x"), sz.cy));
 		sbar.FixSize();
 	}
-	bool bLastIconic = false, bResizeable = false;
+	bool bLastIconic = false,
+		 bResizeable = false;
 	tSimDisp_OnResize pfnOnResize = O;
 	inline bool OnWindowPosChanging(RefAs<WindowPos *> pWndPos) {
 		if ((pWndPos->Flags() & SWP::NoSize) == SWP::NoSize)
@@ -331,6 +344,125 @@ private:
 		panel.Size(sz);
 		return true;
 	}
+#pragma endregion
+#pragma region Keyboard
+	class BaseOf_Dialog(Keyboard) {
+		SFINAE_Dialog(Keyboard);
+		SiDiWindow &parent;
+	public:
+		Keyboard(SiDiWindow & parent) : parent(parent) {}
+		~Keyboard() {}
+
+	private:
+		static inline auto Forming() reflect_as(IDD_OSK);
+
+	private:
+
+		UINT_PTR uIDTimer_LedPriod = 0;
+		bool InitDialog() {
+			uIDTimer_LedPriod = SetTimer(50, 0);
+			return true;
+		}
+
+		// @brief 窗體關閉事件
+		void OnClose() reflect_to(parent.ShowKeyboard(false));
+
+		bool bNumLock = false,
+			 bCapsLock = false,
+			 bScroll = false;
+		void OnTimer(UINT id) {
+			if (bool bNumLock = GetKeyState(VK_NUMLOCK); this->bNumLock != bNumLock) {
+				static_assert(std::is_base_of_v<WindowBase<Button>, Button>,
+							  "DialogItem can only be converted to a WindowBase-derived type.");
+				Item<Button>(IDC_LED_NUM)->Invalidate();
+				this->bNumLock = bNumLock;
+			}
+			if (bool bCapsLock = GetKeyState(VK_CAPITAL); this->bCapsLock != bCapsLock) {
+				Item<Button>(IDC_LED_CAPS)->Invalidate();
+				this->bCapsLock = bCapsLock;
+			}
+			if (bool bScroll = GetKeyState(VK_SCROLL); this->bScroll != bScroll) {
+				Item<Button>(IDC_LED_SCROLL)->Invalidate();
+				this->bScroll = bScroll;
+			}
+		}
+
+		Brush greenBrush = Brush::CreateSolid(RGB(0, 255, 0));
+		inline HBRUSH OnCtlColorStatic(HDC hdc, HWND hwndChild) {
+			if (hwndChild == Item<Button>(IDC_LED_NUM)) {
+				if (bNumLock)
+					return greenBrush;
+			}
+			else if (hwndChild == Item<Button>(IDC_LED_CAPS)) {
+				if (bCapsLock)
+					return greenBrush;
+			}
+			else if (hwndChild == Item<Button>(IDC_LED_SCROLL)) {
+				if (bScroll)
+					return greenBrush;
+			}
+			HandleNext();
+			return O; // Unreachable
+		}
+
+	public:
+		void AlignToParent() {
+			if (!self)
+				return;
+			auto &&rc = parent.Rect();
+			auto &&sz = Size();
+			Position({ rc.left, rc.bottom + 2 });
+		}
+		void Open(bool bShow) {
+			if (!self)
+				Create(parent, hinst);
+			if (bShow)
+				Show(),
+				AlignToParent();
+			else
+				Hide();
+		}
+
+	public:
+		void ShowKey(UINT scanCode, bool bPressed) {
+			if (!self)
+				return;
+			if (auto &&btn = Item<Button>(scanCode + SCAN_CODE_0))
+				btn->States(bPressed ? ButtonState::Checked : ButtonState::Unchecked);
+		}
+	};
+	bool bKeyboard = false;
+	Keyboard dlg = self;
+	void ShowKeyboard(bool bKeyboard) {
+		dlg.Open(bKeyboard);
+		this->bKeyboard = bKeyboard;
+		if (menu)
+			menu(IDM_KEYBOARDMAP).Check(bKeyboard);
+	}
+
+	void OnMove(int x, int y) {
+		if (dlg)
+			dlg.AlignToParent();
+	}
+
+	tSimDisp_OnKey pfnOnKey = O;
+	inline void OnKeyDown(UINT vk, int16_t wRepeat, KEY_FLAGS flags) {
+		if (!flags.bPrevious) {
+			if (pfnOnKey)
+				pfnOnKey(vk, true);
+			dlg.ShowKey(flags.wScanCode, true);
+		}
+	}
+	inline void OnKeyUp(UINT vk, int16_t wRepeat, KEY_FLAGS flags) {
+		if (pfnOnKey)
+			pfnOnKey(vk, false);
+		dlg.ShowKey(flags.wScanCode, false);
+	}
+	inline void SetOnKey(tSimDisp_OnKey pfnOnKey) {
+		this->pfnOnKey = pfnOnKey;
+	}
+#pragma endregion
+
 	inline void OnCommand(int id, HWND hwndCtl, UINT codeNotify) {
 		switch (id) {
 			case IDM_PRINTSCREEN:
@@ -347,6 +479,9 @@ private:
 				break;
 			case IDM_HIDECURSOR: HideCursor(!panel.bHideCursor); break;
 			case IDM_LOCKCURSOR:
+				break;
+			case IDM_KEYBOARDMAP:
+				ShowKeyboard(!bKeyboard);
 				break;
 			case IDM_MASK_MOUSE: MaskMouse(!panel.bMaskMouse); break;
 			case IDM_MASK_TOUCH: MaskTouch(!panel.bMaskTouch); break;
@@ -448,11 +583,11 @@ private:
 							id = IDCANCEL;
 						}
 					case IDCANCEL:
-						End(id);
 						break;
 					default:
-						break;
+						return;
 				}
+				End(id);
 			}
 			inline void OnClose() reflect_to(End(IDCANCEL));
 #pragma endregion
@@ -564,9 +699,9 @@ protected:
 		CoUninitialize();
 	}
 	inline void Catch(const Exception &err) {
-		bError = true;
-		evtInited.Set();
-		CoUninitialize();
+		//bError = true;
+		//evtInited.Set();
+		//CoUninitialize();
 		if (!pSidi) return;
 		if (!*pSidi) return;
 		pSidi->MsgBox(_T("Error"), err.operator String(), MB::IconError);
@@ -652,6 +787,7 @@ REG_FUNC(BOOL, Resizeable, BOOL bEnable) reflect_as(lpSimDisp->Do([=](SiDiWindow
 
 REG_FUNC(void, SetOnDestroy, tSimDisp_OnDestroy lpfnOnDestroy) reflect_to(lpSimDisp->Do([=](SiDiWindow &Win) { Win.SetOnDestroy(lpfnOnDestroy); }));
 REG_FUNC(void, SetOnMouse, tSimDisp_OnMouse lpfnOnMouse) reflect_to(lpSimDisp->Do([=](SiDiWindow &Win) { Win.SetOnMouse(lpfnOnMouse); }));
+REG_FUNC(void, SetOnKey, tSimDisp_OnKey lpfnOnKey) reflect_to(lpSimDisp->Do([=](SiDiWindow &Win) { Win.SetOnKey(lpfnOnKey); }));
 REG_FUNC(void, SetOnResize, tSimDisp_OnResize lpfnOnResize) reflect_to(lpSimDisp->Do([=](SiDiWindow &Win) { Win.SetOnResize(lpfnOnResize); }));
 
 REG_FUNC(HWND, GetHWND, void) {
@@ -672,6 +808,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
 	switch (fdwReason) {
 		case DLL_PROCESS_ATTACH:
 			if (lpSimDisp) break;
+			hinst = hinstDLL;
 			lpSimDisp = new SiDiClient;
 			break;
 		case DLL_PROCESS_DETACH:

@@ -499,7 +499,7 @@ public:
 	SecurityDescriptor() : pSD(Local::Alloc<SECURITY_DESCRIPTOR>()) assert(InitializeSecurityDescriptor(pSD, SECURITY_DESCRIPTOR_REVISION));
 	SecurityDescriptor(Null) {}
 	SecurityDescriptor(SecurityDescriptor &sd) : pSD(sd.pSD) reflect_to(sd.pSD = O);
-	SecurityDescriptor(SecurityDescriptor &&sd) : pSD(sd.pSD) reflect_to(sd.pSD = O);
+	SecurityDescriptor(SecurityDescriptor &&sd) noexcept : pSD(sd.pSD) reflect_to(sd.pSD = O);
 	SecurityDescriptor(const SecurityDescriptor &sd) = delete;
 	SecurityDescriptor(LPCTSTR lpszDesc) assert_reflect_to(ULONG size, ConvertStringSecurityDescriptorToSecurityDescriptor(lpszDesc, SDDL_REVISION_1, &pSD, &size));
 

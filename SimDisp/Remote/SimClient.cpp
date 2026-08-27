@@ -1,6 +1,4 @@
-
-
-#include "./wx/realtime.h"
+#include "realtime.h"
 
 #define SIMDISP_HOST
 #include "SimHost.h"
@@ -45,6 +43,7 @@ class SiDiHost {
 	Event eventClose;
 	tSimDisp_OnDestroy lpfnOnDestroy = O;
 	tSimDisp_OnMouse lpfnOnMouse = O;
+	tSimDisp_OnKey lpfnOnKey = O;
 	tSimDisp_OnResize lpfnOnResize = O;
 	LThread eventBox = [&] {
 		ShellHost(eventBox.ID());
@@ -59,8 +58,15 @@ class SiDiHost {
 					break;
 				case SIDI_MSG::SetOnMouse:
 					if (lpfnOnMouse)
-						lpfnOnMouse(LOWORD(msg.ParamW()), HIWORD(msg.ParamW()),
-									LOWORD(msg.ParamL()), force_cast<tSimDisp_MouseKey>(HIWORD(msg.ParamL())));
+						lpfnOnMouse(LOWORD(msg.ParamW()),
+									HIWORD(msg.ParamW()),
+									LOWORD(msg.ParamL()),
+									force_cast<tSimDisp_MouseKey>(HIWORD(msg.ParamL())));
+					eventReq.Post(msg);
+					break;
+				case SIDI_MSG::SetOnKey:
+					if (lpfnOnKey)
+						lpfnOnKey(msg.ParamW(), msg.ParamL());
 					eventReq.Post(msg);
 					break;
 				case SIDI_MSG::SetOnResize:
@@ -123,6 +129,7 @@ public:
 	}
 	inline void SetOnDestroy(tSimDisp_OnDestroy lpfnOnDestroy) reflect_to(this->lpfnOnDestroy = lpfnOnDestroy);
 	inline void SetOnMouse(tSimDisp_OnMouse lpfnOnMouse) reflect_to(this->lpfnOnMouse = lpfnOnMouse);
+	inline void SetOnKey(tSimDisp_OnKey lpfnOnKey) reflect_to(this->lpfnOnKey = lpfnOnKey);
 	inline void SetOnResize(tSimDisp_OnResize lpfnOnResize) reflect_to(this->lpfnOnResize = lpfnOnResize);
 	inline Message &Send(SIDI_MSG msg, WPARAM wParam = 0, LPARAM lParam = 0) {
 		activity.WaitForSignal();
@@ -169,6 +176,7 @@ REG_FUNC(BOOL, Resizeable, BOOL bEnable) reflect_as(lpSimHost->Send(SIDI_MSG::Re
 
 REG_FUNC(void, SetOnDestroy, tSimDisp_OnDestroy lpfnOnDestroy) reflect_to(lpSimHost->SetOnDestroy(lpfnOnDestroy));
 REG_FUNC(void, SetOnMouse, tSimDisp_OnMouse lpfnOnMouse) reflect_to(lpSimHost->SetOnMouse(lpfnOnMouse));
+REG_FUNC(void, SetOnKey, tSimDisp_OnKey lpfnOnKey) reflect_to(lpSimHost->SetOnKey(lpfnOnKey));
 REG_FUNC(void, SetOnResize, tSimDisp_OnResize lpfnOnResize) reflect_to(lpSimHost->SetOnResize(lpfnOnResize));
 
 #pragma endregion

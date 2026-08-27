@@ -1,4 +1,5 @@
-#include "./wx/realtime.h"
+#include <conio.h>
+#include "realtime.h"
 
 #define SIMDISP_HOST
 #define DLL_IMPORTS 1
@@ -39,6 +40,13 @@ void OnMouse(int16_t xPos, int16_t yPos, int16_t zPos, tSimDisp_MouseKey MouseKe
 	if (bClientBlocked) return;
 	eventBox.Post(SIDI_MSG::SetOnMouse, MAKEWPARAM(xPos, yPos), MAKELPARAM(zPos, force_cast<uint8_t>(MouseKeys)));
 }
+void OnKey(uint16_t vk, uint8_t bPressed) {
+	if (bClientBlocked) return;
+	eventBox.Post(SIDI_MSG::SetOnKey, vk, bPressed);
+#if DEBUG
+	printf("Key: %d %s\n", vk, bPressed ? "Pressed" : "Released");
+#endif
+}
 void OnDestroy() {
 	while (bClientBlocked) {}
 	eventBox.Post(SIDI_MSG::SetOnDestroy);
@@ -48,7 +56,14 @@ void OnDestroy() {
 BOOL OnResize(uint16_t nSizeX, uint16_t nSizeY) {
 	if (bClientBlocked) return FALSE;
 	eventBox.Post(SIDI_MSG::SetOnResize, nSizeX, nSizeY);
+#if DEBUG
+	printf("Resize: %d %d\n", nSizeX, nSizeY);
+#endif
 	while (bClientBlocked) {}
+#if DEBUG
+	printf("Resize required: %d %d\n",
+		   nSizeX, nSizeY);
+#endif
 	return eventBox.msg.ParamW<BOOL>();
 }
 
@@ -72,6 +87,7 @@ void MainProc(DWORD clientBoxID) {
 						assert(eventBox.Create());
 						msg.Param(true, eventBox.ID());
 						SimDisp::SetOnMouse(OnMouse);
+						SimDisp::SetOnKey(OnKey);
 						SimDisp::SetOnDestroy(OnDestroy);
 						SimDisp::SetOnResize(OnResize);
 					}
@@ -136,6 +152,14 @@ int WINAPI wWinMain(
 	_In_ LPWSTR lpCmdLine,
 	_In_ int nShowCmd) {
 	DWORD tid = 0;
+
+#if DEBUG
+	AllocConsole();
+	FILE *_stdout = nullptr;
+	freopen_s(&_stdout, "CONOUT$", "w", stdout);
+	printf("DEBUG MODE\n");
+#endif
+
 	swscanf_s(lpCmdLine, L"%d", &tid);
 	try {
 		MainProc(tid);

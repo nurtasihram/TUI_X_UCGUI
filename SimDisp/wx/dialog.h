@@ -410,9 +410,6 @@ public: // Property - Int
 		assert(lpTranslated);
 		return val;
 	}
-public:
-	template<class AnyWindow>
-	inline operator AnyWindow();
 };
 template<class AnyChild>
 class DialogBase : public WindowBase<AnyChild> {
@@ -426,18 +423,32 @@ public:
 	DialogBase() {}
 
 	inline INT_PTR Box(HWND hParent = NULL, HINSTANCE hInst = GetModuleHandle(O)) {
-		static_assert(member_Forming_of<Child>::template compatible_to<LPDLGTEMPLATE()>);
-		return DialogBoxIndirectParamW(hInst, child.Forming(), hParent, DlgProc, (LPARAM)this);
+		if constexpr (member_Forming_of<Child>::template compatible_to<LPDLGTEMPLATE()>)
+			return DialogBoxIndirectParamW(hInst, child.Forming(), hParent, DlgProc, (LPARAM)this);
+		else {
+			static_assert(member_Forming_of<Child>::template compatible_to<int()>);
+			return DialogBoxParamW(hInst, MAKEINTRESOURCEW(child.Forming()), hParent, DlgProc, (LPARAM)this);
+		}
 	}
 	inline auto&Create(HWND hParent = NULL, HINSTANCE hInst = GetModuleHandle(O)) {
-		static_assert(member_Forming_of<Child>::template compatible_to<LPDLGTEMPLATE()>);
-		assert(CreateDialogIndirectParamW(hInst, child.Forming(), hParent, DlgProc, (LPARAM)this));
+		if constexpr (member_Forming_of<Child>::template compatible_to<LPDLGTEMPLATE()>)
+			CreateDialogParamW(hInst, child.Forming(), hParent, DlgProc, (LPARAM)this);
+		else {
+			static_assert(member_Forming_of<Child>::template compatible_to<int()>);
+			CreateDialogParamW(hInst, MAKEINTRESOURCEW(child.Forming()), hParent, DlgProc, (LPARAM)this);
+		}
 		retchild;
 	}
 
 	inline auto&End(INT_PTR nResult) reflect_to_child(::EndDialog(self, nResult));
 
 	inline DialogItem Item(int nIDDlgItem) reflect_as({ self, nIDDlgItem });
+
+	template<class AnyWindow>
+	inline RefAs<AnyWindow> Item(int nIDDlgItem) {
+		static_assert(std::is_base_of_v<WindowBase<AnyWindow>, AnyWindow>);
+		return GetDlgItem(self, nIDDlgItem);
+	}
 
 protected:
 	static INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msgid, WPARAM wParam, LPARAM lParam) {
