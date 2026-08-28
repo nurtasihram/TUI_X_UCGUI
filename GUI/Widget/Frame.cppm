@@ -185,17 +185,6 @@ private:
 			}
 		}
 	}
-	bool _OnKey(const WM_KEY_INFO *pInfo) {
-		if (pInfo->PressedCnt > 0) { /* Key pressed? */
-			int Key = pInfo->Key;
-			switch (Key) {
-				case GUI_KEY_TAB:
-					pFocussedChild = SetFocusOnNextChild();
-					return true;
-			}
-		}
-		return false;
-	}
 	void _OnPaint() {
 		const char *pText = nullptr;
 		auto size = GetSize();
@@ -263,10 +252,6 @@ private:
 			case WM_TOUCH:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
-			case WM_KEY:
-				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
-					return 0;
-				break;
 			case WM_GET_INSIDE_RECT: {
 				POSITIONS Pos;
 				pObj->_CalcPositions(&Pos);
@@ -312,17 +297,6 @@ private:
 				else
 					pObj->SetActive(0);
 				return 0;
-			case WM_TOUCH_CHILD:
-				/* If a child of this framewindow has been touched and the frame window was not active,
-				   the framewindow will receive the focus.
-				 */
-				if (!(pObj->Flags & FRAMEWIN_CF_ACTIVE)) {
-					auto pState = (const PID_STATE *)Data;
-					if (pState) /* Message may not have a valid pointer (moved out) ! */
-						if (pState->Pressed)
-							pObj->SetFocus();
-				}
-				break;
 			case WM_NOTIFY_CHILD_HAS_FOCUS:
 				pObj->_OnChildHasFocus((const NOTIFY_CHILD_HAS_FOCUS_INFO *)Data);
 				break;
@@ -337,8 +311,8 @@ private:
 			return Data;
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
-	static WM_PARAM _cbClient(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pParent = (Frame *)hWin->Parent();
+	static WM_PARAM _cbClient(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pParent = (Frame *)pWin->Parent();
 		auto cb = pParent->cb;
 		switch (MsgId) {
 			case WM_PAINT:
@@ -350,17 +324,29 @@ private:
 				 * Note that we can not run into the bottom part, as this passes the parents handle
 				  */
 				if (cb)
-					cb(hWin, MsgId, Data);
+					cb(pParent, MsgId, Data);
 				return 0;
 			case WM_SET_FOCUS:
 				if (Data) { /* Focus received */
-					if (pParent->pFocussedChild && pParent->pFocussedChild != hWin)
+					if (pParent->pFocussedChild && pParent->pFocussedChild != pWin)
 						pParent->pFocussedChild->SetFocus();
 					else
-						pParent->pFocussedChild = hWin->SetFocusOnNextChild();
+						pParent->pFocussedChild = pWin->SetFocusOnNextChild();
 					return 0; /* Focus change accepted */
 				}
 				return 0;
+			case WM_KEY:
+				if (auto pInfo = (const WM_KEY_INFO *)Data) {
+					if (pInfo->PressedCnt > 0) { /* Key pressed? */
+						int Key = pInfo->Key;
+						switch (Key) {
+						case GUI_KEY_TAB:
+							pParent->pFocussedChild = pWin->SetFocusOnNextChild();
+							return 1;
+						}
+					}
+				}
+				break;
 			case WM_GET_ACCEPT_FOCUS:
 				pParent->HandleActive(MsgId, &Data);
 				return Data;
@@ -369,12 +355,12 @@ private:
 			case WM_GET_INSIDE_RECT:        /* This should not be passed to parent ... (We do not want parents coordinates)*/
 			case WM_GET_ID:                 /* This should not be passed to parent ... (Possible recursion problem)*/
 			case WM_GET_CLIENT_WINDOW:      /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
-				return WM_DefaultProc(hWin, MsgId, Data);
+				return WM_DefaultProc(pWin, MsgId, Data);
 		}
 		/* Call user callback. Note that the user callback gets the handle of the Framewindow itself, NOT the Client. */
 		if (cb)
 			return cb(pParent, MsgId, Data);
-		return WM_DefaultProc(hWin, MsgId, Data);
+		return WM_DefaultProc(pWin, MsgId, Data);
 	}
 
 public:
