@@ -179,7 +179,7 @@ private:
 			if (pState->Pressed) {
 				if (!(this->Flags & FRAMEWIN_CF_ACTIVE))
 					SetFocus();
-				WM_BringToTop(this);
+				BringToTop();
 				if (this->Flags & FRAMEWIN_CF_MOVEABLE)
 					SetCaptureMove(*pState, FRAMEWIN__MinVisibility);
 			}
@@ -190,7 +190,7 @@ private:
 			int Key = pInfo->Key;
 			switch (Key) {
 				case GUI_KEY_TAB:
-					pFocussedChild = WM_SetFocusOnNextChild(this);
+					pFocussedChild = SetFocusOnNextChild();
 					return true;
 			}
 		}
@@ -305,7 +305,7 @@ private:
 					if (IsWindow(pObj->pFocussedChild))
 						pObj->pFocussedChild->SetFocus();
 					else
-						pObj->pFocussedChild = WM_SetFocusOnNextChild(pObj->pClient);
+						pObj->pFocussedChild = pObj->pClient->SetFocusOnNextChild();
 					pObj->SetActive(1);
 					return 0; /* Focus could be accepted */
 				}
@@ -357,7 +357,7 @@ private:
 					if (pParent->pFocussedChild && pParent->pFocussedChild != hWin)
 						pParent->pFocussedChild->SetFocus();
 					else
-						pParent->pFocussedChild = WM_SetFocusOnNextChild(hWin);
+						pParent->pFocussedChild = hWin->SetFocusOnNextChild();
 					return 0; /* Focus change accepted */
 				}
 				return 0;
@@ -473,19 +473,14 @@ public:
 		}
 	}
 	void AddMenu(Menu *pMenu) {
-		int TitleHeight, BorderSize, IBorderSize = 0;
-		int x0, y0, xSize;
-		TitleHeight = _CalcTitleHeight();
-		BorderSize = Props.BorderSize;
-		if (GetStates() & FRAMEWIN_CF_TITLEVIS) {
-			IBorderSize = Props.IBorderSize;
-		}
-		x0 = BorderSize;
-		y0 = BorderSize + TitleHeight + IBorderSize;
-		xSize = GetSizeX() - BorderSize * 2;
+		auto TitleHeight = _CalcTitleHeight();
+		uint16_t BorderSize = Props.BorderSize,
+			 IBorderSize = GetStates() & FRAMEWIN_CF_TITLEVIS ? Props.IBorderSize : 0;
+		int16_t x0 = BorderSize, y0 = BorderSize + TitleHeight + IBorderSize;
+		auto xSize = GetSizeX() - BorderSize * 2;
 		this->pMenu = pMenu;
-		if (this->cb)
-			pMenu->SetOwner(this->pClient);
+		if (cb)
+			pMenu->SetOwner(pClient);
 		pMenu->AttachMenu(this, x0, y0, xSize, 0);
 		WM_SetAnchor(pMenu, WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT);
 		_UpdatePositions();
@@ -498,89 +493,73 @@ public:
 		/* Move client window accordingly */
 		_CalcPositions(&Pos);
 		r = Props.TitleHeight;
-		if (r == 0) {
+		if (r == 0)
 			r = Pos.TitleHeight;
-		}
-
 		return r;
 	}
 	
-	bool IsMinimized() {
-		return this->Flags & FRAMEWIN_CF_MINIMIZED;
-	}
-	bool IsMaximized() {
-		return this->Flags & FRAMEWIN_CF_MAXIMIZED;
-	}
-
 	void _InvalidateButton(int Id) {
 		for (auto pChild = this->pFirstChild; pChild; pChild = pChild->pNext)
 			if (pChild->GetID() == Id)
 				pChild->Invalidate();
 	}
+
 	void _RestoreMinimized() {
-		/* When window was minimized, restore it */
-		if (this->Flags & FRAMEWIN_CF_MINIMIZED) {
-			int OldHeight = 1 + this->Rect.y1 - this->Rect.y0;
-			int NewHeight = 1 + this->rRestore.y1 - this->rRestore.y0;
-			Resize({ 0, NewHeight - OldHeight });
-			pClient->ShowWindow();
-			pMenu->ShowWindow();
-			_UpdatePositions();
-			this->Flags &= ~FRAMEWIN_CF_MINIMIZED;
-			_InvalidateButton(GUI_ID_MINIMIZE);
-		}
+		if (!IsMinimized())
+			return;
+		Resize({ 0, rRestore.YSize() - Rect.YSize() });
+		pClient->ShowWindow();
+		pMenu->ShowWindow();
+		_UpdatePositions();
+		Flags &= ~FRAMEWIN_CF_MINIMIZED;
+		_InvalidateButton(GUI_ID_MINIMIZE);
 	}
 	void _RestoreMaximized() {
-		/* When window was maximized, restore it */
-		if (this->Flags & FRAMEWIN_CF_MAXIMIZED) {
-			auto r = this->rRestore;
-			MoveTo(r.LeftTop());
-			SetSize(r.Size());
-			_UpdatePositions();
-			this->Flags &= ~FRAMEWIN_CF_MAXIMIZED;
-			_InvalidateButton(GUI_ID_MAXIMIZE);
-		}
-	}
-	void _MinimizeFramewin() {
-		_RestoreMaximized();
-		/* When window is not minimized, minimize it */
-		if ((this->Flags & FRAMEWIN_CF_MINIMIZED) == 0) {
-			int OldHeight = this->Rect.y1 - this->Rect.y0 + 1;
-			int NewHeight = _CalcTitleHeight() + this->EffectSize() * 2 + 2;
-			this->rRestore = this->Rect;
-			pClient->HideWindow();
-			pMenu->HideWindow();
-			Resize({ 0, NewHeight - OldHeight });
-			_UpdatePositions();
-			this->Flags |= FRAMEWIN_CF_MINIMIZED;
-			_InvalidateButton(GUI_ID_MINIMIZE);
-		}
-	}
-	void _MaximizeFramewin() {
-		_RestoreMinimized();
-		/* When window is not maximized, maximize it */
-		if (!(this->Flags & FRAMEWIN_CF_MAXIMIZED)) {
-			auto pParent = this->pParent;
-			RECT r = pParent->Rect;
-			if (!pParent->pParent) {
-				r.x1 = LCD_GetXSize();
-				r.y1 = LCD_GetYSize();
-			}
-			this->rRestore = this->Rect;
-			MoveTo(r.LeftTop());
-			SetSize(r.Size());
-			_UpdatePositions();
-			this->Flags |= FRAMEWIN_CF_MAXIMIZED;
-			_InvalidateButton(GUI_ID_MAXIMIZE);
-		}
+		if (!IsMaximized())
+			return;
+		MoveTo(rRestore.LeftTop());
+		SetSize(rRestore.Size());
+		_UpdatePositions();
+		Flags &= ~FRAMEWIN_CF_MAXIMIZED;
+		_InvalidateButton(GUI_ID_MAXIMIZE);
 	}
 
+	bool IsMinimized() { return Flags & FRAMEWIN_CF_MINIMIZED; }
 	void Minimize() {
-		_MinimizeFramewin();
+		_RestoreMaximized();
+		/* When window is not minimized, minimize it */
+		if (IsMinimized())
+			return;
+		int OldHeight = Rect.y1 - Rect.y0 + 1;
+		int NewHeight = _CalcTitleHeight() + EffectSize() * 2 + 2;
+		rRestore = Rect;
+		pClient->HideWindow();
+		pMenu->HideWindow();
+		Resize({ 0, NewHeight - OldHeight });
+		_UpdatePositions();
+		Flags |= FRAMEWIN_CF_MINIMIZED;
+		_InvalidateButton(GUI_ID_MINIMIZE);
 	}
+
+	bool IsMaximized() { return Flags & FRAMEWIN_CF_MAXIMIZED; }
 	void Maximize() {
-		_MaximizeFramewin();
+		_RestoreMinimized();
+		/* When window is not maximized, maximize it */
+		if (IsMaximized())
+			return;
+		auto r = pParent->Rect;
+		if (!pParent->pParent) {
+			r.x1 = LCD_GetXSize();
+			r.y1 = LCD_GetYSize();
+		}
+		rRestore = Rect;
+		MoveTo(r.LeftTop());
+		SetSize(r.Size());
+		_UpdatePositions();
+		Flags |= FRAMEWIN_CF_MAXIMIZED;
+		_InvalidateButton(GUI_ID_MAXIMIZE);
 	}
+
 	void Restore() {
 		_RestoreMinimized();
 		_RestoreMaximized();
@@ -730,28 +709,22 @@ public:
 		PCCURSOR pNewCursor = nullptr;
 		if (Mode) {
 			auto Direction = Mode & (FRAMEWIN_RESIZE_X | FRAMEWIN_RESIZE_Y);
-			if (Direction == FRAMEWIN_RESIZE_X) {
+			if (Direction == FRAMEWIN_RESIZE_X)
 				pNewCursor = &_ResizeCursorH;
-			}
-			else if (Direction == FRAMEWIN_RESIZE_Y) {
+			else if (Direction == FRAMEWIN_RESIZE_Y)
 				pNewCursor = &_ResizeCursorV;
-			}
 			else {
 				Direction = Mode & (FRAMEWIN_REPOS_X | FRAMEWIN_REPOS_Y);
-				if ((Direction == (FRAMEWIN_REPOS_X | FRAMEWIN_REPOS_Y)) || !Direction) {
+				if ((Direction == (FRAMEWIN_REPOS_X | FRAMEWIN_REPOS_Y)) || !Direction)
 					pNewCursor = &_ResizeCursorDD;
-				}
-				else {
+				else
 					pNewCursor = &_ResizeCursorDU;
-				}
 			}
 		}
 		if (pNewCursor) {
-			PCCURSOR pOldCursor;
-			pOldCursor = GUI_CURSOR_Select(pNewCursor);
-			if (_pOldCursor == nullptr) {
+			auto pOldCursor = GUI_CURSOR_Select(pNewCursor);
+			if (_pOldCursor == nullptr)
 				_pOldCursor = pOldCursor;
-			}
 		}
 		else if (_pOldCursor) {
 			GUI_CURSOR_Select(_pOldCursor);
@@ -759,108 +732,93 @@ public:
 		}
 	}
 #endif
-	static int _CaptureX, _CaptureY;
+	static POINT _Capture;
 	static int _CaptureFlags;
-	void _SetCapture(int x, int y, int Mode) {
-		if ((_CaptureFlags & FRAMEWIN_REPOS_X) == 0) {
-			_CaptureX = x;
-		}
-		if ((_CaptureFlags & FRAMEWIN_REPOS_Y) == 0) {
-			_CaptureY = y;
-		}
-		if (Mode) {
-			if (!HasCaptured())
-				SetCapture(0);
+	void _SetCapture(POINT Pos, int Mode) {
+		if (!(_CaptureFlags & FRAMEWIN_REPOS_X))
+			_Capture.x = Pos.x;
+		if (!(_CaptureFlags & FRAMEWIN_REPOS_Y))
+			_Capture.y = Pos.y;
+		if (!Mode)
+			return;
+		if (!HasCaptured())
+			SetCapture(0);
 #if GUI_SUPPORT_CURSOR
-			_SetResizeCursor(Mode);
+		_SetResizeCursor(Mode);
 #endif
-			if (Mode & FRAMEWIN_MOUSEOVER)
-				Mode = 0;
-			_CaptureFlags = Mode | FRAMEWIN_MOUSEOVER;
-		}
+		if (Mode & FRAMEWIN_MOUSEOVER)
+			Mode = 0;
+		_CaptureFlags = Mode | FRAMEWIN_MOUSEOVER;
 	}
-	void _ChangeWindowPosSize(int *px, int *py) {
-		int dx = 0, dy = 0;
-		RECT Rect = GetClientRect();
+	void _ChangeWindowPosSize(POINT p) {
 		/* Calculate new size of window */
-		if (_CaptureFlags & FRAMEWIN_RESIZE_X)
-			dx = (_CaptureFlags & FRAMEWIN_REPOS_X) ? _CaptureX - *px : *px - _CaptureX;
-		if (_CaptureFlags & FRAMEWIN_RESIZE_Y)
-			dy = (_CaptureFlags & FRAMEWIN_REPOS_Y) ? _CaptureY - *py : *py - _CaptureY;
+		POINT d{
+			_CaptureFlags & FRAMEWIN_RESIZE_X ?
+				_CaptureFlags & FRAMEWIN_REPOS_X ? _Capture.x - p.x : p.x - _Capture.x : 0,
+			_CaptureFlags & FRAMEWIN_RESIZE_Y ?
+				_CaptureFlags & FRAMEWIN_REPOS_Y ? _Capture.y - p.y : p.y - _Capture.y : 0
+		};
+		auto Rect = GetClientRect();
 		/* Check the minimal size of window */
-		if ((Rect.x1 + dx + 1) < FRAMEWIN_MINSIZE_X) {
-			dx = FRAMEWIN_MINSIZE_X - Rect.x1 - 1;
-			*px = _CaptureX + dx;
+		if (auto xMin = FRAMEWIN_MINSIZE_X - Rect.x1 - 1; d.x < xMin) {
+			d.x = xMin;
+			p.x = _Capture.x + xMin;
 		}
-		if ((Rect.y1 + dy + 1) < FRAMEWIN_MINSIZE_Y) {
-			dy = FRAMEWIN_MINSIZE_Y - Rect.y1 - 1;
-			*py = _CaptureY + dy;
+		if (auto yMin = FRAMEWIN_MINSIZE_Y - Rect.y1 - 1; d.y < yMin) {
+			d.y = yMin;
+			p.y = _Capture.y + yMin;
 		}
 		/* Set new window position */
 		Move({
-			(_CaptureFlags & FRAMEWIN_REPOS_X) ? -dx : 0,
-			(_CaptureFlags & FRAMEWIN_REPOS_Y) ? -dy : 0
+			(_CaptureFlags & FRAMEWIN_REPOS_X) ? -d.x : 0,
+			(_CaptureFlags & FRAMEWIN_REPOS_Y) ? -d.y : 0
 		});
 		/* Set new window size */
-		Resize({ dx, dy });
+		Resize(d);
 	}
-	static int _CheckBorderX(int x, int x1, int Border) {
-		int Mode = 0;
-		if (x > (x1 - Border)) {
-			Mode = FRAMEWIN_RESIZE_X;
-		}
-		else if (x < (Border)) {
-			Mode = FRAMEWIN_RESIZE_X | FRAMEWIN_REPOS_X;
-		}
-		return Mode;
+	static int16_t _CheckBorderX(int x, int x1, int Border) {
+		if (x > x1 - Border)
+			return FRAMEWIN_RESIZE_X;
+		if (x < Border)
+			return FRAMEWIN_RESIZE_X | FRAMEWIN_REPOS_X;
+		return 0;
 	}
-	static int _CheckBorderY(int y, int y1, int Border) {
-		int Mode = 0;
-		if (y > (y1 - Border)) {
-			Mode = FRAMEWIN_RESIZE_Y;
-		}
-		else if (y < (Border)) {
-			Mode = FRAMEWIN_RESIZE_Y | FRAMEWIN_REPOS_Y;
-		}
-		return Mode;
+	static int16_t _CheckBorderY(int y, int y1, int Border) {
+		if (y > y1 - Border)
+			return FRAMEWIN_RESIZE_Y;
+		if (y < Border)
+			return FRAMEWIN_RESIZE_Y | FRAMEWIN_REPOS_Y;
+		return 0;
 	}
-	int _CheckReactBorder(int x, int y) {
-		int Mode = 0;
-		RECT r = GetClientRect();
-		if ((x >= 0) && (y >= 0) && (x <= r.x1) && (y <= r.y1)) {
-			Mode |= _CheckBorderX(x, r.x1, FRAMEWIN_REACT_BORDER);
-			if (Mode) {
-				Mode |= _CheckBorderY(y, r.y1, 4 * FRAMEWIN_REACT_BORDER);
-			}
-			else {
-				Mode |= _CheckBorderY(y, r.y1, FRAMEWIN_REACT_BORDER);
-				if (Mode) {
-					Mode |= _CheckBorderX(x, r.x1, 4 * FRAMEWIN_REACT_BORDER);
-				}
-			}
-		}
-		return Mode;
+	int _CheckReactBorder(POINT Pos) {
+		auto r = GetClientRect();
+		if (!(r <= Pos)) return 0;
+		if (auto Mode = _CheckBorderX(Pos.x, r.x1, FRAMEWIN_REACT_BORDER))
+			return Mode | _CheckBorderY(Pos.y, r.y1, 4 * FRAMEWIN_REACT_BORDER);
+		if (auto Mode = _CheckBorderY(Pos.y, r.y1, FRAMEWIN_REACT_BORDER))
+			return Mode | _CheckBorderX(Pos.x, r.x1, 4 * FRAMEWIN_REACT_BORDER);
+		return 0;
 	}
-	int _OnTouchResize(const PID_STATE *pState) {
+	bool _OnTouchResize(const PID_STATE *pState) {
 		if (pState) {  /* Something happened in our area (pressed or released) */
-			int x = pState->x, y = pState->y;
-			int Mode = _CheckReactBorder(x, y);
+			POINT Pos = *pState;
+			auto Mode = _CheckReactBorder(Pos);
 			if (pState->Pressed == 1) {
 				if (_CaptureFlags & FRAMEWIN_RESIZE) {
-					_ChangeWindowPosSize(&x, &y);
-					_SetCapture(x, y, 0);
-					return 1;
+					_ChangeWindowPosSize(Pos);
+					_SetCapture(Pos, 0);
+					return true;
 				}
 				else if (Mode) {
 					SetFocus();
-					WM_BringToTop(this);
-					_SetCapture(x, y, Mode);
-					return 1;
+					BringToTop();
+					_SetCapture(Pos, Mode);
+					return true;
 				}
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 				else if (_CaptureFlags) {
 					ReleaseCapture();
-					return 1;
+					return true;
 				}
 #endif
 			}
@@ -869,66 +827,58 @@ public:
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 				if (!Mode)
 #endif
-				{
 					ReleaseCapture();
-				}
-				return 1;
+				return true;
 			}
 		}
-		return 0;
+		return false;
 	}
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
-	int _ForwardMouseOverMsg(const PID_STATE *pState) {
-		PID_STATE StateBelow = *pState;
-		StateBelow += GetOrg();
-		auto pBelow = WM_Screen2Win(StateBelow);
-		if (pBelow && pBelow != this) {
+	bool _ForwardMouseOverMsg(POINT Pos) {
+		PID_STATE StateBelow = Pos + GetOrg();
+		if (auto pBelow = WM_Screen2Win(StateBelow); pBelow != this) {
 			StateBelow -= pBelow->GetOrg();
 			WM__SendMessage(pBelow, WM_MOUSEOVER, (WM_PARAM)&StateBelow);
 			return true;
 		}
 		return false;
 	}
-	int _OnMouseOver(const PID_STATE *pState) {
-		if (pState) {
-			int x = pState->x, y = pState->y;
-			int Mode = _CheckReactBorder(x, y);
-			if (Mode) {
-				if (_ForwardMouseOverMsg(pState) == 0)
-					_SetCapture(x, y, Mode | FRAMEWIN_MOUSEOVER);
-				return 1;
-			}
-			else if (HasCaptured()) {
-				if ((_CaptureFlags & FRAMEWIN_RESIZE) == 0) {
-					ReleaseCapture();
-					_ForwardMouseOverMsg(pState);
-				}
-				return 1;
-			}
+	bool _OnMouseOver(POINT Pos) {
+		if (auto Mode = _CheckReactBorder(Pos)) {
+			if (!_ForwardMouseOverMsg(Pos))
+				_SetCapture(Pos, Mode | FRAMEWIN_MOUSEOVER);
+			return true;
 		}
-		return 0;
+		if (HasCaptured()) {
+			if (!(_CaptureFlags & FRAMEWIN_RESIZE)) {
+				ReleaseCapture();
+				_ForwardMouseOverMsg(Pos);
+			}
+			return true;
+		}
 	}
 #endif
-	int _HandleResizeable(int MsgId, WM_PARAM Data) {
-		if (HasCaptured() && _CaptureFlags == 0)
-			return 0;
+	bool _HandleResizeable(int MsgId, WM_PARAM Data) {
+		if (HasCaptured() && !_CaptureFlags)
+			return false;
 		if (IsMinimized() || IsMaximized())
-			return 0;
+			return false;
 		switch (MsgId) {
 			case WM_TOUCH:
 				return _OnTouchResize((const PID_STATE *)Data);
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 			case WM_MOUSEOVER:
-				return _OnMouseOver((const PID_STATE *)Data);
+				if (auto pState = (const PID_STATE *)Data)
+					return _OnMouseOver(*pState);
 #endif
 			case WM_CAPTURE_RELEASED:
 #if GUI_SUPPORT_CURSOR
 				_SetResizeCursor(0);
 #endif
 				_CaptureFlags = 0;
-				return 1;
+				return true;
 		}
-		return 0;
+		return false;
 	}
 	void SetResizeable(int State) {
 		if (State)
@@ -937,18 +887,14 @@ public:
 			Flags &= ~FRAMEWIN_CF_RESIZEABLE;
 	}
 
-	int SetTitleHeight(int Height) {
-		int r = 0;
-		int OldHeight;
-		r = Props.TitleHeight;
-		if (Height != r) {
-			OldHeight = _CalcTitleHeight();
-			Props.TitleHeight = Height;
-			_UpdatePositions();
-			_UpdateButtons(OldHeight);
-			Invalidate();
-		}
-		return r;
+	void SetTitleHeight(int Height) {
+		if (Props.TitleHeight == Height)
+			return;
+		auto OldHeight = _CalcTitleHeight();
+		Props.TitleHeight = Height;
+		_UpdatePositions();
+		_UpdateButtons(OldHeight);
+		Invalidate();
 	}
 
 	void _ShowHideButtons() {
@@ -1038,14 +984,12 @@ public:
 		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, [](RECT &r) {
 			auto pObj = (Frame *)WM_GetActiveWindow()->Parent();
 			int Size = (r.x1 - r.x0 + 1) >> 1;
-			if (pObj->Flags & FRAMEWIN_CF_MINIMIZED) {
+			if (pObj->Flags & FRAMEWIN_CF_MINIMIZED)
 				for (int i = 1; i < Size; i++)
 					LCD_DrawHLine(r.x0 + i, r.y0 + i + (Size >> 1), r.x1 - i);
-			}
-			else {
+			else
 				for (int i = 1; i < Size; i++)
 					LCD_DrawHLine(r.x0 + i, r.y1 - i - (Size >> 1), r.x1 - i);
-			}
 		});
 		return pButton;
 	}
@@ -1053,7 +997,7 @@ public:
 
 Frame::Properties Frame::DefaultProps;
 
-int Frame::_CaptureX = 0, Frame::_CaptureY = 0;
+POINT Frame::_Capture{};
 int Frame::_CaptureFlags = 0;
 
 }

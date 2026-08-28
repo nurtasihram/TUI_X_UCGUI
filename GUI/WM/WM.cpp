@@ -6,55 +6,6 @@
 
 static bool IsActive;
 
-#pragma region Focus
-static WObj *_GetNextChild(WObj * pParent, WObj * pChild) {
-	WObj *pObj = nullptr;
-	if (pChild)
-		pObj = pChild->pNext;
-	if (!pObj)
-		pObj = pParent->pFirstChild;
-	if (pObj != pChild)
-		return pObj;
-	return nullptr;
-}
-WObj *WM_SetFocusOnNextChild(WObj * pParent) {
-	if (auto pChild = WM__GetFocussedChild(pParent)) {
-		do {
-			if (!(pChild = _GetNextChild(pParent, pChild)))
-				return nullptr;
-		} while (pChild->IsFocussable());
-		if (!pChild->SetFocus())
-			return pChild;
-	}
-	return nullptr;
-}
-static WObj *_GetPrevChild(WObj * pChild) {
-	WObj *pObj = nullptr;
-	if (pChild)
-		pObj = pChild->PrevSibling();
-	if (!pObj)
-		pObj = pChild->LastSibling();
-	if (pObj != pChild)
-		return pObj;
-	return nullptr;
-}
-WObj *WM_SetFocusOnPrevChild(WObj * pParent) {
-	WObj *pChild;
-	WObj *pWin;
-	pChild = WM__GetFocussedChild(pParent);
-	pChild = _GetPrevChild(pChild);
-	pWin = pChild;
-	while (!pWin->IsFocussable() && pWin) {
-		pWin = _GetPrevChild(pWin);
-		if (pWin == pChild)
-			break;
-	}
-	if (!pWin->SetFocus())
-		return pWin;
-	return 0;
-}
-#pragma endregion
-
 uint8_t WM__PaintCallbackCnt;      /* Public for assertions only */
 static WObj *pWinNextDraw;
 
@@ -90,19 +41,6 @@ struct CriticalHandle {
 CriticalHandle *CriticalHandle::pFirst = nullptr;
 #pragma endregion
 
-static void _SetClipRectUserIntersect(const RECT *prSrc) {
-	if (GUI.WM__pUserClipRect == nullptr) {
-		LCD_SetClipRectEx(prSrc);
-	}
-	else {
-		auto r = *GUI.WM__pUserClipRect;
-		if (WObj::pWinActive)
-			r += WObj::pWinActive->GetOrg(); /* Convert User ClipRect into screen coordinates */
-		/* Set intersection as clip rect */
-		r &= *prSrc;
-		LCD_SetClipRectEx(&r);
-	}
-}
 static void _DeleteAllChildren(WObj * pFirstChild) {
 	for (auto pChild = pFirstChild; pChild; ) {
 		auto pNext = pChild->pNext;
@@ -422,16 +360,26 @@ bool WM__InitIVRSearch(RECT rcMax) {
 	_ClipContext.ClientRect = r;
 	return WM__GetNextIVR();
 }
+static void _SetClipRectUserIntersect(const RECT *prSrc) {
+	if (GUI.WM__pUserClipRect == nullptr) {
+		LCD_SetClipRectEx(prSrc);
+	}
+	else {
+		auto r = *GUI.WM__pUserClipRect;
+		if (WObj::pWinActive)
+			r += WObj::pWinActive->GetOrg(); /* Convert User ClipRect into screen coordinates */
+		/* Set intersection as clip rect */
+		r &= *prSrc;
+		LCD_SetClipRectEx(&r);
+	}
+}
 void WM__ActivateClipRect(void) {
 	if (IsActive)
 		_SetClipRectUserIntersect(&_ClipContext.CurRect);
-	else {    /* Window manager disabled, typically because meory device is active */
-		RECT r;
-		WObj *pAWin;
-		pAWin = WObj::pWinActive;
-		r = pAWin->Rect;
+	else {
+		/* Window manager disabled, typically because meory device is active */
 		/* Take UserClipRect into account */
-		_SetClipRectUserIntersect(&r);
+		_SetClipRectUserIntersect(&WObj::pWinActive->Rect);
 	}
 }
 #pragma endregion
@@ -457,17 +405,7 @@ static void _Paint1(WObj *pWin) {
 *
 *       Callback for Paint message
 *
-/*********************************************************************
-*
-*       WM__PaintWinAndOverlays
-*
-* Purpose
-*   Paint the given window and all overlaying windows
-*   (transparent children and transparent top siblings)
 */
-void WM__PaintWinAndOverlays(WObj *pWin) {
-	_Paint1(pWin); /* Draw the window itself */
-}
 /*********************************************************************
 *
 *       _cbPaintMemDev
@@ -486,7 +424,7 @@ static void _cbPaintMemDev(void *p) {
 	auto pWin = WObj::pWinActive;
 	Rect = pWin->InvalidRect;
 	pWin->InvalidRect = GUI.ClipRect;
-	WM__PaintWinAndOverlays((WObj *)p);
+	_Paint1((WObj *)p);
 	pWin->InvalidRect = Rect;
 }
 #endif
@@ -519,7 +457,7 @@ static int _Paint(WObj *pWin) {
 			}
 			else
 #endif
-			WM__PaintWinAndOverlays(pWin);
+			_Paint1(pWin);
 			Ret = 1;    /* Something has been done */
 		}
 	}
@@ -605,21 +543,6 @@ WM_PARAM WM_DefaultProc(WObj * pWin, int MsgId, WM_PARAM Data) {
 	/* Message not handled. If it queries something, we return 0 to be on the safe side. */
 	return 0;
 }
-void WM__ForEachDesc(WObj * pWin, WM_tfForEach *pcb, void *pData) {
-	WObj *pChild;
-	for (pChild = pWin->pFirstChild; pChild; pChild = pChild->pNext) {
-		pcb(pChild, pData);
-		WM_ForEachDesc(pChild, pcb, pData);
-	}
-}
-
-WObj * WM__GetFocussedChild(WObj * pWin) {
-	WObj * r = 0;
-	if (WM__IsChild(WObj::pWinFocus, pWin)) {
-		r = WObj::pWinFocus;
-	}
-	return r;
-}
 
 /*********************************************************************
 *
@@ -654,60 +577,7 @@ bool WM__IsAncestorOrSelf(WObj * pChild, WObj * pParent) {
 		return true;
 	return WM__IsAncestor(pChild, pParent);
 }
-bool WM__IsChild(WObj *pWin, WObj *pParent) {
-	if (pWin) {
-		if (pWin->pParent == pParent)
-			return true;
-	}
-	return false;
-}
-void WM__Screen2Client(const WObj *pWin, RECT *pRect) {
-	*pRect -= pWin->Rect.LeftTop();
-}
 #define WM_DEBUG_LEVEL 1
-
-void WM_BringToBottom(WObj * pWin) {
-	if (pWin) {
-		if (auto pPrev = pWin->PrevSibling()) { /* If there is no previous one, there is nothing to do ! */
-			auto pParent = pWin->Parent();
-			/* unlink pWin */
-			pPrev->pNext = pWin->pNext;
-			/* Link from parent (making it the first child) */
-			pWin->pNext = pParent->pFirstChild;
-			pParent->pFirstChild = pWin;
-			/* Send message in order to make sure top window will be drawn */
-			WObj::InvalidateArea(pWin->Rect);
-		}
-	}
-}
-static void _cbInvalidateOne(WObj * pWin, void *p) {
-	GUI_USE_PARA(p);
-	pWin->Invalidate();
-}
-static void _InvalidateWindowAndDescs(WObj * pWin) {
-	pWin->Invalidate();
-	WM_ForEachDesc(pWin, _cbInvalidateOne, 0);
-}
-
-void WM_BringToTop(WObj * pWin) {
-	if (pWin) {
-		auto pNext = pWin->pNext;
-		/* Is window alread on top ? If so, we are done. (Not required, just an optimization) */
-		if (pNext == 0) {
-			return;
-		}
-		/* For non-top windows, it is good enough if the next one is a stay-on-top-window (Not required, just an optimization) */
-		if ((pWin->Status & WC_STAYONTOP) == 0) {
-			if (pNext->Status & WC_STAYONTOP) {
-				return;
-			}
-		}
-		auto pParent = pWin->pParent;
-		pWin->_RemoveWindowFromList();
-		pWin->_InsertWindowIntoList(pParent);
-		_InvalidateWindowAndDescs(pWin);
-	}
-}
 
 /*********************************************************************
 *
@@ -724,9 +594,6 @@ static void _ShowInvalid(WObj * pWin) {
 	GUI.SetBkColor(RGB_GREEN);
 	GUI_FillRect(rClient);
 	GUI = Context;
-}
-void WM_ForEachDesc(WObj * pWin, WM_tfForEach *pcb, void *pData) {
-	WM__ForEachDesc(pWin, pcb, pData);
 }
 
 RECT WM_GetClientRect() {
@@ -783,7 +650,7 @@ void WM_Paint(WObj * pWin) {
 		WM_SelectWindow(pWin);
 		pWin->Invalidate();  /* Important ... Window procedure is informed about invalid rect and may optimize */
 		/* Paint the window and its overlaying transparent windows */
-		WM__PaintWinAndOverlays(pWin);
+		_Paint1(pWin);
 		pWin->Validate();
 		GUI_RestoreContext(&Context);
 	}
@@ -792,16 +659,6 @@ PID_STATE WM_PID__GetPrevState() {
 	return WM_PID__StateLast;
 }
 
-bool WM__IsInWindow(WObj *pWin, int x, int y) {
-	if ((pWin->Status & WC_VISIBLE)
-		&& (x >= pWin->Rect.x0)
-		&& (x <= pWin->Rect.x1)
-		&& (y >= pWin->Rect.y0)
-		&& (y <= pWin->Rect.y1)) {
-		return true;
-	}
-	return false;
-}
 void WM_SetAnchor(WObj * pWin, uint16_t AnchorFlags) {
 	if (pWin) {
 		uint16_t Mask;
@@ -821,31 +678,12 @@ WM_CALLBACK *WM_SetCallback(WObj * pWin, WM_CALLBACK *cb) {
 	return r;
 }
 
-void WObj::ShowWindow() {
-	if (!(Status & WC_VISIBLE)) {
-		Status |= WC_VISIBLE;
-		WM_InvalidateDescs(this);
-	}
-}
-
-
 const RECT *WM_SetUserClipRect(const RECT *pRect) {
 	auto pRectReturn = GUI.WM__pUserClipRect;
 	GUI.WM__pUserClipRect = pRect;
 	/* Activate it ... */
 	WM__ActivateClipRect();
 	return pRectReturn;
-}
-
-void WM_InvalidateDescs(WObj * pWin) {
-	if (pWin) {
-		pWin->Invalidate();    /* Invalidate window itself */
-		for (auto pChild = pWin->FirstChild(); pChild;) {
-			auto pNextChild = pChild->pNext;
-			WM_InvalidateDescs(pChild);
-			pChild = pNextChild;
-		}
-	}
 }
 
 void WM_SetStayOnTop(WObj * pWin, int OnOff) {
@@ -870,32 +708,7 @@ int WM_GetStayOnTop(WObj * pWin) {
 	}
 	return Result;
 }
-/*********************************************************************
-*
-*       WM__SubRect
-  The result is the smallest rectangle which includes the entire
-  remaining area.
-  *pDest = *pr0- *pr1;
-*/
-static void _SubRect(RECT *pDest, const RECT *pr0, const RECT *pr1) {
-	if ((pDest == nullptr) || (pr0 == nullptr))
-		return;
-	*pDest = *pr0;
-	if (pr1 == nullptr)
-		return;
-	/* Check left/right sides */
-	if ((pr1->y0 <= pr0->y0)
-		&& (pr1->y1 >= pr0->y1)) {
-		pDest->x0 = Max(pr0->x0, pr1->x1);
-		pDest->x1 = Min(pr0->x1, pr1->x0);
-	}
-	/* Check top/bottom sides */
-	if ((pr1->x0 <= pr0->x0)
-		&& (pr1->x1 >= pr0->x1)) {
-		pDest->y0 = Max(pr0->y0, pr1->y1);
-		pDest->y1 = Min(pr0->y1, pr1->y0);
-	}
-}
+
 int WM_OnKey(int Key, int Pressed) {
 	if (WObj::pWinFocus) {
 		WM_KEY_INFO Info;

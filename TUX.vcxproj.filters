@@ -34,6 +34,9 @@
     <Filter Include="GUI\Widget\Container">
       <UniqueIdentifier>{977dfe3b-0818-446e-935f-636ef6f4b4d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TUX_EXT">
+      <UniqueIdentifier>{2b4f3bf5-9d61-4df6-b77c-b82b616ec60d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI_X\GUI_X_LCD.cc">
@@ -93,7 +96,6 @@
     <ClCompile Include="GUI\Core\GUICore.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="GUI\Widget\ListBox.cppm">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
@@ -202,6 +204,10 @@
     <ClCompile Include="GUI\Core\GUICurs.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
+    <ClCompile Include="TUX_EXT\tux_osk.cpp">
+      <Filter>TUX_EXT</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">

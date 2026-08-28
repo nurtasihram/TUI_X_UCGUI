@@ -38,7 +38,7 @@ private:
 		if (pInfo->PressedCnt > 0) {
 			switch (pInfo->Key) {
 			case GUI_KEY_TAB:
-				pFocussedChild = WM_SetFocusOnNextChild(this);
+				pFocussedChild = SetFocusOnNextChild();
 				break; /* Send to parent by not doing anything */
 			}
 		}
@@ -56,7 +56,7 @@ private:
 				if (pObj->pFocussedChild && pObj->pFocussedChild != pObj)
 					pObj->pFocussedChild->SetFocus();
 				else
-					pObj->pFocussedChild = WM_SetFocusOnNextChild(pObj);
+					pObj->pFocussedChild = pObj->SetFocusOnNextChild();
 			}
 			return 0;
 		case WM_GET_ACCEPT_FOCUS:

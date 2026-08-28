@@ -62,6 +62,8 @@ private:
 	}
 	
 	const char *_GetpItem(int Index) {
+		if (Index < 0 || Index >= GetNumItems())
+			return nullptr;
 		return Handles[Index];
 	}
 	void _DrawTriangleDown(int x, int y, int Size) {

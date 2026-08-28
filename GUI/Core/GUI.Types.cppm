@@ -77,10 +77,6 @@ struct RECT {
 	inline RECT operator*(int dist) const
 	{ return{ x0 - dist, y0 - dist, x1 + dist, y1 + dist }; }
 
-	inline RECT &operator*=(const RECT &r) {
-		x0 += r.x0, y0 += r.y0, x1 += r.x1, y1 += r.y1;
-		return *this;
-	}
 	inline RECT operator+(const RECT &r) const
 	{ return{ x0 + r.x0, y0 + r.y0, x1 + r.x1, y1 + r.y1 }; }
 	inline RECT &operator-=(const RECT &r) {

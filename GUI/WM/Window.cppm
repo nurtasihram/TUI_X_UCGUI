@@ -35,7 +35,6 @@ int  WM_Exec(void);  /* Execute all jobs ... Return 0 if nothing was done. */
 int  WM_Exec1(void); /* Execute one job  ... Return 0 if nothing was done. */
 
 void    WM_DeleteWindow(WObj *pWin);
-void  WM_InvalidateDescs(WObj *pWin);    /* not to be documented (may change in future version) */
 void  WM_SetHasTrans(WObj *pWin);
 void  WM_SetTransState(WObj *pWin, unsigned State);
 void  WM_SetStayOnTop(WObj *pWin, int OnOff);
@@ -52,10 +51,6 @@ WM_CALLBACK *WM_SetCallback(WObj *Win, WM_CALLBACK *cb);
 /* Get size/origin of a window */
 RECT WM_GetClientRect();
 RECT WM_GetInsideRect();
-
-/* Change Z-Order of windows */
-void WM_BringToBottom(WObj *pWin);
-void WM_BringToTop(WObj *pWin);
 
 /* Select window used for drawing operations */
 WObj *WM_SelectWindow(WObj *pWin);
@@ -82,9 +77,6 @@ int WM_OnKey(int Key, int Pressed);
 
 WM_PARAM  WM_DefaultProc(WObj *pWin, int MsgId, WM_PARAM Data);
 
-WObj *WM_SetFocusOnNextChild(WObj *pParent);     /* Set the focus to the next child */
-WObj *WM_SetFocusOnPrevChild(WObj *pParent);     /* Set the focus to the previous child */
-
 /* Scroll functions */
 void WM_GetInsideRectExScrollbar(WObj *pWin, RECT *pRect); /* not to be documented (may change in future version) */
 WObj *WM_GetScrollPartner(WObj *pWin);
@@ -93,7 +85,7 @@ bool WM_SetScrollbarV(WObj *pWin, int OnOff); /* not to be documented (may chang
 void WM_GetScrollState(WObj *pObj, WM_SCROLL_STATE *pScrollState);
 
 bool WM_HandlePID(void);
-void WM_ForEachDesc(WObj *pWin, WM_tfForEach *pcb, void *pData);
+void WM_ForEachChild(WObj *pWin, WM_tfForEach *pcb, void *pData);
 
 #pragma region IVR
 bool WM__InitIVRSearch(RECT rcMax);
@@ -109,7 +101,7 @@ struct WObj {
 	RECT Rect, InvalidRect;
 	WM_CALLBACK *cb = nullptr; /* ptr to notification callback */
 	WObj *pNextLin = nullptr, *pNext = nullptr,
-		 *pParent = nullptr, *pFirstChild = nullptr;
+		*pParent = nullptr, *pFirstChild = nullptr;
 	uint16_t Status = 0; /* Some status flags */
 
 #pragma region Window list
@@ -223,7 +215,7 @@ public:
 
 #pragma endregion
 
-	static WObj* pWinActive;
+	static WObj *pWinActive;
 
 public:
 	void *operator new(size_t size) {
@@ -235,16 +227,16 @@ public:
 
 public:
 	WObj(RECT r, WM_CF Style, WM_CALLBACK *cb, WObj *pParent = nullptr) :
-		Rect(r), cb(cb), Status(Style & (WC_VISIBLE |
-								  WC_MEMDEV |
-								  WC_MEMDEV_ON_REDRAW |
-								  WC_STAYONTOP |
-								  WC_CONST_OUTLINE |
-								  WC_ANCHOR_RIGHT |
-								  WC_ANCHOR_BOTTOM |
-								  WC_ANCHOR_LEFT |
-								  WC_ANCHOR_TOP |
-								  WC_LATE_CLIP)) {
+		Rect(r), cb(cb), Status(Style &(WC_VISIBLE |
+										WC_MEMDEV |
+										WC_MEMDEV_ON_REDRAW |
+										WC_STAYONTOP |
+										WC_CONST_OUTLINE |
+										WC_ANCHOR_RIGHT |
+										WC_ANCHOR_BOTTOM |
+										WC_ANCHOR_LEFT |
+										WC_ANCHOR_TOP |
+										WC_LATE_CLIP)) {
 		//WM_ASSERT_NOT_IN_PAINT();
 		/* Default parent is Desktop 0 */
 		if (!pParent)
@@ -266,7 +258,7 @@ public:
 			WM_SelectWindow(this);  /* This is not needed if callbacks are being used, but it does not cost a lot and makes life easier ... */
 		/* Handle the Style flags, one at a time */
 		if (Style & WC_BGND)
-			WM_BringToBottom(this);
+			BringToBottom();
 		if (Style & WC_VISIBLE)
 			Invalidate();    /* Mark content as invalid */
 		Require(WM_CREATE);
@@ -313,6 +305,14 @@ public:
 		if (!_ClipAtParentBorders(r))
 			return;
 		_Invalidate1Abs(r);
+	}
+	void InvalidateDescs() {
+		Invalidate();    /* Invalidate window itself */
+		for (auto pChild = FirstChild(); pChild;) {
+			auto pNextChild = pChild->pNext;
+			pChild->InvalidateDescs();
+			pChild = pNextChild;
+		}
 	}
 	void Validate() {
 		if (Status & WC_ACTIVATE) {
@@ -365,7 +365,7 @@ public:
 
 #pragma region Coordinate
 	auto GetRect() const { return Rect; }
-	
+
 	auto GetOrg() const { return Rect.LeftTop(); }
 
 	void _MoveDescendents(POINT d) {
@@ -462,6 +462,7 @@ public:
 	}
 
 	RECT GetClientRect() const { return{ 0, Rect.Dist() }; }
+	POINT GetClientSize() const { return GetClientRect().Size(); }
 	RECT GetInsideRect() const {
 		RECT r;
 		Require(WM_GET_INSIDE_RECT, (WM_PARAM)&r);
@@ -483,6 +484,44 @@ public:
 		return pWin; /* No Child affected ... The parent is the right one */
 	}
 #pragma endregion
+
+#pragma region Z-order
+private:
+	void _InvalidateWindowAndDescs() {
+		Invalidate();
+		for (auto pChild = pFirstChild; pChild; pChild = pChild->pNext) {
+			pChild->Invalidate();
+			pChild->_InvalidateWindowAndDescs();
+		}
+	}
+public:
+	void BringToTop() {
+		/* Is window alread on top ? If so, we are done. (Not required, just an optimization) */
+		if (!pNext)
+			return;
+		/* For non-top windows, it is good enough if the next one is a stay-on-top-window (Not required, just an optimization) */
+		if (!(Status & WC_STAYONTOP))
+			if (pNext->Status & WC_STAYONTOP)
+				return;
+		_RemoveWindowFromList();
+		_InsertWindowIntoList(pParent);
+		_InvalidateWindowAndDescs();
+	}
+	void BringToBottom() {
+		if (auto pPrev = PrevSibling()) { /* If there is no previous one, there is nothing to do ! */
+			auto pParent = Parent();
+			/* unlink this */
+			pPrev->pNext = pNext;
+			/* Link from parent (making it the first child) */
+			pNext = pParent->pFirstChild;
+			pParent->pFirstChild = this;
+			/* Send message in order to make sure top window will be drawn */
+			InvalidateArea(Rect);
+		}
+	}
+
+#pragma endregion
+
 
 #pragma region Desktop
 //private:
@@ -633,11 +672,45 @@ public:
 				pWin->Require(WM_NOTIFY_CHILD_HAS_FOCUS, (WM_PARAM)&Info);
 		return false;
 	}
+
+	static WObj *_GetNextChild(WObj *pParent, WObj *pChild) {
+		WObj *pObj = nullptr;
+		if (pChild)
+			pObj = pChild->pNext;
+		if (!pObj)
+			pObj = pParent->pFirstChild;
+		if (pObj != pChild)
+			return pObj;
+		return nullptr;
+	}
+	WObj *_GetFocussedChild() {
+		if (!pWinFocus) return nullptr;
+		if (pWinFocus->pParent == this)
+			return pWinFocus;
+		return nullptr;
+	}
+	WObj *SetFocusOnNextChild() {
+		if (auto pChild = _GetFocussedChild()) {
+			do {
+				if (!(pChild = _GetNextChild(this, pChild)))
+					return nullptr;
+			} while (!pChild->IsFocussable());
+			if (!pChild->SetFocus())
+				return pChild;
+		}
+		return nullptr;
+	}
+
 #pragma endregion
 
 #pragma region Visibility
 	bool IsVisible() const { return Status & WC_VISIBLE; }
-	void ShowWindow();
+	void ShowWindow() {
+		if (!(Status & WC_VISIBLE)) {
+			Status |= WC_VISIBLE;
+			InvalidateDescs();
+		}
+	}
 	void HideWindow() {
 		if (Status & WC_VISIBLE) {
 			Status &= ~WC_VISIBLE;

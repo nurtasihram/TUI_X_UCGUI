@@ -197,7 +197,7 @@ protected:
 				auto pState = (const PID_STATE *)*Data;
 				if (pState) { /* Message may not have a valid pointer (moved out) ! */
 					if (pState->Pressed) {
-						WM_BringToTop(this);
+						BringToTop();
 						return false; /* Message handled -> Return */
 					}
 				}
@@ -254,7 +254,7 @@ public:
 				auto pChild = paWidget->pfCreateIndirect(paWidget, pDialogClient, 0, 0, 0); /* Create child window */
 				pChild->ShowWindow();
 			}
-			WM_SetFocusOnNextChild(pDialog);     /* Set the focus to the first child */
+			pDialog->SetFocusOnNextChild();     /* Set the focus to the first child */
 			pDialogClient->Require(WM_INIT_DIALOG);
 			return pDialog;
 		}

@@ -308,7 +308,7 @@ private:
 					}
 				}
 				else
-					WM_BringToTop(this);
+					BringToTop();
 				Notification = WM_NOTIFICATION_CLICKED;
 			}
 			else
@@ -377,7 +377,7 @@ private:
 				return (WM_PARAM)pParent->Props.aBkColor[1];
 			case WM_TOUCH:
 				pParent->SetFocus();
-				WM_BringToTop(pParent);
+				pParent->BringToTop();
 				return 0;
 			case WM_GET_CLIENT_WINDOW:
 				return (WM_PARAM)pObj;

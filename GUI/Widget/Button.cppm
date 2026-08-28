@@ -89,7 +89,7 @@ private:
 		/* Draw focus */
 		if (GetStates() & BUTTON_STATE_FOCUS) {
 			GUI.SetColor(RGB_BLACK);
-			GUI_DrawFocusRect(rClient, EffectSize);
+			GUI_DrawFocusRect(rClient, EffectSize + 1);
 		}
 	}
 	void _ButtonPressed() {
@@ -122,16 +122,16 @@ private:
 		else
 			_ButtonReleased(WM_NOTIFICATION_MOVED_OUT);
 	}
-	int _OnKey(const WM_KEY_INFO *pInfo) {
+	bool _OnKey(const WM_KEY_INFO *pInfo) {
 		switch (pInfo->Key) {
 			case ' ':
 				if (pInfo->PressedCnt > 0) /* Key pressed? */
 					_ButtonPressed();
 				else
 					_ButtonReleased(WM_NOTIFICATION_RELEASED);
-				return 1;
+				return true;
 		}
-		return 0;
+		return false;
 	}
 #if BUTTON_REACT_ON_LEVEL
 	void _OnPidStateChange(const PID_CHANGED_INFO *pState) {

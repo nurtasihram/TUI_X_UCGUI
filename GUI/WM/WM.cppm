@@ -158,7 +158,7 @@ These ID values are basically meant to be used with widgets
 Note that we have chosen the values to be close to existing
 "standards", so do not change them unless forced to.
 */
-constexpr int 
+enum GUI_KEY {
 	GUI_KEY_BACKSPACE = 8 ,        /* ASCII: BACKSPACE Crtl-H */
 	GUI_KEY_TAB       = 9 ,        /* ASCII: TAB       Crtl-I */
 	GUI_KEY_ENTER     = 13,        /* ASCII: ENTER     Crtl-M */
@@ -175,7 +175,8 @@ constexpr int
 	GUI_KEY_DELETE    = 30,
 	GUI_KEY_SPACE     = 32,
 	GUI_KEY_F1        = 40,
-	GUI_KEY_F2        = 41;
+	GUI_KEY_F2        = 41
+};
 
 /*********************************************************************
 *

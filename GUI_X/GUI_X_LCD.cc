@@ -35,14 +35,17 @@ extern int  LCD_L0_Init(void) {
 	SimDisp::LoadDll(_T("SimClient.dll"));
 	//SimDisp::LoadDll(_T("SimDisp.dll"));
 	assert(SimDisp::Open(L"TUI By Nurtas Ihram", LCD_XSIZE, LCD_YSIZE));
+	SimDisp::SetOnDestroy([] {
+		ExitProcess(0);
+	});
 	SimDisp::SetOnMouse([](int16_t xPos, int16_t yPos, int16_t zPos,
 						   tSimDisp_MouseKey mk) {
 		if (xPos < 0 || yPos < 0)
 			return;
 		GUI_PID_StoreState({ { xPos, yPos }, mk.Left });
 	});
-	SimDisp::SetOnDestroy([] {
-		ExitProcess(0);
+	SimDisp::SetOnKey([](uint16_t Key, uint8_t Pressed) {
+		GUI_StoreKeyMsg(Key, Pressed);
 	});
 	SimDisp::SetOnResize([](uint16_t nSizeX, uint16_t nSizeY) -> BOOL {
 		//xSizeDisp = nSizeX;
