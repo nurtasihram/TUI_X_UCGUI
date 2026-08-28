@@ -59,21 +59,23 @@ void WM_DeleteWindow(WObj * pWin) {
 	/* Make sure that focus is set to an existing window */
 	if (WObj::pWinFocus == pWin)
 		WObj::pWinFocus = nullptr;
-	WObj::ReleaseCapture(); /* Make sure the window does not have capture */
+	if (WObj::pWinCapture == pWin)
+		WObj::ReleaseCapture(); /* Make sure the window does not have capture */
 	/* check if critical handles are affected. If so, reset the window handle to 0 */
 	CriticalHandle::Check(pWin);
-	/* Inform parent */
-	pWin->NotifyParent(WM_NOTIFICATION_CHILD_DELETED);
+	pWin->_RemoveFromLinList();
 	/* Delete all children */
 	_DeleteAllChildren(pWin->pFirstChild);
 	/* Send WM_DELETE message to window in order to inform window itself */
 	pWin->Require(WM_DELETE);     /* tell window about it */
-	pWin->_Detach();
 	/* Remove window from window stack */
-	pWin->_RemoveFromLinList();
+	pWin->_RemoveWindowFromList();
+	pWin->NotifyParent(WM_NOTIFICATION_CHILD_DELETED);
+	pWin->pParent = nullptr;
 	/* Make sure window is no longer counted as invalid */
 	if (pWin->Status & WC_ACTIVATE)
 		WObj::NumInvalidWindows--;
+	WObj::InvalidateArea(pWin->Rect);
 	/* Free window memory */
 	WObj::NumWindows--;
 	GUI_ALLOC_Free(pWin);

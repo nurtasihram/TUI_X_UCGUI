@@ -688,7 +688,7 @@ static WM_PARAM _cbDropDownTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 }
 
 void _TestDropDown() {
-	WObj *pDialog = _aDropDownDialogCreate->CreateDialog(GUI_COUNTOF(_aDropDownDialogCreate), &_cbDropDownTest, 0, 0, 0);
+	auto pDialog = _aDropDownDialogCreate->CreateDialog(GUI_COUNTOF(_aDropDownDialogCreate), &_cbDropDownTest, 0, 0, 0);
 	pDialog->DialogExec();
 }
 
@@ -804,12 +804,10 @@ static WM_PARAM _cbMultiPageTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 							if (_MultiPagePageCount > 0) {
 								int Sel = pMultiPage->GetSelection();
 								if (Sel >= 0 && Sel < _MultiPagePageCount) {
-									if (pMultiPage->IsPageEnabled((unsigned)Sel)) {
+									if (pMultiPage->IsPageEnabled((unsigned)Sel))
 										pMultiPage->DisablePage((unsigned)Sel);
-									}
-									else {
+									else
 										pMultiPage->EnablePage((unsigned)Sel);
-									}
 								}
 							}
 							_UpdateMultiPageStatus(pWin);

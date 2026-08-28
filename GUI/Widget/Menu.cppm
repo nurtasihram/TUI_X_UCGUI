@@ -606,7 +606,7 @@ private:
 public:
 	Menu(int ExFlags, int Id) :
 		Widget({}, WC_VISIBLE | WC_STAYONTOP, _Callback, nullptr, Id, WIDGET_STATE_FOCUSSABLE) {
-		_Detach();
+		Detach();
 		if (ExFlags & MENU_SF_OPEN_ON_POINTEROVER)
 			ExFlags |= MENU_SF_ACTIVE;
 		else

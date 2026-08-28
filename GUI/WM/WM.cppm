@@ -138,6 +138,7 @@ constexpr WM_CF
 	 WC_ANCHOR_LEFT      = 1 << 8, 
 	 /* Top anchor ... If parent is resized, distance to top will remain const (top is default) */
 	 WC_ANCHOR_TOP       = 1 << 9,
+	 WC_ANCHOR_ALL       = WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM,
 
 	 /* Constant outline. This is relevant for transparent windows only. If a window is transparent and does not have a constant outline, its background is invalided instead of the window itself. This causes add. computation time when redrawing. */
 	 WC_CONST_OUTLINE    = 1 << 10,
@@ -147,6 +148,13 @@ constexpr WM_CF
 	 WC_RESERVED3        = 1 << 13,
 	 WC_RESERVED4        = 1 << 14,
 	 WC_RESERVED5        = 1 << 15;
+constexpr WM_CF WM_CF_MASK =
+	WC_VISIBLE |
+	WC_MEMDEV | WC_MEMDEV_ON_REDRAW |
+	WC_STAYONTOP |
+	WC_CONST_OUTLINE |
+	WC_ANCHOR_ALL |
+	WC_LATE_CLIP;
 #pragma endregion
 
 /************************************************************

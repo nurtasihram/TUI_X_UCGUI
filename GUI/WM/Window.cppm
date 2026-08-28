@@ -99,9 +99,9 @@ inline void WM_Iterate(RECT &r, auto fn) {
 
 struct WObj {
 	RECT Rect, InvalidRect;
-	WM_CALLBACK *cb = nullptr; /* ptr to notification callback */
 	WObj *pNextLin = nullptr, *pNext = nullptr,
 		*pParent = nullptr, *pFirstChild = nullptr;
+	WM_CALLBACK *cb = nullptr; /* ptr to notification callback */
 	uint16_t Status = 0; /* Some status flags */
 
 #pragma region Window list
@@ -191,19 +191,19 @@ public:
 
 //protected:
 	void _Detach() {
-		if (!pParent)
-			return;
 		_RemoveWindowFromList();
 		/* Clear area used by this window */
 		InvalidateArea(Rect);
-		pParent = nullptr;
 	}
 public:
 	void Detach() {
-		_Detach();
+		POINT org;
 		if (pParent)
-			Move(-pParent->Rect.LeftTop()); /* Convert screen coordinates -> parent coordinates */
+			org = -pParent->Rect.LeftTop();
+		_Detach();
+		Move(org); /* Convert screen coordinates -> parent coordinates */
 		/* ToDo: Invalidate. If Parent window is located at (0,0). */
+		pParent = nullptr;
 	}
 	void Attach(WObj *pParent, POINT Pos = {}) {
 		Detach();
@@ -227,16 +227,7 @@ public:
 
 public:
 	WObj(RECT r, WM_CF Style, WM_CALLBACK *cb, WObj *pParent = nullptr) :
-		Rect(r), cb(cb), Status(Style &(WC_VISIBLE |
-										WC_MEMDEV |
-										WC_MEMDEV_ON_REDRAW |
-										WC_STAYONTOP |
-										WC_CONST_OUTLINE |
-										WC_ANCHOR_RIGHT |
-										WC_ANCHOR_BOTTOM |
-										WC_ANCHOR_LEFT |
-										WC_ANCHOR_TOP |
-										WC_LATE_CLIP)) {
+		Rect(r), cb(cb), Status(Style & WM_CF_MASK) {
 		//WM_ASSERT_NOT_IN_PAINT();
 		/* Default parent is Desktop 0 */
 		if (!pParent)
@@ -651,9 +642,7 @@ public:
 	bool SetFocus() {
 		if (HasFocus())
 			return true;
-		NOTIFY_CHILD_HAS_FOCUS_INFO Info;
-		Info.pOld = pWinFocus;
-		Info.pNew = this;
+		NOTIFY_CHILD_HAS_FOCUS_INFO Info{ pWinFocus, this };
 		/* Send a "no more focus" message to window losing focus */
 		if (pWinFocus)
 			pWinFocus->Require(WM_SET_FOCUS, 0);
@@ -663,7 +652,7 @@ public:
 			return true;
 		/* Set message to ancestors of window getting the focus */
 		WObj *pWin = this;
-		while ((pWin = pWin->Parent()))
+		for (pWin = this; pWin = pWin->Parent();)
 			pWin->Require(WM_NOTIFY_CHILD_HAS_FOCUS, (WM_PARAM)&Info);
 		/* Set message to ancestors of window loosing the focus */
 		pWin = Info.pOld;

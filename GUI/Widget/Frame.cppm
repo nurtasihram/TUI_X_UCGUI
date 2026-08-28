@@ -8,6 +8,7 @@ export module TUX.Widget.Frame;
 import TUX.Widget;
 import TUX.Widget.Button;
 import TUX.Widget.Menu;
+import TUX.Widget.Window;
 
 static int16_t FRAMEWIN__MinVisibility = 5;
 
@@ -63,14 +64,11 @@ public:
 private:
 	Properties Props = DefaultProps;
 	
-	WM_CALLBACK *cb;
-	WObj *pClient = nullptr;
+	Window *pClient = nullptr;
 	Menu *pMenu = nullptr;
 	char *pText = nullptr;
 	RECT rRestore;
 	uint16_t Flags;
-	WObj *pFocussedChild = nullptr; /* Handle to focussed child .. default none (0) */
-	DIALOG_STATUS *pDialogStatus = nullptr;
 
 	struct POSITIONS {
 		int16_t TitleHeight;
@@ -126,14 +124,14 @@ private:
 	}
 	void _UpdatePositions() {
 		/* Move client window accordingly */
-		if (this->pClient || this->pMenu) {
+		if (pClient || pMenu) {
 			POSITIONS Pos;
 			_CalcPositions(&Pos);
-			if (this->pClient) {
+			if (pClient) {
 				pClient->MoveChildTo(Pos.rClient.LeftTop());
 				pClient->SetSize(Pos.rClient.Size());
 			}
-			if (this->pMenu)
+			if (pMenu)
 				pMenu->MoveChildTo({ Pos.rClient.x0, Pos.rClient.y0 - Pos.MenuHeight });
 		}
 	}
@@ -224,15 +222,13 @@ private:
 			DrawUp();
 	}
 	void _OnChildHasFocus(const NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
-		if (pInfo) {
-			if (WM__IsAncestorOrSelf(pInfo->pNew, this)) /* A child has received the focus, Framewindow needs to be activated */
-				SetActive(1);
-			else { /* A child has lost the focus, we need to deactivate */
-				SetActive(0);
-				/* Remember the child which had the focus so we can reactive this child */
-				if (WM__IsAncestor(pInfo->pOld, this))
-					pFocussedChild = pInfo->pOld;
-			}
+		if (!pInfo) return;
+		/* A child has received the focus, Framewindow needs to be activated */
+		if (WM__IsAncestorOrSelf(pInfo->pNew, this)) { 
+			SetActive(1);
+		}
+		else { /* A child has lost the focus, we need to deactivate */
+			SetActive(0);
 		}
 	}
 
@@ -242,137 +238,85 @@ private:
 			if (pObj->_HandleResizeable(MsgId, Data))
 				return 0;
 		switch (MsgId) {
-			case WM_HANDLE_DIALOG_STATUS:
-				if (Data) /* set pointer to Dialog status */
-					pObj->pDialogStatus = (DIALOG_STATUS *)Data;
-				return (WM_PARAM)pObj->pDialogStatus;
-			case WM_PAINT:
-				pObj->_OnPaint();
-				return 0;
-			case WM_TOUCH:
-				pObj->_OnTouch((const PID_STATE *)Data);
-				return 0;
-			case WM_GET_INSIDE_RECT: {
-				POSITIONS Pos;
-				pObj->_CalcPositions(&Pos);
-				*(RECT *)Data = Pos.rClient;
-				return 0;
-			}
-			case WM_GET_CLIENT_WINDOW: /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
-				return (WM_PARAM)pObj->pClient;
-			case WM_NOTIFY_PARENT: {
-				auto pInfo = (const NOTIFY_INFO *)Data;
-				auto pWinSrc = pInfo->pWinSrc;
-				if (pInfo->Notification == WM_NOTIFICATION_RELEASED) {
-					int Id = pWinSrc->GetID();
-					switch (Id) {
-						case GUI_ID_CLOSE:
-							WM_DeleteWindow(pObj);
-							break;
-						case GUI_ID_MAXIMIZE:
-							if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED)
-								pObj->Restore();
-							else
-								pObj->Maximize();
-							break;
-						case GUI_ID_MINIMIZE:
-							if (pObj->Flags & FRAMEWIN_CF_MINIMIZED)
-								pObj->Restore();
-							else
-								pObj->Minimize();
-							break;
-					}
+		case WM_PAINT:
+			pObj->_OnPaint();
+			return 0;
+		case WM_TOUCH:
+			pObj->_OnTouch((const PID_STATE *)Data);
+			return 0;
+		case WM_GET_INSIDE_RECT: {
+			POSITIONS Pos;
+			pObj->_CalcPositions(&Pos);
+			*(RECT *)Data = Pos.rClient;
+			return 0;
+		}
+		case WM_HANDLE_DIALOG_STATUS:
+			return pObj->pClient->Require(WM_HANDLE_DIALOG_STATUS, Data);
+		case WM_GET_CLIENT_WINDOW: /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
+			return (WM_PARAM)pObj->pClient;
+		case WM_NOTIFY_PARENT: {
+			auto pInfo = (const NOTIFY_INFO *)Data;
+			auto pWinSrc = pInfo->pWinSrc;
+			switch (pInfo->Notification) {
+			case WM_NOTIFICATION_CHILD_DELETED:
+				if (pWinSrc == pObj->pClient) {
+					pObj->pClient = nullptr;
+					WM_DeleteWindow(pObj);
 				}
-				return 0;
-			}
-			case WM_SET_FOCUS: /* We have received or lost focus */
-				if (Data) {
-					if (IsWindow(pObj->pFocussedChild))
-						pObj->pFocussedChild->SetFocus();
-					else
-						pObj->pFocussedChild = pObj->pClient->SetFocusOnNextChild();
-					pObj->SetActive(1);
-					return 0; /* Focus could be accepted */
+				break;
+			case WM_NOTIFICATION_RELEASED:
+				switch (pWinSrc->GetID()) {
+					case GUI_ID_CLOSE:
+						WM_DeleteWindow(pObj);
+						break;
+					case GUI_ID_MAXIMIZE:
+						if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED)
+							pObj->Restore();
+						else
+							pObj->Maximize();
+						break;
+					case GUI_ID_MINIMIZE:
+						if (pObj->Flags & FRAMEWIN_CF_MINIMIZED)
+							pObj->Restore();
+						else
+							pObj->Minimize();
+						break;
 				}
-				else
-					pObj->SetActive(0);
-				return 0;
-			case WM_NOTIFY_CHILD_HAS_FOCUS:
-				pObj->_OnChildHasFocus((const NOTIFY_CHILD_HAS_FOCUS_INFO *)Data);
 				break;
-			case WM_DELETE:
-				GUI_DEBUG_LOG("FRAMEWIN: _FRAMEWIN_Callback(WM_DELETE)\n");
-				GUI_ALLOC_Free(pObj->pText);
-				pObj->pText = nullptr;
-				break;
+			}
+			return 0;
+		}
+		case WM_SET_FOCUS: /* We have received or lost focus */
+			if (Data) {
+				pObj->pClient->SetFocus();
+			}
+			pObj->SetActive(Data);
+			return 0;
+		case WM_NOTIFY_CHILD_HAS_FOCUS:
+			pObj->_OnChildHasFocus((const NOTIFY_CHILD_HAS_FOCUS_INFO *)Data);
+			break;
+		case WM_DELETE:
+			GUI_DEBUG_LOG("FRAMEWIN: _FRAMEWIN_Callback(WM_DELETE)\n");
+			GUI_ALLOC_Free(pObj->pText);
+			pObj->pText = nullptr;
+			break;
 		}
 		/* Let widget handle the standard messages */
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
-	static WM_PARAM _cbClient(WObj *pWin, int MsgId, WM_PARAM Data) {
-		auto pParent = (Frame *)pWin->Parent();
-		auto cb = pParent->cb;
-		switch (MsgId) {
-			case WM_PAINT:
-				if (pParent->Props.ClientColor != RGB_INVALID_COLOR) {
-					GUI.SetBkColor(pParent->Props.ClientColor);
-					GUI_Clear();
-				}
-				/* Give the user callback  a chance to draw.
-				 * Note that we can not run into the bottom part, as this passes the parents handle
-				  */
-				if (cb)
-					cb(pParent, MsgId, Data);
-				return 0;
-			case WM_SET_FOCUS:
-				if (Data) { /* Focus received */
-					if (pParent->pFocussedChild && pParent->pFocussedChild != pWin)
-						pParent->pFocussedChild->SetFocus();
-					else
-						pParent->pFocussedChild = pWin->SetFocusOnNextChild();
-					return 0; /* Focus change accepted */
-				}
-				return 0;
-			case WM_KEY:
-				if (auto pInfo = (const WM_KEY_INFO *)Data) {
-					if (pInfo->PressedCnt > 0) { /* Key pressed? */
-						int Key = pInfo->Key;
-						switch (Key) {
-						case GUI_KEY_TAB:
-							pParent->pFocussedChild = pWin->SetFocusOnNextChild();
-							return 1;
-						}
-					}
-				}
-				break;
-			case WM_GET_ACCEPT_FOCUS:
-				pParent->HandleActive(MsgId, &Data);
-				return Data;
-			case WM_GET_BKCOLOR:
-				return pParent->Props.ClientColor;
-			case WM_GET_INSIDE_RECT:        /* This should not be passed to parent ... (We do not want parents coordinates)*/
-			case WM_GET_ID:                 /* This should not be passed to parent ... (Possible recursion problem)*/
-			case WM_GET_CLIENT_WINDOW:      /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
-				return WM_DefaultProc(pWin, MsgId, Data);
-		}
-		/* Call user callback. Note that the user callback gets the handle of the Framewindow itself, NOT the Client. */
-		if (cb)
-			return cb(pParent, MsgId, Data);
-		return WM_DefaultProc(pWin, MsgId, Data);
-	}
 
 public:
 	Frame(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
 		  uint16_t ExFlags, const char *pTitle, WM_CALLBACK *cb) :
 		Widget(r, Style | WC_LATE_CLIP, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS),
-		cb(cb), Flags(ExFlags) {
+		Flags(ExFlags) {
 		POSITIONS Pos;
 		_CalcPositions(&Pos);
-		pClient = new WObj(
+		pClient = new Window(
 			Pos.rClient,
-			WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT | WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM | WC_VISIBLE | WC_LATE_CLIP, _cbClient, this);
+			WC_ANCHOR_ALL | WC_VISIBLE | WC_LATE_CLIP, this, 0, cb);
 		if (!(Style & (WC_MEMDEV | WC_MEMDEV_ON_REDRAW)))
 			WM_DisableMemdev(this);
 		SetText(pTitle);
@@ -465,7 +409,7 @@ public:
 		int16_t x0 = BorderSize, y0 = BorderSize + TitleHeight + IBorderSize;
 		auto xSize = GetSizeX() - BorderSize * 2;
 		this->pMenu = pMenu;
-		if (cb)
+		if (pClient)
 			pMenu->SetOwner(pClient);
 		pMenu->AttachMenu(this, x0, y0, xSize, 0);
 		WM_SetAnchor(pMenu, WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT);
@@ -842,6 +786,7 @@ public:
 			}
 			return true;
 		}
+		return false;
 	}
 #endif
 	bool _HandleResizeable(int MsgId, WM_PARAM Data) {

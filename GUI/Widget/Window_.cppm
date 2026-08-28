@@ -6,16 +6,14 @@ export module TUX.Widget.Window;
 
 import TUX.Widget;
 
-#define WINDOW_BKCOLOR_DEFAULT RGB_GRAYL(0xC0)
-
 export {
 
-class Window : public Widget {
+class Window : public WObj {
 
 public:
 
 	struct Properties {
-		RGBC BkColor{ WINDOW_BKCOLOR_DEFAULT };
+		RGBC BkColor{ RGB_GRAYL(0xE4) };
 	} static DefaultProps;
 
 private:
@@ -28,11 +26,13 @@ private:
 private:
 
 	void _OnChildHasFocus(const NOTIFY_CHILD_HAS_FOCUS_INFO* pInfo) {
-		if (pInfo)
-			if (!WM__IsAncestorOrSelf(pInfo->pNew, this)) /* A child has received the focus, Framewindow needs to be activated */
-				/* Remember the child which had the focus so we can reactive this child */
-				if (WM__IsAncestor(pInfo->pOld, this))
-					pFocussedChild = pInfo->pOld;
+		if (!pInfo) return;
+		/* A child has received the focus, Framewindow needs to be activated */
+		if (WM__IsAncestorOrSelf(pInfo->pNew, this)) 
+			pFocussedChild = pInfo->pNew;
+		else  if (WM__IsAncestor(pInfo->pOld, this))
+			/* Remember the child which had the focus so we can reactive this child */
+			pFocussedChild = pInfo->pOld;
 	}
 	void _OnKey(const WM_KEY_INFO* pInfo) {
 		if (pInfo->PressedCnt > 0) {
@@ -47,6 +47,8 @@ private:
 		auto pObj = (Window*)pWin;
 		auto cb = pObj->cb;
 		switch (MsgId) {
+		case WM_CREATE:
+			return 0;
 		case WM_HANDLE_DIALOG_STATUS:
 			if (Data) /* set pointer to Dialog status */
 				pObj->pDialogStatus = (DIALOG_STATUS*)Data;
@@ -60,8 +62,7 @@ private:
 			}
 			return 0;
 		case WM_GET_ACCEPT_FOCUS:
-			pObj->HandleActive(MsgId, &Data);
-			return Data;
+			return false;
 		case WM_NOTIFY_CHILD_HAS_FOCUS:
 			pObj->_OnChildHasFocus((const NOTIFY_CHILD_HAS_FOCUS_INFO*)Data);
 			return 0;
@@ -75,22 +76,17 @@ private:
 		case WM_GET_BKCOLOR:
 			return pObj->Props.BkColor;
 		}
+		pObj->pParent->Require(MsgId, Data);
 		if (cb)
 			return cb(pWin, MsgId, Data);
 		return WM_DefaultProc(pWin, MsgId, Data);
 	}
 public:
 	Window(RECT r, WM_CF Style, WObj *pParent, uint16_t Id, WM_CALLBACK *cb) :
-		Widget(r, Style, _cb, pParent, Id, WIDGET_STATE_FOCUSSABLE),
+		WObj(r, Style, _cb, pParent),
 		cb(cb) {}
-	static WObj* CreateIndirect(const CreateStruct* pCreateInfo, WObj* hWinParent, int x0, int y0, WM_CALLBACK* cb) {
-		return new Window(
-			RECT(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,
-				 pCreateInfo->x0 + x0 + pCreateInfo->xSize - 1,
-				 pCreateInfo->y0 + y0 + pCreateInfo->ySize - 1),
-			pCreateInfo->Flags, hWinParent, pCreateInfo->Id,
-			cb);
-	}
+public:
+	auto FocussedChild() const { return pFocussedChild; }
 };
 
 }
