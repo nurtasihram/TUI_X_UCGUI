@@ -43,6 +43,45 @@ constexpr TEXTALIGN
 	TEXTALIGN_VCENTER     = (2<<2),
 	TEXTALIGN_VERTICAL    = (3<<2);
 
+#if GUI_SUPPORT_DEVICES
+
+struct GUI_MEMDEV {
+	int16_t x0, y0, XSize, YSize;
+	int16_t BytesPerLine;
+	int16_t BitsPerPixel;
+	const tLCDDEV_APIList *pAPIList;
+};
+
+typedef void GUI_CALLBACK_VOID_P(void *p);
+
+void GUI_MEMDEV__CopyFromLCD(GUI_MEMDEV *pDev);
+void GUI_MEMDEV__GetRect(RECT *pRect);
+
+GUI_MEMDEV *GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Flags,
+										  const tLCDDEV_APIList *pMemDevAPI);
+
+void *GUI_MEMDEV__XY2PTR(int x, int y);
+void *GUI_MEMDEV__XY2PTREx(GUI_MEMDEV *pDev, int x, int y);
+void  GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV *pDev, int x, int y);
+
+/* Create a memory device which is compatible to the selected LCD */
+GUI_MEMDEV *GUI_MEMDEV_Create(int x0, int y0, int XSize, int YSize);
+GUI_MEMDEV *GUI_MEMDEV_CreateEx(int x0, int y0, int XSize, int YSize, int Flags);
+GUI_MEMDEV *GUI_MEMDEV_CreateFixed(int x0, int y0, int xsize, int ysize, int Flags,
+										 const tLCDDEV_APIList *pMemDevAPI);
+void GUI_MEMDEV_Clear(GUI_MEMDEV *pDev);
+void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV *pDev);
+void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV *pDev);
+void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV *pDev, int x, int y);
+void GUI_MEMDEV_Delete(GUI_MEMDEV *pDev);
+int  GUI_MEMDEV_GetXSize(GUI_MEMDEV *pDev);
+int  GUI_MEMDEV_GetYSize(GUI_MEMDEV *pDev);
+void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV *pDev, int YSize);
+GUI_MEMDEV *GUI_MEMDEV_Select(GUI_MEMDEV *pDev);  /* Select (activate) a particular memory device. */
+void  GUI_MEMDEV_SetOrg(GUI_MEMDEV *pDev, int x0, int y0);
+int   GUI_MEMDEV_Draw(RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int MemSize, int Flags);
+#endif
+
 struct GUI_CONTEXT {
 	/* Variables in LCD module */
 	RGBC aColor[2];
@@ -60,7 +99,7 @@ struct GUI_CONTEXT {
 	/* Variables in MEMDEV module (with memory devices only) */
 #if GUI_SUPPORT_DEVICES
 	const tLCDDEV_APIList *pDeviceAPI;  /* function pointers only */
-	GUI_HMEM hDevData;
+	GUI_MEMDEV *pDevData;
 	RECT ClipRectPrev;
 #endif
 public:

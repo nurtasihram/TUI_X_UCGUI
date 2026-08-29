@@ -22,22 +22,6 @@
 
 typedef enum { WRAPMODE_NONE, WRAPMODE_WORD, WRAPMODE_CHAR } WRAPMODE;
 
-#if GUI_SUPPORT_MEMDEV
-struct GUI_MEMDEV {
-	int16_t x0, y0, XSize, YSize;
-	int16_t BytesPerLine;
-	int16_t BitsPerPixel;
-	const tLCDDEV_APIList *pAPIList;
-};
-
-void GUI_MEMDEV__CopyFromLCD(GUI_MEMDEV_Handle hMem);
-void GUI_MEMDEV__GetRect(RECT *pRect);
-
-GUI_MEMDEV_Handle GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Flags
-											, const tLCDDEV_APIList *pMemDevAPI);
-
-#endif
-
 #define GUI_UC__GetCharSize(sText)  GUI.pUC_API->pfGetCharSize(sText)
 #define GUI_UC__GetCharCode(sText)  GUI.pUC_API->pfGetCharCode(sText)
 

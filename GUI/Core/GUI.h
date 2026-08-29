@@ -90,28 +90,6 @@ void     GUI__memmove(void *pDest, const void *pSrc, size_t NumBytes);
 #define GUI_MEMDEV_HASTRANS       0
 #define GUI_MEMDEV_NOTRANS    (1<<0)
 
-#if GUI_SUPPORT_DEVICES
-typedef void *GUI_MEMDEV_Handle;
-typedef void GUI_CALLBACK_VOID_P(void *p);
-
-/* Create a memory device which is compatible to the selected LCD */
-GUI_MEMDEV_Handle GUI_MEMDEV_Create(int x0, int y0, int XSize, int YSize);
-GUI_MEMDEV_Handle GUI_MEMDEV_CreateEx(int x0, int y0, int XSize, int YSize, int Flags);
-GUI_MEMDEV_Handle GUI_MEMDEV_CreateFixed(int x0, int y0, int xsize, int ysize, int Flags,
-											const tLCDDEV_APIList *pMemDevAPI);
-void GUI_MEMDEV_Clear(GUI_MEMDEV_Handle hMem);
-void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV_Handle hMem);
-void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV_Handle hMem);
-void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y);
-void GUI_MEMDEV_Delete(GUI_MEMDEV_Handle MemDev);
-int  GUI_MEMDEV_GetXSize(GUI_MEMDEV_Handle hMem);
-int  GUI_MEMDEV_GetYSize(GUI_MEMDEV_Handle hMem);
-void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV_Handle hMem, int YSize);
-GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem);  /* Select (activate) a particular memory device. */
-void  GUI_MEMDEV_SetOrg(GUI_MEMDEV_Handle hMem, int x0, int y0);
-int   GUI_MEMDEV_Draw(RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int MemSize, int Flags);
-#endif
-
 void GUI_SelectLCD(void);
 
 void GUI_Delay(int Period);

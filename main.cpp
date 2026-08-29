@@ -1412,15 +1412,15 @@ int main(void) {
 	GUI_Init();
 	GUI_CURSOR_Show();
 
-	_TestListView();
-	_TestMultiPage();
-	_TestRadio();
-	_TestProgBar();
-	_TestSlider();
-	_TestEdit();
-	_TestMultiEdit();
-	_TestDropDown();
-	_TestListBox();
+	//_TestListView();
+	//_TestMultiPage();
+	//_TestRadio();
+	//_TestProgBar();
+	//_TestSlider();
+	//_TestEdit();
+	//_TestMultiEdit();
+	//_TestDropDown();
+	//_TestListBox();
 	_TestMemDev();
 
 	return 0;

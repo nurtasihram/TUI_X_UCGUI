@@ -30,7 +30,7 @@ void GUI_Init(void) {
 void GUI_SelectLCD(void) {
 #if GUI_SUPPORT_DEVICES
 	GUI.pDeviceAPI = LCD_aAPI[0];
-	GUI.hDevData = 0;
+	GUI.pDevData = nullptr;
 #endif
 	LCD_SetClipRectMax();
 	WObj::Activate();

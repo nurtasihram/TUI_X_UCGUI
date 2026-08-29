@@ -704,7 +704,6 @@ public:
 		NumWindows--;
 		/* Select a valid window */
 		pWinFirst->Select();
-//		GUI_ALLOC_Free(this);
 	}
 
 public:

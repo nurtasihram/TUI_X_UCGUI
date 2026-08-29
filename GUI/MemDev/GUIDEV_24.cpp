@@ -9,7 +9,7 @@
 static const RGBC aID[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
 static PIXELINDEX *_XY2PTR(int x, int y) {
-	auto pDev = (GUI_MEMDEV *)GUI.hDevData;
+	auto pDev = GUI.pDevData;
 	auto pData = (uint8_t *)(pDev + 1);
 	pData += (y - pDev->y0) * pDev->BytesPerLine;
 	return ((PIXELINDEX *)pData) + x - pDev->x0;
@@ -252,7 +252,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 						int BitsPerPixel, int BytesPerLine,
 						const uint8_t *pData, int Diff, const RGBC *pTrans) {
 	int i;
-	auto pDev = (GUI_MEMDEV *)GUI.hDevData;
+	auto pDev = GUI.pDevData;
 	unsigned    BytesPerLineDest;
 	PIXELINDEX *pDest;
 	BytesPerLineDest = pDev->BytesPerLine;
@@ -311,7 +311,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 static void _FillRect(int x0, int y0, int x1, int y1) {
 	unsigned BytesPerLine;
 	int Len;
-	auto pDev = (GUI_MEMDEV *)GUI.hDevData;
+	auto pDev = GUI.pDevData;
 	auto pData = _XY2PTR(x0, y0);
 	BytesPerLine = pDev->BytesPerLine;
 	Len = x1 - x0 + 1;
@@ -330,7 +330,7 @@ static void _DrawHLine(int x0, int y, int x1) {
 }
 
 static void _DrawVLine(int x, int y0, int y1) {
-	auto pDev = (GUI_MEMDEV *)GUI.hDevData;
+	auto pDev = GUI.pDevData;
 	auto pData = _XY2PTR(x, y0);
 	unsigned BytesPerLine = pDev->BytesPerLine;
 	unsigned NumPixels = y1 - y0 + 1;
@@ -341,7 +341,7 @@ static void _DrawVLine(int x, int y0, int y1) {
 }
 
 static void _SetPixel(int x, int y, RGBC Index) {
-	auto pDev = (GUI_MEMDEV *)GUI.hDevData;
+	auto pDev = GUI.pDevData;
 	auto pData = _XY2PTR(x, y);
 	*pData = Index;
 }

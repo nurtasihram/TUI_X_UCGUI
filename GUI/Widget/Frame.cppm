@@ -451,7 +451,7 @@ private:
 		PID_STATE StateBelow = Pos + GetOrg();
 		if (auto pBelow = WM_Screen2Win(StateBelow); pBelow != this) {
 			StateBelow -= pBelow->GetOrg();
-			WM__SendMessage(pBelow, WM_MOUSEOVER, (WM_PARAM)&StateBelow);
+			pBelow->Require(WM_MOUSEOVER, (WM_PARAM)&StateBelow);
 			return true;
 		}
 		return false;

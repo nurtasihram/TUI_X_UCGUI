@@ -111,14 +111,14 @@ private:
 		uint32_t ItemId : 16;
 	};
 
-	static int _SendMenuMessage(WObj *pSrcWin, WObj *pDestWin, uint16_t MsgType, uint16_t ItemId) {
+	static WM_PARAM _SendMenuMessage(WObj *pSrcWin, WObj *pDestWin, uint16_t MsgType, uint16_t ItemId) {
 		if (!pDestWin)
 			pDestWin = pSrcWin->Parent();
 		if (pDestWin) {
 			MsgPack MsgData;
 			MsgData.MsgType = MsgType;
 			MsgData.ItemId = ItemId;
-			return (int)WM__SendMessage(pDestWin, WM_MENU, *(WM_PARAM *)&MsgData);
+			return pDestWin->Require(WM_MENU, *(WM_PARAM *)&MsgData);
 		}
 		return 0;
 	}
@@ -372,7 +372,7 @@ private:
 				Pos += GetOrg();
 				if (auto pBelow = WM_Screen2Win(Pos); pBelow && (pBelow != this)) {
 					PID_STATE State = Pos - pBelow->GetOrg();
-					WM__SendMessage(pBelow, WM_MOUSEOVER, (WM_PARAM)&State);
+					pBelow->Require(WM_MOUSEOVER, (WM_PARAM)&State);
 					return true;
 				}
 			}
@@ -439,7 +439,7 @@ private:
 					State += GetOrg() - pOwner->GetOrg();
 					pState = &State;
 				}
-				WM__SendMessage(pOwner, MsgId, (WM_PARAM)pState);
+				pOwner->Require(MsgId, (WM_PARAM)pState);
 			}
 		}
 	}
@@ -459,7 +459,7 @@ private:
 			case MENU_ON_INITSUBMENU:
 				/* Forward message to owner. */
 				if (auto pOwner = this->pOwner ? this->pOwner : Parent())
-					WM__SendMessage(pOwner, WM_MENU, Data);
+					pOwner->Require(WM_MENU, Data);
 				break;
 			case MENU_ON_OPEN:
 				Sel = -1;

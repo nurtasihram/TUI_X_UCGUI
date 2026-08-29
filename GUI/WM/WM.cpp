@@ -10,7 +10,7 @@ PID_STATE WM_PID__GetPrevState() {
 #pragma region Mouse/Touch
 static void _SendMessageIfEnabled(WObj *pWin, int MsgId, WM_PARAM Data) {
 	if (pWin->IsEnabled())
-		WM__SendMessage(pWin, MsgId, Data);
+		pWin->Require(MsgId, Data);
 }
 
 static void _SendTouchMessage(WObj *pWin, int MsgId, PID_STATE *pState) {
@@ -60,7 +60,7 @@ bool WM_HandlePID(void) {
 	}
 	/* Send WM_TOUCH message(s) Note that we may have to send 2 touch messages. */
 	if (WM_PID__StateLast.Pressed | StateNew.Pressed) { /* Only if pressed or just released */
-		r = 1;
+		r = true;
 		/* Tell window if it is no longer pressed
 		* This happens for 2 possible reasons:
 		* a) PID is released
@@ -119,12 +119,6 @@ bool WM_Exec(void) {
 	return r;
 }
 
-WM_PARAM WM__SendMessage(WObj * pWin, int MsgId, WM_PARAM Data) {
-	if (pWin->cb)
-		return pWin->cb(pWin, MsgId, Data);
-	return WM_DefaultProc(pWin, MsgId, Data);
-}
-
 /*********************************************************************
 *
 *       WM_DefaultProc
@@ -168,7 +162,7 @@ int WM_OnKey(int Key, int Pressed) {
 		WM_KEY_INFO Info;
 		Info.Key = Key;
 		Info.PressedCnt = Pressed;
-		WM__SendMessage(WObj::pWinFocus, WM_KEY, (WM_PARAM)&Info);
+		WObj::pWinFocus->Require(WM_KEY, (WM_PARAM)&Info);
 		return 1;
 	}
 	return 0;
