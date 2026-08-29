@@ -18,10 +18,11 @@ typedef void *GUI_HMEM;
 struct PID_STATE : POINT {
 	int8_t Pressed;
 	PID_STATE(POINT Pos, int8_t Pressed = 0) : POINT(Pos), Pressed(Pressed) {}
-	auto operator=(const POINT &p) {
-		this->x = p.x;
-		this->y = p.y;
-	}
+	auto operator=(const POINT &p) { x = p.x, y = p.y; }
+	bool operator==(const PID_STATE &p) const
+	{ return x == p.x && y == p.y &&	Pressed == p.Pressed; }
+	bool operator!=(const PID_STATE &p) const
+	{ return !(*this == p); }
 };
 
 using DRAWMODE = uint8_t; // 2bits

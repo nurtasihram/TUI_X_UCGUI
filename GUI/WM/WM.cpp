@@ -2,43 +2,110 @@
 #include "GUI_Protected.h"
 #include "GUIDebug.h"
 
-#define ASSIGN_IF_LESS(v0,v1) if (v1<v0) v0=v1
-
 static bool IsActive;
 
-uint8_t WM__PaintCallbackCnt;      /* Public for assertions only */
 static WObj *pWinNextDraw;
 
-PID_STATE WM_PID__StateLast{ 0 };
+#pragma region Mouse/Touch
+static void _SendMessageIfEnabled(WObj *pWin, int MsgId, WM_PARAM Data) {
+	if (pWin->IsEnabled())
+		WM__SendMessage(pWin, MsgId, Data);
+}
 
-#pragma region CriticalHandles
-struct CriticalHandle {
-	static CriticalHandle *pFirst;
-	CriticalHandle *pNext = nullptr;
-	WObj *pWin = nullptr;
-	static void Check(WObj * pWin) {
-		for (auto pCH = pFirst; pCH; pCH = pCH->pNext)
-			if (pCH->pWin == pWin)
-				pCH->pWin = nullptr;
+static void _SendTouchMessage(WObj *pWin, int MsgId, PID_STATE *pState) {
+	if (pState) {
+		pState->x -= pWin->Rect.x0;
+		pState->y -= pWin->Rect.y0;
 	}
-	void Add() {
-		pNext = pFirst;
-		pFirst = this;
+	_SendMessageIfEnabled(pWin, MsgId, (WM_PARAM)pState);
+	/* Send notification to all ancestors.
+	   We need to check if the window which has received the last message still exists,
+	   since it may have deleted itself and its parent as result of the message.
+	*/
+	while (WObj::IsWindow(pWin)) {
+		pWin = pWin->Parent();
+		if (pWin)
+			_SendMessageIfEnabled(pWin, WM_TOUCH_CHILD, (WM_PARAM)pState); /* Send message to the ancestors */
 	}
-	void Remove() {
-		CriticalHandle *pLast = nullptr;
-		for (auto pCH = pFirst; pCH; pCH = pCH->pNext) {
-			if (pCH == this) {
-				if (pLast)
-					pLast->pNext = pCH->pNext;
-				pFirst = pCH->pNext;
-				break;
+}
+
+PID_STATE WM_PID__StateLast{ 0 };
+PID_STATE WM_PID__GetPrevState() {
+	return WM_PID__StateLast;
+}
+
+/*********************************************************************
+*
+*       WM_HandlePID
+*
+* Polls the touch screen. If something has changed,
+* sends a message to the concerned window.
+*
+* Return value:
+*   0 if nothing has been done
+*   1 if touch message has been sent
+*/
+bool WM_HandlePID(void) {
+	auto StateNew = GUI_PID_GetState();
+	if (WM_PID__StateLast == StateNew) return false;
+	bool r = false;
+#if GUI_SUPPORT_CURSOR
+	GUI_CURSOR_SetPosition(StateNew.x, StateNew.y);
+#endif
+	WObj::CriticalHandle CHWin = WObj::pWinCapture ? WObj::pWinCapture : WM_Screen2Win(StateNew);
+	CHWin.Add();
+	/* Send WM_PID_STATE_CHANGED message if state has changed (just pressed or just released) */
+	if (WM_PID__StateLast.Pressed != StateNew.Pressed && CHWin.pWin) {
+		PID_CHANGED_INFO Info;
+		auto pWin = CHWin.pWin;
+		Info.State = StateNew.Pressed;
+		Info.StatePrev = WM_PID__StateLast.Pressed;
+		Info.x = StateNew.x - pWin->Rect.x0;
+		Info.y = StateNew.y - pWin->Rect.y0;
+		_SendMessageIfEnabled((WObj *)CHWin.pWin, WM_PID_STATE_CHANGED, (WM_PARAM)&Info);
+	}
+	/* Send WM_TOUCH message(s) Note that we may have to send 2 touch messages. */
+	if (WM_PID__StateLast.Pressed | StateNew.Pressed) { /* Only if pressed or just released */
+		r = 1;
+		/* Tell window if it is no longer pressed
+		* This happens for 2 possible reasons:
+		* a) PID is released
+		* b) PID is moved out
+		*/
+		if (WObj::CHWinLast.pWin != CHWin.pWin) {
+			if (WObj::CHWinLast.pWin) {
+				GUI_DEBUG_LOG("\nSending WM_TOUCH to LastWindow %d (out of area)", WObj::CHWinLast.pWin);
+				PID_STATE *pState = StateNew.Pressed ? nullptr : &WM_PID__StateLast;
+				_SendTouchMessage((WObj *)WObj::CHWinLast.pWin, WM_TOUCH, pState);
+				WObj::CHWinLast.pWin = nullptr;
 			}
-			pLast = pCH;
+		}
+		/* Sending WM_TOUCH to current window */
+		if (CHWin.pWin) {
+			/* Remember window */
+			if (StateNew.Pressed)
+				WObj::CHWinLast.pWin = CHWin.pWin;
+			else {
+				/* Handle automatic capture release */
+				if (WObj::WM__CaptureReleaseAuto)
+					WObj::ReleaseCapture();
+				WObj::CHWinLast.pWin = nullptr;
+			}
+			_SendTouchMessage((WObj *)CHWin.pWin, WM_TOUCH, &StateNew);
 		}
 	}
-};
-CriticalHandle *CriticalHandle::pFirst = nullptr;
+#if GUI_SUPPORT_MOUSE
+	/* Send WM_MOUSEOVER Message */
+	else if (CHWin.pWin)
+		/* Do not send messages to disabled windows */
+		if (CHWin.pWin->IsEnabled())
+			_SendTouchMessage((WObj *)CHWin.pWin, WM_MOUSEOVER, &StateNew);
+#endif
+	CHWin.Remove();
+	/* Store the new state */
+	WM_PID__StateLast = GUI_PID_GetState();
+	return r;
+}
 #pragma endregion
 
 static void _DeleteAllChildren(WObj * pFirstChild) {
@@ -62,7 +129,7 @@ void WM_DeleteWindow(WObj * pWin) {
 	if (WObj::pWinCapture == pWin)
 		WObj::ReleaseCapture(); /* Make sure the window does not have capture */
 	/* check if critical handles are affected. If so, reset the window handle to 0 */
-	CriticalHandle::Check(pWin);
+	WObj::CriticalHandle::Check(pWin);
 	pWin->_RemoveFromLinList();
 	/* Delete all children */
 	_DeleteAllChildren(pWin->pFirstChild);
@@ -80,78 +147,10 @@ void WM_DeleteWindow(WObj * pWin) {
 	WObj::NumWindows--;
 	GUI_ALLOC_Free(pWin);
 	/* Select a valid window */
-	WM_SelectWindow(WObj::pWinFirst);
-}
-WObj * WM_SelectWindow(WObj * pWin) {
-	auto pWinPrev = WObj::pWinActive;
-	WM_ASSERT_NOT_IN_PAINT();
-	if (pWin == 0) {
-		pWin = WObj::pWinFirst;
-	}
-	/* Select new window */
-	WObj::pWinActive = pWin;
-	LCD_SetClipRectMax();             /* Drawing operations will clip ... If WM is deactivated, allow all */
-	GUI.Off = pWin->Rect.LeftTop();
-	return pWinPrev;
-}
-WObj * WM_GetActiveWindow(void) {
-	return WObj::pWinActive;
+	WObj::pWinFirst->Select();
 }
 
 #pragma region IVR
-static void _Findy1(WObj *pWin, RECT *pRect, RECT *pParentRect) {
-	for (; pWin; pWin = pWin->pNext) {
-		int Status = pWin->Status;
-		/* Check if this window affects us at all */
-		if (!(Status & WC_VISIBLE))
-			continue;
-		auto rWinClipped = pWin->Rect; /* Window rect, clipped to part inside of ancestors */
-		if (pParentRect)
-			rWinClipped &= *pParentRect;
-		/* Check if this window affects us at all */
-		if (!(rWinClipped <= *pRect))
-			continue;
-		if (pWin->Rect.y0 > pRect->y0) {
-			ASSIGN_IF_LESS(pRect->y1, rWinClipped.y0 - 1);      /* Check upper border of window */
-		}
-		else {
-			ASSIGN_IF_LESS(pRect->y1, rWinClipped.y1);        /* Check lower border of window */
-		}
-	}
-}
-static bool _Findx0(WObj *pWin, RECT *pRect, RECT *pParentRect) {
-	for (; pWin; pWin = pWin->pNext) {
-		int Status = pWin->Status;
-		if (!(Status & WC_VISIBLE))
-			continue;
-		/* If window is not visible, it can be safely ignored */
-		auto rWinClipped = pWin->Rect;               /* Window rect, clipped to part inside of ancestors */
-		if (pParentRect)
-			rWinClipped &= *pParentRect;
-		/* Check if this window affects us at all */
-		if (rWinClipped <= *pRect) {
-			pRect->x0 = rWinClipped.x1 + 1;
-			return true;
-		}
-	}
-	return false;
-}
-static void _Findx1(WObj *pWin, RECT *pRect, RECT *pParentRect) {
-	for (; pWin; pWin = pWin->pNext) {
-		int Status = pWin->Status;
-		if (!(Status & WC_VISIBLE))
-			continue;
-		/* If window is not visible, it can be safely ignored */
-		RECT rWinClipped = pWin->Rect; /* Window rect, clipped to part inside of ancestors */
-		if (pParentRect)
-			rWinClipped &= *pParentRect;
-		/* Check if this window affects us at all */
-		if (!(rWinClipped <= *pRect))
-			continue;
-		pRect->x1 = rWinClipped.x0 - 1;
-	}
-}
-
 struct {
 	RECT ClientRect;
 	RECT CurRect;
@@ -184,8 +183,6 @@ Function works as follows:
 */
 #if WM_SUPPORT_OBSTRUCT
 static bool _FindNext_IVR(void) {
-	WObj *pParent;
-	WObj *pAWin;
 	auto r = _ClipContext.CurRect;  /* temps  so we do not have to work with pointers too much */
 	/*
 	   STEP 1:
@@ -217,17 +214,16 @@ static bool _FindNext_IVR(void) {
 		 Since we are using the same height for all IVRs at the same y0,
 		 we do this only for the leftmost one.
 	*/
-	pAWin = WObj::pWinActive;
+	auto pAWin = WObj::pWinActive;
 	if (r.x0 == _ClipContext.ClientRect.x0) {
 		r.y1 = _ClipContext.ClientRect.y1;
 		r.x1 = _ClipContext.ClientRect.x1;
 		/* Iterate over all windows which are above */
 		/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
-		for (pParent = WObj::pWinActive; pParent; pParent = pParent->pParent) {
-			_Findy1(pParent->pNext, &r, nullptr);
-		}
+		for (auto pParent = WObj::pWinActive; pParent; pParent = pParent->pParent)
+			pParent->pNext->_Findy1(r);
 		/* Check all children */
-		_Findy1(pAWin->pFirstChild, &r, nullptr);
+		pAWin->pFirstChild->_Findy1(r);
 	}
 	/*
 	  STEP 4
@@ -238,18 +234,11 @@ Find_x0:
 	r.x1 = r.x0;
 	/* Iterate over all windows which are above */
 	/* Check all siblings above (siblings of window, siblings of parents, etc ...) */
-#if 0   /* This is a planned, but not yet released optimization */
-	if (Status & WC_DONT_CLIP_SIBLINGS)
-		pParent = pAWin->pParent;
-	else
-#endif
-		pParent = WObj::pWinActive;
-		for (; pParent; pParent = pParent->pParent) {
-			if (_Findx0(pParent->pNext, &r, nullptr))
-				goto Find_x0;
-		}
+	for (auto pParent = WObj::pWinActive; pParent; pParent = pParent->pParent)
+		if (pParent->pNext->_Findx0(r))
+			goto Find_x0;
 	/* Check all children */
-	if (_Findx0(pAWin->pFirstChild, &r, nullptr))
+	if (pAWin->pFirstChild->_Findx0(r))
 		goto Find_x0;
 	/*
 	 STEP 5:
@@ -266,17 +255,10 @@ Find_x0:
 	   Find r.x1. We have to Iterate over all windows which are above
 	*/
 	/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
-#if 0   /* This is a planned, but not yet released optimization */
-	if (Status & WC_DONT_CLIP_SIBLINGS)
-		pParent = pAWin->pParent;
-	else
-#endif
-		pParent = WObj::pWinActive;
-		for (; pParent; pParent = pParent->pParent) {
-			_Findx1(pParent->pNext, &r, nullptr);
-		}
+	for (auto pParent = WObj::pWinActive; pParent; pParent = pParent->pParent)
+		pParent->pNext->_Findx1(r);
 	/* Check all children */
-	_Findx1(pAWin->pFirstChild, &r, nullptr);
+	pAWin->pFirstChild->_Findx1(r);
 	/* We are done. Return the rectangle we found in the _ClipContext. */
 	if (_ClipContext.Cnt > 200)
 		return false;  /* error !!! This should not happen !*/
@@ -336,7 +318,7 @@ bool WM__InitIVRSearch(RECT rcMax) {
 	/* When using callback mechanism, it is legal to reduce drawing
 	   area to the invalid area ! */
 	RECT r;
-	if (WM__PaintCallbackCnt)
+	if (WObj::_PaintCallbackCnt)
 		r = pAWin->InvalidRect;
 	else if (pAWin->Status & WC_VISIBLE) /* Not using callback mechanism, therefor allow entire rectangle */
 		r = pAWin->Rect;
@@ -386,28 +368,6 @@ void WM__ActivateClipRect(void) {
 }
 #pragma endregion
 
-static void _Paint1(WObj *pWin) {
-	int Status = pWin->Status;
-	/* Send WM_PAINT if window is visible and a callback is defined */
-	if ((pWin->cb != nullptr) && (Status & WC_VISIBLE)) {
-		WM__PaintCallbackCnt++;
-		if (Status & WC_LATE_CLIP) {
-			pWin->Require(WM_PAINT, (WM_PARAM)&pWin->InvalidRect);
-		}
-		else {
-			WM_Iterate(pWin->InvalidRect, [&] {
-				pWin->Require(WM_PAINT, (WM_PARAM)&pWin->InvalidRect);
-			});
-		}
-		WM__PaintCallbackCnt--;
-	}
-}
-
-/*********************************************************************
-*
-*       Callback for Paint message
-*
-*/
 /*********************************************************************
 *
 *       _cbPaintMemDev
@@ -422,14 +382,14 @@ static void _Paint1(WObj *pWin) {
 */
 #if GUI_SUPPORT_MEMDEV
 static void _cbPaintMemDev(void *p) {
-	RECT Rect;
 	auto pWin = WObj::pWinActive;
-	Rect = pWin->InvalidRect;
+	auto Rect = pWin->InvalidRect;
 	pWin->InvalidRect = GUI.ClipRect;
-	_Paint1((WObj *)p);
+	pWin->_Paint1();
 	pWin->InvalidRect = Rect;
 }
 #endif
+
 /*********************************************************************
 *
 *       _Paint
@@ -443,24 +403,22 @@ static int _Paint(WObj *pWin) {
 	int Ret = 0;
 	if (pWin->cb) {
 		if (pWin->_ClipAtParentBorders(pWin->InvalidRect)) {
-			WM_SelectWindow(pWin);
+			pWin->Select();
 #if GUI_SUPPORT_MEMDEV
 			if (pWin->Status & WC_MEMDEV) {
-				int Flags;
-				RECT r = pWin->InvalidRect;
-				Flags = GUI_MEMDEV_NOTRANS;
+				auto r = pWin->InvalidRect;
+				auto Flags = GUI_MEMDEV_NOTRANS;
 				/*
 					* Currently we treat a desktop window as transparent, because per default it does not repaint itself.
 					*/
-				if (pWin->pParent == 0) {
+				if (!pWin->pParent)
 					Flags = GUI_MEMDEV_HASTRANS;
-				}
 				GUI_MEMDEV_Draw(&r, _cbPaintMemDev, pWin, 0, Flags);
 			}
 			else
 #endif
-			_Paint1(pWin);
-			Ret = 1;    /* Something has been done */
+			pWin->_Paint1();
+			Ret = true;    /* Something has been done */
 		}
 	}
 	/* We purposly clear the invalid flag after painting so we can still query the invalid rectangle while painting */
@@ -470,34 +428,35 @@ static int _Paint(WObj *pWin) {
 	WObj::NumInvalidWindows--;
 	return Ret;      /* Nothing done */
 }
+
 static void _DrawNext(void) {
-	int UpdateRem = 1;
-	auto iWin = pWinNextDraw ? pWinNextDraw : WObj::pWinFirst;
 	GUI_CONTEXT ContextOld;
 	GUI_SaveContext(&ContextOld);
+	auto iWin = pWinNextDraw ? pWinNextDraw : WObj::pWinFirst; 
 	/* Make sure the next window to redraw is valid */
-	for (; iWin && UpdateRem; iWin = iWin->pNextLin)
+	for (; iWin; iWin = iWin->pNextLin)
 		if (_Paint(iWin))
-			UpdateRem--;  /* Only the given number of windows at a time ... */
+			break;
 	pWinNextDraw = iWin;   /* Remember the window */
 	GUI_RestoreContext(&ContextOld);
 }
-int WM_Exec1(void) {
+
+bool WM_Exec1(void) {
 	/* Poll PID if necessary */
 	if (WM_HandlePID())
-		return 1; /* We have done something ... */
+		return true; /* We have done something ... */
 	if (GUI_PollKeyMsg())
-		return 1; /* We have done something ... */
+		return true; /* We have done something ... */
 	if (IsActive && WObj::NumInvalidWindows) {
 		_DrawNext();
-		return 1; /* We have done something ... */
+		return true; /* We have done something ... */
 	}
-	return 0; /* There was nothing to do ... */
+	return false; /* There was nothing to do ... */
 }
-int WM_Exec(void) {
-	int r = 0;
+bool WM_Exec(void) {
+	bool r = false;
 	while (WM_Exec1())
-		r = 1; /* We have done something */
+		r = true; /* We have done something */
 	return r;
 }
 
@@ -546,119 +505,11 @@ WM_PARAM WM_DefaultProc(WObj * pWin, int MsgId, WM_PARAM Data) {
 	return 0;
 }
 
-/*********************************************************************
-*
-*       WM__IsAncestor
-*
-* Return value:
-*   if hChild is indeed a descendent (Child or child of child etc.) : true
-*   Else: false
-*/
-bool WM__IsAncestor(WObj *pChild, WObj *pParent) {
-	if (pChild && pParent) {
-		while (pChild) {
-			if (pChild->pParent == pParent)
-				return true;
-			pChild = pChild->pParent;
-		}
-	}
-	return false;
-}
-/*********************************************************************
-*
-*       WM__IsAncestor
-*
-* Return value:
-*   if hChild is indeed a descendent (Child or child of child etc.) : true
-*   Else: false
-*
-*
-*/
-bool WM__IsAncestorOrSelf(WObj * pChild, WObj * pParent) {
-	if (pChild == pParent)
-		return true;
-	return WM__IsAncestor(pChild, pParent);
-}
-#define WM_DEBUG_LEVEL 1
-
-/*********************************************************************
-*
-*       _ShowInvalid
-*
-* Function:
-*   Debug code: shows invalid areas
-*/
-static void _ShowInvalid(WObj * pWin) {
-	auto Context = GUI;
-	auto rClient = pWin->InvalidRect - pWin->Rect.LeftTop();
-	WM_SelectWindow(pWin);
-	GUI.SetColor(RGB_GREEN);
-	GUI.SetBkColor(RGB_GREEN);
-	GUI_FillRect(rClient);
-	GUI = Context;
-}
-
 RECT WM_GetClientRect() {
 	return WObj::pWinActive->GetClientRect();
 }
 RECT WM_GetInsideRect() {
 	return WObj::pWinActive->GetInsideRect();
-}
-
-static char _WindowSiblingsOverlapRect(WObj * iWin, RECT *pRect) {
-	WObj *pWin;
-	for (; iWin; iWin = pWin->pNext) {
-		int Status = (pWin = iWin)->Status;
-		/* Check if this window affects us at all */
-		if (Status & WC_VISIBLE) {
-			/* Check if this window affects us at all */
-			if (pWin->Rect <= *pRect) {
-				return 1;
-			}
-		}
-	}
-	return 0;
-}
-static int _HasOverlap(WObj *pWin, RECT *pRect) {
-	WObj *pParent;
-	/* Step 1:
-	 Check if there are any visible children. If this is so, then the
-	 window has an overlap.
-	 */
-	 /* Check all children */
-	if (_WindowSiblingsOverlapRect(pWin->pFirstChild, pRect)) {
-		return 1;
-	}
-	/* STEP 2:
-		 Find out the max. height (r.y1) if we are at the left border.
-		 Since we are using the same height for all IVRs at the same y0,
-		 we do this only for the leftmost one.
-	*/
-	/* Iterate over all windows which are above */
-	/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
-	for (pParent = pWin->pParent; pParent; pParent = pParent->pParent) {
-		if (_WindowSiblingsOverlapRect(pParent->pNext, pRect)) {
-			return 1;
-		}
-	}
-	return 0;
-}
-
-void WM_Paint(WObj * pWin) {
-	GUI_CONTEXT Context;
-	WM_ASSERT_NOT_IN_PAINT();
-	if (pWin) {
-		GUI_SaveContext(&Context);
-		WM_SelectWindow(pWin);
-		pWin->Invalidate();  /* Important ... Window procedure is informed about invalid rect and may optimize */
-		/* Paint the window and its overlaying transparent windows */
-		_Paint1(pWin);
-		pWin->Validate();
-		GUI_RestoreContext(&Context);
-	}
-}
-PID_STATE WM_PID__GetPrevState() {
-	return WM_PID__StateLast;
 }
 
 void WM_SetAnchor(WObj * pWin, uint16_t AnchorFlags) {
@@ -670,15 +521,6 @@ void WM_SetAnchor(WObj * pWin, uint16_t AnchorFlags) {
 		pWin->Status |= AnchorFlags;
 	}
 }
-WM_CALLBACK *WM_SetCallback(WObj * pWin, WM_CALLBACK *cb) {
-	WM_CALLBACK *r = nullptr;
-	if (pWin) {
-		r = pWin->cb;
-		pWin->cb = cb;
-		pWin->Invalidate();
-	}
-	return r;
-}
 
 const RECT *WM_SetUserClipRect(const RECT *pRect) {
 	auto pRectReturn = GUI.WM__pUserClipRect;
@@ -686,29 +528,6 @@ const RECT *WM_SetUserClipRect(const RECT *pRect) {
 	/* Activate it ... */
 	WM__ActivateClipRect();
 	return pRectReturn;
-}
-
-void WM_SetStayOnTop(WObj * pWin, int OnOff) {
-	if (pWin) {
-		uint16_t OldStatus;
-		OldStatus = pWin->Status;
-		if (OnOff) {
-			if (!(pWin->Status & WC_STAYONTOP)) /* First check if this is necessary at all */
-				pWin->Status |= WC_STAYONTOP;
-		}
-		else if (pWin->Status & WC_STAYONTOP) /* First check if this is necessary at all */
-			pWin->Status &= ~WC_STAYONTOP;
-		if (pWin->Status != OldStatus)
-			pWin->Attach(pWin->Parent());
-	}
-}
-int WM_GetStayOnTop(WObj * pWin) {
-	int Result = 0;
-	if (pWin) {
-		if (pWin->Status & WC_STAYONTOP)
-			Result = 1;
-	}
-	return Result;
 }
 
 int WM_OnKey(int Key, int Pressed) {
@@ -722,120 +541,6 @@ int WM_OnKey(int Key, int Pressed) {
 	return 0;
 }
 
-#pragma region Mouse/Touch
-static CriticalHandle WM__CHWinModal, WM__CHWinLast;
-static bool _IsInModalArea(WObj * pWin) {
-	return (!WM__CHWinModal.pWin ||
-		WM__IsAncestor(pWin, (WObj *)WM__CHWinModal.pWin) ||
-		WM__CHWinModal.pWin == pWin) ? true : false;
-}
-
-static void _SendMessageIfEnabled(WObj * pWin, int MsgId, WM_PARAM Data) {
-	if (pWin->IsEnabled())
-		WM__SendMessage(pWin, MsgId, Data);
-}
-
-static void _SendTouchMessage(WObj * pWin, int MsgId, PID_STATE *pState) {
-	if (pState) {
-		pState->x -= pWin->Rect.x0;
-		pState->y -= pWin->Rect.y0;
-	}
-	_SendMessageIfEnabled(pWin, MsgId, (WM_PARAM)pState);
-	/* Send notification to all ancestors.
-	   We need to check if the window which has received the last message still exists,
-	   since it may have deleted itself and its parent as result of the message.
-	*/
-	while (WObj::IsWindow(pWin)) {
-		pWin = pWin->Parent();
-		if (pWin)
-			_SendMessageIfEnabled(pWin, WM_TOUCH_CHILD, (WM_PARAM)pState); /* Send message to the ancestors */
-	}
-}
-
-/*********************************************************************
-*
-*       WM_HandlePID
-*
-* Polls the touch screen. If something has changed,
-* sends a message to the concerned window.
-*
-* Return value:
-*   0 if nothing has been done
-*   1 if touch message has been sent
-*/
-bool WM_HandlePID(void) {
-	bool r = false;
-	CriticalHandle CHWin;
-	CHWin.Add();
-	auto StateNew = GUI_PID_GetState();
-	if ((WM_PID__StateLast.x != StateNew.x) || (WM_PID__StateLast.y != StateNew.y) || (WM_PID__StateLast.Pressed != StateNew.Pressed)) {
-#if GUI_SUPPORT_CURSOR
-		GUI_CURSOR_SetPosition(StateNew.x, StateNew.y);
-#endif
-		CHWin.pWin = WObj::pWinCapture ? WObj::pWinCapture : WM_Screen2Win(StateNew);
-		if (_IsInModalArea((WObj *)CHWin.pWin)) {
-			/*
-			 * Send WM_PID_STATE_CHANGED message if state has changed (just pressed or just released)
-			 */
-			if ((WM_PID__StateLast.Pressed != StateNew.Pressed) && CHWin.pWin) {
-				PID_CHANGED_INFO Info;
-				auto pWin = CHWin.pWin;
-				Info.State = StateNew.Pressed;
-				Info.StatePrev = WM_PID__StateLast.Pressed;
-				Info.x = StateNew.x - pWin->Rect.x0;
-				Info.y = StateNew.y - pWin->Rect.y0;
-				_SendMessageIfEnabled((WObj *)CHWin.pWin, WM_PID_STATE_CHANGED, (WM_PARAM)&Info);
-			}
-			/*
-			 * Send WM_TOUCH message(s)
-			 * Note that we may have to send 2 touch messages.
-			 */
-			if (WM_PID__StateLast.Pressed | StateNew.Pressed) { /* Only if pressed or just released */
-				r = 1;
-				/*
-				 * Tell window if it is no longer pressed
-				 * This happens for 2 possible reasons:
-				 * a) PID is released
-				 * b) PID is moved out
-				 */
-				if (WM__CHWinLast.pWin != CHWin.pWin) {
-					if (WM__CHWinLast.pWin) {
-						GUI_DEBUG_LOG("\nSending WM_Touch to LastWindow %d (out of area)", WM__CHWinLast.pWin);
-						PID_STATE *pState = StateNew.Pressed ? nullptr : &WM_PID__StateLast;
-						_SendTouchMessage((WObj *)WM__CHWinLast.pWin, WM_TOUCH, pState);
-						WM__CHWinLast.pWin = nullptr;
-					}
-				}
-				/* Sending WM_Touch to current window */
-				if (CHWin.pWin) {
-					/* Remember window */
-					if (StateNew.Pressed)
-						WM__CHWinLast.pWin = CHWin.pWin;
-					else {
-						/* Handle automatic capture release */
-						if (WObj::WM__CaptureReleaseAuto)
-							WObj::ReleaseCapture();
-						WM__CHWinLast.pWin = nullptr;
-					}
-					_SendTouchMessage((WObj *)CHWin.pWin, WM_TOUCH, &StateNew);
-				}
-			}
-#if GUI_SUPPORT_MOUSE
-			/* Send WM_MOUSEOVER Message */
-			else if (CHWin.pWin)
-				/* Do not send messages to disabled windows */
-				if (CHWin.pWin->IsEnabled())
-					_SendTouchMessage((WObj *)CHWin.pWin, WM_MOUSEOVER, &StateNew);
-#endif
-		}
-		/* Store the new state */
-		WM_PID__StateLast = GUI_PID_GetState();
-	}
-	CHWin.Remove();
-	return r;
-}
-#pragma endregion
-
 void WM_Init(void) {
 	static bool _IsInited = false;
 	if (_IsInited)
@@ -848,9 +553,8 @@ void WM_Init(void) {
 	WObj::pWinDesktop = new WObj({ 0, 0, GUI_XMAX, GUI_YMAX }, WC_VISIBLE, WObj::cbBackWin);
 	WObj::pWinDesktop->Invalidate(); /* Required because a desktop window has no parent. */
 	/* Register the critical handles ... Note: This could be moved into the module setting the Window handle */
-	WM__CHWinModal.Add();
-	WM__CHWinLast.Add();
-	WM_SelectWindow(WObj::pWinDesktop);
+	WObj::CHWinLast.Add();
+	WObj::pWinDesktop->Select();
 	WM_Activate();
 	_IsInited = true;
 }

@@ -28,9 +28,9 @@ private:
 	void _OnChildHasFocus(const NOTIFY_CHILD_HAS_FOCUS_INFO* pInfo) {
 		if (!pInfo) return;
 		/* A child has received the focus, Framewindow needs to be activated */
-		if (WM__IsAncestorOrSelf(pInfo->pNew, this)) 
+		if (IsAncestorOrSelf(pInfo->pNew)) 
 			pFocussedChild = pInfo->pNew;
-		else  if (WM__IsAncestor(pInfo->pOld, this))
+		else if (IsAncestorOf(pInfo->pOld))
 			/* Remember the child which had the focus so we can reactive this child */
 			pFocussedChild = pInfo->pOld;
 	}
@@ -76,7 +76,6 @@ private:
 		case WM_GET_BKCOLOR:
 			return pObj->Props.BkColor;
 		}
-		pObj->pParent->Require(MsgId, Data);
 		if (cb)
 			return cb(pWin, MsgId, Data);
 		return WM_DefaultProc(pWin, MsgId, Data);

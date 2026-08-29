@@ -71,7 +71,7 @@ private:
 	static Timer *pTimer1;
 	static void ShowCurrsor(GUI_TIMER_MESSAGE *TimeMsg) {
 		auto pObj = (Edit *)TimeMsg->Context;
-		WM_SelectWindow(pObj);
+		pObj->Select();
 		pObj->_OnPaint();
 		pObj->CurrsorShow++;
 		pTimer1->Restart();

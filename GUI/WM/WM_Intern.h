@@ -4,7 +4,7 @@
 #include "GUI_Protected.h"       /* For GUI */
 
 #if GUI_DEBUG_LEVEL  >= GUI_DEBUG_LEVEL_LOG_WARNINGS
-#define WM_ASSERT_NOT_IN_PAINT() { if (WM__PaintCallbackCnt) \
+#define WM_ASSERT_NOT_IN_PAINT() { if (WObj::_PaintCallbackCnt) \
 									   GUI_DEBUG_ERROROUT("Function may not be called from within a paint event"); \
 								   }
 #else

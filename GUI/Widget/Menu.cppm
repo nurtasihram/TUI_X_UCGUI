@@ -684,10 +684,10 @@ public:
 	void SetOwner(WObj *pOwner) {
 		this->pOwner = pOwner;
 	}
-	void AttachMenu(WObj *pDestWin, int x, int y, int xSize, int ySize) {
+	void AttachMenu(WObj *pDestWin, POINT Pos, int xSize, int ySize) {
 		Width = xSize > 0 ? xSize : 0;
 		Height = ySize > 0 ? ySize : 0;
-		Attach(pDestWin, {x, y});
+		Attach(pDestWin, Pos);
 		_ResizeMenu();
 		ShowWindow();
 	}

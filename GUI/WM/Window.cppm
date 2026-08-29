@@ -1,6 +1,8 @@
 module;
 
 #include "GUI.h"
+#include "GUI_Protected.h"
+#include "GUIDebug.h"
 
 export module TUX.Window;
 
@@ -31,31 +33,19 @@ void WM_Activate(void);
 void WM_Deactivate(void);
 
 void WM_Init(void);
-int  WM_Exec(void);  /* Execute all jobs ... Return 0 if nothing was done. */
-int  WM_Exec1(void); /* Execute one job  ... Return 0 if nothing was done. */
+bool WM_Exec(void);  /* Execute all jobs ... Return 0 if nothing was done. */
+bool WM_Exec1(void); /* Execute one job  ... Return 0 if nothing was done. */
 
-void    WM_DeleteWindow(WObj *pWin);
-void  WM_SetHasTrans(WObj *pWin);
-void  WM_SetTransState(WObj *pWin, unsigned State);
-void  WM_SetStayOnTop(WObj *pWin, int OnOff);
-int   WM_GetStayOnTop(WObj *pWin);
-void  WM_SetAnchor(WObj *pWin, uint16_t AnchorFlags);
+void WM_DeleteWindow(WObj *pWin);
+void WM_SetAnchor(WObj *pWin, uint16_t AnchorFlags);
 
 /* Move/resize windows */
 int  WM_CreateTimer(WObj *pWin, int UserID, int Period, int Mode); /* not to be documented (may change in future version) */
 void WM_DeleteTimer(WObj *pWin, int UserId); /* not to be documented (may change in future version) */
 
-/* Set (new) callback function */
-WM_CALLBACK *WM_SetCallback(WObj *Win, WM_CALLBACK *cb);
-
 /* Get size/origin of a window */
 RECT WM_GetClientRect();
 RECT WM_GetInsideRect();
-
-/* Select window used for drawing operations */
-WObj *WM_SelectWindow(WObj *pWin);
-WObj *WM_GetActiveWindow(void);
-void    WM_Paint(WObj *pObj);
 
 /* Reduce clipping area of a window */
 const RECT *WM_SetUserClipRect(const RECT *pRect);
@@ -217,44 +207,6 @@ public:
 
 	static WObj *pWinActive;
 
-public:
-	void *operator new(size_t size) {
-		return GUI_ALLOC_AllocNoInit(size);
-	}
-	void operator delete(void *p) {
-		GUI_ALLOC_Free(p);
-	}
-
-public:
-	WObj(RECT r, WM_CF Style, WM_CALLBACK *cb, WObj *pParent = nullptr) :
-		Rect(r), cb(cb), Status(Style & WM_CF_MASK) {
-		//WM_ASSERT_NOT_IN_PAINT();
-		/* Default parent is Desktop 0 */
-		if (!pParent)
-			if (NumWindows)
-				pParent = pWinDesktop;
-		if (pParent) {
-			Rect += pParent->Rect.LeftTop();
-			if (!r.XSize())
-				Rect.x1 = pParent->Rect.x1;
-			if (!r.YSize())
-				Rect.y1 = pParent->Rect.y1;
-		}
-		NumWindows++;
-		/* Add to linked lists */
-		_AddToLinList();
-		_InsertWindowIntoList(pParent);
-		/* Activate window if WC_ACTIVATE is specified */
-		if (Style & WC_ACTIVATE)
-			WM_SelectWindow(this);  /* This is not needed if callbacks are being used, but it does not cost a lot and makes life easier ... */
-		/* Handle the Style flags, one at a time */
-		if (Style & WC_BGND)
-			BringToBottom();
-		if (Style & WC_VISIBLE)
-			Invalidate();    /* Mark content as invalid */
-		Require(WM_CREATE);
-	}
-
 #pragma region Invalidation
 	static uint16_t NumInvalidWindows;
 //private:
@@ -313,6 +265,150 @@ public:
 	}
 #pragma endregion
 
+#pragma region IVR
+	void _Findy1(RECT &r) const {
+		for (auto pWin = this; pWin; pWin = pWin->pNext) {
+			auto Status = pWin->Status;
+			/* Check if this window affects us at all */
+			if (!(Status & WC_VISIBLE))
+				continue;
+			auto rWinClipped = pWin->Rect; /* Window rect, clipped to part inside of ancestors */
+			/* Check if this window affects us at all */
+			if (!(rWinClipped <= r))
+				continue;
+			if (pWin->Rect.y0 > r.y0) {
+				if (r.y1 > rWinClipped.y0 - 1) /* Check upper border of window */
+					r.y1 = rWinClipped.y0 - 1;
+			}
+			else if (r.y1 > rWinClipped.y1) /* Check lower border of window */
+				r.y1 = rWinClipped.y1;
+		}
+	}
+	bool _Findx0(RECT &r) const {
+		for (auto pWin = this; pWin; pWin = pWin->pNext) {
+			auto Status = pWin->Status;
+			if (!(Status & WC_VISIBLE))
+				continue;
+			/* If window is not visible, it can be safely ignored */
+			auto rWinClipped = pWin->Rect; /* Window rect, clipped to part inside of ancestors */
+			/* Check if this window affects us at all */
+			if (rWinClipped <= r) {
+				r.x0 = rWinClipped.x1 + 1;
+				return true;
+			}
+		}
+		return false;
+	}
+	void _Findx1(RECT &r) const {
+		for (auto pWin = this; pWin; pWin = pWin->pNext) {
+			auto Status = pWin->Status;
+			if (!(Status & WC_VISIBLE))
+				continue;
+			/* If window is not visible, it can be safely ignored */
+			auto rWinClipped = pWin->Rect; /* Window rect, clipped to part inside of ancestors */
+			/* Check if this window affects us at all */
+			if (!(rWinClipped <= r))
+				continue;
+			r.x1 = rWinClipped.x0 - 1;
+		}
+	}
+#pragma endregion
+
+	static uint8_t _PaintCallbackCnt;      /* Public for assertions only */
+
+	void _Paint1() /* const */ {
+		/* Send WM_PAINT if window is visible and a callback is defined */
+		if (cb && (Status & WC_VISIBLE)) {
+			_PaintCallbackCnt++;
+			if (Status & WC_LATE_CLIP)
+				Require(WM_PAINT, (WM_PARAM)&InvalidRect);
+			else
+				WM_Iterate(InvalidRect, [&] {
+					Require(WM_PAINT, (WM_PARAM)&InvalidRect);
+				});
+			_PaintCallbackCnt--;
+		}
+	}
+
+public:
+	static auto ActiveWindow() { return pWinActive; }
+	void Select() {
+		//WM_ASSERT_NOT_IN_PAINT();
+		WObj::pWinActive = this;
+		LCD_SetClipRectMax();
+		GUI.Off = Rect.LeftTop();
+	}
+
+#pragma region CriticalHandles
+//private:
+	struct CriticalHandle {
+		static CriticalHandle *pFirst;
+		CriticalHandle *pNext = nullptr;
+		WObj *pWin;
+		CriticalHandle(WObj *pWin = nullptr) : pWin(pWin) {}
+		static void Check(WObj *pWin) {
+			for (auto pCH = pFirst; pCH; pCH = pCH->pNext)
+				if (pCH->pWin == pWin)
+					pCH->pWin = nullptr;
+		}
+		void Add() {
+			pNext = pFirst;
+			pFirst = this;
+		}
+		void Remove() {
+			CriticalHandle *pLast = nullptr;
+			for (auto pCH = pFirst; pCH; pCH = pCH->pNext) {
+				if (pCH == this) {
+					if (pLast)
+						pLast->pNext = pCH->pNext;
+					pFirst = pCH->pNext;
+					break;
+				}
+				pLast = pCH;
+			}
+		}
+	};
+	static CriticalHandle CHWinLast;
+#pragma endregion
+
+public:
+	void *operator new(size_t size) {
+		return GUI_ALLOC_AllocNoInit(size);
+	}
+	void operator delete(void *p) {
+		GUI_ALLOC_Free(p);
+	}
+
+public:
+	WObj(RECT r, WM_CF Style, WM_CALLBACK *cb, WObj *pParent = nullptr) :
+		Rect(r), cb(cb), Status(Style & WM_CF_MASK) {
+		//WM_ASSERT_NOT_IN_PAINT();
+		/* Default parent is Desktop 0 */
+		if (!pParent)
+			if (NumWindows)
+				pParent = pWinDesktop;
+		if (pParent) {
+			Rect += pParent->Rect.LeftTop();
+			if (!r.XSize())
+				Rect.x1 = pParent->Rect.x1;
+			if (!r.YSize())
+				Rect.y1 = pParent->Rect.y1;
+		}
+		NumWindows++;
+		/* Add to linked lists */
+		_AddToLinList();
+		_InsertWindowIntoList(pParent);
+		/* Activate window if WC_ACTIVATE is specified */
+		if (Style & WC_ACTIVATE)
+			Select();  /* This is not needed if callbacks are being used, but it does not cost a lot and makes life easier ... */
+		/* Handle the Style flags, one at a time */
+		if (Style & WC_BGND)
+			BringToBottom();
+		if (Style & WC_VISIBLE)
+			Invalidate();    /* Mark content as invalid */
+		Require(WM_CREATE);
+	}
+
 public:
 
 	auto GetFlags() const { return Status; }
@@ -352,6 +448,18 @@ public:
 			if (pWin == this)
 				return pPrev;
 		return nullptr;
+	}
+
+	bool IsAncestorOf(WObj *pChild) {
+		for (; pChild; pChild = pChild->pParent)
+			if (pChild->pParent == this)
+				return true;
+		return false;
+	}
+	bool IsAncestorOrSelf(WObj *pChild) {
+		if (pChild == this)
+			return true;
+		return IsAncestorOf(pChild);
 	}
 
 #pragma region Coordinate
@@ -510,9 +618,17 @@ public:
 			InvalidateArea(Rect);
 		}
 	}
-
+	void StayOnTop(bool bOnTop) {
+		auto Status = bOnTop ? 
+			this->Status | WC_STAYONTOP :
+			this->Status & ~WC_STAYONTOP;
+		if (this->Status != Status) {
+			this->Status = Status;
+			Attach(Parent());
+		}
+	}
+	bool StayOnTop() const { return Status & WC_STAYONTOP; }
 #pragma endregion
-
 
 #pragma region Desktop
 //private:
@@ -723,6 +839,11 @@ WObj* WObj::pWinFirst = nullptr;
 WObj* WObj::pWinActive = nullptr;
 
 uint16_t WObj::NumInvalidWindows = 0;
+
+uint8_t WObj::_PaintCallbackCnt = 0;
+
+WObj::CriticalHandle *WObj::CriticalHandle::pFirst = nullptr;
+WObj::CriticalHandle WObj::CHWinLast;
 
 WObj* WObj::pWinDesktop = nullptr;
 RGBC WObj::BkColorDesktop = RGB_GRAY;
