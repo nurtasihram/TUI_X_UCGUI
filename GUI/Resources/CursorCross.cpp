@@ -1,7 +1,7 @@
 import TUX.Resources;
 
 #pragma region Large
-static BM_BPP2 GUI_Pixels_CrossL[]{
+static BM_BPP2 _pxCrossL[]{
 ________,________,________,____XXXX,XX______,________,________,________,
 ________,________,________,____XXoo,XX______,________,________,________,
 ________,________,________,____XXoo,XX______,________,________,________,
@@ -32,31 +32,16 @@ ________,________,________,____XXoo,XX______,________,________,________,
 ________,________,________,____XXoo,XX______,________,________,________,
 ________,________,________,____XXoo,XX______,________,________,________,
 ________,________,________,____XXoo,XX______,________,________,________,
-________,________,________,____XXXX,XX______,________,________,________,
-};
-
-static CBITMAP _BitmapCrossL{
-	31, 31,              /* XSize, YSize */
-	8,                   /* BytesPerLine */
-	2,                   /* BitsPerPixel */
-	GUI_Pixels_CrossL,   /* Pointer to picture data (indices) */
-	&GUI_CursorPal      /* Pointer to palette */
-};
-CCURSOR CursorCrossL{ &_BitmapCrossL, 15, 15 };
-
-static CBITMAP _BitmapCrossLI{
-	31, 31,              /* XSize, YSize */
-	8,                    /* BytesPerLine */
-	2,                    /* BitsPerPixel */
-	GUI_Pixels_CrossL,    /* Pointer to picture data (indices) */
-	&GUI_CursorPalI       /* Pointer to palette */
-};
-CCURSOR CursorCrossLI{ &_BitmapCrossLI, 15, 15 };
+________,________,________,____XXXX,XX______,________,________,________};
+static CBITMAP _bmCrossL{ 31, 8, 2, _pxCrossL, &GUI_CursorPal };
+CCURSOR CursorCrossL{ &_bmCrossL, 15 };
+static CBITMAP _bmCrossLI{ 31, 8, 2, _pxCrossL, &GUI_CursorPalI };
+CCURSOR CursorCrossLI{ &_bmCrossLI, 15 };
 #pragma endregion
 
 #pragma region Median
 
-BM_BPP2 GUI_Pixels_CrossM[]{
+static BM_BPP2 _pxCrossM[]{
 ________,________,__XXXXXX,________,________,________,
 ________,________,__XXooXX,________,________,________,
 ________,________,__XXooXX,________,________,________,
@@ -77,30 +62,15 @@ ________,________,__XXooXX,________,________,________,
 ________,________,__XXooXX,________,________,________,
 ________,________,__XXooXX,________,________,________,
 ________,________,__XXooXX,________,________,________,
-________,________,__XXXXXX,________,________,________,
-};
-
-static CBITMAP _BitmapCrossM{
-	21, 21,               /* XSize, YSize */
-	6,                    /* BytesPerLine */
-	2,                    /* BitsPerPixel */
-	GUI_Pixels_CrossM,    /* Pointer to picture data (indices) */
-	&GUI_CursorPal        /* Pointer to palette */
-};
-CCURSOR CursorCrossM{ &_BitmapCrossM, 10, 10 };
-
-static CBITMAP _BitmapCrossMI{
-	21, 21,               /* XSize, YSize */
-	6,                    /* BytesPerLine */
-	2,                    /* BitsPerPixel */
-	GUI_Pixels_CrossM,    /* Pointer to picture data (indices) */
-	&GUI_CursorPalI       /* Pointer to palette */
-};
-CCURSOR CursorCrossMI{ &_BitmapCrossMI, 10, 10 };
+________,________,__XXXXXX,________,________,________};
+static CBITMAP _bmCrossM{ 21, 6, 2, _pxCrossM, &GUI_CursorPal };
+CCURSOR CursorCrossM{ &_bmCrossM, 10 };
+static CBITMAP _bmCrossMI{ 21, 6, 2, _pxCrossM, &GUI_CursorPalI };
+CCURSOR CursorCrossMI{ &_bmCrossMI, 10 };
 #pragma endregion
 
 #pragma region Small
-BM_BPP2 GUI_Pixels_CrossS[]{
+static BM_BPP2 _pxCrossS[]{
 ________,XXXXXX__,________,
 ________,XXooXX__,________,
 ________,XXooXX__,________,
@@ -111,24 +81,9 @@ XXXXXXXX,XXooXXXX,XXXXXX__,
 ________,XXooXX__,________,
 ________,XXooXX__,________,
 ________,XXooXX__,________,
-________,XXXXXX__,________,
-};
-
-static CBITMAP _BitmapCrossS{
-	11, 11,               /* XSize, YSize */
-	3,                    /* BytesPerLine */
-	2,                    /* BitsPerPixel */
-	GUI_Pixels_CrossS,    /* Pointer to picture data (indices) */
-	&GUI_CursorPal        /* Pointer to palette */
-};
-CCURSOR CursorCrossS{ &_BitmapCrossS, 5, 5 };
-
-static CBITMAP _BitmapCrossSI{
-	11, 11,               /* XSize, YSize */
-	3,                    /* BytesPerLine */
-	2,                    /* BitsPerPixel */
-	GUI_Pixels_CrossS,    /* Pointer to picture data (indices) */
-	&GUI_CursorPalI       /* Pointer to palette */
-};
-CCURSOR CursorCrossSI{ &_BitmapCrossSI, 5, 5 };
+________,XXXXXX__,________};
+static CBITMAP _bmCrossS{ 11, 3, 2, _pxCrossS, &GUI_CursorPal };
+CCURSOR CursorCrossS{ &_bmCrossS, 5 };
+static CBITMAP _bmCrossSI{ 11, 3, 2, _pxCrossS, &GUI_CursorPalI };
+CCURSOR CursorCrossSI{ &_bmCrossSI, 5 };
 #pragma endregion

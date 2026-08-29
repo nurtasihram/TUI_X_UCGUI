@@ -1,14 +1,14 @@
 #include "GUI_Private.h"
 
 static const RGBC _aColor[]{ RGB_RED, RGB_BLACK, RGB_WHITE };
-const GUI_LOGPALETTE GUI_CursorPal{
+CLOGPALETTE GUI_CursorPal{
   3,	/* number of entries */
   1, 	/* Has transparency */
   &_aColor[0]
 };
 
 static const RGBC _aColorI[]{ RGB_RED, RGB_WHITE, RGB_BLACK };
-const GUI_LOGPALETTE GUI_CursorPalI{
+CLOGPALETTE GUI_CursorPalI{
   3,	/* number of entries */
   1, 	/* Has transparency */
   &_aColorI[0]
@@ -55,7 +55,7 @@ static void _Undraw(void) {
 			for (x = 0; x < xSize; x++) {
 				_SetPixel(x + _Rect.x0, y + _Rect.y0, *(pData + x));
 			}
-			pData += _pCursor->pBitmap->XSize;
+			pData += _pCursor->pBitmap->Size.x;
 		}
 	}
 }
@@ -82,17 +82,17 @@ static void _Draw(void) {
 						_SetPixel(_Rect.x0 + x, _Rect.y0 + y, BitmapPixel);
 				}
 			}
-			pData += pBM->XSize;
+			pData += pBM->Size.x;
 		}
 	}
 }
 
 static void _CalcRect(void) {
 	if (_pCursor) {
-		_Rect.x0 = _x - _pCursor->xHot;
-		_Rect.y0 = _y - _pCursor->yHot;
-		_Rect.x1 = _Rect.x0 + _pCursor->pBitmap->XSize - 1;
-		_Rect.y1 = _Rect.y0 + _pCursor->pBitmap->YSize - 1;
+		_Rect.x0 = _x - _pCursor->Hot.x;
+		_Rect.y0 = _y - _pCursor->Hot.y;
+		_Rect.x1 = _Rect.x0 + _pCursor->pBitmap->Size.x - 1;
+		_Rect.y1 = _Rect.y0 + _pCursor->pBitmap->Size.y - 1;
 	}
 }
 
@@ -151,7 +151,7 @@ PCCURSOR GUI_CURSOR_Select(PCCURSOR pCursor) {
 		pBM = pCursor->pBitmap;
 		aCursorPal = pBM->pPal->pPalEntries;
 		_Hide();
-		AllocSize = pBM->XSize * pBM->YSize * sizeof(RGBC);
+		AllocSize = pBM->Size.x * pBM->Size.y * sizeof(RGBC);
 		if (AllocSize != _AllocSize) {
 			GUI_ALLOC_Free(_pBuffer);
 			_pBuffer = 0;
@@ -177,12 +177,12 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
 				/* Save & set clip rect */
 				/* Compute helper variables */
 				pData = (RGBC *)_pBuffer;
-				xSize = _pCursor->pBitmap->XSize;
+				xSize = _pCursor->pBitmap->Size.x;
 				xOff = xNewPos - _x;
 				if (xOff > 0) {
 					xStep = 1;
 					xStart = 0;
-					xEnd = _pCursor->pBitmap->XSize;
+					xEnd = _pCursor->pBitmap->Size.x;
 					xOverlapMax = xEnd - 1;
 					xOverlapMin = xOff;
 				}
@@ -197,13 +197,13 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
 				if (yOff > 0) {
 					yStep = 1;
 					yStart = 0;
-					yEnd = _pCursor->pBitmap->YSize;
+					yEnd = _pCursor->pBitmap->Size.y;
 					yOverlapMax = yEnd - 1;
 					yOverlapMin = yOff;
 				}
 				else {
 					yStep = -1;
-					yStart = _pCursor->pBitmap->YSize - 1;
+					yStart = _pCursor->pBitmap->Size.y - 1;
 					yEnd = -1;
 					yOverlapMin = 0;
 					yOverlapMax = yStart + yOff;

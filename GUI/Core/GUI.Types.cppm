@@ -17,6 +17,8 @@ struct POINT {
 
 	inline operator bool() const { return x | y; }
 	inline POINT operator~() const { return{ y, x }; }
+	inline POINT operator+(int p) const { return{ x + p, y + p }; }
+	inline POINT operator-(int p) const { return{ x - p, y - p }; }
 	inline POINT operator+(const POINT &pt) const { return{ x + pt.x, y + pt.y }; }
 	inline POINT operator-(const POINT &pt) const { return{ x - pt.x, y - pt.y }; }
 	inline POINT &operator+=(const POINT &pt) { x += pt.x, y += pt.y; return *this; }
@@ -125,59 +127,56 @@ constexpr RGBC RGB_GRAYL (uint8_t a) { return COLOR_RGB(a, a, a); }
 constexpr RGBC RGB_BLUEL (uint8_t a) { return COLOR_RGB(0, 0, a); }
 constexpr RGBC RGB_GREENL(uint8_t a) { return COLOR_RGB(0, a, 0); }
 constexpr RGBC RGB_REDL  (uint8_t a) { return COLOR_RGB(a, 0, 0); }
-constexpr RGBC RGB_BLACK       = RGB_GRAYL(0x00);
-constexpr RGBC RGB_DARKGRAY    = RGB_GRAYL(0x40);
-constexpr RGBC RGB_GRAY        = RGB_GRAYL(0x80);
-constexpr RGBC RGB_LIGHTGRAY   = RGB_GRAYL(0xD3);
-constexpr RGBC RGB_WHITE       = RGB_GRAYL(0xFF);
-constexpr RGBC RGB_BLUE        = COLOR_RGB(0x00, 0x00, 0xFF);
-constexpr RGBC RGB_GREEN       = COLOR_RGB(0x00, 0xFF, 0x00);
-constexpr RGBC RGB_RED         = COLOR_RGB(0xFF, 0x00, 0x00);
-constexpr RGBC RGB_CYAN        = COLOR_RGB(0x00, 0xFF, 0xFF);
-constexpr RGBC RGB_MAGENTA     = COLOR_RGB(0xFF, 0x00, 0xFF);
-constexpr RGBC RGB_YELLOW      = COLOR_RGB(0xFF, 0xFF, 0x00);
-constexpr RGBC RGB_LIGHTBLUE   = COLOR_RGB(0x80, 0x80, 0xFF);
-constexpr RGBC RGB_LIGHTGREEN  = COLOR_RGB(0x80, 0xFF, 0x80);
-constexpr RGBC RGB_LIGHTRED    = COLOR_RGB(0xFF, 0x80, 0x80);
-constexpr RGBC RGB_LIGHTCYAN   = COLOR_RGB(0x80, 0xFF, 0xFF);
-constexpr RGBC RGB_LIGHTMAGENT = COLOR_RGB(0xFF, 0x80, 0xFF);
-constexpr RGBC RGB_LIGHTYELLOW = COLOR_RGB(0xFF, 0xFF, 0x80);
-constexpr RGBC RGB_DARKBLUE    = COLOR_RGB(0x00, 0x00, 0x80);
-constexpr RGBC RGB_DARKGREEN   = COLOR_RGB(0x00, 0x80, 0x00);
-constexpr RGBC RGB_DARKRED     = COLOR_RGB(0x80, 0x00, 0x00);
-constexpr RGBC RGB_DARKCYAN    = COLOR_RGB(0x00, 0x80, 0x80);
-constexpr RGBC RGB_DARKMAGENTA = COLOR_RGB(0x80, 0x00, 0x80);
-constexpr RGBC RGB_DARKYELLOW  = COLOR_RGB(0x80, 0x80, 0x00);
-constexpr RGBC RGB_BROWN       = COLOR_RGB(0xA5, 0x2A, 0x2A);
-
-constexpr RGBC RGB_INVALID_COLOR = ~0;      /* Invalid color - more than 24 bits */
+constexpr RGBC
+	RGB_BLACK       = RGB_GRAYL(0x00),
+	RGB_DARKGRAY    = RGB_GRAYL(0x40),
+	RGB_GRAY        = RGB_GRAYL(0x80),
+	RGB_LIGHTGRAY   = RGB_GRAYL(0xD3),
+	RGB_WHITE       = RGB_GRAYL(0xFF),
+	RGB_BLUE        = COLOR_RGB(0x00, 0x00, 0xFF),
+	RGB_GREEN       = COLOR_RGB(0x00, 0xFF, 0x00),
+	RGB_RED         = COLOR_RGB(0xFF, 0x00, 0x00),
+	RGB_CYAN        = COLOR_RGB(0x00, 0xFF, 0xFF),
+	RGB_MAGENTA     = COLOR_RGB(0xFF, 0x00, 0xFF),
+	RGB_YELLOW      = COLOR_RGB(0xFF, 0xFF, 0x00),
+	RGB_LIGHTBLUE   = COLOR_RGB(0x80, 0x80, 0xFF),
+	RGB_LIGHTGREEN  = COLOR_RGB(0x80, 0xFF, 0x80),
+	RGB_LIGHTRED    = COLOR_RGB(0xFF, 0x80, 0x80),
+	RGB_LIGHTCYAN   = COLOR_RGB(0x80, 0xFF, 0xFF),
+	RGB_LIGHTMAGENT = COLOR_RGB(0xFF, 0x80, 0xFF),
+	RGB_LIGHTYELLOW = COLOR_RGB(0xFF, 0xFF, 0x80),
+	RGB_DARKBLUE    = COLOR_RGB(0x00, 0x00, 0x80),
+	RGB_DARKGREEN   = COLOR_RGB(0x00, 0x80, 0x00),
+	RGB_DARKRED     = COLOR_RGB(0x80, 0x00, 0x00),
+	RGB_DARKCYAN    = COLOR_RGB(0x00, 0x80, 0x80),
+	RGB_DARKMAGENTA = COLOR_RGB(0x80, 0x00, 0x80),
+	RGB_DARKYELLOW  = COLOR_RGB(0x80, 0x80, 0x00),
+	RGB_BROWN       = COLOR_RGB(0xA5, 0x2A, 0x2A),
+	
+	RGB_INVALID_COLOR = ~0;      /* Invalid color - more than 24 bits */
 #pragma endregion
 
-struct GUI_LOGPALETTE {
-	int  NumEntries;
+struct LOGPALETTE {
+	uint8_t NumEntries;
 	char HasTrans;
 	const RGBC *pPalEntries;
 };
-extern const GUI_LOGPALETTE GUI_CursorPal;
-extern const GUI_LOGPALETTE GUI_CursorPalI;
+using CLOGPALETTE = const LOGPALETTE;
+using PCLOGPALETTE = const LOGPALETTE *;
+extern CLOGPALETTE GUI_CursorPal, GUI_CursorPalI;
 
-struct BITMAP_METHODS {
-	void(*pfDraw)(int x0, int y0, int xsize, int ysize, const uint8_t *pPixel, const GUI_LOGPALETTE *pLogPal, int xMag, int yMag);
-};
-
-struct GUI_BITMAP {
-	uint16_t XSize, YSize;
-	uint16_t BytesPerLine;
-	uint16_t BitsPerPixel;
+struct BITMAP {
+	POINT Size;
+	uint16_t BytesPerLine, BitsPerPixel;
 	const void *pData;
-	const GUI_LOGPALETTE *pPal;
+	PCLOGPALETTE pPal = nullptr;
 };
-using CBITMAP = const GUI_BITMAP;
-using PCBITMAP = const GUI_BITMAP *;
+using CBITMAP = const BITMAP;
+using PCBITMAP = const BITMAP *;
 
 struct CURSOR {
 	PCBITMAP pBitmap;
-	int xHot, yHot;
+	POINT Hot{};
 };
 using CCURSOR = const CURSOR;
 using PCCURSOR = const CURSOR *;

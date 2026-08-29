@@ -46,7 +46,7 @@ private:
 	int16_t Sel = -1;
 	uint16_t Spacing;
 	uint16_t NumItems;
-	uint16_t Height = Props.apBmRadio[0]->YSize + RADIO_BORDER * 2;
+	uint16_t Height = Props.apBmRadio[0]->Size.y + RADIO_BORDER * 2;
 	uint8_t  GroupId = 0;
 
 	void _ResizeRect(RECT *pDest, const RECT *pSrc, int Diff) {
@@ -56,13 +56,12 @@ private:
 		pDest->x1 = pSrc->x1 + Diff;
 	}
 	void _OnPaint() {
-		const char *pText;
 		/* Init some data */
 		auto rFocus = GetClientRect();
 		bool HasFocus = GetStates() & WIDGET_STATE_FOCUS;
 		auto pBmRadio = Props.apBmRadio[IsEnabled()],
 			 pBmCheck = Props.pBmCheck;
-		rFocus.x1 = pBmRadio->XSize + RADIO_BORDER * 2 - 1;
+		rFocus.x1 = pBmRadio->Size.x + RADIO_BORDER * 2 - 1;
 		rFocus.y1 = this->Height + ((this->NumItems - 1) * this->Spacing) - 1;
 		/* Select font and text color */
 		GUI.SetColor(Props.TextColor);
@@ -72,7 +71,7 @@ private:
 		auto CHeight = Props.pFont->CHeight;
 		auto SpaceAbove = Props.pFont->Baseline - CHeight;
 		RECT Rect;
-		Rect.x0 = pBmRadio->XSize + RADIO_BORDER * 2 + 2;
+		Rect.x0 = pBmRadio->Size.x + RADIO_BORDER * 2 + 2;
 		Rect.y0 = (CHeight <= this->Height) ? ((this->Height - CHeight) / 2) : 0;
 		Rect.y1 = Rect.y0 + CHeight - 1;
 		auto FocusBorder = (FontDistY <= 12) ? 2 : 3;
@@ -89,20 +88,17 @@ private:
 			GUI_DrawBitmap(pBmRadio, RADIO_BORDER, RADIO_BORDER + y);
 			/* Draw the check bitmap */
 			if (Sel == i)
-				GUI_DrawBitmap(pBmCheck, RADIO_BORDER + (pBmRadio->XSize - pBmCheck->XSize) / 2,
-							   RADIO_BORDER + ((pBmRadio->YSize - pBmCheck->YSize) / 2) + y);
+				GUI_DrawBitmap(pBmCheck, RADIO_BORDER + (pBmRadio->Size.x - pBmCheck->Size.x) / 2,
+							   RADIO_BORDER + ((pBmRadio->Size.y - pBmCheck->Size.y) / 2) + y);
 			/* Draw text if available */
-			pText = TextArray[i];
-			if (pText) {
-				if (*pText) {
-					auto r = Rect;
-					r.x1 = r.x0 + GUI_GetStringDistX(pText) - 2;
-					r += POINT{ 0, y };
-					GUI_DispStringAt(pText, r.x0, r.y0 - SpaceAbove);
-					/* Calculate focus rect */
-					if (HasFocus && Sel == i)
-						_ResizeRect(&rFocus, &r, FocusBorder);
-				}
+			if (auto pText = TextArray[i]) {
+				auto r = Rect;
+				r.x1 = r.x0 + GUI_GetStringDistX(pText) - 2;
+				r += POINT{ 0, y };
+				GUI_DispStringAt(pText, r.x0, r.y0 - SpaceAbove);
+				/* Calculate focus rect */
+				if (HasFocus && Sel == i)
+					_ResizeRect(&rFocus, &r, FocusBorder);
 			}
 		}
 		/* Draw the focus rect */
@@ -186,9 +182,9 @@ private:
 
 private:
 	static void _AdjRect(RECT &r, uint16_t NumItems, uint16_t Spacing) {
-		auto Height = DefaultProps.apBmRadio[0]->YSize + RADIO_BORDER * 2;
+		auto Height = DefaultProps.apBmRadio[0]->Size.y + RADIO_BORDER * 2;
 		if (r.x1 <= r.x0)
-			r.x1 += DefaultProps.apBmRadio[0]->XSize + RADIO_BORDER * 2;
+			r.x1 += DefaultProps.apBmRadio[0]->Size.x + RADIO_BORDER * 2;
 		if (r.y1 <= r.y0)
 			r.y1 += Height + (NumItems - 1) * Spacing;
 	}
@@ -376,17 +372,7 @@ Radio::Properties Radio::DefaultProps;
 #define RADIO_BKCOLOR0_DEFAULT RGB_GRAYL(0xc0)           /* Inactive color */
 #define RADIO_BKCOLOR1_DEFAULT RGB_WHITE          /* Active color */
 
-/* Colors */
-static const RGBC _aColorDisabled[]{ RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
-static const RGBC _aColorEnabled[]{ RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
-static const RGBC _ColorsCheck[]{ RGB_WHITE, RGB_BLACK };
-/* Palettes */
-static const GUI_LOGPALETTE _PalRadioDisabled{ 4, 1, _aColorDisabled };
-static const GUI_LOGPALETTE _PalRadioEnabled{ 4, 1, _aColorEnabled };
-static const GUI_LOGPALETTE _PalCheck{ 2, 1, _ColorsCheck };
-
-/* Pixel data */
-static const uint8_t _acRadio[]{
+static const uint8_t _pxRadio[]{
 ________,XXXXXXXX,________,
 ____XXXX,oooooooo,XXXX____,
 __XXoooo,dddddddd,oooodd__,
@@ -400,23 +386,21 @@ __XX____,dddddddd,____dd__,
 ____dddd,________,dddd____,
 ________,dddddddd,________,
 };
-static const uint8_t _acCheck[]{
+static const RGBC _aColorDisabled[]{ RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
+static const RGBC _aColorEnabled[]{ RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
+static CLOGPALETTE _PalRadioDisabled{ 4, 1, _aColorDisabled };
+static CLOGPALETTE _PalRadioEnabled{ 4, 1, _aColorEnabled };
+CBITMAP _abmRadio[]{
+	{ 12, 3, 2, _pxRadio, &_PalRadioDisabled },
+	{ 12, 3, 2, _pxRadio, &_PalRadioEnabled }
+};
+
+static const uint8_t _pxCheck[]{
 __XXXX__________,
 XXXXXXXX________,
 XXXXXXXX________,
 __XXXX__________
 };
-/* Bitmaps */
-CBITMAP _abmRadio[]{
-	{ 12, 12, 3, 2, _acRadio, &_PalRadioDisabled},
-	{ 12, 12, 3, 2, _acRadio, &_PalRadioEnabled}
-};
-
-CBITMAP _bmCheck{
-	4, /* XSize */
-	4, /* YSize */
-	1, /* BytesPerLine */
-	1, /* BitsPerPixel */
-	_acCheck,  /* Pointer to picture data (indices) */
-	&_PalCheck  /* Pointer to palette */
-};
+static const RGBC _ColorsCheck[]{ RGB_WHITE, RGB_BLACK };
+static CLOGPALETTE _PalCheck{ 2, 1, _ColorsCheck };
+CBITMAP _bmCheck{ 4, 1, 1, _pxCheck, &_PalCheck };

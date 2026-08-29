@@ -20,9 +20,8 @@ import TUX.Widget.MultEdit;
 import TUX.Core.Timer;
 
 static bool _MultiSel = false, _OwnerDrawn = true;
-const RGBC ColorsSmilie0[]{ RGB_WHITE, RGB_BLACK, RGB_RED };
-const GUI_LOGPALETTE PalSmilie0{ 3, 1, &ColorsSmilie0[0] };
-const uint8_t acSmilie0[]{
+
+const uint8_t pxSmilie0[]{
 ________,XXXXXXXX,XX______,________,
 ______XX,oooooooo,ooXX____,________,
 ____XXoo,oooooooo,ooooXX__,________,
@@ -36,16 +35,11 @@ __XXoooo,ooXXXXXX,ooooooXX,________,
 ____XXoo,XXoooooo,XXooXX__,________,
 ______XX,oooooooo,ooXX____,________,
 ________,XXXXXXXX,XX______,________ };
-CBITMAP bmSmilie0{
-	/* Size */ 13, 13,
-	/* BytesPerLine */ 4,
-	/* BitsPerPixel */ 2,
-	acSmilie0, &PalSmilie0
-};
+const RGBC ColorsSmilie0[]{ RGB_WHITE, RGB_BLACK, RGB_RED };
+CLOGPALETTE PalSmilie0{ 3, 1, &ColorsSmilie0[0] };
+CBITMAP bmSmilie0{ 13, 4, 2, pxSmilie0, &PalSmilie0 };
 
-const RGBC ColorsSmilie1[]{ RGB_WHITE, RGB_BLACK, RGB_YELLOW };
-const GUI_LOGPALETTE PalSmilie1{ 3, 1, &ColorsSmilie1[0] };
-const uint8_t acSmilie1[]{
+const uint8_t pxSmilie1[]{
 ________,XXXXXXXX,XX______,________,
 ______XX,oooooooo,ooXX____,________,
 ____XXoo,oooooooo,ooooXX__,________,
@@ -59,12 +53,9 @@ __XXoooo,XXoooooo,XXooooXX,________,
 ____XXoo,ooXXXXXX,ooooXX__,________,
 ______XX,oooooooo,ooXX____,________,
 ________,XXXXXXXX,XX______,________ };
-CBITMAP bmSmilie1{
-	/* Size */ 13, 13,
-	/* BytesPerLine */ 4,
-	/* BitsPerPixel */ 2,
-	acSmilie1, &PalSmilie1
-};
+const RGBC ColorsSmilie1[]{ RGB_WHITE, RGB_BLACK, RGB_YELLOW };
+CLOGPALETTE PalSmilie1{ 3, 1, &ColorsSmilie1[0] };
+CBITMAP bmSmilie1{ 13, 4, 2, pxSmilie1, &PalSmilie1 };
 
 static const char *_ListBox[]{
   "English", "Deutsch", nullptr
@@ -100,7 +91,7 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 		case WIDGET_ITEM_GET_XSIZE: {
 			char acBuffer[100];
 			pObj->GetItemText(Index, acBuffer, sizeof(acBuffer));
-			return GUI_GetStringDistX(acBuffer) + bmSmilie0.XSize + 16;
+			return GUI_GetStringDistX(acBuffer) + bmSmilie0.Size.x + 16;
 		}
 		case WIDGET_ITEM_GET_YSIZE:
 			return _GetItemSizeY(pObj, Index);
@@ -133,10 +124,10 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 			pObj->GetItemText(Index, acBuffer, sizeof(acBuffer));
 			GUI_Clear();
 			auto FontDistY = GUI.GetFont()->DistY();
-			GUI_DispStringAt(acBuffer, ItemPos.x + bmSmilie0.XSize + 16, ItemPos.y + (YSize - FontDistY) / 2);
+			GUI_DispStringAt(acBuffer, ItemPos.x + bmSmilie0.Size.x + 16, ItemPos.y + (YSize - FontDistY) / 2);
 			/* Draw bitmap */
 			auto pBm = MultiSel ? IsSelected ? &bmSmilie1 : &bmSmilie0 : (Index == Sel) ? &bmSmilie1 : &bmSmilie0;
-			GUI_DrawBitmap(pBm, ItemPos.x + 7, ItemPos.y + (YSize - pBm->YSize) / 2);
+			GUI_DrawBitmap(pBm, ItemPos.x + 7, ItemPos.y + (YSize - pBm->Size.y) / 2);
 			/* Draw focus rectangle */
 			if (MultiSel && Index == Sel) {
 				auto rInside = pObj->GetInsideRect();
@@ -1420,7 +1411,7 @@ int main(void) {
 	//_TestEdit();
 	//_TestMultiEdit();
 	//_TestDropDown();
-	//_TestListBox();
+	_TestListBox();
 	_TestMemDev();
 
 	return 0;

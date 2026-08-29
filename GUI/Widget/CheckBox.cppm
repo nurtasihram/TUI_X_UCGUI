@@ -58,8 +58,7 @@ private:
 		GUI_Clear();
 		/* Get size from bitmap */
 		RECT RectBox;
-		RectBox.x1 = Props.apBm[0]->XSize - 1 + 2 * EffectSize;
-		RectBox.y1 = Props.apBm[0]->YSize - 1 + 2 * EffectSize;
+		RectBox.LeftTop(Props.apBm[0]->Size + 2 * EffectSize - 1);
 		SetUserClipRect(&RectBox);
 		/* Clear inside  ... Just in case */
 		GUI.SetBkColor(Props.aBkColorBox[ColorIndex]);
@@ -171,11 +170,11 @@ private:
 
 private:
 	static void _AdjRect(RECT &r) {
-		auto EffectSize = Widget::DefaultEffect->EffectSize;
+		auto EffectSize = Widget::DefaultEffect->EffectSize * 2;
 		if (r.x1 <= r.x0)
-			r.x1 = r.x0 + DefaultProps.apBm[0]->XSize + 2 * EffectSize;
+			r.x1 = r.x0 + DefaultProps.apBm[0]->Size.x + EffectSize;
 		if (r.y1 <= r.y0)
-			r.y1 = r.y0 + DefaultProps.apBm[0]->YSize + 2 * EffectSize;
+			r.y1 = r.y0 + DefaultProps.apBm[0]->Size.y + EffectSize;
 	}
 public:
 	CheckBox(RECT r, WM_CF Style, WObj *pParent, uint16_t Id) :
@@ -276,11 +275,11 @@ CheckBox::Properties CheckBox::DefaultProps;
 static const RGBC _aColorDisabled[]{ RGB_GRAYL(0x10), RGB_GRAYL(0x80) };
 static const RGBC _aColorEnabled[]{ RGB_BLACK, RGB_WHITE };
 /* Palettes */
-static const GUI_LOGPALETTE _PalCheckDisabled{ 2, 0, _aColorDisabled };
-static const GUI_LOGPALETTE _PalCheckEnabled{ 2, 0, _aColorEnabled };
+static CLOGPALETTE _PalCheckDisabled{ 2, 0, _aColorDisabled };
+static CLOGPALETTE _PalCheckEnabled{ 2, 0, _aColorEnabled };
 
 /* Pixel data */
-static const uint8_t _acCheckEnabled[] = {
+static const uint8_t _pxCheckEnabled[] = {
 XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,__XXXX__________,
@@ -294,12 +293,12 @@ XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,XXXXXX__________};
 /* Bitmaps */
 CBITMAP CheckBox::abmCheckEnabled[2]{
-	{ 11, 11, 2, 1, _acCheckEnabled,  &_PalCheckDisabled },
-	{ 11, 11, 2, 1, _acCheckEnabled,  &_PalCheckEnabled  }
+	{ { 11, 11 }, 2, 1, _pxCheckEnabled,  &_PalCheckDisabled },
+	{ { 11, 11 }, 2, 1, _pxCheckEnabled,  &_PalCheckEnabled  }
 };
 
 /* Pixel data */
-static const uint8_t _acCheckDisabled[]{
+static const uint8_t _pxCheckDisabled[]{
 XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,__XXXX__________,
@@ -313,6 +312,6 @@ XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,XXXXXX__________};
 /* Bitmaps */
 CBITMAP CheckBox::abmCheckDisabled[2]{
-	{ 11, 11, 2, 1, _acCheckDisabled,  &_PalCheckDisabled},
-	{ 11, 11, 2, 1, _acCheckDisabled,  &_PalCheckEnabled }
+	{ { 11, 11 }, 2, 1, _pxCheckDisabled,  &_PalCheckDisabled},
+	{ { 11, 11 }, 2, 1, _pxCheckDisabled,  &_PalCheckEnabled }
 };

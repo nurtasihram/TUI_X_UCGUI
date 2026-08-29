@@ -49,17 +49,6 @@ int GUI__strcpy(char *sDest, const char *sSrc);
 
 void GL_DispChar(uint16_t c);
 
-/************************************************************
-*
-*                 Callback pointers for dynamic linkage
-*
-*************************************************************
-Dynamic linkage pointers reduces configuration hassles.
-*/
-
-extern const GUI_LOGPALETTE GUI_CursorPal;
-extern const GUI_LOGPALETTE GUI_CursorPalI;
-
 int GUI_GetBitmapPixel(PCBITMAP pBMP, unsigned x, unsigned y);
 
 extern const GUI_UC_ENC_APILIST GUI__API_TableNone;

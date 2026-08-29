@@ -221,11 +221,7 @@ private:
 #if GUI_SUPPORT_CURSOR
 	static void _SetResizeCursor(int Mode) {
 		static PCCURSOR _pOldCursor;
-		static const uint8_t _acResizeCursorH[]{
-		________,________,________,________,________,
-		________,________,________,________,________,
-		________,________,________,________,________,
-		________,________,________,________,________,
+		static const uint8_t _pxCurResizeH[]{
 		________,XX______,________,XX______,________,
 		______XX,XX______,________,XXXX____,________,
 		____XXoo,XX______,________,XXooXX__,________,
@@ -234,93 +230,61 @@ private:
 		__XXoooo,XXXXXXXX,XXXXXXXX,XXooooXX,________,
 		____XXoo,XX______,________,XXooXX__,________,
 		______XX,XX______,________,XXXX____,________,
-		________,XX______,________,XX______,________,
-		________,________,________,________,________,
-		________,________,________,________,________,
-		________,________,________,________,________,
-		________,________,________,________,________,
-		};
-		static CBITMAP _bmResizeCursorH = {
-			/* Size */ 17, 17,
-			/* BPL, BPP */ 5, 2,
-			_acResizeCursorH, &GUI_CursorPal
-		};
-		static CCURSOR _ResizeCursorH{ &_bmResizeCursorH, 8, 8 };
-		static const uint8_t _acResizeCursorV[]{
-		________,________,XX______,________,________,
-		________,______XX,ooXX____,________,________,
-		________,____XXoo,ooooXX__,________,________,
-		________,__XXoooo,ooooooXX,________,________,
-		________,XXXXXXXX,ooXXXXXX,XX______,________,
-		________,______XX,ooXX____,________,________,
-		________,______XX,ooXX____,________,________,
-		________,______XX,ooXX____,________,________,
-		________,______XX,ooXX____,________,________,
-		________,______XX,ooXX____,________,________,
-		________,______XX,ooXX____,________,________,
-		________,______XX,ooXX____,________,________,
-		________,XXXXXXXX,ooXXXXXX,XX______,________,
-		________,__XXoooo,ooooooXX,________,________,
-		________,____XXoo,ooooXX__,________,________,
-		________,______XX,ooXX____,________,________,
-		________,________,XX______,________,________,
-		};
-		static CBITMAP _bmResizeCursorV{
-			/* Size */ 17, 17,
-			/* BPL, BPP */ 5, 2,
-			_acResizeCursorV, &GUI_CursorPal
-		};
-		static CCURSOR _ResizeCursorV{ &_bmResizeCursorV, 8, 8 };
-		static const uint8_t _acResizeCursorDD[]{
-		________,________,________,________,________,
-		________,________,________,________,________,
-		____XXXX,XXXXXXXX,________,________,________,
-		____XXoo,ooooXX__,________,________,________,
-		____XXoo,ooXX____,________,________,________,
-		____XXoo,XXooXX__,________,________,________,
-		____XXXX,__XXooXX,________,________,________,
-		____XX__,____XXoo,XX______,________,________,
-		________,______XX,ooXX____,________,________,
-		________,________,XXooXX__,____XX__,________,
-		________,________,__XXooXX,__XXXX__,________,
-		________,________,____XXoo,XXooXX__,________,
-		________,________,______XX,ooooXX__,________,
-		________,________,____XXoo,ooooXX__,________,
-		________,________,__XXXXXX,XXXXXX__,________,
-		________,________,________,________,________,
-		________,________,________,________,________,
-		};
-		static CBITMAP _bmResizeCursorDD{
-			/* Size */ 17, 17,
-			/* BPL, BPP */ 5, 2,
-			_acResizeCursorDD, &GUI_CursorPal
-		};
-		static CCURSOR _ResizeCursorDD{ &_bmResizeCursorDD, 8, 8 };
-		static const uint8_t _acResizeCursorDU[]{
-		________,________,________,________,________,
-		________,________,________,________,________,
-		________,________,__XXXXXX,XXXXXX__,________,
-		________,________,____XXoo,ooooXX__,________,
-		________,________,______XX,ooooXX__,________,
-		________,________,____XXoo,XXooXX__,________,
-		________,________,__XXooXX,__XXXX__,________,
-		________,________,XXooXX__,____XX__,________,
-		________,______XX,ooXX____,________,________,
-		____XX__,____XXoo,XX______,________,________,
-		____XXXX,__XXooXX,________,________,________,
-		____XXoo,XXooXX__,________,________,________,
-		____XXoo,ooXX____,________,________,________,
-		____XXoo,ooooXX__,________,________,________,
-		____XXXX,XXXXXXXX,________,________,________,
-		________,________,________,________,________,
-		________,________,________,________,________,
-		};
-		static CBITMAP _bmResizeCursorDU{
-			/* Size */ 17, 17,
-			/* BPL, BPP */ 5, 2,
-			_acResizeCursorDU, &GUI_CursorPal
-		};
-		static CCURSOR _ResizeCursorDU{ &_bmResizeCursorDU, 8, 8 };
+		________,XX______,________,XX______,________};
+		static CBITMAP _bmResizeCursorH{ { 17, 9 }, 5, 2, _pxCurResizeH, &GUI_CursorPal };
+		static CCURSOR _ResizeCursorH{ &_bmResizeCursorH, { 8, 4 } };
+		static const uint8_t _pxCurResizeV[]{
+		________,XX______,________,
+		______XX,ooXX____,________,
+		____XXoo,ooooXX__,________,
+		__XXoooo,ooooooXX,________,
+		XXXXXXXX,ooXXXXXX,XX______,
+		______XX,ooXX____,________,
+		______XX,ooXX____,________,
+		______XX,ooXX____,________,
+		______XX,ooXX____,________,
+		______XX,ooXX____,________,
+		______XX,ooXX____,________,
+		______XX,ooXX____,________,
+		XXXXXXXX,ooXXXXXX,XX______,
+		__XXoooo,ooooooXX,________,
+		____XXoo,ooooXX__,________,
+		______XX,ooXX____,________,
+		________,XX______,________};
+		static CBITMAP _bmResizeCursorV{ { 9, 17 }, 3, 2, _pxCurResizeV, &GUI_CursorPal };
+		static CCURSOR _ResizeCursorV{ &_bmResizeCursorV, { 4, 8 } };
+		static const uint8_t _pxCurResizeDD[]{
+		XXXXXXXX,XXXX____,________,________,
+		XXoooooo,XX______,________,________,
+		XXooooXX,________,________,________,
+		XXooXXoo,XX______,________,________,
+		XXXX__XX,ooXX____,________,________,
+		XX______,XXooXX__,________,________,
+		________,__XXooXX,________,________,
+		________,____XXoo,XX______,XX______,
+		________,______XX,ooXX__XX,XX______,
+		________,________,XXooXXoo,XX______,
+		________,________,__XXoooo,XX______,
+		________,________,XXoooooo,XX______,
+		________,______XX,XXXXXXXX,XX______};
+		static CBITMAP _bmResizeCursorDD{ 13, 4, 2, _pxCurResizeDD, &GUI_CursorPal };
+		static CCURSOR _ResizeCursorDD{ &_bmResizeCursorDD, 6 };
+		static const uint8_t _pxCurResizeDU[]{
+		________,______XX,XXXXXXXX,XX______,
+		________,________,XXoooooo,XX______,
+		________,________,__XXoooo,XX______,
+		________,________,XXooXXoo,XX______,
+		________,______XX,ooXX__XX,XX______,
+		________,____XXoo,XX______,XX______,
+		________,__XXooXX,________,________,
+		XX______,XXooXX__,________,________,
+		XXXX__XX,ooXX____,________,________,
+		XXooXXoo,XX______,________,________,
+		XXooooXX,________,________,________,
+		XXoooooo,XX______,________,________,
+		XXXXXXXX,XXXX____,________,________};
+		static CBITMAP _bmResizeCursorDU{ 13, 4, 2, _pxCurResizeDU, &GUI_CursorPal };
+		static CCURSOR _ResizeCursorDU{ &_bmResizeCursorDU, 6 };
 		PCCURSOR pNewCursor = nullptr;
 		if (Mode) {
 			auto Direction = Mode & (FRAMEWIN_RESIZE_X | FRAMEWIN_RESIZE_Y);

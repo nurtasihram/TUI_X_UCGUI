@@ -60,8 +60,7 @@ struct GUI_DRAW {
 		Paint(r);
 	}
 	virtual void Paint(RECT &r) const = 0;
-	virtual int GetXSize() const { return 0; }
-	virtual int GetYSize() const { return 0; }
+	virtual POINT Size() const { return 0; }
 	GUI_DRAW() {}
 };
 
@@ -72,17 +71,10 @@ GUI_DRAW *GUI_DRAW_BITMAP_Create(PCBITMAP pBitmap) {
 		void Paint(RECT &r) const override {
 			GUI_DrawBitmap(pBitmap, r.x0, r.y0);
 		}
-		int GetXSize() const override {
-			return pBitmap ? pBitmap->XSize : 0;
-		}
-		int GetYSize() const override {
-			return pBitmap ? pBitmap->YSize : 0;
-		}
+		POINT Size() const override
+		{ return pBitmap ? pBitmap->Size : (POINT)0; }
 	};
-	auto pObj = (GUI_DRAW *)GUI_ALLOC_AllocZero(sizeof(_GUI_DRAW));
-	if (pObj)
-		new (pObj) _GUI_DRAW{ pBitmap };
-	return pObj;
+	return new _GUI_DRAW{ pBitmap };
 }
 
 GUI_DRAW *GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw) {
@@ -94,10 +86,7 @@ GUI_DRAW *GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw) {
 				pfDraw(r);
 		}
 	};
-	auto pObj = (GUI_DRAW *)GUI_ALLOC_AllocZero(sizeof(_GUI_DRAW));
-	if (pObj)
-		new (pObj) _GUI_DRAW{ pfDraw };
-	return pObj;
+	return new _GUI_DRAW{ pfDraw };
 }
 #pragma endregion
 

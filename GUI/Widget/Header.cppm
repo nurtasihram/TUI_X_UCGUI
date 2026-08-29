@@ -55,25 +55,26 @@ private:
 			Rect.x0 = xPos;
 			Rect.x1 = Rect.x0 + col.Width;
 			if (auto pDraw = col.pDrawObj) {
-				int xOff = 0, yOff = 0;
+				POINT Size = pDraw->Size(), Off;
 				switch (col.Align & TEXTALIGN_HORIZONTAL) {
 					case TEXTALIGN_RIGHT:
-						xOff = (col.Width - pDraw->GetXSize());
+						Off.x = (col.Width - Size.x);
 						break;
 					case TEXTALIGN_HCENTER:
-						xOff = (col.Width - pDraw->GetXSize()) / 2;
+						Off.x = (col.Width - Size.x) / 2;
 						break;
 				}
 				switch (col.Align & TEXTALIGN_VERTICAL) {
 					case TEXTALIGN_BOTTOM:
-						yOff = ((Rect.y1 - Rect.y0 + 1) - pDraw->GetYSize());
+						Off.y = (Rect.YSize() - Size.y);
 						break;
 					case TEXTALIGN_VCENTER:
-						yOff = ((Rect.y1 - Rect.y0 + 1) - pDraw->GetYSize()) / 2;
+						Off.y = (Rect.YSize() - Size.y) / 2;
 						break;
 				}
+				Off.x += xPos;
 				SetUserClipRect(&Rect);
-				pDraw->Draw(RECT::LeftTop(Rect.LeftTop(), { xPos + xOff, yOff }));
+				pDraw->Draw(RECT::LeftTop(Rect.LeftTop(), Off));
 				SetUserClipRect(nullptr);
 			}
 			DrawUp(Rect);
