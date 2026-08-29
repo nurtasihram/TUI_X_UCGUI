@@ -443,12 +443,12 @@ void _TestMemDev() {
 		_pMemDevTimer = nullptr;
 	}
 	if (WObj::IsWindow(_hMemDevFrame))
-		WM_DeleteWindow(_hMemDevFrame);
-	if (WObj::IsWindow(_hNoMemDevFrame))
-		WM_DeleteWindow(_hNoMemDevFrame);
-	_hMemDevFrame = 0;
+		delete _hMemDevFrame,
+		_hMemDevFrame = nullptr;
+	if (WObj::IsWindow(_hNoMemDevFrame)) 
+		delete _hNoMemDevFrame,
+		_hNoMemDevFrame = nullptr;
 	_hMemDevPane = 0;
-	_hNoMemDevFrame = 0;
 	_hNoMemDevPane = 0;
 }
 

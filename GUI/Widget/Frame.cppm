@@ -520,16 +520,10 @@ private:
 			auto pInfo = (const NOTIFY_INFO *)Data;
 			auto pWinSrc = pInfo->pWinSrc;
 			switch (pInfo->Notification) {
-			case WM_NOTIFICATION_CHILD_DELETED:
-				if (pWinSrc == pObj->pClient) {
-					pObj->pClient = nullptr;
-					WM_DeleteWindow(pObj);
-				}
-				break;
 			case WM_NOTIFICATION_RELEASED:
 				switch (pWinSrc->GetID()) {
 					case GUI_ID_CLOSE:
-						WM_DeleteWindow(pObj);
+						delete pObj;
 						break;
 					case GUI_ID_MAXIMIZE:
 						if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED)
@@ -549,9 +543,8 @@ private:
 			return 0;
 		}
 		case WM_SET_FOCUS: /* We have received or lost focus */
-			if (Data) {
+			if (Data)
 				pObj->pClient->SetFocus();
-			}
 			pObj->SetActive(Data);
 			return 0;
 		case WM_NOTIFY_CHILD_HAS_FOCUS:
@@ -670,7 +663,7 @@ public:
 		if (pClient)
 			pMenu->SetOwner(pClient);
 		pMenu->AttachMenu(this, { BorderSize, BorderSize + TitleHeight + IBorderSize }, xSize, 0);
-		WM_SetAnchor(pMenu, WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT);
+		pMenu->Anchor(WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT);
 		_UpdatePositions();
 		Invalidate();
 	}

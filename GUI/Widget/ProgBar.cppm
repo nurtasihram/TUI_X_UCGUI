@@ -119,14 +119,14 @@ private:
 		/* Draw left bar */
 		auto r = rInside;
 		r.x1 = xPos - 1;
-		WM_SetUserClipRect(&r);
+		SetUserClipRect(&r);
 		_DrawPart(0, rText.x0, rText.y0, pText);
 		/* Draw right bar */
 		r = rInside;
 		r.x0 = xPos;
-		WM_SetUserClipRect(&r);
+		SetUserClipRect(&r);
 		_DrawPart(1, rText.x0, rText.y0, pText);
-		WM_SetUserClipRect(nullptr);
+		SetUserClipRect(nullptr);
 		DrawDown(rClient);
 	}
 	void _Delete() {

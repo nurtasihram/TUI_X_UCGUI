@@ -93,7 +93,7 @@ GUI_MEMDEV_Handle GUI_MEMDEV_Select(GUI_MEMDEV_Handle hMem) {
 		GUI_SelectLCD();
 	else {
 		auto pDev = (GUI_MEMDEV *)hMem;
-		WM_Deactivate();
+		WObj::Deactivate();
 		/* If LCD was selected Save cliprect */
 		if (GUI.hDevData == 0)
 			GUI.ClipRectPrev = GUI.ClipRect;
@@ -134,8 +134,8 @@ void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV_Handle hMem, int x, int y) {
 		r.x1 = (r.x0 = x) + pDevData->XSize - 1;
 		r.y1 = (r.y0 = y) + pDevData->YSize - 1;
 		/* Do the drawing. Window manager has to be on */
-		WM_Activate();
-		WM_Iterate(r, [&] {
+		WObj::Activate();
+		WObj::Iterate(r, [&] {
 			GUI_MEMDEV__WriteToActiveAt(hMem, x, y);
 		});
 		/* Reactivate previously used device */

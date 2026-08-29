@@ -10,7 +10,7 @@ static bool _SetScrollbar(WObj *pWin, int OnOff, int Id, int Flags) {
 			new ScrollBar(pWin, Flags);
 	}
 	else if (pBar)
-		WM_DeleteWindow(pBar);
+		delete pBar;
 	return pBar;
 }
 bool WM_SetScrollbarV(WObj *pWin, int OnOff) {

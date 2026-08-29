@@ -72,9 +72,9 @@ private:
 						yOff = ((Rect.y1 - Rect.y0 + 1) - pDraw->GetYSize()) / 2;
 						break;
 				}
-				WM_SetUserClipRect(&Rect);
+				SetUserClipRect(&Rect);
 				pDraw->Draw(RECT::LeftTop(Rect.LeftTop(), { xPos + xOff, yOff }));
-				WM_SetUserClipRect(nullptr);
+				SetUserClipRect(nullptr);
 			}
 			DrawUp(Rect);
 			xPos += Rect.x1 - Rect.x0;

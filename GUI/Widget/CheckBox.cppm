@@ -60,7 +60,7 @@ private:
 		RECT RectBox;
 		RectBox.x1 = Props.apBm[0]->XSize - 1 + 2 * EffectSize;
 		RectBox.y1 = Props.apBm[0]->YSize - 1 + 2 * EffectSize;
-		WM_SetUserClipRect(&RectBox);
+		SetUserClipRect(&RectBox);
 		/* Clear inside  ... Just in case */
 		GUI.SetBkColor(Props.aBkColorBox[ColorIndex]);
 		GUI_Clear();
@@ -68,7 +68,7 @@ private:
 			GUI_DrawBitmap(Props.apBm[(CurrentState - 1) * 2 + ColorIndex], EffectSize, EffectSize);
 		/* Draw the effect arround the box */
 		DrawDown(RectBox);
-		WM_SetUserClipRect(nullptr);
+		SetUserClipRect(nullptr);
 		/* Draw text if needed */
 		if (!text) return;
 		/* Draw the text */

@@ -33,7 +33,7 @@ void GUI_SelectLCD(void) {
 	GUI.hDevData = 0;
 #endif
 	LCD_SetClipRectMax();
-	WM_Activate();
+	WObj::Activate();
 }
 int GUI_Exec1(void) {
 	int r = 0;
@@ -87,7 +87,7 @@ void GUI_RestoreContext(const GUI_CONTEXT *pContext) {
 void GUI_ClearRect(RECT r) {
 	DRAWMODE PrevDraw = GUI.SetDrawMode(DRAWMODE_REV);
 	r += GUI.Off;
-	WM_Iterate(r, [&] {
+	WObj::Iterate(r, [&] {
 		LCD_FillRect(r.x0, r.y0, r.x1, r.y1);
 	});
 	GUI.SetDrawMode(PrevDraw);
@@ -98,13 +98,13 @@ void GUI_Clear(void) {
 }
 void GUI_FillRect(RECT r) {
 	r += GUI.Off;
-	WM_Iterate(r, [&] {
+	WObj::Iterate(r, [&] {
 		LCD_FillRect(r.x0, r.y0, r.x1, r.y1);
 	});
 }
 void GUI_DrawRect(RECT r) {
 	r += GUI.Off;
-	WM_Iterate(r, [&] {
+	WObj::Iterate(r, [&] {
 		LCD_DrawHLine(r.x0, r.y0, r.x1);
 		LCD_DrawHLine(r.x0, r.y1, r.x1);
 		LCD_DrawVLine(r.x0, r.y0 + 1, r.y1 - 1);
@@ -114,7 +114,7 @@ void GUI_DrawRect(RECT r) {
 void GUI_DrawFocusRect(RECT r, int Dist) {
 	r /= Dist;
 	r += GUI.Off;
-	WM_Iterate(r, [&] {
+	WObj::Iterate(r, [&] {
 		for (int i = r.x0; i <= r.x1; i += 2) {
 			LCD_DrawPixel(i, r.y0);
 			LCD_DrawPixel(i, r.y1);
@@ -144,7 +144,7 @@ void GUI_DrawBitmap(PCBITMAP pBitmap, int x0, int y0) {
 	y0 += GUI.Off.y;
 	r.x1 = (r.x0 = x0) + pBitmap->XSize - 1;
 	r.y1 = (r.y0 = y0) + pBitmap->YSize - 1;
-	WM_Iterate(r, [&] {
+	WObj::Iterate(r, [&] {
 		LCD_DrawBitmap(x0, y0
 						, pBitmap->XSize, pBitmap->YSize
 						, pBitmap->BitsPerPixel
@@ -388,7 +388,7 @@ static void _DispLine(const char *s, int MaxNumChars, const RECT *pRect) {
 }
 void GUI__DispLine(const char *s, int MaxNumChars, const RECT *pr) {
 	auto r = *pr + GUI.Off;
-	WM_Iterate(r, [&] {
+	WObj::Iterate(r, [&] {
 		GUI.DispPos = r.LeftTop();
 		_DispLine(s, MaxNumChars, &r);
 	});
@@ -521,15 +521,15 @@ void GUI_DispStringInRectMax(const char *s, RECT *pRect, int TextAlign, int MaxL
 		RECT r;
 
 		if (pRect) {
-			pOldClipRect = WM_SetUserClipRect(pRect);
+			pOldClipRect = WObj::SetUserClipRect(pRect);
 			if (pOldClipRect) {
 				r = *pRect;
 				r &= *pOldClipRect;
-				WM_SetUserClipRect(&r);
+				WObj::SetUserClipRect(&r);
 			}
 		}
 		GUI__DispStringInRect(s, pRect, TextAlign, MaxLen);
-		WM_SetUserClipRect(pOldClipRect);
+		WObj::SetUserClipRect(pOldClipRect);
 	}
 }
 
@@ -544,7 +544,7 @@ void GUI_DispChar(uint16_t c) {
 	GUI.DispPos += GUI.Off;
 	r.x1 = (r.x0 = GUI.DispPos.x) + GUI_GetCharDistX(c) - 1;
 	r.y1 = (r.y0 = GUI.DispPos.y) + GUI.pAFont->SizeY() - 1;
-	WM_Iterate(r, [&] {
+	WObj::Iterate(r, [&] {
 		GL_DispChar(c);
 	});
 	if (c != '\n') {

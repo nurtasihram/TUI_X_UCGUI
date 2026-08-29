@@ -121,6 +121,7 @@ public:
 	auto EffectSize() const { return pEffect ? pEffect->EffectSize : 0; }
 
 	uint16_t GetId() const { return Id; }
+	bool IsFocussable() const { return State & WIDGET_STATE_FOCUSSABLE; }
 
 protected:
 	void SetBkColorPrefer(RGBC BkColor) {
@@ -184,7 +185,7 @@ protected:
 				*Data = Id;
 				return false; /* Message handled -> Return */
 			case WM_PID_STATE_CHANGED:
-				if (State & WIDGET_STATE_FOCUSSABLE) {
+				if (IsFocussable()) {
 					auto pInfo = (const PID_CHANGED_INFO *)*Data;
 					if (pInfo->State)
 						SetFocus();
@@ -221,7 +222,7 @@ protected:
 				return false;
 			}
 			case WM_GET_ACCEPT_FOCUS:
-				*(bool *)Data = State & WIDGET_STATE_FOCUSSABLE; /* Can handle focus */
+				*(bool *)Data = IsFocussable(); /* Can handle focus */
 				return false; /* Message handled */
 			case WM_GET_INSIDE_RECT:
 				*(RECT *)*Data = _GetInsideRect();
@@ -278,12 +279,12 @@ void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax
 	if (!pText) return;
 	if (!*pText) return;
 	/* Set clipping rectangle */
-	auto pOldClipRect = WM_SetUserClipRect(&TextRectMax);
+	auto pOldClipRect = WObj::SetUserClipRect(&TextRectMax);
 	/* Display text */
 	GUI.SetTextMode(DRAWMODE_NORMAL);
 	GUI_DispStringAt(pText, TextRectAct.x0, TextRectAct.y0);
 	/* Restore clipping rectangle */
-	WM_SetUserClipRect(pOldClipRect);
+	WObj::SetUserClipRect(pOldClipRect);
 }
 
 }

@@ -69,7 +69,7 @@ private:
 		/* Draw background */
 		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
 		GUI.SetColor(Props.aTextColor[ColorIndex]);
-		WM_SetUserClipRect(&rInside);
+		SetUserClipRect(&rInside);
 		GUI_Clear();
 		/* Draw bitmap.
 		   If we have only one, we will use it.
@@ -85,7 +85,7 @@ private:
 			rInside -= EffectSize / 2;
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		GUI_DispStringInRect(text, &rInside, Props.Align);
-		WM_SetUserClipRect(nullptr);
+		SetUserClipRect(nullptr);
 		/* Draw focus */
 		if (GetStates() & BUTTON_STATE_FOCUS) {
 			GUI.SetColor(RGB_BLACK);

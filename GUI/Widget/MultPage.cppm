@@ -71,7 +71,7 @@ private:
 		pScroll->SetValue(this->ScrollState);
 	}
 	void _DeleteScrollbar() {
-		WM_DeleteWindow(GetScrollbarH());
+		delete GetScrollbarH();
 		DelStates(MULTIPAGE_STATE_SCROLLMODE);
 	}
 
@@ -261,7 +261,7 @@ private:
 		rClip = rText;
 		rClip.y0 = rText.y0 - 1;
 		rClip.y1 = rText.y1 + 1;
-		WM_SetUserClipRect(&rClip);
+		SetUserClipRect(&rClip);
 		GUI.SetFont(Props.pFont);
 		for (int i = 0; i < NumItems; i++) {
 			auto &pPage = Handles[i];
@@ -269,7 +269,7 @@ private:
 			w = GUI_GetStringDistX(pPage.pText) + 10;
 			_DrawTextItem(pPage.pText, i, &rText, x0, w, (pPage.Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0);
 		}
-		WM_SetUserClipRect(nullptr);
+		SetUserClipRect(nullptr);
 	}
 	int _ClickedOnMultipage(int x, int y) {
 		RECT rText;
@@ -466,7 +466,7 @@ public:
 			_UpdatePositions();
 			/* Delete the window of the page */
 			if (Delete) {
-				WM_DeleteWindow(hWin);
+				delete hWin;
 			}
 		}
 	}

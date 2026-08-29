@@ -82,7 +82,7 @@ private:
 	}
 	void _FreeAttached() {
 		Handles.Delete();
-		WM_DeleteWindow(this->pListWin);
+		delete pListWin;
 		this->pListWin = nullptr;
 	}
 	void _OnPaint() {
@@ -222,7 +222,7 @@ public:
 			auto pListWin = this->pListWin;
 			this->pListWin = nullptr;
 			ReleaseCapture();
-			WM_DeleteWindow(pListWin);
+			delete pListWin;
 		}
 	}
 	void Expand() {

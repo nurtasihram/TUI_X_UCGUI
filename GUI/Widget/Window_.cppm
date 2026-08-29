@@ -49,6 +49,11 @@ private:
 		switch (MsgId) {
 		case WM_CREATE:
 			return 0;
+		case WM_PID_STATE_CHANGED:
+			if (auto pInfo = (const PID_CHANGED_INFO *)Data)
+				if (pInfo->State)
+					pObj->SetFocus();
+			break;
 		case WM_HANDLE_DIALOG_STATUS:
 			if (Data) /* set pointer to Dialog status */
 				pObj->pDialogStatus = (DIALOG_STATUS*)Data;

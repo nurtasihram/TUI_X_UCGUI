@@ -705,7 +705,7 @@ private:
 		rClip.y0 = EffectSize;
 		rClip.x1 = GetSizeX() - EffectSize - HBorder - 1;
 		rClip.y1 = GetSizeY() - EffectSize - 1;
-		prOldClip = WM_SetUserClipRect(&rClip);
+		prOldClip = SetUserClipRect(&rClip);
 		if (this->hText) {
 			const char *pText;
 			int Line = 0;
@@ -752,7 +752,7 @@ private:
 			r.y1 = r.y0 + FontSizeY - 1;
 			GUI_DrawRect(r);
 		}
-		WM_SetUserClipRect(prOldClip);
+		SetUserClipRect(prOldClip);
 		/* Draw the 3D effect (if configured) */
 		DrawDown();
 	}
