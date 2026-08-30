@@ -213,8 +213,8 @@ public: // Property - SizeBytes
 		return (((log.Width() * log.Planes() /* nPlanes */ * log.BitsPerPixel() /* nBitCount */ + 15) >> 4) << 1) * log.Height();
 	}
 public: // Property - Colors
-	/* W */ inline auto &GetColors(void *lpBits, DWORD cb) const assert_reflect_as_self(GetBitmapBits(self, cb, lpBits));
-	/* R */ inline auto &SetColors(const void *lpBits, DWORD cb) assert_reflect_as_self(SetBitmapBits(self, cb, lpBits));
+	/* W */ inline auto &Colors(void *lpBits, DWORD cb) const assert_reflect_as_self(GetBitmapBits(self, cb, lpBits));
+	/* R */ inline auto &Colors(const void *lpBits, DWORD cb) assert_reflect_as_self(SetBitmapBits(self, cb, lpBits));
 #pragma endregion
 
 };

@@ -111,25 +111,25 @@ private:
 	void _CalcClientRect(RECT *pRect) {
 		*pRect = _GetInsideRect();
 		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
-			pRect->y1 -= Props.pFont->SizeY() + 6;
+			pRect->y1 -= Props.pFont->YSize + 6;
 		}
 		else {
-			pRect->y0 += Props.pFont->SizeY() + 6;
+			pRect->y0 += Props.pFont->YSize + 6;
 		}
 	}
 	void _CalcBorderRect(RECT *pRect) {
 		*pRect = GetClientRect();
 		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
-			pRect->y1 -= Props.pFont->SizeY() + 6;
+			pRect->y1 -= Props.pFont->YSize + 6;
 		}
 		else {
-			pRect->y0 += Props.pFont->SizeY() + 6;
+			pRect->y0 += Props.pFont->YSize + 6;
 		}
 	}
 	int _GetPageSizeX(unsigned Index) {
 		int r = 0;
 		if ((int)Index < Handles.NumItems()) {
-			GUI.SetFont(Props.pFont);
+			GUI.Font(Props.pFont);
 			r = GUI_GetStringDistX(Handles[Index].pText) + 10;
 		}
 		return r;
@@ -147,7 +147,7 @@ private:
 	void _GetTextRect(RECT *pRect) {
 		RECT rBorder;
 		int Width, Height;
-		Height = Props.pFont->SizeY() + 6;
+		Height = Props.pFont->YSize + 6;
 		_CalcBorderRect(&rBorder);
 		/* Calculate Y-Position of text item */
 		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
@@ -183,7 +183,7 @@ private:
 		if (Width > rBorder.x1) {
 			RECT rText;
 			int x0, y0, NumItems = 0;
-			auto Size = ((Props.pFont->SizeY() + 6) * 3) >> 2;
+			auto Size = ((Props.pFont->YSize + 6) * 3) >> 2;
 			x0 = (Props.Align & MULTIPAGE_ALIGN_RIGHT) ? (rBorder.x0) : (rBorder.x1 - 2 * Size + 1);
 			y0 = (Props.Align & MULTIPAGE_ALIGN_BOTTOM) ? (rBorder.y1) : (rBorder.y0 - Size + 1);
 			/* A scrollbar is required so we add one to the MultPage */
@@ -216,26 +216,26 @@ private:
 			if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
 				r.y0 -= this->EffectSize() + 1;
 				if (this->EffectSize() > 1) {
-					GUI.SetColor(RGB_WHITE);
+					GUI.Color(RGB_WHITE);
 					GUI_DrawVLine(r.x0 - 1, r.y0, r.y0 + 1);
-					GUI.SetColor(RGB_GRAYL(0x55));
+					GUI.Color(RGB_GRAYL(0x55));
 					GUI_DrawVLine(r.x1 + 1, r.y0, r.y0 + 1);
 				}
 			}
 			else {
 				r.y1 += this->EffectSize() + 1;
 				if (this->EffectSize() > 1) {
-					GUI.SetColor(RGB_WHITE);
+					GUI.Color(RGB_WHITE);
 					GUI_DrawVLine(r.x0 - 1, r.y1 - 2, r.y1 - 1);
-					GUI.SetColor(RGB_GRAYL(0x55));
+					GUI.Color(RGB_GRAYL(0x55));
 					GUI_DrawVLine(r.x1 + 1, r.y1 - 2, r.y1 - 1);
 				}
 			}
 		}
-		GUI.SetColor(Props.aBkColor[ColorIndex]);
+		GUI.Color(Props.aBkColor[ColorIndex]);
 		GUI_FillRect(r);
-		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
-		GUI.SetColor(Props.aTextColor[ColorIndex]);
+		GUI.BkColor(Props.aBkColor[ColorIndex]);
+		GUI.Color(Props.aTextColor[ColorIndex]);
 		GUI_DispStringAt(pText, r.x0 + 4, pRect->y0 + 3);
 	}
 	void _OnPaint() {
@@ -262,7 +262,7 @@ private:
 		rClip.y0 = rText.y0 - 1;
 		rClip.y1 = rText.y1 + 1;
 		SetUserClipRect(&rClip);
-		GUI.SetFont(Props.pFont);
+		GUI.Font(Props.pFont);
 		for (int i = 0; i < NumItems; i++) {
 			auto &pPage = Handles[i];
 			x0 += w;
@@ -370,7 +370,7 @@ private:
 		auto pParent = (MultPage *)pObj->Parent();
 		switch (MsgId) {
 			case WM_PAINT:
-				GUI.SetBkColor(pParent->Props.aBkColor[1]);
+				GUI.BkColor(pParent->Props.aBkColor[1]);
 				GUI_Clear();
 				return 0;
 			case WM_GET_BKCOLOR:
@@ -493,19 +493,19 @@ public:
 				_UpdatePositions();
 		}
 	}
-	void SetBkColor(RGBC Color, unsigned Index) {
+	void BkColor(RGBC Color, unsigned Index) {
 		if (((int)Index < MULTIPAGE_NUMCOLORS)) {
 			Props.aBkColor[Index] = Color;
 			Invalidate();
 		}
 	}
-	void SetTextColor(RGBC Color, unsigned Index) {
+	void TextColor(RGBC Color, unsigned Index) {
 		if (((int)Index < MULTIPAGE_NUMCOLORS)) {
 			Props.aTextColor[Index] = Color;
 			Invalidate();
 		}
 	}
-	void SetFont(PCFONT pFont) {
+	void Font(PCFONT pFont) {
 		if (pFont) {
 			Props.pFont = pFont;
 			_UpdatePositions();

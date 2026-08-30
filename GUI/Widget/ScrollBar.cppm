@@ -121,17 +121,17 @@ private:
 		/*
 		  Draw left Arrow
 		*/
-		GUI.SetColor(Props.Color);
+		GUI.Color(Props.Color);
 		r.*x0 = Pos.x0_LeftArrow;
 		r.*x1 = Pos.x1_LeftArrow;
 		GUI_FillRect(r);
-		GUI.SetColor(Props.aBkColor[1]);
+		GUI.Color(Props.aBkColor[1]);
 		_DrawTriangle(r.*x0 + ArrowOff, CenterH, ArrowSize, -1);
 		DrawUp(r);
 		/*
 		  Draw the thumb area which is not covered by the thumb
 		*/
-		GUI.SetColor(Props.aBkColor[0]);
+		GUI.Color(Props.aBkColor[0]);
 		r.*x0 = Pos.x1_LeftArrow + 1;
 		r.*x1 = Pos.x0_Thumb - 1;
 		GUI_FillRect(r);
@@ -143,17 +143,17 @@ private:
 		*/
 		r.*x0 = Pos.x0_Thumb;
 		r.*x1 = Pos.x1_Thumb;
-		GUI.SetColor(Props.Color);
+		GUI.Color(Props.Color);
 		GUI_FillRect(r);
 		DrawUp(r);
 		/*
 		  Draw right Arrow
 		*/
-		GUI.SetColor(Props.Color);
+		GUI.Color(Props.Color);
 		r.*x0 = Pos.x0_RightArrow;
 		r.*x1 = Pos.x1_RightArrow;
 		GUI_FillRect(r);
-		GUI.SetColor(Props.aBkColor[1]);
+		GUI.Color(Props.aBkColor[1]);
 		_DrawTriangle(r.*x1 - ArrowOff, CenterH, ArrowSize, 1);
 		DrawUp(r);
 		/*
@@ -162,7 +162,7 @@ private:
 		if (Pos.x1_RightArrow != Pos.x1) {
 			r.*x0 = Pos.x1_RightArrow + 1;
 			r.*x1 = Pos.x1;
-			GUI.SetColor(Props.Color);
+			GUI.Color(Props.Color);
 			GUI_FillRect(r);
 		}
 	}

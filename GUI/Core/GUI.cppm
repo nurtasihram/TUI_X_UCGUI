@@ -92,7 +92,6 @@ struct GUI_CONTEXT {
 	const GUI_UC_ENC_APILIST *pUC_API; /* Unicode encoding API */
 	POINT DispPos;
 	DRAWMODE TextMode = 0;
-	TEXTALIGN TextAlign = 0;
 	/* Variables in WM module */
 	const RECT *WM__pUserClipRect = nullptr;
 	POINT Off;
@@ -114,20 +113,17 @@ public:
 		return OldDM;
 	}
 
-	auto GetBkColor(void) { return aColor[0]; }
-	void SetBkColor(RGBC color) { aColor[(DrawMode & DRAWMODE_REV) ? 1 : 0] = color; }
+	auto BkColor() const { return aColor[0]; }
+	void BkColor(RGBC color) { aColor[(DrawMode & DRAWMODE_REV) ? 1 : 0] = color; }
 
-	auto GetColor(void) { return aColor[1]; }
-	void SetColor(RGBC color) { aColor[(DrawMode & DRAWMODE_REV) ? 0 : 1] = color; }
+	auto Color() const { return aColor[1]; }
+	void Color(RGBC color) { aColor[(DrawMode & DRAWMODE_REV) ? 0 : 1] = color; }
 
-	auto GetTextAlign(void) { return TextAlign; }
-	void SetTextAlign(TEXTALIGN Align) { TextAlign = Align; }
-
-	auto GetTextMode(void) { return TextMode; }
+	auto GetTextMode() const { return TextMode; }
 	void SetTextMode(int Mode) { TextMode = Mode; }
 
-	auto GetFont(void) { return pAFont; }
-	PCFONT SetFont(PCFONT pNewFont) {
+	UCFONT Font() const { return *pAFont; } /// 
+	PCFONT Font(PCFONT pNewFont) {
 		PCFONT pOldFont = pAFont;
 		if (pNewFont)
 			pAFont = pNewFont;

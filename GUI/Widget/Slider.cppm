@@ -55,7 +55,7 @@ private:
 		/* Fill with parents background color */
 		SetBkColorPrefer(Props.BkColor);
 		GUI_Clear();
-		GUI.SetColor(RGB_BLACK);
+		GUI.Color(RGB_BLACK);
 		if (GetStates() & SLIDER_CF_VERTICAL) {
 			auto xSize = GetSizeX();
 			rSlot = rSlot.Rotate90L(xSize);
@@ -76,13 +76,13 @@ private:
 		/* Draw slot */
 		DrawDown(rSlot);
 		/* Draw the slider itself */
-		GUI.SetColor(Props.Color);
+		GUI.Color(Props.Color);
 		GUI_FillRect(rSlider);
-		GUI.SetColor(RGB_BLACK);
+		GUI.Color(RGB_BLACK);
 		DrawUp(rSlider);
 		/* Draw focus */
 		if (GetStates() & WIDGET_STATE_FOCUS) {
-			GUI.SetColor(RGB_BLACK);
+			GUI.Color(RGB_BLACK);
 			GUI_DrawFocusRect(GetClientRect(), 0);
 		}
 	}
@@ -176,7 +176,7 @@ public:
 
 #pragma region Properties
 	
-	void SetBkColor(RGBC Color) {
+	void BkColor(RGBC Color) {
 		Props.BkColor = Color;
 		Invalidate();
 	}

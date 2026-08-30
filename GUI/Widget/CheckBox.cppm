@@ -58,10 +58,10 @@ private:
 		GUI_Clear();
 		/* Get size from bitmap */
 		RECT RectBox;
-		RectBox.LeftTop(Props.apBm[0]->Size + 2 * EffectSize - 1);
+		RectBox.RightBottom(Props.apBm[0]->Size + 2 * EffectSize - 1);
 		SetUserClipRect(&RectBox);
 		/* Clear inside  ... Just in case */
-		GUI.SetBkColor(Props.aBkColorBox[ColorIndex]);
+		GUI.BkColor(Props.aBkColorBox[ColorIndex]);
 		GUI_Clear();
 		if (CurrentState)
 			GUI_DrawBitmap(Props.apBm[(CurrentState - 1) * 2 + ColorIndex], EffectSize, EffectSize);
@@ -74,14 +74,14 @@ private:
 		auto RectText = WM_GetClientRect();
 		RectText.x0 += RectBox.x1 + 1 + Props.Spacing;
 		GUI.SetTextMode(0);
-		GUI.SetColor(Props.TextColor);
-		GUI.SetFont(Props.pFont);
+		GUI.Color(Props.TextColor);
+		GUI.Font(Props.pFont);
 		GUI_DispStringInRect(text, &RectText, Props.Align);
 		/* Draw focus rectangle */
 		if (!(GetStates() & WIDGET_STATE_FOCUS))
 			return;
 		int xSizeText = GUI_GetStringDistX(text);
-		int ySizeText = Props.pFont->SizeY();
+		int ySizeText = Props.pFont->YSize;
 		RECT RectFocus = RectText;
 		switch (Props.Align & ~(TEXTALIGN_HORIZONTAL)) {
 			case TEXTALIGN_VCENTER:
@@ -101,7 +101,7 @@ private:
 		}
 		RectFocus.x1 = RectFocus.x0 + xSizeText;
 		RectFocus.y1 = RectFocus.y0 + ySizeText;
-		GUI.SetColor(RGB_BLACK);
+		GUI.Color(RGB_BLACK);
 		GUI_DrawFocusRect(RectFocus, 0);
 	}
 	void _OnTouch(const PID_STATE *pState) {
@@ -190,28 +190,28 @@ public:
 public:
 
 #pragma region Properties
-	void SetFont(PCFONT pFont) {
+	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
 		Invalidate();
 	}
 
-	void SetTextAlign(TEXTALIGN Align) {
+	void TextAlign(TEXTALIGN Align) {
 		if (Props.Align == Align)
 			return;
 		Props.Align = Align;
 		Invalidate();
 	}
 
-	void SetTextColor(RGBC Color) {
+	void TextColor(RGBC Color) {
 		if (Props.TextColor == Color)
 			return;
 		Props.TextColor = Color;
 		Invalidate();
 	}
 
-	void SetBkColor(RGBC Color) {
+	void BkColor(RGBC Color) {
 		if (Props.BkColor == Color)
 			return;
 		Props.BkColor = Color;

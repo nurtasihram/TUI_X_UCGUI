@@ -66,7 +66,7 @@ private:
 
 	auto _GetRowDistY() {
 		return RowDistY ? RowDistY :
-			Props.pFont->DistY() + (ShowGrid ? 1 : 0);
+			Props.pFont->YDist + (ShowGrid ? 1 : 0);
 	}
 	auto _GetNumVisibleRows() {
 		RECT Rect;
@@ -98,8 +98,8 @@ private:
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		ClipRect &= Rect;
 		/* Set drawing color, font and text mode */
-		GUI.SetColor(Props.aTextColor[0]);
-		GUI.SetFont(Props.pFont);
+		GUI.Color(Props.aTextColor[0]);
+		GUI.Font(Props.pFont);
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		/* Do the drawing */
 		for (i = this->ScrollStateV.v; i < EndRow; i++) {
@@ -121,7 +121,7 @@ private:
 					else {
 						ColorIndex = 0;
 					}
-					GUI.SetBkColor(Props.aBkColor[ColorIndex]);
+					GUI.BkColor(Props.aBkColor[ColorIndex]);
 					/* Iterate over all columns */
 					if (this->ShowGrid) {
 						Rect.y1--;
@@ -141,11 +141,11 @@ private:
 							if (pItem.hItemInfo) {
 								ItemInfo *pItemInfo;
 								pItemInfo = (ItemInfo *)(pItem.hItemInfo);
-								GUI.SetBkColor(pItemInfo->aBkColor[ColorIndex]);
-								GUI.SetColor(pItemInfo->aTextColor[ColorIndex]);
+								GUI.BkColor(pItemInfo->aBkColor[ColorIndex]);
+								GUI.Color(pItemInfo->aTextColor[ColorIndex]);
 							}
 							else {
-								GUI.SetColor(Props.aTextColor[ColorIndex]);
+								GUI.Color(Props.aTextColor[ColorIndex]);
 							}
 							/* Clear background */
 							GUI_ClearRect(Rect);
@@ -155,7 +155,7 @@ private:
 							Align = this->AlignArray[j];
 							GUI_DispStringInRect(pItem.pText, &Rect, Align);
 							if (pItem.hItemInfo)
-								GUI.SetBkColor(Props.aBkColor[ColorIndex]);
+								GUI.BkColor(Props.aBkColor[ColorIndex]);
 						}
 						xPos += Width;
 					}
@@ -168,12 +168,12 @@ private:
 		}
 		/* Clear unused area below items */
 		if (yPos <= ClipRect.y1) {
-			GUI.SetBkColor(Props.aBkColor[0]);
+			GUI.BkColor(Props.aBkColor[0]);
 			GUI_ClearRect({ ClipRect.x0, yPos, ClipRect.x1, ClipRect.y1 });
 		}
 		/* Draw grid */
 		if (this->ShowGrid) {
-			GUI.SetColor(Props.GridColor);
+			GUI.Color(Props.GridColor);
 			yPos = pHeader->GetHeight() + EffectSize - 1;
 			for (i = 0; i < NumVisRows; i++) {
 				yPos += RowDistY;
@@ -428,8 +428,8 @@ public:
 
 #pragma region Properties
 
-	PCFONT GetFont() { return Props.pFont; }
-	void SetFont(PCFONT pFont) {
+	UCFONT Font() const { return *Props.pFont; }
+	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
@@ -437,12 +437,12 @@ public:
 		_InvalidateInsideArea();
 	}
 
-	RGBC GetBkColor(LISTVIEW_CI Index) {
+	RGBC BkColor(LISTVIEW_CI Index) {
 		if (Index >= GUI_COUNTOF(Props.aBkColor))
 			return RGB_INVALID_COLOR;
 		return Props.aBkColor[Index];
 	}
-	void SetBkColor(LISTVIEW_CI Index, RGBC Color) {
+	void BkColor(LISTVIEW_CI Index, RGBC Color) {
 		if (Index >= GUI_COUNTOF(Props.aBkColor))
 			return;
 		if (Props.aBkColor[Index] == Color)
@@ -451,12 +451,12 @@ public:
 		_InvalidateInsideArea();
 	}
 
-	RGBC GetTextColor(LISTVIEW_CI Index) {
+	RGBC TextColor(LISTVIEW_CI Index) {
 		if (Index >= GUI_COUNTOF(Props.aTextColor))
 			return RGB_INVALID_COLOR;
 		return Props.aTextColor[Index];
 	}
-	void SetTextColor(LISTVIEW_CI Index, RGBC Color) {
+	void TextColor(LISTVIEW_CI Index, RGBC Color) {
 		if (Index >= GUI_COUNTOF(Props.aTextColor))
 			return;
 		if (Props.aTextColor[Index] == Color)
@@ -465,7 +465,7 @@ public:
 		_InvalidateInsideArea();
 	}
 
-	void SetTextAlign(LISTVIEW_CI Index, TEXTALIGN Align) {
+	void TextAlign(LISTVIEW_CI Index, TEXTALIGN Align) {
 		if (Index >= AlignArray.NumItems())
 			return;
 		if (AlignArray[Index] == Align)
@@ -573,11 +573,11 @@ public:
 			_InvalidateRowAndBelow(Index);
 	}
 	
-	void SetItemTextColor(uint16_t Column, uint16_t Row, LISTVIEW_CI Index, RGBC Color) {
+	void ItemTextColor(uint16_t Column, uint16_t Row, LISTVIEW_CI Index, RGBC Color) {
 		if (auto pItemInfo = _GetpItemInfo(Column, Row, Index))
 			pItemInfo->aTextColor[Index] = Color;
 	}
-	void SetItemBkColor(uint16_t Column, uint16_t Row, LISTVIEW_CI Index, RGBC Color) {
+	void ItemBkColor(uint16_t Column, uint16_t Row, LISTVIEW_CI Index, RGBC Color) {
 		if (auto pItemInfo = _GetpItemInfo(Column, Row, Index))
 			pItemInfo->aBkColor[Index] = Color;
 	}

@@ -84,7 +84,7 @@ private:
 		return GetStates() & FRAMEWIN_CF_TITLEVIS ? 
 			Props.TitleHeight ?
 				Props.TitleHeight :
-				2 + Props.pFont->SizeY() :
+				2 + Props.pFont->YSize :
 			0;
 	}
 
@@ -192,17 +192,17 @@ private:
 		Pos.rTitleText.y0++;
 		Pos.rTitleText.x0++;
 		Pos.rTitleText.x1--;
-		GUI.SetFont(Props.pFont);
+		GUI.Font(Props.pFont);
 		RECT rText;
 		GUI__CalcTextRect(pText, &Pos.rTitleText, &rText, Props.Align);
 		auto y0 = Pos.TitleHeight + BorderSize;
 		/* Draw Title */
 		auto Index = (Flags & FRAMEWIN_CF_ACTIVE) ? 1 : 0;
-		GUI.SetBkColor(Props.aBarColor[Index]);
-		GUI.SetColor(Props.aTextColor[Index]);
+		GUI.BkColor(Props.aBarColor[Index]);
+		GUI.Color(Props.aTextColor[Index]);
 		WIDGET__FillStringInRect(pText, r, Pos.rTitleText, rText);
 		/* Draw Frame */
-		GUI.SetColor(Props.FrameColor);
+		GUI.Color(Props.FrameColor);
 		GUI_FillRect({ 0, 0, size.x - 1, BorderSize - 1 });
 		GUI_FillRect({ 0, 0, Pos.rClient.x0 - 1, size.y - 1 });
 		GUI_FillRect({ Pos.rClient.x1 + 1, 0, size.x - 1, size.y - 1 });
@@ -551,8 +551,8 @@ public:
 
 #pragma region Properties
 
-	PCFONT GetFont() const { return Props.pFont; }
-	void SetFont(PCFONT pFont) {
+	UCFONT Font() const { return *Props.pFont; }
+	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
 		int OldHeight = _CalcTitleHeight();
@@ -564,14 +564,14 @@ public:
 
 	int GetBorderSize() const { return Props.BorderSize; }
 
-	void SetTextAlign(TEXTALIGN Align) {
+	void TextAlign(TEXTALIGN Align) {
 		if (Props.Align == Align)
 			return;
 		Props.Align = Align;
 		Invalidate();
 	}
 
-	void SetBarColor(unsigned Index, RGBC Color) {
+	void BarColor(unsigned Index, RGBC Color) {
 		if (Index >= GUI_COUNTOF(Props.aBarColor))
 			return;
 		if (Props.aBarColor[Index] == Color)
@@ -580,7 +580,7 @@ public:
 		Invalidate();
 	}
 
-	void SetTextColor(unsigned Index, RGBC Color) {
+	void TextColor(unsigned Index, RGBC Color) {
 		if (Index >= GUI_COUNTOF(Props.aTextColor))
 			return;
 		if (Props.aTextColor[Index] == Color)
@@ -589,7 +589,7 @@ public:
 		Invalidate();
 	}
 
-	void SetClientColor(RGBC Color) {
+	void ClientColor(RGBC Color) {
 		if (Props.ClientColor == Color)
 			return;
 		Props.ClientColor = Color;

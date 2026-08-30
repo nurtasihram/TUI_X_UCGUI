@@ -75,7 +75,7 @@ static const Widget::CreateStruct _aDialogCreate[]{
 };
 
 static int _GetItemSizeY(ListBox *pObj, int ItemIndex) {
-	int DistY = pObj->GetFont()->DistY() + 1;
+	int DistY = pObj->Font().YDist + 1;
 	if (pObj->GetMulti()) {
 		if (pObj->GetItemSel(ItemIndex))
 			DistY += 8;
@@ -119,11 +119,11 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 			else
 				ColorIndex = 0;
 			/* Draw item */
-			GUI.SetBkColor(aBkColor[ColorIndex]);
-			GUI.SetColor(aColor[ColorIndex]);
+			GUI.BkColor(aBkColor[ColorIndex]);
+			GUI.Color(aColor[ColorIndex]);
 			pObj->GetItemText(Index, acBuffer, sizeof(acBuffer));
 			GUI_Clear();
-			auto FontDistY = GUI.GetFont()->DistY();
+			auto FontDistY = GUI.Font().YDist;
 			GUI_DispStringAt(acBuffer, ItemPos.x + bmSmilie0.Size.x + 16, ItemPos.y + (YSize - FontDistY) / 2);
 			/* Draw bitmap */
 			auto pBm = MultiSel ? IsSelected ? &bmSmilie1 : &bmSmilie0 : (Index == Sel) ? &bmSmilie1 : &bmSmilie0;
@@ -136,7 +136,7 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 				rFocus.y0 = ItemPos.y;
 				rFocus.x1 = rInside.x1;
 				rFocus.y1 = ItemPos.y + YSize - 1;
-				GUI.SetColor(RGB_WHITE - aBkColor[ColorIndex]);
+				GUI.Color(RGB_WHITE - aBkColor[ColorIndex]);
 				GUI_DrawFocusRect(rFocus, 0);
 			}
 			break;
@@ -181,22 +181,22 @@ static WM_PARAM _cbMemDevPane(WObj *pWin, int MsgId, WM_PARAM Data) {
 				int Phase = _MemDevPhase % (Span * 2);
 				XPos = Phase > Span ? Span * 2 - Phase : Phase;
 			}
-			GUI.SetBkColor(RGB_WHITE);
+			GUI.BkColor(RGB_WHITE);
 			GUI_Clear();
-			GUI.SetColor(RGB_DARKGRAY);
+			GUI.Color(RGB_DARKGRAY);
 			GUI_DrawRect({ 0, 0, Size.x - 1, Size.y - 1 });
-			GUI.SetColor(RGB_BLACK);
+			GUI.Color(RGB_BLACK);
 			GUI_DispStringAt(MemDevOn ? "MemDev ON" : "MemDev OFF", 8, 8);
 			GUI_DispStringAt(MemDevOn ? "WC_MEMDEV enabled" : "WC_MEMDEV disabled", 8, 24);
-			GUI.SetColor(RGB_GRAY);
+			GUI.Color(RGB_GRAY);
 			GUI_DrawRect({ 10, 48, Size.x - 11, 72 });
-			GUI.SetColor(MemDevOn ? RGB_GREEN : RGB_RED);
+			GUI.Color(MemDevOn ? RGB_GREEN : RGB_RED);
 			GUI_FillRect({ 10 + XPos, 49, 10 + XPos + BarWidth, 71 });
-			GUI.SetColor(RGB_BLUE);
+			GUI.Color(RGB_BLUE);
 			GUI_FillRect({ 10, Size.y - 40, Size.x - 11, Size.y - 25 });
-			GUI.SetColor(RGB_YELLOW);
+			GUI.Color(RGB_YELLOW);
 			GUI_FillRect({ 10 + XPos / 2, Size.y - 39, 35 + XPos / 2, Size.y - 26 });
-			GUI.SetColor(RGB_BLACK);
+			GUI.Color(RGB_BLACK);
 			GUI_DispStringAt("Animated redraw area", 8, Size.y - 18);
 			return 0;
 		}
@@ -922,6 +922,214 @@ void _TestRadio() {
 	pDialog->DialogExec();
 }
 
+// Text widget alignment and anchor test IDs
+#define ID_TEXT_TEST_TITLE         (GUI_ID_USER + 160)
+#define ID_TEXT_LEFT_TOP           (GUI_ID_USER + 161)
+#define ID_TEXT_CENTER_TOP         (GUI_ID_USER + 162)
+#define ID_TEXT_RIGHT_TOP          (GUI_ID_USER + 163)
+#define ID_TEXT_LEFT_VCENTER       (GUI_ID_USER + 164)
+#define ID_TEXT_CENTER_CENTER      (GUI_ID_USER + 165)
+#define ID_TEXT_RIGHT_VCENTER      (GUI_ID_USER + 166)
+#define ID_TEXT_LEFT_BOTTOM        (GUI_ID_USER + 167)
+#define ID_TEXT_CENTER_BOTTOM      (GUI_ID_USER + 168)
+#define ID_TEXT_RIGHT_BOTTOM       (GUI_ID_USER + 169)
+#define ID_TEXT_ANCHOR_LEFT        (GUI_ID_USER + 170)
+#define ID_TEXT_ANCHOR_RIGHT       (GUI_ID_USER + 171)
+#define ID_TEXT_ANCHOR_TOP         (GUI_ID_USER + 172)
+#define ID_TEXT_ANCHOR_BOTTOM      (GUI_ID_USER + 173)
+// Interactive multiline text test IDs
+#define ID_TEXT_MULTILINE          (GUI_ID_USER + 174)
+#define ID_RADIO_HALIGN            (GUI_ID_USER + 175)
+#define ID_RADIO_VALIGN            (GUI_ID_USER + 176)
+#define ID_TEXT_HALIGN_LABEL       (GUI_ID_USER + 177)
+#define ID_TEXT_VALIGN_LABEL       (GUI_ID_USER + 178)
+
+static const Widget::CreateStruct _aTextTestDialogCreate[] = {
+	{ Frame  ::CreateIndirect, "Text Alignment & Anchor Test", 0                        , 40  , 40  , 680 , 420 , FRAMEWIN_CF_MOVEABLE | FRAMEWIN_CF_RESIZEABLE },
+
+	// Title and description
+	{ Text   ::CreateIndirect, "Text Alignment Test (Resizable)", ID_TEXT_TEST_TITLE   , 10  , 5   , 200 , 20  , TEXT_CF_LEFT                                },
+
+	// 3x3 grid showing all alignment combinations
+	// TOP row
+	{ Text   ::CreateIndirect, "Left-Top"        , ID_TEXT_LEFT_TOP        , 10  , 30  , 140 , 60  , TEXT_CF_LEFT | TEXT_CF_TOP         },
+	{ Text   ::CreateIndirect, "Center-Top"      , ID_TEXT_CENTER_TOP      , 160 , 30  , 140 , 60  , TEXT_CF_HCENTER | TEXT_CF_TOP      },
+	{ Text   ::CreateIndirect, "Right-Top"       , ID_TEXT_RIGHT_TOP       , 310 , 30  , 140 , 60  , TEXT_CF_RIGHT | TEXT_CF_TOP        },
+
+	// MIDDLE row
+	{ Text   ::CreateIndirect, "Left-VCenter"    , ID_TEXT_LEFT_VCENTER    , 10  , 100 , 140 , 60  , TEXT_CF_LEFT | TEXT_CF_VCENTER     },
+	{ Text   ::CreateIndirect, "Center-Center"   , ID_TEXT_CENTER_CENTER   , 160 , 100 , 140 , 60  , TEXT_CF_HCENTER | TEXT_CF_VCENTER  },
+	{ Text   ::CreateIndirect, "Right-VCenter"   , ID_TEXT_RIGHT_VCENTER   , 310 , 100 , 140 , 60  , TEXT_CF_RIGHT | TEXT_CF_VCENTER    },
+
+	// BOTTOM row
+	{ Text   ::CreateIndirect, "Left-Bottom"     , ID_TEXT_LEFT_BOTTOM     , 10  , 170 , 140 , 60  , TEXT_CF_LEFT | TEXT_CF_BOTTOM      },
+	{ Text   ::CreateIndirect, "Center-Bottom"   , ID_TEXT_CENTER_BOTTOM   , 160 , 170 , 140 , 60  , TEXT_CF_HCENTER | TEXT_CF_BOTTOM   },
+	{ Text   ::CreateIndirect, "Right-Bottom"    , ID_TEXT_RIGHT_BOTTOM    , 310 , 170 , 140 , 60  , TEXT_CF_RIGHT | TEXT_CF_BOTTOM     },
+
+	// Anchor demonstration section
+	{ Text   ::CreateIndirect, "Anchor Test: Resize window to see anchors in action", 0, 10, 240, 440, 18, TEXT_CF_LEFT | TEXT_CF_VCENTER },
+
+	// Anchor examples (these will stay positioned relative to their anchors)
+	{ Text   ::CreateIndirect, "Anchor: Left"    , ID_TEXT_ANCHOR_LEFT     , 10  , 265 , 100 , 25  , TEXT_CF_LEFT | TEXT_CF_VCENTER     },
+	{ Text   ::CreateIndirect, "Anchor: Right"   , ID_TEXT_ANCHOR_RIGHT    , 350 , 265 , 100 , 25  , TEXT_CF_RIGHT | TEXT_CF_VCENTER    },
+	{ Text   ::CreateIndirect, "Anchor: Top"     , ID_TEXT_ANCHOR_TOP      , 180 , 265 , 100 , 25  , TEXT_CF_HCENTER | TEXT_CF_VCENTER  },
+	{ Text   ::CreateIndirect, "Anchor: Bottom"  , ID_TEXT_ANCHOR_BOTTOM   , 180 , 300 , 100 , 25  , TEXT_CF_HCENTER | TEXT_CF_VCENTER  },
+
+	// Interactive multiline text test section
+	{ Text   ::CreateIndirect, "Interactive Multiline Text Test", 0, 470, 5, 190, 20, TEXT_CF_LEFT },
+
+	// Multiline text display area with border
+	{ Text   ::CreateIndirect, "This is a multiline\ntext example.\n\nYou can use Radio\nbuttons to change\nthe alignment.", 
+	  ID_TEXT_MULTILINE, 470, 30, 190, 150, TEXT_CF_LEFT | TEXT_CF_TOP },
+
+	// Horizontal alignment radio group
+	{ Text   ::CreateIndirect, "Horizontal:"     , ID_TEXT_HALIGN_LABEL    , 470 , 190 , 80  , 15  , TEXT_CF_LEFT                       },
+	{ Radio  ::CreateIndirect, ""                , ID_RADIO_HALIGN         , 470 , 210 , 190 , 60  , 0, (3 | (20 << 8))                   },
+
+	// Vertical alignment radio group
+	{ Text   ::CreateIndirect, "Vertical:"       , ID_TEXT_VALIGN_LABEL    , 470 , 280 , 80  , 15  , TEXT_CF_LEFT                       },
+	{ Radio  ::CreateIndirect, ""                , ID_RADIO_VALIGN         , 470 , 300 , 190 , 60  , 0, (3 | (20 << 8))                   },
+
+	{ Button ::CreateIndirect, "Close"           , GUI_ID_CANCEL           , 580 , 370 , 80  , 25  }
+};
+
+// Helper function to update multiline text alignment based on radio selections
+static void _UpdateMultilineTextAlign(WObj *pWin) {
+	auto pTextMultiline = pWin->GetItem<Text>(ID_TEXT_MULTILINE);
+	auto pRadioHAlign = pWin->GetItem<Radio>(ID_RADIO_HALIGN);
+	auto pRadioVAlign = pWin->GetItem<Radio>(ID_RADIO_VALIGN);
+
+	if (pTextMultiline && pRadioHAlign && pRadioVAlign) {
+		TEXTALIGN align = 0;
+
+		// Get horizontal alignment
+		switch (pRadioHAlign->GetValue()) {
+			case 0: align |= TEXT_CF_LEFT; break;
+			case 1: align |= TEXT_CF_HCENTER; break;
+			case 2: align |= TEXT_CF_RIGHT; break;
+		}
+
+		// Get vertical alignment
+		switch (pRadioVAlign->GetValue()) {
+			case 0: align |= TEXT_CF_TOP; break;
+			case 1: align |= TEXT_CF_VCENTER; break;
+			case 2: align |= TEXT_CF_BOTTOM; break;
+		}
+
+		pTextMultiline->TextAlign(align);
+	}
+}
+
+static WM_PARAM _cbTextTest(WObj *pWin, int MsgId, WM_PARAM Data) {
+	switch (MsgId) {
+		case WM_INIT_DIALOG: {
+			// Set background colors for text widgets to make alignment visible
+			auto SetTextBkColor = [pWin](int Id, RGBC color) {
+				auto pText = pWin->GetItem<Text>(Id);
+				if (pText) {
+					pText->BkColor(color);
+				}
+			};
+
+			// Set light background colors for each text widget
+			SetTextBkColor(ID_TEXT_LEFT_TOP,      COLOR_RGB(0xFF, 0xE0, 0xE0));
+			SetTextBkColor(ID_TEXT_CENTER_TOP,    COLOR_RGB(0xE0, 0xFF, 0xE0));
+			SetTextBkColor(ID_TEXT_RIGHT_TOP,     COLOR_RGB(0xFF, 0xE0, 0xE0));
+			SetTextBkColor(ID_TEXT_LEFT_VCENTER,  COLOR_RGB(0xE0, 0xE0, 0xFF));
+			SetTextBkColor(ID_TEXT_CENTER_CENTER, COLOR_RGB(0xFF, 0xFF, 0xE0));
+			SetTextBkColor(ID_TEXT_RIGHT_VCENTER, COLOR_RGB(0xFF, 0xE0, 0xFF));
+			SetTextBkColor(ID_TEXT_LEFT_BOTTOM,   COLOR_RGB(0xFF, 0xE0, 0xE0));
+			SetTextBkColor(ID_TEXT_CENTER_BOTTOM, COLOR_RGB(0xE0, 0xFF, 0xFF));
+			SetTextBkColor(ID_TEXT_RIGHT_BOTTOM,  COLOR_RGB(0xFF, 0xE0, 0xE0));
+
+			// Set background colors for anchor test widgets
+			SetTextBkColor(ID_TEXT_ANCHOR_LEFT,   COLOR_RGB(0xE0, 0xF0, 0xFF));
+			SetTextBkColor(ID_TEXT_ANCHOR_RIGHT,  COLOR_RGB(0xE0, 0xF0, 0xFF));
+			SetTextBkColor(ID_TEXT_ANCHOR_TOP,    COLOR_RGB(0xF0, 0xFF, 0xE0));
+			SetTextBkColor(ID_TEXT_ANCHOR_BOTTOM, COLOR_RGB(0xFF, 0xF0, 0xE0));
+
+			// Set anchors for the demonstration widgets
+			auto pAnchorLeft = pWin->GetItem(ID_TEXT_ANCHOR_LEFT);
+			if (pAnchorLeft) {
+				// Keep distance to left edge constant (default behavior)
+				pAnchorLeft->Anchor(WC_ANCHOR_LEFT | WC_ANCHOR_TOP);
+			}
+
+			auto pAnchorRight = pWin->GetItem(ID_TEXT_ANCHOR_RIGHT);
+			if (pAnchorRight) {
+				// Keep distance to right edge constant - will move with right edge
+				pAnchorRight->Anchor(WC_ANCHOR_RIGHT | WC_ANCHOR_TOP);
+			}
+
+			auto pAnchorTop = pWin->GetItem(ID_TEXT_ANCHOR_TOP);
+			if (pAnchorTop) {
+				// Keep distance to top edge constant (default behavior)
+				pAnchorTop->Anchor(WC_ANCHOR_LEFT | WC_ANCHOR_TOP);
+			}
+
+			auto pAnchorBottom = pWin->GetItem(ID_TEXT_ANCHOR_BOTTOM);
+			if (pAnchorBottom) {
+				// Keep distance to bottom edge constant - will move with bottom edge
+				pAnchorBottom->Anchor(WC_ANCHOR_LEFT | WC_ANCHOR_BOTTOM);
+			}
+
+			// Initialize radio buttons for multiline text alignment
+			auto pRadioHAlign = pWin->GetItem<Radio>(ID_RADIO_HALIGN);
+			if (pRadioHAlign) {
+				pRadioHAlign->SetText("Left", 0);
+				pRadioHAlign->SetText("Center", 1);
+				pRadioHAlign->SetText("Right", 2);
+				pRadioHAlign->SetValue(0);  // Default to Left
+			}
+
+			auto pRadioVAlign = pWin->GetItem<Radio>(ID_RADIO_VALIGN);
+			if (pRadioVAlign) {
+				pRadioVAlign->SetText("Top", 0);
+				pRadioVAlign->SetText("VCenter", 1);
+				pRadioVAlign->SetText("Bottom", 2);
+				pRadioVAlign->SetValue(0);  // Default to Top
+			}
+
+			// Set background color for multiline text widget
+			SetTextBkColor(ID_TEXT_MULTILINE, COLOR_RGB(0xFF, 0xFF, 0xE0));
+
+			// Initialize the multiline text alignment
+			_UpdateMultilineTextAlign(pWin);
+
+			return 0;
+		}
+		case WM_NOTIFY_PARENT: {
+			auto pInfo = (const NOTIFY_INFO *)Data;
+			auto pWinSrc = pInfo->pWinSrc;
+			int Id = pWinSrc->GetID();
+
+			// Handle radio button value changes
+			if (pInfo->Notification == WM_NOTIFICATION_VALUE_CHANGED) {
+				if (Id == ID_RADIO_HALIGN || Id == ID_RADIO_VALIGN) {
+					_UpdateMultilineTextAlign(pWin);
+				}
+			}
+
+			if (pInfo->Notification == WM_NOTIFICATION_RELEASED) {
+				switch (Id) {
+					case GUI_ID_CANCEL:
+						pWin->DialogEnd(0);
+						break;
+				}
+			}
+			return 0;
+		}
+	}
+	return WM_DefaultProc(pWin, MsgId, Data);
+}
+
+void _TestText() {
+	auto pDialog = (Frame *)_aTextTestDialogCreate->CreateDialog(GUI_COUNTOF(_aTextTestDialogCreate), &_cbTextTest, 0, 0, 0);
+	pDialog->AddMinButton();
+	pDialog->AddMaxButton();
+	pDialog->DialogExec();
+}
+
 #define ID_PROGBAR_TEST        (GUI_ID_USER + 180)
 #define ID_PROGBAR_STATUS      (GUI_ID_USER + 181)
 #define ID_PROGBAR_DEC         (GUI_ID_USER + 182)
@@ -964,7 +1172,7 @@ static WM_PARAM _cbProgBarTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			_ProgBarCustomText = false;
 			pProg->SetMinMax(_ProgBarMin, _ProgBarMax);
 			pProg->SetValue(_ProgBarValue);
-			pProg->SetTextAlign(TEXTALIGN_HCENTER);
+			pProg->TextAlign(TEXTALIGN_HCENTER);
 			pProg->SetText(nullptr);
 			_UpdateProgBarStatus(pWin);
 			return 0;
@@ -1403,16 +1611,17 @@ int main(void) {
 	GUI_Init();
 	GUI_CURSOR_Show();
 
+	_TestText();
 	//_TestListView();
 	//_TestMultiPage();
 	//_TestRadio();
 	//_TestProgBar();
 	//_TestSlider();
-	//_TestEdit();
-	//_TestMultiEdit();
+	_TestEdit();
+	_TestMultiEdit();
 	//_TestDropDown();
-	_TestListBox();
-	_TestMemDev();
+	//_TestListBox();
+	//_TestMemDev();
 
 	return 0;
 }

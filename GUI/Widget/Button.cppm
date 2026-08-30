@@ -57,7 +57,7 @@ private:
 	void _OnPaint() {
 		bool IsPressed = GetStates() & BUTTON_STATE_PRESSED;
 		int ColorIndex = (IsEnabled()) ? IsPressed : 2;
-		GUI.SetFont(Props.pFont);
+		GUI.Font(Props.pFont);
 		auto rClient = WM_GetClientRect();
 		auto rInside = rClient;
 		auto EffectSize = this->EffectSize();
@@ -67,8 +67,8 @@ private:
 			DrawUp();
 		rInside /= EffectSize;
 		/* Draw background */
-		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
-		GUI.SetColor(Props.aTextColor[ColorIndex]);
+		GUI.BkColor(Props.aBkColor[ColorIndex]);
+		GUI.Color(Props.aTextColor[ColorIndex]);
 		SetUserClipRect(&rInside);
 		GUI_Clear();
 		/* Draw bitmap.
@@ -88,7 +88,7 @@ private:
 		SetUserClipRect(nullptr);
 		/* Draw focus */
 		if (GetStates() & BUTTON_STATE_FOCUS) {
-			GUI.SetColor(RGB_BLACK);
+			GUI.Color(RGB_BLACK);
 			GUI_DrawFocusRect(rClient, EffectSize + 1);
 		}
 	}
@@ -190,40 +190,40 @@ public:
 
 #pragma region Properties
 
-	PCFONT GetFont() { return Props.pFont; }
-	void SetFont(PCFONT pFont) {
+	UCFONT Font() const { return *Props.pFont; }
+	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
 		Invalidate();
 	}
 
-	RGBC GetBkColor(BUTTON_CI Index) {
+	RGBC BkColor(BUTTON_CI Index) {
 		if (Index > 2)
 			return RGB_INVALID_COLOR;
 		return Props.aBkColor[Index];
 	}
-	void SetBkColor(BUTTON_CI Index, RGBC Color) {
+	void BkColor(BUTTON_CI Index, RGBC Color) {
 		if (Index > 2)
 			return;
 		Props.aBkColor[Index] = Color;
 		Invalidate();
 	}
 	
-	RGBC GetTextColor(BUTTON_CI Index) {
+	RGBC TextColor(BUTTON_CI Index) {
 		if (Index > 2)
 			return RGB_INVALID_COLOR;
 		return Props.aTextColor[Index];
 	}
-	void SetTextColor(BUTTON_CI Index, RGBC Color) {
+	void TextColor(BUTTON_CI Index, RGBC Color) {
 		if (Index > 2)
 			return;
 		Props.aTextColor[Index] = Color;
 		Invalidate();
 	}
 
-	TEXTALIGN GetTextAlign() { return Props.Align; }
-	void SetTextAlign(TEXTALIGN Align) {
+	TEXTALIGN TextAlign() { return Props.Align; }
+	void TextAlign(TEXTALIGN Align) {
 		if (Props.Align == Align)
 			return;
 		Props.Align = Align;

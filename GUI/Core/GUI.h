@@ -62,10 +62,7 @@ void  GUI_DispStringInRect(const char *s, RECT *pRect, int Flags);
 void  GUI_DispStringInRectMax(const char *s, RECT *pRect, int TextAlign, int MaxLen); /* Not to be doc. */
 
 void  GUI_GetTextExtend(RECT *pRect, const char *s, int Len);
-int   GUI_GetYAdjust(void);
-int   GUI_GetCharDistX(uint16_t c);
 int   GUI_GetStringDistX(const char *s);
-void  GUI_GotoXY(int x, int y);
 void  GUI_DispNextLine(void);
 
 int      GUI_UC_Encode(char *s, uint16_t Char);

@@ -4,11 +4,11 @@ import TUX.Widget;
 
 struct WIDGET_EFFECT_Simple : public WIDGET_EFFECT {
 	void DrawUp(RECT r) const override {
-		GUI.SetColor(RGB_BLACK);
+		GUI.Color(RGB_BLACK);
 		GUI_DrawRect(r);
 	}
 	void DrawDown(RECT r) const override {
-		GUI.SetColor(RGB_BLACK);
+		GUI.Color(RGB_BLACK);
 		GUI_DrawRect(r);
 	}
 	WIDGET_EFFECT_Simple() : WIDGET_EFFECT(1) {}
@@ -16,32 +16,32 @@ struct WIDGET_EFFECT_Simple : public WIDGET_EFFECT {
 
 struct WIDGET_EFFECT_3D : public WIDGET_EFFECT {
 	void DrawUp(RECT r) const override {
-		GUI.SetColor(RGB_BLACK);
+		GUI.Color(RGB_BLACK);
 		GUI_DrawRect(r); /* Draw rectangle around it */
 		/* Draw the bright sides */
-		GUI.SetColor(RGB_WHITE);
+		GUI.Color(RGB_WHITE);
 		GUI_DrawHLine(r.y0 + 1, r.x0 + 1, r.x1 - 2); /* Draw top line */
 		GUI_DrawVLine(r.x0 + 1, r.y0 + 1, r.y1 - 2);
 		/* Draw the dark sides */
-		GUI.SetColor(RGB_GRAYL(0x55));
+		GUI.Color(RGB_GRAYL(0x55));
 		GUI_DrawHLine(r.y1 - 1, r.x0 + 1, r.x1 - 1);
 		GUI_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 2);
 	}
 	void DrawDown(RECT r) const override {
-		GUI.SetColor(RGB_BLACK); /* TBD: Use halftone */
+		GUI.Color(RGB_BLACK); /* TBD: Use halftone */
 		/*  GUI_DrawRect(0, 0, r.x1, r.y1);*/
 		/* Draw the upper left sides */
-		GUI.SetColor(RGB_GRAYL(0x80));
+		GUI.Color(RGB_GRAYL(0x80));
 		GUI_DrawHLine(r.y0, r.x0, r.x1);
 		GUI_DrawVLine(r.x0, r.y0 + 1, r.y1);
-		GUI.SetColor(0x0);
+		GUI.Color(0x0);
 		GUI_DrawHLine(r.y0 + 1, r.x0 + 1, r.x1 - 1);
 		GUI_DrawVLine(r.x0 + 1, r.y0 + 2, r.y1 - 1);
 		/* Draw the lower right sides */
-		GUI.SetColor(RGB_WHITE);
+		GUI.Color(RGB_WHITE);
 		GUI_DrawHLine(r.y1, r.x0 + 1, r.x1);
 		GUI_DrawVLine(r.x1, r.y0 + 1, r.y1);
-		GUI.SetColor(RGB_GRAYL(0xc0));
+		GUI.Color(RGB_GRAYL(0xc0));
 		GUI_DrawHLine(r.y1 - 1, r.x0 + 2, r.x1 - 1);
 		GUI_DrawVLine(r.x1 - 1, r.y0 + 2, r.y1 - 1);
 	}
@@ -51,21 +51,21 @@ struct WIDGET_EFFECT_3D : public WIDGET_EFFECT {
 struct WIDGET_EFFECT_3D1L : public WIDGET_EFFECT {
 	void DrawUp(RECT r) const override {
 		/* Draw the upper left sides */
-		GUI.SetColor(RGB_GRAYL(0xE7));
+		GUI.Color(RGB_GRAYL(0xE7));
 		GUI_DrawHLine(r.y0, r.x0, r.x1 - 1);
 		GUI_DrawVLine(r.x0, r.y0 + 1, r.y1 - 1);
 		/* Draw the lower right sides */
-		GUI.SetColor(RGB_GRAYL(0x60));
+		GUI.Color(RGB_GRAYL(0x60));
 		GUI_DrawHLine(r.y1, r.x0, r.x1);
 		GUI_DrawVLine(r.x1, r.y0, r.y1 - 1);
 	}
 	void DrawDown(RECT r) const override {
 		/* Draw the upper left sides */
-		GUI.SetColor(RGB_GRAYL(0x60));
+		GUI.Color(RGB_GRAYL(0x60));
 		GUI_DrawHLine(r.y0, r.x0, r.x1 - 1);
 		GUI_DrawVLine(r.x0, r.y0 + 1, r.y1 - 1);
 		/* Draw the lower right sides */
-		GUI.SetColor(RGB_GRAYL(0xE7));
+		GUI.Color(RGB_GRAYL(0xE7));
 		GUI_DrawHLine(r.y1, r.x0, r.x1);
 		GUI_DrawVLine(r.x1, r.y0, r.y1 - 1);
 	}
@@ -75,33 +75,33 @@ struct WIDGET_EFFECT_3D1L : public WIDGET_EFFECT {
 struct WIDGET_EFFECT_3D2L : public WIDGET_EFFECT {
 	void DrawUp(RECT r) const override {
 		/* Draw the upper left sides */
-		GUI.SetColor(RGB_GRAYL(0xD0));
+		GUI.Color(RGB_GRAYL(0xD0));
 		GUI_DrawHLine(r.y0, r.x0, r.x1 - 1);
 		GUI_DrawVLine(r.x0, r.y0 + 1, r.y1 - 1);
-		GUI.SetColor(RGB_GRAYL(0xE7));
+		GUI.Color(RGB_GRAYL(0xE7));
 		GUI_DrawHLine(r.y0 + 1, r.x0 + 1, r.x1 - 2);
 		GUI_DrawVLine(r.x0 + 1, r.y0 + 2, r.y1 - 2);
 		/* Draw the lower right sides */
-		GUI.SetColor(RGB_GRAYL(0x60));
+		GUI.Color(RGB_GRAYL(0x60));
 		GUI_DrawHLine(r.y1, r.x0, r.x1);
 		GUI_DrawVLine(r.x1, r.y0, r.y1 - 1);
-		GUI.SetColor(RGB_GRAYL(0x9A));
+		GUI.Color(RGB_GRAYL(0x9A));
 		GUI_DrawHLine(r.y1 - 1, r.x0 + 1, r.x1 - 1);
 		GUI_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 2);
 	}
 	void DrawDown(RECT r) const override {
 		/* Draw the upper left sides */
-		GUI.SetColor(RGB_GRAYL(0x9A));
+		GUI.Color(RGB_GRAYL(0x9A));
 		GUI_DrawHLine(r.y0, r.x0, r.x1 - 1);
 		GUI_DrawVLine(r.x0, r.y0 + 1, r.y1 - 1);
-		GUI.SetColor(RGB_GRAYL(0x60));
+		GUI.Color(RGB_GRAYL(0x60));
 		GUI_DrawHLine(r.y0 + 1, r.x0 + 1, r.x1 - 2);
 		GUI_DrawVLine(r.x0 + 1, r.y0 + 2, r.y1 - 2);
 		/* Draw the lower right sides */
-		GUI.SetColor(RGB_GRAYL(0xE7));
+		GUI.Color(RGB_GRAYL(0xE7));
 		GUI_DrawHLine(r.y1, r.x0, r.x1);
 		GUI_DrawVLine(r.x1, r.y0, r.y1 - 1);
-		GUI.SetColor(RGB_GRAYL(0xD0));
+		GUI.Color(RGB_GRAYL(0xD0));
 		GUI_DrawHLine(r.y1 - 1, r.x0 + 1, r.x1 - 1);
 		GUI_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 2);
 	}

@@ -106,7 +106,7 @@ private:
 		uint16_t Char;
 		while (NumChars--) {
 			Char = GUI_UC__GetCharCodeInc(&pText);
-			xSize += GUI_GetCharDistX(Char);
+			xSize += GUI.Font().GetCharDistX(Char);
 		}
 		return xSize;
 	}
@@ -128,7 +128,7 @@ private:
 						x = _NumChars2XSize(pText, NumCharsPrompt);
 						pText += GUI_UC__NumChars2NumBytes(pText, NumCharsPrompt);
 						while (GUI_UC__GetCharCodeInc(&pText) != 0) {
-							x += GUI_GetCharDistX(MULTEDIT_PASSWORD_CHAR);
+							x += GUI.Font().GetCharDistX(MULTEDIT_PASSWORD_CHAR);
 							if (r && (x > xSize)) {
 								break;
 							}
@@ -165,12 +165,12 @@ private:
 	int _GetCharDistX(const char *pText) {
 		int r;
 		if ((this->Flags & MULTEDIT_CF_PASSWORD) && (_GetNumCharsInPrompt(pText) == 0)) {
-			r = GUI_GetCharDistX(MULTEDIT_PASSWORD_CHAR);
+			r = GUI.Font().GetCharDistX(MULTEDIT_PASSWORD_CHAR);
 		}
 		else {
 			uint16_t c;
 			c = GUI_UC_GetCharCode(pText);
-			r = GUI_GetCharDistX(c);
+			r = GUI.Font().GetCharDistX(c);
 		}
 		return r;
 	}
@@ -254,7 +254,7 @@ private:
 	void _GetCursorXY(int *px, int *py) {
 		if (this->InvalidFlags & INVALID_CURSORXY) {
 			int CursorLine = 0, x = 0;
-			GUI.SetFont(Props.pFont);
+			GUI.Font(Props.pFont);
 			if (this->hText) {
 				const char *pLine;
 				const char *pCursor;
@@ -268,7 +268,7 @@ private:
 				}
 			}
 			this->CursorPosX = x;
-			this->CursorPosY = CursorLine * Props.pFont->DistY();
+			this->CursorPosY = CursorLine * Props.pFont->YDist;
 			this->InvalidFlags &= ~INVALID_CURSORXY;
 		}
 		*px = this->CursorPosX;
@@ -283,7 +283,7 @@ private:
 	void _CalcScrollPos() {
 		int xCursor, yCursor;
 		_GetCursorXY(&xCursor, &yCursor);
-		yCursor /= Props.pFont->DistY();
+		yCursor /= Props.pFont->YDist;
 		ScrollStateV.CheckPos(yCursor, 0, 0);       /* Vertical */
 		ScrollStateH.CheckPos(xCursor, 30, 30);     /* Horizontal */
 		_SetScrollState();
@@ -294,7 +294,7 @@ private:
 			if (this->hText) {
 				int NumChars, xSizeLine;
 				char *pText, *pLine;
-				GUI.SetFont(Props.pFont);
+				GUI.Font(Props.pFont);
 				pText = (char *)(this->hText);
 				do {
 					NumChars = _WrapGetNumCharsDisp(pText);
@@ -317,7 +317,7 @@ private:
 	int _GetNumVisLines() {
 		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
-		return (Rect.y1 - Rect.y0 + 1) / Props.pFont->DistY();
+		return (Rect.y1 - Rect.y0 + 1) / Props.pFont->YDist;
 	}
 	int _GetNumLines() {
 		if (this->InvalidFlags & INVALID_NUMLINES) {
@@ -327,7 +327,7 @@ private:
 				char *pText;
 				uint16_t Char;
 				pText = (char *)(this->hText);
-				GUI.SetFont(Props.pFont);
+				GUI.Font(Props.pFont);
 				do {
 					NumChars = _WrapGetNumCharsDisp(pText);
 					NumBytes = GUI_UC__NumChars2NumBytes(pText, NumChars);
@@ -490,8 +490,8 @@ private:
 			int CursorLine, WrapChars;
 			int SizeX = 0;
 			uint16_t Char;
-			GUI.SetFont(Props.pFont);
-			CursorLine = y / Props.pFont->DistY();
+			GUI.Font(Props.pFont);
+			CursorLine = y / Props.pFont->YDist;
 			pLine = _GetpLine(CursorLine);
 			pText = (char *)(this->hText);
 			WrapChars = _WrapGetNumCharsDisp(pLine);
@@ -521,19 +521,19 @@ private:
 	void _MoveCursorUp() {
 		int xPos, yPos;
 		_GetCursorXY(&xPos, &yPos);
-		yPos -= Props.pFont->DistY();
+		yPos -= Props.pFont->YDist;
 		_SetCursorXY(xPos, yPos);
 	}
 	void _MoveCursorDown() {
 		int xPos, yPos;
 		_GetCursorXY(&xPos, &yPos);
-		yPos += Props.pFont->DistY();
+		yPos += Props.pFont->YDist;
 		_SetCursorXY(xPos, yPos);
 	}
 	void _MoveCursor2NextLine() {
 		int xPos, yPos;
 		_GetCursorXY(&xPos, &yPos);
-		yPos += Props.pFont->DistY();
+		yPos += Props.pFont->YDist;
 		_SetCursorXY(0, yPos);
 	}
 	void _MoveCursor2LineEnd() {
@@ -687,8 +687,8 @@ private:
 		RECT r, rClip;
 		const RECT *prOldClip;
 		/* Init some values */
-		GUI.SetFont(Props.pFont);
-		FontSizeY = Props.pFont->DistY();
+		GUI.Font(Props.pFont);
+		FontSizeY = Props.pFont->YDist;
 		ScrollPosX = this->ScrollStateH.v;
 		ScrollPosY = this->ScrollStateV.v;
 		EffectSize = this->EffectSize();
@@ -697,8 +697,8 @@ private:
 		yOff = EffectSize - ScrollPosY * FontSizeY;
 		ColorIndex = ((this->Flags & MULTEDIT_CF_READONLY) ? 1 : 0);
 		/* Set colors and draw the background */
-		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
-		GUI.SetColor(Props.aColor[ColorIndex]);
+		GUI.BkColor(Props.aBkColor[ColorIndex]);
+		GUI.Color(Props.aColor[ColorIndex]);
 		GUI_Clear();
 		/* Draw the text if necessary */
 		rClip.x0 = EffectSize + HBorder;
@@ -763,7 +763,7 @@ private:
 				int Effect, xPos, yPos;
 				Effect = this->EffectSize();
 				xPos = pState->x + this->ScrollStateH.v - Effect - Props.HBorder;
-				yPos = pState->y + this->ScrollStateV.v * Props.pFont->DistY() - Effect;
+				yPos = pState->y + this->ScrollStateV.v * Props.pFont->YDist - Effect;
 				_SetCursorXY(xPos, yPos);
 				_Invalidate();
 				Notification = WM_NOTIFICATION_CLICKED;
@@ -966,7 +966,7 @@ public:
 
 #pragma region Properties
 
-	void SetFont(PCFONT pFont) {
+	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
@@ -976,7 +976,7 @@ public:
 		_InvalidateTextSizeX();
 	}
 
-	void SetBkColor(MULTEDIT_CI Index, RGBC color) {
+	void BkColor(MULTEDIT_CI Index, RGBC color) {
 		if (Index >= GUI_COUNTOF(Props.aBkColor))
 			return;
 		if (Props.aBkColor[Index] == color)
@@ -985,7 +985,7 @@ public:
 		_InvalidateTextArea();
 	}
 
-	void SetTextColor(MULTEDIT_CI Index, RGBC color) {
+	void TextColor(MULTEDIT_CI Index, RGBC color) {
 		if (Index >= GUI_COUNTOF(Props.aColor))
 			return;
 		if (Props.aColor[Index] == color)

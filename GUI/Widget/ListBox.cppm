@@ -97,9 +97,9 @@ private:
 		auto &pItem = ItemArray[Index];
 		int xSize = pItem.xSize;
 		if (xSize == 0) {
-			PCFONT pOldFont = GUI.SetFont(Props.pFont);
+			PCFONT pOldFont = GUI.Font(Props.pFont);
 			xSize = _CallOwnerDraw(WIDGET_ITEM_GET_XSIZE, Index, {});
-			GUI.SetFont(pOldFont);
+			GUI.Font(pOldFont);
 		}
 		pItem.xSize = xSize;
 		return xSize;
@@ -108,9 +108,9 @@ private:
 		auto &pItem = ItemArray[Index];
 		int ySize = pItem.ySize;
 		if (ySize == 0) {
-			PCFONT pOldFont = GUI.SetFont(Props.pFont);
+			PCFONT pOldFont = GUI.Font(Props.pFont);
 			ySize = _CallOwnerDraw(WIDGET_ITEM_GET_YSIZE, Index, {});
-			GUI.SetFont(pOldFont);
+			GUI.Font(pOldFont);
 		}
 		pItem.ySize = ySize;
 		return ySize;
@@ -303,7 +303,7 @@ private:
 	void _OnPaint(const RECT *pClipRect) {
 		RECT RectInside, RectItem, ClipRect;
 		int ItemDistY;
-		GUI.SetFont(Props.pFont);
+		GUI.Font(Props.pFont);
 		/* Calculate clipping rectangle */
 		ClipRect = *pClipRect - this->Rect.LeftTop();
 		WM_GetInsideRectExScrollbar(this, &RectInside);
@@ -337,7 +337,7 @@ private:
 		/* Calculate & clear 'data free' area */
 		RectItem.y0 = ItemPos.y;
 		RectItem.y1 = RectInside.y1;
-		GUI.SetBkColor(Props.aBkColor[0]);
+		GUI.BkColor(Props.aBkColor[0]);
 		GUI_ClearRect(RectItem);
 		/* Draw the 3D effect (if configured) */
 		DrawDown();
@@ -551,22 +551,22 @@ public:
 
 #pragma region Properties
 
-	PCFONT GetFont() { return Props.pFont; }
-	void SetFont(PCFONT pFont) {
+	UCFONT Font() const { return *Props.pFont; }
+	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
 		InvalidateItem(LISTBOX_ALL_ITEMS);
 	}
 
-	void SetTextColor(LISTBOX_CI Index, RGBC Color) {
+	void TextColor(LISTBOX_CI Index, RGBC Color) {
 		if (Index >= GUI_COUNTOF(Props.aBkColor))
 			return;
 		Props.aTextColor[Index] = Color;
 		_InvalidateInsideArea();
 	}
 
-	void SetBkColor(LISTBOX_CI Index, RGBC color) {
+	void BkColor(LISTBOX_CI Index, RGBC color) {
 		if (Index >= GUI_COUNTOF(Props.aBkColor))
 			return;
 		Props.aBkColor[Index] = color;
@@ -583,32 +583,31 @@ public:
 		auto pObj = (ListBox *)pWin;
 		switch (Cmd) {
 			case WIDGET_ITEM_GET_XSIZE: {
-				auto pOldFont = GUI.SetFont(pObj->Props.pFont);
+				auto pOldFont = GUI.Font(pObj->Props.pFont);
 				auto s = pObj->_GetpString(ItemIndex);
 				auto DistX = GUI_GetStringDistX(s);
-				GUI.SetFont(pOldFont);
+				GUI.Font(pOldFont);
 				return DistX;
 			}
 			case WIDGET_ITEM_GET_YSIZE:
-				return pObj->Props.pFont->DistY() + pObj->ItemSpacing;
+				return pObj->Props.pFont->YDist + pObj->ItemSpacing;
 			case WIDGET_ITEM_DRAW: {
 				auto &pItem = pObj->ItemArray[ItemIndex];
 				auto r = pObj->GetInsideRect();
-				auto FontDistY = pObj->Props.pFont->DistY();
+				auto FontDistY = pObj->Props.pFont->YDist;
 				/* Calculate color index */
 				bool IsDisabled = pItem.Status & LISTBOX_ITEM_DISABLED;
 				bool IsSelected = pItem.Status & LISTBOX_ITEM_SELECTED;
-				int ColorIndex;
-				if (pObj->Flags & LISTBOX_CF_MULTISEL) {
-					ColorIndex = IsDisabled ? 3 : IsSelected ? 2 : 0;
-				}
-				else {
-					ColorIndex = IsDisabled ? 3 : ItemIndex != pObj->Sel ? 0	:
+				int ColorIndex =
+						pObj->Flags & LISTBOX_CF_MULTISEL ?
+							IsDisabled ? 3 :
+							IsSelected ? 2 : 0 :
+						IsDisabled ? 3 :
+						ItemIndex != pObj->Sel ? 0	:
 						pObj->GetStates() & WIDGET_STATE_FOCUS || pObj->pOwner ? 2 : 1;
-				}
 				/* Display item */
-				GUI.SetBkColor(pObj->Props.aBkColor[ColorIndex]);
-				GUI.SetColor(pObj->Props.aTextColor[ColorIndex]);
+				GUI.BkColor(pObj->Props.aBkColor[ColorIndex]);
+				GUI.Color(pObj->Props.aTextColor[ColorIndex]);
 				auto s = pObj->_GetpString(ItemIndex);
 				GUI.SetTextMode(DRAWMODE_TRANS);
 				GUI_Clear();
@@ -619,7 +618,7 @@ public:
 					rFocus.LeftTop(Pos);
 					rFocus.x1 = r.x1;
 					rFocus.y1 = Pos.y + FontDistY - 1;
-					GUI.SetColor(RGB_WHITE - pObj->Props.aBkColor[ColorIndex]);
+					GUI.Color(RGB_WHITE - pObj->Props.aBkColor[ColorIndex]);
 					GUI_DrawFocusRect(rFocus, 0);
 				}
 				return 0;

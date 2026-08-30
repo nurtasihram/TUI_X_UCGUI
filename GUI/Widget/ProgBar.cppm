@@ -51,11 +51,10 @@ private:
 		return EffectSize + ((xSize - 2 * EffectSize) * (int32_t)(v - Min)) / (Max - Min);
 	}
 	void _DrawPart(int Index, int xText, int yText, const char *pText) {
-		GUI.SetBkColor(Props.aBkColor[Index]);
-		GUI.SetColor(Props.aTextColor[Index]);
+		GUI.BkColor(Props.aBkColor[Index]);
+		GUI.Color(Props.aTextColor[Index]);
 		GUI_Clear();
-		GUI_GotoXY(xText, yText);
-		GUI_DispString(pText);
+		GUI_DispStringAt(pText, xText, yText);
 	}
 	const char *_GetText(char *pBuffer) {
 		char *pText;
@@ -87,7 +86,7 @@ private:
 		int xSize = Rect.x1 - Rect.x0 + 1;
 		int ySize = Rect.y1 - Rect.y0 + 1;
 		int TextWidth = GUI_GetStringDistX(pText);
-		int TextHeight = Props.pFont->SizeY();
+		int TextHeight = Props.pFont->YSize;
 		int EffectSize = this->EffectSize();
 		switch (Props.Align & TEXTALIGN_HORIZONTAL) {
 			case TEXTALIGN_HCENTER:
@@ -112,7 +111,7 @@ private:
 		auto rInside = rClient / EffectSize();
 		xPos = _Value2X(v);
 		auto pText = _GetText(ac);
-		GUI.SetFont(Props.pFont);
+		GUI.Font(Props.pFont);
 		RECT rText;
 		_GetTextRect(&rText, pText);
 		GUI.SetTextMode(DRAWMODE_TRANS);
@@ -164,13 +163,13 @@ public:
 public:
 
 #pragma region Properties
-	void SetFont(PCFONT pFont) {
+	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
 		Invalidate();
 	}
-	void SetBarColor(PROGBAR_CI Index, RGBC color) {
+	void BarColor(PROGBAR_CI Index, RGBC color) {
 		if (Index >= GUI_COUNTOF(Props.aBkColor))
 			return;
 		if (Props.aBkColor[Index] == color)
@@ -178,7 +177,7 @@ public:
 		Props.aBkColor[Index] = color;
 		Invalidate();
 	}
-	void SetTextColor(PROGBAR_CI Index, RGBC color) {
+	void TextColor(PROGBAR_CI Index, RGBC color) {
 		if (Index >= GUI_COUNTOF(Props.aTextColor))
 			return;
 		if (Props.aTextColor[Index] == color)
@@ -186,7 +185,7 @@ public:
 		Props.aTextColor[Index] = color;
 		Invalidate();
 	}
-	void SetTextAlign(TEXTALIGN Align) {
+	void TextAlign(TEXTALIGN Align) {
 		if (Props.Align == Align)
 			return;
 		Props.Align = Align;

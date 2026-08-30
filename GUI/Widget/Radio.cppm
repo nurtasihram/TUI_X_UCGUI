@@ -64,10 +64,10 @@ private:
 		rFocus.x1 = pBmRadio->Size.x + RADIO_BORDER * 2 - 1;
 		rFocus.y1 = this->Height + ((this->NumItems - 1) * this->Spacing) - 1;
 		/* Select font and text color */
-		GUI.SetColor(Props.TextColor);
-		GUI.SetFont(Props.pFont);
+		GUI.Color(Props.TextColor);
+		GUI.Font(Props.pFont);
 		GUI.SetTextMode(DRAWMODE_TRANS);
-		auto FontDistY = Props.pFont->DistY();
+		auto FontDistY = Props.pFont->YDist;
 		auto CHeight = Props.pFont->CHeight;
 		auto SpaceAbove = Props.pFont->Baseline - CHeight;
 		RECT Rect;
@@ -103,7 +103,7 @@ private:
 		}
 		/* Draw the focus rect */
 		if (HasFocus) {
-			GUI.SetColor(RGB_BLACK);
+			GUI.Color(RGB_BLACK);
 			GUI_DrawFocusRect(rFocus, 0);
 		}
 	}
@@ -271,21 +271,21 @@ public:
 
 #pragma region Properties
 
-	void SetFont(PCFONT pFont) {
+	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
 		Invalidate();
 	}
 
-	void SetTextColor(RGBC Color) {
+	void TextColor(RGBC Color) {
 		if (Props.TextColor == Color)
 			return;
 		Props.TextColor = Color;
 		Invalidate();
 	}
 
-	void SetBkColor(RGBC Color) {
+	void BkColor(RGBC Color) {
 		if (Props.BkColor == Color)
 			return;
 		Props.BkColor = Color;

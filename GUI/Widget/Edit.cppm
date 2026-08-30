@@ -81,9 +81,9 @@ private:
 	void _OnPaint() {
 		const char *pText = nullptr;
 		/* Set colors and font */
-		GUI.SetBkColor(Props.aBkColor[IsEnabled() ? 1 : 0]);
-		GUI.SetColor(Props.aTextColor[0]);
-		GUI.SetFont(Props.pFont);
+		GUI.BkColor(Props.aBkColor[IsEnabled() ? 1 : 0]);
+		GUI.Color(Props.aTextColor[0]);
+		GUI.Font(Props.pFont);
 		/* Calculate size */
 		auto r = GetClientRect();
 		auto rFillRect = _GetInsideRect();
@@ -101,35 +101,32 @@ private:
 			int CursorWidth = this->XSizeCursor > 0 ? this->XSizeCursor : 1;
 			RECT rInvert;
 			if (pText) {
-				uint16_t Char;
-				int i;
 				//  this->SelSize = 3;	//houhh 20061023...
 				if (this->EditMode != GUI_EDIT_MODE_INSERT || this->SelSize) {
-					int NumChars, CursorOffset;
-					NumChars = GUI__GetNumChars(pText);
+					auto NumChars = GUI__GetNumChars(pText);
 					if (this->CursorPos < NumChars) {
 						if (this->SelSize) {
 							CursorWidth = 0;
-							for (i = this->CursorPos; i < (int)(this->CursorPos + this->SelSize); i++) {
-								CursorOffset = GUI_UC__NumChars2NumBytes(pText, i);
-								Char = GUI_UC_GetCharCode(pText + CursorOffset);
-								CursorWidth += GUI_GetCharDistX(Char);
+							for (int i = this->CursorPos; i < (int)(this->CursorPos + this->SelSize); i++) {
+								auto CursorOffset = GUI_UC__NumChars2NumBytes(pText, i);
+								auto Char = GUI_UC_GetCharCode(pText + CursorOffset);
+								CursorWidth += GUI.Font().GetCharDistX(Char);
 							}
 							if (!CursorWidth) {
 								CursorWidth = 1;
 							}
 						}
 						else {
-							CursorOffset = GUI_UC__NumChars2NumBytes(pText, this->CursorPos);
-							Char = GUI_UC_GetCharCode(pText + CursorOffset);
-							CursorWidth = GUI_GetCharDistX(Char);
+							auto CursorOffset = GUI_UC__NumChars2NumBytes(pText, this->CursorPos);
+							auto Char = GUI_UC_GetCharCode(pText + CursorOffset);
+							CursorWidth = GUI.Font().GetCharDistX(Char);
 						}
 					}
 				}
 				rInvert = rText;
-				for (i = 0; i != this->CursorPos; i++) {
-					Char = GUI_UC__GetCharCodeInc(&p);
-					rInvert.x0 += GUI_GetCharDistX(Char);
+				for (int i = 0; i != this->CursorPos; i++) {
+					auto Char = GUI_UC__GetCharCodeInc(&p);
+					rInvert.x0 += GUI.Font().GetCharDistX(Char);
 				}
 			}
 #if GUI_SUPPORT_TIMER
@@ -174,7 +171,7 @@ private:
 			int xSize, TextWidth, NumChars;
 			const char *pText;
 			pText = this->pText;
-			pOldFont = GUI.SetFont(Props.pFont);
+			pOldFont = GUI.Font(Props.pFont);
 			xSize = GetSizeX();
 			TextWidth = GUI_GetStringDistX(pText);
 			switch (Props.Align & TEXTALIGN_HORIZONTAL) {
@@ -199,14 +196,14 @@ private:
 				uint16_t Char;
 				for (i = 0, x = 0; (i < NumChars) && (x < xPos); i++) {
 					Char = GUI_UC__GetCharCodeInc(&pText);
-					xLenChar = GUI_GetCharDistX(Char);
+					xLenChar = GUI.Font().GetCharDistX(Char);
 					if (xPos < (x + xLenChar))
 						break;
 					x += xLenChar;
 				}
 				_SetCursorPos(i);
 			}
-			GUI.SetFont(pOldFont);
+			GUI.Font(pOldFont);
 			Invalidate();
 		}
 	}
@@ -350,7 +347,7 @@ public:
 			pCreateInfo->Flags, hWinParent, pCreateInfo->Id,
 			(uint16_t)pCreateInfo->Para
 		);
-		pEdit->SetTextAlign((TEXTALIGN)pCreateInfo->Flags);
+		pEdit->TextAlign((TEXTALIGN)pCreateInfo->Flags);
 		return pEdit;
 	}
 
@@ -358,21 +355,21 @@ public:
 
 #pragma region Properties
 
-	void SetFont(PCFONT pFont) {
+	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
 		Invalidate();
 	}
 
-	void SetTextAlign(TEXTALIGN Align) {
+	void TextAlign(TEXTALIGN Align) {
 		if (Props.Align == Align)
 			return;
 		Props.Align = Align;
 		Invalidate();
 	}
 
-	void SetBkColor(EDIT_CI Index, RGBC color) {
+	void BkColor(EDIT_CI Index, RGBC color) {
 		if (Index >= GUI_COUNTOF(Props.aBkColor))
 			return;
 		if (Props.aBkColor[Index] == color)
@@ -381,7 +378,7 @@ public:
 		Invalidate();
 	}
 
-	void SetTextColor(EDIT_CI Index, RGBC color) {
+	void TextColor(EDIT_CI Index, RGBC color) {
 		if (Index >= GUI_COUNTOF(Props.aTextColor))
 			return;
 		if (Props.aTextColor[Index] == color)

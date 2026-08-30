@@ -89,7 +89,7 @@ private:
 		/* Do some initial calculations */
 		auto Border = this->EffectSize();
 		auto TextBorderSize = Props.TextBorderSize;
-		GUI.SetFont(Props.pFont);
+		GUI.Font(Props.pFont);
 		auto ColorIndex = (GetStates() & WIDGET_STATE_FOCUS) ? 2 : 1;
 		auto s = _GetpItem(Sel);
 		auto r = WM_GetClientRect() / Border;
@@ -98,20 +98,20 @@ private:
 		DrawDown();
 		/* Draw the outer text frames */
 		r.x1 -= InnerSize;     /* Spare square area to the right */
-		GUI.SetColor(Props.aBkColor[ColorIndex]);
+		GUI.Color(Props.aBkColor[ColorIndex]);
 		/* Draw the text */
-		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
+		GUI.BkColor(Props.aBkColor[ColorIndex]);
 		GUI_FillRect(r);
 		r.x0 += TextBorderSize;
 		r.x1 -= TextBorderSize;
-		GUI.SetColor(Props.aTextColor[ColorIndex]);
+		GUI.Color(Props.aTextColor[ColorIndex]);
 		GUI_DispStringInRect(s, &r, Props.Align);/**/
 		/* Draw arrow */
 		r = WM_GetClientRect() / Border;
 		r.x0 = r.x1 + 1 - InnerSize;
-		GUI.SetColor(RGB_GRAYL(0xc0));
+		GUI.Color(RGB_GRAYL(0xc0));
 		GUI_FillRect(r);
-		GUI.SetColor(RGB_BLACK);
+		GUI.Color(RGB_BLACK);
 		_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.YSize()) / 3);
 		DrawUp(r);
 	}
@@ -143,7 +143,7 @@ private:
 	void _AdjustHeight() {
 		auto Height = TextHeight;
 		if (!Height)
-			Height = Props.pFont->DistY();
+			Height = Props.pFont->YDist;
 		Height += EffectSize() + 2 * Props.TextBorderSize;
 		SetSize({ GetSizeX(), Height });
 	}
@@ -292,34 +292,34 @@ public:
 	}
 
 	auto GetNumItems() { return Handles.NumItems(); }
-	void SetFont(PCFONT pFont) {
-		auto OldHeight = Props.pFont->DistY();
+	void Font(PCFONT pFont) {
+		auto OldHeight = Props.pFont->YDist;
 		Props.pFont = pFont;
 		_AdjustHeight();
 		Invalidate();
 		if (this->pListWin) {
-			if (OldHeight != Props.pFont->DistY()) {
+			if (OldHeight != Props.pFont->YDist) {
 				Collapse();
 				Expand();
 			}
-			this->pListWin->SetFont(pFont);
+			this->pListWin->Font(pFont);
 		}
 	}
-	void SetBkColor(DROPDOWN_CI Index, RGBC color) {
+	void BkColor(DROPDOWN_CI Index, RGBC color) {
 		if (Index < GUI_COUNTOF(Props.aBkColor)) {
 			Props.aBkColor[Index] = color;
 			Invalidate();
 			if (this->pListWin) {
-				this->pListWin->SetBkColor(Index, color);
+				this->pListWin->BkColor(Index, color);
 			}
 		}
 	}
-	void SetTextColor(DROPDOWN_CI Index, RGBC color) {
+	void TextColor(DROPDOWN_CI Index, RGBC color) {
 		if (Index < GUI_COUNTOF(Props.aTextColor)) {
 			Props.aTextColor[Index] = color;
 			Invalidate();
 			if (this->pListWin) {
-				this->pListWin->SetTextColor(Index, color);
+				this->pListWin->TextColor(Index, color);
 			}
 		}
 	}
@@ -416,7 +416,7 @@ public:
 			}
 		}
 	}
-	void SetTextAlign(TEXTALIGN Align) {
+	void TextAlign(TEXTALIGN Align) {
 		if (Props.Align != Align) {
 			Props.Align = Align;
 			Invalidate();

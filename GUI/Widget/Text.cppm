@@ -34,8 +34,8 @@ private:
 	}
 	void _OnPaint() {
 		const char *s;
-		GUI.SetColor(Props.TextColor);
-		GUI.SetFont(Props.pFont);
+		GUI.Color(Props.TextColor);
+		GUI.Font(Props.pFont);
 		/* Fill with parents background color */
 		SetBkColorPrefer(Props.BkColor);
 		GUI_Clear();
@@ -91,28 +91,28 @@ public:
 
 #pragma region Properties
 
-	void SetFont(PCFONT pFont) {
+	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
 		Invalidate();
 	}
 
-	void SetBkColor(RGBC Color) {
+	void BkColor(RGBC Color) {
 		if (Props.BkColor == Color)
 			return;
 		Props.BkColor = Color;
 		Invalidate();
 	}
 
-	void SetTextAlign(TEXTALIGN Align) {
+	void TextAlign(TEXTALIGN Align) {
 		if (Props.Align == Align)
 			return;
 		Props.Align = Align;
 		Invalidate();
 	}
 	
-	void SetTextColor(RGBC Color) {
+	void TextColor(RGBC Color) {
 		if (Props.TextColor == Color)
 			return;
 		Props.TextColor = Color;

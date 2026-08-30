@@ -134,9 +134,9 @@ private:
 	int _CalcTextWidth(const char *sText) {
 		if (!sText)
 			return 0;
-		auto pOldFont = GUI.SetFont(Props.pFont);
+		auto pOldFont = GUI.Font(Props.pFont);
 		auto TextWidth = GUI_GetStringDistX(sText);
-		GUI.SetFont(pOldFont);
+		GUI.Font(pOldFont);
 		return TextWidth;
 	}
 	int _GetItemWidth(unsigned Index) {
@@ -150,7 +150,7 @@ private:
 	int _GetItemHeight(unsigned Index) {
 		if (Height && !(Flags & MENU_SF_VERTICAL))
 			return Height - (_GetEffectSize() << 1);
-		auto ItemHeight = Props.pFont->DistY();
+		auto ItemHeight = Props.pFont->YDist;
 		if ((Flags & MENU_SF_VERTICAL) && (ItemArray[Index].Flags & MENU_IF_SEPARATOR))
 			ItemHeight = 3;
 		return ItemHeight + Props.aBorder[MENU_BI_TOP] + Props.aBorder[MENU_BI_BOTTOM];
@@ -496,19 +496,19 @@ private:
 			if (pItem.Flags & MENU_IF_DISABLED)
 				ColorIndex = (Flags & MENU_CF_HIDE_DISABLED_SEL) ? MENU_CI_DISABLED : ColorIndex + MENU_CI_DISABLED;
 		}
-		GUI.SetBkColor(Props.aBkColor[ColorIndex]);
-		GUI.SetColor(Props.aTextColor[ColorIndex]);
+		GUI.BkColor(Props.aBkColor[ColorIndex]);
+		GUI.Color(Props.aTextColor[ColorIndex]);
 	}
 	void _OnPaint() {
 		auto NumItems = _GetNumItems();
 		auto BorderLeft = Props.aBorder[MENU_BI_LEFT];
 		auto BorderTop = Props.aBorder[MENU_BI_TOP];
-		auto FontHeight = Props.pFont->DistY();
+		auto FontHeight = Props.pFont->YDist;
 		auto EffectSize = _GetEffectSize();
 		auto FillRect = GetClientRect();
 		RECT TextRect;
 		FillRect -= EffectSize;
-		GUI.SetFont(Props.pFont);
+		GUI.Font(Props.pFont);
 		if (Flags & MENU_SF_VERTICAL) {
 			auto xSize = _CalcMenuSizeX();
 			FillRect.x1 = xSize - EffectSize - 1;
@@ -520,7 +520,7 @@ private:
 					FillRect.y1 = FillRect.y0 + ItemHeight - 1;
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
 						GUI_ClearRect(FillRect);
-						GUI.SetColor(RGB_GRAYL(0x7C));
+						GUI.Color(RGB_GRAYL(0x7C));
 						GUI_DrawHLine(FillRect.y0 + BorderTop + 1, FillRect.x0 + 2, FillRect.x1 - 2);
 					}
 					else {
@@ -545,7 +545,7 @@ private:
 					FillRect.x1 = FillRect.x0 + ItemWidth - 1;
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
 						GUI_ClearRect(FillRect);
-						GUI.SetColor(RGB_GRAYL(0x7C));
+						GUI.Color(RGB_GRAYL(0x7C));
 						GUI_DrawVLine(FillRect.x0 + BorderLeft + 1, FillRect.y0 + 2, FillRect.y1 - 2);
 					}
 					else {
@@ -560,7 +560,7 @@ private:
 		if (Width || Height) {
 			auto r = GetClientRect();
 			r -= EffectSize;
-			GUI.SetBkColor(Props.aBkColor[MENU_CI_ENABLED]);
+			GUI.BkColor(Props.aBkColor[MENU_CI_ENABLED]);
 			GUI_ClearRect({ FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1 });
 			GUI_ClearRect({ EffectSize, FillRect.y1 + 1, r.x1, r.y1 });
 		}
@@ -620,12 +620,12 @@ private:
 
 	void _RecalcTextWidthOfItems() {
 		auto NumItems = _GetNumItems();
-		auto pOldFont = GUI.SetFont(Props.pFont);
+		auto pOldFont = GUI.Font(Props.pFont);
 		for (unsigned i = 0; i < NumItems; i++) {
 			auto &pItem = ItemArray[i];
 			pItem.TextWidth = GUI_GetStringDistX(pItem.pText);
 		}
-		GUI.SetFont(pOldFont);
+		GUI.Font(pOldFont);
 	}
 	char _SetItem(unsigned Index, const ItemData *pItemData) {
 		auto pText = pItemData->pText ? pItemData->pText : "";
@@ -767,7 +767,7 @@ public:
 		Attach(WObj::GetDesktopWindow(), Pos);
 		_SendMenuMessage(pDestWin, this, MENU_ON_OPEN, 0);
 	}
-	void SetBkColor(unsigned ColorIndex, RGBC Color) {
+	void BkColor(unsigned ColorIndex, RGBC Color) {
 		if (ColorIndex >= GUI_COUNTOF(Props.aBkColor))
 			return;
 		if (Color == Props.aBkColor[ColorIndex])
@@ -783,7 +783,7 @@ public:
 		Props.aBorder[BorderIndex] = BorderSize;
 		_ResizeMenu();
 	}
-	void SetFont(PCFONT pFont) {
+	void Font(PCFONT pFont) {
 		if (pFont == Props.pFont)
 			return;
 		Props.pFont = pFont;
@@ -800,7 +800,7 @@ public:
 		if (_SetItem(Index, pItemData))
 			_ResizeMenu();
 	}
-	void SetTextColor(unsigned ColorIndex, RGBC Color) {
+	void TextColor(unsigned ColorIndex, RGBC Color) {
 		if (ColorIndex >= GUI_COUNTOF(Props.aTextColor))
 			return;
 		if (Color == Props.aTextColor[ColorIndex])

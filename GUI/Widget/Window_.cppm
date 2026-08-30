@@ -75,7 +75,7 @@ private:
 			pObj->_OnKey((const WM_KEY_INFO*)Data);
 			break;
 		case WM_PAINT:
-			GUI.SetBkColor(pObj->Props.BkColor);
+			GUI.BkColor(pObj->Props.BkColor);
 			GUI_Clear();
 			return 0;
 		case WM_GET_BKCOLOR:

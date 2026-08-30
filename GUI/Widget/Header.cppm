@@ -46,8 +46,8 @@ private:
 		int NumItems = Columns.NumItems();
 		int EffectSize = this->EffectSize();
 		RECT Rect;
-		GUI.SetBkColor(Props.BkColor);
-		GUI.SetFont(Props.pFont);
+		GUI.BkColor(Props.BkColor);
+		GUI.Font(Props.pFont);
 		GUI_Clear();
 		for (int i = 0; i < NumItems; i++) {
 			auto &col = Columns[i];
@@ -83,7 +83,7 @@ private:
 			Rect.x1 -= EffectSize + Props.BorderH;
 			Rect.y0 += EffectSize + Props.BorderV;
 			Rect.y1 -= EffectSize + Props.BorderV;
-			GUI.SetColor(Props.TextColor);
+			GUI.Color(Props.TextColor);
 			GUI_DispStringInRect(col.pText, &Rect, col.Align);
 		}
 		Rect = WM_GetClientRect();
@@ -220,7 +220,7 @@ private:
 		if (r.x1 <= r.x0)
 			r.x1 = Rect.x1;
 		if (r.y1 <= r.y0)
-			r.y1 = r.y0 + Header::DefaultProps.pFont->DistY()
+			r.y1 = r.y0 + Header::DefaultProps.pFont->YDist
 				+ 2 * Header::DefaultProps.BorderV
 				+ 2 * Widget::DefaultEffect->EffectSize;
 	}
@@ -233,21 +233,21 @@ public:
 
 #pragma region Properties
 
-	void SetFont(PCFONT pFont) {
+	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
 		Props.pFont = pFont;
 		Invalidate();
 	}
 
-	void SetTextColor(RGBC Color) {
+	void TextColor(RGBC Color) {
 		if (Props.TextColor == Color)
 			return;
 		Props.TextColor = Color;
 		Invalidate();
 	}
 
-	void SetBkColor(RGBC Color) {
+	void BkColor(RGBC Color) {
 		if (Props.BkColor == Color)
 			return;
 		Props.BkColor = Color;
@@ -276,9 +276,9 @@ public:
 	void AddItem(int Width, const char *s, int Align) {
 		Column Col = {};
 		if (!Width) {
-			PCFONT pFont = GUI.SetFont(Props.pFont);
+			PCFONT pFont = GUI.Font(Props.pFont);
 			Width = GUI_GetStringDistX(s) + 2 * (this->EffectSize() + Props.BorderH);
-			GUI.SetFont(pFont);
+			GUI.Font(pFont);
 		}
 		Col.Width = Width;
 		Col.Align = Align;
@@ -321,7 +321,7 @@ public:
 			return Columns[Index].Width;
 		return 0;
 	}
-	void SetTextAlign(uint16_t Index, TEXTALIGN Align) {
+	void TextAlign(uint16_t Index, TEXTALIGN Align) {
 		if (Index < Columns.NumItems()) {
 			Columns[Index].Align = Align;
 			Invalidate();

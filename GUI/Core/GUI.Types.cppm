@@ -38,6 +38,9 @@ struct RECT {
 	inline static RECT LeftTop(POINT Pos, POINT Size)
 	{ return { Pos.x, Pos.y, Pos.x + Size.x, Pos.y + Size.y }; }
 
+	inline POINT RightBottom() const { return{ x1, y1 }; }
+	inline void RightBottom(POINT Pos) { x1 = Pos.x, y1 = Pos.y; }
+
 	inline auto XSize() const { return x1 - x0 + 1; }
 	inline auto YSize() const { return y1 - y0 + 1; }
 	inline auto Size() const { return POINT{ XSize(), YSize() }; }
@@ -194,23 +197,12 @@ typedef struct {
 	tGUI_CalcSizeOfChar *pfCalcSizeOfChar;
 	tGUI_Encode *pfEncode;
 } GUI_UC_ENC_APILIST;
-
-typedef int  tGUI_GetLineDistX(const char *s, int Len);
-typedef int  tGUI_GetLineLen(const char *s, int MaxLen);
-typedef void tGL_DispLine(const char *s, int Len);
-
-typedef struct {
-	tGUI_GetLineDistX *pfGetLineDistX;
-	tGUI_GetLineLen *pfGetLineLen;
-	tGL_DispLine *pfDispLine;
-} tGUI_ENC_APIList;
 #pragma endregion
 
 #pragma region Font
 struct FONT {
 	uint8_t YSize, YDist;
 	uint8_t Baseline, LHeight, CHeight;
-	const tGUI_ENC_APIList *pafEncode = nullptr;
 
 	FONT(uint8_t YSize, uint8_t YDist,
 		 uint8_t Baseline,
@@ -219,14 +211,12 @@ struct FONT {
 		Baseline(Baseline),
 		LHeight(LHeight), CHeight(CHeight) {}
 
-	virtual void DispChar(uint16_t c) const = 0;
-	virtual int  GetCharDistX(uint16_t c) const = 0;
 	virtual bool IsInFont(uint16_t c) const = 0;
-public:
-	inline auto SizeY() const { return YSize; }
-	inline auto DistY() const { return YDist; }
+	virtual int  GetCharDistX(uint16_t c) const = 0;
+	virtual void DispChar(uint16_t c) const = 0;
 };
 using CFONT = const FONT;
+using UCFONT = const FONT &;
 using PCFONT = const FONT *;
 
 struct FONT_MONO : FONT {
@@ -258,9 +248,17 @@ struct FONT_MONO : FONT {
 		XSize(XSize), XDist(XDist),
 		BytesPerLine(BytesPerLine) {}
 
+	bool IsInFont(uint16_t c) const {
+		if (FirstChar <= c && c <= LastChar)
+			return true;
+		else if (pTrans)
+			if (pTrans->FirstChar <= c && c <= pTrans->LastChar)
+				return true;
+		return false;
+	}
+	int GetCharDistX(uint16_t c) const
+	{ return XDist; }
 	void DispChar(uint16_t c) const override;
-	int  GetCharDistX(uint16_t c) const override;
-	bool IsInFont(uint16_t c) const override;
 };
 using CFONT_MONO = const FONT_MONO;
 
@@ -285,11 +283,20 @@ struct FONT_PROP : FONT {
 		paCharInfo(paCharInfo),
 		pNext(pNext) {}
 
-	const FONT_PROP *FindChar(uint16_t c) const;
-
+	const FONT_PROP *FindChar(uint16_t c) const {
+		for (auto i = this; i; i = i->pNext)
+			if (i->First <= c && c <= i->Last)
+				return i;
+		return nullptr;
+	}
+	bool IsInFont(uint16_t c) const override
+	{ return FindChar(c); }
+	int GetCharDistX(uint16_t c) const override {
+		if (auto pProp = FindChar(c))
+			return pProp->paCharInfo[c - pProp->First].XDist;
+		return 0;
+	}
 	void DispChar(uint16_t c) const override;
-	int  GetCharDistX(uint16_t c) const override;
-	bool IsInFont(uint16_t c) const override;
 };
 using CFONT_PROP = const FONT_PROP;
 #pragma endregion

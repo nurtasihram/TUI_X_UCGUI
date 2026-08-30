@@ -946,7 +946,7 @@ public:
 			}
 			case WM_PAINT:
 				if (BkColorDesktop != RGB_INVALID_COLOR) {
-					GUI.SetBkColor(BkColorDesktop);
+					GUI.BkColor(BkColorDesktop);
 					GUI_Clear();
 				}
 				return 0;
@@ -957,7 +957,7 @@ public:
 	}
 public:
 	static WObj *GetDesktopWindow() { return pWinDesktop; }
-	static void SetDesktopColor(RGBC Color) {
+	static void DesktopColor(RGBC Color) {
 		BkColorDesktop = Color;
 		if (pWinDesktop)
 			pWinDesktop->Invalidate();
@@ -1050,7 +1050,7 @@ public:
 	}
 #pragma endregion 
 
-	RGBC GetBkColor() const { return (RGBC)Require(WM_GET_BKCOLOR); }
+	RGBC BkColor() const { return (RGBC)Require(WM_GET_BKCOLOR); }
 
 #pragma region Focus
 	static WObj *pWinFocus;

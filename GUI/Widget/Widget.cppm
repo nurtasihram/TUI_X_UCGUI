@@ -116,11 +116,11 @@ protected:
 	void SetBkColorPrefer(RGBC BkColor) {
 		while (BkColor == RGB_INVALID_COLOR) {
 			if (auto pParent = Parent())
-				BkColor = pParent->GetBkColor();
+				BkColor = pParent->BkColor();
 			else
 				break;
 		}
-		GUI.SetBkColor(BkColor);
+		GUI.BkColor(BkColor);
 	}
 
 	void SetScrollState(const WM_SCROLL_STATE &VState, const WM_SCROLL_STATE &HState);
@@ -232,7 +232,7 @@ public:
 		uint16_t Flags; /* Widget specific create flags (opt.) */
 		int32_t Para; /* Widget specific parameter (opt.) */
 
-		WObj* CreateDialog(int NumWidgets, WM_CALLBACK* cb, WObj* hParent, int x0, int y0) const {
+		WObj *CreateDialog(int NumWidgets, WM_CALLBACK* cb, WObj* hParent, int x0, int y0) const {
 			auto pDialog = pfCreateIndirect(this, hParent, x0, y0, cb);     /* Create parent window */
 			auto pDialogClient = pDialog->Client();
 			pDialog->AddStates(Flags);
