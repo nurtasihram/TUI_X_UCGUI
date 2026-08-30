@@ -37,7 +37,7 @@ class MultEdit : public Widget {
 
 public:
 	struct Properties {
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aBkColor[NUM_DISP_MODES]{
 			/* Edit mode */		RGB_WHITE,
 			/* Read-only */		RGB_GRAYL(0xC0)
@@ -52,7 +52,7 @@ public:
 private:
 	Properties Props = DefaultProps;
 
-	WM_HMEM hText = nullptr;
+	char *pText = nullptr;
 	uint16_t MaxNumChars = 0;         /* Maximum number of characters including the prompt */
 	uint16_t
 		NumChars = 0,
@@ -80,7 +80,7 @@ private:
 	int _GetNumChars() {
 		if (this->InvalidFlags & INVALID_NUMCHARS) {
 			char *pText;
-			pText = (char *)(this->hText);
+			pText = this->pText;
 			this->NumChars = GUI__GetNumChars(pText);
 			this->InvalidFlags &= ~INVALID_NUMCHARS;
 		}
@@ -94,7 +94,7 @@ private:
 	int _GetNumCharsInPrompt(const char *pText) {
 		char *pString, *pEndPrompt;
 		int r = 0;
-		pString = (char *)(this->hText);
+		pString = this->pText;
 		pEndPrompt = pString + GUI_UC__NumChars2NumBytes(pString, this->NumCharsPrompt);
 		if (pText < pEndPrompt) {
 			r = GUI_UC__NumBytes2NumChars(pText, (int)(pEndPrompt - pText));
@@ -106,7 +106,7 @@ private:
 		uint16_t Char;
 		while (NumChars--) {
 			Char = GUI_UC__GetCharCodeInc(&pText);
-			xSize += GUI.Font().GetCharDistX(Char);
+			xSize += GUI.Font().GetCharSizeX(Char);
 		}
 		return xSize;
 	}
@@ -128,7 +128,7 @@ private:
 						x = _NumChars2XSize(pText, NumCharsPrompt);
 						pText += GUI_UC__NumChars2NumBytes(pText, NumCharsPrompt);
 						while (GUI_UC__GetCharCodeInc(&pText) != 0) {
-							x += GUI.Font().GetCharDistX(MULTEDIT_PASSWORD_CHAR);
+							x += GUI.Font().GetCharSizeX(MULTEDIT_PASSWORD_CHAR);
 							if (r && (x > xSize)) {
 								break;
 							}
@@ -162,15 +162,15 @@ private:
 		}
 		return r;
 	}
-	int _GetCharDistX(const char *pText) {
+	int _GetCharSizeX(const char *pText) {
 		int r;
 		if ((this->Flags & MULTEDIT_CF_PASSWORD) && (_GetNumCharsInPrompt(pText) == 0)) {
-			r = GUI.Font().GetCharDistX(MULTEDIT_PASSWORD_CHAR);
+			r = GUI.Font().GetCharSizeX(MULTEDIT_PASSWORD_CHAR);
 		}
 		else {
 			uint16_t c;
 			c = GUI_UC_GetCharCode(pText);
-			r = GUI.Font().GetCharDistX(c);
+			r = GUI.Font().GetCharSizeX(c);
 		}
 		return r;
 	}
@@ -199,7 +199,7 @@ private:
 	}
 	char *_GetpLine(unsigned LineNumber) {
 		char *pText, *pLine;
-		pText = (char *)(this->hText);
+		pText = this->pText;
 		if ((unsigned)this->CacheLineNumber != LineNumber) {
 			if (LineNumber > (unsigned)this->CacheLineNumber) {
 				/* If new line number > cache we can start with old pointer */
@@ -255,20 +255,20 @@ private:
 		if (this->InvalidFlags & INVALID_CURSORXY) {
 			int CursorLine = 0, x = 0;
 			GUI.Font(Props.pFont);
-			if (this->hText) {
+			if (this->pText) {
 				const char *pLine;
 				const char *pCursor;
-				pLine = (const char *)(this->hText);
+				pLine = this->pText;
 				pCursor = pLine + this->CursorPosByte;
 				CursorLine = this->CursorLine;
 				pLine = _GetpLine(CursorLine);
 				while (pLine < pCursor) {
-					x += _GetCharDistX(pLine);
+					x += _GetCharSizeX(pLine);
 					pLine += GUI_UC_GetCharSize(pLine);
 				}
 			}
 			this->CursorPosX = x;
-			this->CursorPosY = CursorLine * Props.pFont->YDist;
+			this->CursorPosY = CursorLine * Props.pFont->YSize;
 			this->InvalidFlags &= ~INVALID_CURSORXY;
 		}
 		*px = this->CursorPosX;
@@ -283,7 +283,7 @@ private:
 	void _CalcScrollPos() {
 		int xCursor, yCursor;
 		_GetCursorXY(&xCursor, &yCursor);
-		yCursor /= Props.pFont->YDist;
+		yCursor /= Props.pFont->YSize;
 		ScrollStateV.CheckPos(yCursor, 0, 0);       /* Vertical */
 		ScrollStateH.CheckPos(xCursor, 30, 30);     /* Horizontal */
 		_SetScrollState();
@@ -291,17 +291,17 @@ private:
 	int _GetTextSizeX() {
 		if (this->InvalidFlags & INVALID_TEXTSIZE) {
 			this->TextSizeX = 0;
-			if (this->hText) {
+			if (this->pText) {
 				int NumChars, xSizeLine;
 				char *pText, *pLine;
 				GUI.Font(Props.pFont);
-				pText = (char *)(this->hText);
+				pText = this->pText;
 				do {
 					NumChars = _WrapGetNumCharsDisp(pText);
 					xSizeLine = 0;
 					pLine = pText;
 					while (NumChars--) {
-						xSizeLine += _GetCharDistX(pLine);
+						xSizeLine += _GetCharSizeX(pLine);
 						pLine += GUI_UC_GetCharSize(pLine);
 					}
 					if (xSizeLine > this->TextSizeX) {
@@ -317,16 +317,16 @@ private:
 	int _GetNumVisLines() {
 		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
-		return (Rect.y1 - Rect.y0 + 1) / Props.pFont->YDist;
+		return (Rect.y1 - Rect.y0 + 1) / Props.pFont->YSize;
 	}
 	int _GetNumLines() {
 		if (this->InvalidFlags & INVALID_NUMLINES) {
 			int NumLines = 0;
-			if (this->hText) {
+			if (this->pText) {
 				int NumChars, NumBytes;
 				char *pText;
 				uint16_t Char;
-				pText = (char *)(this->hText);
+				pText = this->pText;
 				GUI.Font(Props.pFont);
 				do {
 					NumChars = _WrapGetNumCharsDisp(pText);
@@ -408,10 +408,10 @@ private:
 		_InvalidateTextArea();
 	}
 	int _CalcNextValidCursorPos(int CursorPosChar, int *pCursorPosByte, int *pCursorLine) {
-		if (this->hText) {
+		if (this->pText) {
 			char *pNextLine, *pCursor, *pText;
 			int CursorLine, NumChars, CursorPosByte;
-			pText = (char *)(this->hText);
+			pText = this->pText;
 			NumChars = _GetNumChars();
 			/* Set offset in valid range */
 			if (CursorPosChar < this->NumCharsPrompt) {
@@ -485,15 +485,15 @@ private:
 		if ((x < 0) || (y < 0)) {
 			return;
 		}
-		if (this->hText) {
+		if (this->pText) {
 			char *pLine, *pText;
 			int CursorLine, WrapChars;
 			int SizeX = 0;
 			uint16_t Char;
 			GUI.Font(Props.pFont);
-			CursorLine = y / Props.pFont->YDist;
+			CursorLine = y / Props.pFont->YSize;
 			pLine = _GetpLine(CursorLine);
-			pText = (char *)(this->hText);
+			pText = this->pText;
 			WrapChars = _WrapGetNumCharsDisp(pLine);
 			Char = GUI_UC__GetCharCode(pLine + GUI_UC__NumChars2NumBytes(pLine, WrapChars));
 			if (this->Flags & MULTEDIT_CF_PASSWORD) {
@@ -508,7 +508,7 @@ private:
 			}
 			while (--WrapChars > 0) {
 				Char = GUI_UC_GetCharCode(pLine);
-				SizeX += _GetCharDistX(pLine);
+				SizeX += _GetCharSizeX(pLine);
 				if (!Char || (SizeX > x)) {
 					break;
 				}
@@ -521,19 +521,19 @@ private:
 	void _MoveCursorUp() {
 		int xPos, yPos;
 		_GetCursorXY(&xPos, &yPos);
-		yPos -= Props.pFont->YDist;
+		yPos -= Props.pFont->YSize;
 		_SetCursorXY(xPos, yPos);
 	}
 	void _MoveCursorDown() {
 		int xPos, yPos;
 		_GetCursorXY(&xPos, &yPos);
-		yPos += Props.pFont->YDist;
+		yPos += Props.pFont->YSize;
 		_SetCursorXY(xPos, yPos);
 	}
 	void _MoveCursor2NextLine() {
 		int xPos, yPos;
 		_GetCursorXY(&xPos, &yPos);
-		yPos += Props.pFont->YDist;
+		yPos += Props.pFont->YSize;
 		_SetCursorXY(0, yPos);
 	}
 	void _MoveCursor2LineEnd() {
@@ -548,11 +548,11 @@ private:
 	}
 	int _IsOverwriteAtThisChar() {
 		int r = 0;
-		if (this->hText && !(this->Flags & MULTEDIT_CF_INSERT)) {
+		if (this->pText && !(this->Flags & MULTEDIT_CF_INSERT)) {
 			const char *pText;
 			int CurPos, Line1, Line2;
 			uint16_t Char;
-			pText = (const char *)(this->hText);
+			pText = (const char *)(this->pText);
 			Line1 = this->CursorLine;
 			CurPos = _CalcNextValidCursorPos(CursorPosChar + 1, 0, 0);
 			Line2 = _GetCursorLine(pText, CurPos);
@@ -576,35 +576,29 @@ private:
 	int _GetCursorSizeX() {
 		if (_IsOverwriteAtThisChar()) {
 			const char *pText;
-			pText = (const char *)(this->hText);
+			pText = (const char *)(this->pText);
 			pText += this->CursorPosByte;
-			return _GetCharDistX(pText);
+			return _GetCharSizeX(pText);
 		}
 		else {
 			return 2;
 		}
 	}
 	int _IncrementBuffer(unsigned AddBytes) {
-		WM_HMEM hNew;
-		int NewSize;
-		NewSize = this->BufferSize + AddBytes;
-		hNew = GUI_ALLOC_Realloc(this->hText, NewSize);
-		if (hNew) {
-			if (!(this->hText)) {
-				char *pText;
-				pText = (char *)(hNew);
-				*pText = 0;
-			}
+		int NewSize = this->BufferSize + AddBytes;
+		if (auto pNew = (char *)GUI_ALLOC_Realloc(this->pText, NewSize)) {
+			if (!(this->pText))
+				*pNew = 0;
 			this->BufferSize = NewSize;
-			this->hText = hNew;
+			this->pText = pNew;
 			return 1;
 		}
 		return 0;
 	}
 	int _IsSpaceInBuffer(int BytesNeeded) {
 		int NumBytes = 0;
-		if (this->hText) {
-			NumBytes = GUI__strlen((char *)(this->hText));
+		if (this->pText) {
+			NumBytes = GUI__strlen((char *)(this->pText));
 		}
 		BytesNeeded = (BytesNeeded + NumBytes + 1) - this->BufferSize;
 		if (BytesNeeded > 0) {
@@ -617,7 +611,7 @@ private:
 	int _IsCharsAvailable(int CharsNeeded) {
 		if ((CharsNeeded > 0) && (this->MaxNumChars > 0)) {
 			int NumChars = 0;
-			if (this->hText) {
+			if (this->pText) {
 				NumChars = _GetNumChars();
 			}
 			if ((CharsNeeded + NumChars) > this->MaxNumChars) {
@@ -627,10 +621,10 @@ private:
 		return 1;
 	}
 	void _DeleteChar() {
-		if (this->hText) {
+		if (this->pText) {
 			int CursorOffset;
 			char *s;
-			s = (char *)(this->hText);
+			s = (char *)(this->pText);
 			CursorOffset = this->CursorPosByte;
 			if (CursorOffset < GUI__strlen(s)) {
 				char *pCursor, *pLine, *pEndLine;
@@ -666,7 +660,7 @@ private:
 			if (_IsSpaceInBuffer(BytesNeeded)) {
 				int CursorOffset;
 				char *pText;
-				pText = (char *)(this->hText);
+				pText = (char *)(this->pText);
 				CursorOffset = this->CursorPosByte;
 				pText += CursorOffset;
 				GUI__memmove(pText + BytesNeeded, pText, GUI__strlen(pText) + 1);
@@ -688,7 +682,7 @@ private:
 		const RECT *prOldClip;
 		/* Init some values */
 		GUI.Font(Props.pFont);
-		FontSizeY = Props.pFont->YDist;
+		FontSizeY = Props.pFont->YSize;
 		ScrollPosX = this->ScrollStateH.v;
 		ScrollPosY = this->ScrollStateV.v;
 		EffectSize = this->EffectSize();
@@ -706,13 +700,13 @@ private:
 		rClip.x1 = GetSizeX() - EffectSize - HBorder - 1;
 		rClip.y1 = GetSizeY() - EffectSize - 1;
 		prOldClip = SetUserClipRect(&rClip);
-		if (this->hText) {
+		if (this->pText) {
 			const char *pText;
 			int Line = 0;
 			int xSize = _GetXSize();
 			int NumVisLines = _GetNumVisLines();
 			/* Get the text */
-			pText = (const char *)(this->hText);
+			pText = (const char *)(this->pText);
 			/* Set the rectangle for drawing */
 			r.x0 = xOff;
 			r.y0 = EffectSize;
@@ -730,7 +724,7 @@ private:
 				/* Cache the position of the first visible byte and the depending line number */
 				if (this->CacheFirstVisibleLine != ScrollPosY) {
 					if (Line == ScrollPosY) {
-						this->CacheFirstVisibleByte = (uint16_t)(pText - (const char *)(this->hText));
+						this->CacheFirstVisibleByte = (uint16_t)(pText - (const char *)(this->pText));
 						this->CacheFirstVisibleLine = ScrollPosY;
 					}
 				}
@@ -763,7 +757,7 @@ private:
 				int Effect, xPos, yPos;
 				Effect = this->EffectSize();
 				xPos = pState->x + this->ScrollStateH.v - Effect - Props.HBorder;
-				yPos = pState->y + this->ScrollStateV.v * Props.pFont->YDist - Effect;
+				yPos = pState->y + this->ScrollStateV.v * Props.pFont->YSize - Effect;
 				_SetCursorXY(xPos, yPos);
 				_Invalidate();
 				Notification = WM_NOTIFICATION_CLICKED;
@@ -922,7 +916,7 @@ private:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_DELETE:
-				GUI_ALLOC_FreePtr(&pObj->hText);
+				GUI_ALLOC_FreePtr((void **)&pObj->pText);
 				return 0;
 			case WM_KEY:
 				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
@@ -948,9 +942,9 @@ public:
 	MultEdit(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
 			 uint8_t ExFlags, uint16_t BufferSize, const char *pText) :
 		Widget((_AdjRect(r, pParent), r), Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE),
-		BufferSize(BufferSize), Flags(Flags) {
+		BufferSize(BufferSize), Flags(ExFlags) {
 		if (BufferSize > 0)
-			this->hText = GUI_ALLOC_AllocZero(BufferSize);
+			this->pText = (char *)GUI_ALLOC_AllocZero(BufferSize);
 		SetText(pText);
 		_ManageScrollers();
 	}	
@@ -1014,8 +1008,8 @@ public:
 		int NumBytesNew = 0, NumBytesOld = 0;
 		char *pText;
 
-		if (this->hText) {
-			pText = (char *)(this->hText);
+		if (this->pText) {
+			pText = (char *)(this->pText);
 			pText += GUI_UC__NumChars2NumBytes(pText, this->NumCharsPrompt);
 			NumCharsOld = GUI__GetNumChars(pText);
 			NumBytesOld = GUI_UC__NumChars2NumBytes(pText, NumCharsOld);
@@ -1026,7 +1020,7 @@ public:
 		}
 		if (_IsCharsAvailable(NumCharsNew - NumCharsOld)) {
 			if (_IsSpaceInBuffer(NumBytesNew - NumBytesOld)) {
-				pText = (char *)(this->hText);
+				pText = (char *)(this->pText);
 				pText += GUI_UC__NumChars2NumBytes(pText, this->NumCharsPrompt);
 				if (pNew) {
 					GUI__strcpy(pText, pNew);
@@ -1045,7 +1039,7 @@ public:
 	void GetText(char *sDest, int MaxLen) {
 		char *pText;
 		int Len;
-		pText = (char *)(this->hText);
+		pText = (char *)(this->pText);
 		pText += GUI_UC__NumChars2NumBytes(pText, this->NumCharsPrompt);
 		Len = GUI__strlen(pText);
 		if (Len > (MaxLen - 1)) {
@@ -1056,7 +1050,7 @@ public:
 	}
 
 	void GetPrompt(char *sDest, int MaxLen) {
-		auto sSource = (char *)(this->hText);
+		auto sSource = (char *)(this->pText);
 		int Len = GUI_UC__NumChars2NumBytes(sSource, this->NumCharsPrompt);
 		if (Len > (MaxLen - 1)) {
 			Len = MaxLen - 1;
@@ -1103,8 +1097,8 @@ public:
 		int NumCharsNew = 0, NumCharsOld = 0;
 		int NumBytesNew = 0, NumBytesOld = 0;
 		char *pText;
-		if (this->hText) {
-			pText = (char *)(this->hText);
+		if (this->pText) {
+			pText = (char *)(this->pText);
 			NumCharsOld = this->NumCharsPrompt;
 			NumBytesOld = GUI_UC__NumChars2NumBytes(pText, NumCharsOld);
 		}
@@ -1114,7 +1108,7 @@ public:
 		}
 		if (_IsCharsAvailable(NumCharsNew - NumCharsOld)) {
 			if (_IsSpaceInBuffer(NumBytesNew - NumBytesOld)) {
-				pText = (char *)(this->hText);
+				pText = (char *)(this->pText);
 				GUI__memmove(pText + NumBytesNew, pText + NumBytesOld, GUI__strlen(pText + NumBytesOld) + 1);
 				if (pPrompt) {
 					GUI__memcpy(pText, pPrompt, NumBytesNew);
@@ -1133,8 +1127,8 @@ public:
 		if (!pText) {
 		}
 		else {
-			GUI_ALLOC_FreePtr(&this->hText);
-			this->hText = pText;
+			GUI_ALLOC_FreePtr((void **)&this->pText);
+			this->pText = pText;
 			this->BufferSize = BufferSize;
 			this->NumCharsPrompt = 0;
 			_SetCursorPos(0);
@@ -1150,10 +1144,10 @@ public:
 		if (MaxNumChars < (unsigned)this->NumCharsPrompt) {
 			this->NumCharsPrompt = MaxNumChars;
 		}
-		if (this->hText && MaxNumChars) {
+		if (this->pText && MaxNumChars) {
 			char *pText;
 			int Offset;
-			pText = (char *)(this->hText);
+			pText = (char *)(this->pText);
 			Offset = GUI_UC__NumChars2NumBytes(pText, MaxNumChars);
 			if (Offset < this->BufferSize) {
 				pText += Offset;
@@ -1167,9 +1161,9 @@ public:
 
 	int  GetTextSize() {
 		int r = 0;
-		if (this->hText) {
+		if (this->pText) {
 			const char *s;
-			s = (const char *)this->hText;
+			s = (const char *)this->pText;
 			s += GUI_UC__NumChars2NumBytes(s, this->NumCharsPrompt);
 			r = 1 + GUI__strlen(s);
 		}

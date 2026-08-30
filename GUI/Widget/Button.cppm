@@ -29,7 +29,7 @@ class Button : public Widget {
 
 public:
 	struct Properties {
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aTextColor[3]{
 			/* Unpressed */	RGB_BLACK,
 			/* Pressed */	RGB_BLACK,

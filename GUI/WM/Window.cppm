@@ -22,8 +22,6 @@ export {
 	
 typedef WM_PARAM WM_CALLBACK(struct WObj *pWin, int MsgId, WM_PARAM Data);
 
-using WM_HMEM = GUI_HMEM;
-
 struct WObj;
 
 struct NOTIFY_INFO {

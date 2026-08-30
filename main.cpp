@@ -75,7 +75,7 @@ static const Widget::CreateStruct _aDialogCreate[]{
 };
 
 static int _GetItemSizeY(ListBox *pObj, int ItemIndex) {
-	int DistY = pObj->Font().YDist + 1;
+	int DistY = pObj->Font().YSize + 1;
 	if (pObj->GetMulti()) {
 		if (pObj->GetItemSel(ItemIndex))
 			DistY += 8;
@@ -91,7 +91,7 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 		case WIDGET_ITEM_GET_XSIZE: {
 			char acBuffer[100];
 			pObj->GetItemText(Index, acBuffer, sizeof(acBuffer));
-			return GUI_GetStringDistX(acBuffer) + bmSmilie0.Size.x + 16;
+			return GUI_GetStringSizeX(acBuffer) + bmSmilie0.Size.x + 16;
 		}
 		case WIDGET_ITEM_GET_YSIZE:
 			return _GetItemSizeY(pObj, Index);
@@ -123,7 +123,7 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 			GUI.Color(aColor[ColorIndex]);
 			pObj->GetItemText(Index, acBuffer, sizeof(acBuffer));
 			GUI_Clear();
-			auto FontDistY = GUI.Font().YDist;
+			auto FontDistY = GUI.Font().YSize;
 			GUI_DispStringAt(acBuffer, ItemPos.x + bmSmilie0.Size.x + 16, ItemPos.y + (YSize - FontDistY) / 2);
 			/* Draw bitmap */
 			auto pBm = MultiSel ? IsSelected ? &bmSmilie1 : &bmSmilie0 : (Index == Sel) ? &bmSmilie1 : &bmSmilie0;
@@ -1608,13 +1608,13 @@ void _TestMultiEdit() {
 }
 
 int main(void) {
-	GUI_Init();
+	GUI_Init(); 
 	GUI_CURSOR_Show();
 
 	_TestText();
 	//_TestListView();
 	//_TestMultiPage();
-	//_TestRadio();
+	_TestRadio();
 	//_TestProgBar();
 	//_TestSlider();
 	_TestEdit();

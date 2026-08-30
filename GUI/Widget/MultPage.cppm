@@ -23,7 +23,7 @@ class MultPage : public Widget {
 
 public:
 	struct Properties {
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aBkColor[MULTIPAGE_NUMCOLORS]{
 			/* Disabled page */	RGB_GRAYL(0xD0),
 			/* Enabled page */	RGB_GRAYL(0xC0)
@@ -130,7 +130,7 @@ private:
 		int r = 0;
 		if ((int)Index < Handles.NumItems()) {
 			GUI.Font(Props.pFont);
-			r = GUI_GetStringDistX(Handles[Index].pText) + 10;
+			r = GUI_GetStringSizeX(Handles[Index].pText) + 10;
 		}
 		return r;
 	}
@@ -266,7 +266,7 @@ private:
 		for (int i = 0; i < NumItems; i++) {
 			auto &pPage = Handles[i];
 			x0 += w;
-			w = GUI_GetStringDistX(pPage.pText) + 10;
+			w = GUI_GetStringSizeX(pPage.pText) + 10;
 			_DrawTextItem(pPage.pText, i, &rText, x0, w, (pPage.Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0);
 		}
 		SetUserClipRect(nullptr);

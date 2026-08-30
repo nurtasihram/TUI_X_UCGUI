@@ -13,8 +13,6 @@ export import TUX.String;
 
 export {
 
-typedef void *GUI_HMEM;
-
 struct PID_STATE : POINT {
 	int8_t Pressed;
 	PID_STATE(POINT Pos, int8_t Pressed = 0) : POINT(Pos), Pressed(Pressed) {}

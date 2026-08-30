@@ -17,7 +17,7 @@ class ProgBar : public Widget {
 
 public:
 	struct Properties {
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aBkColor[2]{
 			/* Active */	RGB_DARKBLUE,
 			/* Inactive */	RGB_GRAYL(0x55)
@@ -85,7 +85,7 @@ private:
 	void _GetTextRect(RECT *pRect, const char *pText) {
 		int xSize = Rect.x1 - Rect.x0 + 1;
 		int ySize = Rect.y1 - Rect.y0 + 1;
-		int TextWidth = GUI_GetStringDistX(pText);
+		int TextWidth = GUI_GetStringSizeX(pText);
 		int TextHeight = Props.pFont->YSize;
 		int EffectSize = this->EffectSize();
 		switch (Props.Align & TEXTALIGN_HORIZONTAL) {

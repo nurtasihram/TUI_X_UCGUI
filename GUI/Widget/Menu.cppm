@@ -86,7 +86,7 @@ public:
 			RGB_GRAYL(0x7C)
 		};
 		uint8_t aBorder[4]{ 4, 4, 2, 2 }; /* Left, Right, Top, Bottom */
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 	} static DefaultProps;
 	
 private:
@@ -135,7 +135,7 @@ private:
 		if (!sText)
 			return 0;
 		auto pOldFont = GUI.Font(Props.pFont);
-		auto TextWidth = GUI_GetStringDistX(sText);
+		auto TextWidth = GUI_GetStringSizeX(sText);
 		GUI.Font(pOldFont);
 		return TextWidth;
 	}
@@ -150,7 +150,7 @@ private:
 	int _GetItemHeight(unsigned Index) {
 		if (Height && !(Flags & MENU_SF_VERTICAL))
 			return Height - (_GetEffectSize() << 1);
-		auto ItemHeight = Props.pFont->YDist;
+		auto ItemHeight = Props.pFont->YSize;
 		if ((Flags & MENU_SF_VERTICAL) && (ItemArray[Index].Flags & MENU_IF_SEPARATOR))
 			ItemHeight = 3;
 		return ItemHeight + Props.aBorder[MENU_BI_TOP] + Props.aBorder[MENU_BI_BOTTOM];
@@ -230,7 +230,7 @@ private:
 		if (Flags & MENU_SF_VERTICAL)
 			for (int i = 0; i < (int)Index; i++)
 				Pos.y += _GetItemHeight(i);
-		else 
+		else
 			for (int i = 0; i < Index; i++)
 				Pos.x += _GetItemWidth(i);
 		return Pos;
@@ -343,8 +343,8 @@ private:
 	void _ActivateMenu(unsigned Index) {
 		if (!(Flags & MENU_SF_OPEN_ON_POINTEROVER)) {
 			auto &pItem = ItemArray[Index];
-				if (pItem.pSubmenu) {
-					if ((pItem.Flags & MENU_IF_DISABLED) == 0) {
+			if (pItem.pSubmenu) {
+				if ((pItem.Flags & MENU_IF_DISABLED) == 0) {
 					if (!(Flags & MENU_SF_ACTIVE)) {
 						Flags |= MENU_SF_ACTIVE;
 						_OpenSubmenu(Index);
@@ -450,29 +450,29 @@ private:
 	WM_PARAM _OnMenu(WM_PARAM Data) {
 		auto msg = *(MsgPack *)&Data;
 		switch (msg.MsgType) {
-			case MENU_ON_ITEMSELECT:
-				_DeactivateMenu();
-				_DeselectItem();
-				_ClosePopup();
-				/* No break here. We need to forward message to owner. */
-			case MENU_ON_INITMENU:
-			case MENU_ON_INITSUBMENU:
-				/* Forward message to owner. */
-				if (auto pOwner = this->pOwner ? this->pOwner : Parent())
-					pOwner->Require(WM_MENU, Data);
-				break;
-			case MENU_ON_OPEN:
-				Sel = -1;
-				IsSubmenuActive = 0;
-				Flags |= MENU_SF_ACTIVE | MENU_SF_OPEN_ON_POINTEROVER;
-				_SetCapture();
-				_ResizeMenu();
-				break;
-			case MENU_ON_CLOSE:
-				_CloseSubmenu();
-				break;
-			case MENU_IS_MENU:
-				return 1;
+		case MENU_ON_ITEMSELECT:
+			_DeactivateMenu();
+			_DeselectItem();
+			_ClosePopup();
+			/* No break here. We need to forward message to owner. */
+		case MENU_ON_INITMENU:
+		case MENU_ON_INITSUBMENU:
+			/* Forward message to owner. */
+			if (auto pOwner = this->pOwner ? this->pOwner : Parent())
+				pOwner->Require(WM_MENU, Data);
+			break;
+		case MENU_ON_OPEN:
+			Sel = -1;
+			IsSubmenuActive = 0;
+			Flags |= MENU_SF_ACTIVE | MENU_SF_OPEN_ON_POINTEROVER;
+			_SetCapture();
+			_ResizeMenu();
+			break;
+		case MENU_ON_CLOSE:
+			_CloseSubmenu();
+			break;
+		case MENU_IS_MENU:
+			return 1;
 		}
 		return 0;
 	}
@@ -503,7 +503,7 @@ private:
 		auto NumItems = _GetNumItems();
 		auto BorderLeft = Props.aBorder[MENU_BI_LEFT];
 		auto BorderTop = Props.aBorder[MENU_BI_TOP];
-		auto FontHeight = Props.pFont->YDist;
+		auto FontHeight = Props.pFont->YSize;
 		auto EffectSize = _GetEffectSize();
 		auto FillRect = GetClientRect();
 		RECT TextRect;
@@ -623,7 +623,7 @@ private:
 		auto pOldFont = GUI.Font(Props.pFont);
 		for (unsigned i = 0; i < NumItems; i++) {
 			auto &pItem = ItemArray[i];
-			pItem.TextWidth = GUI_GetStringDistX(pItem.pText);
+			pItem.TextWidth = GUI_GetStringSizeX(pItem.pText);
 		}
 		GUI.Font(pOldFont);
 	}

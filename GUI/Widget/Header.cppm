@@ -19,7 +19,7 @@ class Header : public Widget {
 
 public:
 	struct Properties {
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC BkColor{ RGB_GRAYL(0xAA) };
 		RGBC TextColor{ RGB_BLACK };
 		PCCURSOR pCursor{ &CursorHeaderM };
@@ -220,7 +220,7 @@ private:
 		if (r.x1 <= r.x0)
 			r.x1 = Rect.x1;
 		if (r.y1 <= r.y0)
-			r.y1 = r.y0 + Header::DefaultProps.pFont->YDist
+			r.y1 = r.y0 + Header::DefaultProps.pFont->YSize
 				+ 2 * Header::DefaultProps.BorderV
 				+ 2 * Widget::DefaultEffect->EffectSize;
 	}
@@ -277,7 +277,7 @@ public:
 		Column Col = {};
 		if (!Width) {
 			PCFONT pFont = GUI.Font(Props.pFont);
-			Width = GUI_GetStringDistX(s) + 2 * (this->EffectSize() + Props.BorderH);
+			Width = GUI_GetStringSizeX(s) + 2 * (this->EffectSize() + Props.BorderH);
 			GUI.Font(pFont);
 		}
 		Col.Width = Width;

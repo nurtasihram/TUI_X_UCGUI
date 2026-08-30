@@ -22,7 +22,7 @@ class ListView : public Widget {
 
 public:
 	struct Properties {
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aBkColor[3]{
 			/* Not selected */       RGB_WHITE,
 			/* Selected, no focus */ RGB_GRAY,
@@ -44,7 +44,7 @@ private:
 		RGBC aTextColor[3];
 	};
 	struct Item {
-		WM_HMEM hItemInfo;
+		ItemInfo *pItemInfo;
 		char *pText;
 	};
 	Header *pHeader;
@@ -66,7 +66,7 @@ private:
 
 	auto _GetRowDistY() {
 		return RowDistY ? RowDistY :
-			Props.pFont->YDist + (ShowGrid ? 1 : 0);
+			Props.pFont->YSize + (ShowGrid ? 1 : 0);
 	}
 	auto _GetNumVisibleRows() {
 		RECT Rect;
@@ -137,10 +137,8 @@ private:
 						Rect.x1 = xPos + Width - 1;
 						/* Make sure that we draw only when column is in drawing area */
 						if (Rect.x1 >= ClipRect.x0) {
-							auto &pItem = pRow[j];
-							if (pItem.hItemInfo) {
-								ItemInfo *pItemInfo;
-								pItemInfo = (ItemInfo *)(pItem.hItemInfo);
+							auto &item = pRow[j];
+							if (auto pItemInfo = item.pItemInfo) {
 								GUI.BkColor(pItemInfo->aBkColor[ColorIndex]);
 								GUI.Color(pItemInfo->aTextColor[ColorIndex]);
 							}
@@ -153,9 +151,9 @@ private:
 							Rect.x0 += LBorder;
 							Rect.x1 -= RBorder;
 							Align = this->AlignArray[j];
-							GUI_DispStringInRect(pItem.pText, &Rect, Align);
-							if (pItem.hItemInfo)
-								GUI.BkColor(Props.aBkColor[ColorIndex]);
+							GUI_DispStringInRect(item.pText, &Rect, Align);
+							if (auto pItemInfo = item.pItemInfo)
+								GUI.BkColor(pItemInfo->aBkColor[ColorIndex]);
 						}
 						xPos += Width;
 					}
@@ -322,10 +320,10 @@ private:
 				auto &pRow = this->RowArray[i];
 				/* Delete attached info items */
 				for (j = 0; j < NumColumns; j++) {
-					auto &pItem = pRow[j];
-					GUI_ALLOC_FreePtr((void **)&pItem.pText);
-					if (pItem.hItemInfo) {
-						GUI_ALLOC_Free(pItem.hItemInfo);
+					auto &item = pRow[j];
+					GUI_ALLOC_FreePtr((void **)&item.pText);
+					if (item.pItemInfo) {
+						GUI_ALLOC_Free(item.pItemInfo);
 					}
 				}
 				/* Delete row */
@@ -341,10 +339,10 @@ private:
 		if (Column >= GetNumColumns() || Row >= GetNumRows())
 			return nullptr;
 		auto pItem = &RowArray[Row][Column];
-		if (pItem->hItemInfo)
-			return (ItemInfo *)(pItem->hItemInfo);
-		pItem->hItemInfo = GUI_ALLOC_AllocZero(sizeof(ItemInfo));
-		auto pItemInfo = (ItemInfo *)(pItem->hItemInfo);
+		auto pItemInfo = pItem->pItemInfo;
+		if (pItemInfo)
+			return pItemInfo;
+		pItemInfo = pItem->pItemInfo = (ItemInfo *)GUI_ALLOC_AllocZero(sizeof(ItemInfo));
 		pItemInfo->aTextColor[0] = Props.aTextColor[0];
 		pItemInfo->aTextColor[1] = Props.aTextColor[1];
 		pItemInfo->aBkColor[0] = Props.aBkColor[0];
@@ -541,7 +539,7 @@ public:
 			/* Delete attached info items */
 			auto &item = Row[Index];
 			GUI_ALLOC_FreePtr((void **)&item.pText);
-			GUI_ALLOC_Free(item.hItemInfo);
+			GUI_ALLOC_FreePtr((void **)&item.pItemInfo);
 			/* Delete cell */
 			Row.DeleteItem(Index);
 		}
@@ -555,9 +553,9 @@ public:
 		auto &Row = RowArray[Index];
 		/* Delete attached info items */
 		for (int i = 0, NumColumns = Row.NumItems(); i < NumColumns; i++) {
-			auto &pItem = Row[i];
-			GUI_ALLOC_FreePtr((void **)&pItem.pText);
-			GUI_ALLOC_Free(pItem.hItemInfo);
+			auto &item = Row[i];
+			GUI_ALLOC_FreePtr((void **)&item.pText);
+			GUI_ALLOC_FreePtr((void **)&item.pItemInfo);
 		}
 		/* Delete row */
 		Row.Delete();

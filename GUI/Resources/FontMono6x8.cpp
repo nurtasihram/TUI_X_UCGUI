@@ -1980,14 +1980,13 @@ static const FONT_MONO::TRANSINFO GUI_F6x8_TI8859_1{
 };
 
 CFONT_MONO FontMono6x8{
-	8, 8, /* YSize, YDist */
-	7,    /* Baseline */
-	5, 7, /* LHeight, CHeight */
+	8, /* YSize */
+	7, /* Baseline */
+	7, /* CHeight */
 	/* For FONT_MONO */
 	GUI_acFont6x8[0],   /* pData */
 	GUI_acFont6x8[0],   /* pTransData */
 	&GUI_F6x8_TI8859_1, /* pTrans */
 	32, 126,            /* FirstChar, LastChar */
-	6, 6,               /* XSize, XDist */
-	1                   /* BytesPerLine */
+	6                   /* XSize */
 };

@@ -25,7 +25,7 @@ class CheckBox : public Widget {
 
 public:
 	struct Properties {
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		PCBITMAP apBm[4]{
 			/* Inactive */	&abmCheckEnabled[0],
 			/* Active */	&abmCheckEnabled[1],
@@ -80,7 +80,7 @@ private:
 		/* Draw focus rectangle */
 		if (!(GetStates() & WIDGET_STATE_FOCUS))
 			return;
-		int xSizeText = GUI_GetStringDistX(text);
+		int xSizeText = GUI_GetStringSizeX(text);
 		int ySizeText = Props.pFont->YSize;
 		RECT RectFocus = RectText;
 		switch (Props.Align & ~(TEXTALIGN_HORIZONTAL)) {

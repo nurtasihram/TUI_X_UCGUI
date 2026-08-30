@@ -32,7 +32,7 @@ class Radio : public Widget {
 
 public:
 	struct Properties {
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC TextColor{ RGB_BLACK };
 		RGBC BkColor{ RGB_INVALID_COLOR };
 		PCBITMAP apBmRadio[2]{ &_abmRadio[0], &_abmRadio[1] };
@@ -67,7 +67,7 @@ private:
 		GUI.Color(Props.TextColor);
 		GUI.Font(Props.pFont);
 		GUI.SetTextMode(DRAWMODE_TRANS);
-		auto FontDistY = Props.pFont->YDist;
+		auto FontDistY = Props.pFont->YSize;
 		auto CHeight = Props.pFont->CHeight;
 		auto SpaceAbove = Props.pFont->Baseline - CHeight;
 		RECT Rect;
@@ -93,7 +93,7 @@ private:
 			/* Draw text if available */
 			if (auto pText = TextArray[i]) {
 				auto r = Rect;
-				r.x1 = r.x0 + GUI_GetStringDistX(pText) - 2;
+				r.x1 = r.x0 + GUI_GetStringSizeX(pText) - 2;
 				r += POINT{ 0, y };
 				GUI_DispStringAt(pText, r.x0, r.y0 - SpaceAbove);
 				/* Calculate focus rect */

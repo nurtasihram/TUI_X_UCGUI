@@ -23,7 +23,7 @@ class DropDown : public Widget {
 
 public:
 	struct Properties {
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aBkColor[4]{
 			/* Unselect */			RGB_WHITE,
 			/* Selected */			RGB_GRAY,
@@ -143,7 +143,7 @@ private:
 	void _AdjustHeight() {
 		auto Height = TextHeight;
 		if (!Height)
-			Height = Props.pFont->YDist;
+			Height = Props.pFont->YSize;
 		Height += EffectSize() + 2 * Props.TextBorderSize;
 		SetSize({ GetSizeX(), Height });
 	}
@@ -154,54 +154,54 @@ private:
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
 		switch (MsgId) {
-			case WM_NOTIFY_PARENT: {
-				auto pInfo = (const NOTIFY_INFO *)Data;
-				switch (pInfo->Notification) {
-					case WM_NOTIFICATION_SCROLL_CHANGED:
-						pObj->NotifyParent(WM_NOTIFICATION_SCROLL_CHANGED);
-						break;
-					case WM_NOTIFICATION_CLICKED: {
-						auto pListWin = (ListBox *)pInfo->pWinSrc;
-						int Sel = pListWin->GetSel();
-						pObj->SetSel(Sel);
-						break;
-					}
-					case WM_NOTIFICATION_RELEASED:
-						pObj->Collapse();
-						pObj->SetFocus();
-						break;
-					case LISTBOX_NOTIFICATION_LOST_FOCUS:
-						pObj->Collapse();
-						break;
-				}
-				return 0;
-			}
-			case WM_PID_STATE_CHANGED:
-				if (auto pInfo = (const PID_CHANGED_INFO *)Data)
-					if (pInfo->State)
-						pObj->Expand();
-				return 0;
-			case WM_TOUCH:
-				pObj->_OnTouch((const PID_STATE *)Data);
-				return 0;
-			case WM_PAINT:
-				pObj->_OnPaint();
-				return 0;
-			case WM_DELETE:
-				for (int i = 0; i < pObj->Handles.NumItems(); i++)
-					GUI__SetText(&pObj->Handles[i], nullptr);
-				pObj->_FreeAttached();
-				return 0;
-			case WM_KEY:
-				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
-					return 0;
+		case WM_NOTIFY_PARENT: {
+			auto pInfo = (const NOTIFY_INFO *)Data;
+			switch (pInfo->Notification) {
+			case WM_NOTIFICATION_SCROLL_CHANGED:
+				pObj->NotifyParent(WM_NOTIFICATION_SCROLL_CHANGED);
 				break;
+			case WM_NOTIFICATION_CLICKED: {
+				auto pListWin = (ListBox *)pInfo->pWinSrc;
+				int Sel = pListWin->GetSel();
+				pObj->SetSel(Sel);
+				break;
+			}
+			case WM_NOTIFICATION_RELEASED:
+				pObj->Collapse();
+				pObj->SetFocus();
+				break;
+			case LISTBOX_NOTIFICATION_LOST_FOCUS:
+				pObj->Collapse();
+				break;
+			}
+			return 0;
+		}
+		case WM_PID_STATE_CHANGED:
+			if (auto pInfo = (const PID_CHANGED_INFO *)Data)
+				if (pInfo->State)
+					pObj->Expand();
+			return 0;
+		case WM_TOUCH:
+			pObj->_OnTouch((const PID_STATE *)Data);
+			return 0;
+		case WM_PAINT:
+			pObj->_OnPaint();
+			return 0;
+		case WM_DELETE:
+			for (int i = 0; i < pObj->Handles.NumItems(); i++)
+				GUI__SetText(&pObj->Handles[i], nullptr);
+			pObj->_FreeAttached();
+			return 0;
+		case WM_KEY:
+			if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+				return 0;
+			break;
 		}
 		return WM_DefaultProc(hWin, MsgId, Data);
 	}
 
 public:
-	DropDown(RECT r, WM_CF Style, WObj* pParent, uint16_t Id,
+	DropDown(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
 			 uint8_t ExFlags) :
 		Widget({ r.x0, r.y0, r.x1, r.y0 - 1 }, Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE),
 		ySizeEx(r.YSize()), Flags(ExFlags) {
@@ -271,34 +271,34 @@ public:
 	}
 	void AddKey(int Key) {
 		switch (Key) {
-			case GUI_KEY_DOWN:
-				IncSel();
-				break;
-			case GUI_KEY_UP:
-				DecSel();
-				break;
-			default:
-				_SelectByKey(Key);
-				break;
+		case GUI_KEY_DOWN:
+			IncSel();
+			break;
+		case GUI_KEY_UP:
+			DecSel();
+			break;
+		default:
+			_SelectByKey(Key);
+			break;
 		}
 	}
 	void AddString(const char *s) {
 		if (s) {
 			auto idx = Handles.NumItems();
 			if (Handles.AddItem() == 0)
-					GUI__SetText(&Handles[idx], s);
+				GUI__SetText(&Handles[idx], s);
 			Invalidate();
 		}
 	}
 
 	auto GetNumItems() { return Handles.NumItems(); }
 	void Font(PCFONT pFont) {
-		auto OldHeight = Props.pFont->YDist;
+		auto OldHeight = Props.pFont->YSize;
 		Props.pFont = pFont;
 		_AdjustHeight();
 		Invalidate();
 		if (this->pListWin) {
-			if (OldHeight != Props.pFont->YDist) {
+			if (OldHeight != Props.pFont->YSize) {
 				Collapse();
 				Expand();
 			}

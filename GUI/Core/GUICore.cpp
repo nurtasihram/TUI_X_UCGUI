@@ -3,7 +3,6 @@
 
 #include "WM.h"
 
-
 #if GUI_SUPPORT_TIMER
 import TUX.Core.Timer;
 #endif
@@ -51,11 +50,9 @@ int GUI_Exec(void) {
 	return r;
 }
 
-
 int GUI_GetTime(void) {
 	return GUI_X_GetTime();
 }
-
 void GUI_Delay(int Period) {
 	int EndTime = GUI_GetTime() + Period;
 	int tRem; /* remaining Time */
@@ -146,6 +143,8 @@ void GUI_DrawBitmap(PCBITMAP pBitmap, int x0, int y0) {
 }
 #pragma endregion
 
+
+
 #pragma region Font&String
 void GUI_GetTextExtend(RECT *pRect, const char *s, int MaxNumChars) {
 	int xMax = 0;
@@ -167,7 +166,7 @@ void GUI_GetTextExtend(RECT *pRect, const char *s, int MaxNumChars) {
 			}
 		}
 		else {
-			LineSizeX += Font.GetCharDistX(Char);
+			LineSizeX += Font.GetCharSizeX(Char);
 		}
 	}
 	if (LineSizeX > xMax) {
@@ -184,7 +183,7 @@ void GUI__CalcTextRect(const char *pText, const RECT *pTextRectIn, RECT *pTextRe
 	if (pText) {
 		int xPos, yPos, TextWidth, TextHeight;
 		/* Calculate X-pos of text */
-		TextWidth = GUI_GetStringDistX(pText);
+		TextWidth = GUI_GetStringSizeX(pText);
 		switch (TextAlign & TEXTALIGN_HORIZONTAL) {
 			case TEXTALIGN_HCENTER:
 				xPos = pTextRectIn->x0 + ((pTextRectIn->x1 - pTextRectIn->x0 + 1) - TextWidth) / 2;
@@ -197,7 +196,7 @@ void GUI__CalcTextRect(const char *pText, const RECT *pTextRectIn, RECT *pTextRe
 		}
 
 		/* Calculate Y-pos of text */
-		TextHeight = GUI.Font().YDist;
+		TextHeight = GUI.Font().YSize;
 		switch (TextAlign & TEXTALIGN_VERTICAL) {
 			case TEXTALIGN_VCENTER:
 				yPos = pTextRectIn->y0 + ((pTextRectIn->y1 - pTextRectIn->y0 + 1) - TextHeight) / 2;
@@ -225,19 +224,19 @@ void GUI__CalcTextRect(const char *pText, const RECT *pTextRectIn, RECT *pTextRe
 *
 *  This routine is used to calculate the length of a line in pixels.
 */
-int GUI__GetLineDistX(const char *s, int MaxNumChars) {
+int GUI__GetLineSizeX(const char *s, int MaxNumChars) {
 	int Dist = 0;
 	UCFONT Font = GUI.Font();
 	if (s) {
 		while (--MaxNumChars >= 0) {
 			auto Char = GUI_UC__GetCharCodeInc(&s);
-			Dist += Font.GetCharDistX(Char);
+			Dist += Font.GetCharSizeX(Char);
 		}
 	}
 	return Dist;
 }
-int GUI_GetStringDistX(const char *s) {
-	return GUI__GetLineDistX(s, GUI__strlen(s));
+int GUI_GetStringSizeX(const char *s) {
+	return GUI__GetLineSizeX(s, GUI__strlen(s));
 }
 #pragma endregion
 
@@ -267,6 +266,7 @@ void FONT_MONO::DispChar(uint16_t c) const {
 		c0 = c1 = -1;
 	/* Draw first character if it is valid */
 	if (c0 != -1) {
+		auto BytesPerLine = (XSize + 7) >> 3;
 		auto BytesPerChar = YSize * BytesPerLine;
 		auto DrawMode = GUI.TextMode;
 		/* call drawing routine */
@@ -286,7 +286,7 @@ void FONT_MONO::DispChar(uint16_t c) const {
 		}
 		GUI.SetDrawMode(OldMode);
 	}
-	GUI.DispPos.x += XDist;
+	GUI.DispPos.x += XSize;
 }
 void FONT_PROP::DispChar(uint16_t c) const {
 	auto pProp = FindChar(c);
@@ -300,7 +300,7 @@ void FONT_PROP::DispChar(uint16_t c) const {
 				   pCharInfo->pData,
 				   &LCD_BKCOLORINDEX);
 	GUI.SetDrawMode(OldDrawMode); /* Restore draw mode */
-	GUI.DispPos.x += pCharInfo->XDist;
+	GUI.DispPos.x += pCharInfo->XSize;
 }
 #pragma endregion
 
@@ -322,12 +322,12 @@ void GUI__DispLine(const char *s, int MaxNumChars, const RECT *pr) {
 void GUI_DispString(const char *s) {
 	if (!s)
 		return;
-	auto FontSizeY = GUI.pAFont->YDist;
+	auto FontSizeY = GUI.pAFont->YSize;
 	auto xOrg = GUI.DispPos.x;
 	for (; *s; s++) {
 		RECT r;
 		int LineNumChars = GUI__GetLineNumChars(s, 0x7fff);
-		int xLineSize = GUI__GetLineDistX(s, LineNumChars);
+		int xLineSize = GUI__GetLineSizeX(s, LineNumChars);
 		r.x0 = GUI.DispPos.x;
 		r.y0 = GUI.DispPos.y;
 		r.x1 = r.x0 + xLineSize - 1;
@@ -397,7 +397,7 @@ void GUI__DispStringInRect(const char *s, RECT *pRect, int TextAlign, int MaxNum
 		int xLineSize;
 		LineLen = GUI__GetLineNumChars(s, NumCharsRem);
 		NumCharsRem -= LineLen;
-		xLineSize = GUI__GetLineDistX(s, LineLen);
+		xLineSize = GUI__GetLineSizeX(s, LineLen);
 		switch (TextAlign & TEXTALIGN_HORIZONTAL) {
 			case TEXTALIGN_HCENTER:
 				xLine = r.x0 + (r.x1 - r.x0 - xLineSize) / 2; break;
@@ -412,7 +412,7 @@ void GUI__DispStringInRect(const char *s, RECT *pRect, int TextAlign, int MaxNum
 		rLine.y1 = y + FontYSize - 1;
 		GUI__DispLine(s, LineLen, &rLine);
 		s += GUI_UC__NumChars2NumBytes(s, LineLen);
-		y += GUI.pAFont->YDist;
+		y += GUI.pAFont->YSize;
 		if (GUI__HandleEOLine(&s))
 			break;
 	}
@@ -445,7 +445,7 @@ void GUI_DispStringInRect(const char *s, RECT *pRect, int TextAlign) {
 void GUI_DispChar(uint16_t c) {
 	RECT r;
 	GUI.DispPos += GUI.Off;
-	r.x1 = (r.x0 = GUI.DispPos.x) + GUI.Font().GetCharDistX(c) - 1;
+	r.x1 = (r.x0 = GUI.DispPos.x) + GUI.Font().GetCharSizeX(c) - 1;
 	r.y1 = (r.y0 = GUI.DispPos.y) + GUI.pAFont->YSize - 1;
 	WObj::Iterate(r, [&] {
 		GL_DispChar(c);
@@ -467,7 +467,7 @@ void GUI_DispChars(uint16_t c, int NumChars) {
 }
 
 void GUI_DispNextLine(void) {
-	GUI.DispPos.y += GUI.pAFont->YDist;
+	GUI.DispPos.y += GUI.pAFont->YSize;
 	GUI.DispPos.x = 0;
 }
 void GL_DispChar(uint16_t c) {
@@ -589,7 +589,7 @@ static int _GetWordWrap(const char *s, int xSize) {
 			WordWrap = NumChars;
 		}
 		PrevChar = Char;
-		xDist += Font.GetCharDistX(Char);
+		xDist += Font.GetCharSizeX(Char);
 		if ((xDist <= xSize) || (NumChars == 0)) {
 			NumChars++;
 		}
@@ -606,7 +606,7 @@ static int _GetCharWrap(const char *s, int xSize) {
 	int xDist = 0, NumChars = 0;
 	UCFONT Font = GUI.Font();
 	while (uint16_t Char = GUI_UC__GetCharCodeInc(&s)) {
-		xDist += Font.GetCharDistX(Char);
+		xDist += Font.GetCharSizeX(Char);
 		if ((NumChars && (xDist > xSize)) || (Char == '\n')) 
 			break;
 		NumChars++;

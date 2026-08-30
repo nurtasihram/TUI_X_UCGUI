@@ -429,7 +429,7 @@
     <ClCompile Include="GUI\Core\GUI_GetLineStyle.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetStringDistX.c">
+    <ClCompile Include="GUI\Core\GUI_GetStringSizeX.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_GetTextAlign.c">

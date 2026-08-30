@@ -18,7 +18,7 @@ class Text : public Widget {
 
 public:
 	struct Properties {
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		TEXTALIGN Align{ 0 };
 		RGBC TextColor{ RGB_BLACK };
 		RGBC BkColor{ RGB_INVALID_COLOR };

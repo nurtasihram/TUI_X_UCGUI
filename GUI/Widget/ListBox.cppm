@@ -35,7 +35,7 @@ class ListBox : public Widget {
 
 public:
 	struct Properties {
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aBkColor[4]{
 			/* Unselect */			RGB_WHITE,
 			/* Selected */			RGB_GRAY,
@@ -585,16 +585,16 @@ public:
 			case WIDGET_ITEM_GET_XSIZE: {
 				auto pOldFont = GUI.Font(pObj->Props.pFont);
 				auto s = pObj->_GetpString(ItemIndex);
-				auto DistX = GUI_GetStringDistX(s);
+				auto DistX = GUI_GetStringSizeX(s);
 				GUI.Font(pOldFont);
 				return DistX;
 			}
 			case WIDGET_ITEM_GET_YSIZE:
-				return pObj->Props.pFont->YDist + pObj->ItemSpacing;
+				return pObj->Props.pFont->YSize + pObj->ItemSpacing;
 			case WIDGET_ITEM_DRAW: {
 				auto &pItem = pObj->ItemArray[ItemIndex];
 				auto r = pObj->GetInsideRect();
-				auto FontDistY = pObj->Props.pFont->YDist;
+				auto FontDistY = pObj->Props.pFont->YSize;
 				/* Calculate color index */
 				bool IsDisabled = pItem.Status & LISTBOX_ITEM_DISABLED;
 				bool IsSelected = pItem.Status & LISTBOX_ITEM_SELECTED;

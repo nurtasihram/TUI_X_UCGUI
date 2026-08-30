@@ -37,7 +37,7 @@ public:
 
 public:
 	struct Properties {
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aTextColor[2]{
 			/* Disabled */	RGB_BLACK,
 			/* Enabled */	RGB_BLACK
@@ -110,7 +110,7 @@ private:
 							for (int i = this->CursorPos; i < (int)(this->CursorPos + this->SelSize); i++) {
 								auto CursorOffset = GUI_UC__NumChars2NumBytes(pText, i);
 								auto Char = GUI_UC_GetCharCode(pText + CursorOffset);
-								CursorWidth += GUI.Font().GetCharDistX(Char);
+								CursorWidth += GUI.Font().GetCharSizeX(Char);
 							}
 							if (!CursorWidth) {
 								CursorWidth = 1;
@@ -119,14 +119,14 @@ private:
 						else {
 							auto CursorOffset = GUI_UC__NumChars2NumBytes(pText, this->CursorPos);
 							auto Char = GUI_UC_GetCharCode(pText + CursorOffset);
-							CursorWidth = GUI.Font().GetCharDistX(Char);
+							CursorWidth = GUI.Font().GetCharSizeX(Char);
 						}
 					}
 				}
 				rInvert = rText;
 				for (int i = 0; i != this->CursorPos; i++) {
 					auto Char = GUI_UC__GetCharCodeInc(&p);
-					rInvert.x0 += GUI.Font().GetCharDistX(Char);
+					rInvert.x0 += GUI.Font().GetCharSizeX(Char);
 				}
 			}
 #if GUI_SUPPORT_TIMER
@@ -173,7 +173,7 @@ private:
 			pText = this->pText;
 			pOldFont = GUI.Font(Props.pFont);
 			xSize = GetSizeX();
-			TextWidth = GUI_GetStringDistX(pText);
+			TextWidth = GUI_GetStringSizeX(pText);
 			switch (Props.Align & TEXTALIGN_HORIZONTAL) {
 				case TEXTALIGN_HCENTER:
 					xPos -= (xSize - TextWidth + 1) / 2;
@@ -196,7 +196,7 @@ private:
 				uint16_t Char;
 				for (i = 0, x = 0; (i < NumChars) && (x < xPos); i++) {
 					Char = GUI_UC__GetCharCodeInc(&pText);
-					xLenChar = GUI.Font().GetCharDistX(Char);
+					xLenChar = GUI.Font().GetCharSizeX(Char);
 					if (xPos < (x + xLenChar))
 						break;
 					x += xLenChar;

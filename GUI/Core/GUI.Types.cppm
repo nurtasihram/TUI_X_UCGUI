@@ -201,18 +201,16 @@ typedef struct {
 
 #pragma region Font
 struct FONT {
-	uint8_t YSize, YDist;
-	uint8_t Baseline, LHeight, CHeight;
+	uint8_t YSize;
+	uint8_t Baseline, CHeight;
 
-	FONT(uint8_t YSize, uint8_t YDist,
-		 uint8_t Baseline,
-		 uint8_t LHeight, uint8_t CHeight) :
-		YSize(YSize), YDist(YDist),
-		Baseline(Baseline),
-		LHeight(LHeight), CHeight(CHeight) {}
+	FONT(uint8_t YSize,
+		 uint8_t Baseline, uint8_t CHeight) :
+		YSize(YSize),
+		Baseline(Baseline),  CHeight(CHeight) {}
 
 	virtual bool IsInFont(uint16_t c) const = 0;
-	virtual int  GetCharDistX(uint16_t c) const = 0;
+	virtual int  GetCharSizeX(uint16_t c) const = 0;
 	virtual void DispChar(uint16_t c) const = 0;
 };
 using CFONT = const FONT;
@@ -229,24 +227,20 @@ struct FONT_MONO : FONT {
 		} const *pList;
 	} const *pTrans;
 	uint16_t FirstChar, LastChar;
-	uint8_t XSize, XDist;
-	uint8_t BytesPerLine;
+	uint8_t XSize;
 
-	FONT_MONO(uint8_t YSize, uint8_t YDist,
-			  uint8_t Baseline,
-			  uint8_t LHeight, uint8_t CHeight,
+	FONT_MONO(uint8_t YSize,
+			  uint8_t Baseline, uint8_t CHeight,
 			  /* For FONT_MONO */
 			  const void *pData,
 			  const void *pTransData,
 			  const TRANSINFO *pTrans,
 			  uint16_t FirstChar, uint16_t LastChar,
-			  uint8_t XSize, uint8_t XDist,
-			  uint8_t BytesPerLine) :
-		FONT(YSize, YDist, Baseline, LHeight, CHeight),
+			  uint8_t XSize) :
+		FONT(YSize, Baseline, CHeight),
 		pData(pData), pTransData(pTransData), pTrans(pTrans),
 		FirstChar(FirstChar), LastChar(LastChar),
-		XSize(XSize), XDist(XDist),
-		BytesPerLine(BytesPerLine) {}
+		XSize(XSize) {}
 
 	bool IsInFont(uint16_t c) const {
 		if (FirstChar <= c && c <= LastChar)
@@ -256,8 +250,8 @@ struct FONT_MONO : FONT {
 				return true;
 		return false;
 	}
-	int GetCharDistX(uint16_t c) const
-	{ return XDist; }
+	int GetCharSizeX(uint16_t c) const
+	{ return XSize; }
 	void DispChar(uint16_t c) const override;
 };
 using CFONT_MONO = const FONT_MONO;
@@ -265,20 +259,19 @@ using CFONT_MONO = const FONT_MONO;
 struct FONT_PROP : FONT {
 	uint16_t First, Last;
 	struct CHARINFO {
-		uint8_t XSize, XDist;
+		uint8_t XSize;
 		uint8_t BytesPerLine;
 		const void *pData;
 	} const *paCharInfo;
 	const FONT_PROP *pNext;
 
-	FONT_PROP(uint8_t YSize, uint8_t YDist,
-			  uint8_t Baseline,
-			  uint8_t LHeight, uint8_t CHeight,
+	FONT_PROP(uint8_t YSize,
+			  uint8_t Baseline, uint8_t CHeight,
 			  /* for FONT_PROP */
 			  uint16_t First, uint16_t Last,
 			  const CHARINFO *paCharInfo,
 			  const FONT_PROP *pNext = nullptr) :
-		FONT(YSize, YDist, Baseline, LHeight, CHeight),
+		FONT(YSize, Baseline, CHeight),
 		First(First), Last(Last),
 		paCharInfo(paCharInfo),
 		pNext(pNext) {}
@@ -291,9 +284,9 @@ struct FONT_PROP : FONT {
 	}
 	bool IsInFont(uint16_t c) const override
 	{ return FindChar(c); }
-	int GetCharDistX(uint16_t c) const override {
+	int GetCharSizeX(uint16_t c) const override {
 		if (auto pProp = FindChar(c))
-			return pProp->paCharInfo[c - pProp->First].XDist;
+			return pProp->paCharInfo[c - pProp->First].XSize;
 		return 0;
 	}
 	void DispChar(uint16_t c) const override;

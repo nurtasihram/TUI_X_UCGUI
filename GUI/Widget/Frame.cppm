@@ -43,7 +43,7 @@ class Frame : public Widget {
 
 public:
 	struct Properties {
-		PCFONT pFont{ &FontProp13_1 };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aTextColor[2]{
 			/* Lose focused */	RGB_BLACK,
 			/* Focused */		RGB_WHITE
