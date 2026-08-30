@@ -78,7 +78,7 @@ private:
 		GUI.Font(Props.pFont);
 		GUI_DispStringInRect(text, &RectText, Props.Align);
 		/* Draw focus rectangle */
-		if (!(GetStates() & WIDGET_STATE_FOCUS))
+		if (!(States & WIDGET_STATE_FOCUS))
 			return;
 		int xSizeText = GUI_GetStringSizeX(text);
 		int ySizeText = Props.pFont->YSize;

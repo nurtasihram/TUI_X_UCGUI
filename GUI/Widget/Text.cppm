@@ -7,12 +7,14 @@ export module TUX.Widget.Text;
 import TUX.Widget;
 
 export {
-constexpr uint16_t TEXT_CF_LEFT    = TEXTALIGN_LEFT;
-constexpr uint16_t TEXT_CF_RIGHT   = TEXTALIGN_RIGHT;
-constexpr uint16_t TEXT_CF_HCENTER = TEXTALIGN_HCENTER;
-constexpr uint16_t TEXT_CF_VCENTER = TEXTALIGN_VCENTER;
-constexpr uint16_t TEXT_CF_TOP     = TEXTALIGN_TOP;
-constexpr uint16_t TEXT_CF_BOTTOM  = TEXTALIGN_BOTTOM;
+
+constexpr uint16_t
+	TEXT_CF_LEFT    = TEXTALIGN_LEFT,
+	TEXT_CF_RIGHT   = TEXTALIGN_RIGHT,
+	TEXT_CF_HCENTER = TEXTALIGN_HCENTER,
+	TEXT_CF_VCENTER = TEXTALIGN_VCENTER,
+	TEXT_CF_TOP     = TEXTALIGN_TOP,
+	TEXT_CF_BOTTOM  = TEXTALIGN_BOTTOM;
 
 class Text : public Widget {
 

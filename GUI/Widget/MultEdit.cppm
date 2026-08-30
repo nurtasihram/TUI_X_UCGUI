@@ -8,25 +8,22 @@ import TUX.Widget;
 
 #define NUM_DISP_MODES 2
 
-/* Define character for password mode */
-#define MULTEDIT_PASSWORD_CHAR   '*'
-
-#define INVALID_NUMCHARS (1 << 0)
-#define INVALID_NUMLINES (1 << 1)
-#define INVALID_TEXTSIZE (1 << 2)
-#define INVALID_CURSORXY (1 << 3)
-#define INVALID_LINEPOSB (1 << 4)
+constexpr uint16_t
+	INVALID_NUMCHARS = 1 << 0,
+	INVALID_NUMLINES = 1 << 1,
+	INVALID_TEXTSIZE = 1 << 2,
+	INVALID_CURSORXY = 1 << 3,
+	INVALID_LINEPOSB = 1 << 4;
 
 #define MULTEDIT_REALLOC_SIZE  16
 
 export {
 
 constexpr uint16_t
-	MULTEDIT_CF_READONLY         = 1 << 0,
-	MULTEDIT_CF_INSERT           = 1 << 2,
-	MULTEDIT_CF_AUTOSCROLLBAR_V  = 1 << 3,
-	MULTEDIT_CF_AUTOSCROLLBAR_H  = 1 << 4,
-	MULTEDIT_CF_PASSWORD         = 1 << 5;
+	MULTEDIT_CF_READONLY         = WIDGET_STATE_USER<0>,
+	MULTEDIT_CF_INSERT           = WIDGET_STATE_USER<1>,
+	MULTEDIT_CF_AUTOSCROLLBAR_V  = WIDGET_STATE_USER<2>,
+	MULTEDIT_CF_AUTOSCROLLBAR_H  = WIDGET_STATE_USER<3>;
 
 enum MULTEDIT_CI {
 	 MULTEDIT_CI_EDITMODE = 0,
@@ -69,7 +66,6 @@ private:
 		CacheLinePosByte = 0, CacheLineNumber = 0,
 		CacheFirstVisibleLine = 0, CacheFirstVisibleByte = 0;
 	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
-	uint8_t Flags;
 	uint8_t InvalidFlags = 0;         /* Flags to save validation status */
 	uint8_t EditMode = 0;
 	WRAPMODE WrapMode = WRAPMODE_NONE;
@@ -103,99 +99,27 @@ private:
 	}
 	int _NumChars2XSize(const char *pText, int NumChars) {
 		int xSize = 0;
-		uint16_t Char;
 		while (NumChars--) {
-			Char = GUI_UC__GetCharCodeInc(&pText);
+			auto Char = GUI_UC__GetCharCodeInc(&pText);
 			xSize += GUI.Font().GetCharSizeX(Char);
 		}
 		return xSize;
 	}
 	int _WrapGetNumCharsDisp(const char *pText) {
-		int xSize, r;
-		xSize = _GetXSize();
-		if (this->Flags & MULTEDIT_CF_PASSWORD) {
-			int NumCharsPrompt;
-			NumCharsPrompt = _GetNumCharsInPrompt(pText);
-			r = GUI__WrapGetNumCharsDisp(pText, xSize, this->WrapMode);
-			if (r >= NumCharsPrompt) {
-				int x;
-				switch (this->WrapMode) {
-					case WRAPMODE_NONE:
-						r = GUI__GetNumChars(pText);
-						break;
-					default:
-						r = NumCharsPrompt;
-						x = _NumChars2XSize(pText, NumCharsPrompt);
-						pText += GUI_UC__NumChars2NumBytes(pText, NumCharsPrompt);
-						while (GUI_UC__GetCharCodeInc(&pText) != 0) {
-							x += GUI.Font().GetCharSizeX(MULTEDIT_PASSWORD_CHAR);
-							if (r && (x > xSize)) {
-								break;
-							}
-							r++;
-						}
-						break;
-				}
-			}
-		}
-		else {
-			r = GUI__WrapGetNumCharsDisp(pText, xSize, this->WrapMode);
-		}
-		return r;
+		int xSize = _GetXSize();
+		return GUI__WrapGetNumCharsDisp(pText, xSize, this->WrapMode);
 	}
 	int _WrapGetNumBytesToNextLine(const char *pText) {
-		int xSize, r;
-		xSize = _GetXSize();
-		if (this->Flags & MULTEDIT_CF_PASSWORD) {
-			int NumChars, NumCharsPrompt;
-			NumCharsPrompt = _GetNumCharsInPrompt(pText);
-			NumChars = _WrapGetNumCharsDisp(pText);
-			r = GUI_UC__NumChars2NumBytes(pText, NumChars);
-			if (NumChars < NumCharsPrompt) {
-				if (*(pText + r) == '\n') {
-					r++;
-				}
-			}
-		}
-		else {
-			r = GUI__WrapGetNumBytesToNextLine(pText, xSize, this->WrapMode);
-		}
-		return r;
+		int xSize = _GetXSize();
+		return GUI__WrapGetNumBytesToNextLine(pText, xSize, this->WrapMode);
 	}
 	int _GetCharSizeX(const char *pText) {
-		int r;
-		if ((this->Flags & MULTEDIT_CF_PASSWORD) && (_GetNumCharsInPrompt(pText) == 0)) {
-			r = GUI.Font().GetCharSizeX(MULTEDIT_PASSWORD_CHAR);
-		}
-		else {
-			uint16_t c;
-			c = GUI_UC_GetCharCode(pText);
-			r = GUI.Font().GetCharSizeX(c);
-		}
-		return r;
+		uint16_t c = GUI_UC_GetCharCode(pText);
+		return GUI.Font().GetCharSizeX(c);
 	}
 	void _DispString(const char *pText, RECT *pRect) {
-		int NumCharsDisp;
-		NumCharsDisp = _WrapGetNumCharsDisp(pText);
-		if (this->Flags & MULTEDIT_CF_PASSWORD) {
-			int x, NumCharsPrompt, NumCharsLeft = 0;
-			NumCharsPrompt = _GetNumCharsInPrompt(pText);
-			if (NumCharsDisp < NumCharsPrompt) {
-				NumCharsPrompt = NumCharsDisp;
-			}
-			else {
-				NumCharsLeft = NumCharsDisp - NumCharsPrompt;
-			}
-			GUI_DispStringInRectMax(pText, pRect, TEXTALIGN_LEFT, NumCharsPrompt);
-			x = pRect->x0 + _NumChars2XSize(pText, NumCharsPrompt);
-			if (NumCharsLeft) {
-				GUI_DispCharAt(MULTEDIT_PASSWORD_CHAR, x, pRect->y0);
-				GUI_DispChars(MULTEDIT_PASSWORD_CHAR, NumCharsLeft - 1);
-			}
-		}
-		else {
-			GUI_DispStringInRectMax(pText, pRect, TEXTALIGN_LEFT, NumCharsDisp);
-		}
+		int NumCharsDisp = _WrapGetNumCharsDisp(pText);
+		GUI_DispStringInRectMax(pText, pRect, TEXTALIGN_LEFT, NumCharsDisp);
 	}
 	char *_GetpLine(unsigned LineNumber) {
 		char *pText, *pLine;
@@ -359,7 +283,7 @@ private:
 		_CalcScrollPos();
 	}
 	void _ManageAutoScrollV() {
-		if (this->Flags & MULTEDIT_CF_AUTOSCROLLBAR_V) {
+		if (States & MULTEDIT_CF_AUTOSCROLLBAR_V) {
 			auto IsRequired = _GetNumVisLines() < _GetNumLines();
 			if (WM_SetScrollbarV(this, IsRequired) != IsRequired) {
 				_InvalidateNumLines();
@@ -373,7 +297,7 @@ private:
 		/* 1. Step: Check if vertical scrollbar is required */
 		_ManageAutoScrollV();
 		/* 2. Step: Check if horizontal scrollbar is required */
-		if (this->Flags & MULTEDIT_CF_AUTOSCROLLBAR_H) {
+		if (States & MULTEDIT_CF_AUTOSCROLLBAR_H) {
 			auto IsRequired = (_GetXSize() < _GetTextSizeX());
 			if (WM_SetScrollbarH(this, IsRequired) != IsRequired) {
 				/* 3. Step: Check vertical scrollbar again if horizontal has changed */
@@ -397,15 +321,6 @@ private:
 		Value = this->CursorPosChar;
 		this->CursorPosChar = 0xffff;
 		return Value;
-	}
-	void _SetFlag(int OnOff, uint8_t Flag) {
-		if (OnOff) {
-			this->Flags |= Flag;
-		}
-		else {
-			this->Flags &= ~Flag;
-		}
-		_InvalidateTextArea();
 	}
 	int _CalcNextValidCursorPos(int CursorPosChar, int *pCursorPosByte, int *pCursorLine) {
 		if (this->pText) {
@@ -496,16 +411,8 @@ private:
 			pText = this->pText;
 			WrapChars = _WrapGetNumCharsDisp(pLine);
 			Char = GUI_UC__GetCharCode(pLine + GUI_UC__NumChars2NumBytes(pLine, WrapChars));
-			if (this->Flags & MULTEDIT_CF_PASSWORD) {
-				if (!Char) {
-					WrapChars++;
-				}
-			}
-			else {
-				if (!Char || (Char == '\n') || ((Char == ' ') && (this->WrapMode == WRAPMODE_WORD))) {
-					WrapChars++;
-				}
-			}
+			if (!Char || (Char == '\n') || ((Char == ' ') && (this->WrapMode == WRAPMODE_WORD)))
+				WrapChars++;
 			while (--WrapChars > 0) {
 				Char = GUI_UC_GetCharCode(pLine);
 				SizeX += _GetCharSizeX(pLine);
@@ -548,7 +455,7 @@ private:
 	}
 	int _IsOverwriteAtThisChar() {
 		int r = 0;
-		if (this->pText && !(this->Flags & MULTEDIT_CF_INSERT)) {
+		if (this->pText && !(States & MULTEDIT_CF_INSERT)) {
 			const char *pText;
 			int CurPos, Line1, Line2;
 			uint16_t Char;
@@ -559,7 +466,7 @@ private:
 			pText += this->CursorPosByte;
 			Char = GUI_UC_GetCharCode(pText);
 			if (Char) {
-				if ((Line1 == Line2) || (this->Flags & MULTEDIT_CF_PASSWORD)) {
+				if (Line1 == Line2) {
 					r = 1;
 				}
 				else {
@@ -689,7 +596,7 @@ private:
 		HBorder = Props.HBorder;
 		xOff = EffectSize + HBorder - ScrollPosX;
 		yOff = EffectSize - ScrollPosY * FontSizeY;
-		ColorIndex = ((this->Flags & MULTEDIT_CF_READONLY) ? 1 : 0);
+		ColorIndex = ((States & MULTEDIT_CF_READONLY) ? 1 : 0);
 		/* Set colors and draw the background */
 		GUI.BkColor(Props.aBkColor[ColorIndex]);
 		GUI.Color(Props.aColor[ColorIndex]);
@@ -797,7 +704,7 @@ private:
 				r = 1;               /* Key has been consumed */
 				break;
 			case GUI_KEY_BACKSPACE:
-				if (!(this->Flags & MULTEDIT_CF_READONLY)) {
+				if (!(States & MULTEDIT_CF_READONLY)) {
 					if (this->CursorPosChar > this->NumCharsPrompt) {
 						_SetCursorPos(CursorPosChar - 1);
 						_DeleteChar();
@@ -806,40 +713,25 @@ private:
 				}
 				break;
 			case GUI_KEY_DELETE:
-				if (!(this->Flags & MULTEDIT_CF_READONLY)) {
+				if (!(States & MULTEDIT_CF_READONLY)) {
 					_DeleteChar();
 					r = 1;               /* Key has been consumed */
 				}
 				break;
 			case GUI_KEY_INSERT:
-				if (!(this->Flags & MULTEDIT_CF_INSERT)) {
-					this->Flags |= MULTEDIT_CF_INSERT;
-				}
-				else {
-					this->Flags &= ~MULTEDIT_CF_INSERT;
-				}
-				r = 1;               /* Key has been consumed */
-				break;
+				CtlStates(MULTEDIT_CF_INSERT, !(States & MULTEDIT_CF_INSERT));
+				return 1;
 			case GUI_KEY_ENTER:
-				if (this->Flags & MULTEDIT_CF_READONLY) {
+				if (States & MULTEDIT_CF_READONLY)
 					_MoveCursor2NextLine();
-				}
-				else {
-					if (_InsertChar((uint8_t)('\n'))) {
-						if (this->Flags & MULTEDIT_CF_PASSWORD) {
-							_SetCursorPos(CursorPosChar + 1);
-						}
-						else {
-							_MoveCursor2NextLine();
-						}
-					}
-				}
+				else if (_InsertChar((uint8_t)('\n')))
+					_MoveCursor2NextLine();
 				r = 1;               /* Key has been consumed */
 				break;
 			case GUI_KEY_ESCAPE:
 				break;
 			default:
-				if (!(this->Flags & MULTEDIT_CF_READONLY) && (Key >= 0x20)) {
+				if (!(States & MULTEDIT_CF_READONLY) && (Key >= 0x20)) {
 					if (_IsOverwriteAtThisChar()) {
 						_DeleteChar();
 					}
@@ -858,7 +750,7 @@ private:
 			if (_AddKey(Key))
 				return 1;
 		}
-		else if (!(this->Flags & MULTEDIT_CF_READONLY))
+		else if (!(States & MULTEDIT_CF_READONLY))
 			return 1; /* Key release is consumed (not sent to parent) */
 		return 0; /* Key release is not consumed (sent to parent) */
 	}
@@ -940,9 +832,9 @@ private:
 	}
 public:
 	MultEdit(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
-			 uint8_t ExFlags, uint16_t BufferSize, const char *pText) :
-		Widget((_AdjRect(r, pParent), r), Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE),
-		BufferSize(BufferSize), Flags(ExFlags) {
+			 uint16_t ExFlags, uint16_t BufferSize, const char *pText) :
+		Widget((_AdjRect(r, pParent), r), Style, _Callback, pParent, Id, ExFlags | WIDGET_STATE_FOCUSSABLE),
+		BufferSize(BufferSize) {
 		if (BufferSize > 0)
 			this->pText = (char *)GUI_ALLOC_AllocZero(BufferSize);
 		SetText(pText);
@@ -1059,35 +951,19 @@ public:
 		*(sDest + Len) = 0;
 	}
 
-	void SetWrapWord() {
-		_SetWrapMode(WRAPMODE_WORD);
-	}
-	void SetWrapChar() {
-		_SetWrapMode(WRAPMODE_CHAR);
-	}
-	void SetWrapNone() {
-		_SetWrapMode(WRAPMODE_NONE);
-	}
+	void SetWrapWord() { _SetWrapMode(WRAPMODE_WORD); }
+	void SetWrapChar() { _SetWrapMode(WRAPMODE_CHAR); }
+	void SetWrapNone() { _SetWrapMode(WRAPMODE_NONE); }
 
-	void SetInsertMode(int OnOff) {
-		_SetFlag(OnOff, MULTEDIT_CF_INSERT);
-	}
-	void SetReadOnly(int OnOff) {
-		_SetFlag(OnOff, MULTEDIT_CF_READONLY);
-	}
-	void SetPasswordMode(int OnOff) {
-		_SetFlag(OnOff, MULTEDIT_CF_PASSWORD);
-		_InvalidateCursorXY();
-		_InvalidateNumLines();
-		_InvalidateTextSizeX();
-	}
+	void SetAutoScrollV(bool bOn)
+	{ CtlStates(MULTEDIT_CF_AUTOSCROLLBAR_V, bOn); }
+	void SetAutoScrollH(bool bOn)
+	{ CtlStates(MULTEDIT_CF_AUTOSCROLLBAR_H, bOn); }
 
-	void SetAutoScrollV(int OnOff) {
-		_SetFlag(OnOff, MULTEDIT_CF_AUTOSCROLLBAR_V);
-	}
-	void SetAutoScrollH(int OnOff) {
-		_SetFlag(OnOff, MULTEDIT_CF_AUTOSCROLLBAR_H);
-	}
+	void SetInsertMode(bool bOn)
+	{ CtlStates(MULTEDIT_CF_INSERT, bOn); }
+	void SetReadOnly(bool bOn)
+	{ CtlStates(MULTEDIT_CF_READONLY, bOn); }
 
 	void SetCursorOffset(int Offset) {
 		_SetCursorPos(Offset);

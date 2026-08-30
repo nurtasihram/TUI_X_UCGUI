@@ -29,12 +29,12 @@ static int16_t
 export {
 
 constexpr uint16_t
-	FRAMEWIN_CF_ACTIVE     = 1 << 3,
-	FRAMEWIN_CF_MOVEABLE   = 1 << 4,
-	FRAMEWIN_CF_RESIZEABLE = 1 << 5,
-	FRAMEWIN_CF_TITLEVIS   = 1 << 6,
-	FRAMEWIN_CF_MINIMIZED  = 1 << 7,
-	FRAMEWIN_CF_MAXIMIZED  = 1 << 8;
+	FRAMEWIN_CF_ACTIVE     = WIDGET_STATE_USER<0>,
+	FRAMEWIN_CF_MOVEABLE   = WIDGET_STATE_USER<1>,
+	FRAMEWIN_CF_RESIZEABLE = WIDGET_STATE_USER<2>,
+	FRAMEWIN_CF_TITLEVIS   = WIDGET_STATE_USER<3>,
+	FRAMEWIN_CF_MINIMIZED  = WIDGET_STATE_USER<4>,
+	FRAMEWIN_CF_MAXIMIZED  = WIDGET_STATE_USER<5>;
 constexpr uint16_t
 	FRAMEWIN_BUTTON_RIGHT   = 1 << 0,
 	FRAMEWIN_BUTTON_LEFT    = 1 << 1;
@@ -68,7 +68,6 @@ private:
 	Window *pClient = nullptr;
 	char *pText = nullptr;
 	RECT rRestore;
-	uint16_t Flags;
 
 	struct POSITIONS {
 		int16_t TitleHeight;
@@ -78,10 +77,10 @@ private:
 	};
 
 	int _IBorderSize() const
-	{ return GetStates() & FRAMEWIN_CF_TITLEVIS ? Props.IBorderSize : 0; }
+	{ return States & FRAMEWIN_CF_TITLEVIS ? Props.IBorderSize : 0; }
 
 	int _CalcTitleHeight() const {
-		return GetStates() & FRAMEWIN_CF_TITLEVIS ? 
+		return States & FRAMEWIN_CF_TITLEVIS ? 
 			Props.TitleHeight ?
 				Props.TitleHeight :
 				2 + Props.pFont->YSize :
@@ -170,10 +169,10 @@ private:
 	void _OnTouch(const PID_STATE *pState) {
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
-				if (!(this->Flags & FRAMEWIN_CF_ACTIVE))
+				if (!(States & FRAMEWIN_CF_ACTIVE))
 					SetFocus();
 				BringToTop();
-				if (this->Flags & FRAMEWIN_CF_MOVEABLE)
+				if (States & FRAMEWIN_CF_MOVEABLE)
 					SetCaptureMove(*pState, FRAMEWIN__MinVisibility);
 			}
 		}
@@ -197,7 +196,7 @@ private:
 		GUI__CalcTextRect(pText, &Pos.rTitleText, &rText, Props.Align);
 		auto y0 = Pos.TitleHeight + BorderSize;
 		/* Draw Title */
-		auto Index = (Flags & FRAMEWIN_CF_ACTIVE) ? 1 : 0;
+		auto Index = (States & FRAMEWIN_CF_ACTIVE) ? 1 : 0;
 		GUI.BkColor(Props.aBarColor[Index]);
 		GUI.Color(Props.aTextColor[Index]);
 		WIDGET__FillStringInRect(pText, r, Pos.rTitleText, rText);
@@ -462,7 +461,7 @@ private:
 
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (Frame *)hWin;
-		if (pObj->Flags & FRAMEWIN_CF_RESIZEABLE)
+		if (pObj->States & FRAMEWIN_CF_RESIZEABLE)
 			if (pObj->_HandleResizeable(MsgId, Data))
 				return 0;
 		switch (MsgId) {
@@ -490,13 +489,13 @@ private:
 						delete pObj;
 						break;
 					case GUI_ID_MAXIMIZE:
-						if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED)
+						if (pObj->States & FRAMEWIN_CF_MAXIMIZED)
 							pObj->Restore();
 						else
 							pObj->Maximize();
 						break;
 					case GUI_ID_MINIMIZE:
-						if (pObj->Flags & FRAMEWIN_CF_MINIMIZED)
+						if (pObj->States & FRAMEWIN_CF_MINIMIZED)
 							pObj->Restore();
 						else
 							pObj->Minimize();
@@ -529,11 +528,10 @@ private:
 public:
 	Frame(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
 		  uint16_t ExFlags, const char *pTitle, WM_CALLBACK *cb) :
-		Widget(r, Style | WC_LATE_CLIP, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS),
+		Widget(r, Style | WC_LATE_CLIP, _Callback, pParent, Id, ExFlags | WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS),
 		pClient(new Window(
 			_CalcPositions().rClient,
-			WC_ANCHOR_ALL | WC_VISIBLE | WC_LATE_CLIP, this, 0, cb)),
-		Flags(ExFlags) {
+			WC_ANCHOR_ALL | WC_VISIBLE | WC_LATE_CLIP, this, 0, cb)) {
 		if (!(Style & (WC_MEMDEV | WC_MEMDEV_ON_REDRAW)))
 			WM_DisableMemdev(this);
 		SetText(pTitle);
@@ -604,19 +602,11 @@ public:
 	}
 
 	void SetMoveable(bool bMoveable) {
-		Flags = bMoveable ?
-			Flags | FRAMEWIN_CF_MOVEABLE :
-			Flags & ~FRAMEWIN_CF_MOVEABLE;
+		CtlStates(FRAMEWIN_CF_MOVEABLE, bMoveable);
 	}
 
 	void SetActive(bool bActive) {
-		auto State = bActive ?
-			Flags | FRAMEWIN_CF_ACTIVE :
-			Flags & ~FRAMEWIN_CF_ACTIVE;
-		if (Flags!= State) {
-			Flags = State;
-			Invalidate();
-		}
+		CtlStates(FRAMEWIN_CF_ACTIVE, bActive);
 	}
 
 	void AddMenu(Menu *pMenu) {
@@ -645,9 +635,10 @@ private:
 			return;
 		Resize({ 0, rRestore.YSize() - Rect.YSize() });
 		pClient->ShowWindow();
-		pMenu->ShowWindow();
+		if (pMenu)
+			pMenu->ShowWindow();
 		_UpdatePositions();
-		Flags &= ~FRAMEWIN_CF_MINIMIZED;
+		States &= ~FRAMEWIN_CF_MINIMIZED;
 		_InvalidateButton(GUI_ID_MINIMIZE);
 	}
 	void _RestoreMaximized() {
@@ -656,11 +647,11 @@ private:
 		MoveTo(rRestore.LeftTop());
 		SetSize(rRestore.Size());
 		_UpdatePositions();
-		Flags &= ~FRAMEWIN_CF_MAXIMIZED;
+		States &= ~FRAMEWIN_CF_MAXIMIZED;
 		_InvalidateButton(GUI_ID_MAXIMIZE);
 	}
 public:
-	bool IsMinimized() { return Flags & FRAMEWIN_CF_MINIMIZED; }
+	bool IsMinimized() { return States & FRAMEWIN_CF_MINIMIZED; }
 	void Minimize() {
 		_RestoreMaximized();
 		/* When window is not minimized, minimize it */
@@ -670,14 +661,15 @@ public:
 		int NewHeight = _CalcTitleHeight() + EffectSize() * 2 + 2;
 		rRestore = Rect;
 		pClient->HideWindow();
-		pMenu->HideWindow();
+		if (pMenu)
+			pMenu->HideWindow();
 		Resize({ 0, NewHeight - OldHeight });
 		_UpdatePositions();
-		Flags |= FRAMEWIN_CF_MINIMIZED;
+		States |= FRAMEWIN_CF_MINIMIZED;
 		_InvalidateButton(GUI_ID_MINIMIZE);
 	}
 
-	bool IsMaximized() { return Flags & FRAMEWIN_CF_MAXIMIZED; }
+	bool IsMaximized() { return States & FRAMEWIN_CF_MAXIMIZED; }
 	void Maximize() {
 		_RestoreMinimized();
 		/* When window is not maximized, maximize it */
@@ -692,7 +684,7 @@ public:
 		MoveTo(r.LeftTop());
 		SetSize(r.Size());
 		_UpdatePositions();
-		Flags |= FRAMEWIN_CF_MAXIMIZED;
+		States |= FRAMEWIN_CF_MAXIMIZED;
 		_InvalidateButton(GUI_ID_MAXIMIZE);
 	}
 
@@ -720,10 +712,10 @@ public:
 		Invalidate();
 	}
 
-	void SetResizeable(int State) {
-		Flags = State ?
-			Flags | FRAMEWIN_CF_RESIZEABLE :
-			Flags & ~FRAMEWIN_CF_RESIZEABLE;
+	void SetResizeable(int bOn) {
+		States = bOn ?
+			States | FRAMEWIN_CF_RESIZEABLE :
+			States & ~FRAMEWIN_CF_RESIZEABLE;
 	}
 
 	void SetTitleHeight(int Height) {
@@ -737,21 +729,17 @@ public:
 	}
 
 	void SetTitleVis(bool bShow) {
-		auto State = bShow ?
-			Flags | FRAMEWIN_CF_TITLEVIS :
-			Flags & ~FRAMEWIN_CF_TITLEVIS;
-		if (Flags == State)
+		if (!CtlStates(FRAMEWIN_CF_TITLEVIS, bShow))
 			return;
-		Flags = State;
 		_UpdatePositions();
 		for (auto pChild = pFirstChild; pChild; pChild = pChild->pNext)
 			if (pChild->Rect.y0 - Rect.y0 == Props.BorderSize && pChild != pClient) {
-				if (GetStates() & FRAMEWIN_CF_TITLEVIS)
+				if (States & FRAMEWIN_CF_TITLEVIS)
 					pChild->ShowWindow();
 				else
 					pChild->HideWindow();
 			}
-		if (Flags & FRAMEWIN_CF_MINIMIZED) {
+		if (States & FRAMEWIN_CF_TITLEVIS) {
 			if (bShow)
 				ShowWindow();
 			else
@@ -793,7 +781,7 @@ public:
 		auto pButton = AddButton(Flags, Off, GUI_ID_MAXIMIZE);
 		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, [](RECT &r) {
 			auto pObj = (Frame*)ActiveWindow()->Parent();
-			if (pObj->Flags & FRAMEWIN_CF_MAXIMIZED) {
+			if (pObj->States & FRAMEWIN_CF_MAXIMIZED) {
 				int Size = ((r.x1 - r.x0 + 1) << 1) / 3;
 				LCD_DrawHLine(r.x1 - Size, r.y0 + 1, r.x1 - 1);
 				LCD_DrawHLine(r.x1 - Size, r.y0 + 2, r.x1 - 1);
@@ -821,7 +809,7 @@ public:
 		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, [](RECT &r) {
 			auto pObj = (Frame *)ActiveWindow()->Parent();
 			int Size = (r.x1 - r.x0 + 1) >> 1;
-			if (pObj->Flags & FRAMEWIN_CF_MINIMIZED)
+			if (pObj->States & FRAMEWIN_CF_MINIMIZED)
 				for (int i = 1; i < Size; i++)
 					LCD_DrawHLine(r.x0 + i, r.y0 + i + (Size >> 1), r.x1 - i);
 			else

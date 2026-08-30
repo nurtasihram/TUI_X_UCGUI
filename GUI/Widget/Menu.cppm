@@ -11,36 +11,31 @@ import TUX.Widget;
 
 import TUX.Array;
 
-#define MENU_SF_HORIZONTAL              MENU_CF_HORIZONTAL
-#define MENU_SF_VERTICAL                MENU_CF_VERTICAL
-#define MENU_SF_OPEN_ON_POINTEROVER     MENU_CF_OPEN_ON_POINTEROVER
-#define MENU_SF_CLOSE_ON_SECOND_CLICK   MENU_CF_CLOSE_ON_SECOND_CLICK
-#define MENU_SF_HIDE_DISABLED_SEL       MENU_CF_HIDE_DISABLED_SEL
-#define MENU_SF_ACTIVE            (1<<6)  /* Internal flag only */
-#define MENU_SF_POPUP             (1<<7)  /* Internal flag only */
-
 /* Define default effect */
 #define MENU_EFFECT_DEFAULT WIDGET_Effect_3D1L
 
 export {
 
 constexpr uint16_t
-	MENU_CF_HORIZONTAL               = 0 << 0,
-	MENU_CF_VERTICAL                 = 1 << 0,
-	MENU_CF_OPEN_ON_POINTEROVER      = 1 << 1,
-	MENU_CF_CLOSE_ON_SECOND_CLICK    = 1 << 2,
-	MENU_CF_HIDE_DISABLED_SEL        = 1 << 3;  /* Hides the selection when a disabled item is selected */
+	MENU_CF_HORIZONTAL               = 0,
+	MENU_CF_VERTICAL                 = WIDGET_STATE_USER<0>,
+	MENU_CF_OPEN_ON_POINTEROVER      = WIDGET_STATE_USER<1>,
+	MENU_CF_CLOSE_ON_SECOND_CLICK    = WIDGET_STATE_USER<2>,
+	MENU_CF_HIDE_DISABLED_SEL        = WIDGET_STATE_USER<3>,  /* Hides the selection when a disabled item is selected */
+	MENU_SF_ACTIVE                   = WIDGET_STATE_USER<4>,
+	MENU_SF_POPUP                    = WIDGET_STATE_USER<5>;
 
 constexpr uint16_t
 	MENU_IF_DISABLED           = 1 << 0,
 	MENU_IF_SEPARATOR          = 1 << 1;
 
-constexpr uint16_t MENU_ON_ITEMSELECT        = 0;   /* Send to owner when selecting a menu item */
-constexpr uint16_t MENU_ON_INITMENU          = 1;   /* Send to owner when for the first time selecting a submenu */
-constexpr uint16_t MENU_ON_INITSUBMENU       = 2;   /* Send to owner when selecting a submenu */
-constexpr uint16_t MENU_ON_OPEN              = 3;   /* Internal message of menu widget (send to submenus) */
-constexpr uint16_t MENU_ON_CLOSE             = 4;   /* Internal message of menu widget (send to submenus) */
-constexpr uint16_t MENU_IS_MENU              = 5;   /* Internal message of menu widget. Owner must call   */
+constexpr uint16_t
+	MENU_ON_ITEMSELECT        = 0,   /* Send to owner when selecting a menu item */
+	MENU_ON_INITMENU          = 1,   /* Send to owner when for the first time selecting a submenu */
+	MENU_ON_INITSUBMENU       = 2,   /* Send to owner when selecting a submenu */
+	MENU_ON_OPEN              = 3,   /* Internal message of menu widget (send to submenus) */
+	MENU_ON_CLOSE             = 4,   /* Internal message of menu widget (send to submenus) */
+	MENU_IS_MENU              = 5;   /* Internal message of menu widget. Owner must call   */
 
 enum MENU_BI { 
 	 MENU_BI_LEFT = 0,
@@ -71,6 +66,7 @@ public:
 
 public:
 	struct Properties {
+		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aTextColor[5]{
 			RGB_BLACK,          /* enabled, not selected */
 			RGB_WHITE,          /* enabled, selected */
@@ -86,7 +82,6 @@ public:
 			RGB_GRAYL(0x7C)
 		};
 		uint8_t aBorder[4]{ 4, 4, 2, 2 }; /* Left, Right, Top, Bottom */
-		PCFONT pFont{ GUI_DEFAULT_FONT };
 	} static DefaultProps;
 	
 private:
@@ -101,7 +96,6 @@ private:
 	};
 	ARRAY<Item> ItemArray;
 	WObj *pOwner = nullptr;
-	uint16_t Flags = 0;
 	char IsSubmenuActive = 0;
 	uint16_t Width = 0, Height = 0;
 	uint16_t Sel = -1;
@@ -128,7 +122,7 @@ private:
 	}
 
 	bool _IsTopLevelMenu() { return !_SendMenuMessage(this, pOwner, MENU_IS_MENU, 0); }
-	bool _HasEffect() { return (Flags & MENU_SF_POPUP) || !_IsTopLevelMenu(); }
+	bool _HasEffect() { return (States & MENU_SF_POPUP) || !_IsTopLevelMenu(); }
 	int _GetEffectSize() { return _HasEffect() ? EffectSize() : 0; }
 
 	int _CalcTextWidth(const char *sText) {
@@ -140,18 +134,18 @@ private:
 		return TextWidth;
 	}
 	int _GetItemWidth(unsigned Index) {
-		if (Width && (Flags & MENU_SF_VERTICAL))
+		if (Width && (States & MENU_CF_VERTICAL))
 			return Width - (_GetEffectSize() << 1);
 		auto &pItem = ItemArray[Index];
-		auto ItemWidth = ((Flags & MENU_SF_VERTICAL) || !(pItem.Flags & MENU_IF_SEPARATOR))
+		auto ItemWidth = ((States & MENU_CF_VERTICAL) || !(pItem.Flags & MENU_IF_SEPARATOR))
 			? pItem.TextWidth : 3;
 		return ItemWidth + Props.aBorder[MENU_BI_LEFT] + Props.aBorder[MENU_BI_RIGHT];
 	}
 	int _GetItemHeight(unsigned Index) {
-		if (Height && !(Flags & MENU_SF_VERTICAL))
+		if (Height && !(States & MENU_CF_VERTICAL))
 			return Height - (_GetEffectSize() << 1);
 		auto ItemHeight = Props.pFont->YSize;
-		if ((Flags & MENU_SF_VERTICAL) && (ItemArray[Index].Flags & MENU_IF_SEPARATOR))
+		if ((States & MENU_CF_VERTICAL) && (ItemArray[Index].Flags & MENU_IF_SEPARATOR))
 			ItemHeight = 3;
 		return ItemHeight + Props.aBorder[MENU_BI_TOP] + Props.aBorder[MENU_BI_BOTTOM];
 	}
@@ -159,7 +153,7 @@ private:
 	int _CalcMenuSizeX() {
 		auto NumItems = _GetNumItems();
 		int xSize = 0;
-		if (Flags & MENU_SF_VERTICAL) {
+		if (States & MENU_CF_VERTICAL) {
 			for (unsigned i = 0; i < NumItems; i++) {
 				auto ItemWidth = _GetItemWidth(i);
 				if (ItemWidth > xSize)
@@ -175,7 +169,7 @@ private:
 	int _CalcMenuSizeY() {
 		auto NumItems = _GetNumItems();
 		int ySize = 0;
-		if (Flags & MENU_SF_VERTICAL) {
+		if (States & MENU_CF_VERTICAL) {
 			for (unsigned i = 0; i < NumItems; i++)
 				ySize += _GetItemHeight(i);
 		}
@@ -207,7 +201,7 @@ private:
 		if ((x < 0) || (y < 0) || (x >= xSize) || (y >= ySize))
 			return -1;
 		auto NumItems = _GetNumItems();
-		if (Flags & MENU_SF_VERTICAL) {
+		if (States & MENU_CF_VERTICAL) {
 			int yPos = 0;
 			for (unsigned i = 0; i < NumItems; i++) {
 				yPos += _GetItemHeight(i);
@@ -227,7 +221,7 @@ private:
 	}
 	POINT _GetItemPos(uint16_t Index) {
 		POINT Pos = _GetEffectSize();
-		if (Flags & MENU_SF_VERTICAL)
+		if (States & MENU_CF_VERTICAL)
 			for (int i = 0; i < (int)Index; i++)
 				Pos.y += _GetItemHeight(i);
 		else
@@ -240,11 +234,11 @@ private:
 			SetCapture(0);
 	}
 	void _ReleaseCapture() {
-		if (HasCaptured() && _IsTopLevelMenu() && !(Flags & MENU_SF_POPUP))
+		if (HasCaptured() && _IsTopLevelMenu() && !(States & MENU_SF_POPUP))
 			ReleaseCapture();
 	}
 	void _CloseSubmenu() {
-		if (!(Flags & MENU_SF_ACTIVE))
+		if (!(States & MENU_SF_ACTIVE))
 			return;
 		if (!IsSubmenuActive)
 			return;
@@ -263,7 +257,7 @@ private:
 		_InvalidateItem(Sel);
 	}
 	void _OpenSubmenu(uint16_t Index) {
-		if (!(Flags & MENU_SF_ACTIVE))
+		if (!(States & MENU_SF_ACTIVE))
 			return;
 		bool PrevActiveSubmenu = IsSubmenuActive;
 		/* Close previous submenu (if needed) */
@@ -276,7 +270,7 @@ private:
 		/* Calculate position of submenu */
 		auto EffectSize = _GetEffectSize();
 		auto Pos = _GetItemPos(Index);
-		if (Flags & MENU_SF_VERTICAL) {
+		if (States & MENU_CF_VERTICAL) {
 			Pos.x += _CalcMenuSizeX() - (_GetEffectSize() << 1);
 			Pos.y -= EffectSize;
 		}
@@ -304,9 +298,9 @@ private:
 		_InvalidateItem(Index);
 	}
 	void _ClosePopup() {
-		if (!(Flags & MENU_SF_POPUP))
+		if (!(States & MENU_SF_POPUP))
 			return;
-		Flags &= ~(MENU_SF_POPUP);
+		States &= ~(MENU_SF_POPUP);
 		Detach();
 		ReleaseCapture();
 	}
@@ -341,19 +335,19 @@ private:
 		_SendMenuMessage(this, pOwner, MENU_ON_ITEMSELECT, pItem.Id);
 	}
 	void _ActivateMenu(unsigned Index) {
-		if (!(Flags & MENU_SF_OPEN_ON_POINTEROVER)) {
+		if (!(States & MENU_CF_OPEN_ON_POINTEROVER)) {
 			auto &pItem = ItemArray[Index];
 			if (pItem.pSubmenu) {
 				if ((pItem.Flags & MENU_IF_DISABLED) == 0) {
-					if (!(Flags & MENU_SF_ACTIVE)) {
-						Flags |= MENU_SF_ACTIVE;
+					if (!(States & MENU_SF_ACTIVE)) {
+						States |= MENU_SF_ACTIVE;
 						_OpenSubmenu(Index);
 						_SetSelection(Index);
 					}
-					else if (Flags & MENU_SF_CLOSE_ON_SECOND_CLICK) {
+					else if (States & MENU_CF_CLOSE_ON_SECOND_CLICK) {
 						if ((int)Index == Sel) {
 							_CloseSubmenu();
-							Flags &= ~MENU_SF_ACTIVE;
+							States &= ~MENU_SF_ACTIVE;
 						}
 					}
 				}
@@ -362,12 +356,12 @@ private:
 	}
 	void _DeactivateMenu() {
 		_CloseSubmenu();
-		if (!(Flags & MENU_SF_OPEN_ON_POINTEROVER))
-			Flags &= ~MENU_SF_ACTIVE;
+		if (!(States & MENU_CF_OPEN_ON_POINTEROVER))
+			States &= ~MENU_SF_ACTIVE;
 	}
 	int _ForwardMouseOverMsg(POINT Pos) {
 #if (GUI_SUPPORT_MOUSE)
-		if (!IsSubmenuActive && !(Flags & MENU_SF_POPUP)) {
+		if (!IsSubmenuActive && !(States & MENU_SF_POPUP)) {
 			if (_IsTopLevelMenu()) {
 				Pos += GetOrg();
 				if (auto pBelow = WM_Screen2Win(Pos); pBelow && (pBelow != this)) {
@@ -464,7 +458,7 @@ private:
 		case MENU_ON_OPEN:
 			Sel = -1;
 			IsSubmenuActive = 0;
-			Flags |= MENU_SF_ACTIVE | MENU_SF_OPEN_ON_POINTEROVER;
+			States |= MENU_SF_ACTIVE | MENU_CF_OPEN_ON_POINTEROVER;
 			_SetCapture();
 			_ResizeMenu();
 			break;
@@ -494,7 +488,7 @@ private:
 		else {
 			ColorIndex = Selected ? MENU_CI_SELECTED : MENU_CI_ENABLED;
 			if (pItem.Flags & MENU_IF_DISABLED)
-				ColorIndex = (Flags & MENU_CF_HIDE_DISABLED_SEL) ? MENU_CI_DISABLED : ColorIndex + MENU_CI_DISABLED;
+				ColorIndex = (States & MENU_CF_HIDE_DISABLED_SEL) ? MENU_CI_DISABLED : ColorIndex + MENU_CI_DISABLED;
 		}
 		GUI.BkColor(Props.aBkColor[ColorIndex]);
 		GUI.Color(Props.aTextColor[ColorIndex]);
@@ -509,7 +503,7 @@ private:
 		RECT TextRect;
 		FillRect -= EffectSize;
 		GUI.Font(Props.pFont);
-		if (Flags & MENU_SF_VERTICAL) {
+		if (States & MENU_CF_VERTICAL) {
 			auto xSize = _CalcMenuSizeX();
 			FillRect.x1 = xSize - EffectSize - 1;
 			TextRect.x0 = FillRect.x0 + BorderLeft;
@@ -604,14 +598,13 @@ private:
 	}
 
 public:
-	Menu(int ExFlags, int Id) :
-		Widget({}, WC_VISIBLE | WC_STAYONTOP, _Callback, nullptr, Id, WIDGET_STATE_FOCUSSABLE) {
+	Menu(uint16_t ExFlags, int Id) :
+		Widget({}, WC_VISIBLE | WC_STAYONTOP, _Callback, nullptr, Id, ExFlags | WIDGET_STATE_FOCUSSABLE) {
 		Detach();
-		if (ExFlags & MENU_SF_OPEN_ON_POINTEROVER)
-			ExFlags |= MENU_SF_ACTIVE;
+		if (ExFlags & MENU_CF_OPEN_ON_POINTEROVER)
+			States |= MENU_SF_ACTIVE;
 		else
-			ExFlags &= ~(MENU_SF_ACTIVE);
-		Flags = ExFlags;
+			States &= ~(MENU_SF_ACTIVE);
 		Sel = -1;
 		SetEffect(MENU__pDefaultEffect);
 	}
@@ -756,10 +749,10 @@ public:
 		else
 			ItemArray.DeleteItem(Index);
 	}
-	void Popup(WObj *pDestWin, int x, int y, int xSize, int ySize, int Flags) {
+	void Popup(WObj *pDestWin, int x, int y, int xSize, int ySize) {
 		if (!pDestWin)
 			return;
-		this->Flags |= MENU_SF_POPUP;
+		States |= MENU_SF_POPUP;
 		Width = xSize > 0 ? xSize : 0;
 		Height = ySize > 0 ? ySize : 0;
 		auto Pos = pDestWin->GetOrg();

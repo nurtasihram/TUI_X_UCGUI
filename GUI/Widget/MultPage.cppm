@@ -9,15 +9,17 @@ import TUX.Widget.ScrollBar;
 
 import TUX.Array;
 
-constexpr uint16_t MULTIPAGE_STATE_ENABLED     = (1<<0);
-constexpr uint16_t MULTIPAGE_STATE_SCROLLMODE  = WIDGET_STATE_USER<0>;
+constexpr uint16_t
+	MULTIPAGE_STATE_ENABLED     = WIDGET_STATE_USER<0>,
+	MULTIPAGE_STATE_SCROLLMODE  = WIDGET_STATE_USER<1>;
 constexpr uint16_t MULTIPAGE_NUMCOLORS         = 2;
 
 export {
-constexpr uint16_t MULTIPAGE_ALIGN_LEFT   = 0 << 0;
-constexpr uint16_t MULTIPAGE_ALIGN_RIGHT  = 1 << 0;
-constexpr uint16_t MULTIPAGE_ALIGN_TOP    = 0 << 2;
-constexpr uint16_t MULTIPAGE_ALIGN_BOTTOM = 1 << 2;
+constexpr uint16_t
+	MULTIPAGE_ALIGN_LEFT   = 0 << 0,
+	MULTIPAGE_ALIGN_RIGHT  = 1 << 0,
+	MULTIPAGE_ALIGN_TOP    = 0 << 2,
+	MULTIPAGE_ALIGN_BOTTOM = 1 << 2;
 
 class MultPage : public Widget {
 
@@ -158,7 +160,7 @@ private:
 		}
 		pRect->y1 = pRect->y0 + Height;
 		/* Calculate width of text items */
-		if (GetStates() & MULTIPAGE_STATE_SCROLLMODE) {
+		if (States & MULTIPAGE_STATE_SCROLLMODE) {
 			Width = rBorder.x1 - ((Height * 3) >> 1) - 3;
 		}
 		else {
@@ -250,7 +252,7 @@ private:
 		if (!NumItems)
 			return;
 		int w = 0, x0 = 0;
-		if (GetStates() & MULTIPAGE_STATE_SCROLLMODE) {
+		if (States & MULTIPAGE_STATE_SCROLLMODE) {
 			if (Props.Align & MULTIPAGE_ALIGN_RIGHT)
 				x0 = -_GetPagePosX(ScrollState);
 			else
@@ -278,7 +280,7 @@ private:
 			if ((Handles.NumItems() > 0) && (x >= rText.x0) && (x <= rText.x1)) {
 				int i, w = 0, x0 = rText.x0;
 				/* Check if another page must be selected */
-				if (   & MULTIPAGE_STATE_SCROLLMODE) {
+				if (States & MULTIPAGE_STATE_SCROLLMODE) {
 					x0 -= _GetPagePosX(this->ScrollState);
 				}
 				for (i = 0; i < Handles.NumItems(); i++) {

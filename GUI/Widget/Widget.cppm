@@ -17,6 +17,7 @@ constexpr uint16_t
 	WIDGET_STATE_FOCUSSABLE  = 1 << 1,
 	WIDGET_STATE_USER_START  = 1 << 2;
 template<uint8_t bits>
+requires(uint16_t(1 << (WIDGET_STATE_USER_START + bits)) != 0)
 constexpr uint16_t
 	WIDGET_STATE_USER = 1 << (WIDGET_STATE_USER_START + bits);
 
@@ -97,11 +98,14 @@ public:
 
 private:
 	PCWIDGET_EFFECT pEffect = DefaultEffect;
-	uint16_t Id, State;
+	uint16_t Id;
+
+protected:
+	uint16_t States;
 
 public:
 	Widget(RECT r, WM_CF Style, WM_CALLBACK *cb, WObj *pParent, uint16_t Id, uint16_t State) :
-		WObj(r, Style, cb, pParent), Id(Id), State(State) {}
+		WObj(r, Style, cb, pParent), Id(Id), States(State) {}
 
 public:
 	auto GetEffect() const { return pEffect; }
@@ -110,7 +114,7 @@ public:
 	auto EffectSize() const { return pEffect ? pEffect->EffectSize : 0; }
 
 	uint16_t GetId() const { return Id; }
-	bool IsFocussable() const { return State & WIDGET_STATE_FOCUSSABLE; }
+	bool IsFocussable() const { return States & WIDGET_STATE_FOCUSSABLE; }
 
 protected:
 	void SetBkColorPrefer(RGBC BkColor) {
@@ -142,20 +146,20 @@ protected:
 			pEffect->DrawDown(r);
 	}
 
-	auto GetStates() const { return State; }
+	auto GetStates() const { return States; }
 	bool SetStates(uint16_t States) {
-		if (State == States)
+		if (this->States == States)
 			return false;
-		State = States;
+		this->States = States;
 		Invalidate();
 		return true;
 	}
 	bool AddStates(uint16_t States)
-	{ return SetStates(State | States); }
+	{ return SetStates(this->States | States); }
 	bool DelStates(uint16_t States)
-	{ return SetStates(State & ~States); }
+	{ return SetStates(this->States & ~States); }
 	bool CtlStates(uint16_t States, bool On)
-	{ return SetStates(On ? State | States : State & ~States); }
+	{ return SetStates(On ? this->States | States : this->States & ~States); }
 	
 	RECT _GetInsideRect() { return GetClientRect() / EffectSize(); }
 
@@ -199,11 +203,11 @@ protected:
 			case WM_SET_FOCUS: {
 				int Notification;
 				if (*Data) {
-					SetStates(State | WIDGET_STATE_FOCUS);
+					SetStates(States | WIDGET_STATE_FOCUS);
 					Notification = WM_NOTIFICATION_GOT_FOCUS;
 				}
 				else {
-					SetStates(State & ~WIDGET_STATE_FOCUS);
+					SetStates(States & ~WIDGET_STATE_FOCUS);
 					Notification = WM_NOTIFICATION_LOST_FOCUS;
 				}
 				NotifyParent(Notification);

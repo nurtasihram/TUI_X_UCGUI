@@ -96,7 +96,7 @@ private:
 		GUI__CalcTextRect(pText, &rInside, &rText, Props.Align);
 		WIDGET__FillStringInRect(pText, rFillRect, rInside, rText);
 		/* Calculate position and size of cursor */
-		if (GetStates() & WIDGET_STATE_FOCUS) {
+		if (States & WIDGET_STATE_FOCUS) {
 			auto p = pText;
 			int CursorWidth = this->XSizeCursor > 0 ? this->XSizeCursor : 1;
 			RECT rInvert;

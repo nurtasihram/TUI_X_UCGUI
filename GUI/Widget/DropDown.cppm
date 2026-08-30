@@ -90,7 +90,7 @@ private:
 		auto Border = this->EffectSize();
 		auto TextBorderSize = Props.TextBorderSize;
 		GUI.Font(Props.pFont);
-		auto ColorIndex = (GetStates() & WIDGET_STATE_FOCUS) ? 2 : 1;
+		auto ColorIndex = (States & WIDGET_STATE_FOCUS) ? 2 : 1;
 		auto s = _GetpItem(Sel);
 		auto r = WM_GetClientRect() / Border;
 		auto InnerSize = r.YSize();
