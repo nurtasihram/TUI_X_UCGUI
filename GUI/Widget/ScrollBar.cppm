@@ -42,7 +42,7 @@ private:
 
 	int _GetArrowSize() {
 		auto Size = GetSize();
-		if (GetStates() & SCROLLBAR_CF_VERTICAL)
+		if (States & SCROLLBAR_CF_VERTICAL)
 			Size = ~Size;
 		auto r = Size.y / 2 + 5;
 		if (r > Size.x - 5)
@@ -52,7 +52,7 @@ private:
 	SCROLLBAR_POSITIONS _CalcPositions() {
 		SCROLLBAR_POSITIONS Pos;
 		auto r = Rect;
-		Pos.x1 = (GetStates() & SCROLLBAR_CF_VERTICAL) ? r.y1 : r.x1;
+		Pos.x1 = (States & SCROLLBAR_CF_VERTICAL) ? r.y1 : r.x1;
 		/* Subtract the rectangle of the other scrollbar (if existing and visible) */
 		switch (GetId()) {
 		case GUI_ID_HSCROLL:
@@ -73,7 +73,7 @@ private:
 		/* Convert coordinates of this window */
 		r -= r.LeftTop();
 		/* Convert real into virtual coordinates */
-		if (GetStates() & SCROLLBAR_CF_VERTICAL)
+		if (States & SCROLLBAR_CF_VERTICAL)
 			r = r.Rotate90R(GetSizeY());
 		auto NumItems = ScrollState.NumItems;
 		auto xSize = r.x1 - r.x0 + 1;
@@ -96,7 +96,7 @@ private:
 		return Pos;
 	}
 	void _DrawTriangle(int x, int y, int Size, int Inc) {
-		if (GetStates() & SCROLLBAR_CF_VERTICAL)
+		if (States & SCROLLBAR_CF_VERTICAL)
 			for (; Size >= 0; Size--, x += Inc)
 				GUI_DrawHLine(x, y - Size, y + Size);
 		else
@@ -109,12 +109,12 @@ private:
 		*/
 		auto r = GetClientRect();
 		auto Pos = _CalcPositions();
-		auto Height = GetStates() & SCROLLBAR_CF_VERTICAL ? r.DistX() : r.DistY();
+		auto Height = States & SCROLLBAR_CF_VERTICAL ? r.DistX() : r.DistY();
 		auto CenterH = Height >> 1;
 		auto ArrowSize = (Height / 3) - 1;
 		auto ArrowOff = 3 + ArrowSize + ArrowSize / 3;
 		int16_t RECT:: *x0, RECT:: *x1;
-		if (GetStates() & SCROLLBAR_CF_VERTICAL)
+		if (States & SCROLLBAR_CF_VERTICAL)
 			x0 = &RECT::y0, x1 = &RECT::y1;
 		else
 			x0 = &RECT::x0, x1 = &RECT::x1;
@@ -181,7 +181,7 @@ private:
 			return;
 		if (!pState->Pressed) {
 			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
-			if (GetStates() & SCROLLBAR_STATE_PRESSED)
+			if (States & SCROLLBAR_STATE_PRESSED)
 				_ScrollbarReleased();
 			return;
 		}
@@ -189,7 +189,7 @@ private:
 		auto Pos = _CalcPositions();
 		auto Range = ScrollState.NumItems - ScrollState.PageSize;
 		/* Swap mouse coordinates if necessary */
-		int x = GetStates() & SCROLLBAR_CF_VERTICAL ? pState->y : pState->x;
+		int x = States & SCROLLBAR_CF_VERTICAL ? pState->y : pState->x;
 		if (x <= Pos.x1_LeftArrow) /* left arrow (line left) */
 			Sel--;
 		else if (x < Pos.x0_Thumb) /* left area  (page left) */
@@ -207,7 +207,7 @@ private:
 		/* hObj->SetFocus(); */
 		SetCapture(1);
 		SetValue(Sel);
-		if (!(GetStates() & SCROLLBAR_STATE_PRESSED))
+		if (!(States & SCROLLBAR_STATE_PRESSED))
 			_ScrollbarPressed();
 	}
 	char _OnKey(const WM_KEY_INFO *pInfo) {
@@ -352,7 +352,7 @@ public:
 	}
 	void SetWidth(int Width) {
 		POINT Size{ ScrollState.PageSize, Width };
-		if (GetStates() & SCROLLBAR_CF_VERTICAL)
+		if (States & SCROLLBAR_CF_VERTICAL)
 			Size = ~Size;
 		SetSize(Size);
 		_InvalidatePartner(); /* Invalidate the partner, since it is also affected */

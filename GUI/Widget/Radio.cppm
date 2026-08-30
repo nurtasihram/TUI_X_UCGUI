@@ -58,7 +58,7 @@ private:
 	void _OnPaint() {
 		/* Init some data */
 		auto rFocus = GetClientRect();
-		bool HasFocus = GetStates() & WIDGET_STATE_FOCUS;
+		bool HasFocus = States & WIDGET_STATE_FOCUS;
 		auto pBmRadio = Props.apBmRadio[IsEnabled()],
 			 pBmCheck = Props.pBmCheck;
 		rFocus.x1 = pBmRadio->Size.x + RADIO_BORDER * 2 - 1;

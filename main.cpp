@@ -1611,17 +1611,17 @@ int main(void) {
 	GUI_Init(); 
 	GUI_CURSOR_Show();
 
-	_TestText();
-	//_TestListView();
+	//_TestText();
+	_TestListView();
 	//_TestMultiPage();
-	_TestRadio();
+	//_TestRadio();
 	//_TestProgBar();
 	//_TestSlider();
-	_TestEdit();
-	_TestMultiEdit();
+	//_TestEdit();
+	//_TestMultiEdit();
 	//_TestDropDown();
-	//_TestListBox();
-	//_TestMemDev();
+	_TestListBox();
+	_TestMemDev();
 
 	return 0;
 }

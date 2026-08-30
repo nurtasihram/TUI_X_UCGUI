@@ -158,7 +158,7 @@ private:
 		}
 		pRect->y1 = pRect->y0 + Height;
 		/* Calculate width of text items */
-		if (GetStates() & MULTIPAGE_STATE_SCROLLMODE) {
+		if (States & MULTIPAGE_STATE_SCROLLMODE) {
 			Width = rBorder.x1 - ((Height * 3) >> 1) - 3;
 		}
 		else {
@@ -250,7 +250,7 @@ private:
 		if (!NumItems)
 			return;
 		int w = 0, x0 = 0;
-		if (GetStates() & MULTIPAGE_STATE_SCROLLMODE) {
+		if (States & MULTIPAGE_STATE_SCROLLMODE) {
 			if (Props.Align & MULTIPAGE_ALIGN_RIGHT)
 				x0 = -_GetPagePosX(ScrollState);
 			else

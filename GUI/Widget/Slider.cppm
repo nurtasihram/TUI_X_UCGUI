@@ -25,10 +25,9 @@ private:
 	int16_t Min = 0, Max = 100, v = 0;
 	int16_t NumTicks = -1;
 	int16_t Width = 8;
-	uint8_t Flags = 0;
 
 	void _OnPaint() {
-		auto r = GetStates() & SLIDER_CF_VERTICAL ? ~GetClientRect() : GetClientRect();
+		auto r = States & SLIDER_CF_VERTICAL ? ~GetClientRect() : GetClientRect();
 		auto xsize = r.x1 - r.x0 + 1 - this->Width;
 		auto x0 = r.x0 + this->Width / 2;
 		auto Range = this->Max - this->Min;
@@ -56,7 +55,7 @@ private:
 		SetBkColorPrefer(Props.BkColor);
 		GUI_Clear();
 		GUI.Color(RGB_BLACK);
-		if (GetStates() & SLIDER_CF_VERTICAL) {
+		if (States & SLIDER_CF_VERTICAL) {
 			auto xSize = GetSizeX();
 			rSlot = rSlot.Rotate90L(xSize);
 			rSlider = rSlider.Rotate90L(xSize);
@@ -81,7 +80,7 @@ private:
 		GUI.Color(RGB_BLACK);
 		DrawUp(rSlider);
 		/* Draw focus */
-		if (GetStates() & WIDGET_STATE_FOCUS) {
+		if (States & WIDGET_STATE_FOCUS) {
 			GUI.Color(RGB_BLACK);
 			GUI_DrawFocusRect(GetClientRect(), 0);
 		}
@@ -101,14 +100,14 @@ private:
 			return;
 		if (!pState->Pressed) {
 			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
-			if (GetStates() & SLIDER_STATE_PRESSED)
+			if (States & SLIDER_STATE_PRESSED)
 				_SliderReleased();
 			return;
 		}
 		auto Range = Max - Min;
 		auto x0 = 1 + Width / 2;  /* 1 pixel focus rectangle + width of actual slider */
-		auto x = (GetStates() & SLIDER_CF_VERTICAL ? pState->y : pState->x) - x0;
-		auto xsize = (GetStates() & SLIDER_CF_VERTICAL ? GetSizeY() : GetSizeX()) - 2 * x0;
+		auto x = (States & SLIDER_CF_VERTICAL ? pState->y : pState->x) - x0;
+		auto xsize = (States & SLIDER_CF_VERTICAL ? GetSizeY() : GetSizeX()) - 2 * x0;
 		int Sel;
 		if (x <= 0)
 			Sel = Min;
@@ -122,7 +121,7 @@ private:
 			SetFocus();
 		SetCapture(1);
 		SetValue(Sel);
-		if (!(GetStates() & SLIDER_STATE_PRESSED))
+		if (!(States & SLIDER_STATE_PRESSED))
 			_SliderPressed();
 	}
 	char _OnKey(const WM_KEY_INFO *pInfo) {

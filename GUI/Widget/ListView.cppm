@@ -12,6 +12,8 @@ import TUX.Array;
 
 export {
 
+constexpr uint16_t LISTVIEW_CF_SHOWGRID = WIDGET_STATE_USER<0>;
+	
 enum LISTVIEW_CI {
 	 LISTVIEW_CI_UNSEL = 0,
 	 LISTVIEW_CI_SEL,
@@ -51,7 +53,6 @@ private:
 	ARRAY<ARRAY<Item>> RowArray; /* One entry per line. Every entry is a ARRAY<Item> */
 	ARRAY<TEXTALIGN>   AlignArray; /* One entry per column */
 	int16_t     Sel = -1;
-	bool        ShowGrid = false;
 	uint16_t    RowDistY = 0, LBorder = 1, RBorder = 1;
 	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
 	WObj *pOwner = nullptr;
@@ -66,7 +67,7 @@ private:
 
 	auto _GetRowDistY() {
 		return RowDistY ? RowDistY :
-			Props.pFont->YSize + (ShowGrid ? 1 : 0);
+			Props.pFont->YSize + (States & LISTVIEW_CF_SHOWGRID ? 1 : 0);
 	}
 	auto _GetNumVisibleRows() {
 		RECT Rect;
@@ -116,14 +117,14 @@ private:
 					int ColorIndex;
 					/* Set background color */
 					if (i == this->Sel) {
-						ColorIndex = (GetStates() & WIDGET_STATE_FOCUS) ? 2 : 1;
+						ColorIndex = (States & WIDGET_STATE_FOCUS) ? 2 : 1;
 					}
 					else {
 						ColorIndex = 0;
 					}
 					GUI.BkColor(Props.aBkColor[ColorIndex]);
 					/* Iterate over all columns */
-					if (this->ShowGrid) {
+					if (States & LISTVIEW_CF_SHOWGRID) {
 						Rect.y1--;
 					}
 					xPos = EffectSize - this->ScrollStateH.v;
@@ -170,7 +171,7 @@ private:
 			GUI_ClearRect({ ClipRect.x0, yPos, ClipRect.x1, ClipRect.y1 });
 		}
 		/* Draw grid */
-		if (this->ShowGrid) {
+		if (States & LISTVIEW_CF_SHOWGRID) {
 			GUI.Color(Props.GridColor);
 			yPos = pHeader->GetHeight() + EffectSize - 1;
 			for (i = 0; i < NumVisRows; i++) {
@@ -493,10 +494,13 @@ public:
 		_InvalidateInsideArea();
 	}
 
-	void SetGridVis(bool Show) {
-		if (ShowGrid == Show)
+	void SetGridVis(bool bShow) {
+		auto NewStates = bShow ?
+			States | LISTVIEW_CF_SHOWGRID :
+			States & ~LISTVIEW_CF_SHOWGRID;
+		if (States == NewStates)
 			return;
-		ShowGrid = Show;
+		States = NewStates;
 		_UpdateScrollParas();
 		_InvalidateInsideArea();
 	}

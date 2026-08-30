@@ -42,7 +42,7 @@ public:
 		};
 		TEXTALIGN Align{ TEXTALIGN_HCENTER | TEXTALIGN_VCENTER };
 	} static DefaultProps;
-	
+
 private:
 	Properties Props = DefaultProps;
 
@@ -55,7 +55,7 @@ private:
 	}
 
 	void _OnPaint() {
-		bool IsPressed = GetStates() & BUTTON_STATE_PRESSED;
+		bool IsPressed = States & BUTTON_STATE_PRESSED;
 		int ColorIndex = (IsEnabled()) ? IsPressed : 2;
 		GUI.Font(Props.pFont);
 		auto rClient = WM_GetClientRect();
@@ -87,7 +87,7 @@ private:
 		GUI_DispStringInRect(text, &rInside, Props.Align);
 		SetUserClipRect(nullptr);
 		/* Draw focus */
-		if (GetStates() & BUTTON_STATE_FOCUS) {
+		if (States & BUTTON_STATE_FOCUS) {
 			GUI.Color(RGB_BLACK);
 			GUI_DrawFocusRect(rClient, EffectSize + 1);
 		}
@@ -109,12 +109,12 @@ private:
 	void _OnTouch(const PID_STATE *pState) {
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
-				if (!(GetStates() & BUTTON_STATE_PRESSED))
+				if (!(States & BUTTON_STATE_PRESSED))
 					_ButtonPressed();
 				SetCapture(1);
 			}
 			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
-			else if (GetStates() & BUTTON_STATE_PRESSED)
+			else if (States & BUTTON_STATE_PRESSED)
 				_ButtonReleased(
 					GetClientRect() <= *pState ? WM_NOTIFICATION_RELEASED :
 					WM_NOTIFICATION_MOVED_OUT);
@@ -136,11 +136,11 @@ private:
 #if BUTTON_REACT_ON_LEVEL
 	void _OnPidStateChange(const PID_CHANGED_INFO *pState) {
 		if (pState->StatePrev == 0 && pState->State == 1) {
-			if (!(GetStates() & BUTTON_STATE_PRESSED))
+			if (!(States & BUTTON_STATE_PRESSED))
 				_ButtonPressed();
 		}
 		else if (pState->StatePrev == 1 && pState->State == 0)
-			if (GetStates() & BUTTON_STATE_PRESSED)
+			if (States & BUTTON_STATE_PRESSED)
 				_ButtonReleased(WM_NOTIFICATION_RELEASED);
 	}
 #endif
@@ -253,7 +253,7 @@ public:
 	void SetSelfDraw(BUTTON_BI Index, GUI_DRAW_SELF_CB *pDraw)
 	{ SetSelfDrawEx(Index, pDraw); }
 
-	bool IsPressed() { return GetStates() & BUTTON_STATE_PRESSED; }
+	bool IsPressed() { return States & BUTTON_STATE_PRESSED; }
 	void SetPressed(bool On) { CtlStates(BUTTON_STATE_PRESSED, On); }
 
 	void SetFocussable(bool On) { CtlStates(WIDGET_STATE_FOCUSSABLE, On); }

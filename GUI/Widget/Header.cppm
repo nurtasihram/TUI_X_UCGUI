@@ -26,7 +26,7 @@ public:
 		int16_t BorderH{ 0 };
 		int16_t BorderV{ 2 };
 	} static DefaultProps;
-	
+
 private:
 	Properties Props = DefaultProps;
 	
