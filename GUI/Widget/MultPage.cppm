@@ -9,9 +9,10 @@ import TUX.Widget.ScrollBar;
 
 import TUX.Array;
 
-constexpr uint16_t
-	MULTIPAGE_STATE_ENABLED     = WIDGET_STATE_USER<0>,
-	MULTIPAGE_STATE_SCROLLMODE  = WIDGET_STATE_USER<1>;
+constexpr uint16_t MULTIPAGE_STATE_ENABLED     = 1 << 0;
+
+constexpr uint16_t MULTIPAGE_STATE_SCROLLMODE  = WIDGET_STATE_USER<0>;
+
 constexpr uint16_t MULTIPAGE_NUMCOLORS         = 2;
 
 export {

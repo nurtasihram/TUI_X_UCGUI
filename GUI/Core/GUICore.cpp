@@ -242,46 +242,30 @@ int GUI_GetStringSizeX(const char *s) {
 
 #pragma region GUI_Font
 void FONT_MONO::DispChar(uint16_t c) const {
-	int c0, c1;
-	const void *pd;
-	int x = GUI.DispPos.x, y = GUI.DispPos.y;
-	if (FirstChar <= c && c <= LastChar) {
-		pd = pData;
-		c0 = c - FirstChar;
-		c1 = -1;
-	}
-	else if (pTrans) {
-		pd = pTransData;
-		if (pTrans->FirstChar <= c && c <= pTrans->LastChar) {
-			c -= pTrans->FirstChar;
-			auto ptl = pTrans->pList;
-			ptl += c;
-			c0 = ptl->c0;
-			c1 = ptl->c1;
-		}
-		else
-			c0 = c1 = -1;
-	}
-	else
-		c0 = c1 = -1;
+	TRANSINFO::LIST lst;
+	if (FirstChar <= c && c <= LastChar)
+		lst.c0 = c - FirstChar;
+	else if (pTrans)
+		if (pTrans->FirstChar <= c && c <= pTrans->LastChar)
+			lst = pTrans->pList[c - pTrans->FirstChar];
 	/* Draw first character if it is valid */
-	if (c0 != -1) {
+	if (lst.c0 >= 0) {
 		auto BytesPerLine = (XSize + 7) >> 3;
 		auto BytesPerChar = YSize * BytesPerLine;
 		auto DrawMode = GUI.TextMode;
 		/* call drawing routine */
 		auto OldMode = GUI.SetDrawMode(DrawMode);
-		LCD_DrawBitmap(x, y,
+		LCD_DrawBitmap(GUI.DispPos.x, GUI.DispPos.y,
 						XSize, YSize,
 						1, BytesPerLine,
-						(const uint8_t *)pd + c0 * BytesPerChar,
+						(const uint8_t *)pData + lst.c0 * BytesPerChar,
 						&LCD_BKCOLORINDEX);
-		if (c1 != -1) {
+		if (lst.c1 >= 0) {
 			GUI.SetDrawMode(DrawMode | DRAWMODE_TRANS);
-			LCD_DrawBitmap(x, y,
+			LCD_DrawBitmap(GUI.DispPos.x, GUI.DispPos.y,
 							XSize, YSize,
 							1, BytesPerLine,
-							(const uint8_t *)pd + c1 * BytesPerChar,
+							(const uint8_t *)pData + lst.c1 * BytesPerChar,
 							&LCD_BKCOLORINDEX);
 		}
 		GUI.SetDrawMode(OldMode);
@@ -290,8 +274,7 @@ void FONT_MONO::DispChar(uint16_t c) const {
 }
 void FONT_PROP::DispChar(uint16_t c) const {
 	auto pProp = FindChar(c);
-	if (!pProp)
-		return;
+	if (!pProp) return;
 	auto pCharInfo = pProp->paCharInfo + (c - pProp->First);
 	auto OldDrawMode = GUI.SetDrawMode(GUI.TextMode);
 	LCD_DrawBitmap(GUI.DispPos.x, GUI.DispPos.y,

@@ -79,7 +79,7 @@ import TUX.Resources;
 #pragma endregion
 
 static BM_BPP1 GUI_F8x8_acFont[][8]{
-	{
+	{  /* char ' '  */
 	________________,
 	________________,
 	________________,
@@ -87,8 +87,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	________________,
 	________________,
-	________________}  /* char ' '  */
- ,{
+	________________}
+ ,{  /* char '!'  */
 	______XXXX______,
 	____XXXXXXXX____,
 	____XXXXXXXX____,
@@ -96,8 +96,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	________________,
 	______XXXX______,
-	________________}  /* char '!'  */
- ,{
+	________________}
+ ,{  /* char '"'  */
 	__XXXX____XXXX__,
 	__XXXX____XXXX__,
 	____XX____XX____,
@@ -105,8 +105,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	________________,
 	________________,
-	________________}  /* char '"'  */
- ,{
+	________________}
+ ,{  /* char '#'  */
 	__XXXX__XXXX____,
 	__XXXX__XXXX____,
 	XXXXXXXXXXXXXX__,
@@ -114,8 +114,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXXXXXXXXXXXX__,
 	__XXXX__XXXX____,
 	__XXXX__XXXX____,
-	________________}  /* char '#'  */
- ,{
+	________________}
+ ,{  /* char '$'  */
 	______XXXX______,
 	____XXXXXXXXXX__,
 	__XXXX__________,
@@ -123,8 +123,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__________XXXX__,
 	__XXXXXXXXXX____,
 	______XXXX______,
-	________________}  /* char '$'  */
- ,{
+	________________}
+ ,{  /* char '%'  */
 	________________,
 	XXXX______XXXX__,
 	XXXX____XXXX____,
@@ -132,8 +132,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	____XXXX________,
 	__XXXX____XXXX__,
 	XXXX______XXXX__,
-	________________}  /* char '%'  */
- ,{
+	________________}
+ ,{  /* char '&'  */
 	____XXXXXX______,
 	__XXXX__XXXX____,
 	____XXXXXX______,
@@ -141,8 +141,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX__XXXXXX____,
 	XXXX____XXXX____,
 	__XXXXXX__XXXX__,
-	________________}  /* char '&'  */
- ,{
+	________________}
+ ,{  /* char '''  */
 	______XXXX______,
 	______XXXX______,
 	____XXXX________,
@@ -150,8 +150,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	________________,
 	________________,
-	________________}  /* char '''  */
- ,{
+	________________}
+ ,{  /* char '('  */
 	________XXXX____,
 	______XXXX______,
 	____XXXX________,
@@ -159,8 +159,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	____XXXX________,
 	______XXXX______,
 	________XXXX____,
-	________________}  /* char '('  */
- ,{
+	________________}
+ ,{  /* char ')'  */
 	____XXXX________,
 	______XXXX______,
 	________XXXX____,
@@ -168,8 +168,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________XXXX____,
 	______XXXX______,
 	____XXXX________,
-	________________}  /* char ')'  */
- ,{
+	________________}
+ ,{  /* char '*'  */
 	________________,
 	__XXXX____XXXX__,
 	____XXXXXXXX____,
@@ -177,8 +177,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	____XXXXXXXX____,
 	__XXXX____XXXX__,
 	________________,
-	________________}  /* char '*'  */
- ,{
+	________________}
+ ,{  /* char '+'  */
 	________________,
 	______XXXX______,
 	______XXXX______,
@@ -186,8 +186,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	______XXXX______,
 	________________,
-	________________}  /* char '+'  */
- ,{
+	________________}
+ ,{  /* char ','  */
 	________________,
 	________________,
 	________________,
@@ -195,8 +195,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	______XXXX______,
 	______XXXX______,
-	____XXXX________}  /* char ','  */
- ,{
+	____XXXX________}
+ ,{  /* char '-'  */
 	________________,
 	________________,
 	________________,
@@ -204,8 +204,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	________________,
 	________________,
-	________________}  /* char '-'  */
- ,{
+	________________}
+ ,{  /* char '.'  */
 	________________,
 	________________,
 	________________,
@@ -213,8 +213,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	______XXXX______,
 	______XXXX______,
-	________________}  /* char '.'  */
- ,{
+	________________}
+ ,{  /* char '/'  */
 	__________XXXX__,
 	________XXXX____,
 	______XXXX______,
@@ -222,8 +222,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX__________,
 	XXXX____________,
 	XX______________,
-	________________}  /* char '/'  */
- ,{
+	________________}
+ ,{  /* char '0'  */
 	____XXXXXX______,
 	__XXXX__XXXX____,
 	XXXX______XXXX__,
@@ -231,8 +231,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX______XXXX__,
 	__XXXX__XXXX____,
 	____XXXXXX______,
-	________________}  /* char '0'  */
- ,{
+	________________}
+ ,{  /* char '1'  */
 	______XXXX______,
 	____XXXXXX______,
 	______XXXX______,
@@ -240,8 +240,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	______XXXX______,
 	__XXXXXXXXXXXX__,
-	________________}  /* char '1'  */
- ,{
+	________________}
+ ,{  /* char '2'  */
 	__XXXXXXXXXX____,
 	XXXX______XXXX__,
 	__________XXXX__,
@@ -249,8 +249,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	____XXXX________,
 	__XXXX____XXXX__,
 	XXXXXXXXXXXXXX__,
-	________________}  /* char '2'  */
- ,{
+	________________}
+ ,{  /* char '3'  */
 	__XXXXXXXXXX____,
 	XXXX______XXXX__,
 	__________XXXX__,
@@ -258,8 +258,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__________XXXX__,
 	XXXX______XXXX__,
 	__XXXXXXXXXX____,
-	________________}  /* char '3'  */
- ,{
+	________________}
+ ,{  /* char '4'  */
 	______XXXXXX____,
 	____XXXXXXXX____,
 	__XXXX__XXXX____,
@@ -267,8 +267,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXXXXXXXXXXXX__,
 	________XXXX____,
 	______XXXXXXXX__,
-	________________}  /* char '4'  */
- ,{
+	________________}
+ ,{  /* char '5'  */
 	XXXXXXXXXXXXXX__,
 	XXXX____________,
 	XXXX____________,
@@ -276,8 +276,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__________XXXX__,
 	XXXX______XXXX__,
 	__XXXXXXXXXX____,
-	________________}  /* char '5'  */
- ,{
+	________________}
+ ,{  /* char '6'  */
 	____XXXXXX______,
 	__XXXX__________,
 	XXXX____________,
@@ -285,8 +285,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX______XXXX__,
 	XXXX______XXXX__,
 	__XXXXXXXXXX____,
-	________________}  /* char '6'  */
- ,{
+	________________}
+ ,{  /* char '7'  */
 	XXXXXXXXXXXXXX__,
 	XXXX______XXXX__,
 	________XXXX____,
@@ -294,8 +294,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	____XXXX________,
 	____XXXX________,
 	____XXXX________,
-	________________}  /* char '7'  */
- ,{
+	________________}
+ ,{  /* char '8'  */
 	__XXXXXXXXXX____,
 	XXXX______XXXX__,
 	XXXX______XXXX__,
@@ -303,8 +303,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX______XXXX__,
 	XXXX______XXXX__,
 	__XXXXXXXXXX____,
-	________________}  /* char '8'  */
- ,{
+	________________}
+ ,{  /* char '9'  */
 	__XXXXXXXXXX____,
 	XXXX______XXXX__,
 	XXXX______XXXX__,
@@ -312,8 +312,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__________XXXX__,
 	________XXXX____,
 	__XXXXXXXX______,
-	________________}  /* char '9'  */
- ,{
+	________________}
+ ,{  /* char ':'  */
 	________________,
 	______XXXX______,
 	______XXXX______,
@@ -321,8 +321,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	______XXXX______,
 	______XXXX______,
-	________________}  /* char ':'  */
- ,{
+	________________}
+ ,{  /* char ';'  */
 	________________,
 	______XXXX______,
 	______XXXX______,
@@ -330,8 +330,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	______XXXX______,
 	______XXXX______,
-	____XXXX________}  /* char ';'  */
- ,{
+	____XXXX________}
+ ,{  /* char '<'  */
 	__________XXXX__,
 	________XXXX____,
 	______XXXX______,
@@ -339,8 +339,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	________XXXX____,
 	__________XXXX__,
-	________________}  /* char '<'  */
- ,{
+	________________}
+ ,{  /* char '='  */
 	________________,
 	________________,
 	__XXXXXXXXXXXX__,
@@ -348,8 +348,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	__XXXXXXXXXXXX__,
 	________________,
-	________________}  /* char '='  */
- ,{
+	________________}
+ ,{  /* char '>'  */
 	__XXXX__________,
 	____XXXX________,
 	______XXXX______,
@@ -357,8 +357,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	____XXXX________,
 	__XXXX__________,
-	________________}  /* char '>'  */
- ,{
+	________________}
+ ,{  /* char '?'  */
 	__XXXXXXXXXX____,
 	XXXX______XXXX__,
 	________XXXX____,
@@ -366,8 +366,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	________________,
 	______XXXX______,
-	________________}  /* char '?'  */
- ,{
+	________________}
+ ,{  /* char '@'  */
 	__XXXXXXXXXX____,
 	XXXX______XXXX__,
 	XXXX__XXXXXXXX__,
@@ -375,8 +375,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX__XXXXXXXX__,
 	XXXX____________,
 	__XXXXXXXX______,
-	________________}  /* char '@'  */
- ,{
+	________________}
+ ,{  /* char 'A'  */
 	____XXXXXX______,
 	__XXXX__XXXX____,
 	XXXX______XXXX__,
@@ -384,8 +384,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX______XXXX__,
 	XXXX______XXXX__,
 	XXXX______XXXX__,
-	________________}  /* char 'A'  */
- ,{
+	________________}
+ ,{  /* char 'B'  */
 	XXXXXXXXXXXX____,
 	__XXXX____XXXX__,
 	__XXXX____XXXX__,
@@ -393,8 +393,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX____XXXX__,
 	__XXXX____XXXX__,
 	XXXXXXXXXXXX____,
-	________________}  /* char 'B'  */
- ,{
+	________________}
+ ,{  /* char 'C'  */
 	____XXXXXXXX____,
 	__XXXX____XXXX__,
 	XXXX____________,
@@ -402,8 +402,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX____________,
 	__XXXX____XXXX__,
 	____XXXXXXXX____,
-	________________}  /* char 'C'  */
- ,{
+	________________}
+ ,{  /* char 'D'  */
 	XXXXXXXXXX______,
 	__XXXX__XXXX____,
 	__XXXX____XXXX__,
@@ -411,8 +411,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX____XXXX__,
 	__XXXX__XXXX____,
 	XXXXXXXXXX______,
-	________________}  /* char 'D'  */
- ,{
+	________________}
+ ,{  /* char 'E'  */
 	XXXXXXXXXXXXXX__,
 	__XXXX______XX__,
 	__XXXX__XX______,
@@ -420,8 +420,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX__XX______,
 	__XXXX______XX__,
 	XXXXXXXXXXXXXX__,
-	________________}  /* char 'E'  */
- ,{
+	________________}
+ ,{  /* char 'F'  */
 	XXXXXXXXXXXXXX__,
 	__XXXX______XX__,
 	__XXXX__XX______,
@@ -429,8 +429,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX__XX______,
 	__XXXX__________,
 	XXXXXXXX________,
-	________________}  /* char 'F'  */
- ,{
+	________________}
+ ,{  /* char 'G'  */
 	____XXXXXXXX____,
 	__XXXX____XXXX__,
 	XXXX____________,
@@ -438,8 +438,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX____XXXXXX__,
 	__XXXX____XXXX__,
 	____XXXXXX__XX__,
-	________________}  /* char 'G'  */
- ,{
+	________________}
+ ,{  /* char 'H'  */
 	XXXX______XXXX__,
 	XXXX______XXXX__,
 	XXXX______XXXX__,
@@ -447,8 +447,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX______XXXX__,
 	XXXX______XXXX__,
 	XXXX______XXXX__,
-	________________}  /* char 'H'  */
- ,{
+	________________}
+ ,{  /* char 'I'  */
 	____XXXXXXXX____,
 	______XXXX______,
 	______XXXX______,
@@ -456,8 +456,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	______XXXX______,
 	____XXXXXXXX____,
-	________________}  /* char 'I'  */
- ,{
+	________________}
+ ,{  /* char 'J'  */
 	______XXXXXXXX__,
 	________XXXX____,
 	________XXXX____,
@@ -465,8 +465,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX____XXXX____,
 	XXXX____XXXX____,
 	__XXXXXXXX______,
-	________________}  /* char 'J'  */
- ,{
+	________________}
+ ,{  /* char 'K'  */
 	XXXXXX____XXXX__,
 	__XXXX____XXXX__,
 	__XXXX__XXXX____,
@@ -474,8 +474,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX__XXXX____,
 	__XXXX____XXXX__,
 	XXXXXX____XXXX__,
-	________________}  /* char 'K'  */
- ,{
+	________________}
+ ,{  /* char 'L'  */
 	XXXXXXXX________,
 	__XXXX__________,
 	__XXXX__________,
@@ -483,8 +483,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX______XX__,
 	__XXXX____XXXX__,
 	XXXXXXXXXXXXXX__,
-	________________}  /* char 'L'  */
- ,{
+	________________}
+ ,{  /* char 'M'  */
 	XXXX______XXXX__,
 	XXXXXX__XXXXXX__,
 	XXXXXXXXXXXXXX__,
@@ -492,8 +492,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX__XX__XXXX__,
 	XXXX______XXXX__,
 	XXXX______XXXX__,
-	________________}  /* char 'M'  */
- ,{
+	________________}
+ ,{  /* char 'N'  */
 	XXXX______XXXX__,
 	XXXXXX____XXXX__,
 	XXXXXXXX__XXXX__,
@@ -501,8 +501,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX____XXXXXX__,
 	XXXX______XXXX__,
 	XXXX______XXXX__,
-	________________}  /* char 'N'  */
- ,{
+	________________}
+ ,{  /* char 'O'  */
 	__XXXXXXXXXX____,
 	XXXX______XXXX__,
 	XXXX______XXXX__,
@@ -510,8 +510,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX______XXXX__,
 	XXXX______XXXX__,
 	__XXXXXXXXXX____,
-	________________}  /* char 'O'  */
- ,{
+	________________}
+ ,{  /* char 'P'  */
 	XXXXXXXXXXXX____,
 	__XXXX____XXXX__,
 	__XXXX____XXXX__,
@@ -519,8 +519,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX__________,
 	__XXXX__________,
 	XXXXXXXX________,
-	________________}  /* char 'P'  */
- ,{
+	________________}
+ ,{  /* char 'Q'  */
 	__XXXXXXXXXX____,
 	XXXX______XXXX__,
 	XXXX______XXXX__,
@@ -528,8 +528,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX______XXXX__,
 	XXXX____XXXXXX__,
 	__XXXXXXXXXX____,
-	________XXXXXX__}  /* char 'Q'  */
- ,{
+	________XXXXXX__}
+ ,{  /* char 'R'  */
 	XXXXXXXXXXXX____,
 	__XXXX____XXXX__,
 	__XXXX____XXXX__,
@@ -537,8 +537,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX__XXXX____,
 	__XXXX____XXXX__,
 	XXXXXX____XXXX__,
-	________________}  /* char 'R'  */
- ,{
+	________________}
+ ,{  /* char 'S'  */
 	____XXXXXXXX____,
 	__XXXX____XXXX__,
 	____XXXX________,
@@ -546,8 +546,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________XXXX____,
 	__XXXX____XXXX__,
 	____XXXXXXXX____,
-	________________}  /* char 'S'  */
- ,{
+	________________}
+ ,{  /* char 'T'  */
 	__XXXXXXXXXXXX__,
 	__XXXXXXXXXXXX__,
 	__XX__XXXX__XX__,
@@ -555,8 +555,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	______XXXX______,
 	____XXXXXXXX____,
-	________________}  /* char 'T'  */
- ,{
+	________________}
+ ,{  /* char 'U'  */
 	XXXX______XXXX__,
 	XXXX______XXXX__,
 	XXXX______XXXX__,
@@ -564,8 +564,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX______XXXX__,
 	XXXX______XXXX__,
 	__XXXXXXXXXX____,
-	________________}  /* char 'U'  */
- ,{
+	________________}
+ ,{  /* char 'V'  */
 	XXXX______XXXX__,
 	XXXX______XXXX__,
 	XXXX______XXXX__,
@@ -573,8 +573,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX______XXXX__,
 	__XXXX__XXXX____,
 	____XXXXXX______,
-	________________}  /* char 'V'  */
- ,{
+	________________}
+ ,{  /* char 'W'  */
 	XXXX______XXXX__,
 	XXXX______XXXX__,
 	XXXX______XXXX__,
@@ -582,8 +582,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX__XX__XXXX__,
 	XXXXXXXXXXXXXX__,
 	__XXXX__XXXX____,
-	________________}  /* char 'W'  */
- ,{
+	________________}
+ ,{  /* char 'X'  */
 	XXXX______XXXX__,
 	XXXX______XXXX__,
 	__XXXX__XXXX____,
@@ -591,8 +591,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX__XXXX____,
 	XXXX______XXXX__,
 	XXXX______XXXX__,
-	________________}  /* char 'X'  */
- ,{
+	________________}
+ ,{  /* char 'Y'  */
 	__XXXX____XXXX__,
 	__XXXX____XXXX__,
 	__XXXX____XXXX__,
@@ -600,8 +600,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	______XXXX______,
 	____XXXXXXXX____,
-	________________}  /* char 'Y'  */
- ,{
+	________________}
+ ,{  /* char 'Z'  */
 	XXXXXXXXXXXXXX__,
 	XXXX______XXXX__,
 	XX______XXXX____,
@@ -609,8 +609,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	____XXXX____XX__,
 	__XXXX____XXXX__,
 	XXXXXXXXXXXXXX__,
-	________________}  /* char 'Z'  */
- ,{
+	________________}
+ ,{  /* char '['  */
 	____XXXXXXXX____,
 	____XXXX________,
 	____XXXX________,
@@ -618,8 +618,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	____XXXX________,
 	____XXXX________,
 	____XXXXXXXX____,
-	________________}  /* char '['  */
- ,{
+	________________}
+ ,{  /* char '\'  */
 	XXXX____________,
 	__XXXX__________,
 	____XXXX________,
@@ -627,8 +627,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________XXXX____,
 	__________XXXX__,
 	____________XX__,
-	________________}  /* char '\'  */
- ,{
+	________________}
+ ,{  /* char ']'  */
 	____XXXXXXXX____,
 	________XXXX____,
 	________XXXX____,
@@ -636,8 +636,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________XXXX____,
 	________XXXX____,
 	____XXXXXXXX____,
-	________________}  /* char ']'  */
- ,{
+	________________}
+ ,{  /* char '^'  */
 	______XX________,
 	____XXXXXX______,
 	__XXXX__XXXX____,
@@ -645,8 +645,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	________________,
 	________________,
-	________________}  /* char '^'  */
- ,{
+	________________}
+ ,{  /* char '_'  */
 	________________,
 	________________,
 	________________,
@@ -654,8 +654,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	________________,
 	________________,
-	XXXXXXXXXXXXXXXX}  /* char '_'  */
- ,{
+	XXXXXXXXXXXXXXXX}
+ ,{  /* char '`'  */
 	____XXXX________,
 	______XXXX______,
 	________XXXX____,
@@ -663,8 +663,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	________________,
 	________________,
-	________________}  /* char '`'  */
- ,{
+	________________}
+ ,{  /* char 'a'  */
 	________________,
 	________________,
 	__XXXXXXXX______,
@@ -672,8 +672,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXXXXXXXX____,
 	XXXX____XXXX____,
 	__XXXXXX__XXXX__,
-	________________}  /* char 'a'  */
- ,{
+	________________}
+ ,{  /* char 'b'  */
 	XXXXXX__________,
 	__XXXX__________,
 	__XXXXXXXXXX____,
@@ -681,8 +681,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX____XXXX__,
 	__XXXX____XXXX__,
 	XXXX__XXXXXX____,
-	________________}  /* char 'b'  */
- ,{
+	________________}
+ ,{  /* char 'c'  */
 	________________,
 	________________,
 	__XXXXXXXXXX____,
@@ -690,8 +690,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX____________,
 	XXXX______XXXX__,
 	__XXXXXXXXXX____,
-	________________}  /* char 'c'  */
- ,{
+	________________}
+ ,{  /* char 'd'  */
 	______XXXXXX____,
 	________XXXX____,
 	__XXXXXXXXXX____,
@@ -699,8 +699,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX____XXXX____,
 	XXXX____XXXX____,
 	__XXXXXX__XXXX__,
-	________________}  /* char 'd'  */
- ,{
+	________________}
+ ,{  /* char 'e'  */
 	________________,
 	________________,
 	__XXXXXXXXXX____,
@@ -708,8 +708,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXXXXXXXXXXXX__,
 	XXXX____________,
 	__XXXXXXXXXX____,
-	________________}  /* char 'e'  */
- ,{
+	________________}
+ ,{  /* char 'f'  */
 	____XXXXXXXX____,
 	__XXXX____XXXX__,
 	__XXXX__________,
@@ -717,8 +717,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX__________,
 	__XXXX__________,
 	XXXXXXXX________,
-	________________}  /* char 'f'  */
- ,{
+	________________}
+ ,{  /* char 'g'  */
 	________________,
 	________________,
 	__XXXXXX__XXXX__,
@@ -726,8 +726,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX____XXXX____,
 	__XXXXXXXXXX____,
 	________XXXX____,
-	XXXXXXXXXX______}  /* char 'g'  */
- ,{
+	XXXXXXXXXX______}
+ ,{  /* char 'h'  */
 	XXXXXX__________,
 	__XXXX__________,
 	__XXXX__XXXX____,
@@ -735,8 +735,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX____XXXX__,
 	__XXXX____XXXX__,
 	XXXXXX____XXXX__,
-	________________}  /* char 'h'  */
- ,{
+	________________}
+ ,{  /* char 'i'  */
 	______XXXX______,
 	________________,
 	____XXXXXX______,
@@ -744,8 +744,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	______XXXX______,
 	____XXXXXXXX____,
-	________________}  /* char 'i'  */
- ,{
+	________________}
+ ,{  /* char 'j'  */
 	__________XXXX__,
 	________________,
 	__________XXXX__,
@@ -753,8 +753,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__________XXXX__,
 	__XXXX____XXXX__,
 	__XXXX____XXXX__,
-	____XXXXXXXX____}  /* char 'j'  */
- ,{
+	____XXXXXXXX____}
+ ,{  /* char 'k'  */
 	XXXXXX__________,
 	__XXXX__________,
 	__XXXX____XXXX__,
@@ -762,8 +762,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXXXXXX______,
 	__XXXX__XXXX____,
 	XXXXXX____XXXX__,
-	________________}  /* char 'k'  */
- ,{
+	________________}
+ ,{  /* char 'l'  */
 	____XXXXXX______,
 	______XXXX______,
 	______XXXX______,
@@ -771,8 +771,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	______XXXX______,
 	____XXXXXXXX____,
-	________________}  /* char 'l'  */
- ,{
+	________________}
+ ,{  /* char 'm'  */
 	________________,
 	________________,
 	XXXXXX__XXXX____,
@@ -780,8 +780,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX__XX__XXXX__,
 	XXXX__XX__XXXX__,
 	XXXX__XX__XXXX__,
-	________________}  /* char 'm'  */
- ,{
+	________________}
+ ,{  /* char 'n'  */
 	________________,
 	________________,
 	XXXX__XXXXXX____,
@@ -789,8 +789,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX____XXXX__,
 	__XXXX____XXXX__,
 	__XXXX____XXXX__,
-	________________}  /* char 'n'  */
- ,{
+	________________}
+ ,{  /* char 'o'  */
 	________________,
 	________________,
 	__XXXXXXXXXX____,
@@ -798,8 +798,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX______XXXX__,
 	XXXX______XXXX__,
 	__XXXXXXXXXX____,
-	________________}  /* char 'o'  */
- ,{
+	________________}
+ ,{  /* char 'p'  */
 	________________,
 	________________,
 	XXXX__XXXXXX____,
@@ -807,8 +807,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX____XXXX__,
 	__XXXXXXXXXX____,
 	__XXXX__________,
-	XXXXXXXX________}  /* char 'p'  */
- ,{
+	XXXXXXXX________}
+ ,{  /* char 'q'  */
 	________________,
 	________________,
 	__XXXXXX__XXXX__,
@@ -816,8 +816,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX____XXXX____,
 	__XXXXXXXXXX____,
 	________XXXX____,
-	______XXXXXXXX__}  /* char 'q'  */
- ,{
+	______XXXXXXXX__}
+ ,{  /* char 'r'  */
 	________________,
 	________________,
 	XXXX__XXXXXX____,
@@ -825,8 +825,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXX__________,
 	__XXXX__________,
 	XXXXXXXX________,
-	________________}  /* char 'r'  */
- ,{
+	________________}
+ ,{  /* char 's'  */
 	________________,
 	________________,
 	__XXXXXXXXXXXX__,
@@ -834,8 +834,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXXXXXXXX____,
 	__________XXXX__,
 	XXXXXXXXXXXX____,
-	________________}  /* char 's'  */
- ,{
+	________________}
+ ,{  /* char 't'  */
 	____XXXX________,
 	____XXXX________,
 	XXXXXXXXXXXX____,
@@ -843,8 +843,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	____XXXX________,
 	____XXXX__XXXX__,
 	______XXXXXX____,
-	________________}  /* char 't'  */
- ,{
+	________________}
+ ,{  /* char 'u'  */
 	________________,
 	________________,
 	XXXX____XXXX____,
@@ -852,8 +852,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX____XXXX____,
 	XXXX____XXXX____,
 	__XXXXXX__XXXX__,
-	________________}  /* char 'u'  */
- ,{
+	________________}
+ ,{  /* char 'v'  */
 	________________,
 	________________,
 	XXXX______XXXX__,
@@ -861,8 +861,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX______XXXX__,
 	__XXXX__XXXX____,
 	____XXXXXX______,
-	________________}  /* char 'v'  */
- ,{
+	________________}
+ ,{  /* char 'w'  */
 	________________,
 	________________,
 	XXXX______XXXX__,
@@ -870,8 +870,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX__XX__XXXX__,
 	XXXXXXXXXXXXXX__,
 	__XXXX__XXXX____,
-	________________}  /* char 'w'  */
- ,{
+	________________}
+ ,{  /* char 'x'  */
 	________________,
 	________________,
 	XXXX______XXXX__,
@@ -879,8 +879,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	____XXXXXX______,
 	__XXXX__XXXX____,
 	XXXX______XXXX__,
-	________________}  /* char 'x'  */
- ,{
+	________________}
+ ,{  /* char 'y'  */
 	________________,
 	________________,
 	XXXX______XXXX__,
@@ -888,8 +888,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX______XXXX__,
 	__XXXXXXXXXXXX__,
 	__________XXXX__,
-	XXXXXXXXXXXX____}  /* char 'y'  */
- ,{
+	XXXXXXXXXXXX____}
+ ,{  /* char 'z'  */
 	________________,
 	________________,
 	__XXXXXXXXXXXX__,
@@ -897,8 +897,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	____XXXX____XX__,
 	__XXXXXXXXXXXX__,
-	________________}  /* char 'z'  */
- ,{
+	________________}
+ ,{  /* char '{'  */
 	________XXXXXX__,
 	______XXXX______,
 	______XXXX______,
@@ -906,8 +906,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	______XXXX______,
 	________XXXXXX__,
-	________________}  /* char '{'  */
- ,{
+	________________}
+ ,{  /* char '|'  */
 	______XXXX______,
 	______XXXX______,
 	______XXXX______,
@@ -915,8 +915,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	______XXXX______,
 	______XXXX______,
-	________________}  /* char '|'  */
- ,{
+	________________}
+ ,{  /* char '}'  */
 	__XXXXXX________,
 	______XXXX______,
 	______XXXX______,
@@ -924,8 +924,8 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	______XXXX______,
 	______XXXX______,
 	__XXXXXX________,
-	________________}  /* char '}'  */
- ,{
+	________________}
+ ,{  /* char '~'  */
 	__XXXXXX__XXXX__,
 	XXXX__XXXXXX____,
 	________________,
@@ -933,7 +933,7 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	________________,
 	________________,
-	________________}   /* char '~'  */
+	________________} 
 /*  additional characters for European character set  */
 /* small accent ague, 95 */
  ,{
@@ -1257,7 +1257,7 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	________________,
 	________________}
  /* cent sign, ISO-Code: 162, internal code: 127  */
- ,{
+ ,{  /* char 'c'  */
 	________________,
 	______XX________,
 	__XXXXXXXXXX____,
@@ -1265,7 +1265,7 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	XXXX__XX________,
 	XXXX__XX__XXXX__,
 	__XXXXXXXXXX____,
-	______XX________}  /* char 'c'  */
+	______XX________}
  /* pound sterling, ISO-Code: 163, internal code: 128  */
  ,{
 	______XXXXXX____,
@@ -1617,129 +1617,126 @@ static BM_BPP1 GUI_F8x8_acFont[][8]{
 	__XXXXXXXX______,
 	____XXXX________}
 };
+
 static const FONT_MONO::TRANSINFO::LIST GUI_F8x8_TransList[]{
-/*
-	The folowing are extensions to ISO 8859-1.
+/*	The folowing are extensions to ISO 8859-1.
 	Since ISO 8859-1 does not define any characters for the codes
 	128 - 159, this area can be used by an application.
 	The most commonly used symbols in embedded applications are
-	therefor inserted here.
-*/
-	{CODE_ARROW_LEFT,-1},			/* 144, arrow left */
-	{CODE_ARROW_RIGHT,-1},		/* 145, arrow right */
-	{CODE_ARROW_UP,-1},			/* 146, arrow up */
-	{CODE_ARROW_DOWN,-1},			/* 147, arrow down */
-	{CODE_ENTER,-1},                      /* 148, enter symbol */
-	{CODE_CHECKMARK,-1},			/* 149, checkmark symbol */
-	{-1,-1},				/* 150, unused symbol */
-	{-1,-1},				/* 151, unused symbol */
-	{-1,-1},				/* 152, unused symbol */
-	{-1,-1},				/* 153, unused symbol */
-	{-1,-1},				/* 154, unused symbol */
-	{-1,-1},				/* 155, unused symbol */
-	{-1,-1},				/* 156, unused symbol */
-	{-1,-1},				/* 157, unused symbol */
-	{-1,-1},				/* 158, unused symbol */
-	{-1,-1},				/* 159, unused symbol */
-/* starting at character code 160 are the characters defined
-	by ISO 8859-1
-*/
-	{CODE_NB_SPACE,-1},                   /* 160, non-breaking space */
-	{CODE_INVEXCLAM,-1},                  /* 161, inverted exclamation sign */
-	{CODE_CENT,-1},                       /* 162, cent sign */
-	{CODE_POUND,-1},                      /* 163, pound sterling */
-	{CODE_CURRENCY,-1},                   /* 164, general currency sign */
-	{CODE_YEN,-1},                        /* 165, yen sign */
-	{CODE_BROKEN_BAR,-1},                 /* 166, broken vertical bar */
-	{CODE_SECTION,-1},                    /* 167, section sign */
-	{CODE_DIERESIS,-1},                   /* 168, umlaut */
-	{CODE_COPYRIGHT,-1},                  /* 169, copyright */
-	{CODE_FEMININE,-1},                   /* 170,  */
-	{CODE_LEFT_QUOTE,-1},                 /* 171,  */
-	{CODE_NOT,-1},                        /* 172,  */
-	{CODE_HYPHEN,-1},                     /* 173,  */
-	{CODE_TRADEMARK,-1},                  /* 174,  */
-	{CODE_MACRON,-1},                     /* 175,  */
-	{CODE_DEGREE,-1},                     /* 176,  */
-	{CODE_PLUS_MINUS,-1},                 /* 177,  */
-	{CODE_SUPER_TWO,-1},                  /* 178,  */
-	{CODE_SUPER_THREE,-1},                /* 179,  */
-	{CODE_ACUTE,-1},                      /* 180,  */
-	{CODE_MICRO,-1},                      /* 181,  */
-	{CODE_PARAGRAPH,-1},                  /* 182,  */
-	{CODE_MIDDLE_DOT,-1},                 /* 183,  */
-	{CODE_CEDILLA,-1},                    /* 184,  */
-	{CODE_SUPER_ONE,-1},                  /* 185,  */
-	{CODE_MASCULINE,-1},                  /* 186,  */
-	{CODE_RIGHT_QUOTE,-1},                /* 187,  */
-	{CODE_ONE_FOURTH,-1},                 /* 188,  */
-	{CODE_ONE_HALF,-1},                   /* 189,  */
-	{CODE_THREE_FOURTH,-1},               /* 190,  */
-	{CODE_INVQUEST,-1},                   /* 191,  */
-	{CODE_LITTLE_A,CODE_CACCGRAV},        /* 192,  */
-	{CODE_LITTLE_A,CODE_CACCAGUE},        /* 193,  */
-	{CODE_LITTLE_A,CODE_CACCCIRC},        /* 194,  */
-	{CODE_LITTLE_A,CODE_CTILDE},          /* 195,  */
-	{CODE_LITTLE_A,CODE_CUMLAUT},         /* 196,  */
-	{CODE_A_RING,-1},                     /* 197,  */
-	{CODE_AE,-1},                         /* 198,  */
-	{'C'-32,CODE_CEDILLA},                /* 199,  */
-	{CODE_LITTLE_E,CODE_CACCGRAV},        /* 200,  */
-	{CODE_LITTLE_E,CODE_CACCAGUE},        /* 201,  */
-	{CODE_LITTLE_E,CODE_CACCCIRC},        /* 202,  */
-	{CODE_LITTLE_E,CODE_CUMLAUT},         /* 203,  */
-	{CODE_LITTLE_I,CODE_CACCGRAV},        /* 204,  */
-	{CODE_LITTLE_I,CODE_CACCAGUE},        /* 205,  */
-	{CODE_LITTLE_I,CODE_CACCCIRC},        /* 206,  */
-	{CODE_LITTLE_I,CODE_CUMLAUT},         /* 207,  */
-	{CODE_ETH,-1},                        /* 208,  */
-	{CODE_LITTLE_N,CODE_CTILDE},          /* 209,  */
-	{CODE_LITTLE_O,CODE_CACCGRAV},        /* 210,  */
-	{CODE_LITTLE_O,CODE_CACCAGUE},        /* 211,  */
-	{CODE_LITTLE_O,CODE_CACCCIRC},        /* 212,  */
-	{CODE_LITTLE_O,CODE_CTILDE},          /* 213,  */
-	{CODE_LITTLE_O,CODE_CUMLAUT},         /* 214,  */
-	{CODE_MULTIPLY,-1},                   /* 215,  */
-	{CODE_OSLASH,-1},                     /* 216,  */
-	{CODE_LITTLE_U,CODE_CACCGRAV},        /* 217,  */
-	{CODE_LITTLE_U,CODE_CACCAGUE},        /* 218,  */
-	{CODE_LITTLE_U,CODE_CACCCIRC},        /* 219,  */
-	{CODE_LITTLE_U,CODE_CUMLAUT},         /* 220,  */
-	{'Y'-32,CODE_CACCAGUE},               /* 221,  */
-	{CODE_THORN,-1},                      /* 222,  */
-	{CODE_SHARPS,-1},                     /* 223,  */
-	{'a'-32,CODE_SACCGRAV},               /* 224,  */
-	{'a'-32,CODE_SACCAGUE},               /* 225,  */
-	{'a'-32,CODE_SACCCIRC},               /* 226,  */
-	{'a'-32,CODE_STILDE},                 /* 227,  */
-	{'a'-32,CODE_SUMLAUT},                /* 228,  */
-	{CODE_SA_RING,-1},                    /* 229,  */
-	{CODE_SMALLAE,-1},                    /* 230,  */
-	{'c'-32,CODE_CEDILLA},                /* 231,  */
-	{'e'-32,CODE_SACCGRAV},               /* 232,  */
-	{'e'-32,CODE_SACCAGUE},               /* 233,  */
-	{'e'-32,CODE_SACCCIRC},               /* 234,  */
-	{'e'-32,CODE_SUMLAUT},                /* 235,  */
-	{CODE_I_NOPOINT,CODE_SACCGRAV},       /* 236,  */
-	{CODE_I_NOPOINT,CODE_SACCAGUE},       /* 237,  */
-	{CODE_I_NOPOINT,CODE_SACCCIRC},       /* 238,  */
-	{CODE_I_NOPOINT,CODE_SUMLAUT},        /* 239,  */
-	{CODE_SMALLETH,-1},                   /* 240, small eth, Icelandic */
-	{'n'-32,CODE_STILDE},                 /* 241, small n, tilde */
-	{'o'-32,CODE_SACCGRAV},               /* 242, small o, grave accent */
-	{'o'-32,CODE_SACCAGUE},               /* 243, small o, acute accent */
-	{'o'-32,CODE_SACCCIRC},               /* 244, small o, circumflex  */
-	{'o'-32,CODE_STILDE},                 /* 245, small o, tilde  */
-	{'o'-32,CODE_SUMLAUT},                /* 246, small o, umlaut  */
-	{CODE_DIVISION,-1},                   /* 247, division sign */
-	{CODE_SOSLASH,-1},                    /* 248, small o slash */
-	{'u'-32,CODE_SACCAGUE},               /* 249,  */
-	{'u'-32,CODE_SACCGRAV},               /* 250,  */
-	{'u'-32,CODE_SACCCIRC},               /* 251,  */
-	{'u'-32,CODE_SUMLAUT},                /* 252, small u, umlaut  */
-	{'y'-32,CODE_SACCAGUE},               /* 253, small y, acute accent */
-	{CODE_SMALLTHORN,-1},                 /* 254, small thorn, Icelandic  */
-	{'y'-32,CODE_SUMLAUT},                /* 255, */
+	therefor inserted here. */
+	{ CODE_ARROW_LEFT   , -1            }, /* 144, arrow left */
+	{ CODE_ARROW_RIGHT  , -1            }, /* 145, arrow right */
+	{ CODE_ARROW_UP     , -1            }, /* 146, arrow up */
+	{ CODE_ARROW_DOWN   , -1            }, /* 147, arrow down */
+	{ CODE_ENTER        , -1            }, /* 148, enter symbol */
+	{ CODE_CHECKMARK    , -1            }, /* 149, checkmark symbol */
+	{ -1                , -1            }, /* 150, unused symbol */
+	{ -1                , -1            }, /* 151, unused symbol */
+	{ -1                , -1            }, /* 152, unused symbol */
+	{ -1                , -1            }, /* 153, unused symbol */
+	{ -1                , -1            }, /* 154, unused symbol */
+	{ -1                , -1            }, /* 155, unused symbol */
+	{ -1                , -1            }, /* 156, unused symbol */
+	{ -1                , -1            }, /* 157, unused symbol */
+	{ -1                , -1            }, /* 158, unused symbol */
+	{ -1                , -1            }, /* 159, unused symbol */
+/*	starting at character code 160 are the characters defined by ISO 8859-1 */
+	{ CODE_NB_SPACE     , -1            }, /* 160, non-breaking space */
+	{ CODE_INVEXCLAM    , -1            }, /* 161, inverted exclamation sign */
+	{ CODE_CENT         , -1            }, /* 162, cent sign */
+	{ CODE_POUND        , -1            }, /* 163, pound sterling */
+	{ CODE_CURRENCY     , -1            }, /* 164, general currency sign */
+	{ CODE_YEN          , -1            }, /* 165, yen sign */
+	{ CODE_BROKEN_BAR   , -1            }, /* 166, broken vertical bar */
+	{ CODE_SECTION      , -1            }, /* 167, section sign */
+	{ CODE_DIERESIS     , -1            }, /* 168, umlaut */
+	{ CODE_COPYRIGHT    , -1            }, /* 169, copyright */
+	{ CODE_FEMININE     , -1            }, /* 170,  */
+	{ CODE_LEFT_QUOTE   , -1            }, /* 171,  */
+	{ CODE_NOT          , -1            }, /* 172,  */
+	{ CODE_HYPHEN       , -1            }, /* 173,  */
+	{ CODE_TRADEMARK    , -1            }, /* 174,  */
+	{ CODE_MACRON       , -1            }, /* 175,  */
+	{ CODE_DEGREE       , -1            }, /* 176,  */
+	{ CODE_PLUS_MINUS   , -1            }, /* 177,  */
+	{ CODE_SUPER_TWO    , -1            }, /* 178,  */
+	{ CODE_SUPER_THREE  , -1            }, /* 179,  */
+	{ CODE_ACUTE        , -1            }, /* 180,  */
+	{ CODE_MICRO        , -1            }, /* 181,  */
+	{ CODE_PARAGRAPH    , -1            }, /* 182,  */
+	{ CODE_MIDDLE_DOT   , -1            }, /* 183,  */
+	{ CODE_CEDILLA      , -1            }, /* 184,  */
+	{ CODE_SUPER_ONE    , -1            }, /* 185,  */
+	{ CODE_MASCULINE    , -1            }, /* 186,  */
+	{ CODE_RIGHT_QUOTE  , -1            }, /* 187,  */
+	{ CODE_ONE_FOURTH   , -1            }, /* 188,  */
+	{ CODE_ONE_HALF     , -1            }, /* 189,  */
+	{ CODE_THREE_FOURTH , -1            }, /* 190,  */
+	{ CODE_INVQUEST     , -1            }, /* 191,  */
+	{ CODE_LITTLE_A     , CODE_CACCGRAV }, /* 192,  */
+	{ CODE_LITTLE_A     , CODE_CACCAGUE }, /* 193,  */
+	{ CODE_LITTLE_A     , CODE_CACCCIRC }, /* 194,  */
+	{ CODE_LITTLE_A     , CODE_CTILDE   }, /* 195,  */
+	{ CODE_LITTLE_A     , CODE_CUMLAUT  }, /* 196,  */
+	{ CODE_A_RING       , -1            }, /* 197,  */
+	{ CODE_AE           , -1            }, /* 198,  */
+	{ 'C' - 32          , CODE_CEDILLA  }, /* 199,  */
+	{ CODE_LITTLE_E     , CODE_CACCGRAV }, /* 200,  */
+	{ CODE_LITTLE_E     , CODE_CACCAGUE }, /* 201,  */
+	{ CODE_LITTLE_E     , CODE_CACCCIRC }, /* 202,  */
+	{ CODE_LITTLE_E     , CODE_CUMLAUT  }, /* 203,  */
+	{ CODE_LITTLE_I     , CODE_CACCGRAV }, /* 204,  */
+	{ CODE_LITTLE_I     , CODE_CACCAGUE }, /* 205,  */
+	{ CODE_LITTLE_I     , CODE_CACCCIRC }, /* 206,  */
+	{ CODE_LITTLE_I     , CODE_CUMLAUT  }, /* 207,  */
+	{ CODE_ETH          , -1            }, /* 208,  */
+	{ CODE_LITTLE_N     , CODE_CTILDE   }, /* 209,  */
+	{ CODE_LITTLE_O     , CODE_CACCGRAV }, /* 210,  */
+	{ CODE_LITTLE_O     , CODE_CACCAGUE }, /* 211,  */
+	{ CODE_LITTLE_O     , CODE_CACCCIRC }, /* 212,  */
+	{ CODE_LITTLE_O     , CODE_CTILDE   }, /* 213,  */
+	{ CODE_LITTLE_O     , CODE_CUMLAUT  }, /* 214,  */
+	{ CODE_MULTIPLY     , -1            }, /* 215,  */
+	{ CODE_OSLASH       , -1            }, /* 216,  */
+	{ CODE_LITTLE_U     , CODE_CACCGRAV }, /* 217,  */
+	{ CODE_LITTLE_U     , CODE_CACCAGUE }, /* 218,  */
+	{ CODE_LITTLE_U     , CODE_CACCCIRC }, /* 219,  */
+	{ CODE_LITTLE_U     , CODE_CUMLAUT  }, /* 220,  */
+	{ 'Y' - 32          , CODE_CACCAGUE }, /* 221,  */
+	{ CODE_THORN        , -1            }, /* 222,  */
+	{ CODE_SHARPS       , -1            }, /* 223,  */
+	{ 'a' - 32          , CODE_SACCGRAV }, /* 224,  */
+	{ 'a' - 32          , CODE_SACCAGUE }, /* 225,  */
+	{ 'a' - 32          , CODE_SACCCIRC }, /* 226,  */
+	{ 'a' - 32          , CODE_STILDE   }, /* 227,  */
+	{ 'a' - 32          , CODE_SUMLAUT  }, /* 228,  */
+	{ CODE_SA_RING      , -1            }, /* 229,  */
+	{ CODE_SMALLAE      , -1            }, /* 230,  */
+	{ 'c' - 32          , CODE_CEDILLA  }, /* 231,  */
+	{ 'e' - 32          , CODE_SACCGRAV }, /* 232,  */
+	{ 'e' - 32          , CODE_SACCAGUE }, /* 233,  */
+	{ 'e' - 32          , CODE_SACCCIRC }, /* 234,  */
+	{ 'e' - 32          , CODE_SUMLAUT  }, /* 235,  */
+	{ CODE_I_NOPOINT    , CODE_SACCGRAV }, /* 236,  */
+	{ CODE_I_NOPOINT    , CODE_SACCAGUE }, /* 237,  */
+	{ CODE_I_NOPOINT    , CODE_SACCCIRC }, /* 238,  */
+	{ CODE_I_NOPOINT    , CODE_SUMLAUT  }, /* 239,  */
+	{ CODE_SMALLETH     , -1            }, /* 240, small eth, Icelandic */
+	{ 'n' - 32          , CODE_STILDE   }, /* 241, small n, tilde */
+	{ 'o' - 32          , CODE_SACCGRAV }, /* 242, small o, grave accent */
+	{ 'o' - 32          , CODE_SACCAGUE }, /* 243, small o, acute accent */
+	{ 'o' - 32          , CODE_SACCCIRC }, /* 244, small o, circumflex  */
+	{ 'o' - 32          , CODE_STILDE   }, /* 245, small o, tilde  */
+	{ 'o' - 32          , CODE_SUMLAUT  }, /* 246, small o, umlaut  */
+	{ CODE_DIVISION     , -1            }, /* 247, division sign */
+	{ CODE_SOSLASH      , -1            }, /* 248, small o slash */
+	{ 'u' - 32          , CODE_SACCAGUE }, /* 249,  */
+	{ 'u' - 32          , CODE_SACCGRAV }, /* 250,  */
+	{ 'u' - 32          , CODE_SACCCIRC }, /* 251,  */
+	{ 'u' - 32          , CODE_SUMLAUT  }, /* 252, small u, umlaut  */
+	{ 'y' - 32          , CODE_SACCAGUE }, /* 253, small y, acute accent */
+	{ CODE_SMALLTHORN   , -1            }, /* 254, small thorn, Icelandic  */
+	{ 'y' - 32          , CODE_SUMLAUT  }, /* 255, */
 };
 static const FONT_MONO::TRANSINFO GUI_F8x8_TransInfo{
 	144, 255,          /*  FirstChar, LastChar */
@@ -1752,7 +1749,6 @@ CFONT_MONO FontMono_8x8{
 	7, /* CHeight */
 	/* For FONT_MONO */
 	GUI_F8x8_acFont[0],    /* pData */
-	GUI_F8x8_acFont[0],    /* pTransData */
 	&GUI_F8x8_TransInfo,   /* pTrans */
 	32, 127,               /* FirstChar, LastChar */
 	8                      /* XSize */

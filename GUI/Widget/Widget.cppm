@@ -17,9 +17,9 @@ constexpr uint16_t
 	WIDGET_STATE_FOCUSSABLE  = 1 << 1,
 	WIDGET_STATE_USER_START  = 1 << 2;
 template<uint8_t bits>
-requires(uint16_t(1 << (WIDGET_STATE_USER_START + bits)) != 0)
+requires(uint16_t(WIDGET_STATE_USER_START << bits) != 0)
 constexpr uint16_t
-	WIDGET_STATE_USER = 1 << (WIDGET_STATE_USER_START + bits);
+	WIDGET_STATE_USER = WIDGET_STATE_USER_START << bits;
 
 constexpr uint16_t WM_WIDGET_SET_EFFECT     = WM_WIDGET<0>;
 

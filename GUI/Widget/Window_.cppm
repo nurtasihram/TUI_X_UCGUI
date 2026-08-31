@@ -60,7 +60,7 @@ private:
 			return (WM_PARAM)pObj->pDialogStatus;
 		case WM_SET_FOCUS:
 			if (Data) { /* Focus received */
-				if (pObj->pFocussedChild && pObj->pFocussedChild != pObj)
+				if (IsWindow(pObj->pFocussedChild) && pObj->pFocussedChild != pObj)
 					pObj->pFocussedChild->SetFocus();
 				else
 					pObj->pFocussedChild = pObj->SetFocusOnNextChild();

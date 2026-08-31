@@ -219,11 +219,10 @@ using PCFONT = const FONT *;
 
 struct FONT_MONO : FONT {
 	const void *pData;
-	const void *pTransData;
 	struct TRANSINFO {
 		uint16_t FirstChar, LastChar;
 		struct LIST {
-			int16_t c0, c1;
+			int16_t c0 = -1, c1 = -1;
 		} const *pList;
 	} const *pTrans;
 	uint16_t FirstChar, LastChar;
@@ -233,12 +232,11 @@ struct FONT_MONO : FONT {
 			  uint8_t Baseline, uint8_t CHeight,
 			  /* For FONT_MONO */
 			  const void *pData,
-			  const void *pTransData,
 			  const TRANSINFO *pTrans,
 			  uint16_t FirstChar, uint16_t LastChar,
 			  uint8_t XSize) :
 		FONT(YSize, Baseline, CHeight),
-		pData(pData), pTransData(pTransData), pTrans(pTrans),
+		pData(pData), pTrans(pTrans),
 		FirstChar(FirstChar), LastChar(LastChar),
 		XSize(XSize) {}
 
@@ -259,9 +257,9 @@ using CFONT_MONO = const FONT_MONO;
 struct FONT_PROP : FONT {
 	uint16_t First, Last;
 	struct CHARINFO {
+		const void *pData;
 		uint8_t XSize;
 		uint8_t BytesPerLine;
-		const void *pData;
 	} const *paCharInfo;
 	const FONT_PROP *pNext;
 

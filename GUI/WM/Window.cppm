@@ -675,8 +675,10 @@ public:
 			return;
 		pWinNextDraw = nullptr; /* Make sure the window will no longer receive drawing messages */
 		/* Make sure that focus is set to an existing window */
-		if (pWinFocus == this)
+		if (pWinFocus == this) {
+			Require(WM_SET_FOCUS, 0);
 			pWinFocus = nullptr;
+		}
 		if (pWinCapture == this)
 			ReleaseCapture(); /* Make sure the window does not have capture */
 		/* check if critical handles are affected. If so, reset the window handle to 0 */
