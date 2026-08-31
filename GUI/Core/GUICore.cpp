@@ -18,7 +18,6 @@ void GUI_Init(void) {
 	GUI.Font(GUI_DEFAULT_FONT);
 	GUI.BkColor(GUI_DEFAULT_BKCOLOR);
 	GUI.Color(GUI_DEFAULT_COLOR);
-	GUI.pUC_API = &GUI__API_TableNone;
 	LCD_SetClipRectMax();
 	LCD_L0_Init();
 	WM_Init();
@@ -143,8 +142,6 @@ void GUI_DrawBitmap(PCBITMAP pBitmap, int x0, int y0) {
 }
 #pragma endregion
 
-
-
 #pragma region Font&String
 void GUI_GetTextExtend(RECT *pRect, const char *s, int MaxNumChars) {
 	int xMax = 0;
@@ -154,27 +151,22 @@ void GUI_GetTextExtend(RECT *pRect, const char *s, int MaxNumChars) {
 	pRect->y0 = GUI.DispPos.y;
 	UCFONT Font = GUI.Font();
 	while (MaxNumChars--) {
-		auto Char = GUI_UC__GetCharCodeInc(&s);
+		auto Char = *s++;
 		if ((Char == '\n') || (Char == 0)) {
-			if (LineSizeX > xMax) {
+			if (LineSizeX > xMax)
 				xMax = LineSizeX;
-			}
 			LineSizeX = 0;
 			NumLines++;
-			if (!Char) {
+			if (!Char)
 				break;
-			}
 		}
-		else {
+		else 
 			LineSizeX += Font.GetCharSizeX(Char);
-		}
 	}
-	if (LineSizeX > xMax) {
+	if (xMax < LineSizeX)
 		xMax = LineSizeX;
-	}
-	if (!NumLines) {
+	if (!NumLines) 
 		NumLines = 1;
-	}
 	pRect->x1 = pRect->x0 + xMax - 1;
 	pRect->y1 = pRect->y0 + Font.YSize * NumLines - 1;
 }
@@ -229,7 +221,7 @@ int GUI__GetLineSizeX(const char *s, int MaxNumChars) {
 	UCFONT Font = GUI.Font();
 	if (s) {
 		while (--MaxNumChars >= 0) {
-			auto Char = GUI_UC__GetCharCodeInc(&s);
+			auto Char = *s++;
 			Dist += Font.GetCharSizeX(Char);
 		}
 	}
@@ -293,7 +285,7 @@ static void _DispLine(const char *s, int MaxNumChars, const RECT *pRect) {
 	if (!(*pRect <= GUI.ClipRect))
 		return;
 	else while (MaxNumChars--) 
-		GUI.pAFont->DispChar(GUI_UC__GetCharCodeInc(&s));
+		GUI.pAFont->DispChar(*s++);
 }
 void GUI__DispLine(const char *s, int MaxNumChars, const RECT *pr) {
 	auto r = *pr + GUI.Off;
@@ -317,15 +309,14 @@ void GUI_DispString(const char *s) {
 		r.y1 = r.y0 + FontSizeY - 1;
 		GUI__DispLine(s, LineNumChars, &r);
 		GUI.DispPos.y = r.y0;
-		s += GUI_UC__NumChars2NumBytes(s, LineNumChars);
+		s += LineNumChars;
 		if (*s == '\n' || *s == '\r') {
 			GUI.DispPos.x = 0;
 			if (*s == '\n')
 				GUI.DispPos.y += FontSizeY;
 		}
-		else {
+		else
 			GUI.DispPos.x = r.x0 + xLineSize;
-		}
 		if (*s == 0)    /* end of string (last line) reached ? */
 			break;
 	}
@@ -361,7 +352,7 @@ void GUI__DispStringInRect(const char *s, RECT *pRect, int TextAlign, int MaxNum
 		for (NumCharsRem = MaxNumChars, NumLines = 1; NumCharsRem; NumLines++) {
 			LineLen = GUI__GetLineNumChars(s, NumCharsRem);
 			NumCharsRem -= LineLen;
-			s += GUI_UC__NumChars2NumBytes(s, LineLen);
+			s += LineLen;
 			if (GUI__HandleEOLine(&s))
 				break;
 		}
@@ -394,7 +385,7 @@ void GUI__DispStringInRect(const char *s, RECT *pRect, int TextAlign, int MaxNum
 		rLine.y0 = GUI.DispPos.y = y;
 		rLine.y1 = y + FontYSize - 1;
 		GUI__DispLine(s, LineLen, &rLine);
-		s += GUI_UC__NumChars2NumBytes(s, LineLen);
+		s += LineLen;
 		y += GUI.pAFont->YSize;
 		if (GUI__HandleEOLine(&s))
 			break;
@@ -528,20 +519,11 @@ int GUI__HandleEOLine(const char **ps) {
 	return 0;
 }
 
-int GUI__GetNumChars(const char *s) {
-	int NumChars = 0;
-	if (s) {
-		while (GUI_UC__GetCharCodeInc(&s)) {
-			NumChars++;
-		}
-	}
-	return NumChars;
-}
 int GUI__GetLineNumChars(const char *s, int MaxNumChars) {
 	int NumChars = 0;
 	if (s) {
 		for (; NumChars < MaxNumChars; NumChars++) {
-			auto Data = GUI_UC__GetCharCodeInc(&s);
+			auto Data = *s++;
 			if (Data == 0 || Data == '\n')
 				break;
 		}
@@ -561,34 +543,30 @@ static int _GetWordWrap(const char *s, int xSize) {
 	uint16_t Char, PrevChar = 0;
 	UCFONT Font = GUI.Font();
 	while (1) {
-		Char = GUI_UC__GetCharCodeInc(&s);   /* Similar to:  *s++ */
+		Char = *s++;   /* Similar to:  *s++ */
 		/* Let's first check if the line end is reached. In this case we are done. */
 		if (_IsLineEnd(Char)) {
 			WordWrap = NumChars;
 			break;
 		}
 		/* If current character is a space, we found a wrap position */
-		if ((Char == ' ') && (Char != PrevChar)) {
+		if (Char == ' ' && Char != PrevChar)
 			WordWrap = NumChars;
-		}
 		PrevChar = Char;
 		xDist += Font.GetCharSizeX(Char);
-		if ((xDist <= xSize) || (NumChars == 0)) {
+		if (xDist <= xSize || NumChars == 0)
 			NumChars++;
-		}
-		else {
+		else
 			break;
-		}
 	}
-	if (!WordWrap) {
+	if (!WordWrap)
 		WordWrap = NumChars;
-	}
 	return WordWrap;
 }
 static int _GetCharWrap(const char *s, int xSize) {
 	int xDist = 0, NumChars = 0;
 	UCFONT Font = GUI.Font();
-	while (uint16_t Char = GUI_UC__GetCharCodeInc(&s)) {
+	while (auto Char = *s++) {
 		xDist += Font.GetCharSizeX(Char);
 		if ((NumChars && (xDist > xSize)) || (Char == '\n')) 
 			break;
@@ -623,29 +601,20 @@ int GUI__WrapGetNumCharsDisp(const char *pText, int xSize, WRAPMODE WrapMode) {
 	return r;
 }
 int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, WRAPMODE WrapMode) {
-	int NumChars;
-	uint16_t Char;
-	NumChars = GUI__WrapGetNumCharsDisp(pText, xSize, WrapMode);
-	pText += GUI_UC__NumChars2NumBytes(pText, NumChars);
-	Char = GUI_UC__GetCharCodeInc(&pText);
-	if (Char == '\n') {
+	auto NumChars = GUI__WrapGetNumCharsDisp(pText, xSize, WrapMode);
+	pText += NumChars;
+	auto Char = *pText++;
+	if (Char == '\n')
 		NumChars++;
-	}
-	else {
-		if (WrapMode == WRAPMODE_WORD) {
-			while (Char == ' ') {
-				NumChars++;
-				Char = GUI_UC__GetCharCodeInc(&pText);
-			}
+	else if (WrapMode == WRAPMODE_WORD)
+		while (Char == ' ') {
+			NumChars++;
+			Char = *pText++;
 		}
-	}
 	return NumChars;
 }
 int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, WRAPMODE WrapMode) {
-	int NumChars, NumBytes;
-	NumChars = GUI__WrapGetNumCharsToNextLine(pText, xSize, WrapMode);
-	NumBytes = GUI_UC__NumChars2NumBytes(pText, NumChars);
-	return NumBytes;
+	return GUI__WrapGetNumCharsToNextLine(pText, xSize, WrapMode);
 }
 #pragma endregion
 #pragma endregion

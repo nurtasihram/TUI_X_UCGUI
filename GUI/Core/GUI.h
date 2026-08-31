@@ -65,14 +65,6 @@ void  GUI_GetTextExtend(RECT *pRect, const char *s, int Len);
 int   GUI_GetStringSizeX(const char *s);
 void  GUI_DispNextLine(void);
 
-int      GUI_UC_Encode(char *s, uint16_t Char);
-int      GUI_UC_GetCharSize(const char *s);
-uint16_t GUI_UC_GetCharCode(const char *s);
-void     GUI_UC_SetEncodeNone(void);
-void     GUI_UC_SetEncodeUTF8(void);
-
-void GUI_UC_DispString(const uint16_t *s);
-
 void *GUI_ALLOC_AllocInit(const void *pInitData, size_t Size);
 void *GUI_ALLOC_AllocNoInit(size_t size);
 void *GUI_ALLOC_AllocZero(size_t size);
@@ -130,5 +122,3 @@ void GUI_TOUCH_GetUnstable(int *px, int *py);  /* for diagnostics only */
 void GUI_TOUCH_StoreState(int x, int y);
 void GUI_TOUCH_StoreStateEx(const PID_STATE *pState);
 void GUI_TOUCH_StoreUnstable(int x, int y);
-
-#define GUI_DispString_UC  GUI_UC_DispString

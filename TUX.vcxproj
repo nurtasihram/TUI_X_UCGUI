@@ -28,9 +28,6 @@
     <ClCompile Include="GUI\Core\GUI_GetBitmapPixelIndex.cpp" />
     <ClCompile Include="GUI\Core\GUI_OnKey.cpp" />
     <ClCompile Include="GUI\Core\GUI_PID.cpp" />
-    <ClCompile Include="GUI\Core\GUI_UC.cpp" />
-    <ClCompile Include="GUI\Core\GUI_UC_EncodeNone.cpp" />
-    <ClCompile Include="GUI\Core\GUI_UC_EncodeUTF8.cpp" />
     <ClCompile Include="GUI\Core\LCD.cpp" />
     <ClCompile Include="GUI\Core\LCD_Mirror.cpp" />
     <ClCompile Include="GUI\Core\String.cppm" />

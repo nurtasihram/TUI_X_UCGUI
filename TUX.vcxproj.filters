@@ -75,15 +75,6 @@
     <ClCompile Include="GUI\Core\GUI_PID.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_UC.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_UC_EncodeNone.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_UC_EncodeUTF8.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUI_X_MEM.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>

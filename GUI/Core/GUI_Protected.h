@@ -4,34 +4,14 @@
 #include "LCD_Protected.h"
 #include "GUIDebug.h"
 
-#ifndef GUI_DEFAULT_FONT
 #define GUI_DEFAULT_FONT    &FontMono6x8
-#endif
-
-#ifndef GUI_DEFAULT_CURSOR
 #define GUI_DEFAULT_CURSOR  &CursorArrowM
-#endif
-
-#ifndef GUI_DEFAULT_BKCOLOR
 #define GUI_DEFAULT_BKCOLOR RGB_BLACK
-#endif
-
-#ifndef GUI_DEFAULT_COLOR
 #define GUI_DEFAULT_COLOR   RGB_WHITE
-#endif
 
 typedef enum { WRAPMODE_NONE, WRAPMODE_WORD, WRAPMODE_CHAR } WRAPMODE;
 
-#define GUI_UC__GetCharSize(sText)  GUI.pUC_API->pfGetCharSize(sText)
-#define GUI_UC__GetCharCode(sText)  GUI.pUC_API->pfGetCharCode(sText)
-
-int   GUI_UC__CalcSizeOfChar(uint16_t Char);
-uint16_t   GUI_UC__GetCharCodeInc(const char **ps);
-int   GUI_UC__NumChars2NumBytes(const char *s, int NumChars);
-int   GUI_UC__NumBytes2NumChars(const char *s, int NumBytes);
-
 int  GUI__GetLineNumChars(const char *s, int MaxNumChars);
-int  GUI__GetNumChars(const char *s);
 int  GUI__GetLineSizeX(const char *s, int Len);
 int  GUI__HandleEOLine(const char **ps);
 void GUI__DispLine(const char *s, int Len, const RECT *pr);
@@ -50,5 +30,3 @@ int GUI__strcpy(char *sDest, const char *sSrc);
 void GL_DispChar(uint16_t c);
 
 int GUI_GetBitmapPixel(PCBITMAP pBMP, unsigned x, unsigned y);
-
-extern const GUI_UC_ENC_APILIST GUI__API_TableNone;

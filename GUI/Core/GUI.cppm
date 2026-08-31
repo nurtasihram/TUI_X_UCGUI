@@ -87,7 +87,6 @@ struct GUI_CONTEXT {
 	DRAWMODE DrawMode;
 	/* Variables in GUICHAR module */
 	PCFONT pAFont;
-	const GUI_UC_ENC_APILIST *pUC_API; /* Unicode encoding API */
 	POINT DispPos;
 	DRAWMODE TextMode = 0;
 	/* Variables in WM module */

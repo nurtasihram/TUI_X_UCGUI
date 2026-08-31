@@ -56,15 +56,10 @@ private:
 	char *pText = nullptr;
 	uint16_t MaxLen;
 	uint16_t BufferSize = 0;
-	int32_t Min = 0, Max = 0;            /* Min max values as normalized floats (integers) */
-	uint8_t NumDecs = 0;              /* Number of decimals */
-	uint32_t CurrentValue = 0;        /* Current value */
 	int16_t CursorPos = 0;           /* Cursor position. 0 means left most */
 	uint16_t SelSize = 0;        /* Number of selected characters */
 	bool EditMode = 1; /* Insert or overwrite mode */
 	uint8_t XSizeCursor = 1;          /* Size of cursor when working in insert mode */
-	tEDIT_AddKeyEx *pfAddKeyEx = nullptr;     /* Handle key input */
-	tEDIT_UpdateBuffer *pfUpdateBuffer = nullptr;  /* Update textbuffer */
 
 #if GUI_SUPPORT_TIMER
 	static int CurrsorShow;
@@ -79,16 +74,12 @@ private:
 #endif
 
 	void _OnPaint() {
-		const char *pText = nullptr;
 		/* Set colors and font */
 		GUI.BkColor(Props.aBkColor[IsEnabled() ? 1 : 0]);
 		GUI.Color(Props.aTextColor[0]);
 		GUI.Font(Props.pFont);
 		/* Calculate size */
-		auto r = GetClientRect();
 		auto rFillRect = _GetInsideRect();
-		if (this->pText)
-			pText = this->pText;
 		auto rInside = rFillRect;
 		rInside.x0 += Props.Border + EDIT_XOFF;
 		rInside.x1 -= Props.Border + EDIT_XOFF;
@@ -98,36 +89,24 @@ private:
 		/* Calculate position and size of cursor */
 		if (States & WIDGET_STATE_FOCUS) {
 			auto p = pText;
-			int CursorWidth = this->XSizeCursor > 0 ? this->XSizeCursor : 1;
+			int CursorWidth = XSizeCursor > 0 ? XSizeCursor : 1;
 			RECT rInvert;
 			if (pText) {
-				//  this->SelSize = 3;	//houhh 20061023...
-				if (this->EditMode != GUI_EDIT_MODE_INSERT || this->SelSize) {
-					auto NumChars = GUI__GetNumChars(pText);
-					if (this->CursorPos < NumChars) {
-						if (this->SelSize) {
+				if (EditMode != GUI_EDIT_MODE_INSERT || SelSize) {
+					if (CursorPos < GUI__strlen(pText)) {
+						if (SelSize) {
 							CursorWidth = 0;
-							for (int i = this->CursorPos; i < (int)(this->CursorPos + this->SelSize); i++) {
-								auto CursorOffset = GUI_UC__NumChars2NumBytes(pText, i);
-								auto Char = GUI_UC_GetCharCode(pText + CursorOffset);
-								CursorWidth += GUI.Font().GetCharSizeX(Char);
-							}
-							if (!CursorWidth) {
+							for (auto i = CursorPos; i < CursorPos + SelSize; i++)
+								CursorWidth += GUI.Font().GetCharSizeX(pText[i]);
+							if (!CursorWidth)
 								CursorWidth = 1;
-							}
-						}
-						else {
-							auto CursorOffset = GUI_UC__NumChars2NumBytes(pText, this->CursorPos);
-							auto Char = GUI_UC_GetCharCode(pText + CursorOffset);
-							CursorWidth = GUI.Font().GetCharSizeX(Char);
-						}
+						} else
+							CursorWidth = GUI.Font().GetCharSizeX(pText[CursorPos]);
 					}
 				}
 				rInvert = rText;
-				for (int i = 0; i != this->CursorPos; i++) {
-					auto Char = GUI_UC__GetCharCodeInc(&p);
-					rInvert.x0 += GUI.Font().GetCharSizeX(Char);
-				}
+				for (int i = 0; i < CursorPos; i++)
+					rInvert.x0 += GUI.Font().GetCharSizeX(*p++);
 			}
 #if GUI_SUPPORT_TIMER
 			if (!pTimer1) {
@@ -136,44 +115,39 @@ private:
 				pTimer1->SetPeriod(500);
 			}
 			if (pTimer1) pTimer1->SetContext(this);
-			if (this->CurrsorShow % 2)
+			if (CurrsorShow % 2)
 #endif
 				GUI_DrawRect({ rInvert.x0, rInvert.y0, rInvert.x0 + CursorWidth, rInvert.y1 });
 		}
 		DrawDown();
 	}
 	void _Delete() {
-		GUI_ALLOC_FreePtr((void **)&this->pText);
+		GUI_ALLOC_FreePtr((void **)&pText);
 #if GUI_SUPPORT_TIMER
 		delete pTimer1;
 		pTimer1 = nullptr;
 #endif
 	}
 	void _SetCursorPos(int CursorPos) {
-		if (this->pText) {
-			auto pText = this->pText;
-			int NumChars = GUI__GetNumChars(pText);
-			int Offset = (this->EditMode == GUI_EDIT_MODE_INSERT) ? 0 : 1;
+		if (pText) {
+			int NumChars = GUI__strlen(pText);
+			int Offset = (EditMode == GUI_EDIT_MODE_INSERT) ? 0 : 1;
 			if (CursorPos < 0)
 				CursorPos = 0;
 			if (CursorPos > NumChars)
 				CursorPos = NumChars;
-			if (CursorPos > this->MaxLen - Offset)
-				CursorPos = this->MaxLen - Offset;
+			if (CursorPos > MaxLen - Offset)
+				CursorPos = MaxLen - Offset;
 			if (this->CursorPos != CursorPos)
 				this->CursorPos = CursorPos;
-			this->SelSize = 0;
+			SelSize = 0;
 		}
 	}
 	void EDIT_SetCursorAtPixel(int xPos) {
-		if (this->pText) {
-			PCFONT pOldFont;
-			int xSize, TextWidth, NumChars;
-			const char *pText;
-			pText = this->pText;
-			pOldFont = GUI.Font(Props.pFont);
-			xSize = GetSizeX();
-			TextWidth = GUI_GetStringSizeX(pText);
+		if (pText) {
+			auto pOldFont = GUI.Font(Props.pFont);
+			auto xSize = GetSizeX();
+			auto TextWidth = GUI_GetStringSizeX(pText);
 			switch (Props.Align & TEXTALIGN_HORIZONTAL) {
 				case TEXTALIGN_HCENTER:
 					xPos -= (xSize - TextWidth + 1) / 2;
@@ -182,21 +156,18 @@ private:
 					xPos -= xSize - TextWidth - (Props.Border + EDIT_XOFF);
 					break;
 				default:
-					xPos -= (Props.Border + EDIT_XOFF) + this->EffectSize();
+					xPos -= (Props.Border + EDIT_XOFF) + EffectSize();
 			}
-			NumChars = GUI__GetNumChars(pText);
-			if (xPos < 0) {
+			auto NumChars = GUI__strlen(pText);
+			if (xPos < 0)
 				_SetCursorPos(0);
-			}
-			else if (xPos > TextWidth) {
+			else if (xPos > TextWidth)
 				_SetCursorPos(NumChars);
-			}
 			else {
-				int i, x, xLenChar;
-				uint16_t Char;
-				for (i = 0, x = 0; (i < NumChars) && (x < xPos); i++) {
-					Char = GUI_UC__GetCharCodeInc(&pText);
-					xLenChar = GUI.Font().GetCharSizeX(Char);
+				auto p = pText;
+				int i = 0, x = 0;
+				for (; (i < NumChars) && (x < xPos); i++) {
+					int xLenChar = GUI.Font().GetCharSizeX(*p++);
 					if (xPos < (x + xLenChar))
 						break;
 					x += xLenChar;
@@ -207,77 +178,59 @@ private:
 			Invalidate();
 		}
 	}
-	int _IncrementBuffer(unsigned AddBytes) {
-		int NewSize = this->BufferSize + AddBytes;
-		auto pNewStr = (char *)GUI_ALLOC_Realloc(this->pText, NewSize);
+	bool _IncrementBuffer(unsigned AddBytes) {
+		int NewSize = BufferSize + AddBytes;
+		auto pNewStr = (char *)GUI_ALLOC_Realloc(pText, NewSize);
 		if (pNewStr) {
-			if (!(this->pText)) {
+			if (!pText)
 				pNewStr[0] = 0;
-			}
-			this->BufferSize = NewSize;
-			this->pText = pNewStr;
-			return 1;
+			BufferSize = NewSize;
+			pText = pNewStr;
+			return true;
 		}
-		return 0;
+		return false;
 	}
-	int _IsSpaceInBuffer(int BytesNeeded) {
+	bool _IsSpaceInBuffer(int BytesNeeded) {
 		int NumBytes = 0;
-		if (this->pText)
-			NumBytes = GUI__strlen(this->pText);
-		BytesNeeded = (BytesNeeded + NumBytes + 1) - this->BufferSize;
+		if (pText)
+			NumBytes = GUI__strlen(pText);
+		BytesNeeded = (BytesNeeded + NumBytes + 1) - BufferSize;
 		if (BytesNeeded > 0)
 			if (!_IncrementBuffer(BytesNeeded + EDIT_REALLOC_SIZE))
-				return 0;
-		return 1;
+				return false;
+		return true;
 	}
-	int _IsCharsAvailable(int CharsNeeded) {
-		if (CharsNeeded > 0 && this->MaxLen > 0) {
+	bool _IsCharsAvailable(int CharsNeeded) {
+		if (CharsNeeded > 0 && MaxLen > 0) {
 			int NumChars = 0;
-			if (this->pText)
-				NumChars = GUI__GetNumChars(this->pText);
-			if ((CharsNeeded + NumChars) > this->MaxLen)
-				return 0;
+			if (pText)
+				NumChars = GUI__strlen(pText);
+			if ((CharsNeeded + NumChars) > MaxLen)
+				return false;
 		}
-		return 1;
+		return true;
 	}
 	void _DeleteChar() {
-		if (this->pText) {
-			int CursorOffset;
-			auto pText = this->pText;
-			CursorOffset = GUI_UC__NumChars2NumBytes(pText, this->CursorPos);
-			if (CursorOffset < GUI__strlen(pText)) {
-				int NumBytes;
-				pText += CursorOffset;
-				NumBytes = GUI_UC_GetCharSize(pText);
-				GUI__strcpy(pText, pText + NumBytes);
-				NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
-			}
+		if (pText && CursorPos < GUI__strlen(pText)) {
+			auto p = pText + CursorPos;
+			GUI__strcpy(p, p + 1);
+			NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
-	int _InsertChar(uint16_t Char) {
-		if (_IsCharsAvailable(1)) {
-			int BytesNeeded;
-			BytesNeeded = GUI_UC__CalcSizeOfChar(Char);
-			if (_IsSpaceInBuffer(BytesNeeded)) {
-				auto pText = this->pText;
-				int CursorOffset = GUI_UC__NumChars2NumBytes(pText, this->CursorPos);
-				pText += CursorOffset;
-				GUI__memmove(pText + BytesNeeded, pText, GUI__strlen(pText) + 1);
-				GUI_UC_Encode(pText, Char);
-				NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
-				return 1;
-			}
+	bool _InsertChar(uint16_t Char) {
+		if (_IsCharsAvailable(1) && _IsSpaceInBuffer(1)) {
+			auto p = pText + CursorPos;
+			GUI__memmove(p + 1, p, GUI__strlen(p) + 1);
+			*p = Char;
+			NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
+			return true;
 		}
-		return 0;
+		return false;
 	}
 	uint16_t _GetCurrentChar() {
-		uint16_t Char = 0;
-		if (this->pText) {
-			auto pText = this->pText;
-			pText += GUI_UC__NumChars2NumBytes(pText, this->CursorPos);
-			Char = GUI_UC_GetCharCode(pText);
-		}
-		return Char;
+		if (pText)
+			return pText[CursorPos];
+		return 0;
 	}
 	void _OnTouch(const PID_STATE *pState) {
 		if (pState) {  /* Something happened in our area (pressed or released) */
@@ -285,7 +238,7 @@ private:
 			if (pState->Pressed) {
 				GUI_DEBUG_LOG("_Callback(WM_TOUCH, Pressed, Handle %d)\n", 1);
 				EDIT_SetCursorAtPixel(pState->x);
-				StartPress = this->CursorPos;
+				StartPress = CursorPos;
 			}
 			else {
 				GUI_DEBUG_LOG("_Callback(WM_TOUCH, Released, Handle %d)\n", 1);
@@ -295,7 +248,7 @@ private:
 			GUI_DEBUG_LOG("_EDIT_Callback(WM_TOUCH, Moved out, Handle %d)\n", 1);
 		}
 	}
-	int _OnKey(const WM_KEY_INFO *pInfo) {
+	bool _OnKey(const WM_KEY_INFO *pInfo) {
 		if (pInfo->PressedCnt > 0) { /* Key pressed? */
 			int Key = pInfo->Key;
 			switch (Key) {
@@ -303,10 +256,10 @@ private:
 					break; /* Send to parent by not doing anything */
 				default:
 					AddKey(Key);
-					return 1;
+					return true;
 			}
 		}
-		return 0;
+		return false;
 	}
 
 	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
@@ -390,165 +343,112 @@ public:
 #pragma endregion
 
 	void AddKey(int Key) {
-		if (pfAddKeyEx) {
-			pfAddKeyEx(this, Key);
-		}
-		else {
-			switch (Key) {
-				case GUI_KEY_UP:
-					if (pText) {
-						auto pText = this->pText;
-						uint16_t Char;
-						pText += GUI_UC__NumChars2NumBytes(pText, this->CursorPos);
-						Char = GUI_UC_GetCharCode(pText);
-						if (Char < 0x7f) {
-							*pText = Char + 1;
-							NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
-						}
+		switch (Key) {
+			case GUI_KEY_UP:
+				if (pText) {
+					auto p = pText + CursorPos;
+					auto Char = *p;
+					if (Char < 0x7f) {
+						*p = Char + 1;
+						NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 					}
-					break;
-				case GUI_KEY_DOWN:
-					if (pText) {
-						auto pText = this->pText;
-						pText += GUI_UC__NumChars2NumBytes(pText, this->CursorPos);
-						uint16_t Char = GUI_UC_GetCharCode(pText);
-						if (Char > 0x20) {
-							*pText = Char - 1;
-							NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
-						}
+				}
+				break;
+			case GUI_KEY_DOWN:
+				if (pText) {
+					auto p = pText + CursorPos;
+					auto Char = *p;
+					if (Char > 0x20) {
+						*p = Char - 1;
+						NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 					}
-					break;
-				case GUI_KEY_RIGHT:
-					_SetCursorPos(this->CursorPos + 1);
-					break;
-				case GUI_KEY_LEFT:
-					_SetCursorPos(this->CursorPos - 1);
-					break;
-				case GUI_KEY_BACKSPACE:
-					_SetCursorPos(this->CursorPos - 1);
-					_DeleteChar();
-					break;
-				case GUI_KEY_DELETE:
-					_DeleteChar();
-					break;
-				case GUI_KEY_INSERT:
-					if (this->EditMode == GUI_EDIT_MODE_OVERWRITE) {
-						this->EditMode = GUI_EDIT_MODE_INSERT;
-					}
-					else {
-						this->EditMode = GUI_EDIT_MODE_OVERWRITE;
-						_SetCursorPos(this->CursorPos);
-					}
-					break;
-				case GUI_KEY_ENTER:
-				case GUI_KEY_ESCAPE:
-					break;
-				default:
-					if (Key >= 0x20) {
-						if (this->EditMode != GUI_EDIT_MODE_INSERT) {
-							_DeleteChar();
-						}
-						if (_InsertChar(Key)) {
-							_SetCursorPos(this->CursorPos + 1);
-						}
-					}
-			}
+				}
+				break;
+			case GUI_KEY_RIGHT:
+				_SetCursorPos(CursorPos + 1);
+				break;
+			case GUI_KEY_LEFT:
+				_SetCursorPos(CursorPos - 1);
+				break;
+			case GUI_KEY_BACKSPACE:
+				_SetCursorPos(CursorPos - 1);
+				_DeleteChar();
+				break;
+			case GUI_KEY_DELETE:
+				_DeleteChar();
+				break;
+			case GUI_KEY_INSERT:
+				if (EditMode == GUI_EDIT_MODE_OVERWRITE)
+					EditMode = GUI_EDIT_MODE_INSERT;
+				else {
+					EditMode = GUI_EDIT_MODE_OVERWRITE;
+					_SetCursorPos(CursorPos);
+				}
+				break;
+			case GUI_KEY_ENTER:
+			case GUI_KEY_ESCAPE:
+				break;
+			default:
+				if (Key >= 0x20) {
+					if (EditMode != GUI_EDIT_MODE_INSERT)
+						_DeleteChar();
+					if (_InsertChar(Key))
+						_SetCursorPos(CursorPos + 1);
+				}
 		}
 		Invalidate();
 	}
 
 	void SetText(const char *s) {
-		if (s) {
-			int NumBytesNew, NumBytesOld = 0;
-			int NumCharsNew;
-			if (this->pText) {
-				auto pText = this->pText;
-				NumBytesOld = GUI__strlen(pText) + 1;
-			}
-			NumCharsNew = GUI__GetNumChars(s);
-			if (NumCharsNew > this->MaxLen) {
-				NumCharsNew = this->MaxLen;
-			}
-			NumBytesNew = GUI_UC__NumChars2NumBytes(s, NumCharsNew) + 1;
-			if (_IsSpaceInBuffer(NumBytesNew - NumBytesOld)) {
-				auto pText = this->pText;
-				GUI__memcpy(pText, s, NumBytesNew);
-				this->CursorPos = NumBytesNew - 1;
-				if (this->CursorPos == this->MaxLen) {
-					if (this->EditMode == GUI_EDIT_MODE_OVERWRITE) {
-						this->CursorPos--;
-					}
-				}
-			}
-		}
-		else {
-			GUI_ALLOC_FreePtr((void **)&this->pText);
-			this->BufferSize = 0;
-			this->CursorPos = 0;
+		if (!s) return;
+		int NumBytesNew, NumBytesOld = 0;
+		int NumCharsNew;
+		if (pText)
+			NumBytesOld = GUI__strlen(pText) + 1;
+		NumCharsNew = GUI__strlen(s);
+		if (NumCharsNew > MaxLen)
+			NumCharsNew = MaxLen;
+		NumBytesNew = NumCharsNew + 1;
+		if (_IsSpaceInBuffer(NumBytesNew - NumBytesOld)) {
+			GUI__memcpy(pText, s, NumBytesNew);
+			CursorPos = NumBytesNew - 1;
+			if (CursorPos == MaxLen && EditMode == GUI_EDIT_MODE_OVERWRITE)
+				CursorPos--;
+		} else {
+			GUI_ALLOC_FreePtr((void **)&pText);
+			BufferSize = 0;
+			CursorPos = 0;
 		}
 		Invalidate();
 	}
 	void GetText(char *sDest, int MaxLen) {
-		if (sDest) {
-			*sDest = 0;
-			if (this->pText) {
-				auto pText = this->pText;
-				int NumChars = GUI__GetNumChars(pText);
-				if (NumChars > MaxLen)
-					NumChars = MaxLen;
-				int NumBytes = GUI_UC__NumChars2NumBytes(pText, NumChars);
-				GUI__memcpy(sDest, pText, NumBytes);
-				*(sDest + NumBytes) = 0;
-			}
-		}
-	}
-
-	int32_t GetValue() {
-		int32_t r = 0;
-		r = this->CurrentValue;
-
-		return r;
-	}
-	void SetValue(int32_t Value) {
-		/* Put in min/max range */
-		if (Value < this->Min)
-			Value = this->Min;
-		if (Value > this->Max)
-			Value = this->Max;
-		if (this->CurrentValue != (uint32_t)Value) {
-			this->CurrentValue = Value;
-			if (this->pfUpdateBuffer)
-				this->pfUpdateBuffer(this);
-			Invalidate();
-			NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
-		}
+		if (!sDest) return;
+		*sDest = 0;
+		if (!pText) return;
+		int NumChars = GUI__strlen(pText);
+		if (NumChars > MaxLen)
+			NumChars = MaxLen;
+		GUI__memcpy(sDest, pText, NumChars);
+		sDest[NumChars] = 0;
 	}
 
 	void SetMaxLen(int MaxLen) {
-		if (MaxLen != this->MaxLen) {
-			if (MaxLen < this->MaxLen) {
-				if (this->pText) {
-					auto pText = this->pText;
-					int NumChars = GUI__GetNumChars(pText);
-					if (NumChars > MaxLen) {
-						int NumBytes;
-						NumBytes = GUI_UC__NumChars2NumBytes(pText, MaxLen);
-						*(pText + NumBytes) = 0;
-					}
-				}
+		if (MaxLen == this->MaxLen) 
+			return;
+		if (MaxLen < this->MaxLen) {
+			if (pText) {
+				int NumChars = GUI__strlen(pText);
+				if (NumChars > MaxLen)
+					pText[MaxLen] = 0;
 			}
-			_IncrementBuffer(MaxLen - this->BufferSize + 1);
-			this->MaxLen = MaxLen;
-			Invalidate();
 		}
+		_IncrementBuffer(MaxLen - BufferSize + 1);
+		this->MaxLen = MaxLen;
+		Invalidate();
 	}
 
 	int GetNumChars() {
-		if (this->pText) {
-			return GUI__GetNumChars(this->pText);
-		}
-
-		return 0;
+		return GUI__strlen(pText);
 	}
 
 	void SetCursorAtChar(int Pos) {
@@ -557,35 +457,24 @@ public:
 	}
 
 	void SetSel(int FirstChar, int LastChar) {
-		if (FirstChar == -1) {
-			this->SelSize = 0;
-		}
+		if (FirstChar == -1)
+			SelSize = 0;
 		else {
-			if (FirstChar > this->BufferSize - 1)
-				FirstChar = this->BufferSize - 1;
-			if (LastChar > this->BufferSize - 1)
-				LastChar = this->BufferSize - 1;
+			if (FirstChar > BufferSize - 1)
+				FirstChar = BufferSize - 1;
+			if (LastChar > BufferSize - 1)
+				LastChar = BufferSize - 1;
 			if (LastChar == -1)
 				LastChar = GetNumChars();
 			if (LastChar >= FirstChar) {
-				this->CursorPos = FirstChar;
-				this->SelSize = LastChar - FirstChar + 1;
+				CursorPos = FirstChar;
+				SelSize = LastChar - FirstChar + 1;
 			}
 		}
 	}
 
-	int SetInsertMode(int OnOff) {
-		int PrevMode = 0;
-		PrevMode = this->EditMode;
-		this->EditMode = OnOff ? GUI_EDIT_MODE_INSERT : GUI_EDIT_MODE_OVERWRITE;
-
-		return PrevMode;
-	}
-	void SetpfAddKeyEx(tEDIT_AddKeyEx *pfAddKeyEx) {
-		this->pfAddKeyEx = pfAddKeyEx;
-	}
-	void SetpfUpdateBuffer(tEDIT_UpdateBuffer *pfUpdateBuffer) {
-		this->pfUpdateBuffer = pfUpdateBuffer;
+	void SetInsertMode(bool OnOff) {
+		EditMode = OnOff ? GUI_EDIT_MODE_INSERT : GUI_EDIT_MODE_OVERWRITE;
 	}
 
 };

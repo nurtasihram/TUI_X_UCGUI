@@ -1612,13 +1612,13 @@ int main(void) {
 	GUI_CURSOR_Show();
 
 	//_TestText();
-	_TestListView();
+	//_TestListView();
 	//_TestMultiPage();
 	//_TestRadio();
 	//_TestProgBar();
 	//_TestSlider();
-	//_TestEdit();
-	//_TestMultiEdit();
+	_TestEdit();
+	_TestMultiEdit();
 	//_TestDropDown();
 	_TestListBox();
 	_TestMemDev();

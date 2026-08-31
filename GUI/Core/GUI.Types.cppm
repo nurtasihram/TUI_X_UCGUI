@@ -185,20 +185,6 @@ using CCURSOR = const CURSOR;
 using PCCURSOR = const CURSOR *;
 #pragma endregion
 
-#pragma region Encoder
-typedef uint16_t tGUI_GetCharCode(const char *s);
-typedef int  tGUI_GetCharSize(const char *s);
-typedef int  tGUI_CalcSizeOfChar(uint16_t Char);
-typedef int  tGUI_Encode(char *s, uint16_t Char);
-
-typedef struct {
-	tGUI_GetCharCode *pfGetCharCode;
-	tGUI_GetCharSize *pfGetCharSize;
-	tGUI_CalcSizeOfChar *pfCalcSizeOfChar;
-	tGUI_Encode *pfEncode;
-} GUI_UC_ENC_APILIST;
-#pragma endregion
-
 #pragma region Font
 struct FONT {
 	uint8_t YSize;
