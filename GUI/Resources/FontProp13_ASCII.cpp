@@ -1434,7 +1434,6 @@ static const FONT_PROP::CHARINFO GUI_Font13ASCII_CharInfo[]{
 CFONT_PROP FontProp13_ASCII{
 	13, /* YSize */
 	11, /* Baseline */
-	8,  /* CHeight */
 	/* For FONT_PROP */
 	32, 126,                      /* FirstChar, LastChar */
 	&GUI_Font13ASCII_CharInfo[0], /* CharInfo */

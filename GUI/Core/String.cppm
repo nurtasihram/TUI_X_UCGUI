@@ -1,6 +1,7 @@
 module;
 
 #include <cstddef>
+#include <stdint.h>
 
 export module TUX.String;
 
@@ -10,7 +11,7 @@ extern "C++" {
 	void *GUI_ALLOC_Realloc(void *ptr, size_t NewSize);
 	void  GUI_ALLOC_FreePtr(void **pptr);
 	bool GUI__SetText(char **ppText, const char *s);
-	int   GUI__strlen(const char *s);
+	uint16_t GUI__strlen(const char *s);
 	bool  GUI__strcmp(const char *s0, const char *s1);
 	void  GUI__memcpy(void *pDest, const void *pSrc, size_t NumBytes);
 }

@@ -38,8 +38,9 @@ private:
 
 	void _FreeText() {
 		GUI_ALLOC_FreePtr((void **)&pText);
+		pText = nullptr;
 	}
-	int _Value2X(int v) {
+	int _Value2X(int v) const {
 		int EffectSize = this->EffectSize();
 		int xSize = GetSizeX();
 		if (v < Min)
@@ -48,13 +49,13 @@ private:
 			v = Max;
 		return EffectSize + ((xSize - 2 * EffectSize) * (int32_t)(v - Min)) / (Max - Min);
 	}
-	void _DrawPart(int Index, int xText, int yText, const char *pText) {
+	void _DrawPart(int Index, int xText, int yText, const char *pText) const {
 		GUI.BkColor(Props.aBkColor[Index]);
 		GUI.Color(Props.aTextColor[Index]);
 		GUI_Clear();
 		GUI_DispStringAt(pText, xText, yText);
 	}
-	const char *_GetText(char *pBuffer) {
+	const char *_GetText(char *pBuffer) const {
 		char *pText;
 		uint8_t value;
 		if (this->pText) {
@@ -80,7 +81,7 @@ private:
 		}
 		return (const char *)pText;
 	}
-	void _GetTextRect(RECT *pRect, const char *pText) {
+	void _GetTextRect(RECT *pRect, const char *pText) const {
 		auto size = GetSize();
 		int TextWidth = GUI_GetStringSizeX(pText);
 		int TextHeight = Props.pFont->YSize;
@@ -102,11 +103,10 @@ private:
 		pRect->y1 = pRect->y0 + TextHeight - 1;
 	}
 	void _OnPaint() {
-		char ac[5];
-		int xPos;
 		auto rClient = WM_GetClientRect();
 		auto rInside = rClient / EffectSize();
-		xPos = _Value2X(v);
+		auto xPos = _Value2X(v);
+		char ac[5]{ 0 };
 		auto pText = _GetText(ac);
 		GUI.Font(Props.pFont);
 		RECT rText;

@@ -968,7 +968,6 @@ extern const FONT_PROP FontProp8_ASCII;
 extern const FONT_PROP GUI_Font8_1{
 	8, /* YSize */
 	7, /* Baseline */
-	7, /* CHeight */
 	/* For FONT_PROP */
 	160, 255,         /* FirstChar, LastChar */
 	Font8_1_CharInfo, /* CharInfo */

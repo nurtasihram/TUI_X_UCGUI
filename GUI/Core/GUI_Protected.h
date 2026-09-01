@@ -24,7 +24,7 @@ int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, WRAPMODE WrapMo
 
 bool GUI__SetText(char **ppText, const char *s);
 bool GUI__strcmp(const char *s0, const char *s1);
-int GUI__strlen(const char *s);
+uint16_t GUI__strlen(const char *s);
 int GUI__strcpy(char *sDest, const char *sSrc);
 
 void GL_DispChar(uint16_t c);

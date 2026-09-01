@@ -481,8 +481,8 @@ bool GUI__strcmp(const char *s0, const char *s1) {
 		return true;    /* Not equal, since s1 is longer than s0 */
 	return false;      /* Equal ! */
 }
-int GUI__strlen(const char *s) {
-	int r = -1;
+uint16_t GUI__strlen(const char *s) {
+	uint16_t r = 0;
 	if (s) {
 		do {
 			r++;

@@ -1450,7 +1450,6 @@ extern const FONT_PROP FontProp13_ASCII;
 CFONT_PROP FontProp13_1{
 	13, /* YSize */
 	11, /* Baseline */
-	8,  /* CHeight */
 	/* For FONT_PROP */
 	160, 255,                  /* FirstChar, LastChar */
 	&FontProp13_1_CharInfo[0], /* CharInfo */

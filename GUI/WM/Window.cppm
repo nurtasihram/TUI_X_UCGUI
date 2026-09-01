@@ -26,7 +26,7 @@ PID_STATE WM_PID__GetPrevState() {
 	return WM_PID__StateLast;
 }
 
-struct WObj;
+class WObj;
 
 struct NOTIFY_INFO {
 	int Notification;
@@ -53,7 +53,7 @@ RECT WM_GetInsideRect();
 
 int WM_OnKey(int Key, int Pressed);
 
-typedef WM_PARAM WM_CALLBACK(struct WObj *pWin, int MsgId, WM_PARAM Data);
+typedef WM_PARAM WM_CALLBACK(WObj *pWin, int MsgId, WM_PARAM Data);
 
 /* Scroll functions */
 void WM_GetInsideRectExScrollbar(WObj *pWin, RECT *pRect); /* not to be documented (may change in future version) */

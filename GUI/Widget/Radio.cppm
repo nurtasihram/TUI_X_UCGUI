@@ -48,29 +48,23 @@ private:
 	uint16_t Height = Props.apBmRadio[0]->Size.y + RADIO_BORDER * 2;
 	uint8_t  GroupId = 0;
 
-	void _ResizeRect(RECT *pDest, const RECT *pSrc, int Diff) {
-		pDest->y0 = pSrc->y0 - Diff;
-		pDest->y1 = pSrc->y1 + Diff;
-		pDest->x0 = pSrc->x0 - Diff;
-		pDest->x1 = pSrc->x1 + Diff;
-	}
-	void _OnPaint() {
+	void _OnPaint() const {
 		/* Init some data */
 		auto rFocus = GetClientRect();
 		bool HasFocus = States & WIDGET_STATE_FOCUS;
 		auto pBmRadio = Props.apBmRadio[IsEnabled()],
 			 pBmCheck = Props.pBmCheck;
 		rFocus.x1 = pBmRadio->Size.x + RADIO_BORDER * 2 - 1;
-		rFocus.y1 = this->Height + ((this->NumItems - 1) * this->Spacing) - 1;
+		rFocus.y1 = Height + ((NumItems - 1) * Spacing) - 1;
 		/* Select font and text color */
 		GUI.Color(Props.TextColor);
 		GUI.Font(Props.pFont);
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		auto FontDistY = Props.pFont->YSize;
-		auto CHeight = Props.pFont->CHeight;
+		auto CHeight = FontDistY;
 		RECT Rect;
 		Rect.x0 = pBmRadio->Size.x + RADIO_BORDER * 2 + 2;
-		Rect.y0 = (CHeight <= this->Height) ? ((this->Height - CHeight) / 2) : 0;
+		Rect.y0 = CHeight <= Height ? (Height - CHeight) / 2 : 0;
 		Rect.y1 = Rect.y0 + CHeight - 1;
 		auto FocusBorder = (FontDistY <= 12) ? 2 : 3;
 		if (Rect.y0 < FocusBorder)
@@ -97,7 +91,7 @@ private:
 				GUI_DispStringAt(pText, r.x0, r.y0);
 				/* Calculate focus rect */
 				if (HasFocus && Sel == i)
-					_ResizeRect(&rFocus, &r, FocusBorder);
+					rFocus = r * FocusBorder;
 			}
 		}
 		/* Draw the focus rect */

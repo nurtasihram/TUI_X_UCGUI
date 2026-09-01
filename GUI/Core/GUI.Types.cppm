@@ -196,13 +196,10 @@ extern CLOGPALETTE GUI_CursorPal, GUI_CursorPalI;
 
 #pragma region Font
 struct FONT {
-	uint8_t YSize;
-	uint8_t Baseline, CHeight;
+	uint8_t YSize, Baseline;
 
-	FONT(uint8_t YSize,
-		 uint8_t Baseline, uint8_t CHeight) :
-		YSize(YSize),
-		Baseline(Baseline),  CHeight(CHeight) {}
+	FONT(uint8_t YSize, uint8_t Baseline) :
+		YSize(YSize), Baseline(Baseline) {}
 
 	virtual bool IsInFont(uint16_t c) const = 0;
 	virtual int  GetCharSizeX(uint16_t c) const = 0;
@@ -223,14 +220,13 @@ struct FONT_MONO : FONT {
 	uint16_t FirstChar, LastChar;
 	uint8_t XSize;
 
-	FONT_MONO(uint8_t YSize,
-			  uint8_t Baseline, uint8_t CHeight,
+	FONT_MONO(uint8_t YSize, uint8_t Baseline,
 			  /* For FONT_MONO */
 			  const void *pData,
 			  const TRANSINFO *pTrans,
 			  uint16_t FirstChar, uint16_t LastChar,
 			  uint8_t XSize) :
-		FONT(YSize, Baseline, CHeight),
+		FONT(YSize, Baseline),
 		pData(pData), pTrans(pTrans),
 		FirstChar(FirstChar), LastChar(LastChar),
 		XSize(XSize) {}
@@ -258,13 +254,12 @@ struct FONT_PROP : FONT {
 	} const *paCharInfo;
 	const FONT_PROP *pNext;
 
-	FONT_PROP(uint8_t YSize,
-			  uint8_t Baseline, uint8_t CHeight,
+	FONT_PROP(uint8_t YSize, uint8_t Baseline,
 			  /* for FONT_PROP */
 			  uint16_t First, uint16_t Last,
 			  const CHARINFO *paCharInfo,
 			  const FONT_PROP *pNext = nullptr) :
-		FONT(YSize, Baseline, CHeight),
+		FONT(YSize, Baseline),
 		First(First), Last(Last),
 		paCharInfo(paCharInfo),
 		pNext(pNext) {}

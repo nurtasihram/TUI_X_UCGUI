@@ -1746,7 +1746,6 @@ static const FONT_MONO::TRANSINFO GUI_F8x8_TransInfo{
 CFONT_MONO FontMono_8x8{
 	8, /* YSize */
 	7, /* Baseline */
-	7, /* CHeight */
 	/* For FONT_MONO */
 	GUI_F8x8_acFont[0],    /* pData */
 	&GUI_F8x8_TransInfo,   /* pTrans */

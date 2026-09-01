@@ -1140,15 +1140,6 @@ static int _ProgBarMax = 100;
 static int _ProgBarValue = 0;
 static bool _ProgBarCustomText = false;
 
-static void _UpdateProgBarStatus(WObj *pWin) {
-	auto pStatus = pWin->GetItem<Text>(ID_PROGBAR_STATUS);
-	if (pStatus) {
-		char acStatus[80];
-		sprintf(acStatus, "Range: %d-%d  Value: %d", _ProgBarMin, _ProgBarMax, _ProgBarValue);
-		pStatus->SetText(acStatus);
-	}
-}
-
 static const Widget::CreateStruct _aProgBarDialogCreate[] = {
 	{ Frame  ::CreateIndirect, "ProgBar Test" , 0                      , 70  , 60  , 360 , 210 , FRAMEWIN_CF_MOVEABLE },
 	{ ProgBar::CreateIndirect, ""             , ID_PROGBAR_TEST        , 15  , 20  , 320 , 25  , 0                    },
@@ -1172,7 +1163,6 @@ static WM_PARAM _cbProgBarTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			pProg->SetValue(_ProgBarValue);
 			pProg->TextAlign(TEXTALIGN_HCENTER);
 			pProg->SetText(nullptr);
-			_UpdateProgBarStatus(pWin);
 			return 0;
 		}
 		case WM_NOTIFY_PARENT: {
@@ -1188,7 +1178,6 @@ static WM_PARAM _cbProgBarTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 							_ProgBarValue = _ProgBarMin;
 						}
 						pProg->SetValue(_ProgBarValue);
-						_UpdateProgBarStatus(pWin);
 						break;
 					case ID_PROGBAR_INC:
 						_ProgBarValue += 10;
@@ -1196,12 +1185,10 @@ static WM_PARAM _cbProgBarTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 							_ProgBarValue = _ProgBarMax;
 						}
 						pProg->SetValue(_ProgBarValue);
-						_UpdateProgBarStatus(pWin);
 						break;
 					case ID_PROGBAR_RESET:
 						_ProgBarValue = 0;
 						pProg->SetValue(_ProgBarValue);
-						_UpdateProgBarStatus(pWin);
 						break;
 					case ID_PROGBAR_TOGGLE_TEXT:
 						_ProgBarCustomText = !_ProgBarCustomText;
@@ -1211,7 +1198,6 @@ static WM_PARAM _cbProgBarTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 						else {
 							pProg->SetText(nullptr);
 						}
-						_UpdateProgBarStatus(pWin);
 						break;
 					case GUI_ID_CANCEL:
 						pWin->DialogEnd(0);
@@ -1609,9 +1595,9 @@ int main(void) {
 	GUI_Init(); 
 	GUI_CURSOR_Show();
 
-	_TestText();
-	_TestListView();
-	_TestMultiPage();
+	//_TestText();
+	//_TestListView();
+	//_TestMultiPage();
 	_TestRadio();
 	_TestProgBar();
 	_TestSlider();

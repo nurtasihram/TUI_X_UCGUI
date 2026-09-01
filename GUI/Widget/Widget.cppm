@@ -114,7 +114,7 @@ public:
 	bool IsFocussable() const { return States & WIDGET_STATE_FOCUSSABLE; }
 
 protected:
-	void SetBkColorPrefer(RGBC BkColor) {
+	void SetBkColorPrefer(RGBC BkColor) const {
 		while (BkColor == RGB_INVALID) {
 			if (auto pParent = Parent())
 				BkColor = pParent->BkColor();
