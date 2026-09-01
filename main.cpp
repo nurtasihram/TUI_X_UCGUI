@@ -35,9 +35,8 @@ __XXoooo,ooXXXXXX,ooooooXX,________,
 ____XXoo,XXoooooo,XXooXX__,________,
 ______XX,oooooooo,ooXX____,________,
 ________,XXXXXXXX,XX______,________ };
-const RGBC ColorsSmilie0[]{ RGB_WHITE, RGB_BLACK, RGB_RED };
-CLOGPALETTE PalSmilie0{ 3, 1, &ColorsSmilie0[0] };
-CBITMAP bmSmilie0{ 13, 4, 2, pxSmilie0, &PalSmilie0 };
+CLOGPALETTE PalSmilie0{ RGB_INVALID, RGB_BLACK, RGB_RED };
+CBITMAP bmSmilie0{ 13, 4, 2, pxSmilie0, PalSmilie0 };
 
 const uint8_t pxSmilie1[]{
 ________,XXXXXXXX,XX______,________,
@@ -53,9 +52,8 @@ __XXoooo,XXoooooo,XXooooXX,________,
 ____XXoo,ooXXXXXX,ooooXX__,________,
 ______XX,oooooooo,ooXX____,________,
 ________,XXXXXXXX,XX______,________ };
-const RGBC ColorsSmilie1[]{ RGB_WHITE, RGB_BLACK, RGB_YELLOW };
-CLOGPALETTE PalSmilie1{ 3, 1, &ColorsSmilie1[0] };
-CBITMAP bmSmilie1{ 13, 4, 2, pxSmilie1, &PalSmilie1 };
+CLOGPALETTE PalSmilie1{ RGB_INVALID, RGB_BLACK, RGB_YELLOW };
+CBITMAP bmSmilie1{ 13, 4, 2, pxSmilie1, PalSmilie1 };
 
 static const char *_ListBox[]{
   "English", "Deutsch", nullptr
@@ -1614,7 +1612,7 @@ int main(void) {
 	//_TestText();
 	//_TestListView();
 	//_TestMultiPage();
-	//_TestRadio();
+	_TestRadio();
 	//_TestProgBar();
 	//_TestSlider();
 	_TestEdit();

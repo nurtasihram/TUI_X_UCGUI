@@ -36,7 +36,7 @@ public:
 			/* Inactive */	RGB_GRAYL(0x80),
 			/* Active */	RGB_WHITE
 		};
-		RGBC BkColor{ RGB_INVALID_COLOR };
+		RGBC BkColor{ RGB_INVALID };
 		RGBC TextColor{ RGB_BLACK };
 		TEXTALIGN Align{ TEXTALIGN_LEFT | TEXTALIGN_VCENTER };
 		uint8_t Spacing{ 4 };
@@ -271,12 +271,9 @@ CheckBox::Properties CheckBox::DefaultProps;
 
 }
 
-/* Colors */
-static const RGBC _aColorDisabled[]{ RGB_GRAYL(0x10), RGB_GRAYL(0x80) };
-static const RGBC _aColorEnabled[]{ RGB_BLACK, RGB_WHITE };
 /* Palettes */
-static CLOGPALETTE _PalCheckDisabled{ 2, 0, _aColorDisabled };
-static CLOGPALETTE _PalCheckEnabled{ 2, 0, _aColorEnabled };
+static CLOGPALETTE _PalCheckDisabled{ RGB_GRAYL(0x10), RGB_GRAYL(0x80) };
+static CLOGPALETTE _PalCheckEnabled{ RGB_BLACK, RGB_WHITE };
 
 /* Pixel data */
 static const uint8_t _pxCheckEnabled[] = {
@@ -293,8 +290,8 @@ XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,XXXXXX__________};
 /* Bitmaps */
 CBITMAP CheckBox::abmCheckEnabled[2]{
-	{ { 11, 11 }, 2, 1, _pxCheckEnabled,  &_PalCheckDisabled },
-	{ { 11, 11 }, 2, 1, _pxCheckEnabled,  &_PalCheckEnabled  }
+	{ { 11, 11 }, 2, 1, _pxCheckEnabled,  _PalCheckDisabled },
+	{ { 11, 11 }, 2, 1, _pxCheckEnabled,  _PalCheckEnabled  }
 };
 
 /* Pixel data */
@@ -312,6 +309,6 @@ XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,XXXXXX__________};
 /* Bitmaps */
 CBITMAP CheckBox::abmCheckDisabled[2]{
-	{ { 11, 11 }, 2, 1, _pxCheckDisabled,  &_PalCheckDisabled},
-	{ { 11, 11 }, 2, 1, _pxCheckDisabled,  &_PalCheckEnabled }
+	{ { 11, 11 }, 2, 1, _pxCheckDisabled,  _PalCheckDisabled},
+	{ { 11, 11 }, 2, 1, _pxCheckDisabled,  _PalCheckEnabled }
 };

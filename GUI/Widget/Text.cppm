@@ -23,7 +23,7 @@ public:
 		PCFONT pFont{ GUI_DEFAULT_FONT };
 		TEXTALIGN Align{ 0 };
 		RGBC TextColor{ RGB_BLACK };
-		RGBC BkColor{ RGB_INVALID_COLOR };
+		RGBC BkColor{ RGB_INVALID };
 	} static DefaultProps;
 	
 private:

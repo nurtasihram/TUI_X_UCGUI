@@ -1,7 +1,7 @@
 ﻿#include "GUI_Private.h"
 
 
-static void  _DrawBitLine1BPP(int x, int y, uint8_t const *p, int Diff, int xsize, const RGBC *pTrans) {
+static void  _DrawBitLine1BPP(int x, int y, uint8_t const *p, int Diff, int xsize, PCLOGPALETTE pTrans) {
 	RGBC Index0 = pTrans[0], Index1 = pTrans[1];
 	x += Diff;
 	if (GUI.DrawMode & DRAWMODE_TRANS)
@@ -22,7 +22,7 @@ static void  _DrawBitLine1BPP(int x, int y, uint8_t const *p, int Diff, int xsiz
 		}
 	} while (--xsize);
 }
-static void  _DrawBitLine2BPP(int x, int y, uint8_t const *p, int Diff, int xsize, const RGBC *pTrans) {
+static void  _DrawBitLine2BPP(int x, int y, uint8_t const *p, int Diff, int xsize, PCLOGPALETTE pTrans) {
 	RGBC Pixels = *p;
 	int CurrentPixel = Diff;
 	x += Diff;
@@ -75,7 +75,7 @@ static void  _DrawBitLine2BPP(int x, int y, uint8_t const *p, int Diff, int xsiz
 		}
 	} while (--xsize);
 }
-static void  _DrawBitLine4BPP(int x, int y, uint8_t const *p, int Diff, int xsize, const RGBC *pTrans) {
+static void  _DrawBitLine4BPP(int x, int y, uint8_t const *p, int Diff, int xsize, PCLOGPALETTE pTrans) {
 	RGBC Pixels = *p;
 	int CurrentPixel = Diff;
 	x += Diff;
@@ -128,7 +128,7 @@ static void  _DrawBitLine4BPP(int x, int y, uint8_t const *p, int Diff, int xsiz
 
 }
 
-static void  _DrawBitLine8BPP(int x, int y, uint8_t const *p, int xsize, const RGBC *pTrans) {
+static void  _DrawBitLine8BPP(int x, int y, uint8_t const *p, int xsize, PCLOGPALETTE pTrans) {
 	RGBC Pixel;
 	if (GUI.DrawMode & DRAWMODE_TRANS) {
 		if (pTrans)
@@ -149,7 +149,7 @@ static void  _DrawBitLine8BPP(int x, int y, uint8_t const *p, int xsize, const R
 	else for (; xsize--; x++, p++)
 		LCD_L0_SetPixel(x, y, *p);
 }
-static void  DrawBitLine16BPP(int x, int y, uint16_t const *p, int xsize, const RGBC *pTrans) {
+static void  DrawBitLine16BPP(int x, int y, uint16_t const *p, int xsize, PCLOGPALETTE pTrans) {
 	RGBC pixel;
 	if (GUI.DrawMode & DRAWMODE_TRANS)
 		if (pTrans)
@@ -172,7 +172,7 @@ static void  DrawBitLine16BPP(int x, int y, uint16_t const *p, int xsize, const 
 		LCD_L0_SetPixel(x, y, *p);
 }
 
-static void _DrawBitLine24BPP(int x, int y, RGBC const *p, int xsize, const RGBC *pTrans) {
+static void _DrawBitLine24BPP(int x, int y, RGBC const *p, int xsize, PCLOGPALETTE pTrans) {
 	RGBC pixel;
 	if (GUI.DrawMode & DRAWMODE_TRANS)
 		for (; xsize--; x++, p++) {
@@ -189,7 +189,7 @@ void LCD_L0_DrawBitmap(int x0, int y0,
 					   int BitsPerPixel,
 					   int BytesPerLine,
 					   const uint8_t *pData, int Diff,
-					   const RGBC *pTrans) {
+					   PCLOGPALETTE pTrans) {
 	int y1 = y0 + ysize;
 	switch (BitsPerPixel) {
 		case 1:
@@ -214,7 +214,7 @@ void LCD_L0_DrawBitmap(int x0, int y0,
 			break;
 		case 24:
 			for (; y0 < y1; y0++, pData += BytesPerLine)
-				_DrawBitLine24BPP(x0, y0, (const RGBC *)pData, xsize, pTrans);
+				_DrawBitLine24BPP(x0, y0, (PCLOGPALETTE )pData, xsize, pTrans);
 			break;
 	}
 }

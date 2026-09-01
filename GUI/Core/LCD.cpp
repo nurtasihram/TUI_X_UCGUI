@@ -100,7 +100,7 @@ void LCD_FillRect(int x0, int y0, int x1, int y1) {
 
 void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize,
 					int BitsPerPixel, int BytesPerLine,
-					const void *pPix, const RGBC *pTrans) {
+					const void *pPix, PCLOGPALETTE pTrans) {
 	auto pPixel = (const uint8_t *)pPix;
 	uint8_t  Data = 0;
 	int x1, y1, Diff;

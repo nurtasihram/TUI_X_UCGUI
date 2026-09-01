@@ -123,12 +123,14 @@ void GUI_DrawHLine(int y0, int x0, int x1) {
 void GUI_DrawBitmap(PCBITMAP pBitmap, int x0, int y0) {
 	POINT Pos{ x0, y0 };
 	Pos += GUI.Off;
-	auto pPal = pBitmap->pPal;
+	auto pPal = pBitmap->pPalEntries;
 	DRAWMODE PrevDraw = GUI.SetDrawMode(0);  /* No Get... at this point */
-	GUI.SetDrawMode((pPal && pPal->HasTrans) ? (PrevDraw | DRAWMODE_TRANS) : PrevDraw & (~DRAWMODE_TRANS));
-	auto pTrans = pBitmap->pPal ? pBitmap->pPal->pPalEntries : nullptr;
+	GUI.SetDrawMode(
+		pPal && pPal[0] != RGB_INVALID ?
+		PrevDraw & ~DRAWMODE_TRANS : PrevDraw | DRAWMODE_TRANS);
+	auto pTrans = pBitmap->pPalEntries;
 	if (!pTrans) 
-		pTrans = (pBitmap->BitsPerPixel != 1) ? nullptr : &LCD_BKCOLORINDEX;
+		pTrans = pBitmap->BitsPerPixel ? &LCD_BKCOLORINDEX : nullptr;
 	RECT r = RECT::LeftTop(Pos, pBitmap->Size);
 	WObj::Iterate(r, [&] {
 		LCD_DrawBitmap(Pos.x, Pos.y

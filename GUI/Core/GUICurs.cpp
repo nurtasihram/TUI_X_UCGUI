@@ -1,18 +1,7 @@
 #include "GUI_Private.h"
 
-static const RGBC _aColor[]{ RGB_RED, RGB_BLACK, RGB_WHITE };
-CLOGPALETTE GUI_CursorPal{
-  3,	/* number of entries */
-  1, 	/* Has transparency */
-  &_aColor[0]
-};
-
-static const RGBC _aColorI[]{ RGB_RED, RGB_WHITE, RGB_BLACK };
-CLOGPALETTE GUI_CursorPalI{
-  3,	/* number of entries */
-  1, 	/* Has transparency */
-  &_aColorI[0]
-};
+CLOGPALETTE GUI_CursorPal{ RGB_INVALID, RGB_BLACK, RGB_WHITE };
+CLOGPALETTE GUI_CursorPalI{ RGB_INVALID, RGB_WHITE, RGB_BLACK };
 
 #if GUI_SUPPORT_CURSOR
 
@@ -24,7 +13,7 @@ static PCCURSOR _pCursor = nullptr;
 static uint8_t _CursorDeActCnt = 0;
 static int16_t _x, _y; /* Position of hot spot */
 static RECT _ClipRect;
-const RGBC *aCursorPal = nullptr;
+PCLOGPALETTE aCursorPal = nullptr;
 
 static void _SetPixel(int x, int y, int Index) {
 	if ((y >= _ClipRect.y0) && (y <= _ClipRect.y1)) {
@@ -149,7 +138,7 @@ PCCURSOR GUI_CURSOR_Select(PCCURSOR pCursor) {
 	pOldCursor = _pCursor;
 	if (pCursor != _pCursor) {
 		pBM = pCursor->pBitmap;
-		aCursorPal = pBM->pPal->pPalEntries;
+		aCursorPal = pBM->pPalEntries;
 		_Hide();
 		AllocSize = pBM->Size.x * pBM->Size.y * sizeof(RGBC);
 		if (AllocSize != _AllocSize) {

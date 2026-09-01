@@ -32,9 +32,9 @@ ________,________,__XXoooo,ooXX____,________,
 ________,________,____XXoo,ooooXX__,________,
 ________,________,____XXoo,ooooXX__,________,
 ________,________,______XX,XXXX____,________};
-static CBITMAP _bmArrowL{ { 18, 30 }, 5, 2, _pxArrowL, &GUI_CursorPal };
+static CBITMAP _bmArrowL{ { 18, 30 }, 5, 2, _pxArrowL, GUI_CursorPal };
 CCURSOR CursorArrowL{ &_bmArrowL };
-static CBITMAP _bmArrowLI{ { 18, 30 }, 5, 2, _pxArrowL, &GUI_CursorPalI };
+static CBITMAP _bmArrowLI{ { 18, 30 }, 5, 2, _pxArrowL, GUI_CursorPalI };
 CCURSOR CursorArrowLI{ &_bmArrowLI };
 #pragma endregion
 
@@ -60,9 +60,9 @@ ________,__XXoooo,ooXX____,
 ________,____XXoo,ooooXX__,
 ________,____XXoo,ooooXX__,
 ________,______XX,XXXX____};
-static CBITMAP _bmArrowM{ { 12, 20 }, 3, 2, _pxArrowM, &GUI_CursorPal };
+static CBITMAP _bmArrowM{ { 12, 20 }, 3, 2, _pxArrowM, GUI_CursorPal };
 CCURSOR CursorArrowM{ &_bmArrowM };
-static CBITMAP _bmArrowMI{ { 12, 20 }, 3, 2, _pxArrowM, &GUI_CursorPalI };
+static CBITMAP _bmArrowMI{ { 12, 20 }, 3, 2, _pxArrowM, GUI_CursorPalI };
 CCURSOR CursorArrowMI{ &_bmArrowMI };
 #pragma endregion
 
@@ -83,8 +83,8 @@ XX____XX,ooooXX__,________,
 ________,XXooooXX,________,
 ________,XXooooXX,________,
 ________,__XXXX__,________};
-static CBITMAP _bmArrowS{ { 9, 15 }, 3, 2, _pxArrowS, &GUI_CursorPal };
+static CBITMAP _bmArrowS{ { 9, 15 }, 3, 2, _pxArrowS, GUI_CursorPal };
 CCURSOR CursorArrowS{ &_bmArrowS };
-static CBITMAP _bmArrowSI{ { 9, 15 }, 3, 2, _pxArrowS, &GUI_CursorPalI };
+static CBITMAP _bmArrowSI{ { 9, 15 }, 3, 2, _pxArrowS, GUI_CursorPalI };
 CCURSOR CursorArrowSI{ &_bmArrowSI };
 #pragma endregion

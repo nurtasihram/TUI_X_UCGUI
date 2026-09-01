@@ -33,9 +33,9 @@ ________,________,________,____XXoo,XX______,________,________,________,
 ________,________,________,____XXoo,XX______,________,________,________,
 ________,________,________,____XXoo,XX______,________,________,________,
 ________,________,________,____XXXX,XX______,________,________,________};
-static CBITMAP _bmCrossL{ 31, 8, 2, _pxCrossL, &GUI_CursorPal };
+static CBITMAP _bmCrossL{ 31, 8, 2, _pxCrossL, GUI_CursorPal };
 CCURSOR CursorCrossL{ &_bmCrossL, 15 };
-static CBITMAP _bmCrossLI{ 31, 8, 2, _pxCrossL, &GUI_CursorPalI };
+static CBITMAP _bmCrossLI{ 31, 8, 2, _pxCrossL, GUI_CursorPalI };
 CCURSOR CursorCrossLI{ &_bmCrossLI, 15 };
 #pragma endregion
 
@@ -63,9 +63,9 @@ ________,________,__XXooXX,________,________,________,
 ________,________,__XXooXX,________,________,________,
 ________,________,__XXooXX,________,________,________,
 ________,________,__XXXXXX,________,________,________};
-static CBITMAP _bmCrossM{ 21, 6, 2, _pxCrossM, &GUI_CursorPal };
+static CBITMAP _bmCrossM{ 21, 6, 2, _pxCrossM, GUI_CursorPal };
 CCURSOR CursorCrossM{ &_bmCrossM, 10 };
-static CBITMAP _bmCrossMI{ 21, 6, 2, _pxCrossM, &GUI_CursorPalI };
+static CBITMAP _bmCrossMI{ 21, 6, 2, _pxCrossM, GUI_CursorPalI };
 CCURSOR CursorCrossMI{ &_bmCrossMI, 10 };
 #pragma endregion
 
@@ -82,8 +82,8 @@ ________,XXooXX__,________,
 ________,XXooXX__,________,
 ________,XXooXX__,________,
 ________,XXXXXX__,________};
-static CBITMAP _bmCrossS{ 11, 3, 2, _pxCrossS, &GUI_CursorPal };
+static CBITMAP _bmCrossS{ 11, 3, 2, _pxCrossS, GUI_CursorPal };
 CCURSOR CursorCrossS{ &_bmCrossS, 5 };
-static CBITMAP _bmCrossSI{ 11, 3, 2, _pxCrossS, &GUI_CursorPalI };
+static CBITMAP _bmCrossSI{ 11, 3, 2, _pxCrossS, GUI_CursorPalI };
 CCURSOR CursorCrossSI{ &_bmCrossSI, 5 };
 #pragma endregion

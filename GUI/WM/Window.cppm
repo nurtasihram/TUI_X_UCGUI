@@ -945,7 +945,7 @@ public:
 				return 0;
 			}
 			case WM_PAINT:
-				if (BkColorDesktop != RGB_INVALID_COLOR) {
+				if (BkColorDesktop != RGB_INVALID) {
 					GUI.BkColor(BkColorDesktop);
 					GUI_Clear();
 				}

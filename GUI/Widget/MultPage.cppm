@@ -242,7 +242,7 @@ private:
 		GUI_DispStringAt(pText, r.x0 + 4, pRect->y0 + 3);
 	}
 	void _OnPaint() {
-		SetBkColorPrefer(RGB_INVALID_COLOR);
+		SetBkColorPrefer(RGB_INVALID);
 		GUI_Clear();
 		RECT rBorder;
 		/* Draw border of MultPage */

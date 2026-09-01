@@ -156,23 +156,31 @@ constexpr RGBC
 	RGB_DARKYELLOW  = COLOR_RGB(0x80, 0x80, 0x00),
 	RGB_BROWN       = COLOR_RGB(0xA5, 0x2A, 0x2A),
 	
-	RGB_INVALID_COLOR = ~0;      /* Invalid color - more than 24 bits */
+	RGB_INVALID = ~0;      /* Invalid color - more than 24 bits */
 #pragma endregion
 
-struct LOGPALETTE {
-	uint8_t NumEntries;
-	char HasTrans;
-	const RGBC *pPalEntries;
-};
-using CLOGPALETTE = const LOGPALETTE;
-using PCLOGPALETTE = const LOGPALETTE *;
-extern CLOGPALETTE GUI_CursorPal, GUI_CursorPalI;
+using CLOGPALETTE = const RGBC[];
+using PCLOGPALETTE = const RGBC *;
 
-struct BITMAP {
+class BITMAP {
 	POINT Size;
-	uint16_t BytesPerLine, BitsPerPixel;
+	uint16_t BytesPerLine;
+	uint8_t BitsPerPixel : 5;
+	uint8_t BitsXOff : 3;
 	const void *pData;
-	PCLOGPALETTE pPal = nullptr;
+	PCLOGPALETTE pPalEntries;
+public:
+	BITMAP(POINT Size,
+		   uint16_t BytesPerLine,
+		   uint8_t BitsPerPixel,
+		   const void *pData,
+		   PCLOGPALETTE pPalEntries = nullptr) :
+		Size(Size),
+		BytesPerLine(BytesPerLine),
+		BitsPerPixel(BitsPerPixel),
+		BitsXOff(0),
+		pData(pData),
+		pPalEntries(pPalEntries) {}
 };
 using CBITMAP = const BITMAP;
 using PCBITMAP = const BITMAP *;
@@ -183,6 +191,8 @@ struct CURSOR {
 };
 using CCURSOR = const CURSOR;
 using PCCURSOR = const CURSOR *;
+
+extern CLOGPALETTE GUI_CursorPal, GUI_CursorPalI;
 #pragma endregion
 
 #pragma region Font

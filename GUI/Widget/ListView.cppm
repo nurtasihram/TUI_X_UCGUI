@@ -438,7 +438,7 @@ public:
 
 	RGBC BkColor(LISTVIEW_CI Index) {
 		if (Index >= GUI_COUNTOF(Props.aBkColor))
-			return RGB_INVALID_COLOR;
+			return RGB_INVALID;
 		return Props.aBkColor[Index];
 	}
 	void BkColor(LISTVIEW_CI Index, RGBC Color) {
@@ -452,7 +452,7 @@ public:
 
 	RGBC TextColor(LISTVIEW_CI Index) {
 		if (Index >= GUI_COUNTOF(Props.aTextColor))
-			return RGB_INVALID_COLOR;
+			return RGB_INVALID;
 		return Props.aTextColor[Index];
 	}
 	void TextColor(LISTVIEW_CI Index, RGBC Color) {

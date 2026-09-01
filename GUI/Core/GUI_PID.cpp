@@ -1,7 +1,4 @@
-#include "LCD_Private.h"      /* private modul definitions & config */
-#include "GUI_Protected.h"
-
-#include "WM.h"
+import TUX;
 
 static PID_STATE _State{ 0 };
 PID_STATE GUI_PID_GetState(void) {
@@ -10,4 +7,3 @@ PID_STATE GUI_PID_GetState(void) {
 void GUI_PID_StoreState(const PID_STATE &State) {
 	_State = State;
 }
-	

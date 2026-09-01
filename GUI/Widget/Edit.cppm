@@ -217,7 +217,7 @@ private:
 			NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
-	bool _InsertChar(uint16_t Char) {
+	bool _InsertChar(char Char) {
 		if (_IsCharsAvailable(1) && _IsSpaceInBuffer(1)) {
 			auto p = pText + CursorPos;
 			GUI__memmove(p + 1, p, GUI__strlen(p) + 1);
@@ -227,7 +227,7 @@ private:
 		}
 		return false;
 	}
-	uint16_t _GetCurrentChar() {
+	char _GetCurrentChar() {
 		if (pText)
 			return pText[CursorPos];
 		return 0;

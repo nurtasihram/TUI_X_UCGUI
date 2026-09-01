@@ -34,7 +34,7 @@ public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC TextColor{ RGB_BLACK };
-		RGBC BkColor{ RGB_INVALID_COLOR };
+		RGBC BkColor{ RGB_INVALID };
 		PCBITMAP apBmRadio[2]{ &_abmRadio[0], &_abmRadio[1] };
 		PCBITMAP pBmCheck{ &_bmCheck };
 	} static DefaultProps;
@@ -386,13 +386,11 @@ __XX____,dddddddd,____dd__,
 ____dddd,________,dddd____,
 ________,dddddddd,________,
 };
-static const RGBC _aColorDisabled[]{ RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
-static const RGBC _aColorEnabled[]{ RGB_GRAYL(0xC0), RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
-static CLOGPALETTE _PalRadioDisabled{ 4, 1, _aColorDisabled };
-static CLOGPALETTE _PalRadioEnabled{ 4, 1, _aColorEnabled };
+static CLOGPALETTE _PalRadioDisabled{ RGB_INVALID, RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
+static CLOGPALETTE _PalRadioEnabled{ RGB_INVALID, RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
 CBITMAP _abmRadio[]{
-	{ 12, 3, 2, _pxRadio, &_PalRadioDisabled },
-	{ 12, 3, 2, _pxRadio, &_PalRadioEnabled }
+	{ 12, 3, 2, _pxRadio, _PalRadioDisabled },
+	{ 12, 3, 2, _pxRadio, _PalRadioEnabled }
 };
 
 static const uint8_t _pxCheck[]{
@@ -401,6 +399,5 @@ XXXXXXXX________,
 XXXXXXXX________,
 __XXXX__________
 };
-static const RGBC _ColorsCheck[]{ RGB_WHITE, RGB_BLACK };
-static CLOGPALETTE _PalCheck{ 2, 1, _ColorsCheck };
-CBITMAP _bmCheck{ 4, 1, 1, _pxCheck, &_PalCheck };
+static CLOGPALETTE _PalCheck{ RGB_INVALID, RGB_BLACK };
+CBITMAP _bmCheck{ 4, 1, 1, _pxCheck, _PalCheck };

@@ -118,7 +118,7 @@ public:
 
 protected:
 	void SetBkColorPrefer(RGBC BkColor) {
-		while (BkColor == RGB_INVALID_COLOR) {
+		while (BkColor == RGB_INVALID) {
 			if (auto pParent = Parent())
 				BkColor = pParent->BkColor();
 			else

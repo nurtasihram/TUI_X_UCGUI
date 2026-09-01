@@ -200,7 +200,7 @@ public:
 
 	RGBC BkColor(BUTTON_CI Index) {
 		if (Index > 2)
-			return RGB_INVALID_COLOR;
+			return RGB_INVALID;
 		return Props.aBkColor[Index];
 	}
 	void BkColor(BUTTON_CI Index, RGBC Color) {
@@ -212,7 +212,7 @@ public:
 	
 	RGBC TextColor(BUTTON_CI Index) {
 		if (Index > 2)
-			return RGB_INVALID_COLOR;
+			return RGB_INVALID;
 		return Props.aTextColor[Index];
 	}
 	void TextColor(BUTTON_CI Index, RGBC Color) {

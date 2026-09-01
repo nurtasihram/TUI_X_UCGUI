@@ -230,7 +230,7 @@ private:
 		____XXoo,XX______,________,XXooXX__,________,
 		______XX,XX______,________,XXXX____,________,
 		________,XX______,________,XX______,________};
-		static CBITMAP _bmResizeCursorH{ { 17, 9 }, 5, 2, _pxCurResizeH, &GUI_CursorPal };
+		static CBITMAP _bmResizeCursorH{ { 17, 9 }, 5, 2, _pxCurResizeH, GUI_CursorPal };
 		static CCURSOR _ResizeCursorH{ &_bmResizeCursorH, { 8, 4 } };
 		static const uint8_t _pxCurResizeV[]{
 		________,XX______,________,
@@ -250,7 +250,7 @@ private:
 		____XXoo,ooooXX__,________,
 		______XX,ooXX____,________,
 		________,XX______,________};
-		static CBITMAP _bmResizeCursorV{ { 9, 17 }, 3, 2, _pxCurResizeV, &GUI_CursorPal };
+		static CBITMAP _bmResizeCursorV{ { 9, 17 }, 3, 2, _pxCurResizeV, GUI_CursorPal };
 		static CCURSOR _ResizeCursorV{ &_bmResizeCursorV, { 4, 8 } };
 		static const uint8_t _pxCurResizeDD[]{
 		XXXXXXXX,XXXX____,________,________,
@@ -266,7 +266,7 @@ private:
 		________,________,__XXoooo,XX______,
 		________,________,XXoooooo,XX______,
 		________,______XX,XXXXXXXX,XX______};
-		static CBITMAP _bmResizeCursorDD{ 13, 4, 2, _pxCurResizeDD, &GUI_CursorPal };
+		static CBITMAP _bmResizeCursorDD{ 13, 4, 2, _pxCurResizeDD, GUI_CursorPal };
 		static CCURSOR _ResizeCursorDD{ &_bmResizeCursorDD, 6 };
 		static const uint8_t _pxCurResizeDU[]{
 		________,______XX,XXXXXXXX,XX______,
@@ -282,7 +282,7 @@ private:
 		XXooooXX,________,________,________,
 		XXoooooo,XX______,________,________,
 		XXXXXXXX,XXXX____,________,________};
-		static CBITMAP _bmResizeCursorDU{ 13, 4, 2, _pxCurResizeDU, &GUI_CursorPal };
+		static CBITMAP _bmResizeCursorDU{ 13, 4, 2, _pxCurResizeDU, GUI_CursorPal };
 		static CCURSOR _ResizeCursorDU{ &_bmResizeCursorDU, 6 };
 		PCCURSOR pNewCursor = nullptr;
 		if (Mode) {

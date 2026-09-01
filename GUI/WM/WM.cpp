@@ -141,7 +141,7 @@ WM_PARAM WM_DefaultProc(WObj * pWin, int MsgId, WM_PARAM Data) {
 			pWin->Parent()->Require(WM_KEY, Data);
 			return 0;	
 		case WM_GET_BKCOLOR:
-			return RGB_INVALID_COLOR;
+			return RGB_INVALID;
 		case WM_NOTIFY_ENABLE:
 			pWin->Invalidate();
 			return 0;

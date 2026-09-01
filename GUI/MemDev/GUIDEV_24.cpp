@@ -6,7 +6,7 @@
 
 #define PIXELINDEX RGBC
 
-static const RGBC aID[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+static CLOGPALETTE aID{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
 static PIXELINDEX *_XY2PTR(int x, int y) {
 	auto pDev = GUI.pDevData;
@@ -16,7 +16,7 @@ static PIXELINDEX *_XY2PTR(int x, int y) {
 }
 
 static void _DrawBitLine1BPP(int x, int y, const uint8_t  *p, int Diff, unsigned int xsize,
-							 const RGBC *pTrans, GUI_MEMDEV *pDev, PIXELINDEX *pDest) {
+							 PCLOGPALETTE pTrans, GUI_MEMDEV *pDev, PIXELINDEX *pDest) {
 	PIXELINDEX Index1;
 	unsigned pixels;
 	unsigned PixelCnt;
@@ -70,7 +70,7 @@ static void _DrawBitLine1BPP(int x, int y, const uint8_t  *p, int Diff, unsigned
 	}
 }
 static void _DrawBitLine2BPP(int x, int y, const uint8_t  *p, int Diff, int xsize,
-							 const RGBC *pTrans, PIXELINDEX *pDest) {
+							 PCLOGPALETTE pTrans, PIXELINDEX *pDest) {
 	uint8_t pixels;
 	uint8_t  PixelCnt;
 	PixelCnt = 4 - Diff;
@@ -112,7 +112,7 @@ static void _DrawBitLine2BPP(int x, int y, const uint8_t  *p, int Diff, int xsiz
 	}
 }
 static void _DrawBitLine4BPP(int x, int y, const uint8_t  *p, int Diff, int xsize,
-							 const RGBC *pTrans, PIXELINDEX *pDest) {
+							 PCLOGPALETTE pTrans, PIXELINDEX *pDest) {
 	uint8_t pixels;
 	uint8_t PixelCnt;
 	PixelCnt = 2 - Diff;
@@ -178,7 +178,7 @@ static void _DrawBitLine4BPP(int x, int y, const uint8_t  *p, int Diff, int xsiz
 	}
 }
 static void _DrawBitLine8BPP(int x, int y, const uint8_t  *pSrc, int xsize,
-							 const RGBC *pTrans, PIXELINDEX *pDest) {
+							 PCLOGPALETTE pTrans, PIXELINDEX *pDest) {
 	switch (GUI.DrawMode & (DRAWMODE_TRANS)) {
 		case 0:    /* Write mode */
 			do {
@@ -231,7 +231,7 @@ static void _DrawBitLine16BPP_DDB(int x, int y, const uint16_t *pSrc, int xsize,
 	}
 }
 
-static void _DrawBitLine24BPP_DDB(int x, int y, const RGBC *pSrc, int xsize, PIXELINDEX *pDest) {
+static void _DrawBitLine24BPP_DDB(int x, int y, PCLOGPALETTE pSrc, int xsize, PIXELINDEX *pDest) {
 	switch (GUI.DrawMode & (DRAWMODE_TRANS)) {
 		case 0: /* Write mode */
 			GUI__memcpy(pDest, pSrc, xsize * 4);  /* 4 bytes per pixel for 24-bit */
@@ -250,7 +250,7 @@ static void _DrawBitLine24BPP_DDB(int x, int y, const RGBC *pSrc, int xsize, PIX
 
 static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 						int BitsPerPixel, int BytesPerLine,
-						const uint8_t *pData, int Diff, const RGBC *pTrans) {
+						const uint8_t *pData, int Diff, PCLOGPALETTE pTrans) {
 	int i;
 	auto pDev = GUI.pDevData;
 	unsigned    BytesPerLineDest;
@@ -261,7 +261,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 	/* handle 24 bpp bitmaps (native format) */
 	if (BitsPerPixel == 24) {
 		for (i = 0; i < ysize; i++) {
-			_DrawBitLine24BPP_DDB(x0, i + y0, (const RGBC *)pData, xsize, pDest);
+			_DrawBitLine24BPP_DDB(x0, i + y0, (PCLOGPALETTE )pData, xsize, pDest);
 			pData += BytesPerLine;
 			pDest = (PIXELINDEX *)((uint8_t *)pDest + BytesPerLineDest);
 		}

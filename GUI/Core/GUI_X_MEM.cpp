@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "GUI_Protected.h"
-#include "GUIDebug.h"
-
 void *GUI_ALLOC_AllocNoInit(size_t Size) {
 	return malloc(Size);
 }
@@ -37,8 +34,7 @@ void *GUI_ALLOC_AllocInit(const void *pInitData, size_t Size) {
 }
 
 void *GUI_ALLOC_AllocZero(size_t Size) {
-	void *pMem;
-	pMem = GUI_ALLOC_AllocNoInit(Size);
+	auto pMem = GUI_ALLOC_AllocNoInit(Size);
 	if (pMem)
 		memset(pMem, 0, Size);
 	return pMem;
