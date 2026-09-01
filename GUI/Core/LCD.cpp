@@ -51,12 +51,6 @@ RGBC LCD_GetPixel(int x, int y) {
 	return LCDDEV_L0_GetPixel(x, y);
 }
 
-void LCD_DrawPixel(int x, int y) {
-	RETURN_IF_Y_OUT();
-	RETURN_IF_X_OUT();
-	LCDDEV_L0_SetPixel(x, y, LCD_COLORINDEX);
-}
-
 void LCD_FillRect(RECT r) {
 	if (!(r &= GUI.ClipRect))
 		return;

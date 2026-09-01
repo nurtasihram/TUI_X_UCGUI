@@ -144,7 +144,7 @@ PCCURSOR GUI_CURSOR_Select(PCCURSOR pCursor) {
 			GUI_ALLOC_Free(_pBuffer);
 			_pBuffer = 0;
 		}
-		_pBuffer = GUI_ALLOC_AllocZero(AllocSize);
+		_pBuffer = GUI_ALLOC_Alloc(AllocSize);
 		_CursorOn = true;
 		_pCursor = pCursor;
 		_CalcRect();

@@ -29,8 +29,6 @@ typedef void tLCDDEV_DrawBitmap(int x0, int y0, int xsize, int ysize,
 
 extern const tLCDDEV_APIList GUI_MEMDEV__APIList24;
 
-void LCD_DrawPixel(int x0, int y0);
-
 void LCD_SetClipRectEx(const RECT *pRect);
 void LCD_SetClipRectMax(void);
 

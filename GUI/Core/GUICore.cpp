@@ -35,15 +35,14 @@ int GUI_Exec1(void) {
 	if (Timer::Exec())
 		r = 1; /* We have done something */
 #endif
-		if (WM_Exec())
+	if (WM_Exec())
 		r = 1;
 	return r;
 }
 int GUI_Exec(void) {
 	int r = 0;
-	while (GUI_Exec1()) {
+	while (GUI_Exec1())
 		r = 1; /* We have done something */
-	}
 	return r;
 }
 
@@ -97,14 +96,15 @@ void GUI_DrawRect(RECT r) {
 void GUI_DrawFocusRect(RECT r, int Dist) {
 	r /= Dist;
 	r += GUI.Off;
+	auto color = GUI.Color();
 	WObj::Iterate(r, [&] {
 		for (int i = r.x0; i <= r.x1; i += 2) {
-			LCD_DrawPixel(i, r.y0);
-			LCD_DrawPixel(i, r.y1);
+			LCD_SetPixel(i, r.y0, color);
+			LCD_SetPixel(i, r.y1, color);
 		}
 		for (int i = r.y0; i <= r.y1; i += 2) {
-			LCD_DrawPixel(r.x0, i);
-			LCD_DrawPixel(r.x1, i);
+			LCD_SetPixel(r.x0, i, color);
+			LCD_SetPixel(r.x1, i, color);
 		}
 	});
 }
@@ -414,119 +414,26 @@ void GUI_DispStringInRect(const char *s, RECT *pRect, int TextAlign) {
 
 #pragma region Display Char
 void GUI_DispChar(uint16_t c) {
-	RECT r;
-	GUI.DispPos += GUI.Off;
-	r.x1 = (r.x0 = GUI.DispPos.x) + GUI.Font().GetCharSizeX(c) - 1;
-	r.y1 = (r.y0 = GUI.DispPos.y) + GUI.pAFont->YSize - 1;
-	WObj::Iterate(r, [&] {
-		GL_DispChar(c);
-	});
-	if (c != '\n') {
-		GUI.DispPos.x = r.x1 + 1;
+	if (c == '\r')
+		return;
+	if (c == '\n') {
+		GUI_DispNextLine();
+		return;
 	}
+	GUI.DispPos += GUI.Off;
+	auto r = RECT::LeftTop(GUI.DispPos, { GUI.Font().GetCharSizeX(c), GUI.pAFont->YSize });
+	WObj::Iterate(r, [&] {
+		GUI.pAFont->DispChar(c);
+	});
+	if (c != '\n')
+		GUI.DispPos.x = r.x1 + 1;
 	GUI.DispPos -= GUI.Off;
 }
-
-void GUI_DispCharAt(uint16_t c, int16_t x, int16_t y) {
-	GUI.DispPos.x = x;
-	GUI.DispPos.y = y;
-	GUI_DispChar(c);
-}
-void GUI_DispChars(uint16_t c, int NumChars) {
-	while (--NumChars >= 0)
-		GUI_DispChar(c);
-}
-
 void GUI_DispNextLine(void) {
 	GUI.DispPos.y += GUI.pAFont->YSize;
 	GUI.DispPos.x = 0;
 }
-void GL_DispChar(uint16_t c) {
-	/* check for control characters */
-	if (c == '\n')
-		GUI_DispNextLine();
-	else if (c != '\r')
-		GUI.pAFont->DispChar(c);
-}
 #pragma endregion
-
-#pragma region Text operators
-bool GUI__SetText(char **ppText, const char *s) {
-	if (!ppText)
-		return false;
-	auto size = GUI__strlen(s);
-	if (!size) {
-		if (*ppText) 
-			GUI_ALLOC_Free(*ppText);
-		*ppText = nullptr;
-		return true;
-	}
-	auto pText = *ppText = (char *)GUI_ALLOC_Realloc(*ppText, ++size);
-	if (!pText)
-		return false;
-	GUI__memcpy(pText, s, size);
-	return true;
-}
-bool GUI__strcmp(const char *s0, const char *s1) {
-	if (s0 == nullptr)
-		s0 = "";
-	if (s1 == nullptr)
-		s1 = "";
-	do {
-		if (*s0 != *s1)
-			return true;
-		s1++;
-	} while (*++s0);
-	if (*s1)
-		return true;    /* Not equal, since s1 is longer than s0 */
-	return false;      /* Equal ! */
-}
-uint16_t GUI__strlen(const char *s) {
-	uint16_t r = 0;
-	if (s) {
-		do {
-			r++;
-		} while (*s++);
-	}
-	return r;
-}
-int GUI__strcpy(char *sDest, const char *sSrc) {
-	auto s = sDest;
-	while ((*s++ = *sSrc++) != 0) {}
-	return (int)(s - sDest - 1);
-}
-/*********************************************************************
-*
-*       GUI__HandleEOLine
-*
-* Is called when processing strings which may consist of
-* multiple lines after a line has been processed. It will
-* a) Swall the line feed character (if it is there)
-* b) Return 1 if end of string, otherwise 0
-*/
-int GUI__HandleEOLine(const char **ps) {
-	auto s = *ps;
-	char c = *s++;
-	if (c == 0) {
-		return 1;
-	}
-	if (c == '\n') {
-		*ps = s;
-	}
-	return 0;
-}
-
-int GUI__GetLineNumChars(const char *s, int MaxNumChars) {
-	int NumChars = 0;
-	if (s) {
-		for (; NumChars < MaxNumChars; NumChars++) {
-			auto Data = *s++;
-			if (Data == 0 || Data == '\n')
-				break;
-		}
-	}
-	return NumChars;
-}
 
 #pragma region Text Wrapping
 static int _IsLineEnd(uint16_t Char) {
@@ -613,7 +520,6 @@ int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, WRAPMODE WrapMo
 int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, WRAPMODE WrapMode) {
 	return GUI__WrapGetNumCharsToNextLine(pText, xSize, WrapMode);
 }
-#pragma endregion
 #pragma endregion
 
 /*********************************************************************

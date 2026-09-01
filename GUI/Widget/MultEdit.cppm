@@ -760,7 +760,7 @@ public:
 		Widget((_AdjRect(r, pParent), r), Style, _Callback, pParent, Id, ExFlags | WIDGET_STATE_FOCUSSABLE),
 		BufferSize(BufferSize) {
 		if (BufferSize > 0)
-			this->pText = (char *)GUI_ALLOC_AllocZero(BufferSize);
+			this->pText = (char *)GUI_ALLOC_Alloc(BufferSize);
 		SetText(pText);
 		_ManageScrollers();
 	}	
@@ -923,7 +923,7 @@ public:
 		}
 	}
 	void SetBufferSize(int BufferSize) {
-		auto pText = (char *)GUI_ALLOC_AllocZero(BufferSize);
+		auto pText = (char *)GUI_ALLOC_Alloc(BufferSize);
 		if (!pText) {
 		}
 		else {

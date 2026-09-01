@@ -66,7 +66,7 @@ public:
 
 	~Timer() { _Unlink(); }
 
-	void *operator new(size_t Size) { return GUI_ALLOC_AllocZero(Size); }
+	void *operator new(size_t Size) { return GUI_ALLOC_Alloc(Size); }
 	void operator delete(void *p) { GUI_ALLOC_Free(p); }
 
 public:

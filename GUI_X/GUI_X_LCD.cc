@@ -243,7 +243,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 #pragma endregion
 
 const tLCDDEV_APIList LCD_API{
-	(tLCDDEV_DrawBitmap *)_DrawBitmap,
+	_DrawBitmap,
 	_FillRect,
 	_GetPixel,
 	_GetRect,

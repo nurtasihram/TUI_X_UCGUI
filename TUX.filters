@@ -225,7 +225,7 @@
     <ClCompile Include="GUI\Core\GUI_ALLOC_AllocInit.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_ALLOC_AllocZero.c">
+    <ClCompile Include="GUI\Core\GUI_ALLOC_Alloc.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_BMP.c">

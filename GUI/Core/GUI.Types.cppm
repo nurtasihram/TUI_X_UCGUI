@@ -36,7 +36,7 @@ struct RECT {
 	inline POINT LeftTop() const { return{ x0, y0 }; }
 	inline void LeftTop(POINT Pos) { x0 = Pos.x, y0 = Pos.y; }
 	inline static RECT LeftTop(POINT Pos, POINT Size)
-	{ return { Pos.x, Pos.y, Pos.x + Size.x, Pos.y + Size.y }; }
+	{ return { Pos.x, Pos.y, Pos.x + Size.x - 1, Pos.y + Size.y - 1 }; }
 
 	inline POINT RightBottom() const { return{ x1, y1 }; }
 	inline void RightBottom(POINT Pos) { x1 = Pos.x, y1 = Pos.y; }

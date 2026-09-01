@@ -16,7 +16,7 @@ public:
 
 	ARRAY() = default;
 	ARRAY(uint16_t nItems) : nItems(nItems) {
-		pArray = (T*)GUI_ALLOC_AllocZero((size_t)nItems * sizeof(T));
+		pArray = (T*)GUI_ALLOC_Alloc((size_t)nItems * sizeof(T));
 	}
 	~ARRAY() { Delete(); }
 

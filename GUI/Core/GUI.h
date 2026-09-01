@@ -53,8 +53,6 @@ bool     GUI_CURSOR__TempHide(RECT);
 #endif
 
 void  GUI_DispChar(uint16_t c);
-void  GUI_DispChars(uint16_t c, int Cnt);
-void  GUI_DispCharAt(uint16_t c, int16_t x, int16_t y);
 void  GUI_DispString(const char *s);
 void  GUI_DispStringAt(const char *s, int x, int y);
 void  GUI__DispStringInRect(const char *s, RECT *pRect, int TextAlign, int MaxNumChars);
@@ -64,17 +62,6 @@ void  GUI_DispStringInRectMax(const char *s, RECT *pRect, int TextAlign, int Max
 void  GUI_GetTextExtend(RECT *pRect, const char *s, int Len);
 int   GUI_GetStringSizeX(const char *s);
 void  GUI_DispNextLine(void);
-
-void *GUI_ALLOC_AllocInit(const void *pInitData, size_t Size);
-void *GUI_ALLOC_AllocNoInit(size_t size);
-void *GUI_ALLOC_AllocZero(size_t size);
-void  GUI_ALLOC_Free(void *ptr);
-void  GUI_ALLOC_FreePtr(void **pptr);
-void *GUI_ALLOC_Realloc(void *ptr, size_t NewSize);
-size_t   GUI_ALLOC_GetMaxSize(void);
-
-void     GUI__memcpy(void *pDest, const void *pSrc, size_t NumBytes);
-void     GUI__memmove(void *pDest, const void *pSrc, size_t NumBytes);
 
 #define GUI_MEMDEV_HASTRANS       0
 #define GUI_MEMDEV_NOTRANS    (1<<0)

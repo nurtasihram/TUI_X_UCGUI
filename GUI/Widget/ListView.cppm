@@ -339,7 +339,7 @@ private:
 		auto pItemInfo = pItem->pItemInfo;
 		if (pItemInfo)
 			return pItemInfo;
-		pItemInfo = pItem->pItemInfo = (ItemInfo *)GUI_ALLOC_AllocZero(sizeof(ItemInfo));
+		pItemInfo = pItem->pItemInfo = (ItemInfo *)GUI_ALLOC_Alloc(sizeof(ItemInfo));
 		pItemInfo->aTextColor[0] = Props.aTextColor[0];
 		pItemInfo->aTextColor[1] = Props.aTextColor[1];
 		pItemInfo->aBkColor[0] = Props.aBkColor[0];

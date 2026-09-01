@@ -5,20 +5,79 @@ module;
 
 export module TUX.String;
 
-extern "C++" {
-	void *GUI_ALLOC_AllocInit(const void *pInitData, size_t Size);
-	void *GUI_ALLOC_AllocNoInit(size_t size);
-	void *GUI_ALLOC_Realloc(void *ptr, size_t NewSize);
-	void  GUI_ALLOC_FreePtr(void **pptr);
-	bool GUI__SetText(char **ppText, const char *s);
-	uint16_t GUI__strlen(const char *s);
-	bool  GUI__strcmp(const char *s0, const char *s1);
-	void  GUI__memcpy(void *pDest, const void *pSrc, size_t NumBytes);
-}
+export import TUX.Memory;
 
 using StringLen = size_t;
 
-export class String {
+export {
+
+bool GUI__strcmp(const char *s0, const char *s1) {
+	if (s0 == nullptr)
+		s0 = "";
+	if (s1 == nullptr)
+		s1 = "";
+	do {
+		if (*s0 != *s1)
+			return true;
+		s1++;
+	} while (*++s0);
+	if (*s1)
+		return true;    /* Not equal, since s1 is longer than s0 */
+	return false;      /* Equal ! */
+}
+uint16_t GUI__strlen(const char *s) {
+	uint16_t r = 0;
+	if (s) {
+		do {
+			r++;
+		} while (*s++);
+	}
+	return r;
+}
+int GUI__strcpy(char *sDest, const char *sSrc) {
+	auto s = sDest;
+	while ((*s++ = *sSrc++) != 0) {}
+	return (int)(s - sDest - 1);
+}
+
+int GUI__HandleEOLine(const char **ps) {
+	auto s = *ps;
+	char c = *s++;
+	if (c == 0) 
+		return 1;
+	if (c == '\n')
+		*ps = s;
+	return 0;
+}
+int GUI__GetLineNumChars(const char *s, int MaxNumChars) {
+	int NumChars = 0;
+	if (s) {
+		for (; NumChars < MaxNumChars; NumChars++) {
+			auto Data = *s++;
+			if (Data == 0 || Data == '\n')
+				break;
+		}
+	}
+	return NumChars;
+}
+bool GUI__SetText(char **ppText, const char *s) {
+	if (!ppText)
+		return false;
+	auto size = GUI__strlen(s);
+	if (!size) {
+		if (*ppText)
+			GUI_ALLOC_Free(*ppText);
+		*ppText = nullptr;
+		return true;
+	}
+	auto pText = *ppText = (char *)GUI_ALLOC_Realloc(*ppText, ++size);
+	if (!pText)
+		return false;
+	GUI__memcpy(pText, s, size);
+	return true;
+}
+
+class String {
 
 	char *pText{ nullptr };
 
@@ -46,3 +105,5 @@ public:
 	operator bool() const noexcept { return pText; }
 	operator const char *() const noexcept { return pText; }
 };
+
+}
