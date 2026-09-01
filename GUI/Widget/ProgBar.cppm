@@ -119,12 +119,12 @@ private:
 		auto r = rInside;
 		r.x1 = xPos - 1;
 		SetUserClipRect(&r);
-		_DrawPart(0, rText.x0, rText.y0, pText);
+		_DrawPart(PROGBAR_CI_INACTIVE, rText.x0, rText.y0, pText);
 		/* Draw right bar */
 		r = rInside;
 		r.x0 = xPos;
 		SetUserClipRect(&r);
-		_DrawPart(1, rText.x0, rText.y0, pText);
+		_DrawPart(PROGBAR_CI_ACTIVE, rText.x0, rText.y0, pText);
 		SetUserClipRect(nullptr);
 		DrawDown(rClient);
 	}

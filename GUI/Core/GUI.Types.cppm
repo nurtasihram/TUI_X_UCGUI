@@ -162,14 +162,13 @@ constexpr RGBC
 using CLOGPALETTE = const RGBC[];
 using PCLOGPALETTE = const RGBC *;
 
-class BITMAP {
+struct BITMAP {
 	POINT Size;
 	uint16_t BytesPerLine;
 	uint8_t BitsPerPixel : 5;
 	uint8_t BitsXOff : 3;
 	const void *pData;
 	PCLOGPALETTE pPalEntries;
-public:
 	BITMAP(POINT Size,
 		   uint16_t BytesPerLine,
 		   uint8_t BitsPerPixel,

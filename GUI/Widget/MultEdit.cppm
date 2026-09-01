@@ -525,8 +525,9 @@ private:
 		auto yOff = EffectSize - ScrollPosY * FontSizeY;
 
 		// Draw background
-		GUI.BkColor(Props.aBkColor[States & MULTEDIT_CF_READONLY ? 1 : 0]);
-		GUI.Color(Props.aColor[States & MULTEDIT_CF_READONLY ? 1 : 0]);
+		auto ColorIndex = States & MULTEDIT_CF_READONLY ? MULTEDIT_CI_READONLY : MULTEDIT_CI_EDITMODE;
+		GUI.BkColor(Props.aBkColor[ColorIndex]);
+		GUI.Color(Props.aColor[ColorIndex]);
 		GUI_Clear();
 
 		// Setup clipping rectangle
@@ -545,7 +546,7 @@ private:
 			auto NumVisLines = _GetNumVisLines();
 
 			// Setup text drawing rectangle
-			RECT r = {
+			RECT r{
 				xOff,
 				EffectSize,
 				_GetXSize() + EffectSize + HBorder - 1,

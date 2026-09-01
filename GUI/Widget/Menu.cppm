@@ -51,7 +51,6 @@ enum MENU_CI {
 	 MENU_CI_ACTIVE_SUBMENU
 };
 
-
 PCWIDGET_EFFECT MENU__pDefaultEffect = MENU_EFFECT_DEFAULT;
 
 class Menu : public Widget {
@@ -479,17 +478,14 @@ private:
 	}
 #endif
 	void _SetPaintColors(const Item &pItem, int ItemIndex) {
-		bool Selected = (ItemIndex == Sel);
-		unsigned ColorIndex;
-		if (IsSubmenuActive && Selected)
-			ColorIndex = MENU_CI_ACTIVE_SUBMENU;
-		else if (pItem.Flags & MENU_IF_SEPARATOR)
-			ColorIndex = MENU_CI_ENABLED;
-		else {
-			ColorIndex = Selected ? MENU_CI_SELECTED : MENU_CI_ENABLED;
-			if (pItem.Flags & MENU_IF_DISABLED)
-				ColorIndex = (States & MENU_CF_HIDE_DISABLED_SEL) ? MENU_CI_DISABLED : ColorIndex + MENU_CI_DISABLED;
-		}
+		bool Selected = ItemIndex == Sel;
+		auto ColorIndex = 
+			IsSubmenuActive && Selected ? MENU_CI_ACTIVE_SUBMENU :
+			pItem.Flags & MENU_IF_SEPARATOR ? MENU_CI_ENABLED :
+			pItem.Flags & MENU_IF_DISABLED ?
+				!(States & MENU_CF_HIDE_DISABLED_SEL) && Selected ?
+					MENU_CI_DISABLED_SEL : MENU_CI_DISABLED :
+				Selected ? MENU_CI_SELECTED : MENU_CI_ENABLED;
 		GUI.BkColor(Props.aBkColor[ColorIndex]);
 		GUI.Color(Props.aTextColor[ColorIndex]);
 	}

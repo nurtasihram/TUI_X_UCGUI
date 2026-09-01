@@ -114,14 +114,10 @@ private:
 				Rect.y1 = yPos + RowDistY - 1;
 				/* Make sure that we draw only when row is in drawing area */
 				if (Rect.y1 >= ClipRect.y0) {
-					int ColorIndex;
-					/* Set background color */
-					if (i == this->Sel) {
-						ColorIndex = (States & WIDGET_STATE_FOCUS) ? 2 : 1;
-					}
-					else {
-						ColorIndex = 0;
-					}
+					auto ColorIndex =
+						 i == Sel ?
+						 	States & WIDGET_STATE_FOCUS ? LISTVIEW_CI_SELFOCUS : LISTVIEW_CI_SEL :
+							LISTVIEW_CI_UNSEL;
 					GUI.BkColor(Props.aBkColor[ColorIndex]);
 					/* Iterate over all columns */
 					if (States & LISTVIEW_CF_SHOWGRID) {

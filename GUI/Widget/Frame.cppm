@@ -39,6 +39,11 @@ constexpr uint16_t
 	FRAMEWIN_BUTTON_RIGHT   = 1 << 0,
 	FRAMEWIN_BUTTON_LEFT    = 1 << 1;
 
+enum FRAME_CI : uint8_t {
+	 FRAME_CI_UNFOCUS = 0,
+	 FRAME_CI_FOCUSSED
+};
+	
 class Frame : public Widget {
 
 public:
@@ -196,7 +201,7 @@ private:
 		GUI__CalcTextRect(pText, &Pos.rTitleText, &rText, Props.Align);
 		auto y0 = Pos.TitleHeight + BorderSize;
 		/* Draw Title */
-		auto Index = (States & FRAMEWIN_CF_ACTIVE) ? 1 : 0;
+		auto Index = States & FRAMEWIN_CF_ACTIVE ? FRAME_CI_FOCUSSED : FRAME_CI_UNFOCUS;
 		GUI.BkColor(Props.aBarColor[Index]);
 		GUI.Color(Props.aTextColor[Index]);
 		WIDGET__FillStringInRect(pText, r, Pos.rTitleText, rText);
@@ -569,7 +574,7 @@ public:
 		Invalidate();
 	}
 
-	void BarColor(unsigned Index, RGBC Color) {
+	void BarColor(FRAME_CI Index, RGBC Color) {
 		if (Index >= GUI_COUNTOF(Props.aBarColor))
 			return;
 		if (Props.aBarColor[Index] == Color)
@@ -578,7 +583,7 @@ public:
 		Invalidate();
 	}
 
-	void TextColor(unsigned Index, RGBC Color) {
+	void TextColor(FRAME_CI Index, RGBC Color) {
 		if (Index >= GUI_COUNTOF(Props.aTextColor))
 			return;
 		if (Props.aTextColor[Index] == Color)

@@ -8,13 +8,13 @@ import TUX.Widget;
 
 export {
 
-enum CHECKBOX_BI {
+enum CHECKBOX_BI : uint8_t {
 	 CHECKBOX_BI_INACTIV = 0,
 	 CHECKBOX_BI_ACTIV,
 	 CHECKBOX_BI_INACTIV_3STATE,
 	 CHECKBOX_BI_ACTIV_3STATE
 };
-enum CHECKBOX_CI {
+enum CHECKBOX_CI : uint8_t {
 	 CHECKBOX_CI_INACTIV = 0,
 	 CHECKBOX_CI_ACTIV
 };
@@ -50,8 +50,8 @@ private:
 	String text;
 
 	void _OnPaint() {
-		int ColorIndex = IsEnabled(),
-			EffectSize = this->EffectSize();
+		auto ColorIndex = IsEnabled() ? CHECKBOX_CI_ACTIV : CHECKBOX_CI_INACTIV;
+		auto EffectSize = this->EffectSize();
 		/* Clear inside ... Just in case      */
 		/* Fill with parents background color */
 		SetBkColorPrefer(Props.BkColor);
@@ -218,7 +218,7 @@ public:
 		Invalidate();
 	}
 
-	void SetImage(PCBITMAP pBitmap, CHECKBOX_BI Index) {
+	void SetImage(CHECKBOX_BI Index, PCBITMAP pBitmap) {
 		if (Index >= GUI_COUNTOF(Props.apBm))
 			return;
 		if (Props.apBm[Index] == pBitmap)
@@ -227,7 +227,7 @@ public:
 		Invalidate();
 	}
 
-	void SetSpacing(unsigned Spacing) {
+	void SetSpacing(uint8_t Spacing) {
 		if (Props.Spacing == Spacing)
 			return;
 		Props.Spacing = Spacing;

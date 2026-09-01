@@ -25,8 +25,8 @@ constexpr uint16_t
 
 enum LISTBOX_CI {
 	 LISTBOX_CI_UNSEL = 0,
-	 LISTBOX_CI_SEL,
-	 LISTBOX_CI_SELFOCUS,
+	 LISTBOX_CI_SEL_UNFOCUS,
+	 LISTBOX_CI_SEL_FOCUSSED,
 	 LISTBOX_CI_DISABLED
 };
 
@@ -83,9 +83,6 @@ private:
 	}
 	uint16_t _GetNumItems() {
 		return ItemArray.NumItems();
-	}
-	const char *_GetpString(int Index) {
-		return ItemArray[Index].pText;
 	}
 	int _GetYSize() {
 		RECT Rect;
@@ -286,7 +283,7 @@ private:
 	void _SelectByKey(int Key) {
 		 Key = _Tolower(Key);
 		for (uint16_t i = 0; i < _GetNumItems(); i++) {
-			auto s = _GetpString(i);
+			auto s = ItemArray[i].pText;
 			if (_Tolower(*s) == Key) {
 				SetSel(i);
 				break;
@@ -578,53 +575,56 @@ public:
 		_ManageAutoScroll();
 		return _CalcScrollParas();
 	}
+#pragma region OwnerDraw
+private:
+	void _PaintItem(int ItemIndex, POINT Pos) const {
+		auto &pItem = ItemArray[ItemIndex];
+		auto r = GetInsideRect();
+		auto FontDistY = Props.pFont->YSize;
+		/* Calculate color index */
+		auto ColorIndex =
+			pItem.Status & LISTBOX_ITEM_DISABLED ? LISTBOX_CI_DISABLED :
+			States & LISTBOX_CF_MULTISEL ?
+			pItem.Status & LISTBOX_ITEM_SELECTED ? LISTBOX_CI_SEL_FOCUSSED : LISTBOX_CI_UNSEL :
+			ItemIndex != Sel ? LISTBOX_CI_UNSEL :
+			States & WIDGET_STATE_FOCUS || pOwner ? LISTBOX_CI_SEL_FOCUSSED : LISTBOX_CI_SEL_UNFOCUS;
+/* Display item */
+		GUI.BkColor(Props.aBkColor[ColorIndex]);
+		GUI.Color(Props.aTextColor[ColorIndex]);
+		auto s = ItemArray[ItemIndex].pText;
+		GUI.SetTextMode(DRAWMODE_TRANS);
+		GUI_Clear();
+		GUI_DispStringAt(s, Pos.x + 1, Pos.y);
+		/* Display focus rectangle */
+		if ((States & LISTBOX_CF_MULTISEL) && (ItemIndex == Sel)) {
+			RECT rFocus;
+			rFocus.LeftTop(Pos);
+			rFocus.x1 = r.x1;
+			rFocus.y1 = Pos.y + FontDistY - 1;
+			GUI.Color(RGB_WHITE - Props.aBkColor[ColorIndex]);
+			GUI_DrawFocusRect(rFocus, 0);
+		}
+	}
+public:
 	static int OwnerDraw(WObj *pWin, int Cmd, int ItemIndex, POINT Pos) {
 		auto pObj = (ListBox *)pWin;
 		switch (Cmd) {
 			case WIDGET_ITEM_GET_XSIZE: {
 				auto pOldFont = GUI.Font(pObj->Props.pFont);
-				auto s = pObj->_GetpString(ItemIndex);
+				auto s = pObj->ItemArray[ItemIndex].pText;
 				auto DistX = GUI_GetStringSizeX(s);
 				GUI.Font(pOldFont);
 				return DistX;
 			}
 			case WIDGET_ITEM_GET_YSIZE:
 				return pObj->Props.pFont->YSize + pObj->ItemSpacing;
-			case WIDGET_ITEM_DRAW: {
-				auto &pItem = pObj->ItemArray[ItemIndex];
-				auto r = pObj->GetInsideRect();
-				auto FontDistY = pObj->Props.pFont->YSize;
-				/* Calculate color index */
-				bool IsDisabled = pItem.Status & LISTBOX_ITEM_DISABLED;
-				bool IsSelected = pItem.Status & LISTBOX_ITEM_SELECTED;
-				int ColorIndex =
-						pObj->States & LISTBOX_CF_MULTISEL ?
-							IsDisabled ? 3 :
-							IsSelected ? 2 : 0 :
-						IsDisabled ? 3 :
-						ItemIndex != pObj->Sel ? 0	:
-						pObj->States & WIDGET_STATE_FOCUS || pObj->pOwner ? 2 : 1;
-				/* Display item */
-				GUI.BkColor(pObj->Props.aBkColor[ColorIndex]);
-				GUI.Color(pObj->Props.aTextColor[ColorIndex]);
-				auto s = pObj->_GetpString(ItemIndex);
-				GUI.SetTextMode(DRAWMODE_TRANS);
-				GUI_Clear();
-				GUI_DispStringAt(s, Pos.x + 1, Pos.y);
-				/* Display focus rectangle */
-				if ((pObj->States & LISTBOX_CF_MULTISEL) && (ItemIndex == pObj->Sel)) {
-					RECT rFocus;
-					rFocus.LeftTop(Pos);
-					rFocus.x1 = r.x1;
-					rFocus.y1 = Pos.y + FontDistY - 1;
-					GUI.Color(RGB_WHITE - pObj->Props.aBkColor[ColorIndex]);
-					GUI_DrawFocusRect(rFocus, 0);
-				}
-				return 0;
-			}
+			case WIDGET_ITEM_DRAW: 
+				pObj->_PaintItem(ItemIndex, Pos);
+				break;
 		}
 		return 0;
 	}
+#pragma endregion
 
 	void InvalidateItem(int Index) {
 		int NumItems;
@@ -733,7 +733,7 @@ public:
 		if (Index < NumItems) {
 			const char *pString;
 			int CopyLen;
-			pString = _GetpString(Index);
+			pString = ItemArray[Index].pText;
 			CopyLen = GUI__strlen(pString);
 			if (CopyLen > (MaxSize - 1)) {
 				CopyLen = MaxSize - 1;

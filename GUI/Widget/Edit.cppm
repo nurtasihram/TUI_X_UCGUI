@@ -24,7 +24,7 @@ constexpr uint8_t
 	GUI_EDIT_MODE_INSERT    = 0,
 	GUI_EDIT_MODE_OVERWRITE = 1;
 		
-enum EDIT_CI {
+enum EDIT_CI : uint8_t {
 	 EDIT_CI_DISABLED = 0,
 	 EDIT_CI_ENABLED
 };
@@ -75,8 +75,8 @@ private:
 
 	void _OnPaint() {
 		/* Set colors and font */
-		GUI.BkColor(Props.aBkColor[IsEnabled() ? 1 : 0]);
-		GUI.Color(Props.aTextColor[0]);
+		GUI.BkColor(Props.aBkColor[IsEnabled() ? EDIT_CI_ENABLED : EDIT_CI_DISABLED]);
+		GUI.Color(Props.aTextColor[IsEnabled() ? EDIT_CI_ENABLED : EDIT_CI_DISABLED]);
 		GUI.Font(Props.pFont);
 		/* Calculate size */
 		auto rFillRect = _GetInsideRect();

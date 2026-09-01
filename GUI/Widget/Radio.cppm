@@ -69,7 +69,6 @@ private:
 		GUI.SetTextMode(DRAWMODE_TRANS);
 		auto FontDistY = Props.pFont->YSize;
 		auto CHeight = Props.pFont->CHeight;
-		auto SpaceAbove = Props.pFont->Baseline - CHeight;
 		RECT Rect;
 		Rect.x0 = pBmRadio->Size.x + RADIO_BORDER * 2 + 2;
 		Rect.y0 = (CHeight <= this->Height) ? ((this->Height - CHeight) / 2) : 0;
@@ -88,14 +87,15 @@ private:
 			GUI_DrawBitmap(pBmRadio, RADIO_BORDER, RADIO_BORDER + y);
 			/* Draw the check bitmap */
 			if (Sel == i)
-				GUI_DrawBitmap(pBmCheck, RADIO_BORDER + (pBmRadio->Size.x - pBmCheck->Size.x) / 2,
-							   RADIO_BORDER + ((pBmRadio->Size.y - pBmCheck->Size.y) / 2) + y);
+				GUI_DrawBitmap(pBmCheck,
+					RADIO_BORDER + (pBmRadio->Size.x - pBmCheck->Size.x) / 2,
+					RADIO_BORDER + ((pBmRadio->Size.y - pBmCheck->Size.y) / 2) + y);
 			/* Draw text if available */
 			if (auto pText = TextArray[i]) {
 				auto r = Rect;
 				r.x1 = r.x0 + GUI_GetStringSizeX(pText) - 2;
 				r += POINT{ 0, y };
-				GUI_DispStringAt(pText, r.x0, r.y0 - SpaceAbove);
+				GUI_DispStringAt(pText, r.x0, r.y0);
 				/* Calculate focus rect */
 				if (HasFocus && Sel == i)
 					_ResizeRect(&rFocus, &r, FocusBorder);
