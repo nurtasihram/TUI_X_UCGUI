@@ -1,6 +1,5 @@
 module;
 
-#include "WM_Intern.h"
 #include "GUI_Protected.h"
 
 export module TUX.Widget.Frame;
@@ -107,12 +106,12 @@ private:
 		Pos.rTitleText.y0 = BorderSize;
 		Pos.rTitleText.y1 = BorderSize + Pos.TitleHeight - 1;
 		/* Iterate over all children */
-		for (auto pChild = FirstChild(); pChild; pChild = pChild->pNext) {
-			int x0 = pChild->Rect.x0 - this->Rect.x0;
-			int x1 = pChild->Rect.x1 - this->Rect.x0;
-			int y0 = pChild->Rect.y0 - this->Rect.y0;
+		for (auto pChild = FirstChild(); pChild; pChild = pChild->NextSibling()) {
+			int x0 = pChild->GetOrg().x - GetOrg().x;
+			int y0 = pChild->GetOrg().y - GetOrg().y;
+			int x1 = pChild->GetRect().x1 - GetOrg().x;
 			if (y0 == BorderSize) {
-				if (pChild->Status & WC_ANCHOR_RIGHT) {
+				if (pChild->GetFlags() & WC_ANCHOR_RIGHT) {
 					if (x0 <= Pos.rTitleText.x1)
 						Pos.rTitleText.x1 = x0 - 1;
 				}
@@ -144,10 +143,10 @@ private:
 				pLeft = pRight = nullptr;
 				xLeft = GUI_XMAX;
 				xRight = GUI_XMIN;
-				for (pChild = this->pFirstChild; pChild; pChild = pChild->pNext) {
-					auto r = pChild->Rect - this->Rect.LeftTop();
+				for (pChild = FirstChild(); pChild; pChild = pChild->NextSibling()) {
+					auto r = pChild->GetRect() - GetOrg();
 					if ((r.y0 == Props.BorderSize) && ((r.y1 - r.y0 + 1) == OldHeight)) {
-						if (pChild->Status & WC_ANCHOR_RIGHT) {
+						if (pChild->GetFlags() & WC_ANCHOR_RIGHT) {
 							if (r.x1 > xRight) {
 								pRight = pChild;
 								xRight = r.x0;
@@ -464,8 +463,8 @@ private:
 	}
 #pragma endregion
 
-	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (Frame *)hWin;
+	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (Frame *)pWin;
 		if (pObj->States & FRAMEWIN_CF_RESIZEABLE)
 			if (pObj->_HandleResizeable(MsgId, Data))
 				return 0;
@@ -527,7 +526,7 @@ private:
 		/* Let widget handle the standard messages */
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
-		return WM_DefaultProc(hWin, MsgId, Data);
+		return DefaultProc(pWin, MsgId, Data);
 	}
 
 public:
@@ -538,15 +537,15 @@ public:
 			_CalcPositions().rClient,
 			WC_ANCHOR_ALL | WC_VISIBLE | WC_LATE_CLIP, this, 0, cb)) {
 		if (!(Style & (WC_MEMDEV | WC_MEMDEV_ON_REDRAW)))
-			WM_DisableMemdev(this);
+			DisableMemdev();
 		SetText(pTitle);
 	}
-	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent,
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent,
 								  int x0, int y0, WM_CALLBACK *cb) {
 		return new Frame(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			0, hWinParent, pCreateInfo->Id,
+			0, pWinParent, pCreateInfo->Id,
 			pCreateInfo->Flags, pCreateInfo->pName, cb);
 	}
 
@@ -630,7 +629,7 @@ public:
 #pragma region Minimize / Maximizes
 private:
 	void _InvalidateButton(int Id) {
-		for (auto pChild = this->pFirstChild; pChild; pChild = pChild->pNext)
+		for (auto pChild = FirstChild(); pChild; pChild = pChild->NextSibling())
 			if (pChild->GetID() == Id)
 				pChild->Invalidate();
 	}
@@ -638,7 +637,7 @@ private:
 	void _RestoreMinimized() {
 		if (!IsMinimized())
 			return;
-		Resize({ 0, rRestore.YSize() - Rect.YSize() });
+		Resize({ 0, rRestore.YSize() - GetSizeY() });
 		pClient->ShowWindow();
 		if (pMenu)
 			pMenu->ShowWindow();
@@ -662,9 +661,9 @@ public:
 		/* When window is not minimized, minimize it */
 		if (IsMinimized())
 			return;
-		int OldHeight = Rect.y1 - Rect.y0 + 1;
+		int OldHeight = GetSizeY();
 		int NewHeight = _CalcTitleHeight() + EffectSize() * 2 + 2;
-		rRestore = Rect;
+		rRestore = GetRect();
 		pClient->HideWindow();
 		if (pMenu)
 			pMenu->HideWindow();
@@ -680,12 +679,8 @@ public:
 		/* When window is not maximized, maximize it */
 		if (IsMaximized())
 			return;
-		auto r = pParent->Rect;
-		if (!pParent->pParent) {
-			r.x1 = LCD_GetXSize();
-			r.y1 = LCD_GetYSize();
-		}
-		rRestore = Rect;
+		auto r = Parent()->GetRect();
+		rRestore = GetRect();
 		MoveTo(r.LeftTop());
 		SetSize(r.Size());
 		_UpdatePositions();
@@ -703,10 +698,10 @@ public:
 		int OldHeight = _CalcTitleHeight();
 		int OldSize = Props.BorderSize;
 		int Diff = Size - OldSize;
-		for (auto pChild = FirstChild(); pChild; pChild = pChild->pNext) {
-			auto r = pChild->Rect - Rect.LeftTop();
+		for (auto pChild = FirstChild(); pChild; pChild = pChild->NextSibling()) {
+			auto r = pChild->GetRect() - GetOrg();
 			if (r.y0 == Props.BorderSize && r.YSize() == OldHeight) {
-				if (pChild->Status & WC_ANCHOR_RIGHT)
+				if (pChild->GetFlags() & WC_ANCHOR_RIGHT)
 					pChild->Move({ -Diff, Diff });
 				else
 					pChild->Move(Diff);
@@ -737,14 +732,14 @@ public:
 		if (!CtlStates(FRAMEWIN_CF_TITLEVIS, bShow))
 			return;
 		_UpdatePositions();
-		for (auto pChild = pFirstChild; pChild; pChild = pChild->pNext)
-			if (pChild->Rect.y0 - Rect.y0 == Props.BorderSize && pChild != pClient) {
-				if (States & FRAMEWIN_CF_TITLEVIS)
+		for (auto pChild = FirstChild(); pChild; pChild = pChild->NextSibling())
+			if (pChild->GetOrg().y - GetOrg().y == Props.BorderSize && pChild != pClient) {
+				if (States & FRAMEWIN_CF_MINIMIZED)
 					pChild->ShowWindow();
 				else
 					pChild->HideWindow();
 			}
-		if (States & FRAMEWIN_CF_TITLEVIS) {
+		if (States & FRAMEWIN_CF_MINIMIZED) {
 			if (bShow)
 				ShowWindow();
 			else
@@ -767,7 +762,7 @@ public:
 			x = Pos.rTitleText.x0 + Off;
 			WinFlags = WC_VISIBLE;
 		}
-		auto r = new Button(RECT::LeftTop({ x, BorderSize }, { Size, Size }), WinFlags, this, Id);
+		auto r = new Button(RECT::LeftTop({ x, BorderSize }, Size), WinFlags, this, Id);
 		r->SetFocussable(0);
 		return r;
 	}
@@ -776,8 +771,8 @@ public:
 		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, [](RECT &r) {
 			int Size = r.x1 - r.x0 - 2;
 			for (int i = 2; i < Size; i++) {
-				LCD_DrawHLine(r.x0 + i, r.y0 + i, r.x0 + i + 1);
-				LCD_DrawHLine(r.x1 - i - 1, r.y0 + i, r.x1 - i);
+				//LCD_DrawHLine(r.x0 + i, r.y0 + i, r.x0 + i + 1);
+				//LCD_DrawHLine(r.x1 - i - 1, r.y0 + i, r.x1 - i);
 			}
 		});
 		return pButton;
@@ -788,23 +783,23 @@ public:
 			auto pObj = (Frame*)ActiveWindow()->Parent();
 			if (pObj->States & FRAMEWIN_CF_MAXIMIZED) {
 				int Size = ((r.x1 - r.x0 + 1) << 1) / 3;
-				LCD_DrawHLine(r.x1 - Size, r.y0 + 1, r.x1 - 1);
-				LCD_DrawHLine(r.x1 - Size, r.y0 + 2, r.x1 - 1);
-				LCD_DrawHLine(r.x0 + Size, r.y0 + Size, r.x1 - 1);
-				LCD_DrawVLine(r.x1 - Size, r.y0 + 1, r.y1 - Size);
-				LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y0 + Size);
-				LCD_DrawHLine(r.x0 + 1, r.y1 - Size, r.x0 + Size);
-				LCD_DrawHLine(r.x0 + 1, r.y1 - Size + 1, r.x0 + Size);
-				LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x0 + Size);
-				LCD_DrawVLine(r.x0 + 1, r.y1 - Size, r.y1 - 1);
-				LCD_DrawVLine(r.x0 + Size, r.y1 - Size, r.y1 - 1);
+				//LCD_DrawHLine(r.x1 - Size, r.y0 + 1, r.x1 - 1);
+				//LCD_DrawHLine(r.x1 - Size, r.y0 + 2, r.x1 - 1);
+				//LCD_DrawHLine(r.x0 + Size, r.y0 + Size, r.x1 - 1);
+				//LCD_DrawVLine(r.x1 - Size, r.y0 + 1, r.y1 - Size);
+				//LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y0 + Size);
+				//LCD_DrawHLine(r.x0 + 1, r.y1 - Size, r.x0 + Size);
+				//LCD_DrawHLine(r.x0 + 1, r.y1 - Size + 1, r.x0 + Size);
+				//LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x0 + Size);
+				//LCD_DrawVLine(r.x0 + 1, r.y1 - Size, r.y1 - 1);
+				//LCD_DrawVLine(r.x0 + Size, r.y1 - Size, r.y1 - 1);
 			}
 			else {
-				LCD_DrawHLine(r.x0 + 1, r.y0 + 1, r.x1 - 1);
-				LCD_DrawHLine(r.x0 + 1, r.y0 + 2, r.x1 - 1);
-				LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x1 - 1);
-				LCD_DrawVLine(r.x0 + 1, r.y0 + 1, r.y1 - 1);
-				LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 1);
+				//LCD_DrawHLine(r.x0 + 1, r.y0 + 1, r.x1 - 1);
+				//LCD_DrawHLine(r.x0 + 1, r.y0 + 2, r.x1 - 1);
+				//LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x1 - 1);
+				//LCD_DrawVLine(r.x0 + 1, r.y0 + 1, r.y1 - 1);
+				//LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 1);
 			}
 		});
 		return pButton;
@@ -815,11 +810,11 @@ public:
 			auto pObj = (Frame *)ActiveWindow()->Parent();
 			int Size = (r.x1 - r.x0 + 1) >> 1;
 			if (pObj->States & FRAMEWIN_CF_MINIMIZED)
-				for (int i = 1; i < Size; i++)
-					LCD_DrawHLine(r.x0 + i, r.y0 + i + (Size >> 1), r.x1 - i);
+				for (int i = 1; i < Size; i++);
+					//LCD_DrawHLine(r.x0 + i, r.y0 + i + (Size >> 1), r.x1 - i);
 			else
-				for (int i = 1; i < Size; i++)
-					LCD_DrawHLine(r.x0 + i, r.y1 - i - (Size >> 1), r.x1 - i);
+				for (int i = 1; i < Size; i++);
+					//LCD_DrawHLine(r.x0 + i, r.y1 - i - (Size >> 1), r.x1 - i);
 		});
 		return pButton;
 	}

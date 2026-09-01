@@ -41,13 +41,11 @@ private:
 	}
 	int _Value2X(int v) {
 		int EffectSize = this->EffectSize();
-		int xSize = Rect.x1 - Rect.x0 + 1;
-		if (v < Min) {
+		int xSize = GetSizeX();
+		if (v < Min)
 			v = Min;
-		}
-		if (v > Max) {
+		if (v > Max)
 			v = Max;
-		}
 		return EffectSize + ((xSize - 2 * EffectSize) * (int32_t)(v - Min)) / (Max - Min);
 	}
 	void _DrawPart(int Index, int xText, int yText, const char *pText) {
@@ -83,22 +81,21 @@ private:
 		return (const char *)pText;
 	}
 	void _GetTextRect(RECT *pRect, const char *pText) {
-		int xSize = Rect.x1 - Rect.x0 + 1;
-		int ySize = Rect.y1 - Rect.y0 + 1;
+		auto size = GetSize();
 		int TextWidth = GUI_GetStringSizeX(pText);
 		int TextHeight = Props.pFont->YSize;
 		int EffectSize = this->EffectSize();
 		switch (Props.Align & TEXTALIGN_HORIZONTAL) {
 			case TEXTALIGN_HCENTER:
-				pRect->x0 = (xSize - TextWidth) / 2;
+				pRect->x0 = (size.x - TextWidth) / 2;
 				break;
 			case TEXTALIGN_RIGHT:
-				pRect->x0 = xSize - TextWidth - 1 - EffectSize;
+				pRect->x0 = size.x - TextWidth - 1 - EffectSize;
 				break;
 			default:
 				pRect->x0 = EffectSize;
 		}
-		pRect->y0 = (ySize - TextHeight) / 2;
+		pRect->y0 = (size.y - TextHeight) / 2;
 		pRect->x0 += XOff;
 		pRect->y0 += YOff;
 		pRect->x1 = pRect->x0 + TextWidth - 1;
@@ -119,7 +116,7 @@ private:
 		auto r = rInside;
 		r.x1 = xPos - 1;
 		SetUserClipRect(&r);
-		_DrawPart(PROGBAR_CI_INACTIVE, rText.x0, rText.y0, pText);
+		_DrawPart(PROGBAR_CI_INACT, rText.x0, rText.y0, pText);
 		/* Draw right bar */
 		r = rInside;
 		r.x0 = xPos;
@@ -132,8 +129,8 @@ private:
 		_FreeText();
 	}
 
-	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (ProgBar *)hWin;
+	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (ProgBar *)pWin;
 		/* Let widget handle the standard messages */
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
@@ -145,7 +142,7 @@ private:
 				pObj->_Delete();
 				return 0;
 		}
-		return WM_DefaultProc(hWin, MsgId, Data);
+		return DefaultProc(pWin, MsgId, Data);
 	}
 
 public:
@@ -153,11 +150,11 @@ public:
 		Widget(r, Style, _Callback, pParent, Id, 0) {
 		SetEffect(WIDGET_Effect_None); /* Standard effect for progbar: None */
 	}
-	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new ProgBar(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			pCreateInfo->Flags, hWinParent, pCreateInfo->Id);
+			pCreateInfo->Flags, pWinParent, pCreateInfo->Id);
 	}
 
 public:

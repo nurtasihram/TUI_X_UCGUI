@@ -4,7 +4,7 @@
 #include "LCD_Protected.h"
 #include "GUIDebug.h"
 
-#define GUI_DEFAULT_FONT    &FontMono6x8
+#define GUI_DEFAULT_FONT    &FontProp13_1
 #define GUI_DEFAULT_CURSOR  &CursorArrowM
 #define GUI_DEFAULT_BKCOLOR RGB_BLACK
 #define GUI_DEFAULT_COLOR   RGB_WHITE

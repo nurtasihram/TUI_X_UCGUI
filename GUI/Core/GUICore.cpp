@@ -9,12 +9,10 @@ import TUX.Core.Timer;
 
 void GUI_Init(void) {
 	GUI_X_Init();
-	/* Init context */
-	/* memset(..,0,..) is not required, as this function is called only at startup of the GUI when data is 0 */
 #if GUI_SUPPORT_DEVICES
-	GUI.pDeviceAPI = LCD_aAPI[0]; /* &LCD_L0_APIList; */
+	GUI.pDeviceAPI = &LCD_API; /* &LCD_L0_APIList; */
 #endif
-	LCD_L0_GetRect(&GUI.ClipRect);
+	GUI.ClipRect = LCD_API.pfGetRect();
 	GUI.Font(GUI_DEFAULT_FONT);
 	GUI.BkColor(GUI_DEFAULT_BKCOLOR);
 	GUI.Color(GUI_DEFAULT_COLOR);
@@ -24,7 +22,7 @@ void GUI_Init(void) {
 }
 void GUI_SelectLCD(void) {
 #if GUI_SUPPORT_DEVICES
-	GUI.pDeviceAPI = LCD_aAPI[0];
+	GUI.pDeviceAPI = &LCD_API;
 	GUI.pDevData = nullptr;
 #endif
 	LCD_SetClipRectMax();
@@ -74,10 +72,7 @@ void GUI_RestoreContext(const GUI_CONTEXT *pContext) {
 void GUI_ClearRect(RECT r) {
 	auto color = GUI.Color();
 	GUI.Color(GUI.BkColor());
-	r += GUI.Off;
-	WObj::Iterate(r, [&] {
-		LCD_FillRect(r.x0, r.y0, r.x1, r.y1);
-	});
+	GUI_FillRect(r);
 	GUI.Color(color);
 }
 void GUI_Clear(void) {
@@ -87,16 +82,16 @@ void GUI_Clear(void) {
 void GUI_FillRect(RECT r) {
 	r += GUI.Off;
 	WObj::Iterate(r, [&] {
-		LCD_FillRect(r.x0, r.y0, r.x1, r.y1);
+		LCD_FillRect(r);
 	});
 }
 void GUI_DrawRect(RECT r) {
 	r += GUI.Off;
 	WObj::Iterate(r, [&] {
-		LCD_DrawHLine(r.x0, r.y0, r.x1);
-		LCD_DrawHLine(r.x0, r.y1, r.x1);
-		LCD_DrawVLine(r.x0, r.y0 + 1, r.y1 - 1);
-		LCD_DrawVLine(r.x1, r.y0 + 1, r.y1 - 1);
+		LCD_FillRect({ r.x0, r.y0, r.x1, r.y0 });
+		LCD_FillRect({ r.x0, r.y1, r.x1, r.y1 });
+		LCD_FillRect({ r.x0, r.y0 + 1, r.x0, r.y1 - 1 });
+		LCD_FillRect({ r.x1, r.y0 + 1, r.x1, r.y1 - 1 });
 	});
 }
 void GUI_DrawFocusRect(RECT r, int Dist) {
@@ -126,8 +121,8 @@ void GUI_DrawBitmap(PCBITMAP pBitmap, int x0, int y0) {
 	auto pPal = pBitmap->pPalEntries;
 	DRAWMODE PrevDraw = GUI.SetDrawMode(0);  /* No Get... at this point */
 	GUI.SetDrawMode(
-		pPal && pPal[0] != RGB_INVALID ?
-		PrevDraw & ~DRAWMODE_TRANS : PrevDraw | DRAWMODE_TRANS);
+		pPal && pPal[0] == RGB_INVALID ?
+		PrevDraw | DRAWMODE_TRANS : PrevDraw & ~DRAWMODE_TRANS);
 	auto pTrans = pBitmap->pPalEntries;
 	if (!pTrans) 
 		pTrans = pBitmap->BitsPerPixel ? &LCD_BKCOLORINDEX : nullptr;

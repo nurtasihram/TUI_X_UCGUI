@@ -42,7 +42,7 @@ private:
 	Properties Props = DefaultProps;
 
 	struct Page {
-		WObj *hWin;
+		WObj *pWin;
 		uint8_t Status;
 		char *pText;
 	};
@@ -79,13 +79,13 @@ private:
 	}
 
 	void _ShowPage(unsigned Index) {
-		WObj *hWin = 0;
+		WObj *pWin = 0;
 		auto pClient = this->pClient;
 		if ((int)Index < Handles.NumItems()) {
-			hWin = Handles[Index].hWin;
+			pWin = Handles[Index].pWin;
 		}
-		for (auto pChild = pClient->pFirstChild; pChild; pChild = pChild->pNext) {
-			if (pChild == hWin) {
+		for (auto pChild = pClient->FirstChild(); pChild; pChild = pChild->NextSibling()) {
+			if (pChild == pWin) {
 				pChild->ShowWindow();
 				pChild->SetFocus();
 			}
@@ -307,7 +307,7 @@ private:
 					Pos += GetOrg();
 					if (auto pBelow = WM_Screen2Win(Pos, this)) {
 						PID_STATE State{ Pos - pBelow->GetOrg(), pState->Pressed };
-						pBelow->cb(pBelow, WM_TOUCH, (WM_PARAM)&State);
+						pBelow->Require(WM_TOUCH, (WM_PARAM)&State);
 					}
 				}
 				else
@@ -322,8 +322,8 @@ private:
 		NotifyParent(Notification);
 	}
 
-	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (MultPage *)hWin;
+	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (MultPage *)pWin;
 		auto Handled = pObj->HandleActive(MsgId, &Data);
 		switch (MsgId) {
 			case WM_PAINT:
@@ -359,13 +359,13 @@ private:
 					GUI_ALLOC_FreePtr((void **)&pObj->Handles[_i].pText);
 				}
 				pObj->Handles.Delete();
-				/* No break here ... WM_DefaultProc needs to be called */
+				/* No break here ... DefaultProc needs to be called */
 			}
 			default:
 				/* Let widget handle the standard messages */
 				if (!Handled)
 					return Data;
-				return WM_DefaultProc(hWin, MsgId, Data);
+				return DefaultProc(pWin, MsgId, Data);
 		}
 		return 0;
 	}
@@ -385,7 +385,7 @@ private:
 			case WM_GET_CLIENT_WINDOW:
 				return (WM_PARAM)pObj;
 			case WM_GET_INSIDE_RECT:
-				return WM_DefaultProc(pObj, MsgId, Data);
+				return DefaultProc(pObj, MsgId, Data);
 		}
 		return 0;
 	}
@@ -401,27 +401,27 @@ public:
 			_ClientCallback, this);
 		_UpdatePositions();
 	}
-	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new MultPage(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			pCreateInfo->Flags, hWinParent, pCreateInfo->Id);
+			pCreateInfo->Flags, pWinParent, pCreateInfo->Id);
 	}
 
 public:
 
-	void AddPage(WObj *hWin, const char *pText) {
-		GUI_USE_PARA(hWin);
-		if (!hWin) {
+	void AddPage(WObj *pWin, const char *pText) {
+		GUI_USE_PARA(pWin);
+		if (!pWin) {
 			/* If we get no handle we must find it. To do this, we search      */
 			/* all children until we found one that has not yet become a page. */
 			auto pClient = this->pClient;
-			for (auto pChild = pClient->pFirstChild; pChild && !hWin; pChild = pChild->pNext) {
-				hWin = pChild;
+			for (auto pChild = pClient->FirstChild(); pChild && !pWin; pChild = pChild->NextSibling()) {
+				pWin = pChild;
 				for (int i = 0; i < Handles.NumItems(); i++) {
 					auto &pPage = Handles[i];
-						if (pPage.hWin == pChild) {
-						hWin = 0;
+						if (pPage.pWin == pChild) {
+						pWin = 0;
 						break;
 					}
 				}
@@ -429,15 +429,15 @@ public:
 		}
 		else {
 			/* If we get a handle we must ensure that it was attached to the MultPage */
-			hWin->Attach(this->pClient);
+			pWin->Attach(this->pClient);
 		}
-		if (hWin) {
+		if (pWin) {
 			Page page = {};
 			char NullByte = 0;
 			if (!pText) {
 				pText = &NullByte;
 			}
-			page.hWin = hWin;
+			page.pWin = pWin;
 			page.Status = MULTIPAGE_STATE_ENABLED;
 			if (Handles.AddItem(&page) == 0) {
 				GUI__SetText(&Handles[Handles.NumItems() - 1].pText, pText);
@@ -447,8 +447,8 @@ public:
 	}
 	void DeletePage(unsigned Index, int Delete) {
 		if ((int)Index < Handles.NumItems()) {
-			WObj *hWin;
-			hWin = Handles[Index].hWin;
+			WObj *pWin;
+			pWin = Handles[Index].pWin;
 			/* Remove the page from the MultPage object */
 			if (Index == this->Selection) {
 				if (Index == ((unsigned)Handles.NumItems() - 1)) {
@@ -469,7 +469,7 @@ public:
 			_UpdatePositions();
 			/* Delete the window of the page */
 			if (Delete) {
-				delete hWin;
+				delete pWin;
 			}
 		}
 	}
@@ -527,7 +527,7 @@ public:
 	WObj *GetWindow(unsigned Index) {
 		WObj *r = 0;
 		if ((int)Index < Handles.NumItems()) {
-			r = Handles[Index].hWin;
+			r = Handles[Index].pWin;
 		}
 
 		return r;

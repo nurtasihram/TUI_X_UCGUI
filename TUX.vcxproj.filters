@@ -10,9 +10,6 @@
     <Filter Include="GUI\Core">
       <UniqueIdentifier>{66bb47bc-d957-45e8-b79b-7df70d23c8b4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GUI\LCDDriver">
-      <UniqueIdentifier>{4edef917-2fe0-4d3d-a4dd-f2d1af05036a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GUI\MemDev">
       <UniqueIdentifier>{abf105d2-d9ee-4c97-92fc-876b476349fe}</UniqueIdentifier>
     </Filter>
@@ -37,6 +34,9 @@
     <Filter Include="TUX_EXT">
       <UniqueIdentifier>{2b4f3bf5-9d61-4df6-b77c-b82b616ec60d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GUI_X\Resources">
+      <UniqueIdentifier>{bf8d5a97-180a-46dd-81af-80366035ac5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUI_X\GUI_X_LCD.cc">
@@ -53,12 +53,6 @@
     </ClCompile>
     <ClCompile Include="GUI\WM\WM.cpp">
       <Filter>GUI\WM</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\WM\WMMemDev.cpp">
-      <Filter>GUI\WM</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\LCDDriver\LCD9325.cpp">
-      <Filter>GUI\LCDDriver</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp">
       <Filter>GUI\Widget</Filter>
@@ -174,7 +168,7 @@
     <ClCompile Include="GUI\Core\GUI.Types.cppm">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\WM\WM.cppm">
+    <ClCompile Include="GUI\WM\WindowTypes.cppm">
       <Filter>GUI\WM</Filter>
     </ClCompile>
     <ClCompile Include="GUI\WM\Window.cppm">
@@ -207,12 +201,6 @@
     <ClInclude Include="GUI\WM\WM.h">
       <Filter>GUI\WM</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\WM\WM_Intern.h">
-      <Filter>GUI\WM</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI_X\resource.h">
-      <Filter>GUI_X</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Core\GUI.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
@@ -240,15 +228,18 @@
     <ClInclude Include="GUI\Core\LCD_Protected.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="GUI_X\SimDisp.ico">
-      <Filter>GUI_X</Filter>
-    </Image>
+    <ClInclude Include="GUI_X\resource.h">
+      <Filter>GUI_X\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GUI_X\SimDisp.rc">
-      <Filter>GUI_X</Filter>
+      <Filter>GUI_X\Resources</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="GUI_X\SimDisp.ico">
+      <Filter>GUI_X\Resources</Filter>
+    </Image>
   </ItemGroup>
 </Project>

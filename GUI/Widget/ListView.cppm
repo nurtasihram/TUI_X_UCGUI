@@ -95,7 +95,7 @@ private:
 		yPos = pHeader->GetHeight() + EffectSize;
 		EndRow = this->ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
 		/* Calculate clipping rectangle */
-		ClipRect = *pClipRect - this->Rect.LeftTop();
+		ClipRect = *pClipRect - GetOrg();
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		ClipRect &= Rect;
 		/* Set drawing color, font and text mode */
@@ -347,8 +347,8 @@ private:
 		return pItemInfo;
 	}
 
-	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (ListView *)hWin;
+	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (ListView *)pWin;
 		/* Let widget handle the standard messages */
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
@@ -403,7 +403,7 @@ private:
 				pObj->_FreeAttached();
 				return 0;
 		}
-		return WM_DefaultProc(hWin, MsgId, Data);
+		return DefaultProc(pWin, MsgId, Data);
 	}
 
 public:
@@ -412,11 +412,11 @@ public:
 		pHeader = new Header(RECT{}, WC_VISIBLE, this, 0);
 		_UpdateScrollParas();
 	}
-	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new ListView(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			pCreateInfo->Flags, hWinParent, pCreateInfo->Id);
+			pCreateInfo->Flags, pWinParent, pCreateInfo->Id);
 	}
 
 public:

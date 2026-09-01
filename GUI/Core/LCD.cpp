@@ -3,20 +3,12 @@
 #include "GUIDebug.h"
 
 void LCD_SetClipRectMax(void) {
-	LCDDEV_L0_GetRect(&GUI.ClipRect);
-}
-void LCD_L0_GetRect(RECT *pRect) {
-	pRect->x0 = 0;
-	pRect->y0 = 0;
-	pRect->x1 = LCD_GetXSize() - 1;
-	pRect->y1 = LCD_GetYSize() - 1;
+	GUI.ClipRect = LCDDEV_L0_GetRect();
 }
 void LCD_SetClipRectEx(const RECT *pRect) {
-	RECT r;
-	LCDDEV_L0_GetRect(&r);
-	GUI.ClipRect = *pRect & r;
+	GUI.ClipRect = *pRect & LCDDEV_L0_GetRect();
 }
-
+		
 #define RETURN_IF_Y_OUT() \
   if (y < GUI.ClipRect.y0) return;             \
   if (y > GUI.ClipRect.y1) return;
@@ -43,8 +35,7 @@ void LCD_SetPixel(int x, int y, int ColorIndex) {
 }
 
 RGBC LCD_GetPixel(int x, int y) {
-	RECT r;
-	LCDDEV_L0_GetRect(&r);
+	auto r = LCDDEV_L0_GetRect();
 	if (x < r.x0) {
 		return 0;
 	}
@@ -66,36 +57,10 @@ void LCD_DrawPixel(int x, int y) {
 	LCDDEV_L0_SetPixel(x, y, LCD_COLORINDEX);
 }
 
-void LCD_DrawVLine(int x, int y0, int y1) {
-	/* Perform clipping and check if there is something to do */
-	RETURN_IF_X_OUT();
-	CLIP_Y();
-	if (y1 < y0) {
+void LCD_FillRect(RECT r) {
+	if (!(r &= GUI.ClipRect))
 		return;
-	}
-	/* Call driver to draw */
-	LCDDEV_L0_DrawVLine(x, y0, y1);
-}
-void LCD_DrawHLine(int x0,int y, int x1) {
-	/* Perform clipping and check if there is something to do */
-	RETURN_IF_Y_OUT();
-	CLIP_X();
-	if (x1 < x0)
-		return;
-	/* Call driver to draw */
-	LCDDEV_L0_DrawHLine(x0, y, x1);
-}
-
-void LCD_FillRect(int x0, int y0, int x1, int y1) {
-	/* Perform clipping and check if there is something to do */
-	CLIP_X();
-	if (x1 < x0)
-		return;
-	CLIP_Y();
-	if (y1 < y0)
-		return;
-	/* Call driver to draw */
-	LCDDEV_L0_FillRect(x0, y0, x1, y1);
+	LCDDEV_L0_FillRect(r);
 }
 
 void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize,
@@ -162,21 +127,3 @@ void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize,
 	}
 	LCDDEV_L0_DrawBitmap(x0, y0, xsize, ysize, BitsPerPixel, BytesPerLine, pPixel, Diff, pTrans);
 }
-
-const tLCDDEV_APIList LCD_L0_APIList = {
-	(tLCDDEV_DrawBitmap *)LCD_L0_DrawBitmap,
-	LCD_L0_DrawHLine,
-	LCD_L0_DrawVLine,
-	LCD_L0_FillRect,
-	LCD_L0_GetPixel,
-	LCD_L0_GetRect,
-	LCD_L0_SetPixel,
-#if GUI_SUPPORT_MEMDEV
-	& GUI_MEMDEV__APIList24,
-	24    /* BitsPerPixel - LCD driver bit depth */
-#endif
-};
-
-const tLCDDEV_APIList * /*const */ LCD_aAPI[] = {
-	&LCD_L0_APIList
-};

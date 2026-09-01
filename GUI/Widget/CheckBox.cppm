@@ -144,8 +144,8 @@ private:
 		return 0;
 	}
 
-	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (CheckBox *)hWin;
+	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (CheckBox *)pWin;
 		/* Let widget handle the standard messages */
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
@@ -165,7 +165,7 @@ private:
 				pObj->~CheckBox();
 				return 0;
 		}
-		return WM_DefaultProc(hWin, MsgId, Data);
+		return DefaultProc(pWin, MsgId, Data);
 	}
 
 private:
@@ -181,11 +181,11 @@ public:
 		Widget((_AdjRect(r), r), Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE),
 		NumStates(2),
 		CurrentState(0) {}
-	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new CheckBox(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			pCreateInfo->Flags, hWinParent, pCreateInfo->Id);
+			pCreateInfo->Flags, pWinParent, pCreateInfo->Id);
 	}
 public:
 

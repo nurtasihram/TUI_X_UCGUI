@@ -1,8 +1,6 @@
 ﻿module;
 
 #include <string.h>
-
-#include "WM_Intern.h"
 #include "GUI_Protected.h"
 
 export module TUX.Widget.Menu;
@@ -559,8 +557,8 @@ private:
 			DrawUp();
 	}
 
-	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (Menu *)hWin;
+	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (Menu *)pWin;
 		if (MsgId != WM_PID_STATE_CHANGED)
 			/* Let widget handle the standard messages */
 			if (!pObj->HandleActive(MsgId, &Data))
@@ -590,7 +588,7 @@ private:
 				break;
 			}
 		}
-		return WM_DefaultProc(hWin, MsgId, Data);
+		return DefaultProc(pWin, MsgId, Data);
 	}
 
 public:

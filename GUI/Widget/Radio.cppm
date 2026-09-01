@@ -1,6 +1,5 @@
 ﻿module;
 
-#include "WM_Intern.h"
 #include "GUI_Protected.h"
 
 export module TUX.Widget.Radio;
@@ -153,8 +152,8 @@ private:
 		return 0;
 	}
 
-	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (Radio *)hWin;
+	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (Radio *)pWin;
 		/* Let widget handle the standard messages */
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
@@ -177,7 +176,7 @@ private:
 				pObj->TextArray.Delete();
 				return 0;
 		}
-		return WM_DefaultProc(hWin, MsgId, Data);
+		return DefaultProc(pWin, MsgId, Data);
 	}
 
 private:
@@ -197,13 +196,13 @@ public:
 		for (int i = 0; i < NumItems; i++)
 			TextArray.AddItem();
 	}
-	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		uint16_t NumItems = (pCreateInfo->Para) & 0xFF;
 		uint16_t Spacing = (pCreateInfo->Para >> 8) & 0xFF;
 		return new Radio(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			pCreateInfo->Flags, hWinParent, pCreateInfo->Id,
+			pCreateInfo->Flags, pWinParent, pCreateInfo->Id,
 			0, NumItems, Spacing);
 	}
 
@@ -236,7 +235,7 @@ private:
 		return nullptr;
 	}
 	void _ClearSelection(uint8_t GroupId) {
-		for (auto pWin = FirstSibling(); pWin; pWin = pWin->pNext) {
+		for (auto pWin = FirstSibling(); pWin; pWin = pWin->NextSibling()) {
 			if (pWin != this)
 				if (_IsInGroup(pWin, GroupId))
 					((Radio *)pWin)->_SetValue(-1);
@@ -244,18 +243,18 @@ private:
 	}
 	void _HandleSetValue(int v) {
 		if (v < 0) {
-			auto hWin = _GetPrevInGroup(this, GroupId);
-			if (hWin) {
-				hWin->SetFocus();
-				hWin->_SetValue(0x7FFF);
+			auto pWin = _GetPrevInGroup(this, GroupId);
+			if (pWin) {
+				pWin->SetFocus();
+				pWin->_SetValue(0x7FFF);
 				_SetValue(-1);
 			}
 		}
 		else if (v >= NumItems) {
-			auto hWin = _GetNextInGroup(this, GroupId);
-			if (hWin) {
-				hWin->SetFocus();
-				hWin->_SetValue(0);
+			auto pWin = _GetNextInGroup(this, GroupId);
+			if (pWin) {
+				pWin->SetFocus();
+				pWin->_SetValue(0);
 				_SetValue(-1);
 			}
 		}

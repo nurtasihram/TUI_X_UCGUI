@@ -7,14 +7,14 @@
 static constexpr int BYTES_PER_PIXEL_24BIT = 4;
 static constexpr double MEMDEV_RESERVE_RATIO = 0.75;
 
-void GUI_MEMDEV__GetRect(RECT *pRect) {
+RECT GUI_MEMDEV__GetRect() {
 	auto pDev = GUI.pDevData;
-
-	pRect->x0 = pDev->x0;
-	pRect->y0 = pDev->y0;
-	pRect->x1 = pDev->x0 + pDev->XSize - 1;
-	pRect->y1 = pDev->y0 + pDev->YSize - 1;
-}
+	RECT r;
+	r.x0 = pDev->x0;
+	r.y0 = pDev->y0;
+	r.x1 = pDev->x0 + pDev->XSize - 1;
+	r.y1 = pDev->y0 + pDev->YSize - 1;
+	return r;}
 
 void GUI_MEMDEV_Delete(GUI_MEMDEV *pDev) {
 	if (!pDev)
@@ -66,8 +66,7 @@ GUI_MEMDEV *GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Fl
 }
 
 GUI_MEMDEV *GUI_MEMDEV_CreateEx(int x0, int y0, int xSize, int ySize, int Flags) {
-	auto pDeviceAPI = LCD_aAPI[0];
-	return GUI_MEMDEV__CreateFixed(x0, y0, xSize, ySize, Flags, pDeviceAPI->pMemDevAPI);
+	return GUI_MEMDEV__CreateFixed(x0, y0, xSize, ySize, Flags, LCD_API.pMemDevAPI);
 }
 
 GUI_MEMDEV *GUI_MEMDEV_Create(int x0, int y0, int xsize, int ysize) {
@@ -75,21 +74,17 @@ GUI_MEMDEV *GUI_MEMDEV_Create(int x0, int y0, int xsize, int ysize) {
 }
 
 GUI_MEMDEV *GUI_MEMDEV_Select(GUI_MEMDEV *pDev) {
-	GUI_MEMDEV *pPrevDevice = GUI.pDevData;
-
-	if (pDev == nullptr) {
+	auto pPrevDevice = GUI.pDevData;
+	if (!pDev) {
 		GUI_SelectLCD();
 	} else {
 		WObj::Deactivate();
-
-		if (GUI.pDevData == nullptr)
+		if (!GUI.pDevData)
 			GUI.ClipRectPrev = GUI.ClipRect;
-
 		GUI.pDevData = pDev;
 		GUI.pDeviceAPI = pDev->pAPIList;
 		LCD_SetClipRectMax();
 	}
-
 	return pPrevDevice;
 }
 
@@ -171,29 +166,15 @@ static int _Min(int v0, int v1) {
 	return (v0 <= v1) ? v0 : v1;
 }
 int GUI_MEMDEV_Draw(RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int NumLines, int Flags) {
-	int x0, y0, xsize, ysize;
-
-	if (pRect) {
-		x0 = (pRect->x0 < 0) ? 0 : pRect->x0;
-		y0 = (pRect->y0 < 0) ? 0 : pRect->y0;
-		int x1 = _Min(pRect->x1, LCD_GetXSize() - 1);
-		int y1 = _Min(pRect->y1, LCD_GetYSize() - 1);
-		xsize = x1 - x0 + 1;
-		ysize = y1 - y0 + 1;
-	} else {
-		x0 = 0;
-		y0 = 0;
-		xsize = LCD_GetXSize();
-		ysize = LCD_GetYSize();
-	}
+	auto rc = pRect ? *pRect & LCD_API.pfGetRect() : LCD_API.pfGetRect();
 
 	if (NumLines == 0)
-		NumLines = -ysize;
+		NumLines = -rc.YSize();
 
-	if (xsize <= 0 || ysize <= 0)
+	if (rc.XSize() <= 0 || rc.YSize() <= 0)
 		return 0;
 
-	GUI_MEMDEV *pMD = GUI_MEMDEV_CreateEx(x0, y0, xsize, NumLines, Flags);
+	GUI_MEMDEV *pMD = GUI_MEMDEV_CreateEx(rc.x0, rc.y0, rc.XSize(), NumLines, Flags);
 	if (!pMD) {
 		pfDraw(pData);
 		return 1;
@@ -202,13 +183,13 @@ int GUI_MEMDEV_Draw(RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int N
 	NumLines = GUI_MEMDEV_GetYSize(pMD);
 	GUI_MEMDEV_Select(pMD);
 
-	for (int i = 0; i < ysize; i += NumLines) {
-		int RemLines = ysize - i;
+	for (int i = 0; i < rc.YSize(); i += NumLines) {
+		int RemLines = rc.YSize() - i;
 		if (RemLines < NumLines)
 			GUI_MEMDEV_ReduceYSize(pMD, RemLines);
 
 		if (i > 0)
-			GUI_MEMDEV_SetOrg(pMD, x0, y0 + i);
+			GUI_MEMDEV_SetOrg(pMD, rc.x0, rc.y0 + i);
 
 		pfDraw(pData);
 		GUI_MEMDEV_CopyToLCD(pMD);

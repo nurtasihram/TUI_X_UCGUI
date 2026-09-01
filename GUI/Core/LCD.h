@@ -5,37 +5,31 @@
 
 import TUX.Types;
 
-typedef void tLCDDEV_DrawHLine(int x0, int y0, int x1);
-typedef void tLCDDEV_DrawVLine(int x, int y0, int y1);
-typedef void tLCDDEV_FillRect(int x0, int y0, int x1, int y1);
+typedef void tLCDDEV_FillRect(RECT r);
 typedef RGBC tLCDDEV_GetPixel(int x, int y);
 typedef void tLCDDEV_SetPixel(int x, int y, RGBC Color);
-typedef void tLCDDEV_GetRect(RECT *pRect);
+typedef RECT tLCDDEV_GetRect();
 
 typedef void tLCDDEV_DrawBitmap(int x0, int y0, int xsize, int ysize,
 								int BitsPerPixel, int BytesPerLine,
 								const uint8_t *pData, int Diff,
-								const void *pTrans);
+								PCLOGPALETTE pTrans);
 
-typedef struct tLCDDEV_APIList_struct {
+ struct tLCDDEV_APIList {
 	tLCDDEV_DrawBitmap *pfDrawBitmap;
-	tLCDDEV_DrawHLine *pfDrawHLine;
-	tLCDDEV_DrawVLine *pfDrawVLine;
 	tLCDDEV_FillRect *pfFillRect;
 	tLCDDEV_GetPixel *pfGetPixel;
 	tLCDDEV_GetRect *pfGetRect;
 	tLCDDEV_SetPixel *pfSetPixel;
 #if GUI_SUPPORT_MEMDEV
-	const struct tLCDDEV_APIList_struct *pMemDevAPI;
+	const tLCDDEV_APIList *pMemDevAPI;
 	unsigned BitsPerPixel;
 #endif
-} tLCDDEV_APIList;
+};
 
 extern const tLCDDEV_APIList GUI_MEMDEV__APIList24;
 
-void LCD_DrawHLine(int x0, int y0, int x1);
 void LCD_DrawPixel(int x0, int y0);
-void LCD_DrawVLine(int x, int y0, int y1);
 
 void LCD_SetClipRectEx(const RECT *pRect);
 void LCD_SetClipRectMax(void);
@@ -43,6 +37,6 @@ void LCD_SetClipRectMax(void);
 void LCD_SetPixel(int x, int y, int Color);
 RGBC LCD_GetPixel(int x, int y);
 
-void LCD_FillRect(int x0, int y0, int x1, int y1);
+void LCD_FillRect(RECT r);
 
 void LCD_X_Init(void);

@@ -148,8 +148,8 @@ private:
 		SetSize({ GetSizeX(), Height });
 	}
 
-	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (DropDown *)hWin;
+	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (DropDown *)pWin;
 		/* Let widget handle the standard messages */
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
@@ -197,7 +197,7 @@ private:
 				return 0;
 			break;
 		}
-		return WM_DefaultProc(hWin, MsgId, Data);
+		return DefaultProc(pWin, MsgId, Data);
 	}
 
 public:
@@ -207,11 +207,11 @@ public:
 		ySizeEx(r.YSize()), Flags(ExFlags) {
 		_AdjustHeight();
 	}
-	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new DropDown(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			0, hWinParent, pCreateInfo->Id,
+			0, pWinParent, pCreateInfo->Id,
 			(uint8_t)pCreateInfo->Flags
 		);
 	}

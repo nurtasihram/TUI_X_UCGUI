@@ -308,36 +308,21 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 	}
 }
 
-static void _FillRect(int x0, int y0, int x1, int y1) {
+static void _FillRect(RECT r) {
 	unsigned BytesPerLine;
 	int Len;
 	auto pDev = GUI.pDevData;
-	auto pData = _XY2PTR(x0, y0);
+	auto pData = _XY2PTR(r.x0, r.y0);
 	BytesPerLine = pDev->BytesPerLine;
-	Len = x1 - x0 + 1;
+	Len = r.x1 - r.x0 + 1;
 	/* Mark rectangle as modified */
 	/* Do the drawing */
-	for (; y0 <= y1; y0++) {
+	for (; r.y0 <= r.y1; r.y0++) {
 		int i;
 		for (i = 0; i < Len; i++)
 			pData[i] = LCD_COLORINDEX;
 		pData = (PIXELINDEX *)((uint8_t *)pData + BytesPerLine);
 	}
-}
-
-static void _DrawHLine(int x0, int y, int x1) {
-	_FillRect(x0, y, x1, y);
-}
-
-static void _DrawVLine(int x, int y0, int y1) {
-	auto pDev = GUI.pDevData;
-	auto pData = _XY2PTR(x, y0);
-	unsigned BytesPerLine = pDev->BytesPerLine;
-	unsigned NumPixels = y1 - y0 + 1;
-	do {
-		*pData = LCD_COLORINDEX;
-		pData = (PIXELINDEX *)((uint8_t *)pData + BytesPerLine); /* Same as "pData += pDev->BytesPerLine >> 1;", Just more efficient */
-	} while (--NumPixels);
 }
 
 static void _SetPixel(int x, int y, RGBC Index) {
@@ -351,10 +336,8 @@ static RGBC _GetPixel(int x, int y) {
 	return *pData;
 }
 
-const tLCDDEV_APIList GUI_MEMDEV__APIList24 = {
+const tLCDDEV_APIList GUI_MEMDEV__APIList24{
 	(tLCDDEV_DrawBitmap *)_DrawBitmap,
-	_DrawHLine,
-	_DrawVLine,
 	_FillRect,
 	_GetPixel,
 	GUI_MEMDEV__GetRect,

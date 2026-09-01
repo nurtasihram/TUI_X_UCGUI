@@ -199,7 +199,7 @@ static WM_PARAM _cbMemDevPane(WObj *pWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(pWin, MsgId, Data);
+	return WObj::DefaultProc(pWin, MsgId, Data);
 }
 
 static WObj *_CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMemDev, WObj **phPane) {
@@ -289,7 +289,7 @@ static WM_PARAM _cbCallback(WObj *pWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(pWin, MsgId, Data);
+	return WObj::DefaultProc(pWin, MsgId, Data);
 }
 
 #define ID_MENU             (GUI_ID_USER +  0)
@@ -415,7 +415,7 @@ static WM_PARAM _cbMemDevTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			break;
 		}
 	}
-	return WM_DefaultProc(pWin, MsgId, Data);
+	return WObj::DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestMemDev() {
@@ -521,7 +521,7 @@ static WM_PARAM _cbListViewTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(pWin, MsgId, Data);
+	return WObj::DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestListView() {
@@ -673,7 +673,7 @@ static WM_PARAM _cbDropDownTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(pWin, MsgId, Data);
+	return WObj::DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestDropDown() {
@@ -821,7 +821,7 @@ static WM_PARAM _cbMultiPageTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(pWin, MsgId, Data);
+	return WObj::DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestMultiPage() {
@@ -912,7 +912,7 @@ static WM_PARAM _cbRadioTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(pWin, MsgId, Data);
+	return WObj::DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestRadio() {
@@ -1118,7 +1118,7 @@ static WM_PARAM _cbTextTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(pWin, MsgId, Data);
+	return WObj::DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestText() {
@@ -1221,7 +1221,7 @@ static WM_PARAM _cbProgBarTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(pWin, MsgId, Data);
+	return WObj::DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestProgBar() {
@@ -1356,7 +1356,7 @@ static WM_PARAM _cbSliderTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(pWin, MsgId, Data);
+	return WObj::DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestSlider() {
@@ -1491,7 +1491,7 @@ static WM_PARAM _cbEditTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(pWin, MsgId, Data);
+	return WObj::DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestEdit() {
@@ -1597,7 +1597,7 @@ static WM_PARAM _cbMultiEditTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			return 0;
 		}
 	}
-	return WM_DefaultProc(pWin, MsgId, Data);
+	return WObj::DefaultProc(pWin, MsgId, Data);
 }
 
 void _TestMultiEdit() {
@@ -1609,15 +1609,15 @@ int main(void) {
 	GUI_Init(); 
 	GUI_CURSOR_Show();
 
-	//_TestText();
-	//_TestListView();
-	//_TestMultiPage();
+	_TestText();
+	_TestListView();
+	_TestMultiPage();
 	_TestRadio();
-	//_TestProgBar();
-	//_TestSlider();
+	_TestProgBar();
+	_TestSlider();
 	_TestEdit();
 	_TestMultiEdit();
-	//_TestDropDown();
+	_TestDropDown();
 	_TestListBox();
 	_TestMemDev();
 

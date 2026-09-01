@@ -297,13 +297,14 @@ private:
 		ItemArray.Delete();
 	}
 	void _OnPaint(const RECT *pClipRect) {
-		RECT RectInside, RectItem, ClipRect;
 		int ItemDistY;
 		GUI.Font(Props.pFont);
 		/* Calculate clipping rectangle */
-		ClipRect = *pClipRect - this->Rect.LeftTop();
+		auto ClipRect = *pClipRect - GetOrg();
+		RECT RectInside;
 		WM_GetInsideRectExScrollbar(this, &RectInside);
 		ClipRect &= RectInside;
+		RECT RectItem;
 		RectItem.x0 = ClipRect.x0;
 		RectItem.x1 = ClipRect.x1;
 		/* Fill item info structure */
@@ -444,8 +445,8 @@ private:
 		return 0;
 	}
 
-	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (ListBox *)hWin;
+	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (ListBox *)pWin;
 		/* In popup mode (pOwner set), bypass WIDGET_HandleActive for WM_PID_STATE_CHANGED.
 		 * WIDGET_HandleActive internally calls SetFocus on press, which would steal
 		 * focus from the dropdown and cause its parent window to flicker. */
@@ -527,7 +528,7 @@ private:
 				pObj->Invalidate();
 				return 0;
 		}
-		return WM_DefaultProc(hWin, MsgId, Data);
+		return DefaultProc(pWin, MsgId, Data);
 	}
 
 public:
@@ -535,12 +536,12 @@ public:
 		Widget(r, Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE) {
 		UpdateScrollers();
 	}
-	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new ListBox(
 			RECT(pCreateInfo->x0 + x0, pCreateInfo->y0 + y0,
 				 pCreateInfo->x0 + x0 + pCreateInfo->xSize - 1,
 				 pCreateInfo->y0 + y0 + pCreateInfo->ySize - 1),
-			pCreateInfo->Flags, hWinParent, pCreateInfo->Id);
+			pCreateInfo->Flags, pWinParent, pCreateInfo->Id);
 	}
 
 public:

@@ -1,8 +1,5 @@
 module;
 
-#include <memory>
-
-#include "WM_Intern.h"
 #include "GUI_Protected.h"
 
 export module TUX.Widget;
@@ -228,7 +225,7 @@ public:
 
 	struct CreateStruct {
 
-		Widget* (*pfCreateIndirect)(const CreateStruct* pCreate, WObj* hWin, int x0, int y0, WM_CALLBACK* cb);
+		Widget* (*pfCreateIndirect)(const CreateStruct* pCreate, WObj* pWin, int x0, int y0, WM_CALLBACK* cb);
 
 		const char* pName; /* Text ... Not used on all widgets */
 		int16_t Id; /* ID ... should be unique in a dialog */

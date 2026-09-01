@@ -53,7 +53,7 @@ struct GUI_MEMDEV {
 typedef void GUI_CALLBACK_VOID_P(void *p);
 
 void GUI_MEMDEV__CopyFromLCD(GUI_MEMDEV *pDev);
-void GUI_MEMDEV__GetRect(RECT *pRect);
+RECT GUI_MEMDEV__GetRect();
 
 GUI_MEMDEV *GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Flags,
 										  const tLCDDEV_APIList *pMemDevAPI);

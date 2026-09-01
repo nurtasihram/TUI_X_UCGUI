@@ -1,6 +1,6 @@
 module;
 
-#include "WM_Intern.h"
+#include "WM.h"
 
 export module TUX.Widget.Window;
 
@@ -83,7 +83,7 @@ private:
 		}
 		if (cb)
 			return cb(pWin, MsgId, Data);
-		return WM_DefaultProc(pWin, MsgId, Data);
+		return DefaultProc(pWin, MsgId, Data);
 	}
 public:
 	Window(RECT r, WM_CF Style, WObj *pParent, uint16_t Id, WM_CALLBACK *cb) :

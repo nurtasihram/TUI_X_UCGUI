@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GUI_ConfDefaults.h"
+#include "GUI.h"
 
 import TUX;
 import TUX.Window;

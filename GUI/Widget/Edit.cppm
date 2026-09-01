@@ -262,8 +262,8 @@ private:
 		return false;
 	}
 
-	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (Edit *)hWin;
+	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (Edit *)pWin;
 		/* Let widget handle the standard messages */
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
@@ -282,7 +282,7 @@ private:
 					return 0;
 				break;
 		}
-		return WM_DefaultProc(hWin, MsgId, Data);
+		return DefaultProc(pWin, MsgId, Data);
 	}
 
 public:
@@ -293,11 +293,11 @@ public:
 		MaxLen(MaxLen ? MaxLen : 8) {
 		_IncrementBuffer(MaxLen + 1);
 	}
-	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		auto pEdit = new Edit(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			pCreateInfo->Flags, hWinParent, pCreateInfo->Id,
+			pCreateInfo->Flags, pWinParent, pCreateInfo->Id,
 			(uint16_t)pCreateInfo->Para
 		);
 		pEdit->TextAlign((TEXTALIGN)pCreateInfo->Flags);

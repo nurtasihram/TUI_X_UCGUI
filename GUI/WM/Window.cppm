@@ -2,6 +2,7 @@ module;
 
 #include "GUI.h"
 #include "GUI_Protected.h"
+#include "LCD_Private.h"
 #include "GUIDebug.h"
 
 #if GUI_DEBUG_LEVEL  >= GUI_DEBUG_LEVEL_LOG_WARNINGS
@@ -19,8 +20,11 @@ export import TUX.Types;
 export import TUX.WindowTypes;
 
 export {
-	
-typedef WM_PARAM WM_CALLBACK(struct WObj *pWin, int MsgId, WM_PARAM Data);
+
+PID_STATE WM_PID__StateLast{ 0 };
+PID_STATE WM_PID__GetPrevState() {
+	return WM_PID__StateLast;
+}
 
 struct WObj;
 
@@ -47,38 +51,23 @@ void WM_DeleteTimer(WObj *pWin, int UserId); /* not to be documented (may change
 RECT WM_GetClientRect();
 RECT WM_GetInsideRect();
 
-/* Use of memory devices */
-void WM_EnableMemdev(WObj *pWin);
-void WM_DisableMemdev(WObj *pWin);
-
 int WM_OnKey(int Key, int Pressed);
 
-/******************************************************************
-*
-*           Message related funcions
-*
-*******************************************************************
-	Please note that some of these functions do not yet show up in the
-	documentation, as they should not be required by application program.
-*/
-
-WM_PARAM  WM_DefaultProc(WObj *pWin, int MsgId, WM_PARAM Data);
+typedef WM_PARAM WM_CALLBACK(struct WObj *pWin, int MsgId, WM_PARAM Data);
 
 /* Scroll functions */
 void WM_GetInsideRectExScrollbar(WObj *pWin, RECT *pRect); /* not to be documented (may change in future version) */
-WObj *WM_GetScrollPartner(WObj *pWin);
+WObj*WM_GetScrollPartner(WObj *pWin);
 bool WM_SetScrollbarH(WObj *pWin, int OnOff); /* not to be documented (may change in future version) */
 bool WM_SetScrollbarV(WObj *pWin, int OnOff); /* not to be documented (may change in future version) */
 void WM_GetScrollState(WObj *pObj, WM_SCROLL_STATE *pScrollState);
 
-bool WM_HandlePID(void);
-void WM_ForEachChild(WObj *pWin, WM_tfForEach *pcb, void *pData);
-
-struct WObj {
+class WObj {
 	RECT Rect, InvalidRect;
 	WObj *pNextLin = nullptr, *pNext = nullptr,
 		*pParent = nullptr, *pFirstChild = nullptr;
 	WM_CALLBACK *cb = nullptr; /* ptr to notification callback */
+protected:
 	uint16_t Status = 0; /* Some status flags */
 
 #pragma region Window list
@@ -115,7 +104,7 @@ public:
 #pragma endregion
 
 #pragma region Parent list
-// private:
+private:
 	void _InsertWindowIntoList(WObj *pNewParent) {
 		if (!pNewParent)
 			return;
@@ -165,8 +154,7 @@ public:
 			pChild = pNext;
 		}
 	}
-
-//protected:
+protected:
 	void _Detach() {
 		_RemoveWindowFromList();
 		/* Clear area used by this window */
@@ -189,8 +177,8 @@ public:
 			MoveTo(pParent->Rect.LeftTop() + Pos); /* Convert parent coordinates -> screen coordinates */
 		}
 	}
-
 #pragma endregion
+
 	static WObj *pWinActive;
 	static bool IsActive;
 public:
@@ -759,6 +747,129 @@ public:
 		return IsAncestorOf(pChild);
 	}
 
+	/*********************************************************************
+	*
+	*       DefaultProc
+	*
+	* Purpose
+	*   Default callback for windows
+	*   Any window should call this routine in the "default" part of the
+	*   its callback function for messages it does not handle itself.
+	*
+	*/
+	static WM_PARAM DefaultProc(WObj *pWin, int MsgId, WM_PARAM Data) {
+		/* Exec message */
+		switch (MsgId) {
+		case WM_GET_INSIDE_RECT: /* return client window in absolute (screen) coordinates */
+			*(RECT *)Data = pWin->GetClientRect();
+			return 0;
+		case WM_GET_CLIENT_WINDOW: /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
+			return (WM_PARAM)pWin;
+		case WM_KEY:
+			pWin->Parent()->Require(WM_KEY, Data);
+			return 0;
+		case WM_GET_BKCOLOR:
+			return RGB_INVALID;
+		case WM_NOTIFY_ENABLE:
+			pWin->Invalidate();
+			return 0;
+		}
+		/* Message not handled. If it queries something, we return 0 to be on the safe side. */
+		return 0;
+	}
+
+#pragma region Mouse/Touch
+private:
+	void _SendMessageIfEnabled(uint16_t MsgId, WM_PARAM Data) {
+		if (IsEnabled())
+			Require(MsgId, Data);
+	}
+	void _SendTouchMessage(uint16_t MsgId, PID_STATE *pState) {
+		if (pState)
+			*pState -= Rect.LeftTop();
+		_SendMessageIfEnabled(MsgId, (WM_PARAM)pState);
+		/* Send notification to all ancestors.
+		   We need to check if the window which has received the last message still exists,
+		   since it may have deleted itself and its parent as result of the message.
+		*/
+		for (auto pWin = Parent(); WObj::IsWindow(pWin); pWin = pWin->Parent())
+			pWin->_SendMessageIfEnabled(WM_TOUCH_CHILD, (WM_PARAM)pState); /* Send message to the ancestors */
+	}
+public:
+	/*********************************************************************
+	*
+	*       HandlePID
+	*
+	* Polls the touch screen. If something has changed,
+	* sends a message to the concerned window.
+	*
+	* Return value:
+	*   0 if nothing has been done
+	*   1 if touch message has been sent
+	*/
+	static bool HandlePID() {
+		auto StateNew = GUI_PID_GetState();
+		if (WM_PID__StateLast == StateNew) return false;
+		bool r = false;
+#if GUI_SUPPORT_CURSOR
+		GUI_CURSOR_SetPosition(StateNew.x, StateNew.y);
+#endif
+		CriticalHandle CHWin = pWinCapture ? pWinCapture : WM_Screen2Win(StateNew);
+		CHWin.Add();
+		/* Send WM_PID_STATE_CHANGED message if state has changed (just pressed or just released) */
+		if (WM_PID__StateLast.Pressed != StateNew.Pressed && CHWin.pWin) {
+			PID_CHANGED_INFO Info;
+			auto pWin = CHWin.pWin;
+			Info.State = StateNew.Pressed;
+			Info.StatePrev = WM_PID__StateLast.Pressed;
+			Info.x = StateNew.x - pWin->Rect.x0;
+			Info.y = StateNew.y - pWin->Rect.y0;
+			pWin->_SendMessageIfEnabled(WM_PID_STATE_CHANGED, (WM_PARAM)&Info);
+		}
+		/* Send WM_TOUCH message(s) Note that we may have to send 2 touch messages. */
+		if (WM_PID__StateLast.Pressed | StateNew.Pressed) { /* Only if pressed or just released */
+			r = true;
+			/* Tell window if it is no longer pressed
+			* This happens for 2 possible reasons:
+			* a) PID is released
+			* b) PID is moved out
+			*/
+			if (CHWinLast.pWin != CHWin.pWin) {
+				if (CHWinLast.pWin) {
+					GUI_DEBUG_LOG("\nSending WM_TOUCH to LastWindow %d (out of area)", CHWinLast.pWin);
+					PID_STATE *pState = StateNew.Pressed ? nullptr : &WM_PID__StateLast;
+					CHWinLast.pWin->_SendTouchMessage(WM_TOUCH, pState);
+					CHWinLast.pWin = nullptr;
+				}
+			}
+			/* Sending WM_TOUCH to current window */
+			if (CHWin.pWin) {
+				/* Remember window */
+				if (StateNew.Pressed)
+					CHWinLast.pWin = CHWin.pWin;
+				else {
+					/* Handle automatic capture release */
+					if (WM__CaptureReleaseAuto)
+						ReleaseCapture();
+					CHWinLast.pWin = nullptr;
+				}
+				CHWin.pWin->_SendTouchMessage(WM_TOUCH, &StateNew);
+			}
+		}
+#if GUI_SUPPORT_MOUSE
+	/* Send WM_MOUSEOVER Message */
+		else if (CHWin.pWin)
+			/* Do not send messages to disabled windows */
+			if (CHWin.pWin->IsEnabled())
+				CHWin.pWin->_SendTouchMessage(WM_MOUSEOVER, &StateNew);
+#endif
+		CHWin.Remove();
+		/* Store the new state */
+		WM_PID__StateLast = GUI_PID_GetState();
+		return r;
+	}
+#pragma endregion
+
 #pragma region Coordinate
 	auto GetRect() const { return Rect; }
 
@@ -884,6 +995,9 @@ public:
 		}
 		return pWin; /* No Child affected ... The parent is the right one */
 	}
+	static WObj *WM_Screen2Win(POINT Pos, WObj *pStop = nullptr) {
+		return pWinFirst->Screen2Win(Pos, pStop);
+	}
 #pragma endregion
 
 #pragma region Z-order
@@ -951,7 +1065,7 @@ public:
 				}
 				return 0;
 			default:
-				return WM_DefaultProc(pWin, MsgId, Data);
+				return DefaultProc(pWin, MsgId, Data);
 		}
 		return 0;
 	}
@@ -961,6 +1075,14 @@ public:
 		BkColorDesktop = Color;
 		if (pWinDesktop)
 			pWinDesktop->Invalidate();
+	}
+	static WObj *CreateDesktopWindow(RGBC BkColor) {
+		if (!pWinDesktop) {
+			pWinDesktop = new WObj(LCD_API.pfGetRect(), WC_VISIBLE, cbBackWin);
+			pWinDesktop->Invalidate(); /* Required because a desktop window has no parent. */
+			pWinDesktop->Select();
+		}
+		return pWinDesktop;
 	}
 #pragma endregion
 
@@ -1128,11 +1250,24 @@ public:
 
 	bool IsEnabled() const { return !(Status & WC_DISABLED); }
 
-};
+	void EnableMemdev() {
+#if GUI_SUPPORT_MEMDEV
+			Status |= WC_MEMDEV;
+#else
+		GUI_DEBUG_WARN("EnableMemdev: No effect because disabled in GUIConf.h (GUI_SUPPORT_MEMDEV == 0)");
+#endif
+	}
 
-WObj *WM_Screen2Win(POINT Pos, WObj *pStop = nullptr) {
-	return WObj::pWinFirst->Screen2Win(Pos, pStop);
-}
+	void DisableMemdev() {
+#if GUI_SUPPORT_MEMDEV
+		Status &= ~(WC_MEMDEV | WC_MEMDEV_ON_REDRAW);
+#else
+		GUI_DEBUG_WARN("DisableMemdev: No effect because disabled in GUIConf.h (GUI_SUPPORT_MEMDEV == 0)");
+#endif
+	}
+
+
+};
 
 }
 

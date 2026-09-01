@@ -184,8 +184,8 @@ private:
 			_HandlePID(pState->x + ScrollPos, pState->y, -1);
 	}
 #endif
-	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (Header *)hWin;
+	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (Header *)pWin;
 		/* Let widget handle the standard messages */
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
@@ -204,10 +204,10 @@ private:
 				return 0;
 #endif
 			case WM_DELETE:
-				pObj->_FreeAttached(); /* No return here ... WM_DefaultProc needs to be called */
+				pObj->_FreeAttached(); /* No return here ... DefaultProc needs to be called */
 				return 0;
 		}
-		return WM_DefaultProc(hWin, MsgId, Data);
+		return DefaultProc(pWin, MsgId, Data);
 	}
 
 private:

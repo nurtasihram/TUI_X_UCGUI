@@ -51,19 +51,19 @@ private:
 	}
 	SCROLLBAR_POSITIONS _CalcPositions() {
 		SCROLLBAR_POSITIONS Pos;
-		auto r = Rect;
+		auto r = GetRect();
 		Pos.x1 = (States & SCROLLBAR_CF_VERTICAL) ? r.y1 : r.x1;
 		/* Subtract the rectangle of the other scrollbar (if existing and visible) */
 		switch (GetId()) {
 		case GUI_ID_HSCROLL:
-			if (auto pWin = pParent->GetScrollbarV()) {
+			if (auto pWin = Parent()->GetScrollbarV()) {
 				auto rSub = pWin->GetRect();
 				if (r.x1 == rSub.x1)
 					r.x1 = rSub.x0 - 1;
 			}
 			break;
 		case GUI_ID_VSCROLL:
-			if (auto pWin = pParent->GetScrollbarH()) {
+			if (auto pWin = Parent()->GetScrollbarH()) {
 				auto rSub = pWin->GetRect();
 				if (r.y1 == rSub.y1)
 					r.y1 = rSub.y0 - 1;
@@ -238,8 +238,8 @@ private:
 		Parent()->Require(WM_NOTIFY_CLIENTCHANGE);   /* Client area may have changed */
 	}
 
-	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (ScrollBar *)hWin;
+	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (ScrollBar *)pWin;
 		/* Let widget handle the standard messages */
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
@@ -264,7 +264,7 @@ private:
 				*(WM_SCROLL_STATE *)Data = pObj->ScrollState;
 				break;
 		}
-		return WM_DefaultProc(hWin, MsgId, Data);
+		return DefaultProc(pWin, MsgId, Data);
 	}
 
 private:

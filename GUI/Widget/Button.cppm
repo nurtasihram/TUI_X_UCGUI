@@ -94,12 +94,12 @@ private:
 	}
 	void _ButtonPressed() {
 		AddStates(BUTTON_STATE_PRESSED);
-		if (this->Status & WC_VISIBLE)
+		if (Status & WC_VISIBLE)
 			NotifyParent(WM_NOTIFICATION_CLICKED);
 	}
 	void _ButtonReleased(int Notification) {
 		DelStates(BUTTON_STATE_PRESSED);
-		if (this->Status & WC_VISIBLE)
+		if (Status & WC_VISIBLE)
 			NotifyParent(Notification);
 		if (Notification == WM_NOTIFICATION_RELEASED) {
 			GUI_DEBUG_LOG("BUTTON: Hit\n");
@@ -145,8 +145,8 @@ private:
 	}
 #endif
 
-	static WM_PARAM _Callback(WObj *hWin, int MsgId, WM_PARAM Data) {
-		auto pObj = (Button *)hWin;
+	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
+		auto pObj = (Button *)pWin;
 		/* Let widget handle the standard messages */
 		if (!pObj->HandleActive(MsgId, &Data))
 			return Data;
@@ -154,11 +154,11 @@ private:
 #if BUTTON_REACT_ON_LEVEL
 			case WM_PID_STATE_CHANGED:
 				pObj->_OnPidStateChange((const PID_CHANGED_INFO *)Data);
-				return 0; /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
+				return 0; /* Message handled. Do not call DefaultProc, because the window may have been destroyed */
 #endif
 			case WM_TOUCH:
 				pObj->_OnTouch((const PID_STATE *)Data);
-				return 0; /* Message handled. Do not call WM_DefaultProc, because the window may have been destroyed */
+				return 0; /* Message handled. Do not call DefaultProc, because the window may have been destroyed */
 			case WM_PAINT:
 				pObj->_OnPaint();
 				return 0;
@@ -171,17 +171,17 @@ private:
 					return 0;
 				break;
 		}
-		return WM_DefaultProc(hWin, MsgId, Data);
+		return DefaultProc(pWin, MsgId, Data);
 	}
 
 public:
 	Button(RECT r, WM_CF Style, WObj *pParent, uint16_t Id) :
 		Widget(r, Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE) {}
-	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *hWinParent, int x0, int y0, WM_CALLBACK *cb) {
+	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		auto pThis = new Button(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			pCreateInfo->Flags, hWinParent, pCreateInfo->Id);
+			pCreateInfo->Flags, pWinParent, pCreateInfo->Id);
 		pThis->SetText(pCreateInfo->pName);
 		return pThis;
 	}
