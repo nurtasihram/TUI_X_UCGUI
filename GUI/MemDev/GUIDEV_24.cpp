@@ -20,7 +20,7 @@ static void _DrawBitLine1BPP(int x, int y, const uint8_t  *p, int Diff, unsigned
 	unsigned pixels;
 	unsigned PixelCnt;
 	PixelCnt = 8 - Diff;
-	pixels = LCD_aMirror[*p] >> Diff;
+	pixels = *p >> Diff;
 	switch (GUI.DrawMode & (DRAWMODE_TRANS)) {
 		case 0: /* Write mode */
 			do {
@@ -39,7 +39,7 @@ static void _DrawBitLine1BPP(int x, int y, const uint8_t  *p, int Diff, unsigned
 					return;
 				}
 				PixelCnt = 8;
-				pixels = LCD_aMirror[*++p];
+				pixels = *++p;
 			} while (1);
 		case DRAWMODE_TRANS:
 			Index1 = *(pTrans + 1);
@@ -64,7 +64,7 @@ static void _DrawBitLine1BPP(int x, int y, const uint8_t  *p, int Diff, unsigned
 				if (xsize == 0)
 					return;
 				PixelCnt = 8;
-				pixels = LCD_aMirror[*(++p)];
+				pixels = *++p;
 			} while (1);
 	}
 }

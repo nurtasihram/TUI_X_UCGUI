@@ -99,17 +99,6 @@ void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV *pDev) {
 	GUI_MEMDEV_CopyToLCDAt(pDev, pDev->x0, pDev->y0);
 }
 
-int GUI_MEMDEV_GetXSize(GUI_MEMDEV *pDev) {
-	if (!pDev)
-		pDev = GUI.pDevData;
-	return pDev ? pDev->XSize : 0;
-}
-int GUI_MEMDEV_GetYSize(GUI_MEMDEV *pDev) {
-	if (!pDev)
-		pDev = GUI.pDevData;
-	return pDev ? pDev->YSize : 0;
-}
-
 void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV *pDev, int YSize) {
 	if (!pDev)
 		pDev = GUI.pDevData;
@@ -144,7 +133,7 @@ int GUI_MEMDEV_Draw(RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int N
 		pfDraw(pData);
 		return 1;
 	}
-	NumLines = GUI_MEMDEV_GetYSize(pMD);
+	NumLines = pMD->YSize;
 	GUI_MEMDEV_Select(pMD);
 	for (int i = 0; i < rc.YSize(); i += NumLines) {
 		int RemLines = rc.YSize() - i;

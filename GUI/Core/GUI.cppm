@@ -30,15 +30,15 @@ constexpr DRAWMODE DRAWMODE_NORMAL = 0,
 using TEXTALIGN = uint8_t; // 4bits
 constexpr TEXTALIGN
 /* Text alignment flags, horizontal */
-	TEXTALIGN_LEFT        = (0<<0),
-	TEXTALIGN_RIGHT       = (1<<0),
-	TEXTALIGN_HCENTER     = (2<<0),
-	TEXTALIGN_HORIZONTAL  = (3<<0),
+	TEXTALIGN_LEFT        = 0 << 0,
+	TEXTALIGN_RIGHT       = 1 << 0,
+	TEXTALIGN_HCENTER     = 2 << 0,
+	TEXTALIGN_HORIZONTAL  = 3 << 0,
 /* Text alignment flags, vertical */
-	TEXTALIGN_TOP         = (0<<2),
-	TEXTALIGN_BOTTOM      = (1<<2),
-	TEXTALIGN_VCENTER     = (2<<2),
-	TEXTALIGN_VERTICAL    = (3<<2);
+	TEXTALIGN_TOP         = 0 << 2,
+	TEXTALIGN_BOTTOM      = 1 << 2,
+	TEXTALIGN_VCENTER     = 2 << 2,
+	TEXTALIGN_VERTICAL    = 3 << 2;
 
 #if GUI_SUPPORT_DEVICES
 
@@ -75,8 +75,6 @@ void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV *pDev);
 void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV *pDev);
 void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV *pDev, int x, int y);
 void GUI_MEMDEV_Delete(GUI_MEMDEV *pDev);
-int  GUI_MEMDEV_GetXSize(GUI_MEMDEV *pDev);
-int  GUI_MEMDEV_GetYSize(GUI_MEMDEV *pDev);
 void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV *pDev, int YSize);
 GUI_MEMDEV *GUI_MEMDEV_Select(GUI_MEMDEV *pDev);  /* Select (activate) a particular memory device. */
 void  GUI_MEMDEV_SetOrg(GUI_MEMDEV *pDev, int x0, int y0);

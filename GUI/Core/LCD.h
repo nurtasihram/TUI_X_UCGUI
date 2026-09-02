@@ -23,8 +23,6 @@ import TUX.Types;
 extern const tLCDDEV_APIList GUI_MEMDEV__APIList24;
 extern const tLCDDEV_APIList LCD_API;
 
-extern const uint8_t LCD_aMirror[256];
-
 void LCD_DrawBitmap(int x0, int y0,
 					int xsize, int ysize,
 					int BitsPerPixel, int BytesPerLine,

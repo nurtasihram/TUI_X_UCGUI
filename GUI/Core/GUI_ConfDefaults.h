@@ -6,17 +6,6 @@
    However, on some systems (AVR - IAR compiler) it can be necessary ( -> __flash const),
    since otherwise constants are copied into RAM
 */
-#ifndef GUI_SUPPORT_MOUSE
-#define GUI_SUPPORT_MOUSE   0
-#endif
-
-#ifndef GUI_SUPPORT_MEMDEV
-#define GUI_SUPPORT_MEMDEV  0
-#endif
-
-#ifndef GUI_SUPPORT_CURSOR
-#define GUI_SUPPORT_CURSOR  0
-#endif
 
 #ifndef GUI_SUPPORT_DEVICES
 #define GUI_SUPPORT_DEVICES (GUI_SUPPORT_MEMDEV)

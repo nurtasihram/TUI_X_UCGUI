@@ -26,10 +26,9 @@ static void _FillRect(RECT r) {
 #pragma region LCD API List
 static void  _DrawBitLine1BPP(int x, int y, uint8_t const *p, int Diff, int xsize, PCLOGPALETTE pTrans) {
 	RGBC Index0 = pTrans[0], Index1 = pTrans[1];
-	x += Diff;
 	if (GUI.DrawMode & DRAWMODE_TRANS)
 		do {
-			if (*p & (0x80 >> Diff))
+			if (*p & (1 << Diff))
 				_SetPixel(x, y, Index1);
 			x++;
 			if (++Diff == 8) {
@@ -38,7 +37,7 @@ static void  _DrawBitLine1BPP(int x, int y, uint8_t const *p, int Diff, int xsiz
 			}
 		} while (--xsize);
 	else do {
-		_SetPixel(x++, y, (*p & (0x80 >> Diff)) ? Index1 : Index0);
+		_SetPixel(x++, y, (*p & (1 << Diff)) ? Index1 : Index0);
 		if (++Diff == 8) {
 			Diff = 0;
 			p++;
@@ -48,7 +47,6 @@ static void  _DrawBitLine1BPP(int x, int y, uint8_t const *p, int Diff, int xsiz
 static void  _DrawBitLine2BPP(int x, int y, uint8_t const *p, int Diff, int xsize, PCLOGPALETTE pTrans) {
 	RGBC Pixels = *p;
 	int CurrentPixel = Diff;
-	x += Diff;
 	if (GUI.DrawMode & DRAWMODE_TRANS) {
 		if (pTrans)
 			do {
@@ -101,7 +99,6 @@ static void  _DrawBitLine2BPP(int x, int y, uint8_t const *p, int Diff, int xsiz
 static void  _DrawBitLine4BPP(int x, int y, uint8_t const *p, int Diff, int xsize, PCLOGPALETTE pTrans) {
 	RGBC Pixels = *p;
 	int CurrentPixel = Diff;
-	x += Diff;
 	if (GUI.DrawMode & DRAWMODE_TRANS)
 		if (pTrans)
 			do {
