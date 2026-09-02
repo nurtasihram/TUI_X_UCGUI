@@ -1,6 +1,6 @@
 module;
 
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 export module TUX.Widget;
 
@@ -262,7 +262,7 @@ public:
 void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax, RECT TextRectAct) {
 	/* Check if we have anything to do at all ... */
 	auto r = FillRect + GUI.Off;
-	if (!(r <= GUI.ClipRect))
+	if (!(r <= GUI.rClip))
 		return;
 	/* Fill border */
 	GUI_ClearRect(FillRect);

@@ -69,13 +69,7 @@
     <ClCompile Include="GUI\Core\GUI_PID.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_X_MEM.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\LCD.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD_Mirror.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUICore.cpp">
@@ -193,6 +187,10 @@
       <Filter>TUX_EXT</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="GUI\Core\GUI_X_MEM.cppm" />
+    <ClCompile Include="GUI\Core\LCD.cppm">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">
@@ -207,12 +205,6 @@
     <ClInclude Include="GUI\Core\GUI_ConfDefaults.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Core\GUI_Private.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Core\GUI_Protected.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Core\GUI_X.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
@@ -220,12 +212,6 @@
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\LCD.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Core\LCD_Private.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Core\LCD_Protected.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI_X\resource.h">

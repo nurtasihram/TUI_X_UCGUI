@@ -1,7 +1,6 @@
 #include "GUI_Private.h"
-#include "GUIDebug.h"
 #include "WM.h"
-/* Memory device capabilities are compiled only if support for them is enabled.*/
+
 #if GUI_SUPPORT_MEMDEV
 
 #define PIXELINDEX RGBC
@@ -249,8 +248,9 @@ static void _DrawBitLine24BPP_DDB(int x, int y, PCLOGPALETTE pSrc, int xsize, PI
 }
 
 static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
-						int BitsPerPixel, int BytesPerLine,
-						const uint8_t *pData, int Diff, PCLOGPALETTE pTrans) {
+						 int BitsPerPixel, int BytesPerLine,
+						 const uint8_t *pData, int Diff,
+						 PCLOGPALETTE pTrans) {
 	int i;
 	auto pDev = GUI.pDevData;
 	unsigned    BytesPerLineDest;
@@ -320,7 +320,7 @@ static void _FillRect(RECT r) {
 	for (; r.y0 <= r.y1; r.y0++) {
 		int i;
 		for (i = 0; i < Len; i++)
-			pData[i] = LCD_COLORINDEX;
+			pData[i] = GUI.Color();
 		pData = (PIXELINDEX *)((uint8_t *)pData + BytesPerLine);
 	}
 }
@@ -337,13 +337,12 @@ static RGBC _GetPixel(int x, int y) {
 }
 
 const tLCDDEV_APIList GUI_MEMDEV__APIList24{
-	(tLCDDEV_DrawBitmap *)_DrawBitmap,
+	_DrawBitmap,
 	_FillRect,
 	_GetPixel,
-	GUI_MEMDEV__GetRect,
 	_SetPixel,
-	nullptr, /* MemDevAPI */
-	24    /* BitsPerPixel */
+	GUI_MEMDEV__GetRect,
+	24
 };
 
 #endif /* GUI_SUPPORT_MEMDEV */

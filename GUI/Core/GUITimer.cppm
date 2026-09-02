@@ -8,6 +8,8 @@ import TUX;
 
 export {
 
+using GUI_TIMER_TIME = intptr_t;
+	
 struct GUI_TIMER_MESSAGE {
 	GUI_TIMER_TIME Time;
 	uintptr_t Context;

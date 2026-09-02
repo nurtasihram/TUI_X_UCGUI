@@ -1,6 +1,6 @@
 module;
 
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 export module TUX.Widget.MultEdit;
 

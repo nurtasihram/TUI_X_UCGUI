@@ -1,9 +1,6 @@
 module;
 
 #include "GUI.h"
-#include "GUI_Protected.h"
-#include "LCD_Private.h"
-#include "GUIDebug.h"
 
 #if GUI_DEBUG_LEVEL  >= GUI_DEBUG_LEVEL_LOG_WARNINGS
 #define WM_ASSERT_NOT_IN_PAINT() { if (WObj::_PaintCallbackCnt) \
@@ -186,13 +183,13 @@ public:
 	void Select() {
 		WM_ASSERT_NOT_IN_PAINT();
 		WObj::pWinActive = this;
-		LCD_SetClipRectMax();
+		GUI.ClipRectMax();
 		GUI.Off = Rect.LeftTop();
 	}
 	static void Activate() { IsActive = true; }
 	static void Deactivate() {
 		IsActive = false; /* No clipping performed by WM */
-		LCD_SetClipRectMax();
+		GUI.ClipRectMax();
 	}
 
 #pragma region Invalidation
@@ -311,17 +308,15 @@ private:
 	static void _ActivateClipRect() {
 		/* Window manager disabled, typically because memory device is active */
 		/* Take UserClipRect into account */
-		const RECT *prSrc = WObj::IsActive ? &_ClipContext.CurRect : &WObj::pWinActive->Rect;
+		RECT rSrc = WObj::IsActive ? _ClipContext.CurRect : WObj::pWinActive->Rect;
 		if (GUI.WM__pUserClipRect) {
 			auto r = *GUI.WM__pUserClipRect;
 			if (WObj::pWinActive)
-				r += WObj::pWinActive->GetOrg(); /* Convert User ClipRect into screen coordinates */
+				r += WObj::pWinActive->GetOrg(); /* Convert User rClip into screen coordinates */
 			/* Set intersection as clip rect */
-			r &= *prSrc;
-			LCD_SetClipRectEx(&r);
+			rSrc &= r;
 		}
-		else
-			LCD_SetClipRectEx(prSrc);
+		GUI.ClipRect(rSrc);
 	}
 
 	/*********************************************************************
@@ -448,7 +443,7 @@ private:
 		}
 #endif
 		++_ClipContext.Cnt;
-		/* Find next rectangle and use it as ClipRect */
+		/* Find next rectangle and use it as rClip */
 		if (!_FindNext_IVR()) {
 			_ClipContext.EntranceCnt--;  /* This search is over ! */
 			return false;        /* Could not find an other one ! */
@@ -549,7 +544,7 @@ public:
 					GUI_MEMDEV_Draw(&r, [](void *p) {
 						auto pWin = WObj::pWinActive;
 						auto Rect = pWin->InvalidRect;
-						pWin->InvalidRect = GUI.ClipRect;
+						pWin->InvalidRect = GUI.rClip;
 						pWin->_Paint1();
 						pWin->InvalidRect = Rect;
 					}, this, 0, Flags);

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GUI_Protected.h"
-#include "LCD_Private.h"
+#include "GUI.h"
+#include "LCD.h"
 
 #if GUI_SUPPORT_DEVICES
 #define LCDDEV_L0_DrawBitmap GUI.pDeviceAPI->pfDrawBitmap

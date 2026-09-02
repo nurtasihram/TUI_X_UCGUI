@@ -1,6 +1,6 @@
 module;
 
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 export module TUX.Widget.ProgBar;
 
@@ -202,7 +202,7 @@ public:
 		}
 	}
 	void SetText(const char *s) {
-		if (GUI__SetText(&pText, s))
+		if (GUI__SetText(pText, s))
 			Invalidate();
 	}
 	void SetTextPos(int XOff, int YOff) {

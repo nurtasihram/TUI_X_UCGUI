@@ -1592,7 +1592,7 @@ void _TestMultiEdit() {
 }
 
 int main(void) {
-	GUI_Init(); 
+		GUI_Init(); 
 	GUI_CURSOR_Show();
 
 	_TestText();

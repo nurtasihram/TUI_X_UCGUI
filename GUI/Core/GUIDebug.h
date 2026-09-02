@@ -1,8 +1,5 @@
 #pragma once
 
-#include "GUI.h"
-#include "GUI_X.h"
-
 #define GUI_DEBUG_LEVEL_NOCHECK       0  /* No run time checks are performed */
 #define GUI_DEBUG_LEVEL_CHECK_PARA    1  /* Parameter checks are performed to avoid crashes */
 #define GUI_DEBUG_LEVEL_CHECK_ALL     2  /* Parameter checks and consistency checks are performed */

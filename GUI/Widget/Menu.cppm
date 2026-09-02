@@ -1,7 +1,7 @@
 ﻿module;
 
 #include <string.h>
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 export module TUX.Widget.Menu;
 
@@ -625,7 +625,7 @@ private:
 		if (Index >= ItemArray.NumItems())
 			return 0;
 		auto &pItem = ItemArray[Index];
-		GUI__SetText(&pItem.pText, pText);
+		GUI__SetText(pItem.pText, pText);
 		pItem.Id       = item.Id;
 		pItem.Flags    = item.Flags;
 		pItem.pSubmenu = item.pSubmenu;

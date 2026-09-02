@@ -3,17 +3,14 @@
 #include "LCD.h"
 #include "GUI_ConfDefaults.h"
 
+#include "GUI_X.h"
+#include "GUIDebug.h"
+
 import TUX;
 import TUX.Resources;
 
 #define GUI_COUNTOF(a) (sizeof(a) / sizeof(a[0]))
 
-/*    *********************************
-	*
-	*     Min/Max coordinates
-	*
-	*********************************
-*/
 /* Define minimum and maximum coordinates in x and y */
 #define GUI_XMIN -4095
 #define GUI_XMAX  4095
@@ -73,20 +70,6 @@ int  GUI_GetTime(void);
 int  GUI_Exec(void);         /* Execute all jobs ... Return 0 if nothing was done. */
 int  GUI_Exec1(void);        /* Execute one job  ... Return 0 if nothing was done. */
 
-/*********************************************************************
-*
-*                 MessageBox
-*
-**********************************************************************
-
-	Note: These should be moved into a separate file.
-*/
-int     GUI_MessageBox(const char *sMessage, const char *sCaption, int Flags);
-#define GUI_MESSAGEBOX_CF_MOVEABLE (1<<4)
-
-#define GUI_MB_OK                20
-#define GUI_MB_WARNING           21
-
 /* Message layer */
 void GUI_StoreKeyMsg(int Key, int Pressed);
 void GUI_SendKeyMsg(int Key, int Pressed);
@@ -109,3 +92,12 @@ void GUI_TOUCH_GetUnstable(int *px, int *py);  /* for diagnostics only */
 void GUI_TOUCH_StoreState(int x, int y);
 void GUI_TOUCH_StoreStateEx(const PID_STATE *pState);
 void GUI_TOUCH_StoreUnstable(int x, int y);
+
+#if GUI_SUPPORT_DEVICES
+#define LCDDEV_L0_DrawBitmap GUI.pDeviceAPI->pfDrawBitmap
+#define LCDDEV_L0_FillRect   GUI.pDeviceAPI->pfFillRect
+#define LCDDEV_L0_GetPixel   GUI.pDeviceAPI->pfGetPixel
+#define LCDDEV_L0_GetRect    GUI.pDeviceAPI->pfGetRect
+#define LCDDEV_L0_GetPixel   GUI.pDeviceAPI->pfGetPixel
+#define LCDDEV_L0_SetPixel   GUI.pDeviceAPI->pfSetPixel
+#endif

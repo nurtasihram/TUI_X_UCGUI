@@ -1,6 +1,6 @@
 ﻿module;
 
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 export module TUX.Widget.MultPage;
 
@@ -411,7 +411,6 @@ public:
 public:
 
 	void AddPage(WObj *pWin, const char *pText) {
-		GUI_USE_PARA(pWin);
 		if (!pWin) {
 			/* If we get no handle we must find it. To do this, we search      */
 			/* all children until we found one that has not yet become a page. */
@@ -440,7 +439,7 @@ public:
 			page.pWin = pWin;
 			page.Status = MULTIPAGE_STATE_ENABLED;
 			if (Handles.AddItem(&page) == 0) {
-				GUI__SetText(&Handles[Handles.NumItems() - 1].pText, pText);
+				GUI__SetText(Handles[Handles.NumItems() - 1].pText, pText);
 			}
 			SelectPage(Handles.NumItems() - 1);
 		}
@@ -492,7 +491,7 @@ public:
 	}
 	void SetText(const char *pText, unsigned Index) {
 		if (pText && (int)Index < Handles.NumItems()) {
-			if (GUI__SetText(&Handles[Index].pText, pText))
+			if (GUI__SetText(Handles[Index].pText, pText))
 				_UpdatePositions();
 		}
 	}

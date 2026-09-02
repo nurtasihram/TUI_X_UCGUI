@@ -1,6 +1,6 @@
 module;
 
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 export module TUX.Widget.Button;
 
@@ -233,7 +233,7 @@ public:
 #pragma endregion
 
 	void SetText(const char *s) {
-		if (text = s)
+		if (text.Set(s))
 			Invalidate();
 	}
 

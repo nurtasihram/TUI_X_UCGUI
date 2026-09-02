@@ -1,6 +1,6 @@
 ﻿module;
 
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 export module TUX.Widget.Header;
 
@@ -286,7 +286,7 @@ public:
 		int Index = Columns.NumItems();
 		if (Columns.AddItem(&Col) == 0) {
 			auto &pColumn = Columns[Index];
-			GUI__SetText(&pColumn.pText, s);
+			GUI__SetText(pColumn.pText, s);
 			Invalidate();
 			Parent()->Invalidate();
 		}
@@ -301,7 +301,7 @@ public:
 	}
 	void SetItemText(uint16_t Index, const char *s) {
 		if (Index < Columns.NumItems()) {
-			if (GUI__SetText(&Columns[Index].pText, s))
+			if (GUI__SetText(Columns[Index].pText, s))
 				Invalidate();
 		}
 	}

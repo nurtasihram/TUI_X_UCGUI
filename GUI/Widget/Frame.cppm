@@ -1,6 +1,6 @@
 module;
 
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 export module TUX.Widget.Frame;
 
@@ -601,7 +601,7 @@ public:
 #pragma endregion
 
 	void SetText(const char *s) {
-		if (GUI__SetText(&this->pText, s))
+		if (GUI__SetText(this->pText, s))
 			Invalidate();
 	}
 

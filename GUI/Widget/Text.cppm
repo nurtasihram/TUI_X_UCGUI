@@ -1,6 +1,6 @@
 module;
 
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 export module TUX.Widget.Text;
 
@@ -75,7 +75,7 @@ public:
 		 TEXTALIGN ExFlags, const char *pText) :
 		Widget(r, Style, _Callback, pParent, Id, 0) {
 		if (pText)
-			GUI__SetText(&this->pText, pText);
+			GUI__SetText(this->pText, pText);
 		else
 			this->pText = nullptr;
 		Props.Align = ExFlags;
@@ -124,7 +124,7 @@ public:
 #pragma endregion
 
 	void SetText(const char *s) {
-		if (GUI__SetText(&pText, s))
+		if (GUI__SetText(pText, s))
 			Invalidate();
 	}
 

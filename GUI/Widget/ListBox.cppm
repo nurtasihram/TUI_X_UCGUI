@@ -1,6 +1,6 @@
 ﻿module;
 
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 export module TUX.Widget.ListBox;
 
@@ -300,13 +300,13 @@ private:
 		int ItemDistY;
 		GUI.Font(Props.pFont);
 		/* Calculate clipping rectangle */
-		auto ClipRect = *pClipRect - GetOrg();
+		auto rClip = *pClipRect - GetOrg();
 		RECT RectInside;
 		WM_GetInsideRectExScrollbar(this, &RectInside);
-		ClipRect &= RectInside;
+		rClip &= RectInside;
 		RECT RectItem;
-		RectItem.x0 = ClipRect.x0;
-		RectItem.x1 = ClipRect.x1;
+		RectItem.x0 = rClip.x0;
+		RectItem.x1 = rClip.x1;
 		/* Fill item info structure */
 		POINT ItemPos{
 			RectInside.x0 - ScrollStateH.v,
@@ -316,13 +316,13 @@ private:
 		for (int i = ScrollStateV.v, NumItems = _GetNumItems(); i < NumItems; i++) {
 			RectItem.y0 = ItemPos.y;
 			/* Break when all other rows are outside the drawing area */
-			if (RectItem.y0 > ClipRect.y1) {
+			if (RectItem.y0 > rClip.y1) {
 				break;
 			}
 			ItemDistY = _GetItemSizeY(i);
 			RectItem.y1 = RectItem.y0 + ItemDistY - 1;
 			/* Make sure that we draw only when row is in drawing area */
-			if (RectItem.y1 >= ClipRect.y0) {
+			if (RectItem.y1 >= rClip.y0) {
 				/* Set user clip rect */
 				SetUserClipRect(&RectItem);
 				/* Draw item */
@@ -657,7 +657,7 @@ public:
 			Item item = { 0, 0 };
 			if (this->ItemArray.AddItem(&item) == 0) {
 				uint16_t ItemIndex = ItemArray.NumItems() - 1;
-				GUI__SetText(&ItemArray[ItemIndex].pText, s);
+				GUI__SetText(ItemArray[ItemIndex].pText, s);
 				_InvalidateItemSize(ItemIndex);
 				UpdateScrollers();
 				_InvalidateItem(ItemIndex);
@@ -755,7 +755,7 @@ public:
 				if (this->ItemArray.InsertItem(Index)) {
 					auto &pItem = this->ItemArray[Index];
 					pItem.Status = 0;
-					GUI__SetText(&pItem.pText, s);
+					GUI__SetText(pItem.pText, s);
 					InvalidateItem(Index);
 				}
 			}
@@ -894,7 +894,7 @@ public:
 	}
 	void SetString(const char *s, uint16_t Index) {
 		if (Index < (uint16_t)_GetNumItems()) {
-			if (GUI__SetText(&ItemArray[Index].pText, s)) {
+			if (GUI__SetText(ItemArray[Index].pText, s)) {
 				_InvalidateItemSize(Index);
 				UpdateScrollers();
 				_InvalidateItem(Index);

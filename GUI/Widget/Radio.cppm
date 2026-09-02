@@ -1,6 +1,6 @@
 ﻿module;
 
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 export module TUX.Widget.Radio;
 
@@ -166,7 +166,7 @@ private:
 				break;
 			case WM_DELETE:
 				for (int i = 0; i < pObj->TextArray.NumItems(); i++)
-					GUI__SetText(&pObj->TextArray[i], nullptr);
+					GUI__SetText(pObj->TextArray[i], nullptr);
 				pObj->TextArray.Delete();
 				return 0;
 		}
@@ -350,7 +350,7 @@ public:
 	}
 	void SetText(const char *pText, unsigned Index) {
 		if (Index < (unsigned)NumItems) {
-			GUI__SetText(&TextArray[Index], pText);
+			GUI__SetText(TextArray[Index], pText);
 			Invalidate();
 		}
 	}

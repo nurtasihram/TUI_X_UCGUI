@@ -25,11 +25,11 @@
     <ClCompile Include="GUI\Core\GUICurs.cpp" />
     <ClCompile Include="GUI\Core\GUITimer.cppm" />
     <ClCompile Include="GUI\Core\GUI_GetBitmapPixelIndex.cpp" />
+    <ClCompile Include="GUI\Core\LCD.cppm" />
     <ClCompile Include="GUI\Core\GUI_OnKey.cpp" />
     <ClCompile Include="GUI\Core\GUI_PID.cpp" />
     <ClCompile Include="GUI\Core\GUI_X_MEM.cppm" />
     <ClCompile Include="GUI\Core\LCD.cpp" />
-    <ClCompile Include="GUI\Core\LCD_Mirror.cpp" />
     <ClCompile Include="GUI\Core\String.cppm" />
     <ClCompile Include="GUI\MemDev\GUIDEV.cpp" />
     <ClCompile Include="GUI\MemDev\GUIDEV_24.cpp" />
@@ -66,12 +66,8 @@
     <ClInclude Include="GUI\Core\GUI.h" />
     <ClInclude Include="GUI\Core\GUIDebug.h" />
     <ClInclude Include="GUI\Core\GUI_ConfDefaults.h" />
-    <ClInclude Include="GUI\Core\GUI_Private.h" />
-    <ClInclude Include="GUI\Core\GUI_Protected.h" />
     <ClInclude Include="GUI\Core\GUI_X.h" />
     <ClInclude Include="GUI\Core\LCD.h" />
-    <ClInclude Include="GUI\Core\LCD_Private.h" />
-    <ClInclude Include="GUI\Core\LCD_Protected.h" />
     <ClCompile Include="GUI\Widget\DropDown.cppm">
       <FileType>Document</FileType>
     </ClCompile>

@@ -2,7 +2,6 @@
 #define AYXANDAR
 #include "SimDisp.h"
 #include "GUI.h"
-#include "GUI_Private.h"
 
 #define LCD_XSIZE 320 * 2
 #define LCD_YSIZE 240 * 2
@@ -13,15 +12,15 @@ static RECT _GetRect() {
 	return{ 0, 0, LCD_XSIZE - 1, LCD_YSIZE - 1 };
 }
 
-static void _SetPixel(int x, int y, RGBC PixelIndex) {
-	Ayx.Dot({ x, y }, PixelIndex);
+static void _SetPixel(int x, int y, RGBC Color) {
+	Ayx.Dot({ x, y }, Color);
 }
 static RGBC _GetPixel(int x, int y) {
 	return Ayx.Dot({ x, y });
 }
 
 static void _FillRect(RECT r) {
-	Ayx.Fill(LCD_COLORINDEX, { r.x0, r.y0, r.x1, r.y1 });
+	Ayx.Fill(GUI.Color(), { r.x0, r.y0, r.x1, r.y1 });
 }
 
 #pragma region LCD API List
@@ -246,11 +245,11 @@ const tLCDDEV_APIList LCD_API{
 	_DrawBitmap,
 	_FillRect,
 	_GetPixel,
-	_GetRect,
 	_SetPixel,
+	_GetRect,
+	24,
 #if GUI_SUPPORT_MEMDEV
-	& GUI_MEMDEV__APIList24,
-	24    /* BitsPerPixel - LCD driver bit depth */
+	& GUI_MEMDEV__APIList24
 #endif
 };
 

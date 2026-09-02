@@ -1,6 +1,6 @@
 ﻿module;
 
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 export module TUX.Widget.ListView;
 
@@ -79,7 +79,7 @@ private:
 		return 1;
 	}
 	void _OnPaint(const RECT *pClipRect) {
-		RECT ClipRect, Rect;
+		RECT rClip, Rect;
 		int NumRows, NumVisRows, NumColumns;
 		int LBorder, RBorder, EffectSize;
 		int xPos, yPos, Width, RowDistY;
@@ -95,9 +95,9 @@ private:
 		yPos = pHeader->GetHeight() + EffectSize;
 		EndRow = this->ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
 		/* Calculate clipping rectangle */
-		ClipRect = *pClipRect - GetOrg();
+		rClip = *pClipRect - GetOrg();
 		WM_GetInsideRectExScrollbar(this, &Rect);
-		ClipRect &= Rect;
+		rClip &= Rect;
 		/* Set drawing color, font and text mode */
 		GUI.Color(Props.aTextColor[0]);
 		GUI.Font(Props.pFont);
@@ -108,12 +108,12 @@ private:
 			{
 				Rect.y0 = yPos;
 				/* Break when all other rows are outside the drawing area */
-				if (Rect.y0 > ClipRect.y1) {
+				if (Rect.y0 > rClip.y1) {
 					break;
 				}
 				Rect.y1 = yPos + RowDistY - 1;
 				/* Make sure that we draw only when row is in drawing area */
-				if (Rect.y1 >= ClipRect.y0) {
+				if (Rect.y1 >= rClip.y0) {
 					auto ColorIndex =
 						 i == Sel ?
 						 	States & WIDGET_STATE_FOCUS ? LISTVIEW_CI_SELFOCUS : LISTVIEW_CI_SEL :
@@ -128,12 +128,12 @@ private:
 						Width = pHeader->GetItemWidth(j);
 						Rect.x0 = xPos;
 						/* Break when all other columns are outside the drawing area */
-						if (Rect.x0 > ClipRect.x1) {
+						if (Rect.x0 > rClip.x1) {
 							break;
 						}
 						Rect.x1 = xPos + Width - 1;
 						/* Make sure that we draw only when column is in drawing area */
-						if (Rect.x1 >= ClipRect.x0) {
+						if (Rect.x1 >= rClip.x0) {
 							auto &item = pRow[j];
 							if (auto pItemInfo = item.pItemInfo) {
 								GUI.BkColor(pItemInfo->aBkColor[ColorIndex]);
@@ -155,16 +155,16 @@ private:
 						xPos += Width;
 					}
 					/* Clear unused area to the right of items */
-					if (xPos <= ClipRect.x1)
-						GUI_ClearRect({ xPos, Rect.y0, ClipRect.x1, Rect.y1 });
+					if (xPos <= rClip.x1)
+						GUI_ClearRect({ xPos, Rect.y0, rClip.x1, Rect.y1 });
 				}
 				yPos += RowDistY;
 			}
 		}
 		/* Clear unused area below items */
-		if (yPos <= ClipRect.y1) {
+		if (yPos <= rClip.y1) {
 			GUI.BkColor(Props.aBkColor[0]);
-			GUI_ClearRect({ ClipRect.x0, yPos, ClipRect.x1, ClipRect.y1 });
+			GUI_ClearRect({ rClip.x0, yPos, rClip.x1, rClip.y1 });
 		}
 		/* Draw grid */
 		if (States & LISTVIEW_CF_SHOWGRID) {
@@ -173,24 +173,24 @@ private:
 			for (i = 0; i < NumVisRows; i++) {
 				yPos += RowDistY;
 				/* Break when all other rows are outside the drawing area */
-				if (yPos > ClipRect.y1) {
+				if (yPos > rClip.y1) {
 					break;
 				}
 				/* Make sure that we draw only when row is in drawing area */
-				if (yPos >= ClipRect.y0) {
-					GUI_DrawHLine(yPos, ClipRect.x0, ClipRect.x1);
+				if (yPos >= rClip.y0) {
+					GUI_DrawHLine(yPos, rClip.x0, rClip.x1);
 				}
 			}
 			xPos = EffectSize - this->ScrollStateH.v;
 			for (i = 0; i < NumColumns; i++) {
 				xPos += pHeader->GetItemWidth(i);
 				/* Break when all other columns are outside the drawing area */
-				if (xPos > ClipRect.x1) {
+				if (xPos > rClip.x1) {
 					break;
 				}
 				/* Make sure that we draw only when column is in drawing area */
-				if (xPos >= ClipRect.x0) {
-					GUI_DrawVLine(xPos, ClipRect.y0, ClipRect.y1);
+				if (xPos >= rClip.x0) {
+					GUI_DrawVLine(xPos, rClip.y0, rClip.y1);
 				}
 			}
 		}
@@ -523,7 +523,7 @@ public:
 				ppText = 0;
 			auto &row = RowArray[NumRows];
 			row.AddItem();
-			GUI__SetText(&row[i].pText, s);
+			GUI__SetText(row[i].pText, s);
 		}
 		_UpdateScrollParas();
 		_InvalidateRow(NumRows);
@@ -582,7 +582,7 @@ public:
 	void SetItemText(uint16_t Column, uint16_t Row, const char *s) {
 		if (Column < GetNumColumns() && Row < GetNumRows()) {
 			auto &item = RowArray[Row][Column];
-			GUI__SetText(&item.pText, s);
+			GUI__SetText(item.pText, s);
 			_InvalidateRow(Row);
 		}
 	}

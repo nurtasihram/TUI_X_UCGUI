@@ -26,13 +26,7 @@
 #define GUI_SUPPORT_TIMER 1
 #endif
 
-/* In order to avoid warnings for undefined parameters */
-#ifndef GUI_USE_PARA
-#define GUI_USE_PARA(para) (void)para;
-#endif
-
-/* Default for types */
-#ifndef GUI_TIMER_TIME
-#define GUI_TIMER_TIME int  /* default is to use 16 bits for 16 bit CPUs,
-	                           32 bits on 32 bit CPUs for timing */
-#endif
+#define GUI_DEFAULT_FONT    &FontProp13_1
+#define GUI_DEFAULT_CURSOR  &CursorArrowM
+#define GUI_DEFAULT_BKCOLOR RGB_BLACK
+#define GUI_DEFAULT_COLOR   RGB_WHITE

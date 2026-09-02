@@ -1,5 +1,4 @@
 #include "GUI_Private.h"
-#include "GUIDebug.h"
 #include "WM.h"
 
 #if GUI_SUPPORT_MEMDEV
@@ -62,10 +61,10 @@ GUI_MEMDEV *GUI_MEMDEV_Select(GUI_MEMDEV *pDev) {
 	} else {
 		WObj::Deactivate();
 		if (!GUI.pDevData)
-			GUI.ClipRectPrev = GUI.ClipRect;
+			GUI.ClipRectPrev = GUI.rClip;
 		GUI.pDevData = pDev;
 		GUI.pDeviceAPI = pDev->pAPIList;
-		LCD_SetClipRectMax();
+		GUI.ClipRectMax();
 	}
 	return pPrevDevice;
 }
@@ -128,7 +127,7 @@ void GUI_MEMDEV_SetOrg(GUI_MEMDEV *pDev, int x0, int y0) {
 	}
 	pDev->x0 = x0;
 	pDev->y0 = y0;
-	LCD_SetClipRectMax();
+	GUI.ClipRectMax();
 }
 
 static int _Min(int v0, int v1) {

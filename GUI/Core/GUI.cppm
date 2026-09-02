@@ -18,15 +18,14 @@ struct PID_STATE : POINT {
 	PID_STATE(POINT Pos, int8_t Pressed = 0) : POINT(Pos), Pressed(Pressed) {}
 	auto operator=(const POINT &p) { x = p.x, y = p.y; }
 	bool operator==(const PID_STATE &p) const
-	{ return x == p.x && y == p.y &&	Pressed == p.Pressed; }
+	{ return x == p.x && y == p.y && Pressed == p.Pressed; }
 	bool operator!=(const PID_STATE &p) const
 	{ return !(*this == p); }
 };
 
 using DRAWMODE = uint8_t; // 2bits
 constexpr DRAWMODE DRAWMODE_NORMAL = 0,
-				   DRAWMODE_TRANS  = 1 << 1,
-				   DRAWMODE_REV    = 1 << 2;
+				   DRAWMODE_TRANS  = 1 << 1;
 
 using TEXTALIGN = uint8_t; // 4bits
 constexpr TEXTALIGN
@@ -48,6 +47,10 @@ struct GUI_MEMDEV {
 	int16_t BytesPerLine;
 	int16_t BitsPerPixel;
 	const tLCDDEV_APIList *pAPIList;
+
+public:
+	uint16_t GetSizeX() const { return XSize; }
+	uint16_t GetSizeY() const { return YSize; }
 };
 
 typedef void GUI_CALLBACK_VOID_P(void *p);
@@ -80,10 +83,25 @@ void  GUI_MEMDEV_SetOrg(GUI_MEMDEV *pDev, int x0, int y0);
 int   GUI_MEMDEV_Draw(RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int MemSize, int Flags);
 #endif
 
+#pragma region Text rendering and wrapping
+typedef enum { WRAPMODE_NONE, WRAPMODE_WORD, WRAPMODE_CHAR } WRAPMODE;
+
+int  GUI__GetLineSizeX(const char *s, int Len);
+void GUI__CalcTextRect(const char *pText, const RECT *pTextRectIn, RECT *pTextRectOut, int TextAlign);
+
+int GUI__WrapGetNumCharsDisp(const char *pText, int xSize, WRAPMODE WrapMode);
+int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, WRAPMODE WrapMode);
+int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, WRAPMODE WrapMode);
+
+void GUI__DispLine(const char *s, int Len, const RECT *pr);
+#pragma endregion 
+
+int GUI_GetBitmapPixel(PCBITMAP pBMP, unsigned x, unsigned y);
+
 struct GUI_CONTEXT {
 	/* Variables in LCD module */
 	RGBC aColor[2];
-	RECT ClipRect;
+	RECT rClip;
 	DRAWMODE DrawMode;
 	/* Variables in GUICHAR module */
 	PCFONT pAFont;
@@ -101,20 +119,15 @@ struct GUI_CONTEXT {
 public:
 	DRAWMODE SetDrawMode(DRAWMODE dm) {
 		DRAWMODE OldDM = DrawMode;
-		if ((DrawMode ^ dm) & DRAWMODE_REV) {
-			RGBC temp = aColor[0];
-			aColor[0] = aColor[1];
-			aColor[1] = temp;
-		}
 		DrawMode = dm;
 		return OldDM;
 	}
 
 	auto BkColor() const { return aColor[0]; }
-	void BkColor(RGBC color) { aColor[(DrawMode & DRAWMODE_REV) ? 1 : 0] = color; }
+	void BkColor(RGBC color) { aColor[0] = color; }
 
 	auto Color() const { return aColor[1]; }
-	void Color(RGBC color) { aColor[(DrawMode & DRAWMODE_REV) ? 0 : 1] = color; }
+	void Color(RGBC color) { aColor[1] = color; }
 
 	auto GetTextMode() const { return TextMode; }
 	void SetTextMode(int Mode) { TextMode = Mode; }
@@ -127,8 +140,10 @@ public:
 		return pOldFont;
 	}
 
-public:
-
+	void ClipRect(const RECT &r)
+	{ rClip = r & pDeviceAPI->pfGetRect(); }
+	void ClipRectMax()
+	{ rClip = pDeviceAPI->pfGetRect(); }
 } GUI;
 
 }

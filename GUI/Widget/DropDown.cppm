@@ -1,6 +1,6 @@
 ﻿module;
 
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 export module TUX.Widget.DropDown;
 
@@ -189,7 +189,7 @@ private:
 			return 0;
 		case WM_DELETE:
 			for (int i = 0; i < pObj->Handles.NumItems(); i++)
-				GUI__SetText(&pObj->Handles[i], nullptr);
+				GUI__SetText(pObj->Handles[i], nullptr);
 			pObj->_FreeAttached();
 			return 0;
 		case WM_KEY:
@@ -286,7 +286,7 @@ public:
 		if (s) {
 			auto idx = Handles.NumItems();
 			if (Handles.AddItem() == 0)
-				GUI__SetText(&Handles[idx], s);
+				GUI__SetText(Handles[idx], s);
 			Invalidate();
 		}
 	}
@@ -365,7 +365,7 @@ public:
 		unsigned int NumItems;
 		NumItems = GetNumItems();
 		if (Index < NumItems) {
-			GUI__SetText(&Handles[Index], nullptr);
+			GUI__SetText(Handles[Index], nullptr);
 			Handles.DeleteItem(Index);
 			Invalidate();
 			if (this->pListWin) {
@@ -381,7 +381,7 @@ public:
 			if (Index < NumItems) {
 				auto pp = Handles.InsertItem(Index);
 				if (pp)
-					GUI__SetText(pp, s);
+					GUI__SetText(*pp, s);
 				Invalidate();
 				if (this->pListWin) {
 					this->pListWin->InsertString(s, Index);

@@ -1,5 +1,4 @@
 #include "GUI_Private.h"
-#include "GUIDebug.h"
 
 #include "WM.h"
 
@@ -12,11 +11,11 @@ void GUI_Init(void) {
 #if GUI_SUPPORT_DEVICES
 	GUI.pDeviceAPI = &LCD_API; /* &LCD_L0_APIList; */
 #endif
-	GUI.ClipRect = LCD_API.pfGetRect();
+	GUI.rClip = LCD_API.pfGetRect();
 	GUI.Font(GUI_DEFAULT_FONT);
 	GUI.BkColor(GUI_DEFAULT_BKCOLOR);
 	GUI.Color(GUI_DEFAULT_COLOR);
-	LCD_SetClipRectMax();
+	GUI.ClipRectMax();
 	LCD_L0_Init();
 	WM_Init();
 }
@@ -25,7 +24,7 @@ void GUI_SelectLCD(void) {
 	GUI.pDeviceAPI = &LCD_API;
 	GUI.pDevData = nullptr;
 #endif
-	LCD_SetClipRectMax();
+	GUI.ClipRectMax();
 	WObj::Activate();
 }
 int GUI_Exec1(void) {
@@ -125,7 +124,7 @@ void GUI_DrawBitmap(PCBITMAP pBitmap, int x0, int y0) {
 		PrevDraw | DRAWMODE_TRANS : PrevDraw & ~DRAWMODE_TRANS);
 	auto pTrans = pBitmap->pPalEntries;
 	if (!pTrans) 
-		pTrans = pBitmap->BitsPerPixel ? &LCD_BKCOLORINDEX : nullptr;
+		pTrans = pBitmap->BitsPerPixel < 8 ? GUI.aColor : nullptr;
 	RECT r = RECT::LeftTop(Pos, pBitmap->Size);
 	WObj::Iterate(r, [&] {
 		LCD_DrawBitmap(Pos.x, Pos.y
@@ -248,14 +247,14 @@ void FONT_MONO::DispChar(uint16_t c) const {
 						XSize, YSize,
 						1, BytesPerLine,
 						(const uint8_t *)pData + lst.c0 * BytesPerChar,
-						&LCD_BKCOLORINDEX);
+						GUI.aColor);
 		if (lst.c1 >= 0) {
 			GUI.SetDrawMode(DrawMode | DRAWMODE_TRANS);
 			LCD_DrawBitmap(GUI.DispPos.x, GUI.DispPos.y,
 							XSize, YSize,
 							1, BytesPerLine,
 							(const uint8_t *)pData + lst.c1 * BytesPerChar,
-							&LCD_BKCOLORINDEX);
+							GUI.aColor);
 		}
 		GUI.SetDrawMode(OldMode);
 	}
@@ -270,7 +269,7 @@ void FONT_PROP::DispChar(uint16_t c) const {
 				   pCharInfo->XSize, YSize,
 				   1, pCharInfo->BytesPerLine,
 				   pCharInfo->pData,
-				   &LCD_BKCOLORINDEX);
+				   GUI.aColor);
 	GUI.SetDrawMode(OldDrawMode); /* Restore draw mode */
 	GUI.DispPos.x += pCharInfo->XSize;
 }
@@ -279,7 +278,7 @@ void FONT_PROP::DispChar(uint16_t c) const {
 #pragma region Display String
 static void _DispLine(const char *s, int MaxNumChars, const RECT *pRect) {
 	/* Check if we have anything to do at all ... */
-	if (!(*pRect <= GUI.ClipRect))
+	if (!(*pRect <= GUI.rClip))
 		return;
 	else while (MaxNumChars--) 
 		GUI.pAFont->DispChar(*s++);

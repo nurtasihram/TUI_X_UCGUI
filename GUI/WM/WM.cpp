@@ -1,5 +1,4 @@
-#include "GUI_Protected.h"
-#include "GUIDebug.h"
+#include "GUI.h"
 
 import TUX.Window;
 

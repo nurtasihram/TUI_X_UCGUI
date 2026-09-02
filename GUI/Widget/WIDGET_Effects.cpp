@@ -1,4 +1,4 @@
-#include "GUI_Protected.h"
+#include "GUI.h"
 
 import TUX.Widget;
 
