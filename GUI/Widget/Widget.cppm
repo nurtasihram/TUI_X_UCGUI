@@ -67,7 +67,7 @@ GUI_DRAW *GUI_DRAW_BITMAP_Create(PCBITMAP pBitmap) {
 		PCBITMAP pBitmap;
 		_GUI_DRAW(PCBITMAP pBitmap) : GUI_DRAW(), pBitmap(pBitmap) {}
 		void Paint(RECT &r) const override {
-			GUI_DrawBitmap(pBitmap, r.x0, r.y0);
+			GUI_DrawBitmap(pBitmap, r.LeftTop());
 		}
 		POINT Size() const override
 		{ return pBitmap ? pBitmap->Size : (POINT)0; }

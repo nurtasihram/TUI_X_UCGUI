@@ -77,12 +77,12 @@ private:
 		for (int i = 0; i < NumItems; i++) {
 			auto y = i * Spacing;
 			/* Draw the radio button bitmap */
-			GUI_DrawBitmap(pBmRadio, RADIO_BORDER, RADIO_BORDER + y);
+			GUI_DrawBitmap(pBmRadio, { RADIO_BORDER, RADIO_BORDER + y });
 			/* Draw the check bitmap */
 			if (Sel == i)
-				GUI_DrawBitmap(pBmCheck,
+				GUI_DrawBitmap(pBmCheck, {
 					RADIO_BORDER + (pBmRadio->Size.x - pBmCheck->Size.x) / 2,
-					RADIO_BORDER + ((pBmRadio->Size.y - pBmCheck->Size.y) / 2) + y);
+					RADIO_BORDER + ((pBmRadio->Size.y - pBmCheck->Size.y) / 2) + y });
 			/* Draw text if available */
 			if (auto pText = TextArray[i]) {
 				auto r = Rect;

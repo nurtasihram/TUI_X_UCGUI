@@ -40,24 +40,9 @@ void LCD_FillRect(RECT r) {
 	LCDDEV_L0_FillRect(r);
 }
 
-void LCD_DrawBitmap(RECT r, int BitsPerPixel, int BytesPerLine, const uint8_t *pPix, PCLOGPALETTE pTrans) {
-	auto ptOld = r.LeftTop();
-	if (!(r &= GUI.rClip))
+void LCD_DrawBitmap(BITVIEW b) {
+	if (!(b &= GUI.rClip))
 		return;
-	auto Off = r.LeftTop() - ptOld;
-	uint8_t DiffBits = 0;
-	if (Off.x > 0) {
-		auto xOffBits = BitsPerPixel * Off.x;
-		DiffBits = xOffBits & 7;
-		pPix += xOffBits >> 3;
-	}
-	if (Off.y > 0)
-		pPix += BytesPerLine * Off.y;
-	LCDDEV_L0_DrawBitmap(r.x0, r.y0, r.XSize(), r.YSize(), BitsPerPixel, BytesPerLine, pPix, DiffBits, pTrans);
+	LCDDEV_L0_DrawBitmap(b);
 }
 
-void LCD_DrawBitmap(int x0, int y0, int xsize, int ysize,
-					int BitsPerPixel, int BytesPerLine,
-					const void *pPix, PCLOGPALETTE pTrans) {
-	LCD_DrawBitmap(RECT::LeftTop({ x0, y0 }, { xsize, ysize }), BitsPerPixel, BytesPerLine, (const uint8_t *)pPix, pTrans);
-}

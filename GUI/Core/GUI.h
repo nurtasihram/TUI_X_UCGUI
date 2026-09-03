@@ -33,7 +33,7 @@ void GUI_DrawFocusRect(RECT r, int Dist);
 void GUI_DrawRect(RECT r);
 void GUI_FillRect(RECT r);
 
-void GUI_DrawBitmap(PCBITMAP pBM, int x0, int y0);
+void GUI_DrawBitmap(PCBITMAP pBM, POINT Pos);
 
 void GUI_DrawHLine(int y0, int x0, int x1);
 void GUI_DrawVLine(int x0, int y0, int y1);

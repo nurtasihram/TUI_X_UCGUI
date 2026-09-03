@@ -64,7 +64,7 @@ private:
 		GUI.BkColor(Props.aBkColorBox[ColorIndex]);
 		GUI_Clear();
 		if (CurrentState)
-			GUI_DrawBitmap(Props.apBm[(CurrentState - 1) * 2 + ColorIndex], EffectSize, EffectSize);
+			GUI_DrawBitmap(Props.apBm[(CurrentState - 1) * 2 + ColorIndex], EffectSize);
 		/* Draw the effect arround the box */
 		DrawDown(RectBox);
 		SetUserClipRect(nullptr);

@@ -204,12 +204,18 @@ static void _DrawBitLine24BPP(int x, int y, RGBC const *p, int xsize, PCLOGPALET
 		_SetPixel(x, y, *p);
 }
 
-static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
-					   int BitsPerPixel, int BytesPerLine,
-					   const uint8_t *pData, int Diff,
-					   PCLOGPALETTE pTrans) {
+static void _DrawBitmap(BITVIEW b) {
+	
+	auto x0 = b.x0, y0 = b.y0;
+	auto xsize = b.XSize(), ysize = b.YSize();
+	auto pData = (const uint8_t *)b.pData;
+	auto pTrans = b.pPalEntries;
+	auto Diff = b.BitsXOff;
+	auto BytesPerLine = b.BytesPerLine;
+	auto BitsPerPixel = b.BitsPerPixel;
 	int y1 = y0 + ysize;
-	switch (BitsPerPixel) {
+
+	switch (b.BitsPerPixel) {
 	case 1:
 		for (; y0 < y1; y0++, pData += BytesPerLine)
 			_DrawBitLine1BPP(x0, y0, pData, Diff, xsize, pTrans);
@@ -236,6 +242,7 @@ static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
 		break;
 	}
 }
+
 #pragma endregion
 
 const tLCDDEV_APIList LCD_API{

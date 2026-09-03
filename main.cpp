@@ -125,7 +125,7 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 			GUI_DispStringAt(acBuffer, ItemPos.x + bmSmilie0.Size.x + 16, ItemPos.y + (YSize - FontDistY) / 2);
 			/* Draw bitmap */
 			auto pBm = MultiSel ? IsSelected ? &bmSmilie1 : &bmSmilie0 : (Index == Sel) ? &bmSmilie1 : &bmSmilie0;
-			GUI_DrawBitmap(pBm, ItemPos.x + 7, ItemPos.y + (YSize - pBm->Size.y) / 2);
+			GUI_DrawBitmap(pBm, { ItemPos.x + 7, ItemPos.y + (YSize - pBm->Size.y) / 2 });
 			/* Draw focus rectangle */
 			if (MultiSel && Index == Sel) {
 				auto rInside = pObj->GetInsideRect();

@@ -247,10 +247,16 @@ static void _DrawBitLine24BPP_DDB(int x, int y, PCLOGPALETTE pSrc, int xsize, PI
 	}
 }
 
-static void _DrawBitmap(int x0, int y0, int xsize, int ysize,
-						 int BitsPerPixel, int BytesPerLine,
-						 const uint8_t *pData, int Diff,
-						 PCLOGPALETTE pTrans) {
+static void _DrawBitmap(BITVIEW b) {
+
+	auto x0 = b.x0, y0 = b.y0;
+	auto xsize = b.XSize(), ysize = b.YSize();
+	auto pData = (const uint8_t*)b.pData;
+	auto pTrans = b.pPalEntries;
+	auto Diff = b.BitsXOff;
+	auto BytesPerLine = b.BytesPerLine;
+	auto BitsPerPixel = b.BitsPerPixel;
+
 	int i;
 	auto pDev = GUI.pDevData;
 	unsigned    BytesPerLineDest;

@@ -6,10 +6,7 @@
 import TUX.Types;
 
  struct tLCDDEV_APIList {
-	 void (*pfDrawBitmap)(int x0, int y0, int xsize, int ysize,
-						  int BitsPerPixel, int BytesPerLine,
-						  const uint8_t *pData, int Diff,
-						  PCLOGPALETTE pTrans);
+	 void (*pfDrawBitmap)(BITVIEW b);
 	void(* pfFillRect)(RECT r);
 	RGBC(* pfGetPixel)(int x, int y);
 	void(* pfSetPixel)(int x, int y, RGBC Color);
@@ -23,11 +20,7 @@ import TUX.Types;
 extern const tLCDDEV_APIList GUI_MEMDEV__APIList24;
 extern const tLCDDEV_APIList LCD_API;
 
-void LCD_DrawBitmap(int x0, int y0,
-					int xsize, int ysize,
-					int BitsPerPixel, int BytesPerLine,
-					const void *pPixel,
-					PCLOGPALETTE pTrans);
+void LCD_DrawBitmap(BITVIEW b);
 
 void LCD_SetPixel(int x, int y, int Color);
 RGBC LCD_GetPixel(int x, int y);

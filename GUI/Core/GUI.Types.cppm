@@ -162,6 +162,42 @@ constexpr RGBC
 using CLOGPALETTE = const RGBC[];
 using PCLOGPALETTE = const RGBC *;
 
+struct BITVIEW : RECT {
+	const void* pData;
+	PCLOGPALETTE pPalEntries;
+	uint16_t BytesPerLine;
+	uint8_t BitsPerPixel : 5;
+	uint8_t BitsXOff : 3;
+public:
+	BITVIEW(RECT r,
+			uint16_t BytesPerLine,
+			uint8_t BitsPerPixel,
+			const void* pData,
+			PCLOGPALETTE pPalEntries = nullptr) :
+		RECT(r),
+		pData(pData),
+		pPalEntries(pPalEntries),
+		BytesPerLine(BytesPerLine),
+		BitsPerPixel(BitsPerPixel),
+		BitsXOff(0) {}
+public:
+	bool operator&=(RECT rClip) {
+		auto ptOld = LeftTop();
+		if (!RECT::operator&=(rClip))
+			return false;
+		auto Off = LeftTop() - ptOld;
+		uint8_t DiffBits = 0;
+		if (Off.x > 0) {
+			auto xOffBits = BitsPerPixel * Off.x;
+			DiffBits = xOffBits & 7;
+			(const uint8_t *&)pData += xOffBits >> 3;
+		}
+		if (Off.y > 0)
+			(const uint8_t*&)pData += BytesPerLine * Off.y;
+		return true;
+	}
+};
+
 struct BITMAP {
 	const void* pData;
 	PCLOGPALETTE pPalEntries;
@@ -180,6 +216,16 @@ struct BITMAP {
 		BytesPerLine(BytesPerLine),
 		BitsPerPixel(BitsPerPixel),
 		BitsXOff(0) {}
+public:
+	BITVIEW At(POINT Pos) const {
+		return {
+			RECT::LeftTop(Pos, Size),
+			BytesPerLine,
+			BitsPerPixel,
+			pData,
+			pPalEntries
+		};
+	}
 };
 using CBITMAP = const BITMAP;
 using PCBITMAP = const BITMAP *;

@@ -114,25 +114,19 @@ void GUI_DrawHLine(int y0, int x0, int x1) {
 	GUI_FillRect({ x0, y0, x1, y0 });	
 }
 
-void GUI_DrawBitmap(PCBITMAP pBitmap, int x0, int y0) {
-	POINT Pos{ x0, y0 };
+void GUI_DrawBitmap(PCBITMAP pBitmap, POINT Pos) {
 	Pos += GUI.Off;
 	auto pPal = pBitmap->pPalEntries;
-	DRAWMODE PrevDraw = GUI.SetDrawMode(0);  /* No Get... at this point */
+	auto PrevDraw = GUI.SetDrawMode(0);  /* No Get... at this point */
 	GUI.SetDrawMode(
 		pPal && pPal[0] == RGB_INVALID ?
 		PrevDraw | DRAWMODE_TRANS : PrevDraw & ~DRAWMODE_TRANS);
 	auto pTrans = pBitmap->pPalEntries;
 	if (!pTrans) 
-		pTrans = pBitmap->BitsPerPixel < 8 ? GUI.aColor : nullptr;
-	RECT r = RECT::LeftTop(Pos, pBitmap->Size);
-	WObj::Iterate(r, [&] {
-		LCD_DrawBitmap(Pos.x, Pos.y
-						, pBitmap->Size.x, pBitmap->Size.y
-						, pBitmap->BitsPerPixel
-						, pBitmap->BytesPerLine
-						, pBitmap->pData
-						, pTrans);
+		pTrans = pBitmap->BitsPerPixel == 1 ? GUI.aColor : nullptr;
+	auto bmView = pBitmap->At(Pos);
+	WObj::Iterate(bmView, [&] {
+		LCD_DrawBitmap(bmView);
 	});
 	GUI.SetDrawMode(PrevDraw);
 }
@@ -238,23 +232,23 @@ void FONT_MONO::DispChar(uint16_t c) const {
 			lst = pTrans->pList[c - pTrans->FirstChar];
 	/* Draw first character if it is valid */
 	if (lst.c0 >= 0) {
-		auto BytesPerLine = (XSize + 7) >> 3;
+		uint16_t BytesPerLine = (XSize + 7) >> 3;
 		auto BytesPerChar = YSize * BytesPerLine;
 		auto DrawMode = GUI.TextMode;
 		/* call drawing routine */
 		auto OldMode = GUI.SetDrawMode(DrawMode);
-		LCD_DrawBitmap(GUI.DispPos.x, GUI.DispPos.y,
-						XSize, YSize,
-						1, BytesPerLine,
-						(const uint8_t *)pData + lst.c0 * BytesPerChar,
-						GUI.aColor);
+		LCD_DrawBitmap(BITVIEW{
+			RECT::LeftTop(GUI.DispPos, { XSize, YSize }),
+			BytesPerLine, 1,
+			(const uint8_t *)pData + lst.c0 * BytesPerChar,
+			GUI.aColor });
 		if (lst.c1 >= 0) {
 			GUI.SetDrawMode(DrawMode | DRAWMODE_TRANS);
-			LCD_DrawBitmap(GUI.DispPos.x, GUI.DispPos.y,
-							XSize, YSize,
-							1, BytesPerLine,
-							(const uint8_t *)pData + lst.c1 * BytesPerChar,
-							GUI.aColor);
+			LCD_DrawBitmap(BITVIEW{
+				RECT::LeftTop(GUI.DispPos, { XSize, YSize }),
+				BytesPerLine, 1,
+				(const uint8_t *)pData + lst.c1 * BytesPerChar,
+				GUI.aColor });
 		}
 		GUI.SetDrawMode(OldMode);
 	}
@@ -265,11 +259,11 @@ void FONT_PROP::DispChar(uint16_t c) const {
 	if (!pProp) return;
 	auto pCharInfo = pProp->paCharInfo + (c - pProp->First);
 	auto OldDrawMode = GUI.SetDrawMode(GUI.TextMode);
-	LCD_DrawBitmap(GUI.DispPos.x, GUI.DispPos.y,
-				   pCharInfo->XSize, YSize,
-				   1, pCharInfo->BytesPerLine,
-				   pCharInfo->pData,
-				   GUI.aColor);
+	LCD_DrawBitmap(BITVIEW{
+		RECT::LeftTop(GUI.DispPos, { pCharInfo->XSize, YSize }),
+		pCharInfo->BytesPerLine, 1,
+		pCharInfo->pData,
+		GUI.aColor });
 	GUI.SetDrawMode(OldDrawMode); /* Restore draw mode */
 	GUI.DispPos.x += pCharInfo->XSize;
 }

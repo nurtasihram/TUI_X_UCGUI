@@ -70,12 +70,10 @@ GUI_MEMDEV *GUI_MEMDEV_Select(GUI_MEMDEV *pDev) {
 }
 
 void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV *pDev, int x, int y) {
-	const int XSize = pDev->XSize;
-	const int YSize = pDev->YSize;
-	const unsigned int BytesPerLine = pDev->BytesPerLine;
-	const unsigned int BitsPerPixel = pDev->BitsPerPixel;
-	auto pData = reinterpret_cast<uint8_t*>(pDev + 1);
-	LCD_DrawBitmap(x, y, XSize, YSize, BitsPerPixel, BytesPerLine, pData, nullptr);
+	LCD_DrawBitmap(BITVIEW{
+		RECT::LeftTop({ x, y }, { pDev->XSize, pDev->YSize }),
+		(uint16_t)pDev->BytesPerLine, (uint8_t)pDev->BitsPerPixel,
+		reinterpret_cast<uint8_t*>(pDev + 1) });
 }
 
 void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV *pDev, int x, int y) {
