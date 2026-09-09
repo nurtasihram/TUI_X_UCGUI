@@ -593,7 +593,6 @@ private:
 		GUI.BkColor(Props.aBkColor[ColorIndex]);
 		GUI.Color(Props.aTextColor[ColorIndex]);
 		auto s = ItemArray[ItemIndex].pText;
-		GUI.SetTextMode(DRAWMODE_TRANS);
 		GUI_Clear();
 		GUI_DispStringAt(s, Pos.x + 1, Pos.y);
 		/* Display focus rectangle */

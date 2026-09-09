@@ -271,7 +271,6 @@ void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax
 	/* Set clipping rectangle */
 	auto pOldClipRect = WObj::SetUserClipRect(&TextRectMax);
 	/* Display text */
-	GUI.SetTextMode(DRAWMODE_NORMAL);
 	GUI_DispStringAt(pText, TextRectAct.x0, TextRectAct.y0);
 	/* Restore clipping rectangle */
 	WObj::SetUserClipRect(pOldClipRect);

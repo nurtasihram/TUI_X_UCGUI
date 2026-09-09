@@ -73,7 +73,6 @@ private:
 		/* Draw the text */
 		auto RectText = WM_GetClientRect();
 		RectText.x0 += RectBox.x1 + 1 + Props.Spacing;
-		GUI.SetTextMode(0);
 		GUI.Color(Props.TextColor);
 		GUI.Font(Props.pFont);
 		GUI_DispStringInRect(text, &RectText, Props.Align);

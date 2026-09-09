@@ -1,27 +1,28 @@
-#include "GUI_Private.h"
-
 #include "WM.h"
+
+#include "GUI.h"
 
 #if GUI_SUPPORT_TIMER
 import TUX.Core.Timer;
 #endif
 
+tLCDDEV_APIList *pLCD_API;
+
 void GUI_Init(void) {
 	GUI_X_Init();
 #if GUI_SUPPORT_DEVICES
-	GUI.pDeviceAPI = &LCD_API; /* &LCD_L0_APIList; */
+	GUI.pDeviceAPI = pLCD_API = LCD_L0_Init();; /* &LCD_L0_APIList; */
 #endif
-	GUI.rClip = LCD_API.pfGetRect();
+	GUI.rClip = pLCD_API->GetRect();
 	GUI.Font(GUI_DEFAULT_FONT);
 	GUI.BkColor(GUI_DEFAULT_BKCOLOR);
 	GUI.Color(GUI_DEFAULT_COLOR);
 	GUI.ClipRectMax();
-	LCD_L0_Init();
 	WM_Init();
 }
 void GUI_SelectLCD(void) {
 #if GUI_SUPPORT_DEVICES
-	GUI.pDeviceAPI = &LCD_API;
+	GUI.pDeviceAPI = pLCD_API;
 	GUI.pDevData = nullptr;
 #endif
 	GUI.ClipRectMax();
@@ -234,38 +235,33 @@ void FONT_MONO::DispChar(uint16_t c) const {
 	if (lst.c0 >= 0) {
 		uint16_t BytesPerLine = (XSize + 7) >> 3;
 		auto BytesPerChar = YSize * BytesPerLine;
-		auto DrawMode = GUI.TextMode;
-		/* call drawing routine */
-		auto OldMode = GUI.SetDrawMode(DrawMode);
 		LCD_DrawBitmap(BITVIEW{
 			RECT::LeftTop(GUI.DispPos, { XSize, YSize }),
 			BytesPerLine, 1,
 			(const uint8_t *)pData + lst.c0 * BytesPerChar,
 			GUI.aColor });
 		if (lst.c1 >= 0) {
-			GUI.SetDrawMode(DrawMode | DRAWMODE_TRANS);
+			auto OldMode = GUI.SetDrawMode(DRAWMODE_TRANS);
 			LCD_DrawBitmap(BITVIEW{
 				RECT::LeftTop(GUI.DispPos, { XSize, YSize }),
 				BytesPerLine, 1,
 				(const uint8_t *)pData + lst.c1 * BytesPerChar,
 				GUI.aColor });
+			GUI.SetDrawMode(OldMode);
 		}
-		GUI.SetDrawMode(OldMode);
 	}
 	GUI.DispPos.x += XSize;
 }
 void FONT_PROP::DispChar(uint16_t c) const {
 	auto pProp = FindChar(c);
 	if (!pProp) return;
-	auto pCharInfo = pProp->paCharInfo + (c - pProp->First);
-	auto OldDrawMode = GUI.SetDrawMode(GUI.TextMode);
+	auto &ci = pProp->paCharInfo[c - pProp->First];
 	LCD_DrawBitmap(BITVIEW{
-		RECT::LeftTop(GUI.DispPos, { pCharInfo->XSize, YSize }),
-		pCharInfo->BytesPerLine, 1,
-		pCharInfo->pData,
+		RECT::LeftTop(GUI.DispPos, { ci.XSize, YSize }),
+		ci.BytesPerLine, 1,
+		ci.pData,
 		GUI.aColor });
-	GUI.SetDrawMode(OldDrawMode); /* Restore draw mode */
-	GUI.DispPos.x += pCharInfo->XSize;
+	GUI.DispPos.x += ci.XSize;
 }
 #pragma endregion
 

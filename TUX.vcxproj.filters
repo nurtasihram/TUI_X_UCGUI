@@ -69,9 +69,6 @@
     <ClCompile Include="GUI\Core\GUI_PID.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\LCD.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Core\GUICore.cpp">
       <Filter>GUI\Core</Filter>
     </ClCompile>
@@ -200,9 +197,6 @@
       <Filter>GUI\WM</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\GUI.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Core\GUI_ConfDefaults.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\GUI_X.h">

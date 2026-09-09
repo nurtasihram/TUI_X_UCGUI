@@ -59,7 +59,6 @@ private:
 		/* Select font and text color */
 		GUI.Color(Props.TextColor);
 		GUI.Font(Props.pFont);
-		GUI.SetTextMode(DRAWMODE_TRANS);
 		auto FontDistY = Props.pFont->YSize;
 		auto CHeight = FontDistY;
 		RECT Rect;

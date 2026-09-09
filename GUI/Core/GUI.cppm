@@ -1,7 +1,5 @@
 module;
 
-#include "GUI_ConfDefaults.h"
-
 #include "LCD.h"
 #include "GUIConf.h"
 
@@ -46,7 +44,7 @@ struct GUI_MEMDEV {
 	int16_t x0, y0, XSize, YSize;
 	int16_t BytesPerLine;
 	int16_t BitsPerPixel;
-	const tLCDDEV_APIList *pAPIList;
+	tLCDDEV_APIList *pAPIList;
 
 public:
 	uint16_t GetSizeX() const { return XSize; }
@@ -58,9 +56,6 @@ typedef void GUI_CALLBACK_VOID_P(void *p);
 void GUI_MEMDEV__CopyFromLCD(GUI_MEMDEV *pDev);
 RECT GUI_MEMDEV__GetRect();
 
-GUI_MEMDEV *GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Flags,
-										  const tLCDDEV_APIList *pMemDevAPI);
-
 void *GUI_MEMDEV__XY2PTR(int x, int y);
 void *GUI_MEMDEV__XY2PTREx(GUI_MEMDEV *pDev, int x, int y);
 void  GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV *pDev, int x, int y);
@@ -69,7 +64,8 @@ void  GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV *pDev, int x, int y);
 GUI_MEMDEV *GUI_MEMDEV_Create(int x0, int y0, int XSize, int YSize);
 GUI_MEMDEV *GUI_MEMDEV_CreateEx(int x0, int y0, int XSize, int YSize, int Flags);
 GUI_MEMDEV *GUI_MEMDEV_CreateFixed(int x0, int y0, int xsize, int ysize, int Flags,
-										 const tLCDDEV_APIList *pMemDevAPI);
+									tLCDDEV_APIList *pMemDevAPI);
+
 void GUI_MEMDEV_Clear(GUI_MEMDEV *pDev);
 void GUI_MEMDEV_CopyFromLCD(GUI_MEMDEV *pDev);
 void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV *pDev);
@@ -94,8 +90,6 @@ int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, WRAPMODE WrapMo
 void GUI__DispLine(const char *s, int Len, const RECT *pr);
 #pragma endregion 
 
-int GUI_GetBitmapPixel(PCBITMAP pBMP, unsigned x, unsigned y);
-
 struct GUI_CONTEXT {
 	/* Variables in LCD module */
 	RGBC aColor[2];
@@ -110,7 +104,7 @@ struct GUI_CONTEXT {
 	POINT Off;
 	/* Variables in MEMDEV module (with memory devices only) */
 #if GUI_SUPPORT_DEVICES
-	const tLCDDEV_APIList *pDeviceAPI;  /* function pointers only */
+	tLCDDEV_APIList *pDeviceAPI;  /* function pointers only */
 	GUI_MEMDEV *pDevData;
 	RECT ClipRectPrev;
 #endif
@@ -127,7 +121,6 @@ public:
 	auto Color() const { return aColor[1]; }
 	void Color(RGBC color) { aColor[1] = color; }
 
-	auto GetTextMode() const { return TextMode; }
 	void SetTextMode(int Mode) { TextMode = Mode; }
 
 	UCFONT Font() const { return *pAFont; } /// 
@@ -139,9 +132,9 @@ public:
 	}
 
 	void ClipRect(const RECT &r)
-	{ rClip = r & pDeviceAPI->pfGetRect(); }
+	{ rClip = r & pDeviceAPI->GetRect(); }
 	void ClipRectMax()
-	{ rClip = pDeviceAPI->pfGetRect(); }
+	{ rClip = pDeviceAPI->GetRect(); }
 } GUI;
 
 }

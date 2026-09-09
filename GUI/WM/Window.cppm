@@ -1073,7 +1073,7 @@ public:
 	}
 	static WObj *CreateDesktopWindow(RGBC BkColor) {
 		if (!pWinDesktop) {
-			pWinDesktop = new WObj(LCD_API.pfGetRect(), WC_VISIBLE, cbBackWin);
+			pWinDesktop = new WObj(pLCD_API->GetRect(), WC_VISIBLE, cbBackWin);
 			pWinDesktop->Invalidate(); /* Required because a desktop window has no parent. */
 			pWinDesktop->Select();
 		}
@@ -1244,23 +1244,11 @@ public:
 #pragma endregion
 
 	bool IsEnabled() const { return !(Status & WC_DISABLED); }
-
-	void EnableMemdev() {
+	
 #if GUI_SUPPORT_MEMDEV
-			Status |= WC_MEMDEV;
-#else
-		GUI_DEBUG_WARN("EnableMemdev: No effect because disabled in GUIConf.h (GUI_SUPPORT_MEMDEV == 0)");
+	void EnableMemdev() { Status |= WC_MEMDEV; }
+	void DisableMemdev() { Status &= ~(WC_MEMDEV | WC_MEMDEV_ON_REDRAW); }
 #endif
-	}
-
-	void DisableMemdev() {
-#if GUI_SUPPORT_MEMDEV
-		Status &= ~(WC_MEMDEV | WC_MEMDEV_ON_REDRAW);
-#else
-		GUI_DEBUG_WARN("DisableMemdev: No effect because disabled in GUIConf.h (GUI_SUPPORT_MEMDEV == 0)");
-#endif
-	}
-
 
 };
 

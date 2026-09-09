@@ -1,9 +1,41 @@
-#include "GUI_Private.h"
+#include "GUI.h"
 
 CLOGPALETTE GUI_CursorPal{ RGB_INVALID, RGB_BLACK, RGB_WHITE };
 CLOGPALETTE GUI_CursorPalI{ RGB_INVALID, RGB_WHITE, RGB_BLACK };
 
 #if GUI_SUPPORT_CURSOR
+
+int _GetBitmapPixel(PCBITMAP pBMP, unsigned x, unsigned y) {
+	unsigned Off, Value;
+	switch (pBMP->BitsPerPixel) {
+	case 1:
+		Off = (x >> 3) + (y * pBMP->BytesPerLine);
+		Value = *((uint8_t *)pBMP->pData + Off);
+		Value = Value >> (7 - (x & 0x7)) & 0x1;
+		break;
+	case 2:
+		Off = (x >> 2) + (y * pBMP->BytesPerLine);
+		Value = *((uint8_t *)pBMP->pData + Off);
+		Value = Value >> (6 - ((x << 1) & 0x6)) & 0x3;
+		break;
+	case 4:
+		Off = (x >> 1) + (y * pBMP->BytesPerLine);
+		Value = *((uint8_t *)pBMP->pData + Off);
+		Value = (x & 1) ? (Value & 0xF) : (Value >> 4);
+		break;
+	case 8:
+		Off = x + y * pBMP->BytesPerLine;
+		Value = *((uint8_t *)pBMP->pData + Off);
+		break;
+	case 16:
+		Off = (x << 1) + y * pBMP->BytesPerLine;
+		Value = *((uint16_t *)((uint8_t *)pBMP->pData + Off));
+		break;
+	default:
+		Value = 0;
+	}
+	return Value;
+}
 
 static int _AllocSize;
 static void *_pBuffer = nullptr;
@@ -18,14 +50,14 @@ PCLOGPALETTE aCursorPal = nullptr;
 static void _SetPixel(int x, int y, int Index) {
 	if ((y >= _ClipRect.y0) && (y <= _ClipRect.y1)) {
 		if ((x >= _ClipRect.x0) && (x <= _ClipRect.x1)) {
-			LCD_API.pfSetPixel(x, y, Index);
+			pLCD_API->SetPixel(x, y, Index);
 		}
 	}
 }
 static int _GetPixel(int x, int y) {
 	if ((y >= _ClipRect.y0) && (y <= _ClipRect.y1)) {
 		if ((x >= _ClipRect.x0) && (x <= _ClipRect.x1)) {
-			return LCD_API.pfGetPixel(x, y);
+			return pLCD_API->GetPixel(x, y);
 		}
 	}
 	return 0;
@@ -62,7 +94,7 @@ static void _Draw(void) {
 			for (x = 0; x < xSize; x++) {
 				int BitmapPixel;
 				*(pData + x) = _GetPixel(_Rect.x0 + x, _Rect.y0 + y);
-				BitmapPixel = GUI_GetBitmapPixel(pBM, x, y);
+				BitmapPixel = _GetBitmapPixel(pBM, x, y);
 				if (BitmapPixel) {
 					if (aCursorPal)
 						_SetPixel(_Rect.x0 + x, _Rect.y0 + y, aCursorPal[BitmapPixel]);
@@ -109,7 +141,7 @@ bool GUI_CURSOR__TempHide(RECT r) {
 }
 
 void GUI_CURSOR_Show(void) {
-	_ClipRect = LCDDEV_L0_GetRect();
+	_ClipRect = GUI.pDeviceAPI->GetRect();
 	_Hide();
 	_CursorOn = true;
 	if (!_pCursor)
@@ -209,12 +241,12 @@ void GUI_CURSOR_SetPosition(int xNewPos, int yNewPos) {
 						RGBC Pixel;
 						auto pSave = pData + x + y * xSize;
 						int xNew = x + xOff;
-						BitmapPixel = GUI_GetBitmapPixel(pBM, x, y);
+						BitmapPixel = _GetBitmapPixel(pBM, x, y);
 						xyOverlaps = (x >= xOverlapMin) && (x <= xOverlapMax) && yOverlaps;
 						xyNewOverlaps = (xNew >= xOverlapMin) && (xNew <= xOverlapMax) && yNewOverlaps;
 						/* Restore old pixel if it was not transparent */
 						if (BitmapPixel) {
-							if (!xyOverlaps || (GUI_GetBitmapPixel(pBM, x - xOff, y - yOff) == 0)) {
+							if (!xyOverlaps || (_GetBitmapPixel(pBM, x - xOff, y - yOff) == 0)) {
 								_SetPixel(x + _Rect.x0, y + _Rect.y0, *(pSave));
 							}
 						}

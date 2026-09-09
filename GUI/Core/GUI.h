@@ -1,7 +1,6 @@
 #pragma once
 
 #include "LCD.h"
-#include "GUI_ConfDefaults.h"
 
 #include "GUI_X.h"
 #include "GUIDebug.h"
@@ -92,12 +91,3 @@ void GUI_TOUCH_GetUnstable(int *px, int *py);  /* for diagnostics only */
 void GUI_TOUCH_StoreState(int x, int y);
 void GUI_TOUCH_StoreStateEx(const PID_STATE *pState);
 void GUI_TOUCH_StoreUnstable(int x, int y);
-
-#if GUI_SUPPORT_DEVICES
-#define LCDDEV_L0_DrawBitmap GUI.pDeviceAPI->pfDrawBitmap
-#define LCDDEV_L0_FillRect   GUI.pDeviceAPI->pfFillRect
-#define LCDDEV_L0_GetPixel   GUI.pDeviceAPI->pfGetPixel
-#define LCDDEV_L0_GetRect    GUI.pDeviceAPI->pfGetRect
-#define LCDDEV_L0_GetPixel   GUI.pDeviceAPI->pfGetPixel
-#define LCDDEV_L0_SetPixel   GUI.pDeviceAPI->pfSetPixel
-#endif

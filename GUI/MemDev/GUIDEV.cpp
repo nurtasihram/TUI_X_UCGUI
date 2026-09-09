@@ -1,7 +1,6 @@
-#include "GUI_Private.h"
-#include "WM.h"
+#include "GUI.h"
 
-#if GUI_SUPPORT_MEMDEV
+#include "WM.h"
 
 RECT GUI_MEMDEV__GetRect() {
 	auto pDev = GUI.pDevData;
@@ -21,8 +20,8 @@ void GUI_MEMDEV_Delete(GUI_MEMDEV *pDev) {
 	GUI_ALLOC_Free(pDev);
 }
 
-GUI_MEMDEV *GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Flags,
-									const tLCDDEV_APIList *pMemDevAPI) {
+GUI_MEMDEV *GUI_MEMDEV_CreateFixed(int x0, int y0, int xsize, int ysize, int Flags,
+									tLCDDEV_APIList *pMemDevAPI) {
 	if (xsize <= 0 || ysize <= 0) {
 		GUI_DEBUG_WARN("GUI_MEMDEV_Create: Too little memory");
 		return nullptr;
@@ -34,7 +33,7 @@ GUI_MEMDEV *GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Fl
 	else
 		BytesPerLine = (xsize * BitsPerPixel + 7) >> 3;
 	auto MemSize = ysize * BytesPerLine + sizeof(GUI_MEMDEV);
-	auto pDevData = static_cast<GUI_MEMDEV*>(GUI_ALLOC_Alloc(MemSize));
+	auto pDevData = static_cast<GUI_MEMDEV *>(GUI_ALLOC_Alloc(MemSize));
 	if (pDevData) {
 		pDevData->x0 = x0;
 		pDevData->y0 = y0;
@@ -48,7 +47,7 @@ GUI_MEMDEV *GUI_MEMDEV__CreateFixed(int x0, int y0, int xsize, int ysize, int Fl
 	return pDevData;
 }
 GUI_MEMDEV *GUI_MEMDEV_CreateEx(int x0, int y0, int xSize, int ySize, int Flags) {
-	return GUI_MEMDEV__CreateFixed(x0, y0, xSize, ySize, Flags, LCD_API.pMemDevAPI);
+	return GUI_MEMDEV_CreateFixed(x0, y0, xSize, ySize, Flags, pLCD_API->pMemDevAPI);
 }
 GUI_MEMDEV *GUI_MEMDEV_Create(int x0, int y0, int xsize, int ysize) {
 	return GUI_MEMDEV_CreateEx(x0, y0, xsize, ysize, GUI_MEMDEV_HASTRANS);
@@ -117,11 +116,8 @@ void GUI_MEMDEV_SetOrg(GUI_MEMDEV *pDev, int x0, int y0) {
 	GUI.ClipRectMax();
 }
 
-static int _Min(int v0, int v1) {
-	return (v0 <= v1) ? v0 : v1;
-}
 int GUI_MEMDEV_Draw(RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int NumLines, int Flags) {
-	auto rc = pRect ? *pRect & LCD_API.pfGetRect() : LCD_API.pfGetRect();
+	auto rc = pRect ? *pRect & pLCD_API->GetRect() : pLCD_API->GetRect();
 	if (NumLines == 0)
 		NumLines = rc.YSize();
 	if (rc.XSize() <= 0 || rc.YSize() <= 0)
@@ -146,5 +142,3 @@ int GUI_MEMDEV_Draw(RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int N
 	GUI_MEMDEV_Select(nullptr);
 	return 0;
 }
-
-#endif

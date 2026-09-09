@@ -29,7 +29,6 @@
     <ClCompile Include="GUI\Core\GUI_OnKey.cpp" />
     <ClCompile Include="GUI\Core\GUI_PID.cpp" />
     <ClCompile Include="GUI\Core\GUI_X_MEM.cppm" />
-    <ClCompile Include="GUI\Core\LCD.cpp" />
     <ClCompile Include="GUI\Core\String.cppm" />
     <ClCompile Include="GUI\MemDev\GUIDEV.cpp" />
     <ClCompile Include="GUI\MemDev\GUIDEV_24.cpp" />
@@ -65,7 +64,6 @@
     <ClInclude Include="Config\GUIConf.h" />
     <ClInclude Include="GUI\Core\GUI.h" />
     <ClInclude Include="GUI\Core\GUIDebug.h" />
-    <ClInclude Include="GUI\Core\GUI_ConfDefaults.h" />
     <ClInclude Include="GUI\Core\GUI_X.h" />
     <ClInclude Include="GUI\Core\LCD.h" />
     <ClCompile Include="GUI\Widget\DropDown.cppm">

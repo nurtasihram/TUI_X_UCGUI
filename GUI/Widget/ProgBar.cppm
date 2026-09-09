@@ -111,7 +111,6 @@ private:
 		GUI.Font(Props.pFont);
 		RECT rText;
 		_GetTextRect(&rText, pText);
-		GUI.SetTextMode(DRAWMODE_TRANS);
 		/* Draw left bar */
 		auto r = rInside;
 		r.x1 = xPos - 1;

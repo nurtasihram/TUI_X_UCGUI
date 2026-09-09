@@ -1,32 +1,30 @@
 #pragma once
 
 #include <stdint.h>
-#include "GUI_ConfDefaults.h"
+#include "GUIConf.h"
 
 import TUX.Types;
 
- struct tLCDDEV_APIList {
-	 void (*pfDrawBitmap)(BITVIEW b);
-	void(* pfFillRect)(RECT r);
-	RGBC(* pfGetPixel)(int x, int y);
-	void(* pfSetPixel)(int x, int y, RGBC Color);
-	RECT(* pfGetRect)();
+struct tLCDDEV_APIList {
 	uint8_t BitsPerPixel;
-#if GUI_SUPPORT_MEMDEV
-	const tLCDDEV_APIList *pMemDevAPI = nullptr;
-#endif
+	tLCDDEV_APIList *pMemDevAPI = nullptr;
+	tLCDDEV_APIList(tLCDDEV_APIList *pMemDevAPI, uint8_t BitsPerPixel)
+		: BitsPerPixel(BitsPerPixel), pMemDevAPI(pMemDevAPI) {}
+	virtual RECT GetRect() = 0;
+	virtual RGBC GetPixel(int x, int y) = 0;
+	virtual void SetPixel(int x, int y, RGBC Color) = 0;
+	virtual void DrawBitmap(BITVIEW b) = 0;
+	virtual void FillRect(RECT r) = 0;
 };
 
-extern const tLCDDEV_APIList GUI_MEMDEV__APIList24;
-extern const tLCDDEV_APIList LCD_API;
+extern tLCDDEV_APIList *pMEMDEV__APIList24;
+extern tLCDDEV_APIList *pLCD_API;
 
 void LCD_DrawBitmap(BITVIEW b);
 
 void LCD_SetPixel(int x, int y, int Color);
-RGBC LCD_GetPixel(int x, int y);
-
 void LCD_FillRect(RECT r);
 
 void LCD_SelectLCD(void);
 
-bool LCD_L0_Init(void);
+tLCDDEV_APIList *LCD_L0_Init(void);

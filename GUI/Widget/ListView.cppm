@@ -101,7 +101,6 @@ private:
 		/* Set drawing color, font and text mode */
 		GUI.Color(Props.aTextColor[0]);
 		GUI.Font(Props.pFont);
-		GUI.SetTextMode(DRAWMODE_TRANS);
 		/* Do the drawing */
 		for (i = this->ScrollStateV.v; i < EndRow; i++) {
 			auto &pRow = this->RowArray[i];

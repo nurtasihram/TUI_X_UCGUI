@@ -1,7 +1,6 @@
-#include "GUI_Private.h"
-#include "WM.h"
+#include "GUI.h"
 
-#if GUI_SUPPORT_MEMDEV
+#include "WM.h"
 
 #define PIXELINDEX RGBC
 
@@ -229,7 +228,6 @@ static void _DrawBitLine16BPP_DDB(int x, int y, const uint16_t *pSrc, int xsize,
 			break;
 	}
 }
-
 static void _DrawBitLine24BPP_DDB(int x, int y, PCLOGPALETTE pSrc, int xsize, PIXELINDEX *pDest) {
 	switch (GUI.DrawMode & (DRAWMODE_TRANS)) {
 		case 0: /* Write mode */
@@ -246,9 +244,7 @@ static void _DrawBitLine24BPP_DDB(int x, int y, PCLOGPALETTE pSrc, int xsize, PI
 			break;
 	}
 }
-
 static void _DrawBitmap(BITVIEW b) {
-
 	auto x0 = b.x0, y0 = b.y0;
 	auto xsize = b.XSize(), ysize = b.YSize();
 	auto pData = (const uint8_t*)b.pData;
@@ -342,13 +338,24 @@ static RGBC _GetPixel(int x, int y) {
 	return *pData;
 }
 
-const tLCDDEV_APIList GUI_MEMDEV__APIList24{
-	_DrawBitmap,
-	_FillRect,
-	_GetPixel,
-	_SetPixel,
-	GUI_MEMDEV__GetRect,
-	24
-};
+struct MemDev_APIList24 : tLCDDEV_APIList {
+	MemDev_APIList24() : tLCDDEV_APIList(nullptr, 24) {}
+	RECT GetRect() override {
+		return GUI_MEMDEV__GetRect();
+	}
+	RGBC GetPixel(int x, int y) override {
+		return _GetPixel(x, y);
+	}
+	void SetPixel(int x, int y, RGBC Color) override {
+		_SetPixel(x, y, Color);
+	}
+	void DrawBitmap(BITVIEW b) override {
+		_DrawBitmap(b);
+	}
+	void FillRect(RECT r) override {
+		_FillRect(r);	
+	}
 
-#endif /* GUI_SUPPORT_MEMDEV */
+} GUI_MEMDEV__APIList24;
+
+tLCDDEV_APIList *pMEMDEV__APIList24 = &GUI_MEMDEV__APIList24;
