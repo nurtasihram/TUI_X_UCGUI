@@ -36,7 +36,7 @@ ____XXoo,XXoooooo,XXooXX__,________,
 ______XX,oooooooo,ooXX____,________,
 ________,XXXXXXXX,XX______,________ };
 CLOGPALETTE PalSmilie0{ RGB_INVALID, RGB_BLACK, RGB_RED };
-CBITMAP bmSmilie0{ 13, 4, 2, pxSmilie0, PalSmilie0 };
+CBITMAP bmSmilie0{ 13, 4, BPP_2, pxSmilie0, PalSmilie0 };
 
 const uint8_t pxSmilie1[]{
 ________,XXXXXXXX,XX______,________,
@@ -53,7 +53,7 @@ ____XXoo,ooXXXXXX,ooooXX__,________,
 ______XX,oooooooo,ooXX____,________,
 ________,XXXXXXXX,XX______,________ };
 CLOGPALETTE PalSmilie1{ RGB_INVALID, RGB_BLACK, RGB_YELLOW };
-CBITMAP bmSmilie1{ 13, 4, 2, pxSmilie1, PalSmilie1 };
+CBITMAP bmSmilie1{ 13, 4, BPP_2, pxSmilie1, PalSmilie1 };
 
 static const char *_ListBox[]{
   "English", "Deutsch", nullptr
@@ -1595,7 +1595,7 @@ int main(void) {
 	GUI_Init(); 
 	GUI_CURSOR_Show();
 
-	_TestText();
+	//_TestText();
 	//_TestListView();
 	//_TestMultiPage();
 	//_TestRadio();

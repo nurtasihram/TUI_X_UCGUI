@@ -41,8 +41,8 @@ constexpr TEXTALIGN
 #if GUI_SUPPORT_DEVICES
 struct GUI_MEMDEV {
 	RECT rect;
-	int16_t BytesPerLine;
-	int16_t BitsPerPixel;
+	uint16_t BytesPerLine;
+	BPP_MODE BitsPerPixel;
 	void *pData;
 	LCDDEV_API *pAPIList;
 public:
@@ -50,24 +50,20 @@ public:
 		rect(r),
 		BitsPerPixel(pMemDevAPI->BitsPerPixel),
 		pAPIList(pMemDevAPI) {
-		if (BitsPerPixel >= 24)
-			BytesPerLine = r.XSize() * 4;
-		else
-			BytesPerLine = (r.XSize() * BitsPerPixel + 7) >> 3;
+		BytesPerLine = (r.XSize() * BPP_Bits[BitsPerPixel] + 7) >> 3;
 		pData = GUI_ALLOC_Alloc(r.YSize() * BytesPerLine);
 	}
 	~GUI_MEMDEV() {
 		GUI_ALLOC_Free(pData);
+		pData = nullptr;
 	}
+	GUI_MEMDEV(const GUI_MEMDEV &) = delete;
+	GUI_MEMDEV &operator=(const GUI_MEMDEV &) = delete;
 public:
 	uint16_t GetSizeX() const { return rect.XSize(); }
 	uint16_t GetSizeY() const { return rect.YSize(); }
 	RECT Rect() const { return rect; }
 	void Org(POINT);
-	void ReduceYSize(int16_t YSize) {
-		if (rect.YSize() > YSize)
-			rect.y1 = rect.y0 + YSize - 1;
-	}
 };
 
 typedef void GUI_CALLBACK_VOID_P(void *p);

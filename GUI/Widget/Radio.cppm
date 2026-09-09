@@ -381,8 +381,8 @@ ________,dddddddd,________,
 static CLOGPALETTE _PalRadioDisabled{ RGB_INVALID, RGBC::Gray(0x80), RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
 static CLOGPALETTE _PalRadioEnabled{ RGB_INVALID, RGBC::Gray(0x80), RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
 CBITMAP _abmRadio[]{
-	{ 12, 3, 2, _pxRadio, _PalRadioDisabled },
-	{ 12, 3, 2, _pxRadio, _PalRadioEnabled }
+	{ 12, 3, BPP_2, _pxRadio, _PalRadioDisabled },
+	{ 12, 3, BPP_2, _pxRadio, _PalRadioEnabled }
 };
 
 static const uint8_t _pxCheck[]{
@@ -392,4 +392,4 @@ XXXXXXXX________,
 __XXXX__________
 };
 static CLOGPALETTE _PalCheck{ RGB_INVALID, RGB_BLACK };
-CBITMAP _bmCheck{ 4, 1, 1, _pxCheck, _PalCheck };
+CBITMAP _bmCheck{ 4, 1, BPP_1, _pxCheck, _PalCheck };

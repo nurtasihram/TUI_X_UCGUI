@@ -137,6 +137,7 @@ struct RGB24b {
 	constexpr static RGB24b Gray (uint8_t a) { return{ a, a, a }; }
 	constexpr operator uint32_t() const { return (blue) | ((green) << 8) | ((red) << 16); }
 };
+static_assert(sizeof(RGB24b) == 3);
 struct RGB32b : RGB24b {
 	uint8_t alpha = 0;
 	constexpr RGB32b() {}
@@ -149,6 +150,7 @@ struct RGB32b : RGB24b {
 	constexpr static RGB24b Gray(uint8_t a) { return{ a, a, a }; }
 	constexpr operator uint32_t() const { return (blue) | ((green) << 8) | ((red) << 16) | ((alpha) << 24); }
 };
+static_assert(sizeof(RGB32b) == 4);
 using RGBC = RGB32b;
 constexpr RGBC
 	RGB_BLACK       = RGBC::Gray(0x00),
@@ -183,39 +185,46 @@ using CLOGPALETTE = const RGBC[];
 using PCLOGPALETTE = const RGBC *;
 #pragma endregion
 
-
+enum BPP_MODE : uint8_t {
+	BPP_1 = 0,
+	BPP_2,
+	BPP_4,
+	BPP_8,
+	BPP_16,
+	BPP_24,
+	BPP_32,
+	BPP_DEFAULT
+};
+const uint8_t BPP_Bits[]{ 1, 2, 4, 8, 16, 24, 32, 0 };
 struct BITVIEW : RECT {
 	const void* pData;
 	PCLOGPALETTE pPalEntries;
 	uint16_t BytesPerLine;
-	uint8_t BitsPerPixel : 5;
+	BPP_MODE BitsPerPixel : 3;
 	uint8_t BitsXOff : 3;
+	uint8_t : 2;
 public:
 	BITVIEW(RECT r,
 			uint16_t BytesPerLine,
-			uint8_t BitsPerPixel,
+			BPP_MODE BitsPerPixel,
 			const void* pData,
-			PCLOGPALETTE pPalEntries = nullptr) :
+			PCLOGPALETTE pPalEntries,
+			uint8_t BitsXOff = 0) :
 		RECT(r),
 		pData(pData),
 		pPalEntries(pPalEntries),
 		BytesPerLine(BytesPerLine),
 		BitsPerPixel(BitsPerPixel),
-		BitsXOff(0) {}
+		BitsXOff(BitsXOff) {}
 public:
 	bool operator&=(RECT rClip) {
 		auto ptOld = LeftTop();
 		if (!RECT::operator&=(rClip))
 			return false;
 		auto Off = LeftTop() - ptOld;
-		uint8_t DiffBits = 0;
-		if (Off.x > 0) {
-			auto xOffBits = BitsPerPixel * Off.x;
-			DiffBits = xOffBits & 7;
-			(const uint8_t *&)pData += xOffBits >> 3;
-		}
-		if (Off.y > 0)
-			(const uint8_t*&)pData += BytesPerLine * Off.y;
+		auto xSizeBits = uint32_t(BitsXOff) + uint32_t(BPP_Bits[BitsPerPixel]) * Off.x;
+		(const uint8_t *&)pData += (xSizeBits >> 3) + uint32_t(BytesPerLine) * Off.y;
+		BitsXOff = xSizeBits & 7;
 		return true;
 	}
 };
@@ -225,17 +234,17 @@ struct BITMAP {
 	PCLOGPALETTE pPalEntries;
 	POINT Size;
 	uint16_t BytesPerLine;
-	uint8_t BitsPerPixel : 5;
+	BPP_MODE BitsPerPixel : 3;
 	uint8_t BitsXOff : 3;
 	BITMAP(POINT Size,
 		   uint16_t BytesPerLine,
-		   uint8_t BitsPerPixel,
+		   BPP_MODE BitsPerPixel,
 		   const void *pData,
 		   PCLOGPALETTE pPalEntries = nullptr) :
 		pData(pData),
 		pPalEntries(pPalEntries),
 		Size(Size),
-		BytesPerLine(BytesPerLine),
+		BytesPerLine(BytesPerLine),	
 		BitsPerPixel(BitsPerPixel),
 		BitsXOff(0) {}
 public:

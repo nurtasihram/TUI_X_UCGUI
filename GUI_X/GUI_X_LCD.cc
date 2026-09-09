@@ -9,7 +9,7 @@
 Ayxandar Ayx;
 
 struct LCD_API : public LCDDEV_API {
-	LCD_API() : LCDDEV_API(pMEMDEV__APIList24, 32) {}
+	LCD_API() : LCDDEV_API(pMEMDEV__APIList24, BPP_32) {}
 	RECT GetRect() override {
 		return{ 0, 0, LCD_XSIZE - 1, LCD_YSIZE - 1 };
 	}

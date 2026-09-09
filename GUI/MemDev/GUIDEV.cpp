@@ -24,9 +24,10 @@ void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV *pDev) {
 	WObj::Iterate(pDev->rect, [&] {
 	LCD_DrawBitmap(BITVIEW{
 		pDev->rect,
-		(uint16_t)pDev->BytesPerLine,
-		(uint8_t)pDev->BitsPerPixel,
-		(const uint8_t*)pDev->pData });
+		pDev->BytesPerLine,
+		pDev->BitsPerPixel,
+		pDev->pData,
+		nullptr });
 	});
 	GUI_MEMDEV_Select(pMemPrev);
 }
@@ -35,20 +36,10 @@ int GUI_MEMDEV_Draw(RECT r, GUI_CALLBACK_VOID_P *pfDraw, void *pData) {
 	if (!(r &= pLCD_API->GetRect()))
 		return 0;
 	auto pDev = new GUI_MEMDEV(r, pLCD_API->pMemDevAPI);
-	if (!pDev) {
-		pfDraw(pData);
-		return 1;
-	}
 	GUI_MEMDEV_Select(pDev);
-	for (int i = 0; i < r.YSize(); i += pDev->GetSizeY()) {
-		int RemLines = r.YSize() - i;
-		if (RemLines < pDev->GetSizeY())
-			pDev->ReduceYSize(RemLines);
-		if (i > 0)
-			pDev->Org({ r.x0, r.y0 + i });
-		pfDraw(pData);
-		GUI_MEMDEV_CopyToLCD(pDev);
-	}
+	pDev->Org(r.LeftTop());
+	pfDraw(pData);
+	GUI_MEMDEV_CopyToLCD(pDev);
 	delete pDev;
 	GUI_MEMDEV_Select(nullptr);
 	return 0;
@@ -57,7 +48,7 @@ int GUI_MEMDEV_Draw(RECT r, GUI_CALLBACK_VOID_P *pfDraw, void *pData) {
 #define PIXELINDEX RGBC
 
 struct MemDev_APIList24 : LCDDEV_API {
-	MemDev_APIList24() : LCDDEV_API(nullptr, 24) {}
+	MemDev_APIList24() : LCDDEV_API(nullptr, BPP_32) {}
 
 	RECT GetRect() override {
 		return GUI.pDevData->Rect();

@@ -131,7 +131,7 @@ void GUI_DrawVLine(int x0, int y0, int y1) {
 	GUI_FillRect({ x0, y0, x0, y1 });
 }
 void GUI_DrawHLine(int y0, int x0, int x1) {
-	GUI_FillRect({ x0, y0, x1, y0 });	
+	GUI_FillRect({ x0, y0, x1, y0 });
 }
 
 void GUI_DrawBitmap(PCBITMAP pBitmap, POINT Pos) {
@@ -141,11 +141,11 @@ void GUI_DrawBitmap(PCBITMAP pBitmap, POINT Pos) {
 	GUI.SetDrawMode(
 		pPal && pPal[0] == RGB_INVALID ?
 		PrevDraw | DRAWMODE_TRANS : PrevDraw & ~DRAWMODE_TRANS);
-	auto pTrans = pBitmap->pPalEntries;
 	CLOGPALETTE aPal{ GUI.BkColor(), GUI.Color() };
-	if (!pTrans)
-		pTrans = pBitmap->BitsPerPixel == 1 ? aPal : nullptr;
+	if (!pPal)
+		pPal = pBitmap->BitsPerPixel == BPP_1 ? aPal : nullptr;
 	auto bmView = pBitmap->At(Pos);
+	bmView.pPalEntries = pPal;
 	WObj::Iterate(bmView, [&] {
 		LCD_DrawBitmap(bmView);
 	});
@@ -258,14 +258,14 @@ void FONT_MONO::DispChar(uint16_t c) const {
 		auto BytesPerChar = YSize * BytesPerLine;
 		LCD_DrawBitmap(BITVIEW{
 			RECT::LeftTop(GUI.DispPos, { XSize, YSize }),
-			BytesPerLine, 1,
+			BytesPerLine, BPP_1,
 			(const uint8_t *)pData + lst.c0 * BytesPerChar,
 			aPal });
 		if (lst.c1 >= 0) {
 			auto OldMode = GUI.SetDrawMode(DRAWMODE_TRANS);
 			LCD_DrawBitmap(BITVIEW{
 				RECT::LeftTop(GUI.DispPos, { XSize, YSize }),
-				BytesPerLine, 1,
+				BytesPerLine, BPP_1,
 				(const uint8_t *)pData + lst.c1 * BytesPerChar,
 				aPal });
 			GUI.SetDrawMode(OldMode);
@@ -280,7 +280,7 @@ void FONT_PROP::DispChar(uint16_t c) const {
 	CLOGPALETTE aPal{ GUI.BkColor(), GUI.Color() };
 	LCD_DrawBitmap(BITVIEW{
 		RECT::LeftTop(GUI.DispPos, { ci.XSize, YSize }),
-		ci.BytesPerLine, 1,
+		ci.BytesPerLine, BPP_1,
 		ci.pData,
 		aPal });
 	GUI.DispPos.x += ci.XSize;
