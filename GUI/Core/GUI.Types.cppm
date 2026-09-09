@@ -124,43 +124,65 @@ struct RECT {
 #pragma region Bitmaps 
 
 #pragma region Standard Colors
-using RGBC = uint32_t;
-constexpr RGBC COLOR_RGB (uint8_t r, uint8_t g, uint8_t b) { return (b) | ((g) << 8) | ((r) << 16); }
-constexpr RGBC RGB_GRAYL (uint8_t a) { return COLOR_RGB(a, a, a); }
-constexpr RGBC RGB_BLUEL (uint8_t a) { return COLOR_RGB(0, 0, a); }
-constexpr RGBC RGB_GREENL(uint8_t a) { return COLOR_RGB(0, a, 0); }
-constexpr RGBC RGB_REDL  (uint8_t a) { return COLOR_RGB(a, 0, 0); }
+struct RGB32b;
+struct RGB24b {
+	uint8_t red = 0, green = 0, blue = 0;
+	constexpr RGB24b() {}
+	constexpr RGB24b(const RGB24b& rgb) : red(rgb.red), green(rgb.green), blue(rgb.blue) {}
+	constexpr RGB24b(uint32_t rgb) : red((rgb >> 16) & 0xFF), green((rgb >> 8) & 0xFF), blue(rgb & 0xFF) {}
+	constexpr RGB24b(uint8_t r, uint8_t g, uint8_t b) : red(r), green(g), blue(b) {}
+	constexpr static RGB24b Red  (uint8_t r) { return{ r, 0, 0 }; }
+	constexpr static RGB24b Green(uint8_t g) { return{ 0, g, 0 }; }
+	constexpr static RGB24b Blue (uint8_t b) { return{ 0, 0, b }; }
+	constexpr static RGB24b Gray (uint8_t a) { return{ a, a, a }; }
+	constexpr operator uint32_t() const { return (blue) | ((green) << 8) | ((red) << 16); }
+};
+struct RGB32b : RGB24b {
+	uint8_t alpha = 0;
+	constexpr RGB32b() {}
+	constexpr RGB32b(RGB24b rgb, uint8_t a = 0) : RGB24b(rgb), alpha(a) {}
+	constexpr RGB32b(uint32_t rgba) : RGB24b(rgba), alpha((rgba >> 24) & 0xFF) {}
+	constexpr RGB32b(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0) : RGB24b(r, g, b), alpha(a) {}
+	constexpr static RGB24b Red(uint8_t r) { return{ r, 0, 0 }; }
+	constexpr static RGB24b Green(uint8_t g) { return{ 0, g, 0 }; }
+	constexpr static RGB24b Blue(uint8_t b) { return{ 0, 0, b }; }
+	constexpr static RGB24b Gray(uint8_t a) { return{ a, a, a }; }
+	constexpr operator uint32_t() const { return (blue) | ((green) << 8) | ((red) << 16) | ((alpha) << 24); }
+};
+using RGBC = RGB32b;
 constexpr RGBC
-	RGB_BLACK       = RGB_GRAYL(0x00),
-	RGB_DARKGRAY    = RGB_GRAYL(0x40),
-	RGB_GRAY        = RGB_GRAYL(0x80),
-	RGB_LIGHTGRAY   = RGB_GRAYL(0xD3),
-	RGB_WHITE       = RGB_GRAYL(0xFF),
-	RGB_BLUE        = COLOR_RGB(0x00, 0x00, 0xFF),
-	RGB_GREEN       = COLOR_RGB(0x00, 0xFF, 0x00),
-	RGB_RED         = COLOR_RGB(0xFF, 0x00, 0x00),
-	RGB_CYAN        = COLOR_RGB(0x00, 0xFF, 0xFF),
-	RGB_MAGENTA     = COLOR_RGB(0xFF, 0x00, 0xFF),
-	RGB_YELLOW      = COLOR_RGB(0xFF, 0xFF, 0x00),
-	RGB_LIGHTBLUE   = COLOR_RGB(0x80, 0x80, 0xFF),
-	RGB_LIGHTGREEN  = COLOR_RGB(0x80, 0xFF, 0x80),
-	RGB_LIGHTRED    = COLOR_RGB(0xFF, 0x80, 0x80),
-	RGB_LIGHTCYAN   = COLOR_RGB(0x80, 0xFF, 0xFF),
-	RGB_LIGHTMAGENT = COLOR_RGB(0xFF, 0x80, 0xFF),
-	RGB_LIGHTYELLOW = COLOR_RGB(0xFF, 0xFF, 0x80),
-	RGB_DARKBLUE    = COLOR_RGB(0x00, 0x00, 0x80),
-	RGB_DARKGREEN   = COLOR_RGB(0x00, 0x80, 0x00),
-	RGB_DARKRED     = COLOR_RGB(0x80, 0x00, 0x00),
-	RGB_DARKCYAN    = COLOR_RGB(0x00, 0x80, 0x80),
-	RGB_DARKMAGENTA = COLOR_RGB(0x80, 0x00, 0x80),
-	RGB_DARKYELLOW  = COLOR_RGB(0x80, 0x80, 0x00),
-	RGB_BROWN       = COLOR_RGB(0xA5, 0x2A, 0x2A),
-	
-	RGB_INVALID = ~0;      /* Invalid color - more than 24 bits */
-#pragma endregion
-
+	RGB_BLACK       = RGBC::Gray(0x00),
+	RGB_DARKGRAY    = RGBC::Gray(0x40),
+	RGB_GRAY        = RGBC::Gray(0x80),
+	RGB_LIGHTGRAY   = RGBC::Gray(0xD3),
+	RGB_WHITE       = RGBC::Gray(0xFF),
+	RGB_BLUE        = RGBC(0x00, 0x00, 0xFF),
+	RGB_GREEN       = RGBC(0x00, 0xFF, 0x00),
+	RGB_RED         = RGBC(0xFF, 0x00, 0x00),
+	RGB_CYAN        = RGBC(0x00, 0xFF, 0xFF),
+	RGB_MAGENTA     = RGBC(0xFF, 0x00, 0xFF),
+	RGB_YELLOW      = RGBC(0xFF, 0xFF, 0x00),
+	RGB_LIGHTBLUE   = RGBC(0x80, 0x80, 0xFF),
+	RGB_LIGHTGREEN  = RGBC(0x80, 0xFF, 0x80),
+	RGB_LIGHTRED    = RGBC(0xFF, 0x80, 0x80),
+	RGB_LIGHTCYAN   = RGBC(0x80, 0xFF, 0xFF),
+	RGB_LIGHTMAGENT = RGBC(0xFF, 0x80, 0xFF),
+	RGB_LIGHTYELLOW = RGBC(0xFF, 0xFF, 0x80),
+	RGB_DARKBLUE    = RGBC(0x00, 0x00, 0x80),
+	RGB_DARKGREEN   = RGBC(0x00, 0x80, 0x00),
+	RGB_DARKRED     = RGBC(0x80, 0x00, 0x00),
+	RGB_DARKCYAN    = RGBC(0x00, 0x80, 0x80),
+	RGB_DARKMAGENTA = RGBC(0x80, 0x00, 0x80),
+	RGB_DARKYELLOW  = RGBC(0x80, 0x80, 0x00),
+	RGB_BROWN       = RGBC(0xA5, 0x2A, 0x2A),
+	RGB_INVALID     = RGBC(0xFF, 0xFF, 0xFF, 0xFF); /* Invalid color - more than 24 bits */
+struct BRUSH {
+	RGBC Color, BkColor;
+};
 using CLOGPALETTE = const RGBC[];
 using PCLOGPALETTE = const RGBC *;
+#pragma endregion
+
 
 struct BITVIEW : RECT {
 	const void* pData;

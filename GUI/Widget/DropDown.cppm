@@ -28,7 +28,7 @@ public:
 			/* Unselect */			RGB_WHITE,
 			/* Selected */			RGB_GRAY,
 			/* Selected focussed */	RGB_DARKBLUE,
-			/* Disabled */			RGB_GRAYL(0xC0)
+			/* Disabled */			RGBC::Gray(0xC0)
 		};
 		RGBC aTextColor[4]{
 			/* Unselect */			RGB_BLACK,
@@ -109,7 +109,7 @@ private:
 		/* Draw arrow */
 		r = WM_GetClientRect() / Border;
 		r.x0 = r.x1 + 1 - InnerSize;
-		GUI.Color(RGB_GRAYL(0xc0));
+		GUI.Color(RGBC::Gray(0xc0));
 		GUI_FillRect(r);
 		GUI.Color(RGB_BLACK);
 		_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.YSize()) / 3);

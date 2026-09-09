@@ -36,7 +36,7 @@ public:
 			/* Disabled */	RGB_DARKGRAY
 		};
 		RGBC aBkColor[3]{
-			/* Unpressed */	RGB_GRAYL(0xD0),
+			/* Unpressed */	RGBC::Gray(0xD0),
 			/* Pressed */	RGB_WHITE,
 			/* Disabled */	RGB_LIGHTGRAY
 		};

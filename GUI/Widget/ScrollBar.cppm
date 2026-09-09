@@ -28,10 +28,10 @@ class ScrollBar : public Widget {
 public:
 	struct Properties {
 		RGBC aBkColor[2]{
-			RGB_GRAYL(0x80),
+			RGBC::Gray(0x80),
 			RGB_BLACK
 		};
-		RGBC Color{ RGB_GRAYL(0xC0) };
+		RGBC Color{ RGBC::Gray(0xC0) };
 	} static DefaultProps;
 	static const int16_t DefaultWidth = 12;
 

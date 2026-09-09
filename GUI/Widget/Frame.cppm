@@ -53,11 +53,11 @@ public:
 			/* Focused */		RGB_WHITE
 		};
 		RGBC aBarColor[2]{
-			/* Lose focused */	RGB_GRAYL(0x80),
-			/* Focused */		RGB_BLUEL(0x80)
+			/* Lose focused */	RGBC::Gray(0x80),
+			/* Focused */		RGBC::Blue(0x80)
 		};
-		RGBC ClientColor{ RGB_GRAYL(0xE4) };
-		RGBC FrameColor{ RGB_GRAYL(0xAA) };
+		RGBC ClientColor{ RGBC::Gray(0xE4) };
+		RGBC FrameColor{ RGBC::Gray(0xAA) };
 		uint16_t TitleHeight{ 20 };
 		uint16_t BorderSize{ 2 };
 		uint16_t IBorderSize{ 1 };

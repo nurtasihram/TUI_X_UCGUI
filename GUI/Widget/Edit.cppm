@@ -43,7 +43,7 @@ public:
 			/* Enabled */	RGB_BLACK
 		};
 		RGBC aBkColor[2]{
-			/* Disabled */	RGB_GRAYL(0xC0),
+			/* Disabled */	RGBC::Gray(0xC0),
 			/* Enabled */	RGB_WHITE
 		};
 		TEXTALIGN Align{ TEXTALIGN_LEFT | TEXTALIGN_VCENTER };

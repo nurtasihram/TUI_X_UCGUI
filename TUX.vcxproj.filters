@@ -48,9 +48,6 @@
     <ClCompile Include="GUI\MemDev\GUIDEV.cpp">
       <Filter>GUI\MemDev</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV_24.cpp">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\WM\WM.cpp">
       <Filter>GUI\WM</Filter>
     </ClCompile>

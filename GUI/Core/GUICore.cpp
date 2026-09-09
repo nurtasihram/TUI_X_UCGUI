@@ -6,12 +6,12 @@
 import TUX.Core.Timer;
 #endif
 
-tLCDDEV_APIList *pLCD_API;
+LCDDEV_API *pLCD_API;
 
 void GUI_Init(void) {
 	GUI_X_Init();
 #if GUI_SUPPORT_DEVICES
-	GUI.pDeviceAPI = pLCD_API = LCD_L0_Init();; /* &LCD_L0_APIList; */
+	GUI.pDeviceAPI = pLCD_API = GUI_X_LCD_Init();; /* &LCD_L0_APIList; */
 #endif
 	GUI.rClip = pLCD_API->GetRect();
 	GUI.Font(GUI_DEFAULT_FONT);
@@ -68,6 +68,25 @@ void GUI_RestoreContext(const GUI_CONTEXT *pContext) {
 #pragma endregion
 
 #pragma region Draw
+
+void LCD_SetPixel(int x, int y, RGBC ColorIndex) {
+	if (y < GUI.rClip.y0) return;
+	if (y > GUI.rClip.y1) return;
+	if (x < GUI.rClip.x0) return;
+	if (x > GUI.rClip.x1) return;
+	GUI.pDeviceAPI->SetPixel(x, y, ColorIndex);
+}
+void LCD_FillRect(RECT r) {
+	if (!(r &= GUI.rClip))
+		return;
+	GUI.pDeviceAPI->FillRect(r, GUI.Color());
+}
+void LCD_DrawBitmap(BITVIEW b) {
+	if (!(b &= GUI.rClip))
+		return;
+	GUI.pDeviceAPI->DrawBitmap(b, GUI.DrawMode & DRAWMODE_TRANS);
+}
+
 void GUI_ClearRect(RECT r) {
 	auto color = GUI.Color();
 	GUI.Color(GUI.BkColor());
@@ -123,8 +142,9 @@ void GUI_DrawBitmap(PCBITMAP pBitmap, POINT Pos) {
 		pPal && pPal[0] == RGB_INVALID ?
 		PrevDraw | DRAWMODE_TRANS : PrevDraw & ~DRAWMODE_TRANS);
 	auto pTrans = pBitmap->pPalEntries;
-	if (!pTrans) 
-		pTrans = pBitmap->BitsPerPixel == 1 ? GUI.aColor : nullptr;
+	CLOGPALETTE aPal{ GUI.BkColor(), GUI.Color() };
+	if (!pTrans)
+		pTrans = pBitmap->BitsPerPixel == 1 ? aPal : nullptr;
 	auto bmView = pBitmap->At(Pos);
 	WObj::Iterate(bmView, [&] {
 		LCD_DrawBitmap(bmView);
@@ -231,6 +251,7 @@ void FONT_MONO::DispChar(uint16_t c) const {
 	else if (pTrans)
 		if (pTrans->FirstChar <= c && c <= pTrans->LastChar)
 			lst = pTrans->pList[c - pTrans->FirstChar];
+	CLOGPALETTE aPal{ GUI.BkColor(), GUI.Color() };
 	/* Draw first character if it is valid */
 	if (lst.c0 >= 0) {
 		uint16_t BytesPerLine = (XSize + 7) >> 3;
@@ -239,14 +260,14 @@ void FONT_MONO::DispChar(uint16_t c) const {
 			RECT::LeftTop(GUI.DispPos, { XSize, YSize }),
 			BytesPerLine, 1,
 			(const uint8_t *)pData + lst.c0 * BytesPerChar,
-			GUI.aColor });
+			aPal });
 		if (lst.c1 >= 0) {
 			auto OldMode = GUI.SetDrawMode(DRAWMODE_TRANS);
 			LCD_DrawBitmap(BITVIEW{
 				RECT::LeftTop(GUI.DispPos, { XSize, YSize }),
 				BytesPerLine, 1,
 				(const uint8_t *)pData + lst.c1 * BytesPerChar,
-				GUI.aColor });
+				aPal });
 			GUI.SetDrawMode(OldMode);
 		}
 	}
@@ -256,11 +277,12 @@ void FONT_PROP::DispChar(uint16_t c) const {
 	auto pProp = FindChar(c);
 	if (!pProp) return;
 	auto &ci = pProp->paCharInfo[c - pProp->First];
+	CLOGPALETTE aPal{ GUI.BkColor(), GUI.Color() };
 	LCD_DrawBitmap(BITVIEW{
 		RECT::LeftTop(GUI.DispPos, { ci.XSize, YSize }),
 		ci.BytesPerLine, 1,
 		ci.pData,
-		GUI.aColor });
+		aPal });
 	GUI.DispPos.x += ci.XSize;
 }
 #pragma endregion

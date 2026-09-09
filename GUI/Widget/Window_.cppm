@@ -13,7 +13,7 @@ class Window : public WObj {
 public:
 
 	struct Properties {
-		RGBC BkColor{ RGB_GRAYL(0xE4) };
+		RGBC BkColor{ RGBC::Gray(0xE4) };
 	} static DefaultProps;
 
 private:

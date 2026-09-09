@@ -31,7 +31,6 @@
     <ClCompile Include="GUI\Core\GUI_X_MEM.cppm" />
     <ClCompile Include="GUI\Core\String.cppm" />
     <ClCompile Include="GUI\MemDev\GUIDEV.cpp" />
-    <ClCompile Include="GUI\MemDev\GUIDEV_24.cpp" />
     <ClCompile Include="GUI\Resources\CursorArrow.cpp" />
     <ClCompile Include="GUI\Resources\CursorCross.cpp" />
     <ClCompile Include="GUI\Resources\CursorHeader.cpp" />

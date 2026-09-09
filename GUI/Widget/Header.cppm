@@ -20,7 +20,7 @@ class Header : public Widget {
 public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
-		RGBC BkColor{ RGB_GRAYL(0xAA) };
+		RGBC BkColor{ RGBC::Gray(0xAA) };
 		RGBC TextColor{ RGB_BLACK };
 		PCCURSOR pCursor{ &CursorHeaderM };
 		int16_t BorderH{ 0 };

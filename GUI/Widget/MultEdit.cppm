@@ -37,7 +37,7 @@ public:
 		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aBkColor[NUM_DISP_MODES]{
 			/* Edit mode */		RGB_WHITE,
-			/* Read-only */		RGB_GRAYL(0xC0)
+			/* Read-only */		RGBC::Gray(0xC0)
 		};
 		RGBC aColor[NUM_DISP_MODES]{
 			/* Edit mode */		RGB_BLACK,

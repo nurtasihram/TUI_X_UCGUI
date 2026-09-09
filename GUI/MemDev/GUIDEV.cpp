@@ -2,59 +2,7 @@
 
 #include "WM.h"
 
-RECT GUI_MEMDEV__GetRect() {
-	auto pDev = GUI.pDevData;
-	RECT r;
-	r.x0 = pDev->x0;
-	r.y0 = pDev->y0;
-	r.x1 = pDev->x0 + pDev->XSize - 1;
-	r.y1 = pDev->y0 + pDev->YSize - 1;
-	return r;
-}
-
-void GUI_MEMDEV_Delete(GUI_MEMDEV *pDev) {
-	if (!pDev)
-		return;
-	if (GUI.pDevData == pDev)
-		GUI_SelectLCD();
-	GUI_ALLOC_Free(pDev);
-}
-
-GUI_MEMDEV *GUI_MEMDEV_CreateFixed(int x0, int y0, int xsize, int ysize, int Flags,
-									tLCDDEV_APIList *pMemDevAPI) {
-	if (xsize <= 0 || ysize <= 0) {
-		GUI_DEBUG_WARN("GUI_MEMDEV_Create: Too little memory");
-		return nullptr;
-	}
-	auto BitsPerPixel = pMemDevAPI->BitsPerPixel;
-	unsigned int BytesPerLine;
-	if (BitsPerPixel == 24)
-		BytesPerLine = xsize * 4;
-	else
-		BytesPerLine = (xsize * BitsPerPixel + 7) >> 3;
-	auto MemSize = ysize * BytesPerLine + sizeof(GUI_MEMDEV);
-	auto pDevData = static_cast<GUI_MEMDEV *>(GUI_ALLOC_Alloc(MemSize));
-	if (pDevData) {
-		pDevData->x0 = x0;
-		pDevData->y0 = y0;
-		pDevData->XSize = xsize;
-		pDevData->YSize = ysize;
-		pDevData->BytesPerLine = BytesPerLine;
-		pDevData->pAPIList = pMemDevAPI;
-		pDevData->BitsPerPixel = BitsPerPixel;
-	} else
-		GUI_DEBUG_WARN("GUI_MEMDEV_Create: Alloc failed");
-	return pDevData;
-}
-GUI_MEMDEV *GUI_MEMDEV_CreateEx(int x0, int y0, int xSize, int ySize, int Flags) {
-	return GUI_MEMDEV_CreateFixed(x0, y0, xSize, ySize, Flags, pLCD_API->pMemDevAPI);
-}
-GUI_MEMDEV *GUI_MEMDEV_Create(int x0, int y0, int xsize, int ysize) {
-	return GUI_MEMDEV_CreateEx(x0, y0, xsize, ysize, GUI_MEMDEV_HASTRANS);
-}
-
-GUI_MEMDEV *GUI_MEMDEV_Select(GUI_MEMDEV *pDev) {
-	auto pPrevDevice = GUI.pDevData;
+void GUI_MEMDEV_Select(GUI_MEMDEV *pDev) {
 	if (!pDev) {
 		GUI_SelectLCD();
 	} else {
@@ -65,80 +13,81 @@ GUI_MEMDEV *GUI_MEMDEV_Select(GUI_MEMDEV *pDev) {
 		GUI.pDeviceAPI = pDev->pAPIList;
 		GUI.ClipRectMax();
 	}
-	return pPrevDevice;
 }
 
-void GUI_MEMDEV__WriteToActiveAt(GUI_MEMDEV *pDev, int x, int y) {
-	LCD_DrawBitmap(BITVIEW{
-		RECT::LeftTop({ x, y }, { pDev->XSize, pDev->YSize }),
-		(uint16_t)pDev->BytesPerLine, (uint8_t)pDev->BitsPerPixel,
-		reinterpret_cast<uint8_t*>(pDev + 1) });
-}
-
-void GUI_MEMDEV_CopyToLCDAt(GUI_MEMDEV *pDev, int x, int y) {
+void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV *pDev) {
 	if (!pDev)
 		return;
 	GUI_MEMDEV *pMemPrev = GUI.pDevData;
 	GUI_SelectLCD();
-	RECT r;
-	r.x0 = x;
-	r.y0 = y;
-	r.x1 = x + pDev->XSize - 1;
-	r.y1 = y + pDev->YSize - 1;
 	WObj::Activate();
-	WObj::Iterate(r, [&] {
-		GUI_MEMDEV__WriteToActiveAt(pDev, x, y);
+	WObj::Iterate(pDev->rect, [&] {
+	LCD_DrawBitmap(BITVIEW{
+		pDev->rect,
+		(uint16_t)pDev->BytesPerLine,
+		(uint8_t)pDev->BitsPerPixel,
+		(const uint8_t*)pDev->pData });
 	});
 	GUI_MEMDEV_Select(pMemPrev);
 }
 
-void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV *pDev) {
-	GUI_MEMDEV_CopyToLCDAt(pDev, pDev->x0, pDev->y0);
-}
-
-void GUI_MEMDEV_ReduceYSize(GUI_MEMDEV *pDev, int YSize) {
-	if (!pDev)
-		pDev = GUI.pDevData;
-	if (!pDev)
-		return;
-	if (pDev->YSize > YSize)
-		pDev->YSize = YSize;
-}
-
-void GUI_MEMDEV_SetOrg(GUI_MEMDEV *pDev, int x0, int y0) {
-	if (!pDev) {
-		pDev = GUI.pDevData;
-		if (!pDev)
-			return;
-	}
-	pDev->x0 = x0;
-	pDev->y0 = y0;
-	GUI.ClipRectMax();
-}
-
-int GUI_MEMDEV_Draw(RECT *pRect, GUI_CALLBACK_VOID_P *pfDraw, void *pData, int NumLines, int Flags) {
-	auto rc = pRect ? *pRect & pLCD_API->GetRect() : pLCD_API->GetRect();
-	if (NumLines == 0)
-		NumLines = rc.YSize();
-	if (rc.XSize() <= 0 || rc.YSize() <= 0)
+int GUI_MEMDEV_Draw(RECT r, GUI_CALLBACK_VOID_P *pfDraw, void *pData) {
+	if (!(r &= pLCD_API->GetRect()))
 		return 0;
-	auto pMD = GUI_MEMDEV_CreateEx(rc.x0, rc.y0, rc.XSize(), NumLines, Flags);
-	if (!pMD) {
+	auto pDev = new GUI_MEMDEV(r, pLCD_API->pMemDevAPI);
+	if (!pDev) {
 		pfDraw(pData);
 		return 1;
 	}
-	NumLines = pMD->YSize;
-	GUI_MEMDEV_Select(pMD);
-	for (int i = 0; i < rc.YSize(); i += NumLines) {
-		int RemLines = rc.YSize() - i;
-		if (RemLines < NumLines)
-			GUI_MEMDEV_ReduceYSize(pMD, RemLines);
+	GUI_MEMDEV_Select(pDev);
+	for (int i = 0; i < r.YSize(); i += pDev->GetSizeY()) {
+		int RemLines = r.YSize() - i;
+		if (RemLines < pDev->GetSizeY())
+			pDev->ReduceYSize(RemLines);
 		if (i > 0)
-			GUI_MEMDEV_SetOrg(pMD, rc.x0, rc.y0 + i);
+			pDev->Org({ r.x0, r.y0 + i });
 		pfDraw(pData);
-		GUI_MEMDEV_CopyToLCD(pMD);
+		GUI_MEMDEV_CopyToLCD(pDev);
 	}
-	GUI_MEMDEV_Delete(pMD);
+	delete pDev;
 	GUI_MEMDEV_Select(nullptr);
 	return 0;
 }
+
+#define PIXELINDEX RGBC
+
+struct MemDev_APIList24 : LCDDEV_API {
+	MemDev_APIList24() : LCDDEV_API(nullptr, 24) {}
+
+	RECT GetRect() override {
+		return GUI.pDevData->Rect();
+	}
+
+	static PIXELINDEX *_XY2PTR(int x, int y) {
+		auto pDev = GUI.pDevData;
+		auto pData = (uint8_t *)pDev->pData;
+		pData += (y - pDev->rect.y0) * pDev->BytesPerLine;
+		return ((PIXELINDEX *)pData) + x - pDev->rect.x0;
+	}
+	RGBC GetPixel(int16_t x, int16_t y) override {
+		return *_XY2PTR(x, y);
+	}
+	void SetPixel(int16_t x, int16_t y, RGBC color) override {
+		*_XY2PTR(x, y) = color;
+	}
+	//void FillRect(RECT r, RGBC color) override {
+	//	unsigned BytesPerLine;
+	//	int Len;
+	//	auto pDev = GUI.pDevData;
+	//	auto pData = _XY2PTR(r.x0, r.y0);
+	//	BytesPerLine = pDev->BytesPerLine;
+	//	Len = r.x1 - r.x0 + 1;
+	//	for (; r.y0 <= r.y1; r.y0++) {
+	//		for (int i = 0; i < Len; i++)
+	//			pData[i] = color;
+	//		pData = (PIXELINDEX *)((uint8_t *)pData + BytesPerLine);
+	//	}
+	//}
+} GUI_MEMDEV__APIList24;
+
+LCDDEV_API *pMEMDEV__APIList24 = &GUI_MEMDEV__APIList24;

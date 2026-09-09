@@ -98,7 +98,7 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 			int ColorIndex = 0;
 			char acBuffer[100];
 			RGBC aColor[4] = { RGB_BLACK, RGB_WHITE, RGB_WHITE, RGB_GRAY };
-			RGBC aBkColor[4] = { RGB_WHITE, RGB_GRAY, RGB_DARKBLUE, RGB_GRAYL(0xC0) };
+			RGBC aBkColor[4] = { RGB_WHITE, RGB_GRAY, RGB_DARKBLUE, RGBC::Gray(0xC0) };
 			bool IsDisabled = pObj->GetItemDisabled(Index);
 			bool IsSelected = pObj->GetItemSel(Index);
 			int MultiSel = pObj->GetMulti();
@@ -1030,21 +1030,21 @@ static WM_PARAM _cbTextTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			};
 
 			// Set light background colors for each text widget
-			SetTextBkColor(ID_TEXT_LEFT_TOP,      COLOR_RGB(0xFF, 0xE0, 0xE0));
-			SetTextBkColor(ID_TEXT_CENTER_TOP,    COLOR_RGB(0xE0, 0xFF, 0xE0));
-			SetTextBkColor(ID_TEXT_RIGHT_TOP,     COLOR_RGB(0xFF, 0xE0, 0xE0));
-			SetTextBkColor(ID_TEXT_LEFT_VCENTER,  COLOR_RGB(0xE0, 0xE0, 0xFF));
-			SetTextBkColor(ID_TEXT_CENTER_CENTER, COLOR_RGB(0xFF, 0xFF, 0xE0));
-			SetTextBkColor(ID_TEXT_RIGHT_VCENTER, COLOR_RGB(0xFF, 0xE0, 0xFF));
-			SetTextBkColor(ID_TEXT_LEFT_BOTTOM,   COLOR_RGB(0xFF, 0xE0, 0xE0));
-			SetTextBkColor(ID_TEXT_CENTER_BOTTOM, COLOR_RGB(0xE0, 0xFF, 0xFF));
-			SetTextBkColor(ID_TEXT_RIGHT_BOTTOM,  COLOR_RGB(0xFF, 0xE0, 0xE0));
+			SetTextBkColor(ID_TEXT_LEFT_TOP,      RGBC(0xFF, 0xE0, 0xE0));
+			SetTextBkColor(ID_TEXT_CENTER_TOP,    RGBC(0xE0, 0xFF, 0xE0));
+			SetTextBkColor(ID_TEXT_RIGHT_TOP,     RGBC(0xFF, 0xE0, 0xE0));
+			SetTextBkColor(ID_TEXT_LEFT_VCENTER,  RGBC(0xE0, 0xE0, 0xFF));
+			SetTextBkColor(ID_TEXT_CENTER_CENTER, RGBC(0xFF, 0xFF, 0xE0));
+			SetTextBkColor(ID_TEXT_RIGHT_VCENTER, RGBC(0xFF, 0xE0, 0xFF));
+			SetTextBkColor(ID_TEXT_LEFT_BOTTOM,   RGBC(0xFF, 0xE0, 0xE0));
+			SetTextBkColor(ID_TEXT_CENTER_BOTTOM, RGBC(0xE0, 0xFF, 0xFF));
+			SetTextBkColor(ID_TEXT_RIGHT_BOTTOM,  RGBC(0xFF, 0xE0, 0xE0));
 
 			// Set background colors for anchor test widgets
-			SetTextBkColor(ID_TEXT_ANCHOR_LEFT,   COLOR_RGB(0xE0, 0xF0, 0xFF));
-			SetTextBkColor(ID_TEXT_ANCHOR_RIGHT,  COLOR_RGB(0xE0, 0xF0, 0xFF));
-			SetTextBkColor(ID_TEXT_ANCHOR_TOP,    COLOR_RGB(0xF0, 0xFF, 0xE0));
-			SetTextBkColor(ID_TEXT_ANCHOR_BOTTOM, COLOR_RGB(0xFF, 0xF0, 0xE0));
+			SetTextBkColor(ID_TEXT_ANCHOR_LEFT,   RGBC(0xE0, 0xF0, 0xFF));
+			SetTextBkColor(ID_TEXT_ANCHOR_RIGHT,  RGBC(0xE0, 0xF0, 0xFF));
+			SetTextBkColor(ID_TEXT_ANCHOR_TOP,    RGBC(0xF0, 0xFF, 0xE0));
+			SetTextBkColor(ID_TEXT_ANCHOR_BOTTOM, RGBC(0xFF, 0xF0, 0xE0));
 
 			// Set anchors for the demonstration widgets
 			auto pAnchorLeft = pWin->GetItem(ID_TEXT_ANCHOR_LEFT);
@@ -1089,7 +1089,7 @@ static WM_PARAM _cbTextTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			}
 
 			// Set background color for multiline text widget
-			SetTextBkColor(ID_TEXT_MULTILINE, COLOR_RGB(0xFF, 0xFF, 0xE0));
+			SetTextBkColor(ID_TEXT_MULTILINE, RGBC(0xFF, 0xFF, 0xE0));
 
 			// Initialize the multiline text alignment
 			_UpdateMultilineTextAlign(pWin);
@@ -1590,9 +1590,9 @@ void _TestMultiEdit() {
 	auto pDialog = _aMultiEditDialogCreate->CreateDialog(GUI_COUNTOF(_aMultiEditDialogCreate), &_cbMultiEditTest, 0, 0, 0);
 	pDialog->DialogExec();
 }
-
-int main(void) {
-		GUI_Init(); 
+	
+int main(void) {	
+	GUI_Init(); 
 	GUI_CURSOR_Show();
 
 	_TestText();

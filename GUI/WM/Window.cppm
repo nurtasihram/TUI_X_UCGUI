@@ -541,13 +541,13 @@ public:
 						*/
 					if (!pParent)
 						Flags = GUI_MEMDEV_HASTRANS;
-					GUI_MEMDEV_Draw(&r, [](void *p) {
+					GUI_MEMDEV_Draw(r, [](void *p) {
 						auto pWin = WObj::pWinActive;
 						auto Rect = pWin->InvalidRect;
 						pWin->InvalidRect = GUI.rClip;
 						pWin->_Paint1();
 						pWin->InvalidRect = Rect;
-					}, this, 0, Flags);
+					}, this);
 				}
 				else
 #endif
@@ -1167,7 +1167,7 @@ public:
 	}
 #pragma endregion 
 
-	RGBC BkColor() const { return (RGBC)Require(WM_GET_BKCOLOR); }
+	RGBC BkColor() const { return (RGBC)(uint32_t)Require(WM_GET_BKCOLOR); }
 
 #pragma region Focus
 	static WObj *pWinFocus;

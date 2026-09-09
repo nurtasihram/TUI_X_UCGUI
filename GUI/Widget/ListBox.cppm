@@ -40,7 +40,7 @@ public:
 			/* Unselect */			RGB_WHITE,
 			/* Selected */			RGB_GRAY,
 			/* Selected focussed */	RGB_DARKBLUE,
-			/* Disabled */			RGB_GRAYL(0xC0)
+			/* Disabled */			RGBC::Gray(0xC0)
 		};
 		RGBC aTextColor[4]{
 			/* Unselect */			RGB_BLACK,

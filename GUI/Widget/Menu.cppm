@@ -67,16 +67,16 @@ public:
 		RGBC aTextColor[5]{
 			RGB_BLACK,          /* enabled, not selected */
 			RGB_WHITE,          /* enabled, selected */
-			RGB_GRAYL(0x7C),    /* disabled, not selected */
+			RGBC::Gray(0x7C),    /* disabled, not selected */
 			RGB_LIGHTGRAY,      /* disabled, selected */
 			RGB_WHITE           /* active submenu */
 		};
 		RGBC aBkColor[5]{
 			RGB_LIGHTGRAY,
-			RGB_BLUEL(0x98),
+			RGBC::Blue(0x98),
 			RGB_LIGHTGRAY,
-			RGB_BLUEL(0x98),
-			RGB_GRAYL(0x7C)
+			RGBC::Blue(0x98),
+			RGBC::Gray(0x7C)
 		};
 		uint8_t aBorder[4]{ 4, 4, 2, 2 }; /* Left, Right, Top, Bottom */
 	} static DefaultProps;
@@ -508,7 +508,7 @@ private:
 					FillRect.y1 = FillRect.y0 + ItemHeight - 1;
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
 						GUI_ClearRect(FillRect);
-						GUI.Color(RGB_GRAYL(0x7C));
+						GUI.Color(RGBC::Gray(0x7C));
 						GUI_DrawHLine(FillRect.y0 + BorderTop + 1, FillRect.x0 + 2, FillRect.x1 - 2);
 					}
 					else {
@@ -533,7 +533,7 @@ private:
 					FillRect.x1 = FillRect.x0 + ItemWidth - 1;
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
 						GUI_ClearRect(FillRect);
-						GUI.Color(RGB_GRAYL(0x7C));
+						GUI.Color(RGBC::Gray(0x7C));
 						GUI_DrawVLine(FillRect.x0 + BorderLeft + 1, FillRect.y0 + 2, FillRect.y1 - 2);
 					}
 					else {

@@ -9,7 +9,7 @@ import TUX.Widget;
 import TUX.Array;
 
 /* Define default background color */
-#define RADIO_DEFAULT_BKCOLOR       RGB_GRAYL(0xC0)
+#define RADIO_DEFAULT_BKCOLOR       RGBC::Gray(0xC0)
 #define RADIO_BORDER                2
 
 extern CBITMAP _abmRadio[2];
@@ -361,7 +361,7 @@ Radio::Properties Radio::DefaultProps;
 
 }
 
-#define RADIO_BKCOLOR0_DEFAULT RGB_GRAYL(0xc0)           /* Inactive color */
+#define RADIO_BKCOLOR0_DEFAULT RGBC::Gray(0xc0)           /* Inactive color */
 #define RADIO_BKCOLOR1_DEFAULT RGB_WHITE          /* Active color */
 
 static const uint8_t _pxRadio[]{
@@ -378,8 +378,8 @@ __XX____,dddddddd,____dd__,
 ____dddd,________,dddd____,
 ________,dddddddd,________,
 };
-static CLOGPALETTE _PalRadioDisabled{ RGB_INVALID, RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
-static CLOGPALETTE _PalRadioEnabled{ RGB_INVALID, RGB_GRAYL(0x80), RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
+static CLOGPALETTE _PalRadioDisabled{ RGB_INVALID, RGBC::Gray(0x80), RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
+static CLOGPALETTE _PalRadioEnabled{ RGB_INVALID, RGBC::Gray(0x80), RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
 CBITMAP _abmRadio[]{
 	{ 12, 3, 2, _pxRadio, _PalRadioDisabled },
 	{ 12, 3, 2, _pxRadio, _PalRadioEnabled }

@@ -4,6 +4,7 @@
 
 /**** Init ****/
 void GUI_X_Init(void);
+LCDDEV_API *GUI_X_LCD_Init(void);
 
 /**** Timing routines - required for blinking ****/
 int  GUI_X_GetTime(void);

@@ -16,7 +16,7 @@ class Slider : public Widget {
 public:
 	struct Properties {
 		RGBC BkColor { RGB_INVALID };
-		RGBC Color   { RGB_GRAYL(0xC0) };
+		RGBC Color   { RGBC::Gray(0xC0) };
 	} static DefaultProps;
 	
 private:

@@ -20,7 +20,7 @@ public:
 		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aBkColor[2]{
 			/* Active */	RGB_DARKBLUE,
-			/* Inactive */	RGB_GRAYL(0x55)
+			/* Inactive */	RGBC::Gray(0x55)
 		};
 		RGBC aTextColor[2]{
 			/* Active */	RGB_WHITE,

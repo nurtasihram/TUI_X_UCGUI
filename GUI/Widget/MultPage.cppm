@@ -28,11 +28,11 @@ public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aBkColor[MULTIPAGE_NUMCOLORS]{
-			/* Disabled page */	RGB_GRAYL(0xD0),
-			/* Enabled page */	RGB_GRAYL(0xC0)
+			/* Disabled page */	RGBC::Gray(0xD0),
+			/* Enabled page */	RGBC::Gray(0xC0)
 		};
 		RGBC aTextColor[MULTIPAGE_NUMCOLORS]{
-			/* Disabled page */	RGB_GRAYL(0x80),
+			/* Disabled page */	RGBC::Gray(0x80),
 			/* Enabled page */	RGB_BLACK
 		};
 		unsigned Align{ MULTIPAGE_ALIGN_LEFT | MULTIPAGE_ALIGN_TOP };
@@ -221,7 +221,7 @@ private:
 				if (this->EffectSize() > 1) {
 					GUI.Color(RGB_WHITE);
 					GUI_DrawVLine(r.x0 - 1, r.y0, r.y0 + 1);
-					GUI.Color(RGB_GRAYL(0x55));
+					GUI.Color(RGBC::Gray(0x55));
 					GUI_DrawVLine(r.x1 + 1, r.y0, r.y0 + 1);
 				}
 			}
@@ -230,7 +230,7 @@ private:
 				if (this->EffectSize() > 1) {
 					GUI.Color(RGB_WHITE);
 					GUI_DrawVLine(r.x0 - 1, r.y1 - 2, r.y1 - 1);
-					GUI.Color(RGB_GRAYL(0x55));
+					GUI.Color(RGBC::Gray(0x55));
 					GUI_DrawVLine(r.x1 + 1, r.y1 - 2, r.y1 - 1);
 				}
 			}

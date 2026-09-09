@@ -33,7 +33,7 @@ public:
 			/* Active 3-State */	&abmCheckEnabled[1]
 		};
 		RGBC aBkColorBox[2]{
-			/* Inactive */	RGB_GRAYL(0x80),
+			/* Inactive */	RGBC::Gray(0x80),
 			/* Active */	RGB_WHITE
 		};
 		RGBC BkColor{ RGB_INVALID };
@@ -271,7 +271,7 @@ CheckBox::Properties CheckBox::DefaultProps;
 }
 
 /* Palettes */
-static CLOGPALETTE _PalCheckDisabled{ RGB_GRAYL(0x10), RGB_GRAYL(0x80) };
+static CLOGPALETTE _PalCheckDisabled{ RGBC::Gray(0x10), RGBC::Gray(0x80) };
 static CLOGPALETTE _PalCheckEnabled{ RGB_BLACK, RGB_WHITE };
 
 /* Pixel data */
