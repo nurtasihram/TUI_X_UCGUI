@@ -195,7 +195,7 @@ enum BPP_MODE : uint8_t {
 	BPP_32,
 	BPP_DEFAULT
 };
-const uint8_t BPP_Bits[]{ 1, 2, 4, 8, 16, 24, 32, 0 };
+extern const uint8_t BPP_Bits[8];
 struct BITVIEW : RECT {
 	const void* pData;
 	PCLOGPALETTE pPalEntries;
@@ -432,3 +432,5 @@ using BM_BPP2 = const BITS_BPP2;
 #pragma endregion
 
 }
+
+const uint8_t BPP_Bits[]{ 1, 2, 4, 8, 16, 24, 32, 0 };

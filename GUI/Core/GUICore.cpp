@@ -6,7 +6,7 @@
 import TUX.Core.Timer;
 #endif
 
-LCDDEV_API *pLCD_API;
+LCDDEV *pLCD_API;
 
 void GUI_Init(void) {
 	GUI_X_Init();
@@ -23,7 +23,6 @@ void GUI_Init(void) {
 void GUI_SelectLCD(void) {
 #if GUI_SUPPORT_DEVICES
 	GUI.pDeviceAPI = pLCD_API;
-	GUI.pDevData = nullptr;
 #endif
 	GUI.ClipRectMax();
 	WObj::Activate();
@@ -77,14 +76,12 @@ void LCD_SetPixel(int x, int y, RGBC ColorIndex) {
 	GUI.pDeviceAPI->SetPixel(x, y, ColorIndex);
 }
 void LCD_FillRect(RECT r) {
-	if (!(r &= GUI.rClip))
-		return;
-	GUI.pDeviceAPI->FillRect(r, GUI.Color());
+	if (r &= GUI.rClip)
+		GUI.pDeviceAPI->FillRect(r, GUI.Color());
 }
 void LCD_DrawBitmap(BITVIEW b) {
-	if (!(b &= GUI.rClip))
-		return;
-	GUI.pDeviceAPI->DrawBitmap(b, GUI.DrawMode & DRAWMODE_TRANS);
+	if (b &= GUI.rClip)
+		GUI.pDeviceAPI->DrawBitmap(b, GUI.DrawMode & DRAWMODE_TRANS);
 }
 
 void GUI_ClearRect(RECT r) {

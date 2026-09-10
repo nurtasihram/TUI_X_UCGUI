@@ -82,12 +82,3 @@ void GUI_ClearKeyBuffer(void);
 
 void GUI_PID_StoreState(const PID_STATE &State);
 PID_STATE GUI_PID_GetState(void);
-
-int  GUI_MOUSE_GetState(PID_STATE *pState);
-void GUI_MOUSE_StoreState(const PID_STATE *pState);
-
-int  GUI_TOUCH_GetState(PID_STATE *pState);
-void GUI_TOUCH_GetUnstable(int *px, int *py);  /* for diagnostics only */
-void GUI_TOUCH_StoreState(int x, int y);
-void GUI_TOUCH_StoreStateEx(const PID_STATE *pState);
-void GUI_TOUCH_StoreUnstable(int x, int y);

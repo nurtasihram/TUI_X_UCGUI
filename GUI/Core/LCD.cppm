@@ -4,13 +4,12 @@ export import TUX.Types;
 
 export {
 	
-struct LCDDEV_API {
+struct LCDDEV {
 	BPP_MODE BitsPerPixel;
 	PCLOGPALETTE pPal = nullptr;
-	LCDDEV_API *pMemDevAPI = nullptr;
 
-	LCDDEV_API(LCDDEV_API *pMemDevAPI, BPP_MODE BitsPerPixel)
-		: BitsPerPixel(BitsPerPixel), pMemDevAPI(pMemDevAPI) {}
+	LCDDEV(BPP_MODE BitsPerPixel)
+		: BitsPerPixel(BitsPerPixel) {}
 
 	virtual RECT GetRect() = 0;
 	virtual RGBC GetPixel(int16_t x, int16_t y) = 0;
@@ -34,7 +33,7 @@ struct LCDDEV_API {
 	}
 
 private:
-	using _SetPixelFunc = void(LCDDEV_API:: *)(int16_t, int16_t, RGBC);
+	using _SetPixelFunc = void(LCDDEV:: *)(int16_t, int16_t, RGBC);
 	void _DrawBitmapBytes(_SetPixelFunc _SetPixel,
 						  RECT r, uint8_t BitsPerPixel,
 						  const void *pData, uint16_t BytesPerLine) {
@@ -76,10 +75,10 @@ private:
 public:
 	virtual void DrawBitmap(BITVIEW b, bool HasTrans) {
 		static const _SetPixelFunc aSetPixelFunc[]{
-			&LCDDEV_API::SetPixel,
-			&LCDDEV_API::SetPixelPal,
-			&LCDDEV_API::SetPixelTrans,
-			&LCDDEV_API::SetPixelTransPal
+			&LCDDEV::SetPixel,
+			&LCDDEV::SetPixelPal,
+			&LCDDEV::SetPixelTrans,
+			&LCDDEV::SetPixelTransPal
 		};
 		pPal = b.pPalEntries;
 		auto _SetPix = aSetPixelFunc[(pPal ? 1 : 0) | (HasTrans ? 2 : 0)];

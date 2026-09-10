@@ -8,8 +8,8 @@
 
 Ayxandar Ayx;
 
-struct LCD_API : public LCDDEV_API {
-	LCD_API() : LCDDEV_API(pMEMDEV__APIList24, BPP_32) {}
+struct LCD_API : public LCDDEV {
+	LCD_API() : LCDDEV(BPP_32) {}
 	RECT GetRect() override {
 		return{ 0, 0, LCD_XSIZE - 1, LCD_YSIZE - 1 };
 	}
@@ -24,7 +24,7 @@ struct LCD_API : public LCDDEV_API {
 	}
 } LCD_API;
 
-LCDDEV_API *GUI_X_LCD_Init(void) {
+LCDDEV *GUI_X_LCD_Init(void) {
 	SimDisp::LoadDll(_T("SimClient.dll"));
 	//SimDisp::LoadDll(_T("SimDisp.dll"));
 	assert(SimDisp::Open(L"TUI By Nurtas Ihram", LCD_XSIZE, LCD_YSIZE));

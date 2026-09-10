@@ -542,7 +542,7 @@ public:
 					if (!pParent)
 						Flags = GUI_MEMDEV_HASTRANS;
 					GUI_MEMDEV_Draw(r, [](void *p) {
-						auto pWin = WObj::pWinActive;
+						auto pWin = (WObj *)p;
 						auto Rect = pWin->InvalidRect;
 						pWin->InvalidRect = GUI.rClip;
 						pWin->_Paint1();

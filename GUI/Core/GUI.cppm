@@ -39,38 +39,9 @@ constexpr TEXTALIGN
 	TEXTALIGN_VERTICAL    = 3 << 2;
 
 #if GUI_SUPPORT_DEVICES
-struct GUI_MEMDEV {
-	RECT rect;
-	uint16_t BytesPerLine;
-	BPP_MODE BitsPerPixel;
-	void *pData;
-	LCDDEV_API *pAPIList;
-public:
-	GUI_MEMDEV(RECT r, LCDDEV_API *pMemDevAPI) :
-		rect(r),
-		BitsPerPixel(pMemDevAPI->BitsPerPixel),
-		pAPIList(pMemDevAPI) {
-		BytesPerLine = (r.XSize() * BPP_Bits[BitsPerPixel] + 7) >> 3;
-		pData = GUI_ALLOC_Alloc(r.YSize() * BytesPerLine);
-	}
-	~GUI_MEMDEV() {
-		GUI_ALLOC_Free(pData);
-		pData = nullptr;
-	}
-	GUI_MEMDEV(const GUI_MEMDEV &) = delete;
-	GUI_MEMDEV &operator=(const GUI_MEMDEV &) = delete;
-public:
-	uint16_t GetSizeX() const { return rect.XSize(); }
-	uint16_t GetSizeY() const { return rect.YSize(); }
-	RECT Rect() const { return rect; }
-	void Org(POINT);
-};
-
 typedef void GUI_CALLBACK_VOID_P(void *p);
-
 /* Create a memory device which is compatible to the selected LCD */
-void GUI_MEMDEV_CopyToLCD(GUI_MEMDEV *pDev);
-int  GUI_MEMDEV_Draw(RECT r, GUI_CALLBACK_VOID_P *pfDraw, void *pData);
+void GUI_MEMDEV_Draw(RECT r, GUI_CALLBACK_VOID_P *pfDraw, void *pData);
 #endif
 
 #pragma region Text rendering and wrapping
@@ -100,9 +71,7 @@ struct GUI_CONTEXT {
 	POINT Off;
 	/* Variables in MEMDEV module (with memory devices only) */
 #if GUI_SUPPORT_DEVICES
-	LCDDEV_API *pDeviceAPI;  /* function pointers only */
-	GUI_MEMDEV *pDevData;
-	RECT ClipRectPrev;
+	LCDDEV *pDeviceAPI;
 #endif
 public:
 	DRAWMODE SetDrawMode(DRAWMODE dm) {
@@ -134,9 +103,4 @@ public:
 	{ rClip = pDeviceAPI->GetRect(); }
 } GUI;
 
-}
-
-void GUI_MEMDEV::Org(POINT p) {
-	rect.LeftTop(p);
-	GUI.ClipRectMax();
 }
