@@ -4,6 +4,7 @@
 
 #include "WM.h"
 
+#pragma region Key Message Handling
 static int _KeyMsgCnt;
 static struct {
 	int Key;
@@ -11,46 +12,33 @@ static struct {
 } _KeyMsg;
 
 static int _Key;
-
 int GUI_GetKey(void) {
 	int r = _Key;
 	_Key = 0;
 	return r;
 }
-
 void GUI_StoreKey(int Key) {
 	if (!_Key) {
 		_Key = Key;
 	}
 }
-
 void GUI_ClearKeyBuffer(void) {
 	while (GUI_GetKey());
 }
-
 void GUI_StoreKeyMsg(int Key, int PressedCnt) {
 	_KeyMsg.Key = Key;
 	_KeyMsg.PressedCnt = PressedCnt;
 	_KeyMsgCnt = 1;
 }
-
-int GUI_PollKeyMsg(void) {
-	int r = 0;
-
-	if (_KeyMsgCnt) {
-		int Key;
-		_KeyMsgCnt--;
-		Key = _KeyMsg.Key;
-		WM_OnKey(Key, _KeyMsg.PressedCnt);
-		if (_KeyMsg.PressedCnt == 1) {
-			GUI_StoreKey(Key);
-		}
-		r = 1;              /* We have done something */
-	}
-
-	return r;
+bool GUI_PollKeyMsg(void) {
+	if (!_KeyMsgCnt) return false;
+	_KeyMsgCnt--;
+	auto Key = _KeyMsg.Key;
+	WM_OnKey(Key, _KeyMsg.PressedCnt);
+	if (_KeyMsg.PressedCnt == 1)
+		GUI_StoreKey(Key);
+	return true;
 }
-
 /*********************************************************************
 *
 *       GUI_SendKeyMsg
@@ -61,7 +49,17 @@ int GUI_PollKeyMsg(void) {
 *   and wait for somebody to poll the buffer.
 */
 void GUI_SendKeyMsg(int Key, int PressedCnt) {
-	if (!WM_OnKey(Key, PressedCnt)) {
+	if (!WM_OnKey(Key, PressedCnt))
 		GUI_StoreKeyMsg(Key, PressedCnt);
-	}
 }
+#pragma endregion
+
+#pragma region Touch Input Handling
+static PID_STATE _State{ 0 };
+PID_STATE GUI_PID_GetState(void) {
+	return _State;
+}
+void GUI_PID_StoreState(const PID_STATE &State) {
+	_State = State;
+}
+#pragma endregion

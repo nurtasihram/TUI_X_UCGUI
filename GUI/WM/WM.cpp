@@ -2,13 +2,6 @@
 
 import TUX.Window;
 
-RECT WM_GetClientRect() {
-	return WObj::pWinActive->GetClientRect();
-}
-RECT WM_GetInsideRect() {
-	return WObj::pWinActive->GetInsideRect();
-}
-
 int WM_OnKey(int Key, int Pressed) {
 	if (WObj::pWinFocus) {
 		WM_KEY_INFO Info;

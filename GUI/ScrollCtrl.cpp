@@ -22,16 +22,11 @@ bool WM_SetScrollbarH(WObj *pWin, int OnOff) {
 
 WObj *WM_GetScrollPartner(WObj *pScroll) {
 	int Id = pScroll->GetID();
-	if (Id == GUI_ID_HSCROLL) {
+	if (Id == GUI_ID_HSCROLL)
 		Id = GUI_ID_VSCROLL;
-	}
-	else if (Id == GUI_ID_VSCROLL) {
+	else if (Id == GUI_ID_VSCROLL)
 		Id = GUI_ID_HSCROLL;
-	}
 	return pScroll->Parent()->GetItem<ScrollBar>(Id);
-}
-void WM_GetScrollState(WObj *pObj, WM_SCROLL_STATE *pScrollState) {
-	pObj->Require(WM_GET_SCROLL_STATE, (WM_PARAM)pScrollState);
 }
 /*********************************************************************
 *
@@ -67,9 +62,9 @@ void WM_GetInsideRectExScrollbar(WObj *pWin, RECT *pRect) {
 	}
 }
 
-void Widget::SetScrollState(const WM_SCROLL_STATE &VState, const WM_SCROLL_STATE &HState) {
+void Widget::ScrollState(const WM_SCROLL_STATE &VState, const WM_SCROLL_STATE &HState) {
 	if (auto pScroll = GetScrollbarV())
-		pScroll->SetScrollState(VState);
+		pScroll->ScrollState(VState);
 	if (auto pScroll = GetScrollbarH())
-		pScroll->SetScrollState(HState);
+		pScroll->ScrollState(HState);
 }

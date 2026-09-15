@@ -71,11 +71,11 @@ private:
 		/* Draw text if needed */
 		if (!text) return;
 		/* Draw the text */
-		auto RectText = WM_GetClientRect();
+		auto RectText = GetClientRect();
 		RectText.x0 += RectBox.x1 + 1 + Props.Spacing;
 		GUI.Color(Props.TextColor);
 		GUI.Font(Props.pFont);
-		GUI_DispStringInRect(text, &RectText, Props.Align);
+		GUI_DispStringInRect(text, RectText, Props.Align);
 		/* Draw focus rectangle */
 		if (!(States & WIDGET_STATE_FOCUS))
 			return;

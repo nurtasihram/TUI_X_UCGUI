@@ -181,6 +181,7 @@ constexpr RGBC
 struct BRUSH {
 	RGBC Color, BkColor;
 };
+using LOGPALETTE = RGBC[];
 using CLOGPALETTE = const RGBC[];
 using PCLOGPALETTE = const RGBC *;
 #pragma endregion
@@ -217,6 +218,7 @@ public:
 		BitsPerPixel(BitsPerPixel),
 		BitsXOff(BitsXOff) {}
 public:
+	bool IsTrans() const { return pPalEntries ? pPalEntries[0] == RGB_INVALID : false; }
 	bool operator&=(RECT rClip) {
 		auto ptOld = LeftTop();
 		if (!RECT::operator&=(rClip))
@@ -240,13 +242,14 @@ struct BITMAP {
 		   uint16_t BytesPerLine,
 		   BPP_MODE BitsPerPixel,
 		   const void *pData,
-		   PCLOGPALETTE pPalEntries = nullptr) :
+		   PCLOGPALETTE pPalEntries = nullptr,
+		   uint8_t BitsXOff = 0) :
 		pData(pData),
 		pPalEntries(pPalEntries),
 		Size(Size),
 		BytesPerLine(BytesPerLine),	
 		BitsPerPixel(BitsPerPixel),
-		BitsXOff(0) {}
+		BitsXOff(BitsXOff) {}
 public:
 	BITVIEW At(POINT Pos) const {
 		return {
@@ -254,7 +257,8 @@ public:
 			BytesPerLine,
 			BitsPerPixel,
 			pData,
-			pPalEntries
+			pPalEntries,
+			BitsXOff
 		};
 	}
 };
@@ -301,13 +305,14 @@ struct FONT {
 			if (ch == '\n') {
 				if (size.x < lineWidth)
 					size.x = lineWidth;
-				lineWidth = 0;
 				size.y += YSize;
+				lineWidth = 0;
 			}
 			else if (ch != '\r') 
 				lineWidth += CharWidth(ch);
 		if (size.x < lineWidth)
 			size.x = lineWidth;
+		size.y += YSize;
 		return size;
 	}
 };

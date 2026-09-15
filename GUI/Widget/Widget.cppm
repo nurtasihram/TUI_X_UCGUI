@@ -28,16 +28,10 @@ typedef int WIDGET_DRAW_ITEM_FUNC(WObj *pWin, int Cmd, int ItemIndex, POINT Item
 
 #pragma region Widget Effect
 struct WIDGET_EFFECT {
-	void DrawUp(void) const { DrawUp(WM_GetClientRect()); }
-	void DrawDown(void) const { DrawDown(WM_GetClientRect()); }
-	RECT GetRect() const { return WM_GetClientRect() / EffectSize; }
-
+	int16_t EffectSize;
+	WIDGET_EFFECT(int16_t EffectSize = 0) : EffectSize(EffectSize) {}
 	virtual void DrawUp(RECT r) const {}
 	virtual void DrawDown(RECT r) const {}
-
-	int EffectSize;
-
-	WIDGET_EFFECT(int EffectSize = 0) : EffectSize(EffectSize) {}
 };
 using CWIDGET_EFFECT = const WIDGET_EFFECT;
 using PCWIDGET_EFFECT = const WIDGET_EFFECT *;
@@ -124,15 +118,15 @@ protected:
 		GUI.BkColor(BkColor);
 	}
 
-	void SetScrollState(const WM_SCROLL_STATE &VState, const WM_SCROLL_STATE &HState);
+	void ScrollState(const WM_SCROLL_STATE &VState, const WM_SCROLL_STATE &HState);
 
 	void DrawUp() const {
 		if (pEffect)
-			pEffect->DrawUp();
+			pEffect->DrawUp(GetClientRect());
 	}
 	void DrawDown() const {
 		if (pEffect)
-			pEffect->DrawDown();
+			pEffect->DrawDown(GetClientRect());
 	}
 	void DrawUp(const RECT &r) const {
 		if (pEffect)

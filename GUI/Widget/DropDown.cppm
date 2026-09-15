@@ -92,7 +92,7 @@ private:
 		GUI.Font(Props.pFont);
 		auto ColorIndex = (States & WIDGET_STATE_FOCUS) ? 2 : 1;
 		auto s = _GetpItem(Sel);
-		auto r = WM_GetClientRect() / Border;
+		auto r = GetClientRect() / Border;
 		auto InnerSize = r.YSize();
 		/* Draw the 3D effect (if configured) */
 		DrawDown();
@@ -105,9 +105,9 @@ private:
 		r.x0 += TextBorderSize;
 		r.x1 -= TextBorderSize;
 		GUI.Color(Props.aTextColor[ColorIndex]);
-		GUI_DispStringInRect(s, &r, Props.Align);/**/
+		GUI_DispStringInRect(s, r, Props.Align);/**/
 		/* Draw arrow */
-		r = WM_GetClientRect() / Border;
+		r = GetClientRect() / Border;
 		r.x0 = r.x1 + 1 - InnerSize;
 		GUI.Color(RGBC::Gray(0xc0));
 		GUI_FillRect(r);

@@ -40,14 +40,6 @@ void WM_Init(void);
 bool WM_Exec(void);  /* Execute all jobs ... Return 0 if nothing was done. */
 bool WM_Exec1(void); /* Execute one job  ... Return 0 if nothing was done. */
 
-/* Move/resize windows */
-int  WM_CreateTimer(WObj *pWin, int UserID, int Period, int Mode); /* not to be documented (may change in future version) */
-void WM_DeleteTimer(WObj *pWin, int UserId); /* not to be documented (may change in future version) */
-
-/* Get size/origin of a window */
-RECT WM_GetClientRect();
-RECT WM_GetInsideRect();
-
 int WM_OnKey(int Key, int Pressed);
 
 typedef WM_PARAM WM_CALLBACK(WObj *pWin, int MsgId, WM_PARAM Data);
@@ -57,7 +49,6 @@ void WM_GetInsideRectExScrollbar(WObj *pWin, RECT *pRect); /* not to be document
 WObj*WM_GetScrollPartner(WObj *pWin);
 bool WM_SetScrollbarH(WObj *pWin, int OnOff); /* not to be documented (may change in future version) */
 bool WM_SetScrollbarV(WObj *pWin, int OnOff); /* not to be documented (may change in future version) */
-void WM_GetScrollState(WObj *pObj, WM_SCROLL_STATE *pScrollState);
 
 class WObj {
 	RECT Rect, InvalidRect;
@@ -532,7 +523,6 @@ public:
 		if (cb) {
 			if (_ClipAtParentBorders(InvalidRect)) {
 				Select();
-#if GUI_SUPPORT_MEMDEV
 				if (Status & WC_MEMDEV) {
 					auto r = InvalidRect;
 					/*
@@ -547,7 +537,6 @@ public:
 					}, this);
 				}
 				else
-#endif
 					_Paint1();
 				Ret = true;    /* Something has been done */
 			}
@@ -1120,8 +1109,13 @@ public:
 	WObj *GetScrollbarH() { return GetItem(GUI_ID_HSCROLL); }
 	WObj *GetScrollbarV() { return GetItem(GUI_ID_VSCROLL); }
 
-	void SetScrollState(const WM_SCROLL_STATE &State)
+	void ScrollState(const WM_SCROLL_STATE &State)
 	{ Require(WM_SET_SCROLL_STATE, (WM_PARAM)&State); }
+	WM_SCROLL_STATE ScrollState() {
+		WM_SCROLL_STATE ScrollState;
+		Require(WM_GET_SCROLL_STATE, (WM_PARAM)&ScrollState);
+		return ScrollState;
+	}
 #pragma endregion
 
 #pragma region ID
@@ -1242,10 +1236,8 @@ public:
 
 	bool IsEnabled() const { return !(Status & WC_DISABLED); }
 	
-#if GUI_SUPPORT_MEMDEV
 	void EnableMemdev() { Status |= WC_MEMDEV; }
 	void DisableMemdev() { Status &= ~(WC_MEMDEV | WC_MEMDEV_ON_REDRAW); }
-#endif
 
 };
 

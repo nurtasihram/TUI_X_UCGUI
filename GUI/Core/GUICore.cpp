@@ -10,9 +10,7 @@ LCDDEV *pLCD_API;
 
 void GUI_Init(void) {
 	GUI_X_Init();
-#if GUI_SUPPORT_DEVICES
 	GUI.pDeviceAPI = pLCD_API = GUI_X_LCD_Init(); /* &LCD_L0_APIList; */
-#endif
 	GUI.rClip = pLCD_API->GetRect();
 	GUI.Font(GUI_DEFAULT_FONT);
 	GUI.BkColor(GUI_DEFAULT_BKCOLOR);
@@ -21,9 +19,7 @@ void GUI_Init(void) {
 	WM_Init();
 }
 void GUI_SelectLCD(void) {
-#if GUI_SUPPORT_DEVICES
 	GUI.pDeviceAPI = pLCD_API;
-#endif
 	GUI.ClipRectMax();
 	WObj::Activate();
 }
@@ -43,18 +39,6 @@ int GUI_Exec(void) {
 	while (GUI_Exec1())
 		r = 1; /* We have done something */
 	return r;
-}
-
-int GUI_GetTime(void) {
-	return GUI_X_GetTime();
-}
-void GUI_Delay(int Period) {
-	int EndTime = GUI_GetTime() + Period;
-	int tRem; /* remaining Time */
-	while (tRem = EndTime - GUI_GetTime(), tRem > 0) {
-		GUI_Exec();
-		GUI_X_Delay((tRem > 5) ? 5 : tRem);
-	}
 }
 
 #pragma region Set/Get Properties
@@ -81,7 +65,7 @@ void LCD_FillRect(RECT r) {
 }
 void LCD_DrawBitmap(BITVIEW b) {
 	if (b &= GUI.rClip)
-		GUI.pDeviceAPI->DrawBitmap(b, GUI.DrawMode & DRAWMODE_TRANS);
+		GUI.pDeviceAPI->DrawBitmap(b, b.IsTrans());
 }
 
 void GUI_ClearRect(RECT r) {
@@ -130,23 +114,15 @@ void GUI_DrawVLine(int x0, int y0, int y1) {
 void GUI_DrawHLine(int y0, int x0, int x1) {
 	GUI_FillRect({ x0, y0, x1, y0 });
 }
-
 void GUI_DrawBitmap(PCBITMAP pBitmap, POINT Pos) {
 	Pos += GUI.Off;
-	auto pPal = pBitmap->pPalEntries;
-	auto PrevDraw = GUI.SetDrawMode(0);  /* No Get... at this point */
-	GUI.SetDrawMode(
-		pPal && pPal[0] == RGB_INVALID ?
-		PrevDraw | DRAWMODE_TRANS : PrevDraw & ~DRAWMODE_TRANS);
-	CLOGPALETTE aPal{ GUI.BkColor(), GUI.Color() };
-	if (!pPal)
-		pPal = pBitmap->BitsPerPixel == BPP_1 ? aPal : nullptr;
 	auto bmView = pBitmap->At(Pos);
-	bmView.pPalEntries = pPal;
+	CLOGPALETTE aPal{ GUI.BkColor(), GUI.Color() };
+	if (!pBitmap->pPalEntries)
+		bmView.pPalEntries = pBitmap->BitsPerPixel == BPP_1 ? aPal : nullptr;
 	WObj::Iterate(bmView, [&] {
 		LCD_DrawBitmap(bmView);
 	});
-	GUI.SetDrawMode(PrevDraw);
 }
 #pragma endregion
 
@@ -172,7 +148,7 @@ void FONT_MONO::DispChar(uint16_t c) const {
 	else if (pTrans)
 		if (pTrans->FirstChar <= c && c <= pTrans->LastChar)
 			lst = pTrans->pList[c - pTrans->FirstChar];
-	CLOGPALETTE aPal{ GUI.BkColor(), GUI.Color() };
+	LOGPALETTE aPal{ GUI.BkColor(), GUI.Color() };
 	/* Draw first character if it is valid */
 	if (lst.c0 >= 0) {
 		uint16_t BytesPerLine = (XSize + 7) >> 3;
@@ -183,13 +159,12 @@ void FONT_MONO::DispChar(uint16_t c) const {
 			(const uint8_t *)pData + lst.c0 * BytesPerChar,
 			aPal });
 		if (lst.c1 >= 0) {
-			auto OldMode = GUI.SetDrawMode(DRAWMODE_TRANS);
+			aPal[0] = RGB_INVALID;
 			LCD_DrawBitmap(BITVIEW{
 				RECT::LeftTop(GUI.DispPos, { XSize, YSize }),
 				BytesPerLine, BPP_1,
 				(const uint8_t *)pData + lst.c1 * BytesPerChar,
 				aPal });
-			GUI.SetDrawMode(OldMode);
 		}
 	}
 	GUI.DispPos.x += XSize;
@@ -255,22 +230,14 @@ void GUI_DispStringAt(const char *s, int x, int y) {
 	GUI.DispPos.y = y;
 	GUI_DispString(s);
 }
-void GUI__DispStringInRect(const char *s, RECT *pRect, int TextAlign, int MaxNumChars) {
-	RECT r;
+void _DispStringInRect(const char *s, const RECT &r, int TextAlign, int MaxNumChars) {
 	RECT rLine;
 	int y = 0;
 	auto sOrg = s;
-	int FontYSize;
 	int xLine = 0;
 	int LineLen;
 	int NumCharsRem;           /* Number of remaining characters */
-	FontYSize = GUI.pAFont->YSize;
-	if (pRect) {
-		r = *pRect;
-	}
-	else {
-		r = WM_GetClientRect();
-	}
+	auto FontYSize = GUI.pAFont->YSize;
 	/* handle vertical alignment */
 	if ((TextAlign & TEXTALIGN_VERTICAL) == TEXTALIGN_TOP) {
 		y = r.y0;
@@ -320,27 +287,18 @@ void GUI__DispStringInRect(const char *s, RECT *pRect, int TextAlign, int MaxNum
 			break;
 	}
 }
-
-void GUI_DispStringInRectMax(const char *s, RECT *pRect, int TextAlign, int MaxLen) {
-	if (s) {
-		const RECT *pOldClipRect = nullptr;
-		RECT r;
-
-		if (pRect) {
-			pOldClipRect = WObj::SetUserClipRect(pRect);
-			if (pOldClipRect) {
-				r = *pRect;
-				r &= *pOldClipRect;
-				WObj::SetUserClipRect(&r);
-			}
-		}
-		GUI__DispStringInRect(s, pRect, TextAlign, MaxLen);
-		WObj::SetUserClipRect(pOldClipRect);
+void GUI_DispStringInRectMax(const char *s, RECT r, int TextAlign, int MaxLen) {
+	if (!s) return;
+	auto pOldClipRect = WObj::SetUserClipRect(&r);
+	if (pOldClipRect) {
+		r &= *pOldClipRect;
+		WObj::SetUserClipRect(&r);
 	}
+	_DispStringInRect(s, r, TextAlign, MaxLen);
+	WObj::SetUserClipRect(pOldClipRect);
 }
-
-void GUI_DispStringInRect(const char *s, RECT *pRect, int TextAlign) {
-	GUI_DispStringInRectMax(s, pRect, TextAlign, 0x7fff);
+void GUI_DispStringInRect(const char *s, const RECT &r, int TextAlign) {
+	GUI_DispStringInRectMax(s, r, TextAlign, 0x7fff);
 }
 #pragma endregion
 
@@ -404,7 +362,7 @@ static int _GetCharWrap(const char *s, int xSize) {
 	UCFONT Font = GUI.Font();
 	while (auto Char = *s++) {
 		xDist += Font.CharWidth(Char);
-		if ((NumChars && (xDist > xSize)) || (Char == '\n')) 
+		if ((NumChars && xDist > xSize) || Char == '\n') 
 			break;
 		NumChars++;
 	}
@@ -423,18 +381,13 @@ static int _GetNoWrap(const char *s) {
 *  not counted
 */
 int GUI__WrapGetNumCharsDisp(const char *pText, int xSize, WRAPMODE WrapMode) {
-	int r;
 	switch (WrapMode) {
 		case WRAPMODE_WORD:
-			r = _GetWordWrap(pText, xSize);
-			break;
+			return _GetWordWrap(pText, xSize);
 		case WRAPMODE_CHAR:
-			r = _GetCharWrap(pText, xSize);
-			break;
-		default:
-			r = _GetNoWrap(pText);
+			return _GetCharWrap(pText, xSize);
 	}
-	return r;
+	return _GetNoWrap(pText);
 }
 int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, WRAPMODE WrapMode) {
 	auto NumChars = GUI__WrapGetNumCharsDisp(pText, xSize, WrapMode);
@@ -463,9 +416,5 @@ int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, WRAPMODE WrapMo
 * divide.
 */
 int GUI__DivideRound(int a, int b) {
-	int r = 0;
-	if (b) {
-		r = ((a + b / 2) / b);
-	}
-	return r;
+	return b ? ((a + b / 2) / b) : 0;
 }

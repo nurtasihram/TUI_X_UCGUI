@@ -45,15 +45,15 @@ private:
 		int xPos = -ScrollPos;
 		int NumItems = Columns.NumItems();
 		int EffectSize = this->EffectSize();
-		RECT Rect;
+		RECT r;
 		GUI.BkColor(Props.BkColor);
 		GUI.Font(Props.pFont);
 		GUI_Clear();
 		for (int i = 0; i < NumItems; i++) {
 			auto &col = Columns[i];
-			Rect = WM_GetClientRect();
-			Rect.x0 = xPos;
-			Rect.x1 = Rect.x0 + col.Width;
+			r = GetClientRect();
+			r.x0 = xPos;
+			r.x1 = r.x0 + col.Width;
 			if (auto pDraw = col.pDrawObj) {
 				POINT Size = pDraw->Size(), Off;
 				switch (col.Align & TEXTALIGN_HORIZONTAL) {
@@ -66,30 +66,30 @@ private:
 				}
 				switch (col.Align & TEXTALIGN_VERTICAL) {
 					case TEXTALIGN_BOTTOM:
-						Off.y = (Rect.YSize() - Size.y);
+						Off.y = (r.YSize() - Size.y);
 						break;
 					case TEXTALIGN_VCENTER:
-						Off.y = (Rect.YSize() - Size.y) / 2;
+						Off.y = (r.YSize() - Size.y) / 2;
 						break;
 				}
 				Off.x += xPos;
-				SetUserClipRect(&Rect);
-				pDraw->Draw(RECT::LeftTop(Rect.LeftTop(), Off));
+				SetUserClipRect(&r);
+				pDraw->Draw(RECT::LeftTop(r.LeftTop(), Off));
 				SetUserClipRect(nullptr);
 			}
-			DrawUp(Rect);
-			xPos += Rect.x1 - Rect.x0;
-			Rect.x0 += EffectSize + Props.BorderH;
-			Rect.x1 -= EffectSize + Props.BorderH;
-			Rect.y0 += EffectSize + Props.BorderV;
-			Rect.y1 -= EffectSize + Props.BorderV;
+			DrawUp(r);
+			xPos += r.x1 - r.x0;
+			r.x0 += EffectSize + Props.BorderH;
+			r.x1 -= EffectSize + Props.BorderH;
+			r.y0 += EffectSize + Props.BorderV;
+			r.y1 -= EffectSize + Props.BorderV;
 			GUI.Color(Props.TextColor);
-			GUI_DispStringInRect(col.pText, &Rect, col.Align);
+			GUI_DispStringInRect(col.pText, r, col.Align);
 		}
-		Rect = WM_GetClientRect();
-		Rect.x0 = xPos;
-		Rect.x1 = 0xfff;
-		DrawUp(Rect);
+		r = GetClientRect();
+		r.x0 = xPos;
+		r.x1 = 0xfff;
+		DrawUp(r);
 	}
 	void _RestoreOldCursor(void) {
 		if (_pOldCursor) {

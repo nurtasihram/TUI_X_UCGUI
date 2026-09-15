@@ -102,7 +102,7 @@ private:
 		pRect->y1 = pRect->y0 + textBound.y - 1;
 	}
 	void _OnPaint() {
-		auto rClient = WM_GetClientRect();
+		auto rClient = GetClientRect();
 		auto rInside = rClient / EffectSize();
 		auto xPos = _Value2X(v);
 		char ac[5]{ 0 };

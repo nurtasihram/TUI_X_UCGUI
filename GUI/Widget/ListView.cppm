@@ -79,86 +79,75 @@ private:
 		return 1;
 	}
 	void _OnPaint(const RECT *pClipRect) {
-		RECT rClip, Rect;
-		int NumRows, NumVisRows, NumColumns;
-		int LBorder, RBorder, EffectSize;
-		int xPos, yPos, Width, RowDistY;
-		int Align, i, j, EndRow;
 		/* Init some values */
-		NumColumns = pHeader->GetNumItems();
-		NumRows = RowArray.NumItems();
-		NumVisRows = _GetNumVisibleRows();
-		RowDistY = _GetRowDistY();
-		LBorder = this->LBorder;
-		RBorder = this->RBorder;
-		EffectSize = this->EffectSize();
-		yPos = pHeader->GetHeight() + EffectSize;
-		EndRow = this->ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
+		auto NumColumns = pHeader->GetNumItems();
+		auto NumRows = RowArray.NumItems();
+		auto NumVisRows = _GetNumVisibleRows();
+		auto RowDistY = _GetRowDistY();
+		auto EffectSize = this->EffectSize();
+		auto yPos = pHeader->GetHeight() + EffectSize;
+		auto EndRow = ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
 		/* Calculate clipping rectangle */
-		rClip = *pClipRect - GetOrg();
-		WM_GetInsideRectExScrollbar(this, &Rect);
-		rClip &= Rect;
+		RECT rClient;
+		auto rClip = *pClipRect - GetOrg();
+		WM_GetInsideRectExScrollbar(this, &rClient);
+		rClip &= rClient;
 		/* Set drawing color, font and text mode */
 		GUI.Color(Props.aTextColor[0]);
 		GUI.Font(Props.pFont);
 		/* Do the drawing */
-		for (i = this->ScrollStateV.v; i < EndRow; i++) {
-			auto &pRow = this->RowArray[i];
-			{
-				Rect.y0 = yPos;
-				/* Break when all other rows are outside the drawing area */
-				if (Rect.y0 > rClip.y1) {
-					break;
-				}
-				Rect.y1 = yPos + RowDistY - 1;
-				/* Make sure that we draw only when row is in drawing area */
-				if (Rect.y1 >= rClip.y0) {
-					auto ColorIndex =
-						 i == Sel ?
-						 	States & WIDGET_STATE_FOCUS ? LISTVIEW_CI_SELFOCUS : LISTVIEW_CI_SEL :
-							LISTVIEW_CI_UNSEL;
-					GUI.BkColor(Props.aBkColor[ColorIndex]);
-					/* Iterate over all columns */
-					if (States & LISTVIEW_CF_SHOWGRID) {
-						Rect.y1--;
-					}
-					xPos = EffectSize - this->ScrollStateH.v;
-					for (j = 0; j < NumColumns; j++) {
-						Width = pHeader->GetItemWidth(j);
-						Rect.x0 = xPos;
-						/* Break when all other columns are outside the drawing area */
-						if (Rect.x0 > rClip.x1) {
-							break;
+		for (auto i = ScrollStateV.v; i < EndRow; i++) {
+			auto &pRow = RowArray[i];
+			rClient.y0 = yPos;
+			/* Break when all other rows are outside the drawing area */
+			if (rClient.y0 > rClip.y1)
+				break;
+			rClient.y1 = yPos + RowDistY - 1;
+			/* Make sure that we draw only when row is in drawing area */
+			if (rClient.y1 >= rClip.y0) {
+				auto ColorIndex =
+						i == Sel ?
+						States & WIDGET_STATE_FOCUS ? LISTVIEW_CI_SELFOCUS : LISTVIEW_CI_SEL :
+						LISTVIEW_CI_UNSEL;
+				GUI.BkColor(Props.aBkColor[ColorIndex]);
+				/* Iterate over all columns */
+				if (States & LISTVIEW_CF_SHOWGRID)
+					rClient.y1--;
+				auto xPos = EffectSize - this->ScrollStateH.v;
+				for (auto j = 0; j < NumColumns; j++) {
+					auto Width = pHeader->GetItemWidth(j);
+					rClient.x0 = xPos;
+					/* Break when all other columns are outside the drawing area */
+					if (rClient.x0 > rClip.x1)
+						break;
+					rClient.x1 = xPos + Width - 1;
+					/* Make sure that we draw only when column is in drawing area */
+					if (rClient.x1 >= rClip.x0) {
+						auto &item = pRow[j];
+						if (auto pItemInfo = item.pItemInfo) {
+							GUI.BkColor(pItemInfo->aBkColor[ColorIndex]);
+							GUI.Color(pItemInfo->aTextColor[ColorIndex]);
 						}
-						Rect.x1 = xPos + Width - 1;
-						/* Make sure that we draw only when column is in drawing area */
-						if (Rect.x1 >= rClip.x0) {
-							auto &item = pRow[j];
-							if (auto pItemInfo = item.pItemInfo) {
-								GUI.BkColor(pItemInfo->aBkColor[ColorIndex]);
-								GUI.Color(pItemInfo->aTextColor[ColorIndex]);
-							}
-							else {
-								GUI.Color(Props.aTextColor[ColorIndex]);
-							}
-							/* Clear background */
-							GUI_ClearRect(Rect);
-							/* Draw text */
-							Rect.x0 += LBorder;
-							Rect.x1 -= RBorder;
-							Align = this->AlignArray[j];
-							GUI_DispStringInRect(item.pText, &Rect, Align);
-							if (auto pItemInfo = item.pItemInfo)
-								GUI.BkColor(pItemInfo->aBkColor[ColorIndex]);
+						else {
+							GUI.Color(Props.aTextColor[ColorIndex]);
 						}
-						xPos += Width;
+						/* Clear background */
+						GUI_ClearRect(rClient);
+						/* Draw text */
+						rClient.x0 += LBorder;
+						rClient.x1 -= RBorder;
+						auto Align = AlignArray[j];
+						GUI_DispStringInRect(item.pText, rClient, Align);
+						if (auto pItemInfo = item.pItemInfo)
+							GUI.BkColor(pItemInfo->aBkColor[ColorIndex]);
 					}
-					/* Clear unused area to the right of items */
-					if (xPos <= rClip.x1)
-						GUI_ClearRect({ xPos, Rect.y0, rClip.x1, Rect.y1 });
+					xPos += Width;
 				}
-				yPos += RowDistY;
+				/* Clear unused area to the right of items */
+				if (xPos <= rClip.x1)
+					GUI_ClearRect({ xPos, rClient.y0, rClip.x1, rClient.y1 });
 			}
+			yPos += RowDistY;
 		}
 		/* Clear unused area below items */
 		if (yPos <= rClip.y1) {
@@ -169,28 +158,16 @@ private:
 		if (States & LISTVIEW_CF_SHOWGRID) {
 			GUI.Color(Props.GridColor);
 			yPos = pHeader->GetHeight() + EffectSize - 1;
-			for (i = 0; i < NumVisRows; i++) {
+			for (auto i = 0; i < NumVisRows; i++) {
 				yPos += RowDistY;
-				/* Break when all other rows are outside the drawing area */
-				if (yPos > rClip.y1) {
-					break;
-				}
-				/* Make sure that we draw only when row is in drawing area */
-				if (yPos >= rClip.y0) {
+				if (rClip.y0 <= yPos && yPos <= rClip.y1)
 					GUI_DrawHLine(yPos, rClip.x0, rClip.x1);
-				}
 			}
-			xPos = EffectSize - this->ScrollStateH.v;
-			for (i = 0; i < NumColumns; i++) {
+			auto xPos = EffectSize - this->ScrollStateH.v;
+			for (auto i = 0; i < NumColumns; i++) {
 				xPos += pHeader->GetItemWidth(i);
-				/* Break when all other columns are outside the drawing area */
-				if (xPos > rClip.x1) {
-					break;
-				}
-				/* Make sure that we draw only when column is in drawing area */
-				if (xPos >= rClip.x0) {
+				if (rClip.x0 <= xPos && xPos <= rClip.x1)
 					GUI_DrawVLine(xPos, rClip.y0, rClip.y1);
-				}
 			}
 		}
 		/* Draw the effect */
@@ -203,7 +180,7 @@ private:
 			HeaderHeight = pHeader->GetHeight();
 			RowDistY = _GetRowDistY();
 			WM_GetInsideRectExScrollbar(this, &Rect);
-			Rect.y0 += HeaderHeight + (Sel - this->ScrollStateV.v) * RowDistY;
+			Rect.y0 += HeaderHeight + (Sel - ScrollStateV.v) * RowDistY;
 			Invalidate(&Rect);
 		}
 	}
@@ -222,7 +199,7 @@ private:
 			HeaderHeight = pHeader->GetHeight();
 			RowDistY = _GetRowDistY();
 			WM_GetInsideRectExScrollbar(this, &Rect);
-			Rect.y0 += HeaderHeight + (Sel - this->ScrollStateV.v) * RowDistY;
+			Rect.y0 += HeaderHeight + (Sel - ScrollStateV.v) * RowDistY;
 			Rect.y1 = Rect.y0 + RowDistY - 1;
 			Invalidate(&Rect);
 		}
@@ -237,7 +214,7 @@ private:
 		Rect.x1 -= Rect.x0;
 		Rect.y1 -= Rect.y0;
 		if ((x >= 0) && (x <= Rect.x1) && (y >= 0) && (y <= (Rect.y1 - HeaderHeight))) {
-			auto Sel = (y / _GetRowDistY()) + this->ScrollStateV.v;
+			auto Sel = (y / _GetRowDistY()) + ScrollStateV.v;
 			if (Sel < RowArray.NumItems())
 				SetSel(Sel);
 		}
@@ -294,15 +271,15 @@ private:
 		else
 			ScrollStateV.Bounds();
 		ScrollStateH.Bounds();
-		SetScrollState(ScrollStateV, ScrollStateH);
+		ScrollState(ScrollStateV, ScrollStateH);
 		return ScrollStateV.v - PrevScrollStateV;
 	}
 	int _UpdateScrollParas() {
 		int NumRows;
 		NumRows = RowArray.NumItems();
 		/* update vertical scrollbar */
-		this->ScrollStateV.PageSize = _GetNumVisibleRows();
-		this->ScrollStateV.NumItems = (NumRows) ? NumRows : 1;
+		ScrollStateV.PageSize = _GetNumVisibleRows();
+		ScrollStateV.NumItems = (NumRows) ? NumRows : 1;
 		/* update horizontal scrollbar */
 		this->ScrollStateH.PageSize = _GetXSize();
 		this->ScrollStateH.NumItems = _GetHeaderWidth();
@@ -313,7 +290,7 @@ private:
 		NumRows = RowArray.NumItems();
 		NumColumns = AlignArray.NumItems();
 		for (i = 0; i < NumRows; i++) {
-				auto &pRow = this->RowArray[i];
+				auto &pRow = RowArray[i];
 				/* Delete attached info items */
 				for (j = 0; j < NumColumns; j++) {
 					auto &item = pRow[j];
@@ -326,7 +303,7 @@ private:
 				pRow.Delete();
 			}
 		this->AlignArray.Delete();
-		this->RowArray.Delete();
+		RowArray.Delete();
 	}
 
 	ItemInfo *_GetpItemInfo(uint16_t Column, uint16_t Row, LISTVIEW_CI Index) {
@@ -366,20 +343,17 @@ private:
 							pObj->pHeader = nullptr;
 						break;
 					case WM_NOTIFICATION_VALUE_CHANGED: {
-						WM_SCROLL_STATE ScrollState;
 						if (pWinSrc == pObj->GetScrollbarV()) {
-							WM_GetScrollState(pWinSrc, &ScrollState);
-							pObj->ScrollStateV.v = ScrollState.v;
+							pObj->ScrollStateV.v = pWinSrc->ScrollState().v;
 							pObj->_InvalidateInsideArea();
-							pObj->_NotifyOwner(WM_NOTIFICATION_SCROLL_CHANGED);
 						}
 						else if (pWinSrc == pObj->GetScrollbarH()) {
-							WM_GetScrollState(pWinSrc, &ScrollState);
-							pObj->ScrollStateH.v = ScrollState.v;
-							pObj->_UpdateScrollParas();
+							pObj->ScrollStateH.v = pWinSrc->ScrollState().v;
 							pObj->pHeader->SetScrollPos(pObj->ScrollStateH.v);
-							pObj->_NotifyOwner(WM_NOTIFICATION_SCROLL_CHANGED);
+							pObj->_UpdateScrollParas();
 						}
+						else break;
+						pObj->_NotifyOwner(WM_NOTIFICATION_SCROLL_CHANGED);
 						break;
 					}
 					case WM_NOTIFICATION_SCROLLBAR_ADDED:

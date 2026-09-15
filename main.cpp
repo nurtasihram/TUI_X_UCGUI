@@ -159,7 +159,7 @@ static WM_PARAM _cbCallback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		pItem->SetState(1);
 		return 0;
 	case WM_KEY: {
-		const WM_KEY_INFO *pInfo = (const WM_KEY_INFO *)Data;
+		auto pInfo = (const WM_KEY_INFO *)Data;
 		switch (pInfo->Key) {
 		case GUI_KEY_ESCAPE:
 			pWin->DialogEnd(1);
@@ -324,7 +324,7 @@ static void _OnMemDevTimer(GUI_TIMER_MESSAGE *pTM) {
 	if (_hNoMemDevPane)
 		_hNoMemDevPane->Invalidate();
 	if (_pMemDevTimer)
-		_pMemDevTimer->SetTime(GUI_GetTime() + 20);
+		_pMemDevTimer->SetTime(GUI_X_GetTime() + 20);
 }
 static WM_PARAM _cbMemDevPane(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
@@ -379,7 +379,7 @@ static const Widget::CreateStruct _aMemDevDialogCreate[] = {
 static WM_PARAM _cbMemDevTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_KEY: {
-			const WM_KEY_INFO *pInfo = (const WM_KEY_INFO *)Data;
+			auto pInfo = (const WM_KEY_INFO *)Data;
 			switch (pInfo->Key) {
 				case GUI_KEY_ESCAPE:
 				case GUI_KEY_ENTER:
@@ -404,7 +404,7 @@ void _TestMemDev() {
 	auto pDialog = (Frame *)_aMemDevDialogCreate->CreateDialog(GUI_COUNTOF(_aMemDevDialogCreate), &_cbMemDevTest, 0, 0, 0);
 	_hMemDevFrame = _CreateMemDevFrame(80, 50, "MemDev ON", 1, &_hMemDevPane);
 	_hNoMemDevFrame = _CreateMemDevFrame(280, 50, "MemDev OFF", 0, &_hNoMemDevPane);
-	_pMemDevTimer = new Timer(_OnMemDevTimer, GUI_GetTime() + 20);
+	_pMemDevTimer = new Timer(_OnMemDevTimer, GUI_X_GetTime() + 20);
 
 	pDialog->DialogExec();
 

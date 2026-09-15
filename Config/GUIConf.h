@@ -1,11 +1,8 @@
 #pragma once
 
-#define GUI_SUPPORT_MEMDEV 1
 #define GUI_SUPPORT_CURSOR 1
 #define GUI_SUPPORT_MOUSE  1
 #define GUI_SUPPORT_TIMER  1
-
-#define GUI_SUPPORT_DEVICES GUI_SUPPORT_MEMDEV
 
 #define GUI_DEFAULT_FONT    &FontProp13_1
 #define GUI_DEFAULT_CURSOR  &CursorArrowM

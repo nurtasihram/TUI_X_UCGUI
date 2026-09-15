@@ -44,9 +44,8 @@ private:
 		/* Show the text */
 		if (pText) {
 			s = pText;
-			GUI.SetTextMode(DRAWMODE_TRANS);
-			auto r = WM_GetClientRect();
-			GUI_DispStringInRect(s, &r, Props.Align);
+			auto r = GetClientRect();
+			GUI_DispStringInRect(s, r, Props.Align);
 		}
 	}
 	void _Delete() {

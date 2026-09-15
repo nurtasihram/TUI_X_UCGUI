@@ -23,23 +23,15 @@
     <ClCompile Include="GUI\Core\GUI.Types.cppm" />
     <ClCompile Include="GUI\Core\GUICore.cpp" />
     <ClCompile Include="GUI\Core\GUICurs.cpp" />
+    <ClCompile Include="GUI\Core\GUIDEV.cpp" />
     <ClCompile Include="GUI\Core\GUITimer.cppm" />
-    <ClCompile Include="GUI\Core\GUI_GetBitmapPixelIndex.cpp" />
     <ClCompile Include="GUI\Core\LCD.cppm" />
-    <ClCompile Include="GUI\Core\GUI_OnKey.cpp" />
-    <ClCompile Include="GUI\Core\GUI_PID.cpp" />
-    <ClCompile Include="GUI\Core\GUI_X_MEM.cppm" />
+    <ClCompile Include="GUI\Core\GUI_Input.cpp" />
     <ClCompile Include="GUI\Core\String.cppm" />
-    <ClCompile Include="GUI\MemDev\GUIDEV.cpp" />
     <ClCompile Include="GUI\Resources\CursorArrow.cpp" />
-    <ClCompile Include="GUI\Resources\CursorCross.cpp" />
     <ClCompile Include="GUI\Resources\CursorHeader.cpp" />
-    <ClCompile Include="GUI\Resources\FontMono6x8.cpp" />
-    <ClCompile Include="GUI\Resources\FontMono8x8.cpp" />
     <ClCompile Include="GUI\Resources\FontProp13_1.cpp" />
     <ClCompile Include="GUI\Resources\FontProp13_ASCII.cpp" />
-    <ClCompile Include="GUI\Resources\FontProp8_1.cpp" />
-    <ClCompile Include="GUI\Resources\FontProp8_ASCII.cpp" />
     <ClCompile Include="GUI\Resources\Resources.cppm" />
     <ClCompile Include="GUI\ScrollCtrl.cpp" />
     <ClCompile Include="GUI\Widget\Button.cppm" />
@@ -51,7 +43,38 @@
     <ClCompile Include="GUI\WM\WindowTypes.cppm" />
     <ClCompile Include="GUI_X\GUI_X.cc" />
     <ClCompile Include="GUI_X\GUI_X_LCD.cc" />
+    <ClCompile Include="GUI_X\GUI_X_MEM.cppm" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TUX_EXT\CursorCross.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="TUX_EXT\FontMono6x8.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="TUX_EXT\FontMono8x8.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="TUX_EXT\FontProp8_1.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="TUX_EXT\FontProp8_ASCII.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="TUX_EXT\tux_osk.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -64,7 +87,6 @@
     <ClInclude Include="GUI\Core\GUI.h" />
     <ClInclude Include="GUI\Core\GUIDebug.h" />
     <ClInclude Include="GUI\Core\GUI_X.h" />
-    <ClInclude Include="GUI\Core\LCD.h" />
     <ClCompile Include="GUI\Widget\DropDown.cppm">
       <FileType>Document</FileType>
     </ClCompile>

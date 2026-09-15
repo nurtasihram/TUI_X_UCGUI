@@ -83,7 +83,7 @@ public:
 	{ this->Context = (uintptr_t)Context; }
 
 	void Restart() {
-		t0 = GUI_GetTime() + Period;
+		t0 = GUI_X_GetTime() + Period;
 		_Unlink();
 		_Link();
 	}
@@ -91,7 +91,7 @@ public:
 	static bool Exec() {
 		static Timer *pActiveTimer = nullptr;
 		bool r = false;
-		auto t = GUI_GetTime();
+		auto t = GUI_X_GetTime();
 		while (auto pTimer = pFirstTimer) {
 			if (pTimer->t0 > t)
 				break;

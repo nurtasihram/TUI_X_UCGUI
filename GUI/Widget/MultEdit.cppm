@@ -109,9 +109,9 @@ private:
 	int _GetCharSizeX(const char *pText) {
 		return GUI.Font().CharWidth(*pText);
 	}
-	void _DispString(const char *pText, RECT *pRect) {
+	void _DispString(const char *pText, const RECT &r) {
 		int NumCharsDisp = _WrapGetNumCharsDisp(pText);
-		GUI_DispStringInRectMax(pText, pRect, TEXTALIGN_LEFT, NumCharsDisp);
+		GUI_DispStringInRectMax(pText, r, TEXTALIGN_LEFT, NumCharsDisp);
 	}
 	char *_GetpLine(unsigned LineNumber) {
 		char *pLine;
@@ -187,7 +187,7 @@ private:
 		InvalidFlags |= INVALID_CURSORXY;
 	}
 	void _SetScrollState() {
-		SetScrollState(ScrollStateV, ScrollStateH);
+		ScrollState(ScrollStateV, ScrollStateH);
 	}
 	void _CalcScrollPos() {
 		int xCursor, yCursor;
@@ -569,7 +569,7 @@ private:
 
 				// Draw line if visible
 				if (Line >= ScrollPosY && (Line - ScrollPosY) <= NumVisLines) {
-					_DispString(pText, &r);
+					_DispString(pText, r);
 					r.y0 += FontSizeY;
 				}
 
@@ -703,22 +703,15 @@ private:
 				auto pInfo = (const NOTIFY_INFO *)Data;
 				auto pWinSrc = pInfo->pWinSrc;
 				switch (pInfo->Notification) {
-					case WM_NOTIFICATION_VALUE_CHANGED: {
-						WM_SCROLL_STATE ScrollState;
-						if (pWinSrc == pObj->GetScrollbarV()) {
-							WM_GetScrollState(pWinSrc, &ScrollState);
-							pObj->ScrollStateV.v = ScrollState.v;
-							pObj->Invalidate();
-							pObj->NotifyParent(WM_NOTIFICATION_SCROLL_CHANGED);
-						}
-						else if (pWinSrc == pObj->GetScrollbarH()) {
-							WM_GetScrollState(pWinSrc, &ScrollState);
-							pObj->ScrollStateH.v = ScrollState.v;
-							pObj->Invalidate();
-							pObj->NotifyParent(WM_NOTIFICATION_SCROLL_CHANGED);
-						}
+					case WM_NOTIFICATION_VALUE_CHANGED:
+						if (pWinSrc == pObj->GetScrollbarV())
+							pObj->ScrollStateV.v = pWinSrc->ScrollState().v;
+						else if (pWinSrc == pObj->GetScrollbarH())
+							pObj->ScrollStateH.v = pWinSrc->ScrollState().v;
+						else break;
+						pObj->Invalidate();
+						pObj->NotifyParent(WM_NOTIFICATION_SCROLL_CHANGED);
 						break;
-					}
 					case WM_NOTIFICATION_SCROLLBAR_ADDED:
 						pObj->_SetScrollState();
 						break;

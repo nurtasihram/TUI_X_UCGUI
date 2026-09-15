@@ -10,9 +10,6 @@
     <Filter Include="GUI\Core">
       <UniqueIdentifier>{66bb47bc-d957-45e8-b79b-7df70d23c8b4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GUI\MemDev">
-      <UniqueIdentifier>{abf105d2-d9ee-4c97-92fc-876b476349fe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GUI\Widget">
       <UniqueIdentifier>{6fc855ae-06c7-466d-b909-67d008be96a8}</UniqueIdentifier>
     </Filter>
@@ -45,9 +42,6 @@
     <ClCompile Include="GUI_X\GUI_X.cc">
       <Filter>GUI_X</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\MemDev\GUIDEV.cpp">
-      <Filter>GUI\MemDev</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\WM\WM.cpp">
       <Filter>GUI\WM</Filter>
     </ClCompile>
@@ -56,15 +50,6 @@
     </ClCompile>
     <ClCompile Include="GUI\Widget\Window_.cppm">
       <Filter>GUI\Widget</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_GetBitmapPixelIndex.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_OnKey.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_PID.cpp">
-      <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUICore.cpp">
       <Filter>GUI\Core</Filter>
@@ -120,22 +105,7 @@
     <ClCompile Include="GUI\Resources\CursorArrow.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Resources\CursorCross.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Resources\CursorHeader.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\FontMono6x8.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\FontMono8x8.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\FontProp8_1.cpp">
-      <Filter>GUI\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Resources\FontProp8_ASCII.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Resources\FontProp13_1.cpp">
@@ -178,9 +148,30 @@
       <Filter>TUX_EXT</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="GUI\Core\GUI_X_MEM.cppm" />
     <ClCompile Include="GUI\Core\LCD.cppm">
       <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUI_Input.cpp" />
+    <ClCompile Include="GUI_X\GUI_X_MEM.cppm">
+      <Filter>GUI_X</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Core\GUIDEV.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TUX_EXT\FontMono6x8.cpp">
+      <Filter>TUX_EXT</Filter>
+    </ClCompile>
+    <ClCompile Include="TUX_EXT\FontMono8x8.cpp">
+      <Filter>TUX_EXT</Filter>
+    </ClCompile>
+    <ClCompile Include="TUX_EXT\FontProp8_1.cpp">
+      <Filter>TUX_EXT</Filter>
+    </ClCompile>
+    <ClCompile Include="TUX_EXT\FontProp8_ASCII.cpp">
+      <Filter>TUX_EXT</Filter>
+    </ClCompile>
+    <ClCompile Include="TUX_EXT\CursorCross.cpp">
+      <Filter>TUX_EXT</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -197,9 +188,6 @@
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\GUIDebug.h">
-      <Filter>GUI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Core\LCD.h">
       <Filter>GUI\Core</Filter>
     </ClInclude>
     <ClInclude Include="GUI_X\resource.h">

@@ -13,13 +13,13 @@ struct LCDDEV {
 	virtual ~LCDDEV() {}
 
 	virtual RECT GetRect() = 0;
-	virtual RGBC GetPixel(int16_t x, int16_t y) = 0;
 	virtual void FillRect(RECT r, RGBC color) {
 		for (int y = r.y0; y <= r.y1; ++y)
-			for (int x = r.x0; x <= r.x1; ++x)
-				SetPixel(x, y, color);
+		for (int x = r.x0; x <= r.x1; ++x)
+		SetPixel(x, y, color);
 	}
 
+	virtual RGBC GetPixel(int16_t x, int16_t y) = 0;
 	virtual void SetPixel(int16_t x, int16_t y, RGBC color) = 0;
 	void SetPixelPal(int16_t x, int16_t y, RGBC color) {
 		SetPixel(x, y, pPal[color]);
@@ -90,5 +90,11 @@ public:
 		pPal = nullptr;
 	}
 };
+
+extern LCDDEV *pLCD_API;
+
+void LCD_DrawBitmap(BITVIEW b);
+void LCD_SetPixel(int x, int y, RGBC Color);
+void LCD_FillRect(RECT r);
 
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GUI.h"
+import TUX.LCD;
 
 /**** Init ****/
 void GUI_X_Init(void);

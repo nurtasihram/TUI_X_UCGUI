@@ -185,7 +185,7 @@ private:
 		}
 		ScrollStateV.Bounds();
 		ScrollStateH.Bounds();
-		SetScrollState(ScrollStateV, ScrollStateH);
+		ScrollState(ScrollStateV, ScrollStateH);
 		return ScrollStateV.v - PrevScrollStateV;
 	}
 	void _InvalidateItemSize(uint16_t Index) {
@@ -460,22 +460,15 @@ private:
 				auto pInfo = (const NOTIFY_INFO *)Data;
 				auto pWinSrc = pInfo->pWinSrc;
 				switch (pInfo->Notification) {
-					case WM_NOTIFICATION_VALUE_CHANGED: {
-						WM_SCROLL_STATE ScrollState;
-						if (pWinSrc == pObj->GetScrollbarV()) {
-							WM_GetScrollState(pWinSrc, &ScrollState);
-							pObj->ScrollStateV.v = ScrollState.v;
-							pObj->_InvalidateInsideArea();
-							pObj->_NotifyOwner(WM_NOTIFICATION_SCROLL_CHANGED);
-						}
-						else if (pWinSrc == pObj->GetScrollbarH()) {
-							WM_GetScrollState(pWinSrc, &ScrollState);
-							pObj->ScrollStateH.v = ScrollState.v;
-							pObj->_InvalidateInsideArea();
-							pObj->_NotifyOwner(WM_NOTIFICATION_SCROLL_CHANGED);
-						}
+					case WM_NOTIFICATION_VALUE_CHANGED:
+						if (pWinSrc == pObj->GetScrollbarV())
+							pObj->ScrollStateV.v = pWinSrc->ScrollState().v;
+						else if (pWinSrc == pObj->GetScrollbarH())
+							pObj->ScrollStateH.v = pWinSrc->ScrollState().v;
+						else break;
+						pObj->_InvalidateInsideArea();
+						pObj->_NotifyOwner(WM_NOTIFICATION_SCROLL_CHANGED);
 						break;
-					}
 					case WM_NOTIFICATION_SCROLLBAR_ADDED:
 						pObj->UpdateScrollers();
 						break;

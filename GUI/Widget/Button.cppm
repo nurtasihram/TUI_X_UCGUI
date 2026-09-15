@@ -58,7 +58,7 @@ private:
 		bool IsPressed = States & BUTTON_STATE_PRESSED;
 		int ColorIndex = (IsEnabled()) ? IsPressed : 2;
 		GUI.Font(Props.pFont);
-		auto rClient = WM_GetClientRect();
+		auto rClient = GetClientRect();
 		auto rInside = rClient;
 		auto EffectSize = this->EffectSize();
 		if (IsPressed)
@@ -83,8 +83,7 @@ private:
 		/* Draw the actual button (background and text) */
 		if (!IsPressed)
 			rInside -= EffectSize / 2;
-		GUI.SetTextMode(DRAWMODE_TRANS);
-		GUI_DispStringInRect(text, &rInside, Props.Align);
+		GUI_DispStringInRect(text, rInside, Props.Align);
 		SetUserClipRect(nullptr);
 		/* Draw focus */
 		if (States & BUTTON_STATE_FOCUS) {
