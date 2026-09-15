@@ -99,9 +99,6 @@
     <ClCompile Include="GUI\Widget\MultEdit.cppm">
       <Filter>GUI\Widget\Leaf</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\Edit.cppm">
-      <Filter>GUI\Widget\Leaf</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\Text.cppm">
       <Filter>GUI\Widget\Leaf</Filter>
     </ClCompile>

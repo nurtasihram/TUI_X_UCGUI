@@ -83,24 +83,23 @@ private:
 	}
 	void _GetTextRect(RECT *pRect, const char *pText) const {
 		auto size = GetSize();
-		int TextWidth = GUI_GetStringSizeX(pText);
-		int TextHeight = Props.pFont->YSize;
+		auto textBound = Props.pFont->TextBound(pText);
 		int EffectSize = this->EffectSize();
 		switch (Props.Align & TEXTALIGN_HORIZONTAL) {
 			case TEXTALIGN_HCENTER:
-				pRect->x0 = (size.x - TextWidth) / 2;
+				pRect->x0 = (size.x - textBound.x) / 2;
 				break;
 			case TEXTALIGN_RIGHT:
-				pRect->x0 = size.x - TextWidth - 1 - EffectSize;
+				pRect->x0 = size.x - textBound.x - 1 - EffectSize;
 				break;
 			default:
 				pRect->x0 = EffectSize;
 		}
-		pRect->y0 = (size.y - TextHeight) / 2;
+		pRect->y0 = (size.y - textBound.y) / 2;
 		pRect->x0 += XOff;
 		pRect->y0 += YOff;
-		pRect->x1 = pRect->x0 + TextWidth - 1;
-		pRect->y1 = pRect->y0 + TextHeight - 1;
+		pRect->x1 = pRect->x0 + textBound.x - 1;
+		pRect->y1 = pRect->y0 + textBound.y - 1;
 	}
 	void _OnPaint() {
 		auto rClient = WM_GetClientRect();

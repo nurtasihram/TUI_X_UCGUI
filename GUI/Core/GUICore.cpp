@@ -11,7 +11,7 @@ LCDDEV *pLCD_API;
 void GUI_Init(void) {
 	GUI_X_Init();
 #if GUI_SUPPORT_DEVICES
-	GUI.pDeviceAPI = pLCD_API = GUI_X_LCD_Init();; /* &LCD_L0_APIList; */
+	GUI.pDeviceAPI = pLCD_API = GUI_X_LCD_Init(); /* &LCD_L0_APIList; */
 #endif
 	GUI.rClip = pLCD_API->GetRect();
 	GUI.Font(GUI_DEFAULT_FONT);
@@ -151,92 +151,16 @@ void GUI_DrawBitmap(PCBITMAP pBitmap, POINT Pos) {
 #pragma endregion
 
 #pragma region Font&String
-void GUI_GetTextExtend(RECT *pRect, const char *s, int MaxNumChars) {
-	int xMax = 0;
-	int NumLines = 0;
-	int LineSizeX = 0;
-	pRect->x0 = GUI.DispPos.x;
-	pRect->y0 = GUI.DispPos.y;
-	UCFONT Font = GUI.Font();
-	while (MaxNumChars--) {
-		auto Char = *s++;
-		if ((Char == '\n') || (Char == 0)) {
-			if (LineSizeX > xMax)
-				xMax = LineSizeX;
-			LineSizeX = 0;
-			NumLines++;
-			if (!Char)
-				break;
-		}
-		else 
-			LineSizeX += Font.GetCharSizeX(Char);
-	}
-	if (xMax < LineSizeX)
-		xMax = LineSizeX;
-	if (!NumLines) 
-		NumLines = 1;
-	pRect->x1 = pRect->x0 + xMax - 1;
-	pRect->y1 = pRect->y0 + Font.YSize * NumLines - 1;
-}
-
-void GUI__CalcTextRect(const char *pText, const RECT *pTextRectIn, RECT *pTextRectOut, int TextAlign) {
-	if (pText) {
-		int xPos, yPos, TextWidth, TextHeight;
-		/* Calculate X-pos of text */
-		TextWidth = GUI_GetStringSizeX(pText);
-		switch (TextAlign & TEXTALIGN_HORIZONTAL) {
-			case TEXTALIGN_HCENTER:
-				xPos = pTextRectIn->x0 + ((pTextRectIn->x1 - pTextRectIn->x0 + 1) - TextWidth) / 2;
-				break;
-			case TEXTALIGN_RIGHT:
-				xPos = pTextRectIn->x1 - TextWidth + 1;
-				break;
-			default:
-				xPos = pTextRectIn->x0;
-		}
-
-		/* Calculate Y-pos of text */
-		TextHeight = GUI.Font().YSize;
-		switch (TextAlign & TEXTALIGN_VERTICAL) {
-			case TEXTALIGN_VCENTER:
-				yPos = pTextRectIn->y0 + ((pTextRectIn->y1 - pTextRectIn->y0 + 1) - TextHeight) / 2;
-				break;
-			case TEXTALIGN_BOTTOM:
-				yPos = pTextRectIn->y1 - TextHeight + 1;
-				break;
-			default:
-				yPos = pTextRectIn->y0;
-		}
-
-		/* Return text rectangle */
-		pTextRectOut->x0 = xPos;
-		pTextRectOut->y0 = yPos;
-		pTextRectOut->x1 = xPos + TextWidth - 1;
-		pTextRectOut->y1 = yPos + TextHeight - 1;
-	}
-	else {
-		*pTextRectOut = *pTextRectIn;
-	}
-}
-/*********************************************************************
-*
-*       GUI_GetLineDistX
-*
-*  This routine is used to calculate the length of a line in pixels.
-*/
 int GUI__GetLineSizeX(const char *s, int MaxNumChars) {
 	int Dist = 0;
 	UCFONT Font = GUI.Font();
 	if (s) {
 		while (--MaxNumChars >= 0) {
 			auto Char = *s++;
-			Dist += Font.GetCharSizeX(Char);
+			Dist += Font.CharWidth(Char);
 		}
 	}
 	return Dist;
-}
-int GUI_GetStringSizeX(const char *s) {
-	return GUI__GetLineSizeX(s, GUI__strlen(s));
 }
 #pragma endregion
 
@@ -429,7 +353,7 @@ void GUI_DispChar(uint16_t c) {
 		return;
 	}
 	GUI.DispPos += GUI.Off;
-	auto r = RECT::LeftTop(GUI.DispPos, { GUI.Font().GetCharSizeX(c), GUI.pAFont->YSize });
+	auto r = RECT::LeftTop(GUI.DispPos, { GUI.Font().CharWidth(c), GUI.pAFont->YSize });
 	WObj::Iterate(r, [&] {
 		GUI.pAFont->DispChar(c);
 	});
@@ -465,7 +389,7 @@ static int _GetWordWrap(const char *s, int xSize) {
 		if (Char == ' ' && Char != PrevChar)
 			WordWrap = NumChars;
 		PrevChar = Char;
-		xDist += Font.GetCharSizeX(Char);
+		xDist += Font.CharWidth(Char);
 		if (xDist <= xSize || NumChars == 0)
 			NumChars++;
 		else
@@ -479,7 +403,7 @@ static int _GetCharWrap(const char *s, int xSize) {
 	int xDist = 0, NumChars = 0;
 	UCFONT Font = GUI.Font();
 	while (auto Char = *s++) {
-		xDist += Font.GetCharSizeX(Char);
+		xDist += Font.CharWidth(Char);
 		if ((NumChars && (xDist > xSize)) || (Char == '\n')) 
 			break;
 		NumChars++;

@@ -16,6 +16,7 @@ constexpr uint16_t MULTIPAGE_STATE_SCROLLMODE  = WIDGET_STATE_USER<0>;
 constexpr uint16_t MULTIPAGE_NUMCOLORS         = 2;
 
 export {
+
 constexpr uint16_t
 	MULTIPAGE_ALIGN_LEFT   = 0 << 0,
 	MULTIPAGE_ALIGN_RIGHT  = 1 << 0,
@@ -48,7 +49,7 @@ private:
 	};
 	ARRAY<Page> Handles;
 	WObj *pClient;
-	uint16_t Selection = 0xffff;
+	uint16_t sel = 0xffff;
 	int16_t ScrollState = 0;
 
 	void _AddScrollbar(int x, int y, int w, int h) {
@@ -78,12 +79,10 @@ private:
 		DelStates(MULTIPAGE_STATE_SCROLLMODE);
 	}
 
-	void _ShowPage(unsigned Index) {
-		WObj *pWin = 0;
-		auto pClient = this->pClient;
-		if ((int)Index < Handles.NumItems()) {
+	void _ShowPage(uint16_t Index) {
+		WObj *pWin = nullptr;
+		if (Index < Handles.NumItems())
 			pWin = Handles[Index].pWin;
-		}
 		for (auto pChild = pClient->FirstChild(); pChild; pChild = pChild->NextSibling()) {
 			if (pChild == pWin) {
 				pChild->ShowWindow();
@@ -93,24 +92,16 @@ private:
 				pChild->HideWindow();
 		}
 	}
-	void _SetEnable(unsigned Index, int State) {
-		if ((int)Index < Handles.NumItems()) {
-			auto &pPage = Handles[Index];
-			if (State) {
-				pPage.Status |= MULTIPAGE_STATE_ENABLED;
-			}
-			else {
-				pPage.Status &= ~MULTIPAGE_STATE_ENABLED;
-			}
+	void _SetEnable(uint16_t Index, int bEnable) {
+		if (Index < Handles.NumItems()) {
+			auto &page = Handles[Index];
+			if (bEnable)
+				page.Status |= MULTIPAGE_STATE_ENABLED;
+			else
+				page.Status &= ~MULTIPAGE_STATE_ENABLED;
 		}
 	}
-	int _GetEnable(unsigned Index) {
-		int r = 0;
-		if ((int)Index < Handles.NumItems()) {
-			r = (Handles[Index].Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0;
-		}
-		return r;
-	}
+	
 	void _CalcClientRect(RECT *pRect) {
 		*pRect = _GetInsideRect();
 		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
@@ -129,19 +120,15 @@ private:
 			pRect->y0 += Props.pFont->YSize + 6;
 		}
 	}
-	int _GetPageSizeX(unsigned Index) {
-		int r = 0;
-		if ((int)Index < Handles.NumItems()) {
-			GUI.Font(Props.pFont);
-			r = GUI_GetStringSizeX(Handles[Index].pText) + 10;
-		}
-		return r;
+	uint16_t _GetPageSizeX(uint16_t Index) {
+		if (Index < Handles.NumItems())
+			return Props.pFont->TextBound(Handles[Index].pText).x + 10;
+		return 0;
 	}
-	int _GetPagePosX(unsigned Index) {
-		unsigned i, r = 0;
-		for (i = 0; i < Index; i++) {
+	uint16_t _GetPagePosX(uint16_t Index) {
+		uint16_t r = 0;
+		for (uint16_t i = 0; i < Index; i++)
 			r += _GetPageSizeX(i);
-		}
 		return r;
 	}
 	int _GetTextWidth() {
@@ -177,6 +164,7 @@ private:
 			pRect->x1 = Width;
 		}
 	}
+
 	void _UpdatePositions() {
 		RECT rBorder;
 		int Width;
@@ -207,18 +195,19 @@ private:
 		pClient->SetSize(rBorder.Size());
 		Invalidate();
 	}
-	void _DrawTextItem(const char *pText, unsigned Index,
+
+	void _DrawTextItem(const char *pText, uint16_t Index,
 					   const RECT *pRect, int x0, int w, int ColorIndex) {
 		RECT r;
 		r = *pRect;
 		r.x0 += x0;
 		r.x1 = r.x0 + w;
 		DrawUp(r);
-		r -= this->EffectSize();
-		if (this->Selection == Index) {
+		r -= EffectSize();
+		if (sel == Index) {
 			if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
-				r.y0 -= this->EffectSize() + 1;
-				if (this->EffectSize() > 1) {
+				r.y0 -= EffectSize() + 1;
+				if (EffectSize() > 1) {
 					GUI.Color(RGB_WHITE);
 					GUI_DrawVLine(r.x0 - 1, r.y0, r.y0 + 1);
 					GUI.Color(RGBC::Gray(0x55));
@@ -226,8 +215,8 @@ private:
 				}
 			}
 			else {
-				r.y1 += this->EffectSize() + 1;
-				if (this->EffectSize() > 1) {
+				r.y1 += EffectSize() + 1;
+				if (EffectSize() > 1) {
 					GUI.Color(RGB_WHITE);
 					GUI_DrawVLine(r.x0 - 1, r.y1 - 2, r.y1 - 1);
 					GUI.Color(RGBC::Gray(0x55));
@@ -267,10 +256,10 @@ private:
 		SetUserClipRect(&rClip);
 		GUI.Font(Props.pFont);
 		for (int i = 0; i < NumItems; i++) {
-			auto &pPage = Handles[i];
+			auto &page = Handles[i];
 			x0 += w;
-			w = GUI_GetStringSizeX(pPage.pText) + 10;
-			_DrawTextItem(pPage.pText, i, &rText, x0, w, (pPage.Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0);
+			w = Props.pFont->TextBound(page.pText).x + 10;
+			_DrawTextItem(page.pText, i, &rText, x0, w, (page.Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0);
 		}
 		SetUserClipRect(nullptr);
 	}
@@ -288,7 +277,7 @@ private:
 					x0 += w;
 					w = _GetPageSizeX(i);
 					if (x >= x0 && x <= (x0 + w - 1)) {
-						SelectPage(i);
+						Selected(i);
 						NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 						return 1;
 					}
@@ -418,9 +407,9 @@ public:
 			for (auto pChild = pClient->FirstChild(); pChild && !pWin; pChild = pChild->NextSibling()) {
 				pWin = pChild;
 				for (int i = 0; i < Handles.NumItems(); i++) {
-					auto &pPage = Handles[i];
-						if (pPage.pWin == pChild) {
-						pWin = 0;
+					auto &page = Handles[i];
+					if (page.pWin == pChild) {
+						pWin = nullptr;
 						break;
 					}
 				}
@@ -441,78 +430,73 @@ public:
 			if (Handles.AddItem(&page) == 0) {
 				GUI__SetText(Handles[Handles.NumItems() - 1].pText, pText);
 			}
-			SelectPage(Handles.NumItems() - 1);
+			Selected(Handles.NumItems() - 1);
 		}
 	}
-	void DeletePage(unsigned Index, int Delete) {
-		if ((int)Index < Handles.NumItems()) {
-			WObj *pWin;
-			pWin = Handles[Index].pWin;
+	void DeletePage(uint16_t Index, int Delete) {
+		if (Index < Handles.NumItems()) {
+			auto pWin = Handles[Index].pWin;
 			/* Remove the page from the MultPage object */
-			if (Index == this->Selection) {
-				if (Index == ((unsigned)Handles.NumItems() - 1)) {
+			if (Index == sel) {
+				if (Index == Handles.NumItems() - 1) {
 					_ShowPage(Index - 1);
-					this->Selection--;
+					sel--;
 				}
-				else {
+				else
 					_ShowPage(Index + 1);
-				}
 			}
-			else {
-				if (Index < this->Selection) {
-					this->Selection--;
-				}
-			}
+			else if (Index < sel)
+				sel--;
 			GUI_ALLOC_FreePtr((void **)&Handles[Index].pText);
 			Handles.DeleteItem(Index);
 			_UpdatePositions();
 			/* Delete the window of the page */
-			if (Delete) {
+			if (Delete)
 				delete pWin;
-			}
 		}
 	}
-	void SelectPage(unsigned Index) {
-		if ((int)Index < Handles.NumItems()) {
-			if (Index != this->Selection && _GetEnable(Index)) {
+	
+	WObj *GetWindow(uint16_t Index) {
+		if (Index < Handles.NumItems())
+			return Handles[Index].pWin;
+		return nullptr;
+	}
+	
+	void PageEnable(uint16_t Index, bool bEnable) {
+		_SetEnable(Index, bEnable);
+		Invalidate();
+	}
+	bool PageEnable(uint16_t Index) const {
+		if (Index < Handles.NumItems())
+			return Handles[Index].Status & MULTIPAGE_STATE_ENABLED;
+		return false;
+	}
+
+	void Selected(uint16_t Index) {
+		if (Index < Handles.NumItems()) {
+			if (Index != sel && (Handles[Index].Status & MULTIPAGE_STATE_ENABLED)) {
 				_ShowPage(Index);
-				this->Selection = Index;
+				sel = Index;
 				_UpdatePositions();
 			}
 		}
-	}
-	void DisablePage(unsigned Index) {
-		_SetEnable(Index, 0);
-		Invalidate();
-	}
-	void EnablePage(unsigned Index) {
-		_SetEnable(Index, 1);
-		Invalidate();
-	}
-	void SetText(const char *pText, unsigned Index) {
-		if (pText && (int)Index < Handles.NumItems()) {
-			if (GUI__SetText(Handles[Index].pText, pText))
-				_UpdatePositions();
-		}
-	}
-	void BkColor(RGBC Color, unsigned Index) {
-		if (((int)Index < MULTIPAGE_NUMCOLORS)) {
-			Props.aBkColor[Index] = Color;
-			Invalidate();
-		}
-	}
-	void TextColor(RGBC Color, unsigned Index) {
-		if (((int)Index < MULTIPAGE_NUMCOLORS)) {
-			Props.aTextColor[Index] = Color;
-			Invalidate();
-		}
-	}
+	}	
+	uint16_t Selected() const { return sel; }
+
 	void Font(PCFONT pFont) {
 		if (pFont) {
 			Props.pFont = pFont;
 			_UpdatePositions();
 		}
 	}
+
+	void SetText(const char *pText, uint16_t Index) {
+		if (Index < Handles.NumItems()) {
+			if (GUI__SetText(Handles[Index].pText, pText))
+				_UpdatePositions();
+		}
+	}
+
 	void SetAlign(unsigned Align) {
 		Props.Align = Align;
 		RECT rClient;
@@ -520,24 +504,20 @@ public:
 		pClient->MoveTo(rClient.LeftTop() + GetRect().LeftTop());
 		_UpdatePositions();
 	}
-	int  GetSelection() {
-		return Selection;
-	}
-	WObj *GetWindow(unsigned Index) {
-		WObj *r = 0;
-		if ((int)Index < Handles.NumItems()) {
-			r = Handles[Index].pWin;
+
+	void BkColor(RGBC Color, uint16_t Index) {
+		if (Index < MULTIPAGE_NUMCOLORS) {
+			Props.aBkColor[Index] = Color;
+			Invalidate();
 		}
-
-		return r;
-	}
-	int IsPageEnabled(unsigned Index) {
-		int r = 0;
-		r = _GetEnable(Index);
-
-		return r;
 	}
 
+	void TextColor(RGBC Color, uint16_t Index) {
+		if (Index < MULTIPAGE_NUMCOLORS) {
+			Props.aTextColor[Index] = Color;
+			Invalidate();
+		}
+	}
 };
 
 MultPage::Properties MultPage::DefaultProps;

@@ -55,12 +55,7 @@ void  GUI__DispStringInRect(const char *s, RECT *pRect, int TextAlign, int MaxNu
 void  GUI_DispStringInRect(const char *s, RECT *pRect, int Flags);
 void  GUI_DispStringInRectMax(const char *s, RECT *pRect, int TextAlign, int MaxLen); /* Not to be doc. */
 
-void  GUI_GetTextExtend(RECT *pRect, const char *s, int Len);
-int   GUI_GetStringSizeX(const char *s);
 void  GUI_DispNextLine(void);
-
-#define GUI_MEMDEV_HASTRANS       0
-#define GUI_MEMDEV_NOTRANS    (1<<0)
 
 void GUI_SelectLCD(void);
 

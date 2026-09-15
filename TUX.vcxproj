@@ -68,9 +68,6 @@
     <ClCompile Include="GUI\Widget\DropDown.cppm">
       <FileType>Document</FileType>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\Edit.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\Frame.cppm">
       <FileType>Document</FileType>
     </ClCompile>

@@ -122,14 +122,6 @@ private:
 	bool _HasEffect() { return (States & MENU_SF_POPUP) || !_IsTopLevelMenu(); }
 	int _GetEffectSize() { return _HasEffect() ? EffectSize() : 0; }
 
-	int _CalcTextWidth(const char *sText) {
-		if (!sText)
-			return 0;
-		auto pOldFont = GUI.Font(Props.pFont);
-		auto TextWidth = GUI_GetStringSizeX(sText);
-		GUI.Font(pOldFont);
-		return TextWidth;
-	}
 	int _GetItemWidth(unsigned Index) {
 		if (Width && (States & MENU_CF_VERTICAL))
 			return Width - (_GetEffectSize() << 1);
@@ -516,7 +508,7 @@ private:
 						TextRect.x1 = TextRect.x0 + TextWidth - 1;
 						TextRect.y0 = FillRect.y0 + BorderTop;
 						TextRect.y1 = TextRect.y0 + FontHeight - 1;
-						WIDGET__FillStringInRect(pItem.pText, FillRect, TextRect, TextRect);
+						WIDGET__FillStringInRect(pItem.pText, FillRect, TextRect);
 					}
 					FillRect.y0 += ItemHeight;
 				}
@@ -540,7 +532,7 @@ private:
 						auto TextWidth = pItem.TextWidth;
 						TextRect.x0 = FillRect.x0 + BorderLeft;
 						TextRect.x1 = TextRect.x0 + TextWidth - 1;
-						WIDGET__FillStringInRect(pItem.pText, FillRect, TextRect, TextRect);
+						WIDGET__FillStringInRect(pItem.pText, FillRect, TextRect);
 					}
 					FillRect.x0 += ItemWidth;
 				}
@@ -606,33 +598,23 @@ public:
 private:
 
 	void _RecalcTextWidthOfItems() {
-		auto NumItems = _GetNumItems();
-		auto pOldFont = GUI.Font(Props.pFont);
-		for (unsigned i = 0; i < NumItems; i++) {
+		for (uint16_t i = 0, NumItems = _GetNumItems(); i < NumItems; i++) {
 			auto &pItem = ItemArray[i];
-			pItem.TextWidth = GUI_GetStringSizeX(pItem.pText);
+			pItem.TextWidth = Props.pFont->TextBound(pItem.pText).x;
 		}
-		GUI.Font(pOldFont);
 	}
-	char _SetItem(unsigned Index, const ItemData *pItemData) {
-		auto pText = pItemData->pText ? pItemData->pText : "";
-		Item item{
-			.pSubmenu = (pItemData->Flags & MENU_IF_SEPARATOR) ? nullptr : pItemData->pSubmenu,
-			.Id = pItemData->Id,
-			.Flags = pItemData->Flags,
-			.TextWidth = (uint16_t)_CalcTextWidth(pText)
-		};
+	bool _SetItem(unsigned Index, const ItemData *pItemData) {
 		if (Index >= ItemArray.NumItems())
-			return 0;
-		auto &pItem = ItemArray[Index];
-		GUI__SetText(pItem.pText, pText);
-		pItem.Id       = item.Id;
-		pItem.Flags    = item.Flags;
-		pItem.pSubmenu = item.pSubmenu;
-		pItem.TextWidth= item.TextWidth;
+			return false;
+		auto &item = ItemArray[Index];
+		item.Id        = pItemData->Id;
+		item.Flags     = pItemData->Flags;
+		item.pSubmenu  = pItemData->Flags & MENU_IF_SEPARATOR ? nullptr : pItemData->pSubmenu;
+		item.TextWidth = Props.pFont->TextBound(item.pText).x;
+		GUI__SetText(item.pText, pItemData->pText);
 		if (item.pSubmenu)
-			pItem.pSubmenu->SetOwner(this);
-		return 1;
+			item.pSubmenu->SetOwner(this);
+		return true;
 	}
 	void _SetItemFlags(unsigned Index, uint16_t Mask, uint16_t Flags) {
 		auto &pItem = ItemArray[Index];

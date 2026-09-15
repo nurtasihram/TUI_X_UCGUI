@@ -535,12 +535,9 @@ public:
 #if GUI_SUPPORT_MEMDEV
 				if (Status & WC_MEMDEV) {
 					auto r = InvalidRect;
-					auto Flags = GUI_MEMDEV_NOTRANS;
 					/*
-						* Currently we treat a desktop window as transparent, because per default it does not repaint itself.
-						*/
-					if (!pParent)
-						Flags = GUI_MEMDEV_HASTRANS;
+					 * Currently we treat a desktop window as transparent, because per default it does not repaint itself.
+					 */
 					GUI_MEMDEV_Draw(r, [](void *p) {
 						auto pWin = (WObj *)p;
 						auto Rect = pWin->InvalidRect;

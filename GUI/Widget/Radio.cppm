@@ -60,12 +60,11 @@ private:
 		GUI.Color(Props.TextColor);
 		GUI.Font(Props.pFont);
 		auto FontDistY = Props.pFont->YSize;
-		auto CHeight = FontDistY;
 		RECT Rect;
 		Rect.x0 = pBmRadio->Size.x + RADIO_BORDER * 2 + 2;
-		Rect.y0 = CHeight <= Height ? (Height - CHeight) / 2 : 0;
-		Rect.y1 = Rect.y0 + CHeight - 1;
-		auto FocusBorder = (FontDistY <= 12) ? 2 : 3;
+		Rect.y0 = FontDistY <= Height ? (Height - FontDistY) / 2 : 0;
+		Rect.y1 = Rect.y0 + FontDistY - 1;
+		auto FocusBorder = FontDistY <= 12 ? 2 : 3;
 		if (Rect.y0 < FocusBorder)
 			FocusBorder = Rect.y0;
 		/* Clear inside ... Just in case      */
@@ -85,7 +84,7 @@ private:
 			/* Draw text if available */
 			if (auto pText = TextArray[i]) {
 				auto r = Rect;
-				r.x1 = r.x0 + GUI_GetStringSizeX(pText) - 2;
+				r.x1 = r.x0 + Props.pFont->TextBound(pText).x - 2;
 				r += POINT{ 0, y };
 				GUI_DispStringAt(pText, r.x0, r.y0);
 				/* Calculate focus rect */

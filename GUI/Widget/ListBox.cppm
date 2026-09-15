@@ -576,12 +576,12 @@ public:
 		_ManageAutoScroll();
 		return _CalcScrollParas();
 	}
+
 #pragma region OwnerDraw
 private:
 	void _PaintItem(int ItemIndex, POINT Pos) const {
 		auto &pItem = ItemArray[ItemIndex];
 		auto r = GetInsideRect();
-		auto FontDistY = Props.pFont->YSize;
 		/* Calculate color index */
 		auto ColorIndex =
 			pItem.Status & LISTBOX_ITEM_DISABLED ? LISTBOX_CI_DISABLED :
@@ -589,18 +589,18 @@ private:
 			pItem.Status & LISTBOX_ITEM_SELECTED ? LISTBOX_CI_SEL_FOCUSSED : LISTBOX_CI_UNSEL :
 			ItemIndex != Sel ? LISTBOX_CI_UNSEL :
 			States & WIDGET_STATE_FOCUS || pOwner ? LISTBOX_CI_SEL_FOCUSSED : LISTBOX_CI_SEL_UNFOCUS;
-/* Display item */
+		/* Display item */
 		GUI.BkColor(Props.aBkColor[ColorIndex]);
 		GUI.Color(Props.aTextColor[ColorIndex]);
 		auto s = ItemArray[ItemIndex].pText;
 		GUI_Clear();
 		GUI_DispStringAt(s, Pos.x + 1, Pos.y);
 		/* Display focus rectangle */
-		if ((States & LISTBOX_CF_MULTISEL) && (ItemIndex == Sel)) {
+		if ((States & LISTBOX_CF_MULTISEL) && ItemIndex == Sel) {
 			RECT rFocus;
 			rFocus.LeftTop(Pos);
 			rFocus.x1 = r.x1;
-			rFocus.y1 = Pos.y + FontDistY - 1;
+			rFocus.y1 = Pos.y + Props.pFont->TextBound(s).x - 1;
 			GUI.Color(RGB_WHITE - Props.aBkColor[ColorIndex]);
 			GUI_DrawFocusRect(rFocus, 0);
 		}
@@ -610,14 +610,13 @@ public:
 		auto pObj = (ListBox *)pWin;
 		switch (Cmd) {
 			case WIDGET_ITEM_GET_XSIZE: {
-				auto pOldFont = GUI.Font(pObj->Props.pFont);
 				auto s = pObj->ItemArray[ItemIndex].pText;
-				auto DistX = GUI_GetStringSizeX(s);
-				GUI.Font(pOldFont);
-				return DistX;
+				return pObj->Props.pFont->TextBound(s).x;
 			}
-			case WIDGET_ITEM_GET_YSIZE:
-				return pObj->Props.pFont->YSize + pObj->ItemSpacing;
+			case WIDGET_ITEM_GET_YSIZE: {
+				auto s = pObj->ItemArray[ItemIndex].pText;
+				return pObj->Props.pFont->TextBound(s).y + pObj->ItemSpacing;
+			}
 			case WIDGET_ITEM_DRAW: 
 				pObj->_PaintItem(ItemIndex, Pos);
 				break;

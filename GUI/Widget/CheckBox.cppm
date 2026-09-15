@@ -79,27 +79,25 @@ private:
 		/* Draw focus rectangle */
 		if (!(States & WIDGET_STATE_FOCUS))
 			return;
-		int xSizeText = GUI_GetStringSizeX(text);
-		int ySizeText = Props.pFont->YSize;
+		auto textBound = Props.pFont->TextBound(text);
 		RECT RectFocus = RectText;
 		switch (Props.Align & ~(TEXTALIGN_HORIZONTAL)) {
 			case TEXTALIGN_VCENTER:
-				RectFocus.y0 = (RectText.y1 - ySizeText) / 2;
+				RectFocus.y0 = (RectText.y1 - textBound.y) / 2;
 				break;
 			case TEXTALIGN_BOTTOM:
-				RectFocus.y0 = RectText.y1 - ySizeText;
+				RectFocus.y0 = RectText.y1 - textBound.y;
 				break;
 		}
 		switch (Props.Align & ~(TEXTALIGN_VERTICAL)) {
 			case TEXTALIGN_HCENTER:
-				RectFocus.x0 += ((RectText.x1 - RectText.x0) - xSizeText) / 2;
+				RectFocus.x0 += ((RectText.x1 - RectText.x0) - textBound.x) / 2;
 				break;
 			case TEXTALIGN_RIGHT:
-				RectFocus.x0 += (RectText.x1 - RectText.x0) - xSizeText;
+				RectFocus.x0 += (RectText.x1 - RectText.x0) - textBound.x;
 				break;
 		}
-		RectFocus.x1 = RectFocus.x0 + xSizeText;
-		RectFocus.y1 = RectFocus.y0 + ySizeText;
+		RectFocus.RightBottom(RectFocus.LeftTop() + textBound);
 		GUI.Color(RGB_BLACK);
 		GUI_DrawFocusRect(RectFocus, 0);
 	}

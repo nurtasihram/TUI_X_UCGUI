@@ -279,8 +279,37 @@ struct FONT {
 		YSize(YSize), Baseline(Baseline) {}
 
 	virtual bool IsInFont(uint16_t c) const = 0;
-	virtual int  GetCharSizeX(uint16_t c) const = 0;
+	virtual int  CharWidth(uint16_t c) const = 0;
 	virtual void DispChar(uint16_t c) const = 0;
+
+	uint16_t LineSizeX(const char *str) const {
+		uint16_t xSize = 0;
+		while (auto ch = *str) {
+			if (ch == '\n')
+				break;
+			if (ch != '\r')
+				xSize += CharWidth(ch);
+			++str;
+		}
+		return xSize;
+	}
+	POINT TextBound(const char *str) const {
+		if (!str) return{};
+		POINT size;
+		uint16_t lineWidth = 0;
+		while (auto ch = *str++)
+			if (ch == '\n') {
+				if (size.x < lineWidth)
+					size.x = lineWidth;
+				lineWidth = 0;
+				size.y += YSize;
+			}
+			else if (ch != '\r') 
+				lineWidth += CharWidth(ch);
+		if (size.x < lineWidth)
+			size.x = lineWidth;
+		return size;
+	}
 };
 using CFONT = const FONT;
 using UCFONT = const FONT &;
@@ -316,7 +345,7 @@ struct FONT_MONO : FONT {
 				return true;
 		return false;
 	}
-	int GetCharSizeX(uint16_t c) const
+	int CharWidth(uint16_t c) const
 	{ return XSize; }
 	void DispChar(uint16_t c) const override;
 };
@@ -349,7 +378,7 @@ struct FONT_PROP : FONT {
 	}
 	bool IsInFont(uint16_t c) const override
 	{ return FindChar(c); }
-	int GetCharSizeX(uint16_t c) const override {
+	int CharWidth(uint16_t c) const override {
 		if (auto pProp = FindChar(c))
 			return pProp->paCharInfo[c - pProp->First].XSize;
 		return 0;

@@ -196,14 +196,12 @@ private:
 		Pos.rTitleText.x0++;
 		Pos.rTitleText.x1--;
 		GUI.Font(Props.pFont);
-		RECT rText;
-		GUI__CalcTextRect(pText, &Pos.rTitleText, &rText, Props.Align);
 		auto y0 = Pos.TitleHeight + BorderSize;
 		/* Draw Title */
 		auto Index = States & FRAMEWIN_CF_ACTIVE ? FRAME_CI_FOCUSSED : FRAME_CI_UNFOCUS;
 		GUI.BkColor(Props.aBarColor[Index]);
 		GUI.Color(Props.aTextColor[Index]);
-		WIDGET__FillStringInRect(pText, r, Pos.rTitleText, rText);
+		WIDGET__FillStringInRect(pText, r, Pos.rTitleText);
 		/* Draw Frame */
 		GUI.Color(Props.FrameColor);
 		GUI_FillRect({ 0, 0, size.x - 1, BorderSize - 1 });

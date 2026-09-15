@@ -95,7 +95,7 @@ private:
 	int _NumChars2XSize(const char *pText, int NumChars) {
 		int xSize = 0;
 		while (NumChars--)
-			xSize += GUI.Font().GetCharSizeX(*pText++);
+			xSize += GUI.Font().CharWidth(*pText++);
 		return xSize;
 	}
 	int _WrapGetNumCharsDisp(const char *pText) {
@@ -107,7 +107,7 @@ private:
 		return GUI__WrapGetNumBytesToNextLine(pText, xSize, WrapMode);
 	}
 	int _GetCharSizeX(const char *pText) {
-		return GUI.Font().GetCharSizeX(*pText);
+		return GUI.Font().CharWidth(*pText);
 	}
 	void _DispString(const char *pText, RECT *pRect) {
 		int NumCharsDisp = _WrapGetNumCharsDisp(pText);

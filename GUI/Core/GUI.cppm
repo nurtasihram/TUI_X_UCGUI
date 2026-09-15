@@ -47,9 +47,6 @@ void GUI_MEMDEV_Draw(RECT r, GUI_CALLBACK_VOID_P *pfDraw, void *pData);
 #pragma region Text rendering and wrapping
 typedef enum { WRAPMODE_NONE, WRAPMODE_WORD, WRAPMODE_CHAR } WRAPMODE;
 
-int  GUI__GetLineSizeX(const char *s, int Len);
-void GUI__CalcTextRect(const char *pText, const RECT *pTextRectIn, RECT *pTextRectOut, int TextAlign);
-
 int GUI__WrapGetNumCharsDisp(const char *pText, int xSize, WRAPMODE WrapMode);
 int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, WRAPMODE WrapMode);
 int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, WRAPMODE WrapMode);

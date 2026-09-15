@@ -31,10 +31,10 @@ private:
 	Properties Props = DefaultProps;
 	
 	struct Column {
-		int16_t Width;
-		TEXTALIGN Align;
-		GUI_DRAW *pDrawObj;
-		char *pText;
+		int16_t Width = 0;
+		TEXTALIGN Align = TEXTALIGN_LEFT;
+		GUI_DRAW *pDrawObj = nullptr;
+		char *pText = nullptr;
 	};
 	ARRAY<Column> Columns;
 	int16_t CapturePosX = -1;
@@ -274,16 +274,11 @@ public:
 
 	auto GetNumItems() { return Columns.NumItems(); }
 	void AddItem(int Width, const char *s, int Align) {
-		Column Col = {};
-		if (!Width) {
-			PCFONT pFont = GUI.Font(Props.pFont);
-			Width = GUI_GetStringSizeX(s) + 2 * (this->EffectSize() + Props.BorderH);
-			GUI.Font(pFont);
-		}
-		Col.Width = Width;
+		Column Col;
+		Col.Width = Width ? Width : 
+			Props.pFont->TextBound(s).x + 2 * (EffectSize() + Props.BorderH);
 		Col.Align = Align;
-		Col.pDrawObj = 0;
-		int Index = Columns.NumItems();
+		auto Index = Columns.NumItems();
 		if (Columns.AddItem(&Col) == 0) {
 			auto &pColumn = Columns[Index];
 			GUI__SetText(pColumn.pText, s);

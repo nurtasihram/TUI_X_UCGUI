@@ -10,6 +10,7 @@ struct LCDDEV {
 
 	LCDDEV(BPP_MODE BitsPerPixel)
 		: BitsPerPixel(BitsPerPixel) {}
+	virtual ~LCDDEV() {}
 
 	virtual RECT GetRect() = 0;
 	virtual RGBC GetPixel(int16_t x, int16_t y) = 0;

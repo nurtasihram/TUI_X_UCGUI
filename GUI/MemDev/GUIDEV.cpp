@@ -18,10 +18,6 @@ public:
 	MEMDEV(const MEMDEV &) = delete;
 	MEMDEV &operator=(const MEMDEV &) = delete;
 public:
-	uint16_t GetSizeX() const { return rect.XSize(); }
-	uint16_t GetSizeY() const { return rect.YSize(); }
-	RECT Rect() const { return rect; }
-public:
 	RECT GetRect() override { return rect; }
 
 	RGBC *_XY2PTR(int x, int y) {

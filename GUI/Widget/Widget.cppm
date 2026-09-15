@@ -259,7 +259,7 @@ public:
 
 };
 
-void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax, RECT TextRectAct) {
+void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax) {
 	/* Check if we have anything to do at all ... */
 	auto r = FillRect + GUI.Off;
 	if (!(r <= GUI.rClip))
@@ -271,7 +271,7 @@ void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax
 	/* Set clipping rectangle */
 	auto pOldClipRect = WObj::SetUserClipRect(&TextRectMax);
 	/* Display text */
-	GUI_DispStringAt(pText, TextRectAct.x0, TextRectAct.y0);
+	GUI_DispStringAt(pText, TextRectMax.x0, TextRectMax.y0);
 	/* Restore clipping rectangle */
 	WObj::SetUserClipRect(pOldClipRect);
 }
