@@ -4,7 +4,7 @@ import TUX.Window;
 
 int WM_OnKey(int Key, int Pressed) {
 	if (WObj::pWinFocus) {
-		WM_KEY_INFO Info;
+		KEY_STATE Info;
 		Info.Key = Key;
 		Info.PressedCnt = Pressed;
 		WObj::pWinFocus->Require(WM_KEY, (WM_PARAM)&Info);

@@ -10,7 +10,7 @@ Ayxandar Ayx;
 
 struct LCD_API : public LCDDEV {
 	LCD_API() : LCDDEV(BPP_32) {}
-	RECT GetRect() override {
+	RECT Rect() override {
 		return{ 0, 0, LCD_XSIZE - 1, LCD_YSIZE - 1 };
 	}
 	RGBC GetPixel(int16_t x, int16_t y) override {

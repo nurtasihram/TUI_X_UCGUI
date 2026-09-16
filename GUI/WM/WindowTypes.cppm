@@ -4,6 +4,8 @@ module;
 
 export module TUX.WindowTypes;
 
+export import TUX.Types;
+
 export {
 
 #pragma region Messages & Notifications	
@@ -208,14 +210,14 @@ constexpr uint16_t
 	GUI_ID_HSCROLL   = 0xFF,
 	GUI_ID_USER      = 0x100;
 
-
 #pragma region Windows parameter type
 using WM_PARAM = uintptr_t;
 
-struct WM_KEY_INFO {
-	int16_t Key, PressedCnt;
+struct DIALOG_STATUS {
+	int16_t Done = 0, ReturnValue = 0;
 };
-struct WM_SCROLL_STATE {
+
+struct SCROLL_STATE {
 	int16_t NumItems = 0, PageSize = 0, v = 0;
 	void Bounds() {
 		int Max = NumItems - PageSize;
@@ -244,21 +246,12 @@ struct WM_SCROLL_STATE {
 		Bounds();
 		return this->v - vOld;
 	}
-	inline bool operator!=(const WM_SCROLL_STATE &other) const {
-		return NumItems != other.NumItems || v != other.v || PageSize != other.PageSize;
-	}
-	inline bool operator==(const WM_SCROLL_STATE &other) const {
-		return !(*this != other);
-	}
-};
-struct DIALOG_STATUS {
-	int16_t Done = 0, ReturnValue = 0;
+	inline bool operator!=(const SCROLL_STATE &other) const
+	{ return NumItems != other.NumItems || v != other.v || PageSize != other.PageSize; }
+	inline bool operator==(const SCROLL_STATE &other) const
+	{ return !(*this != other); }
 };
 
-struct PID_CHANGED_INFO {
-	int16_t x, y;
-	uint8_t State, StatePrev;
-};
 #pragma endregion
 
 }

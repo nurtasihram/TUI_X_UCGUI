@@ -18,7 +18,7 @@ public:
 	MEMDEV(const MEMDEV &) = delete;
 	MEMDEV &operator=(const MEMDEV &) = delete;
 public:
-	RECT GetRect() override { return rect; }
+	RECT Rect() override { return rect; }
 
 	RGBC *_XY2PTR(int x, int y) {
 		auto pData = (uint8_t *)this->pData;
@@ -61,7 +61,7 @@ void GUI_MEMDEV_CopyToLCD(MEMDEV *pDev) {
 }
 
 void GUI_MEMDEV_Draw(RECT r, GUI_CALLBACK_VOID_P *pfDraw, void *pData) {
-	if (!(r &= pLCD_API->GetRect()))
+	if (!(r &= pLCD_API->Rect()))
 		return;
 	auto pDev = new MEMDEV(r);
 	GUI_MEMDEV_Select(pDev);

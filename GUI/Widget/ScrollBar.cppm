@@ -38,33 +38,33 @@ public:
 private:
 	Properties Props = DefaultProps;
 
-	WM_SCROLL_STATE ScrollState{ 100, 10, 0 };
+	SCROLL_STATE ScrollState{ 100, 10, 0 };
 
-	int _GetArrowSize() {
-		auto Size = GetSize();
+	int _GetArrowSize() const {
+		auto s = Size();
 		if (States & SCROLLBAR_CF_VERTICAL)
-			Size = ~Size;
-		auto r = Size.y / 2 + 5;
-		if (r > Size.x - 5)
-			r = Size.x - 5;
+			s = ~s;
+		auto r = s.y / 2 + 5;
+		if (r > s.x - 5)
+			r = s.x - 5;
 		return r;
 	}
-	SCROLLBAR_POSITIONS _CalcPositions() {
+	SCROLLBAR_POSITIONS _CalcPositions() const {
 		SCROLLBAR_POSITIONS Pos;
-		auto r = GetRect();
+		auto r = Rect();
 		Pos.x1 = (States & SCROLLBAR_CF_VERTICAL) ? r.y1 : r.x1;
 		/* Subtract the rectangle of the other scrollbar (if existing and visible) */
 		switch (GetId()) {
 		case GUI_ID_HSCROLL:
 			if (auto pWin = Parent()->GetScrollbarV()) {
-				auto rSub = pWin->GetRect();
+				auto rSub = pWin->Rect();
 				if (r.x1 == rSub.x1)
 					r.x1 = rSub.x0 - 1;
 			}
 			break;
 		case GUI_ID_VSCROLL:
 			if (auto pWin = Parent()->GetScrollbarH()) {
-				auto rSub = pWin->GetRect();
+				auto rSub = pWin->Rect();
 				if (r.y1 == rSub.y1)
 					r.y1 = rSub.y0 - 1;
 			}
@@ -74,7 +74,7 @@ private:
 		r -= r.LeftTop();
 		/* Convert real into virtual coordinates */
 		if (States & SCROLLBAR_CF_VERTICAL)
-			r = r.Rotate90R(GetSizeY());
+			r = r.Rotate90R(SizeY());
 		auto NumItems = ScrollState.NumItems;
 		auto xSize = r.x1 - r.x0 + 1;
 		auto xSizeArrow = _GetArrowSize();
@@ -107,7 +107,7 @@ private:
 		/*
 		  Get / calc position info
 		*/
-		auto r = GetClientRect();
+		auto r = ClientRect();
 		auto Pos = _CalcPositions();
 		auto Height = States & SCROLLBAR_CF_VERTICAL ? r.DistX() : r.DistY();
 		auto CenterH = Height >> 1;
@@ -210,7 +210,7 @@ private:
 		if (!(States & SCROLLBAR_STATE_PRESSED))
 			_ScrollbarPressed();
 	}
-	char _OnKey(const WM_KEY_INFO *pInfo) {
+	char _OnKey(const KEY_STATE *pInfo) {
 		if (pInfo->PressedCnt > 0) {
 			switch (pInfo->Key) {
 				case GUI_KEY_RIGHT:
@@ -225,7 +225,7 @@ private:
 		}
 		return 0;
 	}
-	void _OnSetScrollState(const WM_SCROLL_STATE *pState) {
+	void _OnSetScrollState(const SCROLL_STATE *pState) {
 		if (ScrollState != *pState) {
 			ScrollState = *pState;
 			Invalidate();
@@ -254,14 +254,14 @@ private:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_KEY:
-				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+				if (pObj->_OnKey((const KEY_STATE *)Data))
 					return 0; /* Send to parent by not doing anything */
 				break;
 			case WM_SET_SCROLL_STATE:
-				pObj->_OnSetScrollState((const WM_SCROLL_STATE *)Data);
+				pObj->_OnSetScrollState((const SCROLL_STATE *)Data);
 				return 0;
 			case WM_GET_SCROLL_STATE:
-				*(WM_SCROLL_STATE *)Data = pObj->ScrollState;
+				*(SCROLL_STATE *)Data = pObj->ScrollState;
 				break;
 		}
 		return DefaultProc(pWin, MsgId, Data);
@@ -271,7 +271,7 @@ private:
 	static void _AdjRect(RECT &r, WObj *pParent, bool bVertical) {
 		if (r.x1 > r.x0 && r.y1 > r.y0)
 			return;
-		auto Rect = pParent->GetInsideRect();
+		auto Rect = pParent->InsideRect();
 		if (bVertical) {
 			r.y0 = Rect.y0;
 			r.y1 = Rect.y1;
@@ -342,7 +342,7 @@ public:
 			Invalidate();
 		}
 	}
-	void SetState(const WM_SCROLL_STATE *pState) {
+	void SetState(const SCROLL_STATE *pState) {
 		SetPageSize(pState->PageSize);
 		SetNumItems(pState->NumItems);
 		SetValue(pState->v);
@@ -351,10 +351,10 @@ public:
 		return ScrollState.v;
 	}
 	void SetWidth(int Width) {
-		POINT Size{ ScrollState.PageSize, Width };
+		POINT s{ ScrollState.PageSize, Width };
 		if (States & SCROLLBAR_CF_VERTICAL)
-			Size = ~Size;
-		SetSize(Size);
+			s = ~s;
+		Size(s);
 		_InvalidatePartner(); /* Invalidate the partner, since it is also affected */
 	}
 

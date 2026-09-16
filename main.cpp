@@ -121,7 +121,7 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 			GUI_DrawBitmap(pBm, { ItemPos.x + 7, ItemPos.y + (YSize - pBm->Size.y) / 2 });
 			/* Draw focus rectangle */
 			if (MultiSel && Index == Sel) {
-				auto rInside = pObj->GetInsideRect();
+				auto rInside = pObj->InsideRect();
 				RECT rFocus;
 				rFocus.x0 = ItemPos.x;
 				rFocus.y0 = ItemPos.y;
@@ -159,7 +159,7 @@ static WM_PARAM _cbCallback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		pItem->SetState(1);
 		return 0;
 	case WM_KEY: {
-		auto pInfo = (const WM_KEY_INFO *)Data;
+		auto pInfo = (const KEY_STATE *)Data;
 		switch (pInfo->Key) {
 		case GUI_KEY_ESCAPE:
 			pWin->DialogEnd(1);
@@ -330,7 +330,7 @@ static WM_PARAM _cbMemDevPane(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_PAINT:
 		{
-			auto Size = pWin->GetSize();
+			auto Size = pWin->Size();
 			int BarWidth = 36;
 			int Span = Size.x - BarWidth - 20;
 			int XPos = 0;
@@ -367,7 +367,7 @@ static WObj *_CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMemDe
 		Flags |= WC_MEMDEV;
 	auto pFrame = new Frame(RECT::LeftTop({ x0, y0 }, { 190, 180 }), WC_VISIBLE, nullptr, 0, FRAMEWIN_CF_MOVEABLE, pTitle, nullptr);
 	auto pClient = pFrame->Client();
-	auto Size = pClient->GetSize();
+	auto Size = pClient->Size();
 	*phPane = new WObj(RECT(0, 0, Size.x - 1, Size.y - 1), Flags, _cbMemDevPane, pClient);
 	return pFrame;
 }
@@ -379,7 +379,7 @@ static const Widget::CreateStruct _aMemDevDialogCreate[] = {
 static WM_PARAM _cbMemDevTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_KEY: {
-			auto pInfo = (const WM_KEY_INFO *)Data;
+			auto pInfo = (const KEY_STATE *)Data;
 			switch (pInfo->Key) {
 				case GUI_KEY_ESCAPE:
 				case GUI_KEY_ENTER:

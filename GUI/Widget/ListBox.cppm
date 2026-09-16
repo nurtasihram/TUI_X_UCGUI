@@ -62,7 +62,7 @@ private:
 
 	ARRAY<Item> ItemArray;
 	WIDGET_DRAW_ITEM_FUNC *pfDrawItem = nullptr;
-	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
+	SCROLL_STATE ScrollStateV, ScrollStateH;
 	WObj *pOwner = nullptr;
 	int16_t Sel = 0; /* current selection */
 	uint16_t ScrollbarWidth = 0;
@@ -300,7 +300,7 @@ private:
 		int ItemDistY;
 		GUI.Font(Props.pFont);
 		/* Calculate clipping rectangle */
-		auto rClip = GetInvalidRect() - GetOrg();
+		auto rClip = GetInvalidRect() - LeftTop();
 		RECT RectInside;
 		WM_GetInsideRectExScrollbar(this, &RectInside);
 		rClip &= RectInside;
@@ -387,7 +387,7 @@ private:
 		}
 	}
 #endif
-	bool _OnKey(const WM_KEY_INFO *pInfo) {
+	bool _OnKey(const KEY_STATE *pInfo) {
 		if (pInfo->PressedCnt > 0) {
 			int Key = pInfo->Key;
 			if (AddKey(Key))
@@ -480,9 +480,8 @@ private:
 				return 0;
 			case WM_PID_STATE_CHANGED: {
 				auto pInfo = (const PID_CHANGED_INFO *)Data;
-				if (pInfo->State) {
-					int Sel;
-					Sel = pObj->_GetItemFromPos(pInfo->x, pInfo->y);
+				if (pInfo->Pressed) {
+					auto Sel = pObj->_GetItemFromPos(pInfo->x, pInfo->y);
 					if (Sel >= 0) {
 						pObj->_ToggleMultiSel(Sel);
 						pObj->SetSel(Sel);
@@ -494,7 +493,7 @@ private:
 			case WM_TOUCH: {
 				auto pState = (const PID_STATE *)Data;
 				if (pObj->pOwner && pState) {
-					auto r = pObj->GetClientRect();
+					auto r = pObj->ClientRect();
 					if (pState->x < 0 || pState->y < 0 || pState->x > r.x1 || pState->y > r.y1) {
 						if (pState->Pressed)
 							pObj->_NotifyOwner(LISTBOX_NOTIFICATION_LOST_FOCUS);
@@ -513,7 +512,7 @@ private:
 				pObj->_FreeAttached();
 				return 0;
 			case WM_KEY:
-				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+				if (pObj->_OnKey((const KEY_STATE *)Data))
 					return 0;
 				break;
 			case WM_SIZE:
@@ -574,7 +573,7 @@ public:
 private:
 	void _PaintItem(int ItemIndex, POINT Pos) const {
 		auto &pItem = ItemArray[ItemIndex];
-		auto r = GetInsideRect();
+		auto r = InsideRect();
 		/* Calculate color index */
 		auto ColorIndex =
 			pItem.Status & LISTBOX_ITEM_DISABLED ? LISTBOX_CI_DISABLED :

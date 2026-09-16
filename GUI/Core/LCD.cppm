@@ -12,7 +12,7 @@ struct LCDDEV {
 		: BitsPerPixel(BitsPerPixel) {}
 	virtual ~LCDDEV() {}
 
-	virtual RECT GetRect() = 0;
+	virtual RECT Rect() = 0;
 	virtual void FillRect(RECT r, RGBC color) {
 		for (int y = r.y0; y <= r.y1; ++y)
 		for (int x = r.x0; x <= r.x1; ++x)

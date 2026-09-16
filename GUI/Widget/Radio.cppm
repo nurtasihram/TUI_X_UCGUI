@@ -50,7 +50,7 @@ private:
 
 	void _OnPaint() const {
 		/* Init some data */
-		auto rFocus = GetClientRect();
+		auto rFocus = ClientRect();
 		bool HasFocus = States & WIDGET_STATE_FOCUS;
 		auto pBmRadio = Props.apBmRadio[IsEnabled()],
 			 pBmCheck = Props.pBmCheck;
@@ -128,7 +128,7 @@ private:
 			GUI_StoreKey(GetId());
 		}
 	}
-	char _OnKey(const WM_KEY_INFO *pInfo) {
+	char _OnKey(const KEY_STATE *pInfo) {
 		if (pInfo->PressedCnt > 0) {
 			switch (pInfo->Key) {
 				case GUI_KEY_RIGHT:
@@ -159,7 +159,7 @@ private:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_KEY:
-				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+				if (pObj->_OnKey((const KEY_STATE *)Data))
 					return 0;
 				break;
 			case WM_DELETE:

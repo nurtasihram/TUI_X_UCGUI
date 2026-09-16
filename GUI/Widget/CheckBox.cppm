@@ -71,7 +71,7 @@ private:
 		/* Draw text if needed */
 		if (!text) return;
 		/* Draw the text */
-		auto RectText = GetClientRect();
+		auto RectText = ClientRect();
 		RectText.x0 += RectBox.x1 + 1 + Props.Spacing;
 		GUI.Color(Props.TextColor);
 		GUI.Font(Props.pFont);
@@ -127,7 +127,7 @@ private:
 			GUI_StoreKey(GetId());
 		}
 	}
-	char _OnKey(const WM_KEY_INFO *pInfo) {
+	char _OnKey(const KEY_STATE *pInfo) {
 		if (IsEnabled()) {
 			if (pInfo->PressedCnt > 0) {
 				switch (pInfo->Key) {
@@ -154,7 +154,7 @@ private:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_KEY:
-				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+				if (pObj->_OnKey((const KEY_STATE *)Data))
 					return 0;
 				break;
 			case WM_DELETE:

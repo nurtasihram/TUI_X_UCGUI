@@ -51,7 +51,7 @@ bool WM_SetScrollbarH(WObj *pWin, int OnOff); /* not to be documented (may chang
 bool WM_SetScrollbarV(WObj *pWin, int OnOff); /* not to be documented (may change in future version) */
 
 class WObj {
-	RECT Rect, rInvalid;
+	RECT rWin, rInvalid;
 	WObj *pNextLin = nullptr, *pNext = nullptr,
 		*pParent = nullptr, *pFirstChild = nullptr;
 	WM_CALLBACK *cb = nullptr; /* ptr to notification callback */
@@ -146,13 +146,13 @@ protected:
 	void _Detach() {
 		_RemoveWindowFromList();
 		/* Clear area used by this window */
-		InvalidateArea(Rect);
+		InvalidateArea(rWin);
 	}
 public:
 	void Detach() {
 		POINT org;
 		if (pParent)
-			org = -pParent->Rect.LeftTop();
+			org = -pParent->rWin.LeftTop();
 		_Detach();
 		Move(org); /* Convert screen coordinates -> parent coordinates */
 		/* ToDo: Invalidate. If Parent window is located at (0,0). */
@@ -162,7 +162,7 @@ public:
 		Detach();
 		if (pParent && pParent != this) {
 			_InsertWindowIntoList(pParent);
-			MoveTo(pParent->Rect.LeftTop() + Pos); /* Convert parent coordinates -> screen coordinates */
+			MoveTo(pParent->rWin.LeftTop() + Pos); /* Convert parent coordinates -> screen coordinates */
 		}
 	}
 #pragma endregion
@@ -175,7 +175,7 @@ public:
 		WM_ASSERT_NOT_IN_PAINT();
 		pWinActive = this;
 		GUI.ClipRectMax();
-		GUI.Off = Rect.LeftTop();
+		GUI.Off = rWin.LeftTop();
 	}
 	static void Activate() { IsActive = true; }
 	static void Deactivate() {
@@ -188,7 +188,7 @@ public:
 //private:
 	bool _ClipAtParentBorders(RECT &r) const {
 		for (auto pWin = this; pWin->Status & WC_VISIBLE; pWin = pWin->pParent) {
-			r &= pWin->Rect;
+			r &= pWin->rWin;
 			if (!pWin->pParent)
 				return pWin == pWinDesktop;
 		}
@@ -198,7 +198,7 @@ public:
 		if (!(Status & WC_VISIBLE))
 			return; /* Window is not visible... we are done */
 		/* Calc affected area */
-		if (r &= Rect) {
+		if (r &= rWin) {
 			if (Status & WC_ACTIVATE)
 				rInvalid |= r;
 			else {
@@ -218,9 +218,9 @@ public:
 	void Invalidate(const RECT *pRect = nullptr) {
 		if (!(Status & WC_VISIBLE))
 			return;
-		auto r = Rect;
+		auto r = rWin;
 		if (pRect)
-			r &= *pRect + GetOrg();
+			r &= *pRect + LeftTop();
 		/* Optimization that saves invalidation if window area is not visible ... Not required */
 		if (!_ClipAtParentBorders(r))
 			return;
@@ -250,11 +250,11 @@ private:
 			/* Check if this window affects us at all */
 			if (!(Status & WC_VISIBLE))
 				continue;
-			auto rWinClipped = pWin->Rect; /* Window rect, clipped to part inside of ancestors */
+			auto rWinClipped = pWin->rWin; /* Window rect, clipped to part inside of ancestors */
 			/* Check if this window affects us at all */
 			if (!(rWinClipped <= r))
 				continue;
-			if (pWin->Rect.y0 > r.y0) {
+			if (pWin->rWin.y0 > r.y0) {
 				if (r.y1 > rWinClipped.y0 - 1) /* Check upper border of window */
 					r.y1 = rWinClipped.y0 - 1;
 			}
@@ -268,7 +268,7 @@ private:
 			if (!(Status & WC_VISIBLE))
 				continue;
 			/* If window is not visible, it can be safely ignored */
-			auto rWinClipped = pWin->Rect; /* Window rect, clipped to part inside of ancestors */
+			auto rWinClipped = pWin->rWin; /* Window rect, clipped to part inside of ancestors */
 			/* Check if this window affects us at all */
 			if (rWinClipped <= r) {
 				r.x0 = rWinClipped.x1 + 1;
@@ -283,7 +283,7 @@ private:
 			if (!(Status & WC_VISIBLE))
 				continue;
 			/* If window is not visible, it can be safely ignored */
-			auto rWinClipped = pWin->Rect; /* Window rect, clipped to part inside of ancestors */
+			auto rWinClipped = pWin->rWin; /* Window rect, clipped to part inside of ancestors */
 			/* Check if this window affects us at all */
 			if (!(rWinClipped <= r))
 				continue;
@@ -293,7 +293,7 @@ private:
 private:
 
 	struct {
-		RECT ClientRect, CurRect;
+		RECT rClient, CurRect;
 		const RECT *prUserClip = nullptr;
 		int Cnt = -1, EntranceCnt = 0;
 	} static _ClipContext;
@@ -301,11 +301,11 @@ private:
 	static void _ActivateClipRect() {
 		/* Window manager disabled, typically because memory device is active */
 		/* Take UserClipRect into account */
-		RECT rSrc = WObj::IsActive ? _ClipContext.CurRect : pWinActive->Rect;
+		RECT rSrc = WObj::IsActive ? _ClipContext.CurRect : pWinActive->rWin;
 		if (_ClipContext.prUserClip) {
 			auto r = *_ClipContext.prUserClip;
 			if (pWinActive)
-				r += pWinActive->GetOrg(); /* Convert User rClip into screen coordinates */
+				r += pWinActive->LeftTop(); /* Convert User rClip into screen coordinates */
 			/* Set intersection as clip rect */
 			rSrc &= r;
 		}
@@ -344,13 +344,13 @@ private:
 			 or next one down if we are at the right border.
 		*/
 		if (!_ClipContext.Cnt) /* First IVR starts in upper left */
-			r.LeftTop(_ClipContext.ClientRect.LeftTop());
+			r.LeftTop(_ClipContext.rClient.LeftTop());
 		else {
 			r.x0 = _ClipContext.CurRect.x1 + 1;
 			r.y0 = _ClipContext.CurRect.y0;
-			if (r.x0 > _ClipContext.ClientRect.x1) {
+			if (r.x0 > _ClipContext.rClient.x1) {
 			NextStripe: /* go down to next stripe */
-				r.x0 = _ClipContext.ClientRect.x0;
+				r.x0 = _ClipContext.rClient.x0;
 				r.y0 = _ClipContext.CurRect.y1 + 1;
 			}
 		}
@@ -358,15 +358,15 @@ private:
 		   STEP 2:
 			 Check if we are done completely.
 		*/
-		if (r.y0 > _ClipContext.ClientRect.y1)
+		if (r.y0 > _ClipContext.rClient.y1)
 			return false;
 		/* STEP 3:
 			 Find out the max. height (r.y1) if we are at the left border.
 			 Since we are using the same height for all IVRs at the same y0,
 			 we do this only for the leftmost one.
 		*/
-		if (r.x0 == _ClipContext.ClientRect.x0) {
-			r.RightBottom(_ClipContext.ClientRect.RightBottom());
+		if (r.x0 == _ClipContext.rClient.x0) {
+			r.RightBottom(_ClipContext.rClient.RightBottom());
 			/* Iterate over all windows which are above */
 			/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
 			for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
@@ -394,7 +394,7 @@ private:
 		   If r.x0 out of right border, this stripe is done. Set next stripe and goto STEP 2
 		   Find out x1 for the given x0, y0, y1
 		*/
-		r.x1 = _ClipContext.ClientRect.x1;
+		r.x1 = _ClipContext.rClient.x1;
 		if (r.x1 < r.x0) { /* horizontal border reached ? */
 			_ClipContext.CurRect = r;
 			goto NextStripe;
@@ -460,7 +460,7 @@ private:
 		if (WObj::_PaintCallbackCnt)
 			r = pWinActive->rInvalid;
 		else if (pWinActive->Status & WC_VISIBLE) /* Not using callback mechanism, therefor allow entire rectangle */
-			r = pWinActive->Rect;
+			r = pWinActive->rWin;
 		else {
 			--_ClipContext.EntranceCnt;
 			return false;  /* window is not even visible ! */
@@ -469,14 +469,14 @@ private:
 		r &= rcMax;
 		/* If user has reduced the cliprect size, reduce the rectangle */
 		if (_ClipContext.prUserClip)
-			r &= *(_ClipContext.prUserClip)+pWinActive->GetOrg();
+			r &= *(_ClipContext.prUserClip) + pWinActive->LeftTop();
 		/* Iterate over all ancestors and clip at their borders. If there is no visible part, we are done */
 		if (!pWinActive->_ClipAtParentBorders(r)) {
 			--_ClipContext.EntranceCnt;
 			return false;           /* Nothing to draw */
 		}
 		/* Store the rectangle and find the first rectangle of the area */
-		_ClipContext.ClientRect = r;
+		_ClipContext.rClient = r;
 		return _GetNextIVR();
 	}
 public:
@@ -490,7 +490,6 @@ public:
 	static inline void Iterate(RECT &r, auto fn) {
 		if (_InitIVRSearch(r))
 			do { fn(); } while (_GetNextIVR());
-
 	}
 #pragma endregion
 
@@ -522,10 +521,10 @@ public:
 					 */
 					GUI_MEMDEV_Draw(rInvalid, [](void *p) {
 						auto pWin = (WObj *)p;
-						auto Rect = pWin->rInvalid;
+						auto rInvalid = pWin->rInvalid;
 						pWin->rInvalid = GUI.rClip;
 						pWin->_Paint1();
-						pWin->rInvalid = Rect;
+						pWin->rInvalid = rInvalid;
 					}, this);
 				else
 					_Paint1();
@@ -602,18 +601,18 @@ public:
 
 public:
 	WObj(RECT r, WM_CF Style, WM_CALLBACK *cb, WObj *pParent = nullptr) :
-		Rect(r), cb(cb), Status(Style & WM_CF_MASK) {
+		rWin(r), cb(cb), Status(Style & WM_CF_MASK) {
 		WM_ASSERT_NOT_IN_PAINT();
 		/* Default parent is Desktop 0 */
 		if (!pParent)
 			if (NumWindows)
 				pParent = pWinDesktop;
 		if (pParent) {
-			Rect += pParent->Rect.LeftTop();
+			rWin += pParent->rWin.LeftTop();
 			if (!r.XSize())
-				Rect.x1 = pParent->Rect.x1;
+				rWin.x1 = pParent->rWin.x1;
 			if (!r.YSize())
-				Rect.y1 = pParent->Rect.y1;
+				rWin.y1 = pParent->rWin.y1;
 		}
 		NumWindows++;
 		/* Add to linked lists */
@@ -659,7 +658,7 @@ public:
 		/* Make sure window is no longer counted as invalid */
 		if (Status & WC_ACTIVATE)
 			NumInvalidWindows--;
-		InvalidateArea(Rect);
+		InvalidateArea(rWin);
 		/* Free window memory */
 		NumWindows--;
 		/* Select a valid window */
@@ -733,7 +732,7 @@ public:
 		/* Exec message */
 		switch (MsgId) {
 		case WM_GET_INSIDE_RECT: /* return client window in absolute (screen) coordinates */
-			*(RECT *)Data = pWin->GetClientRect();
+			*(RECT *)Data = pWin->ClientRect();
 			return 0;
 		case WM_GET_CLIENT_WINDOW: /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
 			return (WM_PARAM)pWin;
@@ -758,7 +757,7 @@ private:
 	}
 	void _SendTouchMessage(uint16_t MsgId, PID_STATE *pState) {
 		if (pState)
-			*pState -= Rect.LeftTop();
+			*pState -= rWin.LeftTop();
 		_SendMessageIfEnabled(MsgId, (WM_PARAM)pState);
 		/* Send notification to all ancestors.
 		   We need to check if the window which has received the last message still exists,
@@ -790,13 +789,9 @@ public:
 		CHWin.Add();
 		/* Send WM_PID_STATE_CHANGED message if state has changed (just pressed or just released) */
 		if (WM_PID__StateLast.Pressed != StateNew.Pressed && CHWin.pWin) {
-			PID_CHANGED_INFO Info;
-			auto pWin = CHWin.pWin;
-			Info.State = StateNew.Pressed;
-			Info.StatePrev = WM_PID__StateLast.Pressed;
-			Info.x = StateNew.x - pWin->Rect.x0;
-			Info.y = StateNew.y - pWin->Rect.y0;
-			pWin->_SendMessageIfEnabled(WM_PID_STATE_CHANGED, (WM_PARAM)&Info);
+			PID_CHANGED_INFO Info{ StateNew - CHWin.pWin->rWin.LeftTop(),
+				StateNew.Pressed, WM_PID__StateLast.Pressed };
+			CHWin.pWin->_SendMessageIfEnabled(WM_PID_STATE_CHANGED, (WM_PARAM)&Info);
 		}
 		/* Send WM_TOUCH message(s) Note that we may have to send 2 touch messages. */
 		if (WM_PID__StateLast.Pressed | StateNew.Pressed) { /* Only if pressed or just released */
@@ -843,48 +838,49 @@ public:
 #pragma endregion
 
 #pragma region Coordinate
-	auto GetRect() const { return Rect; }
-
-	auto GetOrg() const { return Rect.LeftTop(); }
+private:
+	void _MoveDescendents(POINT d) {
+		for (auto pWin = this; pWin; pWin = pWin->pNext) {
+			pWin->rWin += d;
+			pWin->rInvalid += d;
+			pWin->pFirstChild->_MoveDescendents(d);  /* Children need to be moved along ...*/
+			pWin->Require(WM_MOVE);
+		}
+	}
+public:
+	auto Rect() const { return rWin; }
+	auto LeftTop() const { return rWin.LeftTop(); }
 
 	void Anchor(uint16_t AnchorFlags) {
 		Status &= ~WC_ANCHOR_ALL;
 		Status |= AnchorFlags & WC_ANCHOR_ALL;
 	}
 
-	void _MoveDescendents(POINT d) {
-		for (auto pWin = this; pWin; pWin = pWin->pNext) {
-			pWin->Rect += d;
-			pWin->rInvalid += d;
-			pWin->pFirstChild->_MoveDescendents(d);  /* Children need to be moved along ...*/
-			pWin->Require(WM_MOVE);
-		}
-	}
 	void Move(POINT d) {
 		if (!d) return;
-		auto r = Rect;
-		Rect += d;
+		auto r = rWin;
+		rWin += d;
 		rInvalid += d;
 		pFirstChild->_MoveDescendents(d);  /* Children need to be moved along ...*/
 		Require(WM_MOVE); /* Notify window it has been moved */
 		/* Invalidate old and new area ... */
 		if (Status & WC_VISIBLE) {
-			InvalidateArea(Rect);     /* Invalidate new area */
+			InvalidateArea(rWin);     /* Invalidate new area */
 			InvalidateArea(r);        /* Invalidate old area */
 		}
 	}
 	void MoveTo(POINT Pos) {
-		Move(Pos - Rect.LeftTop());
+		Move(Pos - rWin.LeftTop());
 	}
 	void MoveChildTo(POINT Pos) {
 		if (pParent)
-			Move(Pos - Rect.LeftTop() + pParent->Rect.LeftTop());
+			Move(Pos - rWin.LeftTop() + pParent->rWin.LeftTop());
 	}
 
 	void _UpdateChildPositions(RECT d) {
 		for (auto pChild = pFirstChild; pChild; pChild = pChild->pNext) {
 			/* Compute size of new rectangle */
-			auto rOld = pChild->Rect, rNew = rOld;
+			auto rOld = pChild->rWin, rNew = rOld;
 			switch (pChild->Status & (WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT)) {
 			case WC_ANCHOR_RIGHT: /* Right ANCHOR : Move window with right side */
 				rNew.x0 += d.x1;
@@ -918,7 +914,7 @@ public:
 	}
 	void Resize(POINT d) {
 		if (!d) return;
-		auto rOld = Rect, rNew = rOld;
+		auto rOld = rWin, rNew = rOld;
 		if (d.x) {
 			if ((Status & WC_ANCHOR_RIGHT) && !(Status & WC_ANCHOR_LEFT))
 				rNew.x0 -= d.x;
@@ -931,23 +927,22 @@ public:
 			else
 				rNew.y1 += d.y;
 		}
-		Rect = rNew;
+		rWin = rNew;
 		InvalidateArea(rOld | rNew);
 		_UpdateChildPositions(rNew - rOld);
-		rInvalid &= Rect; /* Make sure invalid area is not bigger than window itself */
+		rInvalid &= rWin; /* Make sure invalid area is not bigger than window itself */
 		Require(WM_SIZE); /* Send size message to the window */
 	}
 
-	auto GetSize() const { return Rect.Size(); }
-	auto GetSizeX() const { return Rect.XSize(); }
-	auto GetSizeY() const { return Rect.YSize(); }
-	void SetSize(POINT Size) {
-		Resize(Size - GetSize());
+	auto Size() const { return rWin.Size(); }
+	auto SizeX() const { return rWin.XSize(); }
+	auto SizeY() const { return rWin.YSize(); }
+	void Size(POINT s) {
+		Resize(s - Size());
 	}
 
-	RECT GetClientRect() const { return{ 0, Rect.Dist() }; }
-	POINT GetClientSize() const { return GetClientRect().Size(); }
-	RECT GetInsideRect() const {
+	RECT ClientRect() const { return{ 0, rWin.Dist() }; }
+	RECT InsideRect() const {
 		RECT r;
 		Require(WM_GET_INSIDE_RECT, (WM_PARAM)&r);
 		return r;
@@ -955,7 +950,7 @@ public:
 
 	WObj *Screen2Win(POINT Pos, WObj *pStop = nullptr) {
 		/* First check if the  coordinates are in the given window. If not, return 0 */
-		if (!(Rect <= Pos))
+		if (!(rWin <= Pos))
 			return nullptr;
 		/* If the coordinates are in a child, search deeper ... */
 		auto pWin = this;
@@ -1003,7 +998,7 @@ public:
 			pNext = pParent->pFirstChild;
 			pParent->pFirstChild = this;
 			/* Send message in order to make sure top window will be drawn */
-			InvalidateArea(Rect);
+			InvalidateArea(rWin);
 		}
 	}
 	void StayOnTop(bool bOnTop) {
@@ -1025,7 +1020,7 @@ public:
 	static WM_PARAM cbBackWin(WObj *pWin, int MsgId, WM_PARAM Data) {
 		switch (MsgId) {
 			case WM_KEY: {
-				auto pKeyInfo = (const WM_KEY_INFO *)Data;
+				auto pKeyInfo = (const KEY_STATE *)Data;
 				if (pKeyInfo->PressedCnt == 1)
 					GUI_StoreKey(pKeyInfo->Key);
 				return 0;
@@ -1050,7 +1045,7 @@ public:
 	}
 	static WObj *CreateDesktopWindow(RGBC BkColor) {
 		if (!pWinDesktop) {
-			pWinDesktop = new WObj(pLCD_API->GetRect(), WC_VISIBLE, cbBackWin);
+			pWinDesktop = new WObj(pLCD_API->Rect(), WC_VISIBLE, cbBackWin);
 			pWinDesktop->Invalidate(); /* Required because a desktop window has no parent. */
 			pWinDesktop->Select();
 		}
@@ -1089,9 +1084,9 @@ public:
 			return;
 		}
 		/* make sure at least a part of the windows stays inside of its parent */
-		auto Rect = GetRect() + d,
-			 RectParent = Parent()->GetRect() / MinVisibility;
-		if (RectParent <= Rect)
+		auto rWin = Rect() + d,
+			 rParent = Parent()->Rect() / MinVisibility;
+		if (rParent <= rWin)
 			Move(d);
 	}
 #pragma endregion 
@@ -1100,10 +1095,10 @@ public:
 	WObj *GetScrollbarH() { return GetItem(GUI_ID_HSCROLL); }
 	WObj *GetScrollbarV() { return GetItem(GUI_ID_VSCROLL); }
 
-	void ScrollState(const WM_SCROLL_STATE &State)
+	void ScrollState(const SCROLL_STATE &State)
 	{ Require(WM_SET_SCROLL_STATE, (WM_PARAM)&State); }
-	WM_SCROLL_STATE ScrollState() {
-		WM_SCROLL_STATE ScrollState;
+	SCROLL_STATE ScrollState() {
+		SCROLL_STATE ScrollState;
 		Require(WM_GET_SCROLL_STATE, (WM_PARAM)&ScrollState);
 		return ScrollState;
 	}
@@ -1220,7 +1215,7 @@ public:
 	void HideWindow() {
 		if (Status & WC_VISIBLE) {
 			Status &= ~WC_VISIBLE;
-			_Invalidate1Abs(Rect);
+			_Invalidate1Abs(rWin);
 		}
 	}
 #pragma endregion

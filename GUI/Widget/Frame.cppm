@@ -96,9 +96,9 @@ private:
 		int IBorderSize = _IBorderSize();
 		POSITIONS Pos;
 		Pos.TitleHeight = _CalcTitleHeight();
-		Pos.MenuHeight = pMenu ? pMenu->GetSizeY() : 0;
+		Pos.MenuHeight = pMenu ? pMenu->SizeY() : 0;
 		/* Set object properties accordingly */
-		Pos.rClient = GetClientRect() / BorderSize;
+		Pos.rClient = ClientRect() / BorderSize;
 		Pos.rClient.y0 += IBorderSize + Pos.TitleHeight + Pos.MenuHeight;
 		/* Calculate title rect */
 		Pos.rTitleText.x0 = BorderSize;
@@ -107,9 +107,9 @@ private:
 		Pos.rTitleText.y1 = BorderSize + Pos.TitleHeight - 1;
 		/* Iterate over all children */
 		for (auto pChild = FirstChild(); pChild; pChild = pChild->NextSibling()) {
-			int x0 = pChild->GetOrg().x - GetOrg().x;
-			int y0 = pChild->GetOrg().y - GetOrg().y;
-			int x1 = pChild->GetRect().x1 - GetOrg().x;
+			int x0 = pChild->LeftTop().x - LeftTop().x;
+			int y0 = pChild->LeftTop().y - LeftTop().y;
+			int x1 = pChild->Rect().x1 - LeftTop().x;
 			if (y0 == BorderSize) {
 				if (pChild->GetFlags() & WC_ANCHOR_RIGHT) {
 					if (x0 <= Pos.rTitleText.x1)
@@ -127,7 +127,7 @@ private:
 			auto &&Pos = _CalcPositions();
 			if (pClient) {
 				pClient->MoveChildTo(Pos.rClient.LeftTop());
-				pClient->SetSize(Pos.rClient.Size());
+				pClient->Size(Pos.rClient.Size());
 			}
 			if (pMenu)
 				pMenu->MoveChildTo({ Pos.rClient.x0, Pos.rClient.y0 - Pos.MenuHeight });
@@ -144,7 +144,7 @@ private:
 				xLeft = GUI_XMAX;
 				xRight = GUI_XMIN;
 				for (pChild = FirstChild(); pChild; pChild = pChild->NextSibling()) {
-					auto r = pChild->GetRect() - GetOrg();
+					auto r = pChild->Rect() - LeftTop();
 					if ((r.y0 == Props.BorderSize) && ((r.y1 - r.y0 + 1) == OldHeight)) {
 						if (pChild->GetFlags() & WC_ANCHOR_RIGHT) {
 							if (r.x1 > xRight) {
@@ -182,7 +182,7 @@ private:
 		}
 	}
 	void _OnPaint() {
-		auto size = GetSize();
+		auto size = Size();
 		auto BorderSize = Props.BorderSize;
 		auto &&Pos = _CalcPositions();
 		RECT r{
@@ -338,7 +338,7 @@ private:
 			_CaptureFlags & FRAMEWIN_RESIZE_Y ?
 				_CaptureFlags & FRAMEWIN_REPOS_Y ? _Capture.y - p.y : p.y - _Capture.y : 0
 		};
-		auto Rect = GetClientRect();
+		auto Rect = ClientRect();
 		/* Check the minimal size of window */
 		if (auto xMin = FRAMEWIN_MINSIZE_X - Rect.x1 - 1; d.x < xMin) {
 			d.x = xMin;
@@ -369,7 +369,7 @@ private:
 			0;
 	}
 	int _CheckReactBorder(POINT Pos) {
-		auto r = GetClientRect();
+		auto r = ClientRect();
 		if (!(r <= Pos)) return 0;
 		if (auto Mode = _CheckBorderX(Pos.x, r.x1, FRAMEWIN_REACT_BORDER))
 			return Mode | _CheckBorderY(Pos.y, r.y1, 4 * FRAMEWIN_REACT_BORDER);
@@ -413,9 +413,9 @@ private:
 	}
 #if (GUI_SUPPORT_MOUSE & GUI_SUPPORT_CURSOR)
 	bool _ForwardMouseOverMsg(POINT Pos) {
-		PID_STATE StateBelow = Pos + GetOrg();
+		PID_STATE StateBelow = Pos + LeftTop();
 		if (auto pBelow = WM_Screen2Win(StateBelow); pBelow != this) {
-			StateBelow -= pBelow->GetOrg();
+			StateBelow -= pBelow->LeftTop();
 			pBelow->Require(WM_MOUSEOVER, (WM_PARAM)&StateBelow);
 			return true;
 		}
@@ -614,7 +614,7 @@ public:
 	void AddMenu(Menu *pMenu) {
 		auto TitleHeight = _CalcTitleHeight();
 		uint16_t BorderSize = Props.BorderSize, IBorderSize = _IBorderSize();
-		auto xSize = GetSizeX() - BorderSize * 2;
+		auto xSize = SizeX() - BorderSize * 2;
 		this->pMenu = pMenu;
 		if (pClient)
 			pMenu->SetOwner(pClient);
@@ -635,7 +635,7 @@ private:
 	void _RestoreMinimized() {
 		if (!IsMinimized())
 			return;
-		Resize({ 0, rRestore.YSize() - GetSizeY() });
+		Resize({ 0, rRestore.YSize() - SizeY() });
 		pClient->ShowWindow();
 		if (pMenu)
 			pMenu->ShowWindow();
@@ -647,7 +647,7 @@ private:
 		if (!IsMaximized())
 			return;
 		MoveTo(rRestore.LeftTop());
-		SetSize(rRestore.Size());
+		Size(rRestore.Size());
 		_UpdatePositions();
 		States &= ~FRAMEWIN_CF_MAXIMIZED;
 		_InvalidateButton(GUI_ID_MAXIMIZE);
@@ -659,9 +659,9 @@ public:
 		/* When window is not minimized, minimize it */
 		if (IsMinimized())
 			return;
-		int OldHeight = GetSizeY();
+		int OldHeight = SizeY();
 		int NewHeight = _CalcTitleHeight() + EffectSize() * 2 + 2;
-		rRestore = GetRect();
+		rRestore = Rect();
 		pClient->HideWindow();
 		if (pMenu)
 			pMenu->HideWindow();
@@ -677,10 +677,10 @@ public:
 		/* When window is not maximized, maximize it */
 		if (IsMaximized())
 			return;
-		auto r = Parent()->GetRect();
-		rRestore = GetRect();
+		auto r = Parent()->Rect();
+		rRestore = Rect();
 		MoveTo(r.LeftTop());
-		SetSize(r.Size());
+		Size(r.Size());
 		_UpdatePositions();
 		States |= FRAMEWIN_CF_MAXIMIZED;
 		_InvalidateButton(GUI_ID_MAXIMIZE);
@@ -697,7 +697,7 @@ public:
 		int OldSize = Props.BorderSize;
 		int Diff = Size - OldSize;
 		for (auto pChild = FirstChild(); pChild; pChild = pChild->NextSibling()) {
-			auto r = pChild->GetRect() - GetOrg();
+			auto r = pChild->Rect() - LeftTop();
 			if (r.y0 == Props.BorderSize && r.YSize() == OldHeight) {
 				if (pChild->GetFlags() & WC_ANCHOR_RIGHT)
 					pChild->Move({ -Diff, Diff });
@@ -731,7 +731,7 @@ public:
 			return;
 		_UpdatePositions();
 		for (auto pChild = FirstChild(); pChild; pChild = pChild->NextSibling())
-			if (pChild->GetOrg().y - GetOrg().y == Props.BorderSize && pChild != pClient) {
+			if (pChild->LeftTop().y - LeftTop().y == Props.BorderSize && pChild != pClient) {
 				if (States & FRAMEWIN_CF_MINIMIZED)
 					pChild->ShowWindow();
 				else

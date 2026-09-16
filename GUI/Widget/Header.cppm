@@ -51,7 +51,7 @@ private:
 		GUI_Clear();
 		for (int i = 0; i < NumItems; i++) {
 			auto &col = Columns[i];
-			r = GetClientRect();
+			r = ClientRect();
 			r.x0 = xPos;
 			r.x1 = r.x0 + col.Width;
 			if (auto pDraw = col.pDrawObj) {
@@ -86,7 +86,7 @@ private:
 			GUI.Color(Props.TextColor);
 			GUI_DispStringInRect(col.pText, r, col.Align);
 		}
-		r = GetClientRect();
+		r = ClientRect();
 		r.x0 = xPos;
 		r.x1 = 0xfff;
 		DrawUp(r);
@@ -115,7 +115,7 @@ private:
 	}
 #if (HEADER_SUPPORT_DRAG)
 	int _GetItemIndex(int x, int y) {
-		if ((y >= 0) && (y < GetSizeY())) {
+		if ((y >= 0) && (y < SizeY())) {
 			int xPos = this->EffectSize();
 			for (int i = 0, n = Columns.NumItems(); i < n; ++i) {
 				auto &col = Columns[i];
@@ -208,7 +208,7 @@ private:
 
 private:
 	static void _AdjRect(RECT &r, WObj *pParent) {
-		auto Rect = pParent->GetInsideRect();
+		auto Rect = pParent->InsideRect();
 		if (r.x0 <= 0)
 			r.x0 = Rect.x0;
 		if (r.y0 <= 0)
@@ -250,9 +250,9 @@ public:
 	}
 #pragma endregion
 
-	int GetHeight() { return GetClientRect().YSize(); }
+	int GetHeight() { return ClientRect().YSize(); }
 	void SetHeight(int Height) {
-		SetSize({ GetSize().x, Height });
+		Size({ SizeX(), Height });
 		Parent()->Invalidate();
 	}
 

@@ -55,7 +55,7 @@ private:
 	void _AddScrollbar(int x, int y, int w, int h) {
 		if (auto pScroll = GetScrollbarH()) {
 			pScroll->MoveChildTo({ x, y });
-			pScroll->SetSize({ w, h });
+			pScroll->Size({ w, h });
 		}
 		else {
 			auto pScrollbar = new ScrollBar(
@@ -112,7 +112,7 @@ private:
 		}
 	}
 	void _CalcBorderRect(RECT *pRect) {
-		*pRect = GetClientRect();
+		*pRect = ClientRect();
 		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
 			pRect->y1 -= Props.pFont->YSize + 6;
 		}
@@ -192,7 +192,7 @@ private:
 		/* Move and resize the client area to the updated positions */
 		_CalcClientRect(&rBorder);
 		pClient->MoveChildTo(rBorder.LeftTop());
-		pClient->SetSize(rBorder.Size());
+		pClient->Size(rBorder.Size());
 		Invalidate();
 	}
 
@@ -293,9 +293,9 @@ private:
 			if (pState->Pressed) {
 				POINT Pos = *pState;
 				if (!_ClickedOnMultipage(Pos.x, Pos.y)) {
-					Pos += GetOrg();
+					Pos += LeftTop();
 					if (auto pBelow = WM_Screen2Win(Pos, this)) {
-						PID_STATE State{ Pos - pBelow->GetOrg(), pState->Pressed };
+						PID_STATE State{ Pos - pBelow->LeftTop(), pState->Pressed };
 						pBelow->Require(WM_TOUCH, (WM_PARAM)&State);
 					}
 				}
@@ -501,7 +501,7 @@ public:
 		Props.Align = Align;
 		RECT rClient;
 		_CalcClientRect(&rClient);
-		pClient->MoveTo(rClient.LeftTop() + GetRect().LeftTop());
+		pClient->MoveTo(rClient.LeftTop() + Rect().LeftTop());
 		_UpdatePositions();
 	}
 

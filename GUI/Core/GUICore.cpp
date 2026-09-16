@@ -11,7 +11,7 @@ LCDDEV *pLCD_API;
 void GUI_Init(void) {
 	GUI_X_Init();
 	GUI.pDeviceAPI = pLCD_API = GUI_X_LCD_Init(); /* &LCD_L0_APIList; */
-	GUI.rClip = pLCD_API->GetRect();
+	GUI.rClip = pLCD_API->Rect();
 	GUI.Font(GUI_DEFAULT_FONT);
 	GUI.BkColor(GUI_DEFAULT_BKCOLOR);
 	GUI.Color(GUI_DEFAULT_COLOR);

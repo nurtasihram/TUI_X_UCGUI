@@ -141,7 +141,7 @@ bool GUI_CURSOR__TempHide(RECT r) {
 }
 
 void GUI_CURSOR_Show(void) {
-	_ClipRect = GUI.pDeviceAPI->GetRect();
+	_ClipRect = GUI.pDeviceAPI->Rect();
 	_Hide();
 	_CursorOn = true;
 	if (!_pCursor)

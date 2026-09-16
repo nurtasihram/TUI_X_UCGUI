@@ -54,7 +54,7 @@ private:
 	ARRAY<TEXTALIGN>   AlignArray; /* One entry per column */
 	int16_t     Sel = -1;
 	uint16_t    RowDistY = 0, LBorder = 1, RBorder = 1;
-	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
+	SCROLL_STATE ScrollStateV, ScrollStateH;
 	WObj *pOwner = nullptr;
 
 	void _NotifyOwner(int Notification) {
@@ -104,7 +104,7 @@ private:
 		auto EndRow = ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
 		/* Calculate clipping rectangle */
 		RECT rClient;
-		auto rClip = GetInvalidRect() - GetOrg();
+		auto rClip = GetInvalidRect() - LeftTop();
 		WM_GetInsideRectExScrollbar(this, &rClient);
 		rClip &= rClient;
 		/* Set drawing color, font and text mode */
@@ -237,7 +237,7 @@ private:
 			Notification = WM_NOTIFICATION_MOVED_OUT;
 		_NotifyOwner(Notification);
 	}
-	bool _OnKey(const WM_KEY_INFO *pInfo) {
+	bool _OnKey(const KEY_STATE *pInfo) {
 		if (pInfo->PressedCnt > 0)
 			switch (pInfo->Key) {
 				case GUI_KEY_DOWN:
@@ -351,7 +351,7 @@ private:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_KEY:
-				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+				if (pObj->_OnKey((const KEY_STATE *)Data))
 					return 0;
 				break;
 			case WM_DELETE:

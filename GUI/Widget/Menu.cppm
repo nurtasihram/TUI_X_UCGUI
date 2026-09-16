@@ -252,7 +252,7 @@ private:
 			Pos.y += _CalcMenuSizeY() - (_GetEffectSize() << 1);
 			Pos.x -= EffectSize;
 		}
-		Pos += GetOrg();
+		Pos += LeftTop();
 		/*
 			* Notify owner window when for the first time open a menu (when no
 			* other submenu was open), so it can initialize the menu items.
@@ -337,9 +337,9 @@ private:
 #if (GUI_SUPPORT_MOUSE)
 		if (!IsSubmenuActive && !(States & MENU_SF_POPUP)) {
 			if (_IsTopLevelMenu()) {
-				Pos += GetOrg();
+				Pos += LeftTop();
 				if (auto pBelow = WM_Screen2Win(Pos); pBelow && (pBelow != this)) {
-					PID_STATE State = Pos - pBelow->GetOrg();
+					PID_STATE State = Pos - pBelow->LeftTop();
 					pBelow->Require(WM_MOUSEOVER, (WM_PARAM)&State);
 					return true;
 				}
@@ -354,7 +354,7 @@ private:
 		/* Check if coordinates are inside the widget */
 		bool XYInWidget = (State.x >= 0) && (State.y >= 0);
 		if (XYInWidget) {
-			auto r = GetClientRect();
+			auto r = ClientRect();
 			XYInWidget = (State.x <= r.x1) && (State.y <= r.y1);
 		}
 		if (!XYInWidget) {
@@ -405,7 +405,7 @@ private:
 				PID_STATE State{ 0 };
 				if (pState) {
 					State = *pState;
-					State += GetOrg() - pOwner->GetOrg();
+					State += LeftTop() - pOwner->LeftTop();
 					pState = &State;
 				}
 				pOwner->Require(MsgId, (WM_PARAM)pState);
@@ -413,7 +413,7 @@ private:
 		}
 	}
 	void _ResizeMenu() {
-		SetSize({ _CalcWindowSizeX(), _CalcWindowSizeY() });
+		Size({ _CalcWindowSizeX(), _CalcWindowSizeY() });
 		Invalidate();
 	}
 	WM_PARAM _OnMenu(WM_PARAM Data) {
@@ -471,7 +471,7 @@ private:
 		auto BorderTop = Props.aBorder[MENU_BI_TOP];
 		auto FontHeight = Props.pFont->YSize;
 		auto EffectSize = _GetEffectSize();
-		auto FillRect = GetClientRect() / EffectSize;
+		auto FillRect = ClientRect() / EffectSize;
 		RECT TextRect;
 		GUI.Font(Props.pFont);
 
@@ -525,7 +525,7 @@ private:
 		}
 
 		if (Width || Height) {
-			auto r = GetClientRect() / EffectSize;
+			auto r = ClientRect() / EffectSize;
 			GUI.BkColor(Props.aBkColor[MENU_CI_ENABLED]);
 			GUI_ClearRect({ FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1 });
 			GUI_ClearRect({ EffectSize, FillRect.y1 + 1, r.x1, r.y1 });
@@ -638,7 +638,7 @@ public:
 		States |= MENU_SF_POPUP;
 		Width = xSize > 0 ? xSize : 0;
 		Height = ySize > 0 ? ySize : 0;
-		auto Pos = pDestWin->GetOrg();
+		auto Pos = pDestWin->LeftTop();
 		SetOwner(pDestWin);
 		Attach(WObj::GetDesktopWindow(), Pos);
 		_SendMenuMessage(pDestWin, this, MENU_ON_OPEN, 0);

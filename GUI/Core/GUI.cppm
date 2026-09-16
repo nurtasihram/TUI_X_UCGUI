@@ -11,16 +11,6 @@ export import TUX.LCD;
 
 export {
 
-struct PID_STATE : POINT {
-	int8_t Pressed;
-	PID_STATE(POINT Pos, int8_t Pressed = 0) : POINT(Pos), Pressed(Pressed) {}
-	auto operator=(const POINT &p) { x = p.x, y = p.y; }
-	bool operator==(const PID_STATE &p) const
-	{ return x == p.x && y == p.y && Pressed == p.Pressed; }
-	bool operator!=(const PID_STATE &p) const
-	{ return !(*this == p); }
-};
-
 using DRAWMODE = uint8_t; // 2bits
 constexpr DRAWMODE DRAWMODE_NORMAL = 0,
 				   DRAWMODE_TRANS  = 1 << 1;
@@ -81,9 +71,9 @@ public:
 	}
 
 	void ClipRect(const RECT &r)
-	{ rClip = r & pDeviceAPI->GetRect(); }
+	{ rClip = r & pDeviceAPI->Rect(); }
 	void ClipRectMax()
-	{ rClip = pDeviceAPI->GetRect(); }
+	{ rClip = pDeviceAPI->Rect(); }
 
 public:
 	void DrawRect(RECT r);

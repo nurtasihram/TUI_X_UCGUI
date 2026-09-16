@@ -118,15 +118,15 @@ protected:
 		GUI.BkColor(BkColor);
 	}
 
-	void ScrollState(const WM_SCROLL_STATE &VState, const WM_SCROLL_STATE &HState);
+	void ScrollState(const SCROLL_STATE &VState, const SCROLL_STATE &HState);
 
 	void DrawUp() const {
 		if (pEffect)
-			pEffect->DrawUp(GetClientRect());
+			pEffect->DrawUp(ClientRect());
 	}
 	void DrawDown() const {
 		if (pEffect)
-			pEffect->DrawDown(GetClientRect());
+			pEffect->DrawDown(ClientRect());
 	}
 	void DrawUp(const RECT &r) const {
 		if (pEffect)
@@ -152,7 +152,7 @@ protected:
 	bool CtlStates(uint16_t States, bool On)
 	{ return SetStates(On ? this->States | States : this->States & ~States); }
 	
-	RECT _GetInsideRect() { return GetClientRect() / EffectSize(); }
+	RECT _GetInsideRect() { return ClientRect() / EffectSize(); }
 
 	bool HandleActive(int MsgId, WM_PARAM *Data) {
 		switch (MsgId) {
@@ -171,7 +171,7 @@ protected:
 			case WM_PID_STATE_CHANGED:
 				if (IsFocussable()) {
 					auto pInfo = (const PID_CHANGED_INFO *)*Data;
-					if (pInfo->State)
+					if (pInfo->Pressed)
 						SetFocus();
 				}
 				break;

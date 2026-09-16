@@ -65,7 +65,7 @@ private:
 	uint16_t
 		CacheLinePosByte = 0, CacheLineNumber = 0,
 		CacheFirstVisibleLine = 0, CacheFirstVisibleByte = 0;
-	WM_SCROLL_STATE ScrollStateV, ScrollStateH;
+	SCROLL_STATE ScrollStateV, ScrollStateH;
 	uint8_t InvalidFlags = 0;         /* Flags to save validation status */
 	uint8_t EditMode = 0;
 	WRAPMODE WrapMode = WRAPMODE_NONE;
@@ -534,8 +534,8 @@ private:
 		RECT rClip = {
 			EffectSize + HBorder,
 			EffectSize,
-			GetSizeX() - EffectSize - HBorder - 1,
-			GetSizeY() - EffectSize - 1
+			SizeX() - EffectSize - HBorder - 1,
+			SizeY() - EffectSize - 1
 		};
 		auto prOldClip = SetUserClipRect(&rClip);
 
@@ -550,7 +550,7 @@ private:
 				xOff,
 				EffectSize,
 				_GetXSize() + EffectSize + HBorder - 1,
-				GetSizeY()
+				SizeY()
 			};
 
 			// Use cached first visible line if available
@@ -669,7 +669,7 @@ private:
 		_InvalidateTextArea();
 		return true;
 	}
-	bool _OnKey(const WM_KEY_INFO *pInfo) {
+	bool _OnKey(const KEY_STATE *pInfo) {
 		if (pInfo->PressedCnt > 0) {
 			int Key = pInfo->Key;
 			if (_AddKey(Key))
@@ -728,7 +728,7 @@ private:
 				GUI_ALLOC_FreePtr((void **)&pObj->pText);
 				return 0;
 			case WM_KEY:
-				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+				if (pObj->_OnKey((const KEY_STATE *)Data))
 					return 0;
 				break;
 		}
@@ -737,7 +737,7 @@ private:
 
 private:
 	static void _AdjRect(RECT &r, WObj *pParent) {
-		auto Rect = pParent->GetClientRect();
+		auto Rect = pParent->ClientRect();
 		if (!r.x0)
 			r.x0 = Rect.x0;
 		if (!r.y1)

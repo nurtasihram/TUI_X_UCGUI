@@ -58,7 +58,7 @@ private:
 		bool IsPressed = States & BUTTON_STATE_PRESSED;
 		int ColorIndex = (IsEnabled()) ? IsPressed : 2;
 		GUI.Font(Props.pFont);
-		auto rClient = GetClientRect();
+		auto rClient = ClientRect();
 		auto rInside = rClient;
 		auto EffectSize = this->EffectSize();
 		if (IsPressed)
@@ -79,7 +79,7 @@ private:
 			aDrawObj[BUTTON_BI_PRESSED] && IsPressed ? BUTTON_BI_PRESSED : BUTTON_BI_UNPRESSED :
 			aDrawObj[BUTTON_BI_DISABLED] ? BUTTON_BI_DISABLED : BUTTON_BI_UNPRESSED;
 		if (auto pDraw = aDrawObj[Index])
-			pDraw->Draw(GetInsideRect());
+			pDraw->Draw(InsideRect());
 		/* Draw the actual button (background and text) */
 		if (!IsPressed)
 			rInside -= EffectSize / 2;
@@ -115,13 +115,13 @@ private:
 			/* React only if button was pressed before ... avoid problems with moving / hiding windows above (such as dropdown) */
 			else if (States & BUTTON_STATE_PRESSED)
 				_ButtonReleased(
-					GetClientRect() <= *pState ? WM_NOTIFICATION_RELEASED :
+					ClientRect() <= *pState ? WM_NOTIFICATION_RELEASED :
 					WM_NOTIFICATION_MOVED_OUT);
 		}
 		else
 			_ButtonReleased(WM_NOTIFICATION_MOVED_OUT);
 	}
-	bool _OnKey(const WM_KEY_INFO *pInfo) {
+	bool _OnKey(const KEY_STATE *pInfo) {
 		switch (pInfo->Key) {
 			case ' ':
 				if (pInfo->PressedCnt > 0) /* Key pressed? */
@@ -166,7 +166,7 @@ private:
 				pObj->~Button();
 				return 0;
 			case WM_KEY:
-				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+				if (pObj->_OnKey((const KEY_STATE *)Data))
 					return 0;
 				break;
 		}

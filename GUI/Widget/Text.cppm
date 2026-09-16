@@ -44,7 +44,7 @@ private:
 		/* Show the text */
 		if (pText) {
 			s = pText;
-			auto r = GetClientRect();
+			auto r = ClientRect();
 			GUI_DispStringInRect(s, r, Props.Align);
 		}
 	}

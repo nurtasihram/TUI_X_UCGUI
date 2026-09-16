@@ -47,7 +47,7 @@ private:
 	int16_t    ySizeEx;  /* Drop down size */
 	int16_t    TextHeight = 0;
 	ARRAY<char *> Handles;
-	WM_SCROLL_STATE ScrollState;
+	SCROLL_STATE ScrollState;
 	ListBox *pListWin = nullptr;
 	uint8_t  Flags;
 	uint16_t ItemSpacing = 0;
@@ -92,7 +92,7 @@ private:
 		GUI.Font(Props.pFont);
 		auto ColorIndex = (States & WIDGET_STATE_FOCUS) ? 2 : 1;
 		auto s = _GetpItem(Sel);
-		auto r = GetClientRect() / Border;
+		auto r = ClientRect() / Border;
 		auto InnerSize = r.YSize();
 		/* Draw the 3D effect (if configured) */
 		DrawDown();
@@ -107,7 +107,7 @@ private:
 		GUI.Color(Props.aTextColor[ColorIndex]);
 		GUI_DispStringInRect(s, r, Props.Align);/**/
 		/* Draw arrow */
-		r = GetClientRect() / Border;
+		r = ClientRect() / Border;
 		r.x0 = r.x1 + 1 - InnerSize;
 		GUI.Color(RGBC::Gray(0xc0));
 		GUI_FillRect(r);
@@ -127,7 +127,7 @@ private:
 		else /* Mouse moved out */
 			NotifyParent(WM_NOTIFICATION_MOVED_OUT);
 	}
-	bool _OnKey(const WM_KEY_INFO *pInfo) {
+	bool _OnKey(const KEY_STATE *pInfo) {
 		if (pInfo->PressedCnt > 0) {
 			int Key = pInfo->Key;
 			switch (Key) {
@@ -145,7 +145,7 @@ private:
 		if (!Height)
 			Height = Props.pFont->YSize;
 		Height += EffectSize() + 2 * Props.TextBorderSize;
-		SetSize({ GetSizeX(), Height });
+		Size({ SizeX(), Height });
 	}
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
@@ -178,7 +178,7 @@ private:
 		}
 		case WM_PID_STATE_CHANGED:
 			if (auto pInfo = (const PID_CHANGED_INFO *)Data)
-				if (pInfo->State)
+				if (pInfo->Pressed)
 					pObj->Expand();
 			return 0;
 		case WM_TOUCH:
@@ -193,7 +193,7 @@ private:
 			pObj->_FreeAttached();
 			return 0;
 		case WM_KEY:
-			if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+			if (pObj->_OnKey((const KEY_STATE *)Data))
 				return 0;
 			break;
 		}
@@ -227,7 +227,7 @@ public:
 	}
 	void Expand() {
 		auto NumItems = GetNumItems();
-		auto r = GetRect();
+		auto r = Rect();
 		if (Flags & DROPDOWN_CF_UP)
 			r.y0 -= ySizeEx;
 		else

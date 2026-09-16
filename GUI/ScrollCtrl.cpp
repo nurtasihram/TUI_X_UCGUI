@@ -41,17 +41,17 @@ WObj *WM_GetScrollPartner(WObj *pScroll) {
 void WM_GetInsideRectExScrollbar(WObj *pWin, RECT *pRect) {
 	if (pWin) {
 		if (pRect) {
-			auto rWin = pWin->GetRect();     /* The entire window in screen coordinates */
-			auto rInside = pWin->GetInsideRect();
+			auto rWin = pWin->Rect();     /* The entire window in screen coordinates */
+			auto rInside = pWin->InsideRect();
 			if (auto pBarV = pWin->GetScrollbarV()) {
-				auto rScrollbar = pBarV->GetRect() - rWin.LeftTop();
+				auto rScrollbar = pBarV->Rect() - rWin.LeftTop();
 				auto WinFlags = pBarV->GetFlags();
 				if ((WinFlags & WC_ANCHOR_RIGHT) && (WinFlags & WC_VISIBLE)) {
 					rInside.x1 = rScrollbar.x0 - 1;
 				}
 			}
 			if (auto pBarH = pWin->GetScrollbarH()) {
-				auto rScrollbar = pBarH->GetRect() - rWin.LeftTop();
+				auto rScrollbar = pBarH->Rect() - rWin.LeftTop();
 				auto WinFlags = pBarH->GetFlags();
 				if ((WinFlags & WC_ANCHOR_BOTTOM) && (WinFlags & WC_VISIBLE)) {
 					rInside.y1 = rScrollbar.y0 - 1;
@@ -62,7 +62,7 @@ void WM_GetInsideRectExScrollbar(WObj *pWin, RECT *pRect) {
 	}
 }
 
-void Widget::ScrollState(const WM_SCROLL_STATE &VState, const WM_SCROLL_STATE &HState) {
+void Widget::ScrollState(const SCROLL_STATE &VState, const SCROLL_STATE &HState) {
 	if (auto pScroll = GetScrollbarV())
 		pScroll->ScrollState(VState);
 	if (auto pScroll = GetScrollbarH())

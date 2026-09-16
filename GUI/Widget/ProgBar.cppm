@@ -42,7 +42,7 @@ private:
 	}
 	int _Value2X(int v) const {
 		int EffectSize = this->EffectSize();
-		int xSize = GetSizeX();
+		int xSize = SizeX();
 		if (v < Min)
 			v = Min;
 		if (v > Max)
@@ -82,7 +82,7 @@ private:
 		return (const char *)pText;
 	}
 	void _GetTextRect(RECT *pRect, const char *pText) const {
-		auto size = GetSize();
+		auto size = Size();
 		auto textBound = Props.pFont->TextBound(pText);
 		int EffectSize = this->EffectSize();
 		switch (Props.Align & TEXTALIGN_HORIZONTAL) {
@@ -102,7 +102,7 @@ private:
 		pRect->y1 = pRect->y0 + textBound.y - 1;
 	}
 	void _OnPaint() {
-		auto rClient = GetClientRect();
+		auto rClient = ClientRect();
 		auto rInside = rClient / EffectSize();
 		auto xPos = _Value2X(v);
 		char ac[5]{ 0 };

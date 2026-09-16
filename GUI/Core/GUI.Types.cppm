@@ -124,6 +124,25 @@ struct RECT {
 };
 #pragma endregion
 
+struct KEY_STATE {
+	int16_t Key, PressedCnt;
+};
+struct PID_STATE : POINT {
+	int8_t Pressed;
+	PID_STATE(POINT Pos, int8_t Pressed = 0) : POINT(Pos), Pressed(Pressed) {}
+	auto operator=(const POINT &p) { x = p.x, y = p.y; }
+	bool operator==(const PID_STATE &p) const
+	{ return x == p.x && y == p.y && Pressed == p.Pressed; }
+	bool operator!=(const PID_STATE &p) const
+	{ return !(*this == p); }
+};
+struct PID_CHANGED_INFO : PID_STATE {
+	int8_t StatePrev;
+	PID_CHANGED_INFO(POINT Pos, int8_t State, int8_t StatePrev) :
+		PID_STATE(Pos, State),
+		StatePrev(StatePrev) {}
+};
+
 #pragma region Bitmaps 
 
 #pragma region Standard Colors

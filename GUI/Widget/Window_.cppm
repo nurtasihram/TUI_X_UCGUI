@@ -34,7 +34,7 @@ private:
 			/* Remember the child which had the focus so we can reactive this child */
 			pFocussedChild = pInfo->pOld;
 	}
-	void _OnKey(const WM_KEY_INFO* pInfo) {
+	void _OnKey(const KEY_STATE* pInfo) {
 		if (pInfo->PressedCnt > 0) {
 			switch (pInfo->Key) {
 			case GUI_KEY_TAB:
@@ -51,7 +51,7 @@ private:
 			return 0;
 		case WM_PID_STATE_CHANGED:
 			if (auto pInfo = (const PID_CHANGED_INFO *)Data)
-				if (pInfo->State)
+				if (pInfo->Pressed)
 					pObj->SetFocus();
 			break;
 		case WM_HANDLE_DIALOG_STATUS:
@@ -72,7 +72,7 @@ private:
 			pObj->_OnChildHasFocus((const NOTIFY_CHILD_HAS_FOCUS_INFO*)Data);
 			return 0;
 		case WM_KEY:
-			pObj->_OnKey((const WM_KEY_INFO*)Data);
+			pObj->_OnKey((const KEY_STATE*)Data);
 			break;
 		case WM_PAINT:
 			GUI.BkColor(pObj->Props.BkColor);

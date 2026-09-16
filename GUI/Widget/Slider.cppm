@@ -27,7 +27,7 @@ private:
 	int16_t Width = 8;
 
 	void _OnPaint() {
-		auto r = States & SLIDER_CF_VERTICAL ? ~GetClientRect() : GetClientRect();
+		auto r = States & SLIDER_CF_VERTICAL ? ~ClientRect() : ClientRect();
 		auto xsize = r.x1 - r.x0 + 1 - this->Width;
 		auto x0 = r.x0 + this->Width / 2;
 		auto Range = this->Max - this->Min;
@@ -56,7 +56,7 @@ private:
 		GUI_Clear();
 		GUI.Color(RGB_BLACK);
 		if (States & SLIDER_CF_VERTICAL) {
-			auto xSize = GetSizeX();
+			auto xSize = SizeX();
 			rSlot = rSlot.Rotate90L(xSize);
 			rSlider = rSlider.Rotate90L(xSize);
 			/* Draw the ticks */
@@ -82,7 +82,7 @@ private:
 		/* Draw focus */
 		if (States & WIDGET_STATE_FOCUS) {
 			GUI.Color(RGB_BLACK);
-			GUI_DrawFocusRect(GetClientRect(), 0);
+			GUI_DrawFocusRect(ClientRect(), 0);
 		}
 	}
 	void _SliderPressed() {
@@ -107,7 +107,7 @@ private:
 		auto Range = Max - Min;
 		auto x0 = 1 + Width / 2;  /* 1 pixel focus rectangle + width of actual slider */
 		auto x = (States & SLIDER_CF_VERTICAL ? pState->y : pState->x) - x0;
-		auto xsize = (States & SLIDER_CF_VERTICAL ? GetSizeY() : GetSizeX()) - 2 * x0;
+		auto xsize = (States & SLIDER_CF_VERTICAL ? SizeY() : SizeX()) - 2 * x0;
 		int Sel;
 		if (x <= 0)
 			Sel = Min;
@@ -124,7 +124,7 @@ private:
 		if (!(States & SLIDER_STATE_PRESSED))
 			_SliderPressed();
 	}
-	char _OnKey(const WM_KEY_INFO *pInfo) {
+	char _OnKey(const KEY_STATE *pInfo) {
 		if (pInfo->PressedCnt > 0) {
 			switch (pInfo->Key) {
 				case GUI_KEY_RIGHT:
@@ -151,7 +151,7 @@ private:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_KEY:
-				if (pObj->_OnKey((const WM_KEY_INFO *)Data))
+				if (pObj->_OnKey((const KEY_STATE *)Data))
 					return 0;
 				break;
 		}
