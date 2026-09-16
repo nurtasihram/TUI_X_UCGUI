@@ -65,7 +65,7 @@ private:
 		pOwner->Require(WM_NOTIFY_PARENT, (WM_PARAM)&Info);
 	}
 
-	auto _GetRowDistY() {
+	auto _GetRowDistY() const {
 		return RowDistY ? RowDistY :
 			Props.pFont->YSize + (States & LISTVIEW_CF_SHOWGRID ? 1 : 0);
 	}
@@ -78,7 +78,22 @@ private:
 		}
 		return 1;
 	}
-	void _OnPaint(const RECT *pClipRect) {
+	int _GetXSize() {
+		RECT Rect;
+		WM_GetInsideRectExScrollbar(this, &Rect);
+		return Rect.x1 + 1;
+	}
+	int _GetHeaderWidth() {
+		int r = 1;
+		if (auto NumItems = pHeader->GetNumItems())
+			for (auto i = 0, r = 0; i < NumItems; i++)
+				r += pHeader->GetItemWidth(i);
+		if (auto Diff = ScrollStateH.v + ScrollStateH.PageSize - r; Diff > 0)
+			r += Diff;
+		return r;
+	}
+
+	void _OnPaint() {
 		/* Init some values */
 		auto NumColumns = pHeader->GetNumItems();
 		auto NumRows = RowArray.NumItems();
@@ -89,7 +104,7 @@ private:
 		auto EndRow = ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
 		/* Calculate clipping rectangle */
 		RECT rClient;
-		auto rClip = *pClipRect - GetOrg();
+		auto rClip = GetInvalidRect() - GetOrg();
 		WM_GetInsideRectExScrollbar(this, &rClient);
 		rClip &= rClient;
 		/* Set drawing color, font and text mode */
@@ -113,7 +128,7 @@ private:
 				/* Iterate over all columns */
 				if (States & LISTVIEW_CF_SHOWGRID)
 					rClient.y1--;
-				auto xPos = EffectSize - this->ScrollStateH.v;
+				auto xPos = EffectSize - ScrollStateH.v;
 				for (auto j = 0; j < NumColumns; j++) {
 					auto Width = pHeader->GetItemWidth(j);
 					rClient.x0 = xPos;
@@ -163,7 +178,7 @@ private:
 				if (rClip.y0 <= yPos && yPos <= rClip.y1)
 					GUI_DrawHLine(yPos, rClip.x0, rClip.x1);
 			}
-			auto xPos = EffectSize - this->ScrollStateH.v;
+			auto xPos = EffectSize - ScrollStateH.v;
 			for (auto i = 0; i < NumColumns; i++) {
 				xPos += pHeader->GetItemWidth(i);
 				if (rClip.x0 <= xPos && xPos <= rClip.x1)
@@ -176,54 +191,42 @@ private:
 	void _InvalidateRowAndBelow(int Sel) {
 		if (Sel >= 0) {
 			RECT Rect;
-			int HeaderHeight, RowDistY;
-			HeaderHeight = pHeader->GetHeight();
-			RowDistY = _GetRowDistY();
 			WM_GetInsideRectExScrollbar(this, &Rect);
-			Rect.y0 += HeaderHeight + (Sel - ScrollStateV.v) * RowDistY;
+			Rect.y0 += pHeader->GetHeight() + (Sel - ScrollStateV.v) * _GetRowDistY();
 			Invalidate(&Rect);
 		}
 	}
 	void _InvalidateInsideArea() {
 		RECT Rect;
-		int HeaderHeight;
-		HeaderHeight = pHeader->GetHeight();
 		WM_GetInsideRectExScrollbar(this, &Rect);
-		Rect.y0 += HeaderHeight;
+		Rect.y0 += pHeader->GetHeight();
 		Invalidate(&Rect);
 	}
 	void _InvalidateRow(int Sel) {
 		if (Sel >= 0) {
 			RECT Rect;
-			int HeaderHeight, RowDistY;
-			HeaderHeight = pHeader->GetHeight();
-			RowDistY = _GetRowDistY();
 			WM_GetInsideRectExScrollbar(this, &Rect);
-			Rect.y0 += HeaderHeight + (Sel - ScrollStateV.v) * RowDistY;
+			auto RowDistY = _GetRowDistY();
+			Rect.y0 += pHeader->GetHeight() + (Sel - ScrollStateV.v) * RowDistY;
 			Rect.y1 = Rect.y0 + RowDistY - 1;
 			Invalidate(&Rect);
 		}
 	}
-	void _SetSelFromPos(const PID_STATE *pState) {
+
+	void _SetSelFromPos(POINT Pos) {
 		RECT Rect;
-		int x, y, HeaderHeight;
-		HeaderHeight = pHeader->GetHeight();
 		WM_GetInsideRectExScrollbar(this, &Rect);
-		x = pState->x - Rect.x0;
-		y = pState->y - Rect.y0 - HeaderHeight;
-		Rect.x1 -= Rect.x0;
-		Rect.y1 -= Rect.y0;
-		if ((x >= 0) && (x <= Rect.x1) && (y >= 0) && (y <= (Rect.y1 - HeaderHeight))) {
-			auto Sel = (y / _GetRowDistY()) + ScrollStateV.v;
-			if (Sel < RowArray.NumItems())
-				SetSel(Sel);
-		}
+		if (!(Rect <= Pos)) return;
+		auto Sel = (Pos.y - Rect.y0 - pHeader->GetHeight()) / _GetRowDistY() + ScrollStateV.v;
+		if (Sel < RowArray.NumItems())
+			SetSel(Sel);
 	}
+
 	void _OnTouch(const PID_STATE *pState) {
 		int Notification;
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
-				_SetSelFromPos(pState);
+				_SetSelFromPos(*pState);
 				Notification = WM_NOTIFICATION_CLICKED;
 				SetFocus();
 			}
@@ -234,35 +237,17 @@ private:
 			Notification = WM_NOTIFICATION_MOVED_OUT;
 		_NotifyOwner(Notification);
 	}
-	int _OnKey(const WM_KEY_INFO *pInfo) {
+	bool _OnKey(const WM_KEY_INFO *pInfo) {
 		if (pInfo->PressedCnt > 0)
 			switch (pInfo->Key) {
 				case GUI_KEY_DOWN:
 					IncSel();
-					return 1;
+					return true;
 				case GUI_KEY_UP:
 					DecSel();
-					return 1;
+					return true;
 			}
-		return 0;
-	}
-	int _GetXSize() {
-		RECT Rect;
-		WM_GetInsideRectExScrollbar(this, &Rect);
-		return Rect.x1 + 1;
-	}
-	int _GetHeaderWidth() {
-		int NumItems, i, r = 1;
-		NumItems = pHeader->GetNumItems();
-		if (NumItems) {
-			for (i = 0, r = 0; i < NumItems; i++) {
-				r += pHeader->GetItemWidth(i);
-			}
-		}
-		if (this->ScrollStateH.v > (r - this->ScrollStateH.PageSize)) {
-			r += this->ScrollStateH.PageSize - (r - this->ScrollStateH.v);
-		}
-		return r;
+		return false;
 	}
 	int _UpdateScrollPos() {
 		auto PrevScrollStateV = ScrollStateV.v;
@@ -275,34 +260,31 @@ private:
 		return ScrollStateV.v - PrevScrollStateV;
 	}
 	int _UpdateScrollParas() {
-		int NumRows;
-		NumRows = RowArray.NumItems();
+		auto NumRows = RowArray.NumItems();
 		/* update vertical scrollbar */
 		ScrollStateV.PageSize = _GetNumVisibleRows();
-		ScrollStateV.NumItems = (NumRows) ? NumRows : 1;
+		ScrollStateV.NumItems = NumRows ? NumRows : 1;
 		/* update horizontal scrollbar */
-		this->ScrollStateH.PageSize = _GetXSize();
-		this->ScrollStateH.NumItems = _GetHeaderWidth();
+		ScrollStateH.PageSize = _GetXSize();
+		ScrollStateH.NumItems = _GetHeaderWidth();
 		return _UpdateScrollPos();
 	}
 	void _FreeAttached() {
-		int i, j, NumRows, NumColumns;
-		NumRows = RowArray.NumItems();
-		NumColumns = AlignArray.NumItems();
-		for (i = 0; i < NumRows; i++) {
+		auto NumRows = RowArray.NumItems(), 
+			 NumColumns = AlignArray.NumItems();
+		for (auto i = 0; i < NumRows; i++) {
 				auto &pRow = RowArray[i];
 				/* Delete attached info items */
-				for (j = 0; j < NumColumns; j++) {
+				for (auto j = 0; j < NumColumns; j++) {
 					auto &item = pRow[j];
 					GUI_ALLOC_FreePtr((void **)&item.pText);
-					if (item.pItemInfo) {
+					if (item.pItemInfo)
 						GUI_ALLOC_Free(item.pItemInfo);
-					}
 				}
 				/* Delete row */
 				pRow.Delete();
 			}
-		this->AlignArray.Delete();
+		AlignArray.Delete();
 		RowArray.Delete();
 	}
 
@@ -363,7 +345,7 @@ private:
 				return 0;
 			}
 			case WM_PAINT:
-				pObj->_OnPaint((const RECT *)Data);
+				pObj->_OnPaint();
 				return 0;
 			case WM_TOUCH:
 				pObj->_OnTouch((const PID_STATE *)Data);
@@ -395,7 +377,6 @@ public:
 public:
 
 #pragma region Properties
-
 	UCFONT Font() const { return *Props.pFont; }
 	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
@@ -473,7 +454,6 @@ public:
 		_UpdateScrollParas();
 		_InvalidateInsideArea();
 	}
-
 #pragma endregion
 
 	void AddColumn(int Width, const char *s, TEXTALIGN Align) {
@@ -502,7 +482,7 @@ public:
 		_InvalidateRow(NumRows);
 	}
 
-	void DeleteColumn(unsigned Index) {
+	void DeleteColumn(uint16_t Index) {
 		if (Index >= AlignArray.NumItems())
 			return;
 		pHeader->DeleteItem(Index);
@@ -561,13 +541,13 @@ public:
 	}
 
 	Header *GetHeader() { return pHeader; }
-	void SetColumnWidth(unsigned int Index, int Width)
+	void SetColumnWidth(uint16_t Index, int Width)
 	{ pHeader->SetItemWidth(Index, Width); }
 
-	auto GetNumColumns() { return AlignArray.NumItems(); }
-	auto GetNumRows() { return RowArray.NumItems(); }
+	auto GetNumColumns() const { return AlignArray.NumItems(); }
+	auto GetNumRows() const { return RowArray.NumItems(); }
 
-	auto GetSel() { return Sel; }
+	auto GetSel() const { return Sel; }
 	void SetSel(int NewSel) {
 		int MaxSel = RowArray.NumItems() - 1;
 		if (NewSel > MaxSel)

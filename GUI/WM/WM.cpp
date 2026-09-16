@@ -34,7 +34,6 @@ void WM_Init(void) {
 	static bool _IsInited = false;
 	if (_IsInited)
 		return;
-	GUI.WM__pUserClipRect = nullptr;
 	/* Register the critical handles ... Note: This could be moved into the module setting the Window handle */
 	WObj::CHWinLast.Add();
 	/* Make sure we have at least one window. This greatly simplifies the

@@ -93,7 +93,7 @@ private:
 	};
 	ARRAY<Item> ItemArray;
 	WObj *pOwner = nullptr;
-	char IsSubmenuActive = 0;
+	bool IsSubmenuActive = false;
 	uint16_t Width = 0, Height = 0;
 	uint16_t Sel = -1;
 
@@ -170,7 +170,7 @@ private:
 	uint16_t _CalcWindowSizeY() const { return Height ? Height : _CalcMenuSizeY(); }
 
 	int _GetItemFromPos(POINT Pos) const {
-		if (RECT{ _GetEffectSize(), { _CalcMenuSizeX(), _CalcMenuSizeY() } } > Pos)
+		if (!(RECT{ _GetEffectSize(), { _CalcMenuSizeX(), _CalcMenuSizeY() } } <= Pos))
 			return -1;
 		auto NumItems = GetNumItems();
 		if (States & MENU_CF_VERTICAL) {
@@ -220,7 +220,7 @@ private:
 		/* Inform submenu about its deactivation and detach it */
 		_SendMenuMessage(this, pItem.pSubmenu, MENU_ON_CLOSE, 0);
 		pItem.pSubmenu->Detach();
-		IsSubmenuActive = 0;
+		IsSubmenuActive = false;
 		/*
 		 * Keep capture in menu widget. The capture may only released
 		 * by clicking outside the menu or when mouse moved out.
@@ -233,7 +233,7 @@ private:
 	void _OpenSubmenu(uint16_t Index) {
 		if (!(States & MENU_SF_ACTIVE))
 			return;
-		bool PrevActiveSubmenu = IsSubmenuActive;
+		auto PrevActiveSubmenu = IsSubmenuActive;
 		/* Close previous submenu (if needed) */
 		_CloseSubmenu();
 		auto &pItem = ItemArray[Index];
@@ -432,7 +432,7 @@ private:
 			break;
 		case MENU_ON_OPEN:
 			Sel = -1;
-			IsSubmenuActive = 0;
+			IsSubmenuActive = false;
 			States |= MENU_SF_ACTIVE | MENU_CF_OPEN_ON_POINTEROVER;
 			_SetCapture();
 			_ResizeMenu();

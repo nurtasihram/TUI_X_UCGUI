@@ -60,7 +60,6 @@ struct GUI_CONTEXT {
 	PCFONT pAFont;
 	POINT DispPos;
 	/* Variables in WM module */
-	const RECT *WM__pUserClipRect = nullptr;
 	POINT Off;
 	/* Variables in MEMDEV module (with memory devices only) */
 	LCDDEV *pDeviceAPI;

@@ -49,6 +49,9 @@ struct RECT {
 	inline auto DistY() const { return y1 - y0; }
 	inline auto Dist() const { return POINT{ DistX(), DistY() }; }
 
+	inline auto &DistX(int16_t XDist) { x0 += XDist, x1 += XDist; return *this; }
+	inline auto &DistY(int16_t YDist) { y0 += YDist, y1 += YDist; return *this; }
+
 	inline RECT Rotate90L(int16_t XSize) const
 	{ return{ XSize - y1, x0, XSize - y0, x1 }; }
 	inline RECT Rotate90R(int16_t YSize) const

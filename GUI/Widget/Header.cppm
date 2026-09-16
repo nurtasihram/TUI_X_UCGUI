@@ -31,7 +31,7 @@ private:
 	Properties Props = DefaultProps;
 	
 	struct Column {
-		int16_t Width = 0;
+		uint16_t Width = 0;
 		TEXTALIGN Align = TEXTALIGN_LEFT;
 		GUI_DRAW *pDrawObj = nullptr;
 		char *pText = nullptr;
@@ -117,21 +117,18 @@ private:
 	int _GetItemIndex(int x, int y) {
 		if ((y >= 0) && (y < GetSizeY())) {
 			int xPos = this->EffectSize();
-			for (int Index = 0, NumColumns = Columns.NumItems(); Index < NumColumns; ++Index) {
-				auto &col = Columns[Index];
+			for (int i = 0, n = Columns.NumItems(); i < n; ++i) {
+				auto &col = Columns[i];
 				xPos += col.Width;
-				if (x - 4 <= xPos && xPos <= x + 4) {
-					if (Index < NumColumns && x < xPos) {
-						if (Columns[Index].Width)
-							return Index;
-					}
-				}
+				if (x - 4 <= xPos && xPos <= x + 4)
+					if (col.Width)
+						return i;
 			}
 		}
 		return -1;
 	}
 	void _HandlePID(int x, int y, int Pressed) {
-		int Hit = _GetItemIndex(x, y);
+		auto Hit = _GetItemIndex(x, y);
 		/* set capture position () */
 		if ((Pressed == 1) && (Hit >= 0) && (CapturePosX == -1)) {
 			CapturePosX = x;
@@ -141,9 +138,8 @@ private:
 		if (Hit >= 0) {
 			SetCapture(1);
 #if GUI_SUPPORT_CURSOR
-			if (!_pOldCursor) {
+			if (!_pOldCursor)
 				_pOldCursor = GUI_CURSOR_Select(Props.pCursor);
-			}
 #endif
 		}
 		/* modify header */
@@ -197,11 +193,11 @@ private:
 			case WM_TOUCH:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
-#endif
-#if (HEADER_SUPPORT_DRAG & GUI_SUPPORT_MOUSE)
+#if (GUI_SUPPORT_MOUSE)
 			case WM_MOUSEOVER:
 				pObj->_OnMouseOver((const PID_STATE *)Data);
 				return 0;
+#endif
 #endif
 			case WM_DELETE:
 				pObj->_FreeAttached(); /* No return here ... DefaultProc needs to be called */
@@ -232,7 +228,6 @@ public:
 public:
 
 #pragma region Properties
-
 	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
@@ -253,7 +248,6 @@ public:
 		Props.BkColor = Color;
 		Invalidate();
 	}
-
 #pragma endregion
 
 	int GetHeight() { return GetClientRect().YSize(); }
@@ -262,18 +256,16 @@ public:
 		Parent()->Invalidate();
 	}
 
-	void SetScrollPos(int ScrollPos) {
-		if (ScrollPos >= 0) {
-			if (ScrollPos != ScrollPos) {
-				ScrollPos = ScrollPos;
-				Invalidate();
-				Parent()->Invalidate();
-			}
+	void SetScrollPos(uint16_t ScrollPos) {
+		if (this->ScrollPos != ScrollPos) {
+			this->ScrollPos = ScrollPos;
+			Invalidate();
+			Parent()->Invalidate();
 		}
 	}
 
-	auto GetNumItems() { return Columns.NumItems(); }
-	void AddItem(int Width, const char *s, int Align) {
+	auto GetNumItems() const { return Columns.NumItems(); }
+	void AddItem(uint16_t Width, const char *s, int Align) {
 		Column Col;
 		Col.Width = Width ? Width : 
 			Props.pFont->TextBound(s).x + 2 * (EffectSize() + Props.BorderH);
@@ -300,18 +292,15 @@ public:
 				Invalidate();
 		}
 	}
-	void SetItemWidth(uint16_t Index, int Width) {
-		if (Width >= 0) {
-			if (Index <= Columns.NumItems()) {
-				auto &pColumn = Columns[Index];
-				pColumn.Width = Width;
-				Invalidate();
-				Parent()->Require(WM_NOTIFY_CLIENTCHANGE);
-				Parent()->Invalidate();
-			}
+	void SetItemWidth(uint16_t Index, uint16_t Width) {
+		if (Index < Columns.NumItems()) {
+			Columns[Index].Width = Width;
+			Invalidate();
+			Parent()->Require(WM_NOTIFY_CLIENTCHANGE);
+			Parent()->Invalidate();
 		}
 	}
-	int16_t GetItemWidth(uint16_t Index) {
+	uint16_t GetItemWidth(uint16_t Index) {
 		if (Index < Columns.NumItems())
 			return Columns[Index].Width;
 		return 0;

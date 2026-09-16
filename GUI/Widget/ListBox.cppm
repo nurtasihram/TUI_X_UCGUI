@@ -296,11 +296,11 @@ private:
 		}
 		ItemArray.Delete();
 	}
-	void _OnPaint(const RECT *pClipRect) {
+	void _OnPaint() {
 		int ItemDistY;
 		GUI.Font(Props.pFont);
 		/* Calculate clipping rectangle */
-		auto rClip = *pClipRect - GetOrg();
+		auto rClip = GetInvalidRect() - GetOrg();
 		RECT RectInside;
 		WM_GetInsideRectExScrollbar(this, &RectInside);
 		rClip &= RectInside;
@@ -387,13 +387,13 @@ private:
 		}
 	}
 #endif
-	int _OnKey(const WM_KEY_INFO *pInfo) {
+	bool _OnKey(const WM_KEY_INFO *pInfo) {
 		if (pInfo->PressedCnt > 0) {
 			int Key = pInfo->Key;
 			if (AddKey(Key))
-				return 1; /* Key has been consumed */
+				return true; /* Key has been consumed */
 		}
-		return 0; /* Key has not been consumed */
+		return false; /* Key has not been consumed */
 	}
 	void _MoveSel(int Dir) {
 		int NewSel = -1;
@@ -476,7 +476,7 @@ private:
 				return 0;
 			}
 			case WM_PAINT:
-				pObj->_OnPaint((const RECT *)Data);
+				pObj->_OnPaint();
 				return 0;
 			case WM_PID_STATE_CHANGED: {
 				auto pInfo = (const PID_CHANGED_INFO *)Data;

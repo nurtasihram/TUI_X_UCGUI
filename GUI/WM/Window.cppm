@@ -51,7 +51,7 @@ bool WM_SetScrollbarH(WObj *pWin, int OnOff); /* not to be documented (may chang
 bool WM_SetScrollbarV(WObj *pWin, int OnOff); /* not to be documented (may change in future version) */
 
 class WObj {
-	RECT Rect, InvalidRect;
+	RECT Rect, rInvalid;
 	WObj *pNextLin = nullptr, *pNext = nullptr,
 		*pParent = nullptr, *pFirstChild = nullptr;
 	WM_CALLBACK *cb = nullptr; /* ptr to notification callback */
@@ -173,7 +173,7 @@ public:
 	static auto ActiveWindow() { return pWinActive; }
 	void Select() {
 		WM_ASSERT_NOT_IN_PAINT();
-		WObj::pWinActive = this;
+		pWinActive = this;
 		GUI.ClipRectMax();
 		GUI.Off = Rect.LeftTop();
 	}
@@ -200,9 +200,9 @@ public:
 		/* Calc affected area */
 		if (r &= Rect) {
 			if (Status & WC_ACTIVATE)
-				InvalidRect |= r;
+				rInvalid |= r;
 			else {
-				InvalidRect = r;
+				rInvalid = r;
 				Status |= WC_ACTIVATE;
 				NumInvalidWindows++;
 			}
@@ -210,6 +210,7 @@ public:
 	}
 public:
 	static uint16_t GetNumInvalidWindows() { return NumInvalidWindows; }
+	const RECT &GetInvalidRect() const { return rInvalid; }
 	static void InvalidateArea(const RECT &r) {
 		for (auto pWin = pWinFirst; pWin; pWin = pWin->pNextLin)
 			pWin->_Invalidate1Abs(r);
@@ -293,17 +294,18 @@ private:
 
 	struct {
 		RECT ClientRect, CurRect;
+		const RECT *prUserClip = nullptr;
 		int Cnt = -1, EntranceCnt = 0;
 	} static _ClipContext;
 
 	static void _ActivateClipRect() {
 		/* Window manager disabled, typically because memory device is active */
 		/* Take UserClipRect into account */
-		RECT rSrc = WObj::IsActive ? _ClipContext.CurRect : WObj::pWinActive->Rect;
-		if (GUI.WM__pUserClipRect) {
-			auto r = *GUI.WM__pUserClipRect;
-			if (WObj::pWinActive)
-				r += WObj::pWinActive->GetOrg(); /* Convert User rClip into screen coordinates */
+		RECT rSrc = WObj::IsActive ? _ClipContext.CurRect : pWinActive->Rect;
+		if (_ClipContext.prUserClip) {
+			auto r = *_ClipContext.prUserClip;
+			if (pWinActive)
+				r += pWinActive->GetOrg(); /* Convert User rClip into screen coordinates */
 			/* Set intersection as clip rect */
 			rSrc &= r;
 		}
@@ -341,15 +343,13 @@ private:
 			 This will be the first unhandle pixel in reading order, i.e. next one to the right
 			 or next one down if we are at the right border.
 		*/
-		if (!_ClipContext.Cnt) {       /* First IVR starts in upper left */
-			r.x0 = _ClipContext.ClientRect.x0;
-			r.y0 = _ClipContext.ClientRect.y0;
-		}
+		if (!_ClipContext.Cnt) /* First IVR starts in upper left */
+			r.LeftTop(_ClipContext.ClientRect.LeftTop());
 		else {
 			r.x0 = _ClipContext.CurRect.x1 + 1;
 			r.y0 = _ClipContext.CurRect.y0;
 			if (r.x0 > _ClipContext.ClientRect.x1) {
-			NextStripe:  /* go down to next stripe */
+			NextStripe: /* go down to next stripe */
 				r.x0 = _ClipContext.ClientRect.x0;
 				r.y0 = _ClipContext.CurRect.y1 + 1;
 			}
@@ -365,16 +365,14 @@ private:
 			 Since we are using the same height for all IVRs at the same y0,
 			 we do this only for the leftmost one.
 		*/
-		auto pAWin = WObj::pWinActive;
 		if (r.x0 == _ClipContext.ClientRect.x0) {
-			r.y1 = _ClipContext.ClientRect.y1;
-			r.x1 = _ClipContext.ClientRect.x1;
+			r.RightBottom(_ClipContext.ClientRect.RightBottom());
 			/* Iterate over all windows which are above */
 			/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
-			for (auto pParent = WObj::pWinActive; pParent; pParent = pParent->pParent)
+			for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
 				pParent->pNext->_Findy1(r);
 			/* Check all children */
-			pAWin->pFirstChild->_Findy1(r);
+			pWinActive->pFirstChild->_Findy1(r);
 		}
 		/*
 		  STEP 4
@@ -385,11 +383,11 @@ private:
 		r.x1 = r.x0;
 		/* Iterate over all windows which are above */
 		/* Check all siblings above (siblings of window, siblings of parents, etc ...) */
-		for (auto pParent = WObj::pWinActive; pParent; pParent = pParent->pParent)
+		for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
 			if (pParent->pNext->_Findx0(r))
 				goto Find_x0;
 		/* Check all children */
-		if (pAWin->pFirstChild->_Findx0(r))
+		if (pWinActive->pFirstChild->_Findx0(r))
 			goto Find_x0;
 		/*
 		 STEP 5:
@@ -397,7 +395,7 @@ private:
 		   Find out x1 for the given x0, y0, y1
 		*/
 		r.x1 = _ClipContext.ClientRect.x1;
-		if (r.x1 < r.x0) {/* horizontal border reached ? */
+		if (r.x1 < r.x0) { /* horizontal border reached ? */
 			_ClipContext.CurRect = r;
 			goto NextStripe;
 		}
@@ -406,17 +404,17 @@ private:
 		   Find r.x1. We have to Iterate over all windows which are above
 		*/
 		/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
-		for (auto pParent = WObj::pWinActive; pParent; pParent = pParent->pParent)
+		for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
 			pParent->pNext->_Findx1(r);
 		/* Check all children */
-		pAWin->pFirstChild->_Findx1(r);
+		pWinActive->pFirstChild->_Findx1(r);
 		/* We are done. Return the rectangle we found in the _ClipContext. */
 		if (_ClipContext.Cnt > 200)
 			return false;  /* error !!! This should not happen !*/
 		_ClipContext.CurRect = r;
 		return true;  /* IVR is valid ! */
 	}
-	static bool _GetNextIVR(void) {
+	static bool _GetNextIVR() {
 #if GUI_SUPPORT_CURSOR
 		static char _CursorHidden;
 #endif
@@ -455,15 +453,14 @@ private:
 		/* If we entered multiple times, leave Cliprect alone */
 		if (++_ClipContext.EntranceCnt > 1)
 			return true;
-		auto pAWin = WObj::pWinActive;
 		_ClipContext.Cnt = -1;
 		/* When using callback mechanism, it is legal to reduce drawing
 		   area to the invalid area ! */
 		RECT r;
 		if (WObj::_PaintCallbackCnt)
-			r = pAWin->InvalidRect;
-		else if (pAWin->Status & WC_VISIBLE) /* Not using callback mechanism, therefor allow entire rectangle */
-			r = pAWin->Rect;
+			r = pWinActive->rInvalid;
+		else if (pWinActive->Status & WC_VISIBLE) /* Not using callback mechanism, therefor allow entire rectangle */
+			r = pWinActive->Rect;
 		else {
 			--_ClipContext.EntranceCnt;
 			return false;  /* window is not even visible ! */
@@ -471,14 +468,10 @@ private:
 		/* If the drawing routine has specified a rectangle, use it to reduce the rectangle */
 		r &= rcMax;
 		/* If user has reduced the cliprect size, reduce the rectangle */
-		if (GUI.WM__pUserClipRect) {
-			auto pWin = pAWin;
-			auto rUser = *(GUI.WM__pUserClipRect);
-			rUser += pWin->GetOrg();
-			r &= rUser;
-		}
+		if (_ClipContext.prUserClip)
+			r &= *(_ClipContext.prUserClip)+pWinActive->GetOrg();
 		/* Iterate over all ancestors and clip at their borders. If there is no visible part, we are done */
-		if (!WObj::pWinActive->_ClipAtParentBorders(r)) {
+		if (!pWinActive->_ClipAtParentBorders(r)) {
 			--_ClipContext.EntranceCnt;
 			return false;           /* Nothing to draw */
 		}
@@ -488,8 +481,8 @@ private:
 	}
 public:
 	static const RECT *SetUserClipRect(const RECT *pRect) {
-		auto pRectReturn = GUI.WM__pUserClipRect;
-		GUI.WM__pUserClipRect = pRect;
+		auto pRectReturn = _ClipContext.prUserClip;
+		_ClipContext.prUserClip = pRect;
 		/* Activate it ... */
 		_ActivateClipRect();
 		return pRectReturn;
@@ -508,10 +501,10 @@ public:
 		if (cb && (Status & WC_VISIBLE)) {
 			_PaintCallbackCnt++;
 			if (Status & WC_LATE_CLIP)
-				Require(WM_PAINT, (WM_PARAM)&InvalidRect);
+				Require(WM_PAINT);
 			else
-				Iterate(InvalidRect, [&] {
-					Require(WM_PAINT, (WM_PARAM)&InvalidRect);
+				Iterate(rInvalid, [&] {
+					Require(WM_PAINT);
 				});
 			_PaintCallbackCnt--;
 		}
@@ -521,21 +514,19 @@ public:
 			return false;
 		bool Ret = false;
 		if (cb) {
-			if (_ClipAtParentBorders(InvalidRect)) {
+			if (_ClipAtParentBorders(rInvalid)) {
 				Select();
-				if (Status & WC_MEMDEV) {
-					auto r = InvalidRect;
+				if (Status & WC_MEMDEV)
 					/*
 					 * Currently we treat a desktop window as transparent, because per default it does not repaint itself.
 					 */
-					GUI_MEMDEV_Draw(r, [](void *p) {
+					GUI_MEMDEV_Draw(rInvalid, [](void *p) {
 						auto pWin = (WObj *)p;
-						auto Rect = pWin->InvalidRect;
-						pWin->InvalidRect = GUI.rClip;
+						auto Rect = pWin->rInvalid;
+						pWin->rInvalid = GUI.rClip;
 						pWin->_Paint1();
-						pWin->InvalidRect = Rect;
+						pWin->rInvalid = Rect;
 					}, this);
-				}
 				else
 					_Paint1();
 				Ret = true;    /* Something has been done */
@@ -864,7 +855,7 @@ public:
 	void _MoveDescendents(POINT d) {
 		for (auto pWin = this; pWin; pWin = pWin->pNext) {
 			pWin->Rect += d;
-			pWin->InvalidRect += d;
+			pWin->rInvalid += d;
 			pWin->pFirstChild->_MoveDescendents(d);  /* Children need to be moved along ...*/
 			pWin->Require(WM_MOVE);
 		}
@@ -873,7 +864,7 @@ public:
 		if (!d) return;
 		auto r = Rect;
 		Rect += d;
-		InvalidRect += d;
+		rInvalid += d;
 		pFirstChild->_MoveDescendents(d);  /* Children need to be moved along ...*/
 		Require(WM_MOVE); /* Notify window it has been moved */
 		/* Invalidate old and new area ... */
@@ -943,7 +934,7 @@ public:
 		Rect = rNew;
 		InvalidateArea(rOld | rNew);
 		_UpdateChildPositions(rNew - rOld);
-		InvalidRect &= Rect; /* Make sure invalid area is not bigger than window itself */
+		rInvalid &= Rect; /* Make sure invalid area is not bigger than window itself */
 		Require(WM_SIZE); /* Send size message to the window */
 	}
 
