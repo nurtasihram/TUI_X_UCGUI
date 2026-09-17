@@ -21,7 +21,7 @@ constexpr uint16_t
 	RADIO_TEXTPOS_RIGHT = 0,
 	RADIO_TEXTPOS_LEFT  = WIDGET_STATE_USER<0>; /* Not implemented, TBD */
 
-enum RADIO_CI {
+enum RADIO_BI {
 	 RADIO_BI_INACTIV = 0,
 	 RADIO_BI_ACTIV,
 	 RADIO_BI_CHECK
@@ -55,7 +55,7 @@ private:
 		auto pBmRadio = Props.apBmRadio[IsEnabled()],
 			 pBmCheck = Props.pBmCheck;
 		rFocus.x1 = pBmRadio->Size.x + RADIO_BORDER * 2 - 1;
-		rFocus.y1 = Height + ((NumItems - 1) * Spacing) - 1;
+		rFocus.y1 = Height + (NumItems - 1) * Spacing - 1;
 		/* Select font and text color */
 		GUI.Color(Props.TextColor);
 		GUI.Font(Props.pFont);
@@ -103,16 +103,13 @@ private:
 		int Hit = 0;
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
-				int y, Sel;
-				y = pState->y;
-				Sel = y / this->Spacing;
-				y -= Sel * this->Spacing;
-				if (y <= this->Height) {
-					SetValue( Sel);
-				}
-				if (IsFocussable()) {
+				auto y = pState->y;
+				auto Sel = y / Spacing;
+				y -= Sel * Spacing;
+				if (y <= Height)
+					SetValue(Sel);
+				if (IsFocussable())
 					SetFocus();
-				}
 				Notification = WM_NOTIFICATION_CLICKED;
 			}
 			else {
@@ -120,13 +117,9 @@ private:
 				Notification = WM_NOTIFICATION_RELEASED;
 			}
 		}
-		else {
+		else
 			Notification = WM_NOTIFICATION_MOVED_OUT;
-		}
 		NotifyParent(Notification);
-		if (Hit == 1) {
-			GUI_StoreKey(GetId());
-		}
 	}
 	char _OnKey(const KEY_STATE *pInfo) {
 		if (pInfo->PressedCnt > 0) {
@@ -200,9 +193,8 @@ public:
 
 private:
 	void _SetValue(int v) {
-		if (v >= NumItems) {
+		if (v >= NumItems)
 			v = NumItems - 1;
-		}
 		if (Sel != v) {
 			Sel = v;
 			Invalidate();
@@ -285,56 +277,44 @@ public:
 
 #pragma endregion
 
-	void AddValue(int Add) {
-		SetValue(Sel + Add);
-	}
-	void Dec() {
-		AddValue(-1);
-	}
-	void Inc() {
-		AddValue(1);
-	}
+	void AddValue(int Add) { SetValue(Sel + Add); }
+	void Dec() { AddValue(Sel - 1); }
+	void Inc() { AddValue(Sel + 1); }
+	auto GetValue() const { return Sel; }
 	void SetValue(int v) {
-		if (GroupId) {
+		if (GroupId)
 			_HandleSetValue(v);
-		}
 		else {
-			if (v < 0) {
+			if (v < 0)
 				v = 0;
-			}
 			_SetValue(v);
 		}
 	}
-	int  GetValue() {
-		return Sel;
-	}
 
 	void SetGroupId(uint8_t NewGroupId) {
+		if (GroupId == NewGroupId)
+			return;
 		auto OldGroupId = GroupId;
-		if (NewGroupId != OldGroupId) {
-			auto pFirst = FirstSibling();
-			/* Pass our selection, if we have one, to another radio button in */
-			/* our old group. So the group have a valid selection when we leave it. */
-			if (OldGroupId && Sel >= 0) {
-				GroupId = 0; /* Leave group first, so _GetNextInGroup() could */
-				/* not find a handle to our own window. */
-				if (auto pWin = _GetNextInGroup(pFirst, OldGroupId))
-					pWin->_SetValue(0);
-			}
-			/* Make sure we have a valid selection according to our new group */
-			if (_GetNextInGroup(pFirst, NewGroupId) != 0) {
-				/* Join an existing group with an already valid selection, so clear our own one */
-				_SetValue(-1);
-			}
-			else if (Sel < 0) {
-				/* We are the first window in group, so we must have a valid selection at our own. */
-				_SetValue(0);
-			}
-			/* Change the group */
-			GroupId = NewGroupId;
+		auto pFirst = FirstSibling();
+		/* Pass our selection, if we have one, to another radio button in */
+		/* our old group. So the group have a valid selection when we leave it. */
+		if (OldGroupId && Sel >= 0) {
+			GroupId = 0; /* Leave group first, so _GetNextInGroup() could */
+			/* not find a handle to our own window. */
+			if (auto pWin = _GetNextInGroup(pFirst, OldGroupId))
+				pWin->_SetValue(0);
 		}
+		/* Make sure we have a valid selection according to our new group */
+		if (_GetNextInGroup(pFirst, NewGroupId))
+			/* Join an existing group with an already valid selection, so clear our own one */
+			_SetValue(-1);
+		else if (Sel < 0)
+			/* We are the first window in group, so we must have a valid selection at our own. */
+			_SetValue(0);
+		/* Change the group */
+		GroupId = NewGroupId;
 	}
-	void SetImage(PCBITMAP pBitmap, unsigned int Index) {
+	void SetImage(RADIO_BI Index, PCBITMAP pBitmap) {
 		switch (Index) {
 			case RADIO_BI_INACTIV:
 			case RADIO_BI_ACTIV:
@@ -346,14 +326,12 @@ public:
 		}
 		Invalidate();
 	}
-	void SetText(const char *pText, unsigned Index) {
-		if (Index < (unsigned)NumItems) {
+	void SetText(uint16_t Index, const char *pText) {
+		if (Index < NumItems) {
 			GUI__SetText(TextArray[Index], pText);
 			Invalidate();
 		}
 	}
-
-
 };
 
 Radio::Properties Radio::DefaultProps;

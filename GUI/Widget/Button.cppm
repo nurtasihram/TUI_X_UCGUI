@@ -30,15 +30,11 @@ class Button : public Widget {
 public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
-		RGBC aTextColor[3]{
-			/* Unpressed */	RGB_BLACK,
-			/* Pressed */	RGB_BLACK,
-			/* Disabled */	RGB_DARKGRAY
-		};
-		RGBC aBkColor[3]{
-			/* Unpressed */	RGBC::Gray(0xD0),
-			/* Pressed */	RGB_WHITE,
-			/* Disabled */	RGB_LIGHTGRAY
+		BRUSH aBrush[3]{
+			/* Index        | Background      | Text         */
+			/* Unpressed */ { RGBC::Gray(0xD0), RGB_BLACK    },
+			/* Pressed   */ { RGB_WHITE       , RGB_BLACK    },
+			/* Disabled  */ { RGB_LIGHTGRAY   , RGB_DARKGRAY }
 		};
 		TEXTALIGN Align{ TEXTALIGN_HCENTER | TEXTALIGN_VCENTER };
 	} static DefaultProps;
@@ -54,7 +50,7 @@ private:
 		GUI_ALLOC_FreePtr((void **)&aDrawObj[1]);
 	}
 
-	void _OnPaint() {
+	void _OnPaint() const {
 		bool IsPressed = States & BUTTON_STATE_PRESSED;
 		int ColorIndex = (IsEnabled()) ? IsPressed : 2;
 		GUI.Font(Props.pFont);
@@ -67,8 +63,7 @@ private:
 			DrawUp();
 		rInside /= EffectSize;
 		/* Draw background */
-		GUI.BkColor(Props.aBkColor[ColorIndex]);
-		GUI.Color(Props.aTextColor[ColorIndex]);
+		GUI.Brush(Props.aBrush[ColorIndex]);
 		SetUserClipRect(&rInside);
 		GUI_Clear();
 		/* Draw bitmap.
@@ -100,10 +95,6 @@ private:
 		DelStates(BUTTON_STATE_PRESSED);
 		if (Status & WC_VISIBLE)
 			NotifyParent(Notification);
-		if (Notification == WM_NOTIFICATION_RELEASED) {
-			GUI_DEBUG_LOG("BUTTON: Hit\n");
-			GUI_StoreKey(GetId());
-		}
 	}
 	void _OnTouch(const PID_STATE *pState) {
 		if (pState) {  /* Something happened in our area (pressed or released) */
@@ -188,7 +179,6 @@ public:
 public:
 
 #pragma region Properties
-
 	UCFONT Font() const { return *Props.pFont; }
 	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
@@ -197,27 +187,15 @@ public:
 		Invalidate();
 	}
 
-	RGBC BkColor(BUTTON_CI Index) {
+	BRUSH Brush(BUTTON_CI Index) {
 		if (Index > 2)
-			return RGB_INVALID;
-		return Props.aBkColor[Index];
+			return{};
+		return Props.aBrush[Index];
 	}
-	void BkColor(BUTTON_CI Index, RGBC Color) {
+	void Brush(BUTTON_CI Index, BRUSH brush) {
 		if (Index > 2)
 			return;
-		Props.aBkColor[Index] = Color;
-		Invalidate();
-	}
-	
-	RGBC TextColor(BUTTON_CI Index) {
-		if (Index > 2)
-			return RGB_INVALID;
-		return Props.aTextColor[Index];
-	}
-	void TextColor(BUTTON_CI Index, RGBC Color) {
-		if (Index > 2)
-			return;
-		Props.aTextColor[Index] = Color;
+		Props.aBrush[Index] = brush;
 		Invalidate();
 	}
 
@@ -228,7 +206,6 @@ public:
 		Props.Align = Align;
 		Invalidate();
 	}
-
 #pragma endregion
 
 	void SetText(const char *s) {

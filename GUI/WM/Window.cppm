@@ -34,14 +34,6 @@ struct NOTIFY_CHILD_HAS_FOCUS_INFO {
 	WObj *pOld, *pNew;
 };
 
-typedef void WM_tfForEach(WObj *pWin, void *pData);
-
-void WM_Init(void);
-bool WM_Exec(void);  /* Execute all jobs ... Return 0 if nothing was done. */
-bool WM_Exec1(void); /* Execute one job  ... Return 0 if nothing was done. */
-
-int WM_OnKey(int Key, int Pressed);
-
 typedef WM_PARAM WM_CALLBACK(WObj *pWin, int MsgId, WM_PARAM Data);
 
 /* Scroll functions */
@@ -167,6 +159,7 @@ public:
 	}
 #pragma endregion
 
+private:
 	static WObj *pWinActive;
 	static bool IsActive;
 public:
@@ -184,8 +177,8 @@ public:
 	}
 
 #pragma region Invalidation
+private:
 	static uint16_t NumInvalidWindows;
-//private:
 	bool _ClipAtParentBorders(RECT &r) const {
 		for (auto pWin = this; pWin->Status & WC_VISIBLE; pWin = pWin->pParent) {
 			r &= pWin->rWin;
@@ -301,7 +294,7 @@ private:
 	static void _ActivateClipRect() {
 		/* Window manager disabled, typically because memory device is active */
 		/* Take UserClipRect into account */
-		RECT rSrc = WObj::IsActive ? _ClipContext.CurRect : pWinActive->rWin;
+		RECT rSrc = IsActive ? _ClipContext.CurRect : pWinActive->rWin;
 		if (_ClipContext.prUserClip) {
 			auto r = *_ClipContext.prUserClip;
 			if (pWinActive)
@@ -419,7 +412,7 @@ private:
 		static char _CursorHidden;
 #endif
 	/* If WM is not active, we have no rectangles to return */
-		if (!WObj::IsActive)
+		if (!IsActive)
 			return false;
 		if (_ClipContext.EntranceCnt > 1) {
 			_ClipContext.EntranceCnt--;
@@ -446,7 +439,7 @@ private:
 	}
 	static bool _InitIVRSearch(RECT rcMax) {
 		/* If WM is not active -> nothing to do, leave cliprect alone */
-		if (!WObj::IsActive) {
+		if (!IsActive) {
 			_ActivateClipRect();
 			return true;
 		}
@@ -457,7 +450,7 @@ private:
 		/* When using callback mechanism, it is legal to reduce drawing
 		   area to the invalid area ! */
 		RECT r;
-		if (WObj::_PaintCallbackCnt)
+		if (_PaintCallbackCnt)
 			r = pWinActive->rInvalid;
 		else if (pWinActive->Status & WC_VISIBLE) /* Not using callback mechanism, therefor allow entire rectangle */
 			r = pWinActive->rWin;
@@ -538,8 +531,7 @@ public:
 		--NumInvalidWindows;
 		return Ret;
 	}
-public:
-//private:
+private:
 	static WObj *pWinNextDraw;
 public:
 	static bool DrawOnce() {
@@ -547,7 +539,7 @@ public:
 			return false;
 		GUI_CONTEXT ContextOld;
 		GUI_SaveContext(&ContextOld);
-		auto iWin = pWinNextDraw ? pWinNextDraw : WObj::pWinFirst;
+		auto iWin = pWinNextDraw ? pWinNextDraw : pWinFirst;
 		/* Make sure the next window to redraw is valid */
 		for (; iWin; iWin = iWin->pNextLin)
 			if (iWin->_Paint())
@@ -560,7 +552,7 @@ public:
 #pragma endregion
 
 #pragma region CriticalHandles
-//private:
+private:
 	struct CriticalHandle {
 		static CriticalHandle *pFirst;
 		CriticalHandle *pNext = nullptr;
@@ -749,94 +741,6 @@ public:
 		return 0;
 	}
 
-#pragma region Mouse/Touch
-private:
-	void _SendMessageIfEnabled(uint16_t MsgId, WM_PARAM Data) {
-		if (IsEnabled())
-			Require(MsgId, Data);
-	}
-	void _SendTouchMessage(uint16_t MsgId, PID_STATE *pState) {
-		if (pState)
-			*pState -= rWin.LeftTop();
-		_SendMessageIfEnabled(MsgId, (WM_PARAM)pState);
-		/* Send notification to all ancestors.
-		   We need to check if the window which has received the last message still exists,
-		   since it may have deleted itself and its parent as result of the message.
-		*/
-		for (auto pWin = Parent(); WObj::IsWindow(pWin); pWin = pWin->Parent())
-			pWin->_SendMessageIfEnabled(WM_TOUCH_CHILD, (WM_PARAM)pState); /* Send message to the ancestors */
-	}
-public:
-	/*********************************************************************
-	*
-	*       HandlePID
-	*
-	* Polls the touch screen. If something has changed,
-	* sends a message to the concerned window.
-	*
-	* Return value:
-	*   0 if nothing has been done
-	*   1 if touch message has been sent
-	*/
-	static bool HandlePID() {
-		auto StateNew = GUI_PID_GetState();
-		if (WM_PID__StateLast == StateNew) return false;
-		bool r = false;
-#if GUI_SUPPORT_CURSOR
-		GUI_CURSOR_SetPosition(StateNew.x, StateNew.y);
-#endif
-		CriticalHandle CHWin = pWinCapture ? pWinCapture : WM_Screen2Win(StateNew);
-		CHWin.Add();
-		/* Send WM_PID_STATE_CHANGED message if state has changed (just pressed or just released) */
-		if (WM_PID__StateLast.Pressed != StateNew.Pressed && CHWin.pWin) {
-			PID_CHANGED_INFO Info{ StateNew - CHWin.pWin->rWin.LeftTop(),
-				StateNew.Pressed, WM_PID__StateLast.Pressed };
-			CHWin.pWin->_SendMessageIfEnabled(WM_PID_STATE_CHANGED, (WM_PARAM)&Info);
-		}
-		/* Send WM_TOUCH message(s) Note that we may have to send 2 touch messages. */
-		if (WM_PID__StateLast.Pressed | StateNew.Pressed) { /* Only if pressed or just released */
-			r = true;
-			/* Tell window if it is no longer pressed
-			* This happens for 2 possible reasons:
-			* a) PID is released
-			* b) PID is moved out
-			*/
-			if (CHWinLast.pWin != CHWin.pWin) {
-				if (CHWinLast.pWin) {
-					GUI_DEBUG_LOG("\nSending WM_TOUCH to LastWindow %d (out of area)", CHWinLast.pWin);
-					PID_STATE *pState = StateNew.Pressed ? nullptr : &WM_PID__StateLast;
-					CHWinLast.pWin->_SendTouchMessage(WM_TOUCH, pState);
-					CHWinLast.pWin = nullptr;
-				}
-			}
-			/* Sending WM_TOUCH to current window */
-			if (CHWin.pWin) {
-				/* Remember window */
-				if (StateNew.Pressed)
-					CHWinLast.pWin = CHWin.pWin;
-				else {
-					/* Handle automatic capture release */
-					if (WM__CaptureReleaseAuto)
-						ReleaseCapture();
-					CHWinLast.pWin = nullptr;
-				}
-				CHWin.pWin->_SendTouchMessage(WM_TOUCH, &StateNew);
-			}
-		}
-#if GUI_SUPPORT_MOUSE
-	/* Send WM_MOUSEOVER Message */
-		else if (CHWin.pWin)
-			/* Do not send messages to disabled windows */
-			if (CHWin.pWin->IsEnabled())
-				CHWin.pWin->_SendTouchMessage(WM_MOUSEOVER, &StateNew);
-#endif
-		CHWin.Remove();
-		/* Store the new state */
-		WM_PID__StateLast = GUI_PID_GetState();
-		return r;
-	}
-#pragma endregion
-
 #pragma region Coordinate
 private:
 	void _MoveDescendents(POINT d) {
@@ -1014,15 +918,12 @@ public:
 #pragma endregion
 
 #pragma region Desktop
-//private:
+private:
 	static WObj *pWinDesktop;
 	static RGBC BkColorDesktop;
 	static WM_PARAM cbBackWin(WObj *pWin, int MsgId, WM_PARAM Data) {
 		switch (MsgId) {
 			case WM_KEY: {
-				auto pKeyInfo = (const KEY_STATE *)Data;
-				if (pKeyInfo->PressedCnt == 1)
-					GUI_StoreKey(pKeyInfo->Key);
 				return 0;
 			}
 			case WM_PAINT:
@@ -1225,6 +1126,126 @@ public:
 	void EnableMemdev() { Status |= WC_MEMDEV; }
 	void DisableMemdev() { Status &= ~(WC_MEMDEV | WC_MEMDEV_ON_REDRAW); }
 
+public:
+	static bool OnKey(KEY_STATE State) {
+		if (pWinFocus)
+			return pWinFocus->Require(WM_KEY, (WM_PARAM)&State);
+		return false;
+	}
+
+#pragma region Mouse/Touch
+private:
+	void _SendMessageIfEnabled(uint16_t MsgId, WM_PARAM Data) {
+		if (IsEnabled())
+			Require(MsgId, Data);
+	}
+	void _SendTouchMessage(uint16_t MsgId, PID_STATE *pState) {
+		if (pState)
+			*pState -= rWin.LeftTop();
+		_SendMessageIfEnabled(MsgId, (WM_PARAM)pState);
+		/* Send notification to all ancestors.
+		   We need to check if the window which has received the last message still exists,
+		   since it may have deleted itself and its parent as result of the message.
+		*/
+		for (auto pWin = Parent(); IsWindow(pWin); pWin = pWin->Parent())
+			pWin->_SendMessageIfEnabled(WM_TOUCH_CHILD, (WM_PARAM)pState); /* Send message to the ancestors */
+	}
+public:
+	/*********************************************************************
+	*
+	*       HandlePID
+	*
+	* Polls the touch screen. If something has changed,
+	* sends a message to the concerned window.
+	*
+	* Return value:
+	*   0 if nothing has been done
+	*   1 if touch message has been sent
+	*/
+	static bool HandlePID() {
+		auto StateNew = GUI_PID_Get();
+		if (WM_PID__StateLast == StateNew) return false;
+		bool r = false;
+#if GUI_SUPPORT_CURSOR
+		GUI_CURSOR_SetPosition(StateNew.x, StateNew.y);
+#endif
+		CriticalHandle CHWin = pWinCapture ? pWinCapture : WM_Screen2Win(StateNew);
+		CHWin.Add();
+		/* Send WM_PID_STATE_CHANGED message if state has changed (just pressed or just released) */
+		if (WM_PID__StateLast.Pressed != StateNew.Pressed && CHWin.pWin) {
+			PID_CHANGED_INFO Info{ StateNew - CHWin.pWin->rWin.LeftTop(),
+				StateNew.Pressed, WM_PID__StateLast.Pressed };
+			CHWin.pWin->_SendMessageIfEnabled(WM_PID_STATE_CHANGED, (WM_PARAM)&Info);
+		}
+		/* Send WM_TOUCH message(s) Note that we may have to send 2 touch messages. */
+		if (WM_PID__StateLast.Pressed | StateNew.Pressed) { /* Only if pressed or just released */
+			r = true;
+			/* Tell window if it is no longer pressed
+			* This happens for 2 possible reasons:
+			* a) PID is released
+			* b) PID is moved out
+			*/
+			if (CHWinLast.pWin != CHWin.pWin && CHWinLast.pWin) {
+				GUI_DEBUG_LOG("\nSending WM_TOUCH to LastWindow %d (out of area)", CHWinLast.pWin);
+				PID_STATE *pState = StateNew.Pressed ? nullptr : &WM_PID__StateLast;
+				CHWinLast.pWin->_SendTouchMessage(WM_TOUCH, pState);
+				CHWinLast.pWin = nullptr;
+			}
+			/* Sending WM_TOUCH to current window */
+			if (CHWin.pWin) {
+				/* Remember window */
+				if (StateNew.Pressed)
+					CHWinLast.pWin = CHWin.pWin;
+				else {
+					/* Handle automatic capture release */
+					if (WM__CaptureReleaseAuto)
+						ReleaseCapture();
+					CHWinLast.pWin = nullptr;
+				}
+				CHWin.pWin->_SendTouchMessage(WM_TOUCH, &StateNew);
+			}
+		}
+#if GUI_SUPPORT_MOUSE
+	/* Send WM_MOUSEOVER Message */
+		else if (CHWin.pWin)
+			/* Do not send messages to disabled windows */
+			if (CHWin.pWin->IsEnabled())
+				CHWin.pWin->_SendTouchMessage(WM_MOUSEOVER, &StateNew);
+#endif
+		CHWin.Remove();
+		/* Store the new state */
+		WM_PID__StateLast = GUI_PID_Get();
+		return r;
+	}
+#pragma endregion
+
+	static bool Exec1(void) {
+		/* Poll PID if necessary */
+		if (HandlePID())
+			return true; /* We have done something ... */
+		if (GUI_PollKeyMsg())
+			return true; /* We have done something ... */
+		if (DrawOnce())
+			return true; /* We have done something ... */
+		return false; /* There was nothing to do ... */
+	}
+	static bool Exec(void) {
+		bool r = false;
+		while (Exec1())
+			r = true; /* We have done something */
+		return r;
+	}
+
+	static void Init(void) {
+		static bool _IsInited = false;
+		if (_IsInited)
+			return;
+		/* Register the critical handles ... Note: This could be moved into the module setting the Window handle */
+		CHWinLast.Add();
+		CreateDesktopWindow(RGB_INVALID);
+		Activate();
+		_IsInited = true;
+	}
 };
 
 }

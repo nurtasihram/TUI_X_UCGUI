@@ -1,6 +1,5 @@
-#include "GUI.h"
-
-#include "WM.h"
+import TUX;
+import TUX.Window;
 
 struct MEMDEV : LCDDEV {
 	RECT rect;

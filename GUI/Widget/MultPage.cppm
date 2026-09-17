@@ -104,21 +104,17 @@ private:
 	
 	void _CalcClientRect(RECT *pRect) {
 		*pRect = _GetInsideRect();
-		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
+		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM)
 			pRect->y1 -= Props.pFont->YSize + 6;
-		}
-		else {
+		else
 			pRect->y0 += Props.pFont->YSize + 6;
-		}
 	}
 	void _CalcBorderRect(RECT *pRect) {
 		*pRect = ClientRect();
-		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
+		if (Props.Align & MULTIPAGE_ALIGN_BOTTOM)
 			pRect->y1 -= Props.pFont->YSize + 6;
-		}
-		else {
+		else
 			pRect->y0 += Props.pFont->YSize + 6;
-		}
 	}
 	uint16_t _GetPageSizeX(uint16_t Index) {
 		if (Index < Handles.NumItems())

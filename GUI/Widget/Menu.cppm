@@ -65,11 +65,11 @@ public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
 		RGBC aTextColor[5]{
-			RGB_BLACK,          /* enabled, not selected */
-			RGB_WHITE,          /* enabled, selected */
-			RGBC::Gray(0x7C),    /* disabled, not selected */
-			RGB_LIGHTGRAY,      /* disabled, selected */
-			RGB_WHITE           /* active submenu */
+			/* enabled , not selected */ RGB_BLACK,        
+			/* enabled ,     selected */ RGB_WHITE,        
+			/* disabled, not selected */ RGBC::Gray(0x7C), 
+			/* disabled,     selected */ RGB_LIGHTGRAY,    
+			/* active submenu         */ RGB_WHITE         
 		};
 		RGBC aBkColor[5]{
 			RGB_LIGHTGRAY,
@@ -352,12 +352,7 @@ private:
 	bool _HandlePID(PID_STATE State) {
 		auto PrevState = WM_PID__GetPrevState();
 		/* Check if coordinates are inside the widget */
-		bool XYInWidget = (State.x >= 0) && (State.y >= 0);
-		if (XYInWidget) {
-			auto r = ClientRect();
-			XYInWidget = (State.x <= r.x1) && (State.y <= r.y1);
-		}
-		if (!XYInWidget) {
+		if (!(ClientRect() <= State)) {
 			/* Handle PID when coordinates are outside the widget */
 			if (State.Pressed == 1 && PrevState.Pressed == 0) {
 				/* User has clicked outside the menu. Close the active submenu.
@@ -647,6 +642,13 @@ public:
 public:
 
 #pragma region Properties
+	void Font(PCFONT pFont) {
+		if (pFont == Props.pFont)
+			return;
+		Props.pFont = pFont;
+		_RecalcTextWidthOfItems();
+		_ResizeMenu();
+	}
 	void BkColor(MENU_CI ColorIndex, RGBC Color) {
 		if (ColorIndex >= GUI_COUNTOF(Props.aBkColor))
 			return;
@@ -655,22 +657,6 @@ public:
 		Props.aBkColor[ColorIndex] = Color;
 		Invalidate();
 	}
-	void TextColor(MENU_CI ColorIndex, RGBC Color) {
-		if (ColorIndex >= GUI_COUNTOF(Props.aTextColor))
-			return;
-		if (Color == Props.aTextColor[ColorIndex])
-			return;
-		Props.aTextColor[ColorIndex] = Color;
-		Invalidate();
-	}
-	void Font(PCFONT pFont) {
-		if (pFont == Props.pFont)
-			return;
-		Props.pFont = pFont;
-		_RecalcTextWidthOfItems();
-		_ResizeMenu();
-	}
-
 	void SetBorderSize(unsigned BorderIndex, uint8_t BorderSize) {
 		if (BorderIndex >= GUI_COUNTOF(Props.aBorder))
 			return;

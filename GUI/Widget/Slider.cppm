@@ -15,8 +15,7 @@ class Slider : public Widget {
 
 public:
 	struct Properties {
-		RGBC BkColor { RGB_INVALID };
-		RGBC Color   { RGBC::Gray(0xC0) };
+		BRUSH brush{ RGB_INVALID, RGBC::Gray(0xC0) };
 	} static DefaultProps;
 	
 private:
@@ -24,35 +23,35 @@ private:
 	
 	int16_t Min = 0, Max = 100, v = 0;
 	int16_t NumTicks = -1;
-	int16_t Width = 8;
+	uint16_t Width = 8;
 
-	void _OnPaint() {
+	void _OnPaint() const {
 		auto r = States & SLIDER_CF_VERTICAL ? ~ClientRect() : ClientRect();
-		auto xsize = r.x1 - r.x0 + 1 - this->Width;
-		auto x0 = r.x0 + this->Width / 2;
-		auto Range = this->Max - this->Min;
+		auto xsize = r.XSize() - Width;
+		auto x0 = r.x0 + Width / 2;
+		auto Range = Max - Min;
 		if (Range == 0)
 			Range = 1;
 		/* Calculate Slider position */
 		auto rSlider = r;
 		rSlider.y0 = 5;
-		rSlider.x0 = x0 + (uint32_t)xsize * (uint32_t)(this->v - this->Min) / Range - this->Width / 2;
-		rSlider.x1 = rSlider.x0 + this->Width;
+		rSlider.x0 = x0 + xsize * (v - Min) / Range - Width / 2;
+		rSlider.x1 = rSlider.x0 + Width;
 		/* Calculate Slot position */
 		RECT rSlot;
 		rSlot.x0 = x0;
+		rSlot.y0 = rSlider.DistY() / 2 - 1;
 		rSlot.x1 = x0 + xsize;
-		rSlot.y0 = (rSlider.y0 + rSlider.y1) / 2 - 1;
 		rSlot.y1 = rSlot.y0 + 3;
 		/* Calculate the ticks */
 		auto NumTicks = this->NumTicks;
 		if (NumTicks < 0) {
 			NumTicks = Range + 1;
-			if (NumTicks > (xsize / 5))
+			if (NumTicks > xsize / 5)
 				NumTicks = 11;
 		}
 		/* Fill with parents background color */
-		SetBkColorPrefer(Props.BkColor);
+		SetBkColorPrefer(Props.brush.BkColor);
 		GUI_Clear();
 		GUI.Color(RGB_BLACK);
 		if (States & SLIDER_CF_VERTICAL) {
@@ -60,22 +59,16 @@ private:
 			rSlot = rSlot.Rotate90L(xSize);
 			rSlider = rSlider.Rotate90L(xSize);
 			/* Draw the ticks */
-			for (int i = 0; i < NumTicks; i++) {
-				int x = x0 + xsize * i / (NumTicks - 1);
-				GUI_DrawHLine(x, 1, 3);
-			}
+			for (int i = 0; i < NumTicks; i++)
+				GUI_DrawHLine(x0 + xsize * i / (NumTicks - 1), 1, 3);
 		}
-		else {
-			/* Draw the ticks */
-			for (int i = 0; i < NumTicks; i++) {
-				int x = x0 + xsize * i / (NumTicks - 1);
-				GUI_DrawVLine(x, 1, 3);
-			}
-		}
+		else /* Draw the ticks */
+			for (int i = 0; i < NumTicks; i++)
+				GUI_DrawVLine(x0 + xsize * i / (NumTicks - 1), 1, 3);
 		/* Draw slot */
 		DrawDown(rSlot);
 		/* Draw the slider itself */
-		GUI.Color(Props.Color);
+		GUI.Color(Props.brush.Color);
 		GUI_FillRect(rSlider);
 		GUI.Color(RGB_BLACK);
 		DrawUp(rSlider);
@@ -115,7 +108,7 @@ private:
 			Sel = Max;
 		else {
 			auto Div = xsize ? xsize : 1;     /* Make sure we do not divide by 0, even though xsize should never be 0 in this case anyhow */
-			Sel = Min + ((uint32_t)Range * (uint32_t)x + Div / 2) / Div;
+			Sel = Min + (Range * x + Div / 2) / Div;
 		}
 		if (IsFocussable())
 			SetFocus();
@@ -124,18 +117,18 @@ private:
 		if (!(States & SLIDER_STATE_PRESSED))
 			_SliderPressed();
 	}
-	char _OnKey(const KEY_STATE *pInfo) {
+	bool _OnKey(const KEY_STATE *pInfo) {
 		if (pInfo->PressedCnt > 0) {
 			switch (pInfo->Key) {
 				case GUI_KEY_RIGHT:
 					Inc();
-					return 1;
+					return true;
 				case GUI_KEY_LEFT:
 					Dec();
-					return 1;
+					return true;
 			}
 		}
-		return 0;
+		return false;
 	}
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
@@ -174,34 +167,24 @@ public:
 public:
 
 #pragma region Properties
-	
-	void BkColor(RGBC Color) {
-		Props.BkColor = Color;
+	void Brush(BRUSH brush) {
+		if (Props.brush == brush)
+			return;
+		Props.brush = brush;
 		Invalidate();
 	}
 
+	void SetWidth(uint16_t Width) {
+		if (this->Width == Width)
+			return;
+		this->Width = Width;
+		Invalidate();
+	}
 #pragma endregion
 
-	void Dec() {
-		if (v > Min) {
-			v--;
-			Invalidate();
-			NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
-		}
-	}
-	void Inc() {
-		if (v < Max) {
-			v++;
-			Invalidate();
-			NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
-		}
-	}
-	void SetWidth(int Width) {
-		if (this->Width != Width) {
-			this->Width = Width;
-			Invalidate();
-		}
-	}
+	void Dec() { SetValue(v - 1); }
+	void Inc() { SetValue(v + 1); }
+	auto GetValue() const { return v; }
 	void SetValue(int v) {
 		/* Put in min/max range */
 		if (v < Min)
@@ -219,24 +202,18 @@ public:
 			Max = Min;
 		this->Min = Min;
 		this->Max = Max;
-		if (v < Min) {
+		if (v < Min)
 			v = Min;
-		}
-		if (v > Max) {
+		if (v > Max)
 			v = Max;
-		}
 		Invalidate();
 	}
-	void SetNumTicks(int NumTicks) {
-		if ((NumTicks >= 0)) {
-			this->NumTicks = NumTicks;
-			Invalidate();
-		}
+	void SetNumTicks(int16_t NumTicks) {
+		if (this->NumTicks == NumTicks) 
+			return;
+		this->NumTicks = NumTicks;
+		Invalidate();
 	}
-	int  GetValue() {
-		return v;
-	}
-
 };
 
 Slider::Properties Slider::DefaultProps;

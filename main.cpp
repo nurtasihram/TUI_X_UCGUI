@@ -1,7 +1,6 @@
 #include <stdio.h>
 
 #include "GUI.h"
-#include "WM.h"
 
 import TUX.Widget;
 import TUX.Widget.CheckBox;
@@ -90,8 +89,8 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 		{
 			int ColorIndex = 0;
 			char acBuffer[100];
-			RGBC aColor[4] = { RGB_BLACK, RGB_WHITE, RGB_WHITE, RGB_GRAY };
-			RGBC aBkColor[4] = { RGB_WHITE, RGB_GRAY, RGB_DARKBLUE, RGBC::Gray(0xC0) };
+			RGBC aColor[4]{ RGB_BLACK, RGB_WHITE, RGB_WHITE, RGB_GRAY };
+			RGBC aBkColor[4]{ RGB_WHITE, RGB_GRAY, RGB_DARKBLUE, RGBC::Gray(0xC0) };
 			bool IsDisabled = pObj->GetItemDisabled(Index);
 			bool IsSelected = pObj->GetItemSel(Index);
 			int MultiSel = pObj->GetMulti();
@@ -328,8 +327,7 @@ static void _OnMemDevTimer(GUI_TIMER_MESSAGE *pTM) {
 }
 static WM_PARAM _cbMemDevPane(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
-		case WM_PAINT:
-		{
+		case WM_PAINT: {
 			auto Size = pWin->Size();
 			int BarWidth = 36;
 			int Span = Size.x - BarWidth - 20;
@@ -371,7 +369,7 @@ static WObj *_CreateMemDevFrame(int x0, int y0, const char *pTitle, int UseMemDe
 	*phPane = new WObj(RECT(0, 0, Size.x - 1, Size.y - 1), Flags, _cbMemDevPane, pClient);
 	return pFrame;
 }
-static const Widget::CreateStruct _aMemDevDialogCreate[] = {
+static const Widget::CreateStruct _aMemDevDialogCreate[]{
 	{ Frame ::CreateIndirect, "MemDev Test"                           , 0             , 80  , 260 , 460 , 90                     , FRAMEWIN_CF_MOVEABLE },
 	{ Text  ::CreateIndirect, "Compare redraw with and without MemDev", 0             , 10  , 10  , 310 , 16                     , TEXT_CF_LEFT         },
 	{ Button::CreateIndirect, "Close"                                 , GUI_ID_CANCEL , 370 , 35  , 70  , 20                                        }
@@ -425,7 +423,7 @@ void _TestMemDev() {
 
 #pragma region Test ListView
 #define ID_LISTVIEW_TEST    (GUI_ID_USER + 100)
-static const Widget::CreateStruct _aListViewDialogCreate[] = {
+static const Widget::CreateStruct _aListViewDialogCreate[]{
 	{ Frame   ::CreateIndirect, "ListView Test"      , 0                 , 50  , 50  , 320 , 240 , FRAMEWIN_CF_MOVEABLE       },
 	{ ListView::CreateIndirect, ""                   , ID_LISTVIEW_TEST  , 10  , 10  , 290 , 160 , 0                          },
 	{ Button  ::CreateIndirect, "Add Row"            , GUI_ID_USER + 101 , 10  , 180 , 80  , 25                               },
@@ -441,9 +439,9 @@ static WM_PARAM _cbListViewTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			pListView->AddColumn(60, "Age", TEXTALIGN_RIGHT);
 			pListView->AddColumn(120, "City", TEXTALIGN_LEFT);
 			// Add rows
-			const char *row1[] = { "Alice", "25", "New York", nullptr };
-			const char *row2[] = { "Bob", "30", "London", nullptr };
-			const char *row3[] = { "Charlie", "35", "Tokyo", nullptr };
+			const char *row1[]{ "Alice", "25", "New York", nullptr };
+			const char *row2[]{ "Bob", "30", "London", nullptr };
+			const char *row3[]{ "Charlie", "35", "Tokyo", nullptr };
 			pListView->AddRow(row1);
 			pListView->AddRow(row2);
 			pListView->AddRow(row3);
@@ -465,7 +463,7 @@ static WM_PARAM _cbListViewTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 							char name[32], age[32];
 							sprintf(name, "User %d", rowCount);
 							sprintf(age, "%d", 20 + rowCount);
-							const char *newRow[] = { name, age, "Paris", nullptr };
+							const char *newRow[]{ name, age, "Paris", nullptr };
 							pListView->AddRow(newRow);
 							rowCount++;
 							break;
@@ -514,7 +512,7 @@ void _TestListView() {
 #define ID_DROPDOWN_COLLAPSE     (GUI_ID_USER + 129)
 static bool _DropDownAutoScroll = false;
 static int _DropDownItemCounter = 0;
-static const char *_DropDownInitialItems[] = {
+static const char *_DropDownInitialItems[]{
 	"Alpha",
 	"Beta",
 	"Gamma",
@@ -533,7 +531,7 @@ static void _UpdateDropDownStatus(WObj *pWin) {
 		pStatus->SetText(acStatus);
 	}
 }
-static const Widget::CreateStruct _aDropDownDialogCreate[] = {
+static const Widget::CreateStruct _aDropDownDialogCreate[]{
 	{ Frame   ::CreateIndirect, "DropDown Test"      , 0                      , 50  , 40  , 390 , 230 , FRAMEWIN_CF_MOVEABLE       },
 	{ DropDown::CreateIndirect, ""                   , ID_DROPDOWN_TEST       , 10  , 10  , 220 , 96  , 0                          },
 	{ Text    ::CreateIndirect, "Use the DropDown or buttons below to interact."
@@ -678,7 +676,7 @@ static void _UpdateMultiPageStatus(WObj *pWin) {
 		pStatus->SetText(acStatus);
 	}
 }
-static const Widget::CreateStruct _aMultiPageDialogCreate[] = {
+static const Widget::CreateStruct _aMultiPageDialogCreate[]{
 	{ Frame   ::CreateIndirect, "MultiPage Test"     , 0                         , 40  , 40  , 420 , 270 , FRAMEWIN_CF_MOVEABLE },
 	{ MultPage::CreateIndirect, ""                   , ID_MULTIPAGE_TEST         , 10  , 10  , 390 , 150 , 0                    },
 	{ Button  ::CreateIndirect, "Add Page"           , ID_MULTIPAGE_ADD          , 10  , 170 , 90  , 25                         },
@@ -694,7 +692,7 @@ static WM_PARAM _cbMultiPageTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
 			auto pMultiPage = pWin->GetItem<MultPage>(ID_MULTIPAGE_TEST);
-			const char *aTitles[] = { "Home", "Settings", "About", nullptr };
+			const char *aTitles[]{ "Home", "Settings", "About", nullptr };
 			_MultiPagePageCount = 0;
 			_MultiPageNewPageIndex = 0;
 			for (int i = 0; aTitles[i]; ++i) {
@@ -807,7 +805,7 @@ static void _UpdateRadioStatus(WObj *pWin) {
 		pStatus->SetText(acStatus);
 	}
 }
-static const Widget::CreateStruct _aRadioDialogCreate[] = {
+static const Widget::CreateStruct _aRadioDialogCreate[]{
 	{ Frame ::CreateIndirect, "Radio Test" , 0               , 60  , 50  , 360 , 220 , FRAMEWIN_CF_MOVEABLE },
 	{ Radio ::CreateIndirect, ""           , ID_RADIO_TEST   , 10  , 10  , 200 , 80  , 0, (3 | (24 << 8))   },
 	{ Button::CreateIndirect, "Prev"       , ID_RADIO_PREV   , 10  , 100 , 70  , 25                         },
@@ -822,9 +820,9 @@ static WM_PARAM _cbRadioTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
 		case WM_INIT_DIALOG: {
 			auto pRadio = pWin->GetItem<Radio>(ID_RADIO_TEST);
-			pRadio->SetText("Option A", 0);
-			pRadio->SetText("Option B", 1);
-			pRadio->SetText("Option C", 2);
+			pRadio->SetText(0, "Option A");
+			pRadio->SetText(1, "Option B");
+			pRadio->SetText(2, "Option C");
 			pRadio->SetValue(0);
 			_UpdateRadioStatus(pWin);
 			return 0;
@@ -901,7 +899,7 @@ void _TestRadio() {
 #define ID_RADIO_VALIGN            (GUI_ID_USER + 176)
 #define ID_TEXT_HALIGN_LABEL       (GUI_ID_USER + 177)
 #define ID_TEXT_VALIGN_LABEL       (GUI_ID_USER + 178)
-static const Widget::CreateStruct _aTextTestDialogCreate[] = {
+static const Widget::CreateStruct _aTextTestDialogCreate[]{
 	{ Frame  ::CreateIndirect, "Text Alignment & Anchor Test", 0                        , 40  , 40  , 680 , 420 , FRAMEWIN_CF_MOVEABLE | FRAMEWIN_CF_RESIZEABLE },
 
 	// Title and description
@@ -980,10 +978,8 @@ static WM_PARAM _cbTextTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 		case WM_INIT_DIALOG: {
 			// Set background colors for text widgets to make alignment visible
 			auto SetTextBkColor = [pWin](int Id, RGBC color) {
-				auto pText = pWin->GetItem<Text>(Id);
-				if (pText) {
-					pText->BkColor(color);
-				}
+				if (auto pText = pWin->GetItem<Text>(Id))
+					pText->Brush({ color, pText->Brush().Color });
 			};
 
 			// Set light background colors for each text widget
@@ -1031,17 +1027,17 @@ static WM_PARAM _cbTextTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			// Initialize radio buttons for multiline text alignment
 			auto pRadioHAlign = pWin->GetItem<Radio>(ID_RADIO_HALIGN);
 			if (pRadioHAlign) {
-				pRadioHAlign->SetText("Left", 0);
-				pRadioHAlign->SetText("Center", 1);
-				pRadioHAlign->SetText("Right", 2);
+				pRadioHAlign->SetText(0, "Left");
+				pRadioHAlign->SetText(1, "Center");
+				pRadioHAlign->SetText(2, "Right");
 				pRadioHAlign->SetValue(0);  // Default to Left
 			}
 
 			auto pRadioVAlign = pWin->GetItem<Radio>(ID_RADIO_VALIGN);
 			if (pRadioVAlign) {
-				pRadioVAlign->SetText("Top", 0);
-				pRadioVAlign->SetText("VCenter", 1);
-				pRadioVAlign->SetText("Bottom", 2);
+				pRadioVAlign->SetText(0, "Top");
+				pRadioVAlign->SetText(1, "VCenter");
+				pRadioVAlign->SetText(2, "Bottom");
 				pRadioVAlign->SetValue(0);  // Default to Top
 			}
 
@@ -1094,7 +1090,7 @@ void _TestText() {
 #define ID_PROGBAR_TOGGLE_TEXT (GUI_ID_USER + 185)
 static int _ProgBarMin = 0, _ProgBarMax = 100, _ProgBarValue = 0;
 static bool _ProgBarCustomText = false;
-static const Widget::CreateStruct _aProgBarDialogCreate[] = {
+static const Widget::CreateStruct _aProgBarDialogCreate[]{
 	{ Frame  ::CreateIndirect, "ProgBar Test" , 0                      , 70  , 60  , 360 , 210 , FRAMEWIN_CF_MOVEABLE },
 	{ ProgBar::CreateIndirect, ""             , ID_PROGBAR_TEST        , 15  , 20  , 320 , 25  , 0                    },
 	{ Button ::CreateIndirect, "-10"          , ID_PROGBAR_DEC         , 15  , 60  , 60  , 25                         },
@@ -1191,7 +1187,7 @@ static void _UpdateSliderStatus(WObj *pWin) {
 		pStatus->SetText(acStatus);
 	}
 }
-static const Widget::CreateStruct _aSliderDialogCreate[] = {
+static const Widget::CreateStruct _aSliderDialogCreate[]{
 	{ Frame ::CreateIndirect, "Slider Test"                               , 0                      , 70  , 60  , 470 , 250 , FRAMEWIN_CF_MOVEABLE },
 	{ Slider::CreateIndirect, ""                                          , ID_SLIDER_TEST         , 15  , 20  , 340 , 30                         },
 	{ Slider::CreateIndirect, ""                                          , ID_SLIDER_TEST_V       , 375 , 20  , 30  , 150 , SLIDER_CF_VERTICAL   },
@@ -1317,7 +1313,7 @@ static void _UpdateMultiEditStatus(WObj *pWin) {
 		pStatus->SetText(acStatus);
 	}
 }
-static const Widget::CreateStruct _aMultiEditDialogCreate[] = {
+static const Widget::CreateStruct _aMultiEditDialogCreate[]{
 	{ Frame   ::CreateIndirect, "MultiEdit Test"  , 0                           , 60  , 60  , 420 , 280 , FRAMEWIN_CF_MOVEABLE },
 	{ MultEdit::CreateIndirect, ""                , ID_MULTEDIT_TEST            , 10  , 10  , 395 , 150 , 0, 512               },
 	{ Button  ::CreateIndirect, "Append"          , ID_MULTEDIT_APPEND          , 10  , 170 , 70  , 25                         },

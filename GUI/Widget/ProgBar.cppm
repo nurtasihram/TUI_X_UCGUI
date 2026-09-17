@@ -47,7 +47,7 @@ private:
 			v = Min;
 		if (v > Max)
 			v = Max;
-		return EffectSize + ((xSize - 2 * EffectSize) * (int32_t)(v - Min)) / (Max - Min);
+		return EffectSize + ((xSize - 2 * EffectSize) * (v - Min)) / (Max - Min);
 	}
 	void _DrawPart(int Index, int xText, int yText, const char *pText) const {
 		GUI.BkColor(Props.aBkColor[Index]);
@@ -56,35 +56,29 @@ private:
 		GUI_DispStringAt(pText, xText, yText);
 	}
 	const char *_GetText(char *pBuffer) const {
-		char *pText;
-		uint8_t value;
-		if (this->pText) {
-			pText = this->pText;
+		if (pText) return pText;
+		auto pText = pBuffer;
+		uint8_t value = 100 * (v - Min) / (Max - Min);
+		if (value == 100) {
+			*pBuffer++ = '1';
+			*pBuffer++ = '0';
+			*pBuffer++ = '0';
 		}
 		else {
-			pText = pBuffer;
-			value = 100 * (v - Min) / (Max - Min);
-			if (value == 100) {
-				*pBuffer++ = '1';
-				*pBuffer++ = '0';
-				*pBuffer++ = '0';
+			if (value >= 10) {
+				*pBuffer++ = '0' + value / 10;
+				value %= 10;
 			}
-			else {
-				if (value >= 10) {
-					*pBuffer++ = '0' + value / 10;
-					value %= 10;
-				}
-				*pBuffer++ = '0' + value;
-			}
-			*pBuffer++ = '%';
-			*pBuffer = 0;
+			*pBuffer++ = '0' + value;
 		}
+		*pBuffer++ = '%';
+		*pBuffer = 0;
 		return (const char *)pText;
 	}
 	void _GetTextRect(RECT *pRect, const char *pText) const {
 		auto size = Size();
 		auto textBound = Props.pFont->TextBound(pText);
-		int EffectSize = this->EffectSize();
+		auto EffectSize = this->EffectSize();
 		switch (Props.Align & TEXTALIGN_HORIZONTAL) {
 			case TEXTALIGN_HCENTER:
 				pRect->x0 = (size.x - textBound.x) / 2;
@@ -101,7 +95,7 @@ private:
 		pRect->x1 = pRect->x0 + textBound.x - 1;
 		pRect->y1 = pRect->y0 + textBound.y - 1;
 	}
-	void _OnPaint() {
+	void _OnPaint() const {
 		auto rClient = ClientRect();
 		auto rInside = rClient / EffectSize();
 		auto xPos = _Value2X(v);

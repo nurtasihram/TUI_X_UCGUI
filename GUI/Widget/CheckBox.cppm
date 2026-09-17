@@ -103,7 +103,6 @@ private:
 	}
 	void _OnTouch(const PID_STATE *pState) {
 		int Notification = 0;
-		int Hit = 0;
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (!HasCaptured()) {
 				if (pState->Pressed) {
@@ -112,20 +111,13 @@ private:
 					Invalidate();
 					Notification = WM_NOTIFICATION_CLICKED;
 				}
-				else {
-					Hit = 1;
+				else
 					Notification = WM_NOTIFICATION_RELEASED;
-				}
 			}
 		}
-		else {
+		else
 			Notification = WM_NOTIFICATION_MOVED_OUT;
-		}
 		NotifyParent(Notification);
-		if (Hit == 1) {
-			GUI_DEBUG_LOG("CHECKBOX: Hit\n");
-			GUI_StoreKey(GetId());
-		}
 	}
 	char _OnKey(const KEY_STATE *pInfo) {
 		if (IsEnabled()) {

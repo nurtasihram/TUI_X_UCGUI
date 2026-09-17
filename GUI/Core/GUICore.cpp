@@ -1,7 +1,8 @@
-#include "WM.h"
-
 #include "GUI.h"
+#include "GUI_X.h"
 
+import TUX;
+import TUX.Window;
 #if GUI_SUPPORT_TIMER
 import TUX.Core.Timer;
 #endif
@@ -16,7 +17,7 @@ void GUI_Init(void) {
 	GUI.BkColor(GUI_DEFAULT_BKCOLOR);
 	GUI.Color(GUI_DEFAULT_COLOR);
 	GUI.ClipRectMax();
-	WM_Init();
+	WObj::Init();
 }
 void GUI_SelectLCD(void) {
 	GUI.pDeviceAPI = pLCD_API;
@@ -30,7 +31,7 @@ int GUI_Exec1(void) {
 	if (Timer::Exec())
 		r = 1; /* We have done something */
 #endif
-	if (WM_Exec())
+	if (WObj::Exec())
 		r = 1;
 	return r;
 }

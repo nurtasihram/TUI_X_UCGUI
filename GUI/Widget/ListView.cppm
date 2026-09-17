@@ -25,15 +25,11 @@ class ListView : public Widget {
 public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
-		RGBC aBkColor[3]{
-			/* Not selected */       RGB_WHITE,
-			/* Selected, no focus */ RGB_GRAY,
-			/* Selected, focus */    RGB_DARKBLUE
-		};
-		RGBC aTextColor[3]{
-			/* Not selected */       RGB_BLACK,
-			/* Selected, no focus */ RGB_WHITE,
-			/* Selected, focus */    RGB_WHITE
+		BRUSH aBrush[3]{
+			/* Index                 | Background   , Text      */
+			/* Not selected       */ { RGB_WHITE    , RGB_BLACK },
+			/* Selected, no focus */ { RGB_GRAY     , RGB_WHITE },
+			/* Selected, focus    */ { RGB_DARKBLUE , RGB_WHITE }
 		};
 		RGBC GridColor{ RGB_LIGHTGRAY };
 	} static DefaultProps;
@@ -42,8 +38,7 @@ private:
 	Properties Props = DefaultProps;
 
 	struct ItemInfo {
-		RGBC aBkColor[3];
-		RGBC aTextColor[3];
+		BRUSH aBrush[3];
 	};
 	struct Item {
 		ItemInfo *pItemInfo;
@@ -83,11 +78,10 @@ private:
 		WM_GetInsideRectExScrollbar(this, &Rect);
 		return Rect.x1 + 1;
 	}
-	int _GetHeaderWidth() {
+	int _GetHeaderWidth() const {
 		int r = 1;
-		if (auto NumItems = pHeader->GetNumItems())
-			for (auto i = 0, r = 0; i < NumItems; i++)
-				r += pHeader->GetItemWidth(i);
+		for (uint16_t i = 0, NumItems = pHeader->GetNumItems(); i < NumItems; i++)
+			r += pHeader->GetItemWidth(i);
 		if (auto Diff = ScrollStateH.v + ScrollStateH.PageSize - r; Diff > 0)
 			r += Diff;
 		return r;
@@ -95,8 +89,7 @@ private:
 
 	void _OnPaint() {
 		/* Init some values */
-		auto NumColumns = pHeader->GetNumItems();
-		auto NumRows = RowArray.NumItems();
+		auto NumColumns = pHeader->GetNumItems(), NumRows = RowArray.NumItems();
 		auto NumVisRows = _GetNumVisibleRows();
 		auto RowDistY = _GetRowDistY();
 		auto EffectSize = this->EffectSize();
@@ -108,10 +101,9 @@ private:
 		WM_GetInsideRectExScrollbar(this, &rClient);
 		rClip &= rClient;
 		/* Set drawing color, font and text mode */
-		GUI.Color(Props.aTextColor[0]);
 		GUI.Font(Props.pFont);
 		/* Do the drawing */
-		for (auto i = ScrollStateV.v; i < EndRow; i++) {
+		for (auto i = ScrollStateV.v; i < EndRow; i++, yPos += RowDistY) {
 			auto &pRow = RowArray[i];
 			rClient.y0 = yPos;
 			/* Break when all other rows are outside the drawing area */
@@ -119,54 +111,44 @@ private:
 				break;
 			rClient.y1 = yPos + RowDistY - 1;
 			/* Make sure that we draw only when row is in drawing area */
-			if (rClient.y1 >= rClip.y0) {
-				auto ColorIndex =
-						i == Sel ?
-						States & WIDGET_STATE_FOCUS ? LISTVIEW_CI_SELFOCUS : LISTVIEW_CI_SEL :
-						LISTVIEW_CI_UNSEL;
-				GUI.BkColor(Props.aBkColor[ColorIndex]);
-				/* Iterate over all columns */
-				if (States & LISTVIEW_CF_SHOWGRID)
-					rClient.y1--;
-				auto xPos = EffectSize - ScrollStateH.v;
-				for (auto j = 0; j < NumColumns; j++) {
-					auto Width = pHeader->GetItemWidth(j);
-					rClient.x0 = xPos;
-					/* Break when all other columns are outside the drawing area */
-					if (rClient.x0 > rClip.x1)
-						break;
-					rClient.x1 = xPos + Width - 1;
-					/* Make sure that we draw only when column is in drawing area */
-					if (rClient.x1 >= rClip.x0) {
-						auto &item = pRow[j];
-						if (auto pItemInfo = item.pItemInfo) {
-							GUI.BkColor(pItemInfo->aBkColor[ColorIndex]);
-							GUI.Color(pItemInfo->aTextColor[ColorIndex]);
-						}
-						else {
-							GUI.Color(Props.aTextColor[ColorIndex]);
-						}
-						/* Clear background */
-						GUI_ClearRect(rClient);
-						/* Draw text */
-						rClient.x0 += LBorder;
-						rClient.x1 -= RBorder;
-						auto Align = AlignArray[j];
-						GUI_DispStringInRect(item.pText, rClient, Align);
-						if (auto pItemInfo = item.pItemInfo)
-							GUI.BkColor(pItemInfo->aBkColor[ColorIndex]);
-					}
-					xPos += Width;
-				}
-				/* Clear unused area to the right of items */
-				if (xPos <= rClip.x1)
-					GUI_ClearRect({ xPos, rClient.y0, rClip.x1, rClient.y1 });
+			if (rClient.y1 < rClip.y0)
+				continue;
+			auto ColorIndex = i == Sel ? States & WIDGET_STATE_FOCUS ?
+				LISTVIEW_CI_SELFOCUS : LISTVIEW_CI_SEL : LISTVIEW_CI_UNSEL;
+			/* Iterate over all columns */
+			if (States & LISTVIEW_CF_SHOWGRID)
+				rClient.y1--;
+			auto xPos = EffectSize - ScrollStateH.v, Width = 0;
+			for (auto j = 0; j < NumColumns; j++, xPos += Width) {
+				Width = pHeader->GetItemWidth(j);
+				rClient.x0 = xPos;
+				/* Break when all other columns are outside the drawing area */
+				if (rClient.x0 > rClip.x1)
+					break;
+				rClient.x1 = xPos + Width - 1;
+				/* Make sure that we draw only when column is in drawing area */
+				if (rClient.x1 < rClip.x0)
+					continue;
+				auto &item = pRow[j];
+				if (auto pItemInfo = item.pItemInfo)
+					GUI.Brush(pItemInfo->aBrush[ColorIndex]);
+				else
+					GUI.Brush(Props.aBrush[ColorIndex]);
+				/* Clear background */
+				GUI_ClearRect(rClient);
+				/* Draw text */
+				rClient.x0 += LBorder;
+				rClient.x1 -= RBorder;
+				auto Align = AlignArray[j];
+				GUI_DispStringInRect(item.pText, rClient, Align);
 			}
-			yPos += RowDistY;
+			/* Clear unused area to the right of items */
+			if (xPos <= rClip.x1)
+				GUI_ClearRect({ xPos, rClient.y0, rClip.x1, rClient.y1 });
 		}
 		/* Clear unused area below items */
 		if (yPos <= rClip.y1) {
-			GUI.BkColor(Props.aBkColor[0]);
+			GUI.BkColor(Props.aBrush[0].BkColor);
 			GUI_ClearRect({ rClip.x0, yPos, rClip.x1, rClip.y1 });
 		}
 		/* Draw grid */
@@ -288,23 +270,6 @@ private:
 		RowArray.Delete();
 	}
 
-	ItemInfo *_GetpItemInfo(uint16_t Column, uint16_t Row, LISTVIEW_CI Index) {
-		if (Index >= GUI_COUNTOF(ItemInfo::aTextColor))
-			return nullptr;
-		if (Column >= GetNumColumns() || Row >= GetNumRows())
-			return nullptr;
-		auto pItem = &RowArray[Row][Column];
-		auto pItemInfo = pItem->pItemInfo;
-		if (pItemInfo)
-			return pItemInfo;
-		pItemInfo = pItem->pItemInfo = (ItemInfo *)GUI_ALLOC_Alloc(sizeof(ItemInfo));
-		pItemInfo->aTextColor[0] = Props.aTextColor[0];
-		pItemInfo->aTextColor[1] = Props.aTextColor[1];
-		pItemInfo->aBkColor[0] = Props.aBkColor[0];
-		pItemInfo->aBkColor[1] = Props.aBkColor[1];
-		return pItemInfo;
-	}
-
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (ListView *)pWin;
 		/* Let widget handle the standard messages */
@@ -386,31 +351,17 @@ public:
 		_InvalidateInsideArea();
 	}
 
-	RGBC BkColor(LISTVIEW_CI Index) {
-		if (Index >= GUI_COUNTOF(Props.aBkColor))
-			return RGB_INVALID;
-		return Props.aBkColor[Index];
+	BRUSH Brush(LISTVIEW_CI Index) {
+		if (Index >= GUI_COUNTOF(Props.aBrush))
+			return{};
+		return Props.aBrush[Index];
 	}
-	void BkColor(LISTVIEW_CI Index, RGBC Color) {
-		if (Index >= GUI_COUNTOF(Props.aBkColor))
+	void Brush(LISTVIEW_CI Index, BRUSH brush) {
+		if (Index >= GUI_COUNTOF(Props.aBrush))
 			return;
-		if (Props.aBkColor[Index] == Color)
+		if (Props.aBrush[Index] == brush)
 			return;
-		Props.aBkColor[Index] = Color;
-		_InvalidateInsideArea();
-	}
-
-	RGBC TextColor(LISTVIEW_CI Index) {
-		if (Index >= GUI_COUNTOF(Props.aTextColor))
-			return RGB_INVALID;
-		return Props.aTextColor[Index];
-	}
-	void TextColor(LISTVIEW_CI Index, RGBC Color) {
-		if (Index >= GUI_COUNTOF(Props.aTextColor))
-			return;
-		if (Props.aTextColor[Index] == Color)
-			return;
-		Props.aTextColor[Index] = Color;
+		Props.aBrush[Index] = brush;
 		_InvalidateInsideArea();
 	}
 
@@ -524,20 +475,26 @@ public:
 			_InvalidateRowAndBelow(Index);
 	}
 	
-	void ItemTextColor(uint16_t Column, uint16_t Row, LISTVIEW_CI Index, RGBC Color) {
-		if (auto pItemInfo = _GetpItemInfo(Column, Row, Index))
-			pItemInfo->aTextColor[Index] = Color;
-	}
-	void ItemBkColor(uint16_t Column, uint16_t Row, LISTVIEW_CI Index, RGBC Color) {
-		if (auto pItemInfo = _GetpItemInfo(Column, Row, Index))
-			pItemInfo->aBkColor[Index] = Color;
-	}
 	void SetItemText(uint16_t Column, uint16_t Row, const char *s) {
 		if (Column < GetNumColumns() && Row < GetNumRows()) {
 			auto &item = RowArray[Row][Column];
 			GUI__SetText(item.pText, s);
 			_InvalidateRow(Row);
 		}
+	}
+	void ItemBrush(uint16_t Column, uint16_t Row, LISTVIEW_CI Index, BRUSH brush) {
+		if (Index >= GUI_COUNTOF(ItemInfo::aBrush))
+			return;
+		if (Column >= GetNumColumns() || Row >= GetNumRows())
+			return;
+		auto pItem = &RowArray[Row][Column];
+		auto pItemInfo = pItem->pItemInfo;
+		if (!pItemInfo) {
+			pItemInfo = pItem->pItemInfo = (ItemInfo *)GUI_ALLOC_Alloc(sizeof(ItemInfo));
+			pItemInfo->aBrush[0] = Props.aBrush[0];
+			pItemInfo->aBrush[1] = Props.aBrush[1];
+		}
+		pItemInfo->aBrush[Index] = brush;
 	}
 
 	Header *GetHeader() { return pHeader; }

@@ -125,7 +125,7 @@ struct RECT {
 #pragma endregion
 
 struct KEY_STATE {
-	int16_t Key, PressedCnt;
+	uint16_t Key, PressedCnt;
 };
 struct PID_STATE : POINT {
 	int8_t Pressed;
@@ -201,7 +201,9 @@ constexpr RGBC
 	RGB_BROWN       = RGBC(0xA5, 0x2A, 0x2A),
 	RGB_INVALID     = RGBC(0xFF, 0xFF, 0xFF, 0xFF); /* Invalid color - more than 24 bits */
 struct BRUSH {
-	RGBC Color, BkColor;
+	RGBC BkColor = RGB_INVALID, Color = RGB_INVALID;
+	inline bool operator==(const BRUSH &b) const { return BkColor == b.BkColor && Color == b.Color; }
+	inline bool operator!=(const BRUSH &b) const { return !(*this == b); }
 };
 using LOGPALETTE = RGBC[];
 using CLOGPALETTE = const RGBC[];

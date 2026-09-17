@@ -22,8 +22,7 @@ public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
 		TEXTALIGN Align{ 0 };
-		RGBC TextColor{ RGB_BLACK };
-		RGBC BkColor{ RGB_INVALID };
+		BRUSH brush{ RGB_INVALID, RGB_BLACK };
 	} static DefaultProps;
 	
 private:
@@ -34,12 +33,11 @@ private:
 	void _FreeAttached() {
 		GUI_ALLOC_FreePtr((void **)&pText);
 	}
-	void _OnPaint() {
+	void _OnPaint() const {
 		const char *s;
-		GUI.Color(Props.TextColor);
-		GUI.Font(Props.pFont);
+		GUI.Brush(Props.brush);
 		/* Fill with parents background color */
-		SetBkColorPrefer(Props.BkColor);
+		SetBkColorPrefer(Props.brush.BkColor);
 		GUI_Clear();
 		/* Show the text */
 		if (pText) {
@@ -90,8 +88,7 @@ public:
 
 public:
 
-#pragma region Properties
-
+#pragma region properties
 	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
@@ -99,10 +96,11 @@ public:
 		Invalidate();
 	}
 
-	void BkColor(RGBC Color) {
-		if (Props.BkColor == Color)
+	auto Brush() const { return Props.brush; }
+	void Brush(BRUSH brush) {
+		if (Props.brush == brush)
 			return;
-		Props.BkColor = Color;
+		Props.brush = brush;
 		Invalidate();
 	}
 
@@ -112,14 +110,6 @@ public:
 		Props.Align = Align;
 		Invalidate();
 	}
-	
-	void TextColor(RGBC Color) {
-		if (Props.TextColor == Color)
-			return;
-		Props.TextColor = Color;
-		Invalidate();
-	}
-
 #pragma endregion
 
 	void SetText(const char *s) {

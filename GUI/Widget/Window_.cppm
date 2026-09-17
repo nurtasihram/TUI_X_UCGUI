@@ -1,9 +1,6 @@
-module;
-
-#include "WM.h"
-
 export module TUX.Widget.Window;
 
+import TUX;
 import TUX.Widget;
 
 export {

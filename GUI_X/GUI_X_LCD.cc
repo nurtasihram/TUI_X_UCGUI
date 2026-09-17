@@ -35,10 +35,10 @@ LCDDEV *GUI_X_LCD_Init(void) {
 						   tSimDisp_MouseKey mk) {
 		if (xPos < 0 || yPos < 0)
 			return;
-		GUI_PID_StoreState({ { xPos, yPos }, mk.Left });
+		GUI_PID_Store({ { xPos, yPos }, mk.Left });
 	});
 	SimDisp::SetOnKey([](uint16_t Key, uint8_t Pressed) {
-		GUI_StoreKeyMsg(Key, Pressed);
+		GUI_KEY_Store({ Key, Pressed });
 	});
 	SimDisp::SetOnResize([](uint16_t nSizeX, uint16_t nSizeY) -> BOOL {
 		//xSizeDisp = nSizeX;

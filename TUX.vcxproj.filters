@@ -42,9 +42,6 @@
     <ClCompile Include="GUI_X\GUI_X.cc">
       <Filter>GUI_X</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\WM\WM.cpp">
-      <Filter>GUI\WM</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp">
       <Filter>GUI\Widget</Filter>
     </ClCompile>
@@ -151,7 +148,6 @@
     <ClCompile Include="GUI\Core\LCD.cppm">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_Input.cpp" />
     <ClCompile Include="GUI_X\GUI_X_MEM.cppm">
       <Filter>GUI_X</Filter>
     </ClCompile>
@@ -173,13 +169,13 @@
     <ClCompile Include="TUX_EXT\CursorCross.cpp">
       <Filter>TUX_EXT</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\Core\GUI_Input.cpp">
+      <Filter>GUI\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\GUIConf.h">
       <Filter>Config</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\WM\WM.h">
-      <Filter>GUI\WM</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Core\GUI.h">
       <Filter>GUI\Core</Filter>
