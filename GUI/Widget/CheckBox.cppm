@@ -59,7 +59,7 @@ private:
 		/* Get size from bitmap */
 		RECT RectBox;
 		RectBox.RightBottom(Props.apBm[0]->Size + 2 * EffectSize - 1);
-		SetUserClipRect(&RectBox);
+		UserClip(&RectBox);
 		/* Clear inside  ... Just in case */
 		GUI.BkColor(Props.aBkColorBox[ColorIndex]);
 		GUI_Clear();
@@ -67,7 +67,7 @@ private:
 			GUI_DrawBitmap(Props.apBm[(CurrentState - 1) * 2 + ColorIndex], EffectSize);
 		/* Draw the effect arround the box */
 		DrawDown(RectBox);
-		SetUserClipRect(nullptr);
+		UserClip(nullptr);
 		/* Draw text if needed */
 		if (!text) return;
 		/* Draw the text */

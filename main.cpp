@@ -347,11 +347,11 @@ static WM_PARAM _cbMemDevPane(WObj *pWin, int MsgId, WM_PARAM Data) {
 			GUI.Color(RGB_GRAY);
 			GUI_DrawRect({ 10, 48, Size.x - 11, 72 });
 			GUI.Color(MemDevOn ? RGB_GREEN : RGB_RED);
-			GUI_FillRect({ 10 + XPos, 49, 10 + XPos + BarWidth, 71 });
+			GUI.FillRect({ 10 + XPos, 49, 10 + XPos + BarWidth, 71 });
 			GUI.Color(RGB_BLUE);
-			GUI_FillRect({ 10, Size.y - 40, Size.x - 11, Size.y - 25 });
+			GUI.FillRect({ 10, Size.y - 40, Size.x - 11, Size.y - 25 });
 			GUI.Color(RGB_YELLOW);
-			GUI_FillRect({ 10 + XPos / 2, Size.y - 39, 35 + XPos / 2, Size.y - 26 });
+			GUI.FillRect({ 10 + XPos / 2, Size.y - 39, 35 + XPos / 2, Size.y - 26 });
 			GUI.Color(RGB_BLACK);
 			GUI_DispStringAt("Animated redraw area", 8, Size.y - 18);
 			return 0;
@@ -1397,8 +1397,11 @@ void _TestMultiEdit() {
 }	
 #pragma endregion
 
-int main(void) {	
-	GUI_Init(); 
+int main(void) {
+	GUI_X_Init();
+	GUI.Init(); 
+	WObj::Init();
+
 	GUI_CURSOR_Show();
 
 	_TestText();

@@ -158,13 +158,13 @@ private:
 			for (auto i = 0; i < NumVisRows; i++) {
 				yPos += RowDistY;
 				if (rClip.y0 <= yPos && yPos <= rClip.y1)
-					GUI_DrawHLine(yPos, rClip.x0, rClip.x1);
+					GUI.DrawHLine(yPos, rClip.x0, rClip.x1);
 			}
 			auto xPos = EffectSize - ScrollStateH.v;
 			for (auto i = 0; i < NumColumns; i++) {
 				xPos += pHeader->GetItemWidth(i);
 				if (rClip.x0 <= xPos && xPos <= rClip.x1)
-					GUI_DrawVLine(xPos, rClip.y0, rClip.y1);
+					GUI.DrawVLine(xPos, rClip.y0, rClip.y1);
 			}
 		}
 		/* Draw the effect */

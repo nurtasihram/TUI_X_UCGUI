@@ -237,267 +237,248 @@ public:
 
 #pragma region IVR
 private:
-	void _Findy1(RECT &r) const {
-		for (auto pWin = this; pWin; pWin = pWin->pNext) {
-			auto Status = pWin->Status;
-			/* Check if this window affects us at all */
-			if (!(Status & WC_VISIBLE))
-				continue;
-			auto rWinClipped = pWin->rWin; /* Window rect, clipped to part inside of ancestors */
-			/* Check if this window affects us at all */
-			if (!(rWinClipped <= r))
-				continue;
-			if (pWin->rWin.y0 > r.y0) {
-				if (r.y1 > rWinClipped.y0 - 1) /* Check upper border of window */
-					r.y1 = rWinClipped.y0 - 1;
-			}
-			else if (r.y1 > rWinClipped.y1) /* Check lower border of window */
-				r.y1 = rWinClipped.y1;
-		}
-	}
-	bool _Findx0(RECT &r) const {
-		for (auto pWin = this; pWin; pWin = pWin->pNext) {
-			auto Status = pWin->Status;
-			if (!(Status & WC_VISIBLE))
-				continue;
-			/* If window is not visible, it can be safely ignored */
-			auto rWinClipped = pWin->rWin; /* Window rect, clipped to part inside of ancestors */
-			/* Check if this window affects us at all */
-			if (rWinClipped <= r) {
-				r.x0 = rWinClipped.x1 + 1;
-				return true;
-			}
-		}
-		return false;
-	}
-	void _Findx1(RECT &r) const {
-		for (auto pWin = this; pWin; pWin = pWin->pNext) {
-			auto Status = pWin->Status;
-			if (!(Status & WC_VISIBLE))
-				continue;
-			/* If window is not visible, it can be safely ignored */
-			auto rWinClipped = pWin->rWin; /* Window rect, clipped to part inside of ancestors */
-			/* Check if this window affects us at all */
-			if (!(rWinClipped <= r))
-				continue;
-			r.x1 = rWinClipped.x0 - 1;
-		}
-	}
-private:
-
-	struct {
+	class IVR {
 		RECT rClient, CurRect;
 		const RECT *prUserClip = nullptr;
 		int Cnt = -1, EntranceCnt = 0;
-	} static _ClipContext;
-
-	static void _ActivateClipRect() {
-		/* Window manager disabled, typically because memory device is active */
-		/* Take UserClipRect into account */
-		RECT rSrc = IsActive ? _ClipContext.CurRect : pWinActive->rWin;
-		if (_ClipContext.prUserClip) {
-			auto r = *_ClipContext.prUserClip;
-			if (pWinActive)
-				r += pWinActive->LeftTop(); /* Convert User rClip into screen coordinates */
-			/* Set intersection as clip rect */
-			rSrc &= r;
-		}
-		GUI.ClipRect(rSrc);
-	}
-
-	/*********************************************************************
-	*
-	*       IVR calculation
-	*
-	**********************************************************************
-	IVRs are invalid rectangles. When redrawing, only the portion of the
-	window which is
-	  a) within the window-rectangle
-	  b) not covered by an other window
-	  c) marked as invalid
-	  is actually redrawn. Unfortunately, this section is not always
-	  rectangular. If the window is partially covered by an other window,
-	  it consists of the sum of multiple rectangles. In all drawing
-	  operations, we have to iterate over every one of these rectangles in
-	  order to make sure the window is drawn completly.
-	Function works as follows:
-	  STEP 1: - Set upper left coordinates to next pixel. If end of line (right border), goto next line -> (r.x0, r.y0)
-	  STEP 2: - Check if we are done, return if we are.
-	  STEP 3: - If we are at the left border, find max. heigtht (r.y1) by iterating over windows above
-	  STEP 4: - Find x0 for the given y0, y1 by iterating over windows above
-	  STEP 5: - If r.x0 out of right border, this stripe is done. Set next stripe and goto STEP 2
-	  STEP 6: - Find r.x1. We have to Iterate over all windows which are above
-	*/
-	static bool _FindNext_IVR(void) {
-		auto r = _ClipContext.CurRect;  /* temps  so we do not have to work with pointers too much */
-		/*
-		   STEP 1:
-			 Set the next position which could be part of the next IVR
-			 This will be the first unhandle pixel in reading order, i.e. next one to the right
-			 or next one down if we are at the right border.
-		*/
-		if (!_ClipContext.Cnt) /* First IVR starts in upper left */
-			r.LeftTop(_ClipContext.rClient.LeftTop());
-		else {
-			r.x0 = _ClipContext.CurRect.x1 + 1;
-			r.y0 = _ClipContext.CurRect.y0;
-			if (r.x0 > _ClipContext.rClient.x1) {
-			NextStripe: /* go down to next stripe */
-				r.x0 = _ClipContext.rClient.x0;
-				r.y0 = _ClipContext.CurRect.y1 + 1;
+		
+		void _ActivateClipRect() const {
+			/* Window manager disabled, typically because memory device is active */
+			/* Take UserClipRect into account */
+			RECT rSrc = IsActive ? CurRect : pWinActive->rWin;
+			if (prUserClip) {
+				auto r = *prUserClip;
+				if (pWinActive)
+					r += pWinActive->LeftTop(); /* Convert User rClip into screen coordinates */
+				/* Set intersection as clip rect */
+				rSrc &= r;
 			}
+			GUI.ClipRect(rSrc);
 		}
-		/*
-		   STEP 2:
-			 Check if we are done completely.
+
+		/*********************************************************************
+		*
+		*       IVR calculation
+		*
+		**********************************************************************
+		IVRs are invalid rectangles. When redrawing, only the portion of the
+		window which is
+		  a) within the window-rectangle
+		  b) not covered by an other window
+		  c) marked as invalid
+		  is actually redrawn. Unfortunately, this section is not always
+		  rectangular. If the window is partially covered by an other window,
+		  it consists of the sum of multiple rectangles. In all drawing
+		  operations, we have to iterate over every one of these rectangles in
+		  order to make sure the window is drawn completly.
+		Function works as follows:
+		  STEP 1: - Set upper left coordinates to next pixel. If end of line (right border), goto next line -> (r.x0, r.y0)
+		  STEP 2: - Check if we are done, return if we are.
+		  STEP 3: - If we are at the left border, find max. heigtht (r.y1) by iterating over windows above
+		  STEP 4: - Find x0 for the given y0, y1 by iterating over windows above
+		  STEP 5: - If r.x0 out of right border, this stripe is done. Set next stripe and goto STEP 2
+		  STEP 6: - Find r.x1. We have to Iterate over all windows which are above
 		*/
-		if (r.y0 > _ClipContext.rClient.y1)
-			return false;
-		/* STEP 3:
-			 Find out the max. height (r.y1) if we are at the left border.
-			 Since we are using the same height for all IVRs at the same y0,
-			 we do this only for the leftmost one.
-		*/
-		if (r.x0 == _ClipContext.rClient.x0) {
-			r.RightBottom(_ClipContext.rClient.RightBottom());
+		bool _FindNext() {
+			auto r = CurRect;  /* temps  so we do not have to work with pointers too much */
+			/*
+			   STEP 1:
+				 Set the next position which could be part of the next IVR
+				 This will be the first unhandle pixel in reading order, i.e. next one to the right
+				 or next one down if we are at the right border.
+			*/
+			if (!Cnt) /* First IVR starts in upper left */
+				r.LeftTop(rClient.LeftTop());
+			else {
+				r.x0 = CurRect.x1 + 1;
+				r.y0 = CurRect.y0;
+				if (r.x0 > rClient.x1) {
+				NextStripe: /* go down to next stripe */
+					r.x0 = rClient.x0;
+					r.y0 = CurRect.y1 + 1;
+				}
+			}
+			/*
+			   STEP 2:
+				 Check if we are done completely.
+			*/
+			if (r.y0 > rClient.y1)
+				return false;
+			/* STEP 3:
+				 Find out the max. height (r.y1) if we are at the left border.
+				 Since we are using the same height for all IVRs at the same y0,
+				 we do this only for the leftmost one.
+			*/
+			static auto _Findy1 = [](const WObj *pWin, RECT &r) {
+				for (; pWin; pWin = pWin->pNext)
+					if (pWin->Status & WC_VISIBLE)
+						if (auto rWin = pWin->rWin; rWin <= r) {
+							if (rWin.y0 > r.y0) {
+								if (r.y1 > rWin.y0 - 1) /* Check upper border of window */
+									r.y1 = rWin.y0 - 1;
+							}
+							else if (r.y1 > rWin.y1) /* Check lower border of window */
+								r.y1 = rWin.y1;
+						}
+			};
+			if (r.x0 == rClient.x0) {
+				r.RightBottom(rClient.RightBottom());
+				/* Iterate over all windows which are above */
+				/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
+				for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
+					_Findy1(pParent->pNext, r);
+				/* Check all children */
+				_Findy1(pWinActive->pFirstChild, r);
+			}
+			/*
+			  STEP 4
+				Find out x0 for the given y0, y1 by iterating over windows above.
+				if we find one that intersects, adjust x0 to the right.
+			*/
+			static auto _Findx0 = [](const WObj * pWin, RECT & r) {
+				for (; pWin; pWin = pWin->pNext)
+					if (pWin->Status & WC_VISIBLE)
+						if (auto rWin = pWin->rWin; rWin <= r) {
+							r.x0 = rWin.x1 + 1;
+							return true;
+						}
+				return false;
+			};
+		Find_x0:
+			r.x1 = r.x0;
 			/* Iterate over all windows which are above */
+			/* Check all siblings above (siblings of window, siblings of parents, etc ...) */
+			for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
+				if (_Findx0(pParent->pNext, r))
+					goto Find_x0;
+			/* Check all children */
+			if (_Findx0(pWinActive->pFirstChild, r))
+				goto Find_x0;
+			/*
+			 STEP 5:
+			   If r.x0 out of right border, this stripe is done. Set next stripe and goto STEP 2
+			   Find out x1 for the given x0, y0, y1
+			*/
+			r.x1 = rClient.x1;
+			if (r.x1 < r.x0) { /* horizontal border reached ? */
+				CurRect = r;
+				goto NextStripe;
+			}
+			/*
+			 STEP 6:
+			   Find r.x1. We have to Iterate over all windows which are above
+			*/
+			static auto _Findx1 = [](const WObj *pWin, RECT &r) {
+				for (; pWin; pWin = pWin->pNext)
+					if (pWin->Status & WC_VISIBLE)
+						if (auto rWin = pWin->rWin; rWin <= r)
+							r.x1 = rWin.x0 - 1;
+			};
 			/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
 			for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
-				pParent->pNext->_Findy1(r);
+				_Findx1(pParent->pNext, r);
 			/* Check all children */
-			pWinActive->pFirstChild->_Findy1(r);
+			_Findx1(pWinActive->pFirstChild, r);
+			/* We are done. Return the rectangle we found in the  */
+			if (Cnt > 200)
+				return false;  /* error !!! This should not happen !*/
+			CurRect = r;
+			return true;  /* IVR is valid ! */
 		}
-		/*
-		  STEP 4
-			Find out x0 for the given y0, y1 by iterating over windows above.
-			if we find one that intersects, adjust x0 to the right.
-		*/
-	Find_x0:
-		r.x1 = r.x0;
-		/* Iterate over all windows which are above */
-		/* Check all siblings above (siblings of window, siblings of parents, etc ...) */
-		for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
-			if (pParent->pNext->_Findx0(r))
-				goto Find_x0;
-		/* Check all children */
-		if (pWinActive->pFirstChild->_Findx0(r))
-			goto Find_x0;
-		/*
-		 STEP 5:
-		   If r.x0 out of right border, this stripe is done. Set next stripe and goto STEP 2
-		   Find out x1 for the given x0, y0, y1
-		*/
-		r.x1 = _ClipContext.rClient.x1;
-		if (r.x1 < r.x0) { /* horizontal border reached ? */
-			_ClipContext.CurRect = r;
-			goto NextStripe;
-		}
-		/*
-		 STEP 6:
-		   Find r.x1. We have to Iterate over all windows which are above
-		*/
-		/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
-		for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
-			pParent->pNext->_Findx1(r);
-		/* Check all children */
-		pWinActive->pFirstChild->_Findx1(r);
-		/* We are done. Return the rectangle we found in the _ClipContext. */
-		if (_ClipContext.Cnt > 200)
-			return false;  /* error !!! This should not happen !*/
-		_ClipContext.CurRect = r;
-		return true;  /* IVR is valid ! */
-	}
-	static bool _GetNextIVR() {
-#if GUI_SUPPORT_CURSOR
-		static char _CursorHidden;
-#endif
-	/* If WM is not active, we have no rectangles to return */
-		if (!IsActive)
-			return false;
-		if (_ClipContext.EntranceCnt > 1) {
-			_ClipContext.EntranceCnt--;
-			return false;
-		}
-#if GUI_SUPPORT_CURSOR
-		if (_CursorHidden) {
-			_CursorHidden = 0;
-			GUI_CURSOR__TempShow();
-		}
-#endif
-		++_ClipContext.Cnt;
-		/* Find next rectangle and use it as rClip */
-		if (!_FindNext_IVR()) {
-			_ClipContext.EntranceCnt--;  /* This search is over ! */
-			return false;        /* Could not find an other one ! */
-		}
-		_ActivateClipRect();
-		/* Hide cursor if necessary */
-#if GUI_SUPPORT_CURSOR
-		_CursorHidden = GUI_CURSOR__TempHide(_ClipContext.CurRect);
-#endif
-		return true;
-	}
-	static bool _InitIVRSearch(RECT rcMax) {
-		/* If WM is not active -> nothing to do, leave cliprect alone */
-		if (!IsActive) {
+	public:
+		bool GetNext() {
+	#if GUI_SUPPORT_CURSOR
+			static char _CursorHidden;
+	#endif
+		/* If WM is not active, we have no rectangles to return */
+			if (!IsActive)
+				return false;
+			if (EntranceCnt > 1) {
+				EntranceCnt--;
+				return false;
+			}
+	#if GUI_SUPPORT_CURSOR
+			if (_CursorHidden) {
+				_CursorHidden = 0;
+				GUI_CURSOR__TempShow();
+			}
+	#endif
+			++Cnt;
+			/* Find next rectangle and use it as rClip */
+			if (!_FindNext()) {
+				EntranceCnt--;  /* This search is over ! */
+				return false;        /* Could not find an other one ! */
+			}
 			_ActivateClipRect();
+			/* Hide cursor if necessary */
+	#if GUI_SUPPORT_CURSOR
+			_CursorHidden = GUI_CURSOR__TempHide(CurRect);
+	#endif
 			return true;
 		}
-		/* If we entered multiple times, leave Cliprect alone */
-		if (++_ClipContext.EntranceCnt > 1)
-			return true;
-		_ClipContext.Cnt = -1;
-		/* When using callback mechanism, it is legal to reduce drawing
-		   area to the invalid area ! */
-		RECT r;
-		if (_PaintCallbackCnt)
-			r = pWinActive->rInvalid;
-		else if (pWinActive->Status & WC_VISIBLE) /* Not using callback mechanism, therefor allow entire rectangle */
-			r = pWinActive->rWin;
-		else {
-			--_ClipContext.EntranceCnt;
-			return false;  /* window is not even visible ! */
+		bool InitSearch(RECT rcMax) {
+			/* If WM is not active -> nothing to do, leave cliprect alone */
+			if (!IsActive) {
+				_ActivateClipRect();
+				return true;
+			}
+			/* If we entered multiple times, leave Cliprect alone */
+			if (++EntranceCnt > 1)
+				return true;
+			Cnt = -1;
+			/* When using callback mechanism, it is legal to reduce drawing
+			   area to the invalid area ! */
+			RECT r;
+			if (_PaintCallbackCnt)
+				r = pWinActive->rInvalid;
+			else if (pWinActive->Status & WC_VISIBLE) /* Not using callback mechanism, therefor allow entire rectangle */
+				r = pWinActive->rWin;
+			else {
+				--EntranceCnt;
+				return false;  /* window is not even visible ! */
+			}
+			/* If the drawing routine has specified a rectangle, use it to reduce the rectangle */
+			r &= rcMax;
+			/* If user has reduced the cliprect size, reduce the rectangle */
+			if (prUserClip)
+				r &= *(prUserClip) + pWinActive->LeftTop();
+			/* Iterate over all ancestors and clip at their borders. If there is no visible part, we are done */
+			if (!pWinActive->_ClipAtParentBorders(r)) {
+				--EntranceCnt;
+				return false;           /* Nothing to draw */
+			}
+			/* Store the rectangle and find the first rectangle of the area */
+			rClient = r;
+			return GetNext();
 		}
-		/* If the drawing routine has specified a rectangle, use it to reduce the rectangle */
-		r &= rcMax;
-		/* If user has reduced the cliprect size, reduce the rectangle */
-		if (_ClipContext.prUserClip)
-			r &= *(_ClipContext.prUserClip) + pWinActive->LeftTop();
-		/* Iterate over all ancestors and clip at their borders. If there is no visible part, we are done */
-		if (!pWinActive->_ClipAtParentBorders(r)) {
-			--_ClipContext.EntranceCnt;
-			return false;           /* Nothing to draw */
+		const RECT *UserClip(const RECT *pRect) {
+			auto pRectReturn = prUserClip;
+			prUserClip = pRect;
+			_ActivateClipRect();
+			return pRectReturn;
 		}
-		/* Store the rectangle and find the first rectangle of the area */
-		_ClipContext.rClient = r;
-		return _GetNextIVR();
-	}
+	} static _ClipContext;
+
 public:
-	static const RECT *SetUserClipRect(const RECT *pRect) {
-		auto pRectReturn = _ClipContext.prUserClip;
-		_ClipContext.prUserClip = pRect;
-		/* Activate it ... */
-		_ActivateClipRect();
-		return pRectReturn;
+	static const RECT *UserClip(const RECT *pRect) {
+		return _ClipContext.UserClip(pRect);
 	}
 	static inline void Iterate(RECT &r, auto fn) {
-		if (_InitIVRSearch(r))
-			do { fn(); } while (_GetNextIVR());
+
+		if (_ClipContext.InitSearch(r))
+			do { fn(); } while (_ClipContext.GetNext());
+
 	}
 #pragma endregion
 
 #pragma region Paint & Draw
 	static uint8_t _PaintCallbackCnt;      /* Public for assertions only */
 	void _Paint1() /* const */ {
-		/* Send WM_PAINT if window is visible and a callback is defined */
 		if (cb && (Status & WC_VISIBLE)) {
 			_PaintCallbackCnt++;
-			if (Status & WC_LATE_CLIP)
+			Iterate(rInvalid, [&] {
 				Require(WM_PAINT);
-			else
-				Iterate(rInvalid, [&] {
-					Require(WM_PAINT);
-				});
+			});
 			_PaintCallbackCnt--;
 		}
 	}
@@ -505,46 +486,37 @@ public:
 		if (!(Status & WC_ACTIVATE))
 			return false;
 		bool Ret = false;
-		if (cb) {
-			if (_ClipAtParentBorders(rInvalid)) {
-				Select();
-				if (Status & WC_MEMDEV)
-					/*
-					 * Currently we treat a desktop window as transparent, because per default it does not repaint itself.
-					 */
-					GUI_MEMDEV_Draw(rInvalid, [](void *p) {
-						auto pWin = (WObj *)p;
-						auto rInvalid = pWin->rInvalid;
-						pWin->rInvalid = GUI.rClip;
-						pWin->_Paint1();
-						pWin->rInvalid = rInvalid;
-					}, this);
-				else
-					_Paint1();
-				Ret = true;    /* Something has been done */
-			}
+		if (cb && _ClipAtParentBorders(rInvalid)) {
+			Select();
+			if (Status & WC_MEMDEV)
+				GUI_MEMDEV_Draw(rInvalid, [](void *p) {
+					auto pWin = (WObj *)p;
+					auto rInvalid = pWin->rInvalid;
+					pWin->rInvalid = GUI.rClip;
+					pWin->_Paint1();
+					pWin->rInvalid = rInvalid;
+				}, this);
+			else
+				_Paint1();
+			Ret = true;    /* Something has been done */
 		}
 		/* We purposly clear the invalid flag after painting so we can still query the invalid rectangle while painting */
 		Status &= ~WC_ACTIVATE; /* Clear invalid flag */
-		if (Status & WC_MEMDEV_ON_REDRAW)
-			Status |= WC_MEMDEV;
 		--NumInvalidWindows;
 		return Ret;
 	}
 private:
-	static WObj *pWinNextDraw;
+	static WObj *pwDraw;
 public:
 	static bool DrawOnce() {
 		if (!IsActive || !NumInvalidWindows)
 			return false;
 		GUI_CONTEXT ContextOld;
 		GUI_SaveContext(&ContextOld);
-		auto iWin = pWinNextDraw ? pWinNextDraw : pWinFirst;
-		/* Make sure the next window to redraw is valid */
-		for (; iWin; iWin = iWin->pNextLin)
-			if (iWin->_Paint())
+		if (!pwDraw) pwDraw = pWinFirst;
+		for (; pwDraw; pwDraw = pwDraw->pNextLin)
+			if (pwDraw->_Paint())
 				break;
-		pWinNextDraw = iWin;   /* Remember the window */
 		GUI_RestoreContext(&ContextOld);
 		return true;
 	}
@@ -595,10 +567,8 @@ public:
 	WObj(RECT r, WM_CF Style, WM_CALLBACK *cb, WObj *pParent = nullptr) :
 		rWin(r), cb(cb), Status(Style & WM_CF_MASK) {
 		WM_ASSERT_NOT_IN_PAINT();
-		/* Default parent is Desktop 0 */
 		if (!pParent)
-			if (NumWindows)
-				pParent = pWinDesktop;
+			pParent = pWinDesktop;
 		if (pParent) {
 			rWin += pParent->rWin.LeftTop();
 			if (!r.XSize())
@@ -607,53 +577,42 @@ public:
 				rWin.y1 = pParent->rWin.y1;
 		}
 		NumWindows++;
-		/* Add to linked lists */
 		_AddToLinList();
 		_InsertWindowIntoList(pParent);
 		/* Activate window if WC_ACTIVATE is specified */
 		if (Style & WC_ACTIVATE)
 			Select();  /* This is not needed if callbacks are being used, but it does not cost a lot and makes life easier ... */
-		/* Handle the Style flags, one at a time */
-		if (Style & WC_BGND)
-			BringToBottom();
 		if (Style & WC_VISIBLE)
-			Invalidate();    /* Mark content as invalid */
+			Invalidate();
 		Require(WM_CREATE);
 	}
 	~WObj() {
 		WM_ASSERT_NOT_IN_PAINT();
 		if (!IsWindow(this))
 			return;
-		pWinNextDraw = nullptr; /* Make sure the window will no longer receive drawing messages */
-		/* Make sure that focus is set to an existing window */
+		if (pwDraw == this)
+			pwDraw = nullptr;
 		if (pWinFocus == this) {
 			Require(WM_SET_FOCUS, 0);
 			pWinFocus = nullptr;
 		}
 		if (pWinCapture == this)
-			ReleaseCapture(); /* Make sure the window does not have capture */
-		/* check if critical handles are affected. If so, reset the window handle to 0 */
+			ReleaseCapture();
 		CriticalHandle::Check(this);
 		_RemoveFromLinList();
-		/* Delete all children */
 		for (auto pChild = pFirstChild; pChild; ) {
 			auto pNext = pChild->pNext;
 			delete pChild;
 			pChild = pNext;
 		}
-		/* Send WM_DELETE message to window in order to inform window itself */
-		Require(WM_DELETE);     /* tell window about it */
-		/* Remove window from window stack */
+		Require(WM_DELETE);
 		_RemoveWindowFromList();
 		NotifyParent(WM_NOTIFICATION_CHILD_DELETED);
 		pParent = nullptr;
-		/* Make sure window is no longer counted as invalid */
 		if (Status & WC_ACTIVATE)
 			NumInvalidWindows--;
 		InvalidateArea(rWin);
-		/* Free window memory */
 		NumWindows--;
-		/* Select a valid window */
 		pWinFirst->Select();
 	}
 
@@ -785,31 +744,33 @@ public:
 		for (auto pChild = pFirstChild; pChild; pChild = pChild->pNext) {
 			/* Compute size of new rectangle */
 			auto rOld = pChild->rWin, rNew = rOld;
-			switch (pChild->Status & (WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT)) {
-			case WC_ANCHOR_RIGHT: /* Right ANCHOR : Move window with right side */
+			switch (pChild->Status & WC_ANCHOR_VERTICAL) {
+			case WC_ANCHOR_TOP:
+				rNew.x0 += d.x0;
+				rNew.x1 += d.x0;
+				break;
+			case WC_ANCHOR_RIGHT:
 				rNew.x0 += d.x1;
 				rNew.x1 += d.x1;
 				break;
-			case WC_ANCHOR_RIGHT | WC_ANCHOR_LEFT: /* Left & Right ANCHOR: Resize window */
+			case WC_ANCHOR_VERTICAL:
 				rNew.x0 += d.x0;
 				rNew.x1 += d.x1;
 				break;
-			default: /* Left ANCHOR: Move window with left side of parent */
-				rNew.x0 += d.x0;
-				rNew.x1 += d.x0;
 			}
-			switch (pChild->Status & (WC_ANCHOR_TOP | WC_ANCHOR_BOTTOM)) {
-			case WC_ANCHOR_BOTTOM: /* Bottom ANCHOR */
+			switch (pChild->Status & WC_ANCHOR_HORIZONTAL) {
+			case WC_ANCHOR_TOP:
+				rNew.y0 += d.y0;
+				rNew.y1 += d.y0;
+				break;
+			case WC_ANCHOR_BOTTOM:
 				rNew.y0 += d.y1;
 				rNew.y1 += d.y1;
 				break;
-			case WC_ANCHOR_BOTTOM | WC_ANCHOR_TOP: /* resize window */
+			case WC_ANCHOR_HORIZONTAL:
 				rNew.y0 += d.y0;
 				rNew.y1 += d.y1;
 				break;
-			default: /* Top ANCHOR */
-				rNew.y0 += d.y0;
-				rNew.y1 += d.y0;
 			}
 			/* Set new window position using Move and Resize as required */
 			pChild->Move(rNew.LeftTop() - rOld.LeftTop());
@@ -946,8 +907,8 @@ public:
 	}
 	static WObj *CreateDesktopWindow(RGBC BkColor) {
 		if (!pWinDesktop) {
-			pWinDesktop = new WObj(pLCD_API->Rect(), WC_VISIBLE, cbBackWin);
-			pWinDesktop->Invalidate(); /* Required because a desktop window has no parent. */
+			pWinDesktop = new WObj(GUI_X_GetLCD()->Rect(), WC_VISIBLE, cbBackWin);
+			pWinDesktop->Invalidate();
 			pWinDesktop->Select();
 		}
 		return pWinDesktop;
@@ -1124,7 +1085,7 @@ public:
 	bool IsEnabled() const { return !(Status & WC_DISABLED); }
 	
 	void EnableMemdev() { Status |= WC_MEMDEV; }
-	void DisableMemdev() { Status &= ~(WC_MEMDEV | WC_MEMDEV_ON_REDRAW); }
+	void DisableMemdev() { Status &= ~(WC_MEMDEV); }
 
 public:
 	static bool OnKey(KEY_STATE State) {
@@ -1257,9 +1218,9 @@ WObj* WObj::pWinActive = nullptr;
 bool WObj::IsActive = false;
 
 uint16_t WObj::NumInvalidWindows = 0;
-WObj *WObj::pWinNextDraw = nullptr;
+WObj *WObj::pwDraw = nullptr;
 
-decltype(WObj::_ClipContext) WObj::_ClipContext;
+WObj::IVR WObj::_ClipContext;
 
 uint8_t WObj::_PaintCallbackCnt = 0;
 

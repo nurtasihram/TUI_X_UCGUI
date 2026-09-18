@@ -50,14 +50,14 @@ PCLOGPALETTE aCursorPal = nullptr;
 static void _SetPixel(int x, int y, int Index) {
 	if ((y >= _ClipRect.y0) && (y <= _ClipRect.y1)) {
 		if ((x >= _ClipRect.x0) && (x <= _ClipRect.x1)) {
-			pLCD_API->SetPixel(x, y, Index);
+			GUI.pDevice->SetPixel(x, y, Index);
 		}
 	}
 }
 static int _GetPixel(int x, int y) {
 	if ((y >= _ClipRect.y0) && (y <= _ClipRect.y1)) {
 		if ((x >= _ClipRect.x0) && (x <= _ClipRect.x1)) {
-			return pLCD_API->GetPixel(x, y);
+			return GUI.pDevice->GetPixel(x, y);
 		}
 	}
 	return 0;
@@ -141,7 +141,7 @@ bool GUI_CURSOR__TempHide(RECT r) {
 }
 
 void GUI_CURSOR_Show(void) {
-	_ClipRect = GUI.pDeviceAPI->Rect();
+	_ClipRect = GUI.pDevice->Rect();
 	_Hide();
 	_CursorOn = true;
 	if (!_pCursor)

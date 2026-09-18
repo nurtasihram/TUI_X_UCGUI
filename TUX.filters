@@ -369,7 +369,7 @@
     <ClCompile Include="GUI\Core\GUI_DrawGraph.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_DrawHLine.c">
+    <ClCompile Include="GUI\Core\GUI.DrawHLine.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_DrawPie.c">
@@ -384,7 +384,7 @@
     <ClCompile Include="GUI\Core\GUI_DrawRectEx.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_DrawVLine.c">
+    <ClCompile Include="GUI\Core\GUI.DrawVLine.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_ErrorOut.c">
@@ -396,10 +396,10 @@
     <ClCompile Include="GUI\Core\GUI_FillPolygon.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_FillRect.c">
+    <ClCompile Include="GUI\Core\GUI.FillRect.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_FillRectEx.c">
+    <ClCompile Include="GUI\Core\GUI.FillRectEx.c">
       <Filter>GUI\Core</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Core\GUI_GetBitmapPixelColor.c">

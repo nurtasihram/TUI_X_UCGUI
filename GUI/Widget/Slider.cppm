@@ -60,16 +60,16 @@ private:
 			rSlider = rSlider.Rotate90L(xSize);
 			/* Draw the ticks */
 			for (int i = 0; i < NumTicks; i++)
-				GUI_DrawHLine(x0 + xsize * i / (NumTicks - 1), 1, 3);
+				GUI.DrawHLine(x0 + xsize * i / (NumTicks - 1), 1, 3);
 		}
 		else /* Draw the ticks */
 			for (int i = 0; i < NumTicks; i++)
-				GUI_DrawVLine(x0 + xsize * i / (NumTicks - 1), 1, 3);
+				GUI.DrawVLine(x0 + xsize * i / (NumTicks - 1), 1, 3);
 		/* Draw slot */
 		DrawDown(rSlot);
 		/* Draw the slider itself */
 		GUI.Color(Props.brush.Color);
-		GUI_FillRect(rSlider);
+		GUI.FillRect(rSlider);
 		GUI.Color(RGB_BLACK);
 		DrawUp(rSlider);
 		/* Draw focus */

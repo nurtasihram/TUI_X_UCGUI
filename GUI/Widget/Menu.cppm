@@ -482,7 +482,7 @@ private:
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
 						GUI_ClearRect(FillRect);
 						GUI.Color(RGBC::Gray(0x7C));
-						GUI_DrawHLine(FillRect.y0 + BorderTop + 1, FillRect.x0 + 2, FillRect.x1 - 2);
+						GUI.DrawHLine(FillRect.y0 + BorderTop + 1, FillRect.x0 + 2, FillRect.x1 - 2);
 					}
 					else {
 						auto TextWidth = pItem.TextWidth;
@@ -507,7 +507,7 @@ private:
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
 						GUI_ClearRect(FillRect);
 						GUI.Color(RGBC::Gray(0x7C));
-						GUI_DrawVLine(FillRect.x0 + BorderLeft + 1, FillRect.y0 + 2, FillRect.y1 - 2);
+						GUI.DrawVLine(FillRect.x0 + BorderLeft + 1, FillRect.y0 + 2, FillRect.y1 - 2);
 					}
 					else {
 						auto TextWidth = pItem.TextWidth;

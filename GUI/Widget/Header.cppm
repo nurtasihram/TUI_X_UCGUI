@@ -73,9 +73,9 @@ private:
 						break;
 				}
 				Off.x += xPos;
-				SetUserClipRect(&r);
+				UserClip(&r);
 				pDraw->Draw(RECT::LeftTop(r.LeftTop(), Off));
-				SetUserClipRect(nullptr);
+				UserClip(nullptr);
 			}
 			DrawUp(r);
 			xPos += r.x1 - r.x0;

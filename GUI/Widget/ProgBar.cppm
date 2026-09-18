@@ -107,14 +107,14 @@ private:
 		/* Draw left bar */
 		auto r = rInside;
 		r.x1 = xPos - 1;
-		SetUserClipRect(&r);
+		UserClip(&r);
 		_DrawPart(PROGBAR_CI_INACT, rText.x0, rText.y0, pText);
 		/* Draw right bar */
 		r = rInside;
 		r.x0 = xPos;
-		SetUserClipRect(&r);
+		UserClip(&r);
 		_DrawPart(PROGBAR_CI_ACTIVE, rText.x0, rText.y0, pText);
-		SetUserClipRect(nullptr);
+		UserClip(nullptr);
 		DrawDown(rClient);
 	}
 	void _Delete() {

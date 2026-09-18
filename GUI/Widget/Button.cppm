@@ -64,7 +64,7 @@ private:
 		rInside /= EffectSize;
 		/* Draw background */
 		GUI.Brush(Props.aBrush[ColorIndex]);
-		SetUserClipRect(&rInside);
+		UserClip(&rInside);
 		GUI_Clear();
 		/* Draw bitmap.
 		   If we have only one, we will use it.
@@ -79,7 +79,7 @@ private:
 		if (!IsPressed)
 			rInside -= EffectSize / 2;
 		GUI_DispStringInRect(text, rInside, Props.Align);
-		SetUserClipRect(nullptr);
+		UserClip(nullptr);
 		/* Draw focus */
 		if (States & BUTTON_STATE_FOCUS) {
 			GUI.Color(RGB_BLACK);

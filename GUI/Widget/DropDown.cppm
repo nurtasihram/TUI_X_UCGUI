@@ -68,7 +68,7 @@ private:
 	}
 	void _DrawTriangleDown(int x, int y, int Size) {
 		while (Size--)
-			GUI_DrawHLine(y++, x - Size, x + Size);
+			GUI.DrawHLine(y++, x - Size, x + Size);
 	}
 	void _SelectByKey(int Key) {
 		Key = _Tolower(Key);
@@ -101,7 +101,7 @@ private:
 		GUI.Color(Props.aBkColor[ColorIndex]);
 		/* Draw the text */
 		GUI.BkColor(Props.aBkColor[ColorIndex]);
-		GUI_FillRect(r);
+		GUI.FillRect(r);
 		r.x0 += TextBorderSize;
 		r.x1 -= TextBorderSize;
 		GUI.Color(Props.aTextColor[ColorIndex]);
@@ -110,7 +110,7 @@ private:
 		r = ClientRect() / Border;
 		r.x0 = r.x1 + 1 - InnerSize;
 		GUI.Color(RGBC::Gray(0xc0));
-		GUI_FillRect(r);
+		GUI.FillRect(r);
 		GUI.Color(RGB_BLACK);
 		_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.YSize()) / 3);
 		DrawUp(r);

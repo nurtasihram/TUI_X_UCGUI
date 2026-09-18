@@ -1,12 +1,14 @@
 import TUX;
 import TUX.Window;
 
+#include "GUI_X.h"
+
 struct MEMDEV : LCDDEV {
 	RECT rect;
 	uint16_t BytesPerLine;
 	void *pData;
 public:
-	MEMDEV(RECT r) : LCDDEV(GUI.pDeviceAPI->BitsPerPixel), rect(r) {
+	MEMDEV(RECT r) : LCDDEV(GUI.pDevice->BitsPerPixel), rect(r) {
 		BytesPerLine = (r.XSize() * BPP_Bits[BitsPerPixel] + 7) >> 3;
 		pData = GUI_ALLOC_Alloc(r.YSize() * BytesPerLine);
 	}
@@ -37,7 +39,7 @@ void GUI_MEMDEV_Select(auto pDev) {
 		GUI_SelectLCD();
 	} else {
 		WObj::Deactivate();
-		GUI.pDeviceAPI = pDev;
+		GUI.pDevice = pDev;
 		GUI.ClipRectMax();
 	}
 }
@@ -45,7 +47,7 @@ void GUI_MEMDEV_Select(auto pDev) {
 void GUI_MEMDEV_CopyToLCD(MEMDEV *pDev) {
 	if (!pDev)
 		return;
-	auto pDevPrev = GUI.pDeviceAPI;
+	auto pDevPrev = GUI.pDevice;
 	GUI_SelectLCD();
 	WObj::Activate();
 	WObj::Iterate(pDev->rect, [&] {
@@ -60,7 +62,7 @@ void GUI_MEMDEV_CopyToLCD(MEMDEV *pDev) {
 }
 
 void GUI_MEMDEV_Draw(RECT r, GUI_CALLBACK_VOID_P *pfDraw, void *pData) {
-	if (!(r &= pLCD_API->Rect()))
+	if (!(r &= GUI_X_GetLCD()->Rect()))
 		return;
 	auto pDev = new MEMDEV(r);
 	GUI_MEMDEV_Select(pDev);

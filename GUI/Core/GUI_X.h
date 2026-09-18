@@ -4,7 +4,7 @@ import TUX.LCD;
 
 /**** Init ****/
 void GUI_X_Init(void);
-LCDDEV *GUI_X_LCD_Init(void);
+LCDDEV *GUI_X_GetLCD(void);
 
 /**** Timing routines - required for blinking ****/
 int  GUI_X_GetTime(void);

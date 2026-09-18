@@ -1,6 +1,7 @@
 module;
 
 #include "GUIConf.h"
+#include "GUI_X.h"
 
 export module TUX;
 
@@ -10,10 +11,6 @@ export import TUX.String;
 export import TUX.LCD;
 
 export {
-
-using DRAWMODE = uint8_t; // 2bits
-constexpr DRAWMODE DRAWMODE_NORMAL = 0,
-				   DRAWMODE_TRANS  = 1 << 1;
 
 using TEXTALIGN = uint8_t; // 4bits
 constexpr TEXTALIGN
@@ -44,11 +41,7 @@ typedef enum { WRAPMODE_NONE, WRAPMODE_WORD, WRAPMODE_CHAR } WRAPMODE;
 int GUI__WrapGetNumCharsDisp(const char *pText, int xSize, WRAPMODE WrapMode);
 int GUI__WrapGetNumCharsToNextLine(const char *pText, int xSize, WRAPMODE WrapMode);
 int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, WRAPMODE WrapMode);
-
-void GUI__DispLine(const char *s, int Len, const RECT *pr);
 #pragma endregion
-
-void GUI_Init(void);
 
 int  GUI__DivideRound(int a, int b);
 
@@ -56,11 +49,6 @@ void GUI_Clear(void);
 void GUI_ClearRect(RECT r);
 void GUI_DrawFocusRect(RECT r, int Dist);
 void GUI_DrawRect(RECT r);
-void GUI_FillRect(RECT r);
-
-void GUI_DrawHLine(int y0, int x0, int x1);
-void GUI_DrawVLine(int x0, int y0, int y1);
-
 void GUI_DrawBitmap(PCBITMAP pBM, POINT Pos);
 
 #if GUI_SUPPORT_CURSOR
@@ -74,17 +62,17 @@ void     GUI_CURSOR__TempShow(void);
 bool     GUI_CURSOR__TempHide(RECT);
 #endif
 
-void  GUI_DispChar(uint16_t c);
-void  GUI_DispString(const char *s);
-void  GUI_DispStringAt(const char *s, int x, int y);
-void  GUI_DispStringInRect(const char *s, const RECT &r, int Flags);
-void  GUI_DispStringInRectMax(const char *s, RECT r, int TextAlign, int MaxLen); /* Not to be doc. */
-void  GUI_DispNextLine(void);
+void GUI_DispChar(uint16_t c);
+void GUI_DispString(const char *s);
+void GUI_DispStringAt(const char *s, int x, int y);
+void GUI_DispStringInRect(const char *s, const RECT &r, int Flags);
+void GUI_DispStringInRectMax(const char *s, RECT r, int TextAlign, int MaxLen); /* Not to be doc. */
+void GUI_DispNextLine(void);
 
 void GUI_SelectLCD(void);
 
-int  GUI_Exec(void);         /* Execute all jobs ... Return 0 if nothing was done. */
-int  GUI_Exec1(void);        /* Execute one job  ... Return 0 if nothing was done. */
+bool GUI_Exec();
+bool GUI_Exec1();
 
 void GUI_KEY_Store(const KEY_STATE &State);
 bool GUI_PollKeyMsg(void);
@@ -93,16 +81,24 @@ void GUI_PID_Store(const PID_STATE &State);
 PID_STATE GUI_PID_Get(void);
 
 struct GUI_CONTEXT {
-	/* Variables in LCD module */
+	LCDDEV *pDevice = nullptr;
+	PCFONT pFont;
 	BRUSH brush{ GUI_DEFAULT_BKCOLOR, GUI_DEFAULT_COLOR };
 	RECT rClip;
-	/* Variables in GUICHAR module */
-	PCFONT pAFont;
-	POINT DispPos;
-	/* Variables in WM module */
-	POINT Off;
-	/* Variables in MEMDEV module (with memory devices only) */
-	LCDDEV *pDeviceAPI;
+	POINT DispPos, Off;
+
+public:
+	void Init() {
+		pDevice = GUI_X_GetLCD();
+		if (pDevice)
+			rClip = pDevice->Rect();
+		Font(GUI_DEFAULT_FONT);
+		BkColor(GUI_DEFAULT_BKCOLOR);
+		Color(GUI_DEFAULT_COLOR);
+		ClipRectMax();
+	}
+	void Select(LCDDEV *pDevice) {
+	}
 
 public:
 	auto BkColor() const { return brush.BkColor; }
@@ -112,27 +108,40 @@ public:
 	auto Brush() const { return brush; }
 	void Brush(BRUSH colors) { brush = colors; }
 
-	UCFONT Font() const { return *pAFont; } /// 
+	UCFONT Font() const { return *pFont; } /// 
 	PCFONT Font(PCFONT pNewFont) {
-		PCFONT pOldFont = pAFont;
+		PCFONT pOldFont = pFont;
 		if (pNewFont)
-			pAFont = pNewFont;
+			pFont = pNewFont;
 		return pOldFont;
 	}
 
 	void ClipRect(const RECT &r)
-	{ rClip = r & pDeviceAPI->Rect(); }
+	{ rClip = r & pDevice->Rect(); }
 	void ClipRectMax()
-	{ rClip = pDeviceAPI->Rect(); }
+	{ rClip = pDevice->Rect(); }
 
 public:
+	void FillRect(RECT r) {
+		r += Off;
+		if (r &= rClip)
+			pDevice->FillRect(r, Color());
+	}
+	void Clear(RECT r) {
+		r += Off;
+		if (r &= rClip)
+			pDevice->FillRect(r, BkColor());
+	}
+	void Clear() {
+		pDevice->FillRect(pDevice->Rect(), BkColor());
+	}
+
 	void DrawRect(RECT r);
 	void DrawFocusRect(RECT r, int16_t Dist);
-	void ClearRect(RECT r);
-	void Clear();
-	void FillRect(RECT r);
-	void DrawVLine(int16_t x, int16_t y0, int16_t y1);
-	void DrawHLine(int16_t y, int16_t x0, int16_t x1);
+	void DrawVLine(int16_t x0, int16_t y0, int16_t y1)
+	{ FillRect({ x0, y0, x0, y1 }); }
+	void DrawHLine(int16_t y0, int16_t x0, int16_t x1)
+	{ FillRect({ x0, y0, x1, y0 }); }
 
 } GUI;
 

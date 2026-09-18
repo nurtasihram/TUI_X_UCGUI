@@ -324,13 +324,13 @@ private:
 			/* Make sure that we draw only when row is in drawing area */
 			if (RectItem.y1 >= rClip.y0) {
 				/* Set user clip rect */
-				SetUserClipRect(&RectItem);
+				UserClip(&RectItem);
 				/* Draw item */
 				_CallOwnerDraw(WIDGET_ITEM_DRAW, i, POINT{ ItemPos.x, ItemPos.y });
 			}
 			ItemPos.y += ItemDistY;
 		}
-		SetUserClipRect(nullptr);
+		UserClip(nullptr);
 		/* Calculate & clear 'data free' area */
 		RectItem.y0 = ItemPos.y;
 		RectItem.y1 = RectInside.y1;

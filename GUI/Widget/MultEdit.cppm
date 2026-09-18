@@ -537,7 +537,7 @@ private:
 			SizeX() - EffectSize - HBorder - 1,
 			SizeY() - EffectSize - 1
 		};
-		auto prOldClip = SetUserClipRect(&rClip);
+		auto prOldClip = UserClip(&rClip);
 
 		// Draw text content
 		if (pText) {
@@ -591,7 +591,7 @@ private:
 			GUI_DrawRect(rCursor);
 		}
 
-		SetUserClipRect(prOldClip);
+		UserClip(prOldClip);
 		DrawDown();
 	}
 	void _OnTouch(const PID_STATE *pState) {

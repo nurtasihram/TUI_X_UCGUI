@@ -98,10 +98,10 @@ private:
 	void _DrawTriangle(int x, int y, int Size, int Inc) {
 		if (States & SCROLLBAR_CF_VERTICAL)
 			for (; Size >= 0; Size--, x += Inc)
-				GUI_DrawHLine(x, y - Size, y + Size);
+				GUI.DrawHLine(x, y - Size, y + Size);
 		else
 			for (; Size >= 0; Size--, x += Inc)
-				GUI_DrawVLine(x, y - Size, y + Size);
+				GUI.DrawVLine(x, y - Size, y + Size);
 	}
 	void _OnPaint() {
 		/*
@@ -124,7 +124,7 @@ private:
 		GUI.Color(Props.Color);
 		r.*x0 = Pos.x0_LeftArrow;
 		r.*x1 = Pos.x1_LeftArrow;
-		GUI_FillRect(r);
+		GUI.FillRect(r);
 		GUI.Color(Props.aBkColor[1]);
 		_DrawTriangle(r.*x0 + ArrowOff, CenterH, ArrowSize, -1);
 		DrawUp(r);
@@ -134,17 +134,17 @@ private:
 		GUI.Color(Props.aBkColor[0]);
 		r.*x0 = Pos.x1_LeftArrow + 1;
 		r.*x1 = Pos.x0_Thumb - 1;
-		GUI_FillRect(r);
+		GUI.FillRect(r);
 		r.*x0 = Pos.x1_Thumb + 1;
 		r.*x1 = Pos.x0_RightArrow - 1;
-		GUI_FillRect(r);
+		GUI.FillRect(r);
 		/*
 		  Draw Thumb
 		*/
 		r.*x0 = Pos.x0_Thumb;
 		r.*x1 = Pos.x1_Thumb;
 		GUI.Color(Props.Color);
-		GUI_FillRect(r);
+		GUI.FillRect(r);
 		DrawUp(r);
 		/*
 		  Draw right Arrow
@@ -152,7 +152,7 @@ private:
 		GUI.Color(Props.Color);
 		r.*x0 = Pos.x0_RightArrow;
 		r.*x1 = Pos.x1_RightArrow;
-		GUI_FillRect(r);
+		GUI.FillRect(r);
 		GUI.Color(Props.aBkColor[1]);
 		_DrawTriangle(r.*x1 - ArrowOff, CenterH, ArrowSize, 1);
 		DrawUp(r);
@@ -163,7 +163,7 @@ private:
 			r.*x0 = Pos.x1_RightArrow + 1;
 			r.*x1 = Pos.x1;
 			GUI.Color(Props.Color);
-			GUI_FillRect(r);
+			GUI.FillRect(r);
 		}
 	}
 	void _ScrollbarPressed() {

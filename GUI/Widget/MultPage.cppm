@@ -205,23 +205,23 @@ private:
 				r.y0 -= EffectSize() + 1;
 				if (EffectSize() > 1) {
 					GUI.Color(RGB_WHITE);
-					GUI_DrawVLine(r.x0 - 1, r.y0, r.y0 + 1);
+					GUI.DrawVLine(r.x0 - 1, r.y0, r.y0 + 1);
 					GUI.Color(RGBC::Gray(0x55));
-					GUI_DrawVLine(r.x1 + 1, r.y0, r.y0 + 1);
+					GUI.DrawVLine(r.x1 + 1, r.y0, r.y0 + 1);
 				}
 			}
 			else {
 				r.y1 += EffectSize() + 1;
 				if (EffectSize() > 1) {
 					GUI.Color(RGB_WHITE);
-					GUI_DrawVLine(r.x0 - 1, r.y1 - 2, r.y1 - 1);
+					GUI.DrawVLine(r.x0 - 1, r.y1 - 2, r.y1 - 1);
 					GUI.Color(RGBC::Gray(0x55));
-					GUI_DrawVLine(r.x1 + 1, r.y1 - 2, r.y1 - 1);
+					GUI.DrawVLine(r.x1 + 1, r.y1 - 2, r.y1 - 1);
 				}
 			}
 		}
 		GUI.Color(Props.aBkColor[ColorIndex]);
-		GUI_FillRect(r);
+		GUI.FillRect(r);
 		GUI.BkColor(Props.aBkColor[ColorIndex]);
 		GUI.Color(Props.aTextColor[ColorIndex]);
 		GUI_DispStringAt(pText, r.x0 + 4, pRect->y0 + 3);
@@ -249,7 +249,7 @@ private:
 		rClip = rText;
 		rClip.y0 = rText.y0 - 1;
 		rClip.y1 = rText.y1 + 1;
-		SetUserClipRect(&rClip);
+		UserClip(&rClip);
 		GUI.Font(Props.pFont);
 		for (int i = 0; i < NumItems; i++) {
 			auto &page = Handles[i];
@@ -257,7 +257,7 @@ private:
 			w = Props.pFont->TextBound(page.pText).x + 10;
 			_DrawTextItem(page.pText, i, &rText, x0, w, (page.Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0);
 		}
-		SetUserClipRect(nullptr);
+		UserClip(nullptr);
 	}
 	int _ClickedOnMultipage(int x, int y) {
 		RECT rText;
@@ -377,7 +377,7 @@ private:
 
 public:
 	MultPage(RECT r, WM_CF Style, WObj *pParent, uint16_t Id) :
-		Widget(r, Style | WC_LATE_CLIP, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE) {
+		Widget(r, Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE) {
 		RECT rClient;
 		_CalcClientRect(&rClient);
 		pClient = new WObj(

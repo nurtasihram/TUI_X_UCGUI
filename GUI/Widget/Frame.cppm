@@ -204,11 +204,11 @@ private:
 		WIDGET__FillStringInRect(pText, r, Pos.rTitleText);
 		/* Draw Frame */
 		GUI.Color(Props.FrameColor);
-		GUI_FillRect({ 0, 0, size.x - 1, BorderSize - 1 });
-		GUI_FillRect({ 0, 0, Pos.rClient.x0 - 1, size.y - 1 });
-		GUI_FillRect({ Pos.rClient.x1 + 1, 0, size.x - 1, size.y - 1 });
-		GUI_FillRect({ 0, Pos.rClient.y1 + 1, size.x - 1, size.y - 1 });
-		GUI_FillRect({ 0, y0, size.x - 1, y0 + Props.IBorderSize - 1 });
+		GUI.FillRect({ 0, 0, size.x - 1, BorderSize - 1 });
+		GUI.FillRect({ 0, 0, Pos.rClient.x0 - 1, size.y - 1 });
+		GUI.FillRect({ Pos.rClient.x1 + 1, 0, size.x - 1, size.y - 1 });
+		GUI.FillRect({ 0, Pos.rClient.y1 + 1, size.x - 1, size.y - 1 });
+		GUI.FillRect({ 0, y0, size.x - 1, y0 + Props.IBorderSize - 1 });
 		/* Draw the 3D effect (if configured) */
 		if (Props.BorderSize >= 2)
 			DrawUp();
@@ -530,12 +530,10 @@ private:
 public:
 	Frame(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
 		  uint16_t ExFlags, const char *pTitle, WM_CALLBACK *cb) :
-		Widget(r, Style | WC_LATE_CLIP, _Callback, pParent, Id, ExFlags | WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS),
+		Widget(r, Style, _Callback, pParent, Id, ExFlags | WIDGET_STATE_FOCUSSABLE | FRAMEWIN_CF_TITLEVIS),
 		pClient(new Window(
 			_CalcPositions().rClient,
-			WC_ANCHOR_ALL | WC_VISIBLE | WC_LATE_CLIP, this, 0, cb)) {
-		if (!(Style & (WC_MEMDEV | WC_MEMDEV_ON_REDRAW)))
-			DisableMemdev();
+			WC_ANCHOR_ALL | WC_VISIBLE, this, 0, cb)) {
 		SetText(pTitle);
 	}
 	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent,

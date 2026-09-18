@@ -24,7 +24,10 @@ struct LCD_API : public LCDDEV {
 	}
 } LCD_API;
 
-LCDDEV *GUI_X_LCD_Init(void) {
+LCDDEV *GUI_X_GetLCD() {
+	static LCDDEV *pLCD_API = nullptr;
+	if (pLCD_API)
+		return pLCD_API;
 	SimDisp::LoadDll(_T("SimClient.dll"));
 	//SimDisp::LoadDll(_T("SimDisp.dll"));
 	assert(SimDisp::Open(L"TUI By Nurtas Ihram", LCD_XSIZE, LCD_YSIZE));
@@ -50,5 +53,5 @@ LCDDEV *GUI_X_LCD_Init(void) {
 	SimDisp::AutoFlush(true);
 	SimDisp::Show(true);
 	Ayx.Init();
-	return &LCD_API;
+	return pLCD_API = &LCD_API;
 }
