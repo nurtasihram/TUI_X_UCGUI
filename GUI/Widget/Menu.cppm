@@ -733,18 +733,6 @@ public:
 		_SetItemFlags(Index, MENU_IF_DISABLED, bEnabled ? 0 : MENU_IF_DISABLED);
 		_InvalidateItem(Index);
 	}
-	void GetItemText(uint16_t ItemId, char *pBuffer, uint16_t BufferSize) {
-		if (!pBuffer)
-			return;
-		Menu *pMenu;
-		auto Index = _FindItem(ItemId, &pMenu);
-		if (Index < 0)
-			return;
-		auto &pItem = ItemArray[Index];
-		strncpy(pBuffer, pItem.pText, BufferSize);
-		pBuffer[BufferSize - 1] = 0;
-	}
-
 };
 
 Menu::Properties Menu::DefaultProps;

@@ -1,5 +1,9 @@
 #include <stdio.h>
 
+#if _WIN32
+#	define sprintf sprintf_s
+#endif
+
 #include "GUI.h"
 
 import TUX.Widget;

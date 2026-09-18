@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -25,8 +25,8 @@
     <ClCompile Include="GUI\Core\GUICurs.cpp" />
     <ClCompile Include="GUI\Core\GUIDEV.cpp" />
     <ClCompile Include="GUI\Core\GUITimer.cppm" />
-    <ClCompile Include="GUI\Core\LCD.cppm" />
     <ClCompile Include="GUI\Core\GUI_Input.cpp" />
+    <ClCompile Include="GUI\Core\LCD.cppm" />
     <ClCompile Include="GUI\Core\String.cppm" />
     <ClCompile Include="GUI\Resources\CursorArrow.cpp" />
     <ClCompile Include="GUI\Resources\CursorHeader.cpp" />
@@ -36,6 +36,21 @@
     <ClCompile Include="GUI\ScrollCtrl.cpp" />
     <ClCompile Include="GUI\Widget\Button.cppm" />
     <ClCompile Include="GUI\Widget\CheckBox.cppm" />
+    <ClCompile Include="GUI\Widget\DropDown.cppm" />
+    <ClCompile Include="GUI\Widget\Frame.cppm" />
+    <ClCompile Include="GUI\Widget\GUI_ARRAY.cppm" />
+    <ClCompile Include="GUI\Widget\Header.cppm" />
+    <ClCompile Include="GUI\Widget\ListBox.cppm" />
+    <ClCompile Include="GUI\Widget\ListView.cppm" />
+    <ClCompile Include="GUI\Widget\Menu.cppm" />
+    <ClCompile Include="GUI\Widget\MultEdit.cppm" />
+    <ClCompile Include="GUI\Widget\MultPage.cppm" />
+    <ClCompile Include="GUI\Widget\ProgBar.cppm" />
+    <ClCompile Include="GUI\Widget\Radio.cppm" />
+    <ClCompile Include="GUI\Widget\ScrollBar.cppm" />
+    <ClCompile Include="GUI\Widget\Slider.cppm" />
+    <ClCompile Include="GUI\Widget\Text.cppm" />
+    <ClCompile Include="GUI\Widget\Widget.cppm" />
     <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp" />
     <ClCompile Include="GUI\Widget\Window_.cppm" />
     <ClCompile Include="GUI\WM\Window.cppm" />
@@ -82,53 +97,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Config\GUIConf.h" />
+    <ClInclude Include="GUIConf.h" />
     <ClInclude Include="GUI\Core\GUI.h" />
     <ClInclude Include="GUI\Core\GUIDebug.h" />
     <ClInclude Include="GUI\Core\GUI_X.h" />
-    <ClCompile Include="GUI\Widget\DropDown.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Frame.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\GUI_ARRAY.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Header.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\ListBox.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\ListView.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Menu.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MultEdit.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MultPage.cppm" />
-    <ClCompile Include="GUI\Widget\ProgBar.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Radio.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\ScrollBar.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Slider.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Text.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Widget.cppm">
-      <FileType>Document</FileType>
-    </ClCompile>
     <ClInclude Include="GUI_X\resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -138,12 +110,11 @@
     <ResourceCompile Include="GUI_X\SimDisp.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>16.0</VCProjectVersion>
+    <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{4ba7f911-b93b-4ee8-8e21-cad9a47b3df9}</ProjectGuid>
-    <RootNamespace>ucgui</RootNamespace>
+    <ProjectGuid>{63dba48d-51d4-4340-a802-a7ab0ff3af4a}</ProjectGuid>
+    <RootNamespace>TUX</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>TUX</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -191,84 +162,84 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir);$(ProjectDir)SimDisp;$(ProjectDir)GUI_X;$(ProjectDir)GUI\Core;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir);$(ProjectDir)SimDisp;$(ProjectDir)GUI_X;$(ProjectDir)GUI\Core;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir);$(ProjectDir)SimDisp;$(ProjectDir)GUI_X;$(ProjectDir)GUI\Core;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir);$(ProjectDir)SimDisp;$(ProjectDir)GUI_X;$(ProjectDir)GUI\Core;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\GUI\MemDev;$(ProjectDir)\GUI\Core;$(ProjectDir)\GUI\AntiAlias;$(ProjectDir)\GUI\Widget;$(ProjectDir)\GUI\WM;$(ProjectDir)\Config;$(ProjectDir)\SimDisp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\GUI\MemDev;$(ProjectDir)\GUI\Core;$(ProjectDir)\GUI\AntiAlias;$(ProjectDir)\GUI\Widget;$(ProjectDir)\GUI\WM;$(ProjectDir)\Config;$(ProjectDir)\SimDisp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\GUI\MemDev;$(ProjectDir)\GUI\Core;$(ProjectDir)\GUI\AntiAlias;$(ProjectDir)\GUI\Widget;$(ProjectDir)\GUI\WM;$(ProjectDir)\Config;$(ProjectDir)\SimDisp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\GUI\MemDev;$(ProjectDir)\GUI\Core;$(ProjectDir)\GUI\AntiAlias;$(ProjectDir)\GUI\Widget;$(ProjectDir)\GUI\WM;$(ProjectDir)\Config;$(ProjectDir)\SimDisp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

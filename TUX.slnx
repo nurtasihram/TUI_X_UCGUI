@@ -1,0 +1,19 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/SimDisp/">
+    <Project Path="SimDisp/workspaces/SimClient.vcxproj" Id="d977c0ae-a9ee-467f-ae96-e4ad49702bf8">
+      <BuildDependency Project="SimDisp/workspaces/SimHost.vcxproj" />
+    </Project>
+    <Project Path="SimDisp/workspaces/SimDisp.vcxproj" Id="1a6597d6-ed10-4aa9-bcb4-71fee1a6ba3e" />
+    <Project Path="SimDisp/workspaces/SimHost.vcxproj" Id="d317b3b6-57d9-4688-bfcd-af3815e79250">
+      <BuildDependency Project="SimDisp/workspaces/SimDisp.vcxproj" />
+    </Project>
+  </Folder>
+  <Project Path="TUX.vcxproj" Id="63dba48d-51d4-4340-a802-a7ab0ff3af4a">
+    <BuildDependency Project="SimDisp/workspaces/SimClient.vcxproj" />
+    <BuildDependency Project="SimDisp/workspaces/SimDisp.vcxproj" />
+  </Project>
+</Solution>
