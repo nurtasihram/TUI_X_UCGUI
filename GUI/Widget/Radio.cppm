@@ -70,7 +70,7 @@ private:
 		/* Clear inside ... Just in case      */
 		/* Fill with parents background color */
 		SetBkColorPrefer(Props.BkColor);
-		GUI_Clear();
+		GUI.Clear();
 		/* Iterate over all items */
 		for (int i = 0; i < NumItems; i++) {
 			auto y = i * Spacing;

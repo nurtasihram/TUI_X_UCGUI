@@ -135,7 +135,7 @@ private:
 				else
 					GUI.Brush(Props.aBrush[ColorIndex]);
 				/* Clear background */
-				GUI_ClearRect(rClient);
+				GUI.Clear(rClient);
 				/* Draw text */
 				rClient.x0 += LBorder;
 				rClient.x1 -= RBorder;
@@ -144,12 +144,12 @@ private:
 			}
 			/* Clear unused area to the right of items */
 			if (xPos <= rClip.x1)
-				GUI_ClearRect({ xPos, rClient.y0, rClip.x1, rClient.y1 });
+				GUI.Clear({ xPos, rClient.y0, rClip.x1, rClient.y1 });
 		}
 		/* Clear unused area below items */
 		if (yPos <= rClip.y1) {
 			GUI.BkColor(Props.aBrush[0].BkColor);
-			GUI_ClearRect({ rClip.x0, yPos, rClip.x1, rClip.y1 });
+			GUI.Clear({ rClip.x0, yPos, rClip.x1, rClip.y1 });
 		}
 		/* Draw grid */
 		if (States & LISTVIEW_CF_SHOWGRID) {

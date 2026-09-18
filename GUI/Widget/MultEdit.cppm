@@ -528,7 +528,7 @@ private:
 		auto ColorIndex = States & MULTEDIT_CF_READONLY ? MULTEDIT_CI_READONLY : MULTEDIT_CI_EDITMODE;
 		GUI.BkColor(Props.aBkColor[ColorIndex]);
 		GUI.Color(Props.aColor[ColorIndex]);
-		GUI_Clear();
+		GUI.Clear();
 
 		// Setup clipping rectangle
 		RECT rClip = {

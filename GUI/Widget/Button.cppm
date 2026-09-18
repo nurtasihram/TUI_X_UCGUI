@@ -65,7 +65,7 @@ private:
 		/* Draw background */
 		GUI.Brush(Props.aBrush[ColorIndex]);
 		UserClip(&rInside);
-		GUI_Clear();
+		GUI.Clear();
 		/* Draw bitmap.
 		   If we have only one, we will use it.
 		   If we have to we will use the second one (Index 1) for the pressed state

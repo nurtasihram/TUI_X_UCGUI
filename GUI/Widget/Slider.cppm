@@ -52,7 +52,7 @@ private:
 		}
 		/* Fill with parents background color */
 		SetBkColorPrefer(Props.brush.BkColor);
-		GUI_Clear();
+		GUI.Clear();
 		GUI.Color(RGB_BLACK);
 		if (States & SLIDER_CF_VERTICAL) {
 			auto xSize = SizeX();

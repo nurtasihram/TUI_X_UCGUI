@@ -48,7 +48,7 @@ private:
 		RECT r;
 		GUI.BkColor(Props.BkColor);
 		GUI.Font(Props.pFont);
-		GUI_Clear();
+		GUI.Clear();
 		for (int i = 0; i < NumItems; i++) {
 			auto &col = Columns[i];
 			r = ClientRect();

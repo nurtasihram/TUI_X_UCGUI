@@ -52,7 +52,7 @@ private:
 	void _DrawPart(int Index, int xText, int yText, const char *pText) const {
 		GUI.BkColor(Props.aBkColor[Index]);
 		GUI.Color(Props.aTextColor[Index]);
-		GUI_Clear();
+		GUI.Clear();
 		GUI_DispStringAt(pText, xText, yText);
 	}
 	const char *_GetText(char *pBuffer) const {

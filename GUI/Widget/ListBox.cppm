@@ -335,7 +335,7 @@ private:
 		RectItem.y0 = ItemPos.y;
 		RectItem.y1 = RectInside.y1;
 		GUI.BkColor(Props.aBkColor[0]);
-		GUI_ClearRect(RectItem);
+		GUI.Clear(RectItem);
 		/* Draw the 3D effect (if configured) */
 		DrawDown();
 	}
@@ -585,7 +585,7 @@ private:
 		GUI.BkColor(Props.aBkColor[ColorIndex]);
 		GUI.Color(Props.aTextColor[ColorIndex]);
 		auto s = ItemArray[ItemIndex].pText;
-		GUI_Clear();
+		GUI.Clear();
 		GUI_DispStringAt(s, Pos.x + 1, Pos.y);
 		/* Display focus rectangle */
 		if ((States & LISTBOX_CF_MULTISEL) && ItemIndex == Sel) {

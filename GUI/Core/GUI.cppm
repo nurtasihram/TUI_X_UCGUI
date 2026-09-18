@@ -45,8 +45,6 @@ int GUI__WrapGetNumBytesToNextLine(const char *pText, int xSize, WRAPMODE WrapMo
 
 int  GUI__DivideRound(int a, int b);
 
-void GUI_Clear(void);
-void GUI_ClearRect(RECT r);
 void GUI_DrawFocusRect(RECT r, int Dist);
 void GUI_DrawRect(RECT r);
 void GUI_DrawBitmap(PCBITMAP pBM, POINT Pos);
@@ -133,7 +131,9 @@ public:
 			pDevice->FillRect(r, BkColor());
 	}
 	void Clear() {
-		pDevice->FillRect(pDevice->Rect(), BkColor());
+		DispPos = 0;
+		if (auto r = pDevice->Rect(); r &= rClip)
+			pDevice->FillRect(r, BkColor());
 	}
 
 	void DrawRect(RECT r);

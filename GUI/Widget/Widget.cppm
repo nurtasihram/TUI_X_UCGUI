@@ -259,7 +259,7 @@ void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax
 	if (!(r <= GUI.rClip))
 		return;
 	/* Fill border */
-	GUI_ClearRect(FillRect);
+	GUI.Clear(FillRect);
 	if (!pText) return;
 	if (!*pText) return;
 	/* Set clipping rectangle */

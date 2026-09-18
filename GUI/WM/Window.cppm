@@ -890,7 +890,7 @@ private:
 			case WM_PAINT:
 				if (BkColorDesktop != RGB_INVALID) {
 					GUI.BkColor(BkColorDesktop);
-					GUI_Clear();
+					GUI.Clear();
 				}
 				return 0;
 			default:

@@ -480,7 +480,7 @@ private:
 					_SetPaintColors(pItem, i);
 					FillRect.y1 = FillRect.y0 + ItemHeight - 1;
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
-						GUI_ClearRect(FillRect);
+						GUI.Clear(FillRect);
 						GUI.Color(RGBC::Gray(0x7C));
 						GUI.DrawHLine(FillRect.y0 + BorderTop + 1, FillRect.x0 + 2, FillRect.x1 - 2);
 					}
@@ -505,7 +505,7 @@ private:
 					_SetPaintColors(pItem, i);
 					FillRect.x1 = FillRect.x0 + ItemWidth - 1;
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
-						GUI_ClearRect(FillRect);
+						GUI.Clear(FillRect);
 						GUI.Color(RGBC::Gray(0x7C));
 						GUI.DrawVLine(FillRect.x0 + BorderLeft + 1, FillRect.y0 + 2, FillRect.y1 - 2);
 					}
@@ -522,8 +522,8 @@ private:
 		if (Width || Height) {
 			auto r = ClientRect() / EffectSize;
 			GUI.BkColor(Props.aBkColor[MENU_CI_ENABLED]);
-			GUI_ClearRect({ FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1 });
-			GUI_ClearRect({ EffectSize, FillRect.y1 + 1, r.x1, r.y1 });
+			GUI.Clear({ FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1 });
+			GUI.Clear({ EffectSize, FillRect.y1 + 1, r.x1, r.y1 });
 		}
 		/* Draw 3D effect (if configured) */
 		if (_HasEffect())

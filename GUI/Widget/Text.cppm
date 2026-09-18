@@ -38,7 +38,7 @@ private:
 		GUI.Brush(Props.brush);
 		/* Fill with parents background color */
 		SetBkColorPrefer(Props.brush.BkColor);
-		GUI_Clear();
+		GUI.Clear();
 		/* Show the text */
 		if (pText) {
 			s = pText;

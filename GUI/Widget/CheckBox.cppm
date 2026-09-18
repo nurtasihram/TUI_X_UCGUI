@@ -55,14 +55,14 @@ private:
 		/* Clear inside ... Just in case      */
 		/* Fill with parents background color */
 		SetBkColorPrefer(Props.BkColor);
-		GUI_Clear();
+		GUI.Clear();
 		/* Get size from bitmap */
 		RECT RectBox;
 		RectBox.RightBottom(Props.apBm[0]->Size + 2 * EffectSize - 1);
 		UserClip(&RectBox);
 		/* Clear inside  ... Just in case */
 		GUI.BkColor(Props.aBkColorBox[ColorIndex]);
-		GUI_Clear();
+		GUI.Clear();
 		if (CurrentState)
 			GUI_DrawBitmap(Props.apBm[(CurrentState - 1) * 2 + ColorIndex], EffectSize);
 		/* Draw the effect arround the box */

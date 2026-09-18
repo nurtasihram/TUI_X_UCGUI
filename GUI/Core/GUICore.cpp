@@ -53,16 +53,6 @@ void LCD_DrawBitmap(BITVIEW b) {
 		GUI.pDevice->DrawBitmap(b, b.IsTrans());
 }
 
-void GUI_ClearRect(RECT r) {
-	auto color = GUI.Color();
-	GUI.Color(GUI.BkColor());
-	GUI.FillRect(r);
-	GUI.Color(color);
-}
-void GUI_Clear(void) {
-	GUI.DispPos = 0;
-	GUI_ClearRect({ GUI_XMIN, GUI_YMIN, GUI_XMAX, GUI_YMAX });
-}
 void GUI_DrawRect(RECT r) {
 	r += GUI.Off;
 	LCD_FillRect({ r.x0, r.y0, r.x1, r.y0 });

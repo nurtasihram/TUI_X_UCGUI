@@ -228,7 +228,7 @@ private:
 	}
 	void _OnPaint() {
 		SetBkColorPrefer(RGB_INVALID);
-		GUI_Clear();
+		GUI.Clear();
 		RECT rBorder;
 		/* Draw border of MultPage */
 		_CalcBorderRect(&rBorder);
@@ -359,7 +359,7 @@ private:
 		switch (MsgId) {
 			case WM_PAINT:
 				GUI.BkColor(pParent->Props.aBkColor[1]);
-				GUI_Clear();
+				GUI.Clear();
 				return 0;
 			case WM_GET_BKCOLOR:
 				return (WM_PARAM)pParent->Props.aBkColor[1];

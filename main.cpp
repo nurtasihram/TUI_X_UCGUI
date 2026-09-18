@@ -112,7 +112,7 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 			GUI.BkColor(aBkColor[ColorIndex]);
 			GUI.Color(aColor[ColorIndex]);
 			pObj->GetItemText(Index, acBuffer, sizeof(acBuffer));
-			GUI_Clear();
+			GUI.Clear();
 			auto FontDistY = GUI.Font().YSize;
 			GUI_DispStringAt(acBuffer, ItemPos.x + bmSmilie0.Size.x + 16, ItemPos.y + (YSize - FontDistY) / 2);
 			/* Draw bitmap */
@@ -338,7 +338,7 @@ static WM_PARAM _cbMemDevPane(WObj *pWin, int MsgId, WM_PARAM Data) {
 				XPos = Phase > Span ? Span * 2 - Phase : Phase;
 			}
 			GUI.BkColor(RGB_WHITE);
-			GUI_Clear();
+			GUI.Clear();
 			GUI.Color(RGB_DARKGRAY);
 			GUI_DrawRect({ 0, 0, Size.x - 1, Size.y - 1 });
 			GUI.Color(RGB_BLACK);

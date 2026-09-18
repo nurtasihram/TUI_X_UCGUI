@@ -73,7 +73,7 @@ private:
 			break;
 		case WM_PAINT:
 			GUI.BkColor(pObj->Props.BkColor);
-			GUI_Clear();
+			GUI.Clear();
 			return 0;
 		case WM_GET_BKCOLOR:
 			return pObj->Props.BkColor;
