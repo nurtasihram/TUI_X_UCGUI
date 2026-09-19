@@ -37,7 +37,7 @@ private:
 	int16_t v = 0, Min = 0, Max = 0;
 
 	void _FreeText() {
-		GUI_ALLOC_FreePtr((void **)&pText);
+		GUI_MEM_FreePtr((void **)&pText);
 		pText = nullptr;
 	}
 	int _Value2X(int v) const {

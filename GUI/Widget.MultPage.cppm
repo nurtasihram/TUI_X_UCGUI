@@ -341,7 +341,7 @@ private:
 				return 0;
 			case WM_DELETE: {
 				for (int _i = 0; _i < pObj->Handles.NumItems(); _i++) {
-					GUI_ALLOC_FreePtr((void **)&pObj->Handles[_i].pText);
+					GUI_MEM_FreePtr((void **)&pObj->Handles[_i].pText);
 				}
 				pObj->Handles.Delete();
 				/* No break here ... DefaultProc needs to be called */
@@ -443,7 +443,7 @@ public:
 			}
 			else if (Index < sel)
 				sel--;
-			GUI_ALLOC_FreePtr((void **)&Handles[Index].pText);
+			GUI_MEM_FreePtr((void **)&Handles[Index].pText);
 			Handles.DeleteItem(Index);
 			_UpdatePositions();
 			/* Delete the window of the page */

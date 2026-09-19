@@ -104,9 +104,9 @@ private:
 		NumItems = Columns.NumItems();
 		for (i = 0; i < NumItems; i++) {
 			auto &col = Columns[i];
-			GUI_ALLOC_FreePtr((void **)&col.pText);
+			GUI_MEM_FreePtr((void **)&col.pText);
 			if (col.pDrawObj) {
-				GUI_ALLOC_Free(col.pDrawObj);
+				GUI_MEM_Free(col.pDrawObj);
 			}
 		}
 		/* Delete attached objects (if any) */
@@ -280,7 +280,7 @@ public:
 	}
 	void DeleteItem(uint16_t Index) {
 		if (Index < Columns.NumItems()) {
-			GUI_ALLOC_FreePtr((void **)&Columns[Index].pText);
+			GUI_MEM_FreePtr((void **)&Columns[Index].pText);
 			Columns.DeleteItem(Index);
 			Invalidate();
 			Parent()->Invalidate();
@@ -315,7 +315,7 @@ public:
 	void SetDrawObj(uint16_t Index, GUI_DRAW *pDrawObj) {
 		if (Index < Columns.NumItems()) {
 			auto &col = Columns[Index];
-			GUI_ALLOC_FreePtr((void **)&col.pDrawObj);
+			GUI_MEM_FreePtr((void **)&col.pDrawObj);
 			col.pDrawObj = pDrawObj;
 		}
 	}

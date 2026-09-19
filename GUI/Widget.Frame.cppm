@@ -517,7 +517,7 @@ private:
 			break;
 		case WM_DELETE:
 			GUI_DEBUG_LOG("FRAMEWIN: _FRAMEWIN_Callback(WM_DELETE)\n");
-			GUI_ALLOC_Free(pObj->pText);
+			GUI_MEM_Free(pObj->pText);
 			pObj->pText = nullptr;
 			break;
 		}

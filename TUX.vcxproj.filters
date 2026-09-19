@@ -7,60 +7,21 @@
     <Filter Include="GUI_X">
       <UniqueIdentifier>{ee93d937-6daf-41e1-bbf4-a560eb3e1e6c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GUI\Core">
-      <UniqueIdentifier>{d236d0d7-b6ca-4bbe-ac96-992f292523ac}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GUI\Resources">
       <UniqueIdentifier>{f38c7937-c7d0-4cdb-92b6-b07f1c19b9d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GUI\Widgets">
-      <UniqueIdentifier>{62d7d254-60cd-41f0-b62d-e17d97428e71}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GUI\WM">
-      <UniqueIdentifier>{c5cb1be4-7330-4b87-bcd9-edd21a79ea8f}</UniqueIdentifier>
     </Filter>
     <Filter Include="TUX_EXT">
       <UniqueIdentifier>{d6830d6f-85b6-4802-a4e6-381142e5e54a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GUI\Widget">
+      <UniqueIdentifier>{5e031ae5-58f4-4bff-9843-51e89f403c5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI_X\res">
+      <UniqueIdentifier>{74b03a66-85b3-4809-8b7a-6783fb7d6dee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GUI_X\GUI_X.cc">
-      <Filter>GUI_X</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI_X\GUI_X_LCD.cc">
-      <Filter>GUI_X</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI_X\GUI_X_MEM.cppm">
-      <Filter>GUI_X</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="GUI\Core\GUI.cppm">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI.Types.cppm">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUI_Input.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUICore.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUICurs.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUIDEV.cpp">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\GUITimer.cppm">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\LCD.cppm">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Core\String.cppm">
-      <Filter>GUI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Resources\CursorArrow.cpp">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
@@ -76,62 +37,8 @@
     <ClCompile Include="GUI\Resources\Resources.cppm">
       <Filter>GUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\Button.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\CheckBox.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\DropDown.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Frame.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Header.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\ListBox.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\ListView.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Menu.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MultEdit.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\MultPage.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\ProgBar.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Radio.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\ScrollBar.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Slider.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Text.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Widget.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\ScrollCtrl.cpp">
       <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\WM\Window.cppm">
-      <Filter>GUI\WM</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\WM\WindowTypes.cppm">
-      <Filter>GUI\WM</Filter>
     </ClCompile>
     <ClCompile Include="TUX_EXT\CursorCross.cpp">
       <Filter>TUX_EXT</Filter>
@@ -151,39 +58,126 @@
     <ClCompile Include="TUX_EXT\tux_osk.cpp">
       <Filter>TUX_EXT</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\Client.cppm">
-      <Filter>GUI\Widgets</Filter>
+    <ClCompile Include="GUI\Timer.cppm">
+      <Filter>GUI</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\Effects.cpp">
-      <Filter>GUI\Widgets</Filter>
+    <ClCompile Include="GUI\Array.cppm">
+      <Filter>GUI</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\GUI.ARRAY.cppm">
-      <Filter>GUI\Widgets</Filter>
+    <ClCompile Include="GUI\Core.cppm">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Types.cppm">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\GUICore.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\GUICurs.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\GUIDEV.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\LCD.cppm">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\String.cppm">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.Widget.cppm">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Window.cppm">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\WindowTypes.cppm">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.Text.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.Button.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.CheckBox.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.Client.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.DropDown.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.Effects.cpp">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.Frame.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.Header.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.ListBox.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.ListView.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.Menu.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.MultEdit.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.MultPage.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.ProgBar.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.Radio.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.ScrollBar.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget.Slider.cppm">
+      <Filter>GUI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\X.cppm">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI_X\GUI_X.cc">
+      <Filter>GUI_X</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI_X\GUI_X_LCD.cc">
+      <Filter>GUI_X</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI_X\GUI_X_MEM.cc">
+      <Filter>GUI_X</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GUI_X\resource.h">
-      <Filter>GUI_X</Filter>
-    </ClInclude>
     <ClInclude Include="GUIConf.h" />
-    <ClInclude Include="GUI\Core\GUI.h">
-      <Filter>GUI\Core</Filter>
+    <ClInclude Include="GUI\GUI.h">
+      <Filter>GUI</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Core\GUI_X.h">
-      <Filter>GUI\Core</Filter>
+    <ClInclude Include="GUI\GUIDebug.h">
+      <Filter>GUI</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Core\GUIDebug.h">
-      <Filter>GUI\Core</Filter>
+    <ClInclude Include="GUI_X\resource.h">
+      <Filter>GUI_X\res</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="GUI_X\SimDisp.ico">
-      <Filter>GUI_X</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GUI_X\SimDisp.rc">
-      <Filter>GUI_X</Filter>
+      <Filter>GUI_X\res</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="GUI_X\SimDisp.ico">
+      <Filter>GUI_X\res</Filter>
+    </Image>
   </ItemGroup>
 </Project>

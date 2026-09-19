@@ -46,8 +46,8 @@ private:
 	GUI_DRAW *aDrawObj[3]{ nullptr };
 
 	~Button() {
-		GUI_ALLOC_FreePtr((void **)&aDrawObj[0]);
-		GUI_ALLOC_FreePtr((void **)&aDrawObj[1]);
+		GUI_MEM_FreePtr((void **)&aDrawObj[0]);
+		GUI_MEM_FreePtr((void **)&aDrawObj[1]);
 	}
 
 	void _OnPaint() const {
@@ -216,7 +216,7 @@ public:
 	void SetDrawObj(BUTTON_BI Index, GUI_DRAW *pDrawObj) {
 		if (Index > 2)
 			return;
-		GUI_ALLOC_FreePtr((void **)&aDrawObj[Index]);
+		GUI_MEM_FreePtr((void **)&aDrawObj[Index]);
 		aDrawObj[Index] = pDrawObj;
 		Invalidate();
 	}

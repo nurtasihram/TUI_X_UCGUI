@@ -259,9 +259,9 @@ private:
 				/* Delete attached info items */
 				for (auto j = 0; j < NumColumns; j++) {
 					auto &item = pRow[j];
-					GUI_ALLOC_FreePtr((void **)&item.pText);
+					GUI_MEM_FreePtr((void **)&item.pText);
 					if (item.pItemInfo)
-						GUI_ALLOC_Free(item.pItemInfo);
+						GUI_MEM_Free(item.pItemInfo);
 				}
 				/* Delete row */
 				pRow.Delete();
@@ -442,8 +442,8 @@ public:
 			auto &Row = RowArray[i];
 			/* Delete attached info items */
 			auto &item = Row[Index];
-			GUI_ALLOC_FreePtr((void **)&item.pText);
-			GUI_ALLOC_FreePtr((void **)&item.pItemInfo);
+			GUI_MEM_FreePtr((void **)&item.pText);
+			GUI_MEM_FreePtr((void **)&item.pItemInfo);
 			/* Delete cell */
 			Row.DeleteItem(Index);
 		}
@@ -458,8 +458,8 @@ public:
 		/* Delete attached info items */
 		for (int i = 0, NumColumns = Row.NumItems(); i < NumColumns; i++) {
 			auto &item = Row[i];
-			GUI_ALLOC_FreePtr((void **)&item.pText);
-			GUI_ALLOC_FreePtr((void **)&item.pItemInfo);
+			GUI_MEM_FreePtr((void **)&item.pText);
+			GUI_MEM_FreePtr((void **)&item.pItemInfo);
 		}
 		/* Delete row */
 		Row.Delete();
@@ -490,7 +490,7 @@ public:
 		auto pItem = &RowArray[Row][Column];
 		auto pItemInfo = pItem->pItemInfo;
 		if (!pItemInfo) {
-			pItemInfo = pItem->pItemInfo = (ItemInfo *)GUI_ALLOC_Alloc(sizeof(ItemInfo));
+			pItemInfo = pItem->pItemInfo = (ItemInfo *)GUI_MEM_Alloc(sizeof(ItemInfo));
 			pItemInfo->aBrush[0] = Props.aBrush[0];
 			pItemInfo->aBrush[1] = Props.aBrush[1];
 		}

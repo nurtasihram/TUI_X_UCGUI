@@ -557,10 +557,10 @@ private:
 
 public:
 	void *operator new(size_t size) {
-		return GUI_ALLOC_Alloc(size);
+		return GUI_MEM_Alloc(size);
 	}
 	void operator delete(void *p) {
-		GUI_ALLOC_Free(p);
+		GUI_MEM_Free(p);
 	}
 
 public:

@@ -1,7 +1,6 @@
 module;
 
 #include "GUIConf.h"
-#include "GUI_X.h"
 
 export module TUX;
 

@@ -449,7 +449,7 @@ private:
 	}
 	bool _IncrementBuffer(unsigned AddBytes) {
 		int NewSize = BufferSize + AddBytes;
-		if (auto pNew = (char *)GUI_ALLOC_Realloc(pText, NewSize)) {
+		if (auto pNew = (char *)GUI_MEM_Realloc(pText, NewSize)) {
 			if (!pText)
 				*pNew = 0;
 			BufferSize = NewSize;
@@ -725,7 +725,7 @@ private:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
 			case WM_DELETE:
-				GUI_ALLOC_FreePtr((void **)&pObj->pText);
+				GUI_MEM_FreePtr((void **)&pObj->pText);
 				return 0;
 			case WM_KEY:
 				if (pObj->_OnKey((const KEY_STATE *)Data))
@@ -753,7 +753,7 @@ public:
 		Widget((_AdjRect(r, pParent), r), Style, _Callback, pParent, Id, ExFlags | WIDGET_STATE_FOCUSSABLE),
 		BufferSize(BufferSize) {
 		if (BufferSize > 0)
-			this->pText = (char *)GUI_ALLOC_Alloc(BufferSize);
+			this->pText = (char *)GUI_MEM_Alloc(BufferSize);
 		SetText(pText);
 		_ManageScrollers();
 	}	
@@ -916,11 +916,11 @@ public:
 		}
 	}
 	void SetBufferSize(int BufferSize) {
-		auto pText = (char *)GUI_ALLOC_Alloc(BufferSize);
+		auto pText = (char *)GUI_MEM_Alloc(BufferSize);
 		if (!pText) {
 		}
 		else {
-			GUI_ALLOC_FreePtr((void **)&this->pText);
+			GUI_MEM_FreePtr((void **)&this->pText);
 			this->pText = pText;
 			this->BufferSize = BufferSize;
 			this->NumCharsPrompt = 0;

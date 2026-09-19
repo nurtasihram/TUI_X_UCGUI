@@ -1,10 +1,6 @@
-module;
+export module TUX.Timer;
 
-#include "GUI.h"
-
-export module TUX.Core.Timer;
-
-import TUX;
+import TUX.X;
 
 export {
 
@@ -68,8 +64,8 @@ public:
 
 	~Timer() { _Unlink(); }
 
-	void *operator new(size_t Size) { return GUI_ALLOC_Alloc(Size); }
-	void operator delete(void *p) { GUI_ALLOC_Free(p); }
+	void *operator new(size_t Size) { return GUI_MEM_Alloc(Size); }
+	void operator delete(void *p) { GUI_MEM_Free(p); }
 
 public:
 
@@ -83,7 +79,7 @@ public:
 	{ this->Context = (uintptr_t)Context; }
 
 	void Restart() {
-		t0 = GUI_X_GetTime() + Period;
+		t0 = GUI_TIME_Get() + Period;
 		_Unlink();
 		_Link();
 	}
@@ -91,7 +87,7 @@ public:
 	static bool Exec() {
 		static Timer *pActiveTimer = nullptr;
 		bool r = false;
-		auto t = GUI_X_GetTime();
+		auto t = GUI_TIME_Get();
 		while (auto pTimer = pFirstTimer) {
 			if (pTimer->t0 > t)
 				break;

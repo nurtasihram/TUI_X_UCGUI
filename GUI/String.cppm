@@ -5,7 +5,7 @@ module;
 
 export module TUX.String;
 
-export import TUX.Memory;
+export import TUX.X;
 
 using TextPtr = char *;
 using TextPtrConst = const char *;
@@ -59,12 +59,12 @@ bool GUI__SetText(char *&rfText, const char *s) {
 	auto size = GUI__strlen(s);
 	if (!size) {
 		if (rfText)
-			GUI_ALLOC_Free(rfText),
+			GUI_MEM_Free(rfText),
 			rfText = nullptr;
 		return true;
 	}
 	++size;
-	rfText = (char *)(rfText ? GUI_ALLOC_Realloc(rfText, ++size) : GUI_ALLOC_Alloc(size));
+	rfText = (char *)(rfText ? GUI_MEM_Realloc(rfText, ++size) : GUI_MEM_Alloc(size));
 	GUI__memcpy(rfText, s, size);
 	return true;
 }
@@ -153,7 +153,7 @@ public:
 	~String() { Delete(); }
 public:
 	void Delete() noexcept {
-		GUI_ALLOC_Free(pText);
+		GUI_MEM_Free(pText);
 		pText = nullptr;
 	}
 	bool Set(const char *s) {

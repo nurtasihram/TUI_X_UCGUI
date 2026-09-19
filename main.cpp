@@ -19,7 +19,7 @@ import TUX.Widget.Radio;
 import TUX.Widget.ProgBar;
 import TUX.Widget.Slider;
 import TUX.Widget.MultEdit;
-import TUX.Core.Timer;
+import TUX.Timer;
 
 #pragma region Test ListBox
 static bool _MultiSel = false, _OwnerDrawn = true;
@@ -327,7 +327,7 @@ static void _OnMemDevTimer(GUI_TIMER_MESSAGE *pTM) {
 	if (_hNoMemDevPane)
 		_hNoMemDevPane->Invalidate();
 	if (_pMemDevTimer)
-		_pMemDevTimer->SetTime(GUI_X_GetTime() + 20);
+		_pMemDevTimer->SetTime(GUI_TIME_Get() + 20);
 }
 static WM_PARAM _cbMemDevPane(WObj *pWin, int MsgId, WM_PARAM Data) {
 	switch (MsgId) {
@@ -406,7 +406,7 @@ void _TestMemDev() {
 	auto pDialog = (Frame *)_aMemDevDialogCreate->CreateDialog(GUI_COUNTOF(_aMemDevDialogCreate), &_cbMemDevTest, 0, 0, 0);
 	_hMemDevFrame = _CreateMemDevFrame(80, 50, "MemDev ON", 1, &_hMemDevPane);
 	_hNoMemDevFrame = _CreateMemDevFrame(280, 50, "MemDev OFF", 0, &_hNoMemDevPane);
-	_pMemDevTimer = new Timer(_OnMemDevTimer, GUI_X_GetTime() + 20);
+	_pMemDevTimer = new Timer(_OnMemDevTimer, GUI_TIME_Get() + 20);
 
 	pDialog->DialogExec();
 

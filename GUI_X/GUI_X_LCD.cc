@@ -6,6 +6,8 @@
 #define LCD_XSIZE 320 * 2
 #define LCD_YSIZE 240 * 2
 
+import TUX.X;
+
 Ayxandar Ayx;
 
 struct LCD_API : public LCDDEV {

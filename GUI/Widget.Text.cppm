@@ -38,7 +38,7 @@ private:
 		GUI_DispStringInRect(pText, ClientRect(), Props.Align);
 	}
 	void _Delete() {
-		GUI_ALLOC_FreePtr((void **)&pText);
+		GUI_MEM_FreePtr((void **)&pText);
 	}
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {

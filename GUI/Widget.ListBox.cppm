@@ -292,7 +292,7 @@ private:
 	}
 	void _FreeAttached() {
 		for (unsigned _i = 0, _n = ItemArray.NumItems(); _i < _n; _i++) {
-			GUI_ALLOC_FreePtr((void **)&ItemArray[_i].pText);
+			GUI_MEM_FreePtr((void **)&ItemArray[_i].pText);
 		}
 		ItemArray.Delete();
 	}
@@ -695,7 +695,7 @@ public:
 		uint16_t NumItems;
 		NumItems = _GetNumItems();
 		if (Index < NumItems) {
-			GUI_ALLOC_FreePtr((void **)&this->ItemArray[Index].pText);
+			GUI_MEM_FreePtr((void **)&this->ItemArray[Index].pText);
 			this->ItemArray.DeleteItem(Index);
 			/*
 			 * Update selection

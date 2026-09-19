@@ -16,7 +16,7 @@ public:
 
 	ARRAY() = default;
 	ARRAY(uint16_t nItems) : nItems(nItems) {
-		pArray = (T*)GUI_ALLOC_Alloc((size_t)nItems * sizeof(T));
+		pArray = (T*)GUI_MEM_Alloc((size_t)nItems * sizeof(T));
 	}
 	~ARRAY() { Delete(); }
 
@@ -26,7 +26,7 @@ public:
 		if (pArray) {
 			for (uint16_t i = 0; i < nItems; ++i)
 				pArray[i].~T();
-			GUI_ALLOC_Free(pArray);
+			GUI_MEM_Free(pArray);
 			pArray = nullptr;
 		}
 		nItems = 0;
@@ -34,9 +34,9 @@ public:
 
 	void Resize(uint16_t num) {
 		if (pArray)
-			pArray = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)num * sizeof(T));
+			pArray = (T*)GUI_MEM_Realloc((void*)pArray, (size_t)num * sizeof(T));
 		else
-			pArray = (T*)GUI_ALLOC_Alloc((size_t)num * sizeof(T));
+			pArray = (T*)GUI_MEM_Alloc((size_t)num * sizeof(T));
 		nItems = num;
 	}
 
@@ -47,15 +47,15 @@ public:
 		for (uint16_t i = Index; i + 1 < nItems; ++i)
 			pArray[i] = pArray[i + 1];
 		if (--nItems)
-			pArray = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)nItems * sizeof(T));
+			pArray = (T*)GUI_MEM_Realloc((void*)pArray, (size_t)nItems * sizeof(T));
 		else {
-			GUI_ALLOC_Free(pArray);
+			GUI_MEM_Free(pArray);
 			pArray = nullptr;
 		}
 	}
 
 	inline T &Add() {
-		pArray = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
+		pArray = (T*)GUI_MEM_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
 		auto &item = pArray[nItems++];
 		item = {};
 		return item;
@@ -66,7 +66,7 @@ public:
 			Index = 0;
 		else if (Index >= nItems)
 			Index = nItems - 1;
-		pArray = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
+		pArray = (T*)GUI_MEM_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
 		++nItems;
 		for (uint16_t i = nItems - 1; i > Index; --i)
 			pArray[i] = pArray[i - 1];
@@ -81,7 +81,7 @@ public:
 	inline uint16_t NumItems() const { return nItems; }
 
 	int AddItem(const T *pData = nullptr) {
-		auto pNew = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
+		auto pNew = (T*)GUI_MEM_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
 		if (!pNew)
 			return 1;
 		pArray = pNew;
@@ -100,7 +100,7 @@ public:
 	char InsertBlankItem(unsigned int Index) {
 		if (Index > nItems)
 			return 0;
-		auto pNew = (T*)GUI_ALLOC_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
+		auto pNew = (T*)GUI_MEM_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
 		if (!pNew)
 			return 0;
 		pArray = pNew;

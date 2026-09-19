@@ -1,8 +1,6 @@
 import TUX;
 import TUX.Window;
 
-#include "GUI_X.h"
-
 struct MEMDEV : LCDDEV {
 	RECT rect;
 	uint16_t BytesPerLine;
@@ -10,10 +8,10 @@ struct MEMDEV : LCDDEV {
 public:
 	MEMDEV(RECT r) : LCDDEV(GUI.pDevice->BitsPerPixel), rect(r) {
 		BytesPerLine = (r.XSize() * BPP_Bits[BitsPerPixel] + 7) >> 3;
-		pData = GUI_ALLOC_Alloc(r.YSize() * BytesPerLine);
+		pData = GUI_MEM_Alloc(r.YSize() * BytesPerLine);
 	}
 	~MEMDEV() {
-		GUI_ALLOC_Free(pData);
+		GUI_MEM_Free(pData);
 		pData = nullptr;
 	}
 	MEMDEV(const MEMDEV &) = delete;

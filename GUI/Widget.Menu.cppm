@@ -554,7 +554,7 @@ private:
 				return 0;
 			case WM_DELETE: {
 				for (uint16_t i = 0, n = pObj->ItemArray.NumItems(); i < n; i++)
-					GUI_ALLOC_FreePtr((void **)&pObj->ItemArray[i].pText);
+					GUI_MEM_FreePtr((void **)&pObj->ItemArray[i].pText);
 				pObj->ItemArray.Delete();
 				break;
 			}
@@ -684,7 +684,7 @@ public:
 		auto Index = _FindItem(ItemId, &pMenu);
 		if (Index < 0)
 			return;
-		GUI_ALLOC_FreePtr((void **)&pMenu->ItemArray[Index].pText);
+		GUI_MEM_FreePtr((void **)&pMenu->ItemArray[Index].pText);
 		ItemArray.DeleteItem(Index);
 		_ResizeMenu();
 	}
