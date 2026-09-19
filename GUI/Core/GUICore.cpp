@@ -22,8 +22,9 @@ bool GUI_Exec1(void) {
 	return r;
 }
 bool GUI_Exec() {
-	bool r;
-	while (r = GUI_Exec1());
+	bool r = false;
+	while (GUI_Exec1())
+		r = true;
 	return r;
 }
 

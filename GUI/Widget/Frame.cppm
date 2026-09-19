@@ -7,7 +7,7 @@ export module TUX.Widget.Frame;
 import TUX.Widget;
 import TUX.Widget.Button;
 import TUX.Widget.Menu;
-import TUX.Widget.Window;
+import TUX.Widget.Client;
 
 static int16_t FRAMEWIN__MinVisibility = 5;
 

@@ -1,4 +1,4 @@
-export module TUX.Widget.Window;
+export module TUX.Widget.Client;
 
 import TUX;
 import TUX.Widget;

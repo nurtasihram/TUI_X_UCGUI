@@ -88,9 +88,6 @@
     <ClCompile Include="GUI\Widget\Frame.cppm">
       <Filter>GUI\Widgets</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\GUI_ARRAY.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Widget\Header.cppm">
       <Filter>GUI\Widgets</Filter>
     </ClCompile>
@@ -127,12 +124,6 @@
     <ClCompile Include="GUI\Widget\Widget.cppm">
       <Filter>GUI\Widgets</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Widget\Window_.cppm">
-      <Filter>GUI\Widgets</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\ScrollCtrl.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
@@ -159,6 +150,15 @@
     </ClCompile>
     <ClCompile Include="TUX_EXT\tux_osk.cpp">
       <Filter>TUX_EXT</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Client.cppm">
+      <Filter>GUI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\Effects.cpp">
+      <Filter>GUI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Widget\GUI.ARRAY.cppm">
+      <Filter>GUI\Widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

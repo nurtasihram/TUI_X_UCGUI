@@ -40,7 +40,7 @@ private:
 		/* Calculate Slot position */
 		RECT rSlot;
 		rSlot.x0 = x0;
-		rSlot.y0 = rSlider.DistY() / 2 - 1;
+		rSlot.y0 = rSlider.CenterY();
 		rSlot.x1 = x0 + xsize;
 		rSlot.y1 = rSlot.y0 + 3;
 		/* Calculate the ticks */
@@ -197,6 +197,7 @@ public:
 			NotifyParent(WM_NOTIFICATION_VALUE_CHANGED);
 		}
 	}
+
 	void SetRange(int Min, int Max) {
 		if (Max < Min)
 			Max = Min;
@@ -208,6 +209,7 @@ public:
 			v = Max;
 		Invalidate();
 	}
+
 	void SetNumTicks(int16_t NumTicks) {
 		if (this->NumTicks == NumTicks) 
 			return;

@@ -21,8 +21,8 @@ class Text : public Widget {
 public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
-		TEXTALIGN Align{ 0 };
 		BRUSH brush{ RGB_INVALID, RGB_BLACK };
+		TEXTALIGN Align{ 0 };
 	} static DefaultProps;
 	
 private:
@@ -30,25 +30,15 @@ private:
 
 	char *pText = nullptr;
 
-	void _FreeAttached() {
-		GUI_ALLOC_FreePtr((void **)&pText);
-	}
 	void _OnPaint() const {
-		const char *s;
+		GUI.Font(Props.pFont);
 		GUI.Brush(Props.brush);
-		/* Fill with parents background color */
 		SetBkColorPrefer(Props.brush.BkColor);
 		GUI.Clear();
-		/* Show the text */
-		if (pText) {
-			s = pText;
-			auto r = ClientRect();
-			GUI_DispStringInRect(s, r, Props.Align);
-		}
+		GUI_DispStringInRect(pText, ClientRect(), Props.Align);
 	}
 	void _Delete() {
-		/* Delete attached objects (if any) */
-		_FreeAttached();
+		GUI_ALLOC_FreePtr((void **)&pText);
 	}
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
@@ -89,6 +79,7 @@ public:
 public:
 
 #pragma region properties
+	auto Font() const { return Props.pFont; }
 	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
@@ -104,6 +95,7 @@ public:
 		Invalidate();
 	}
 
+	auto TextAlign() const { return Props.Align; }
 	void TextAlign(TEXTALIGN Align) {
 		if (Props.Align == Align)
 			return;
@@ -116,7 +108,6 @@ public:
 		if (GUI__SetText(pText, s))
 			Invalidate();
 	}
-
 };
 
 Text::Properties Text::DefaultProps;

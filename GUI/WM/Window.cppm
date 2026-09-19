@@ -745,10 +745,6 @@ public:
 			/* Compute size of new rectangle */
 			auto rOld = pChild->rWin, rNew = rOld;
 			switch (pChild->Status & WC_ANCHOR_VERTICAL) {
-			case WC_ANCHOR_TOP:
-				rNew.x0 += d.x0;
-				rNew.x1 += d.x0;
-				break;
 			case WC_ANCHOR_RIGHT:
 				rNew.x0 += d.x1;
 				rNew.x1 += d.x1;
@@ -757,12 +753,12 @@ public:
 				rNew.x0 += d.x0;
 				rNew.x1 += d.x1;
 				break;
+			default:
+				rNew.x0 += d.x0;
+				rNew.x1 += d.x0;
+				break;
 			}
 			switch (pChild->Status & WC_ANCHOR_HORIZONTAL) {
-			case WC_ANCHOR_TOP:
-				rNew.y0 += d.y0;
-				rNew.y1 += d.y0;
-				break;
 			case WC_ANCHOR_BOTTOM:
 				rNew.y0 += d.y1;
 				rNew.y1 += d.y1;
@@ -770,6 +766,10 @@ public:
 			case WC_ANCHOR_HORIZONTAL:
 				rNew.y0 += d.y0;
 				rNew.y1 += d.y1;
+				break;
+			default:
+				rNew.y0 += d.y0;
+				rNew.y1 += d.y0;
 				break;
 			}
 			/* Set new window position using Move and Resize as required */

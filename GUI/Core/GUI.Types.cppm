@@ -49,6 +49,10 @@ struct RECT {
 	inline auto DistY() const { return y1 - y0; }
 	inline auto Dist() const { return POINT{ DistX(), DistY() }; }
 
+	inline auto CenterX() const { return ((x0 + x1) >> 1) - 1; }
+	inline auto CenterY() const { return ((y0 + y1) >> 1) - 1; }
+	inline POINT Cneter() const { return { CenterX(), CenterY() }; }
+
 	inline auto &DistX(int16_t XDist) { x0 += XDist, x1 += XDist; return *this; }
 	inline auto &DistY(int16_t YDist) { y0 += YDist, y1 += YDist; return *this; }
 

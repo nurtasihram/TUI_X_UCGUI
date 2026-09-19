@@ -31,11 +31,10 @@ class Radio : public Widget {
 
 public:
 	struct Properties {
-		PCFONT pFont{ GUI_DEFAULT_FONT };
-		RGBC TextColor{ RGB_BLACK };
-		RGBC BkColor{ RGB_INVALID };
 		PCBITMAP apBmRadio[2]{ &_abmRadio[0], &_abmRadio[1] };
 		PCBITMAP pBmCheck{ &_bmCheck };
+		PCFONT pFont{ GUI_DEFAULT_FONT };
+		BRUSH brush{ RGB_INVALID, RGB_BLACK };
 	} static DefaultProps;
 	
 private:
@@ -44,21 +43,20 @@ private:
 	ARRAY<char *> TextArray;
 	int16_t Sel = -1;
 	uint16_t Spacing;
-	uint16_t NumItems;
 	uint16_t Height = Props.apBmRadio[0]->Size.y + RADIO_BORDER * 2;
 	uint8_t  GroupId = 0;
 
 	void _OnPaint() const {
 		/* Init some data */
-		auto rFocus = ClientRect();
 		bool HasFocus = States & WIDGET_STATE_FOCUS;
 		auto pBmRadio = Props.apBmRadio[IsEnabled()],
 			 pBmCheck = Props.pBmCheck;
+		auto NumItems = this->NumItems();
+		auto rFocus = ClientRect();
 		rFocus.x1 = pBmRadio->Size.x + RADIO_BORDER * 2 - 1;
 		rFocus.y1 = Height + (NumItems - 1) * Spacing - 1;
 		/* Select font and text color */
-		GUI.Color(Props.TextColor);
-		GUI.Font(Props.pFont);
+		GUI.Brush(Props.brush);
 		auto FontDistY = Props.pFont->YSize;
 		RECT Rect;
 		Rect.x0 = pBmRadio->Size.x + RADIO_BORDER * 2 + 2;
@@ -69,7 +67,7 @@ private:
 			FocusBorder = Rect.y0;
 		/* Clear inside ... Just in case      */
 		/* Fill with parents background color */
-		SetBkColorPrefer(Props.BkColor);
+		SetBkColorPrefer(Props.brush.BkColor);
 		GUI.Clear();
 		/* Iterate over all items */
 		for (int i = 0; i < NumItems; i++) {
@@ -166,18 +164,16 @@ private:
 
 private:
 	static void _AdjRect(RECT &r, uint16_t NumItems, uint16_t Spacing) {
-		auto Height = DefaultProps.apBmRadio[0]->Size.y + RADIO_BORDER * 2;
 		if (r.x1 <= r.x0)
 			r.x1 += DefaultProps.apBmRadio[0]->Size.x + RADIO_BORDER * 2;
 		if (r.y1 <= r.y0)
-			r.y1 += Height + (NumItems - 1) * Spacing;
+			r.y1 += DefaultProps.apBmRadio[0]->Size.y + RADIO_BORDER * 2 + (NumItems - 1) * Spacing;
 	}
 public:
 	Radio(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
-		  uint16_t ExFlags, uint16_t NumItems, uint16_t Spacing) :
+		  uint16_t ExFlags, uint16_t NumItems, uint16_t Spacing = 0) :
 		Widget((_AdjRect(r, NumItems, Spacing), r), Style, _Callback, pParent, Id, ExFlags | WIDGET_STATE_FOCUSSABLE),
-		Spacing(Spacing ? Spacing : 20),
-		NumItems(NumItems ? NumItems : 2) {
+		Spacing(Spacing ? Spacing : 20) {
 		for (int i = 0; i < NumItems; i++)
 			TextArray.AddItem();
 	}
@@ -193,8 +189,8 @@ public:
 
 private:
 	void _SetValue(int v) {
-		if (v >= NumItems)
-			v = NumItems - 1;
+		if (v >= NumItems())
+			v = NumItems() - 1;
 		if (Sel != v) {
 			Sel = v;
 			Invalidate();
@@ -227,33 +223,29 @@ private:
 	}
 	void _HandleSetValue(int v) {
 		if (v < 0) {
-			auto pWin = _GetPrevInGroup(this, GroupId);
-			if (pWin) {
+			if (auto pWin = _GetPrevInGroup(this, GroupId)) {
 				pWin->SetFocus();
 				pWin->_SetValue(0x7FFF);
 				_SetValue(-1);
 			}
 		}
-		else if (v >= NumItems) {
-			auto pWin = _GetNextInGroup(this, GroupId);
-			if (pWin) {
+		else if (v >= NumItems()) {
+			if (auto pWin = _GetNextInGroup(this, GroupId)) {
 				pWin->SetFocus();
 				pWin->_SetValue(0);
 				_SetValue(-1);
 			}
 		}
-		else {
-			if (Sel != v) {
-				_ClearSelection(GroupId);
-				_SetValue(v);
-			}
+		else if (Sel != v) {
+			_ClearSelection(GroupId);
+			_SetValue(v);
 		}
 	}
 
 public:
 
 #pragma region Properties
-
+	auto Font() const { return Props.pFont; }
 	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
@@ -261,25 +253,30 @@ public:
 		Invalidate();
 	}
 
-	void TextColor(RGBC Color) {
-		if (Props.TextColor == Color)
+	auto Brush() const { return Props.brush; }
+	void Brush(BRUSH brush) {
+		if (Props.brush == brush)
 			return;
-		Props.TextColor = Color;
+		Props.brush = brush;
 		Invalidate();
 	}
 
-	void BkColor(RGBC Color) {
-		if (Props.BkColor == Color)
-			return;
-		Props.BkColor = Color;
+	void SetImage(RADIO_BI Index, PCBITMAP pBitmap) {
+		switch (Index) {
+		case RADIO_BI_INACTIV:
+		case RADIO_BI_ACTIV:
+			Props.apBmRadio[Index] = pBitmap;
+			break;
+		case RADIO_BI_CHECK:
+			Props.pBmCheck = pBitmap;
+			break;
+		}
 		Invalidate();
 	}
-
 #pragma endregion
 
-	void AddValue(int Add) { SetValue(Sel + Add); }
-	void Dec() { AddValue(Sel - 1); }
-	void Inc() { AddValue(Sel + 1); }
+	void Dec() { SetValue(Sel - 1); }
+	void Inc() { SetValue(Sel + 1); }
 	auto GetValue() const { return Sel; }
 	void SetValue(int v) {
 		if (GroupId)
@@ -314,20 +311,10 @@ public:
 		/* Change the group */
 		GroupId = NewGroupId;
 	}
-	void SetImage(RADIO_BI Index, PCBITMAP pBitmap) {
-		switch (Index) {
-			case RADIO_BI_INACTIV:
-			case RADIO_BI_ACTIV:
-				Props.apBmRadio[Index] = pBitmap;
-				break;
-			case RADIO_BI_CHECK:
-				Props.pBmCheck = pBitmap;
-				break;
-		}
-		Invalidate();
-	}
+
+	auto NumItems() const { return TextArray.NumItems(); }
 	void SetText(uint16_t Index, const char *pText) {
-		if (Index < NumItems) {
+		if (Index < NumItems()) {
 			GUI__SetText(TextArray[Index], pText);
 			Invalidate();
 		}

@@ -36,9 +36,11 @@
     <ClCompile Include="GUI\ScrollCtrl.cpp" />
     <ClCompile Include="GUI\Widget\Button.cppm" />
     <ClCompile Include="GUI\Widget\CheckBox.cppm" />
+    <ClCompile Include="GUI\Widget\Client.cppm" />
     <ClCompile Include="GUI\Widget\DropDown.cppm" />
+    <ClCompile Include="GUI\Widget\Effects.cpp" />
     <ClCompile Include="GUI\Widget\Frame.cppm" />
-    <ClCompile Include="GUI\Widget\GUI_ARRAY.cppm" />
+    <ClCompile Include="GUI\Widget\GUI.ARRAY.cppm" />
     <ClCompile Include="GUI\Widget\Header.cppm" />
     <ClCompile Include="GUI\Widget\ListBox.cppm" />
     <ClCompile Include="GUI\Widget\ListView.cppm" />
@@ -51,8 +53,6 @@
     <ClCompile Include="GUI\Widget\Slider.cppm" />
     <ClCompile Include="GUI\Widget\Text.cppm" />
     <ClCompile Include="GUI\Widget\Widget.cppm" />
-    <ClCompile Include="GUI\Widget\WIDGET_Effects.cpp" />
-    <ClCompile Include="GUI\Widget\Window_.cppm" />
     <ClCompile Include="GUI\WM\Window.cppm" />
     <ClCompile Include="GUI\WM\WindowTypes.cppm" />
     <ClCompile Include="GUI_X\GUI_X.cc" />
