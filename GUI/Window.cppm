@@ -1,16 +1,8 @@
-module;
-
-#include "GUI.h"
-
-#if GUI_DEBUG_LEVEL  >= GUI_DEBUG_LEVEL_LOG_WARNINGS
-#define WM_ASSERT_NOT_IN_PAINT() { if (WObj::_PaintCallbackCnt) \
-									   GUI_DEBUG_ERROROUT("Function may not be called from within a paint event"); \
-								   }
-#else
-#define WM_ASSERT_NOT_IN_PAINT()
-#endif
-
 export module TUX.Window;
+
+#include "GUIConf.h"
+
+#define WM_ASSERT_NOT_IN_PAINT()
 
 export import TUX;
 export import TUX.Types;
@@ -171,10 +163,7 @@ public:
 		GUI.Off = rWin.LeftTop();
 	}
 	static void Activate() { IsActive = true; }
-	static void Deactivate() {
-		IsActive = false; /* No clipping performed by WM */
-		GUI.ClipRectMax();
-	}
+	static void Deactivate() { IsActive = false; }
 
 #pragma region Invalidation
 private:
@@ -473,31 +462,43 @@ public:
 
 #pragma region Paint & Draw
 	static uint8_t _PaintCallbackCnt;      /* Public for assertions only */
-	void _Paint1() /* const */ {
+	void _Paint1(GUI_CONTEXT &ctx) /* const */ {
 		if (cb && (Status & WC_VISIBLE)) {
 			_PaintCallbackCnt++;
 			Iterate(rInvalid, [&] {
-				Require(WM_PAINT);
+				Require(WM_PAINT, (WM_PARAM)&ctx);
 			});
 			_PaintCallbackCnt--;
 		}
 	}
-	bool _Paint() {
+	bool _Paint(GUI_CONTEXT &ctx) {
 		if (!(Status & WC_ACTIVATE))
 			return false;
 		bool Ret = false;
 		if (cb && _ClipAtParentBorders(rInvalid)) {
 			Select();
-			if (Status & WC_MEMDEV)
-				GUI_MEMDEV_Draw(rInvalid, [](void *p) {
-					auto pWin = (WObj *)p;
-					auto rInvalid = pWin->rInvalid;
-					pWin->rInvalid = GUI.rClip;
-					pWin->_Paint1();
-					pWin->rInvalid = rInvalid;
-				}, this);
+			if (Status & WC_MEMDEV) {
+				MemDev.Alloc(rInvalid);
+				Deactivate();
+				ctx.pDevice = &MemDev;
+				ctx.ClipRectMax();
+				auto rOldInvalid = rInvalid;
+				rInvalid = ctx.rClip;
+				_Paint1(ctx);
+				rInvalid = rOldInvalid;
+				ctx.pDevice = GUI_X_GetLCD();
+				Activate();
+				Iterate(MemDev.rect, [&] {
+					LCD_DrawBitmap(BITVIEW{
+						MemDev.rect,
+						MemDev.BytesPerLine,
+						MemDev.BitsPerPixel,
+						MemDev.pData,
+						nullptr });
+				});
+			}
 			else
-				_Paint1();
+				_Paint1(ctx);
 			Ret = true;    /* Something has been done */
 		}
 		/* We purposly clear the invalid flag after painting so we can still query the invalid rectangle while painting */
@@ -508,19 +509,17 @@ public:
 private:
 	static WObj *pwDraw;
 public:
-	static bool DrawOnce() {
+	static bool DrawOnce(GUI_CONTEXT &ctx) {
 		if (!IsActive || !NumInvalidWindows)
 			return false;
-		GUI_CONTEXT ContextOld;
-		GUI_SaveContext(&ContextOld);
+		GUI_CONTEXT ContextOld = ctx;
 		if (!pwDraw) pwDraw = pWinFirst;
 		for (; pwDraw; pwDraw = pwDraw->pNextLin)
-			if (pwDraw->_Paint())
+			if (pwDraw->_Paint(ctx))
 				break;
-		GUI_RestoreContext(&ContextOld);
+		ctx = ContextOld;
 		return true;
 	}
-
 #pragma endregion
 
 #pragma region CriticalHandles
@@ -1147,7 +1146,6 @@ public:
 			* b) PID is moved out
 			*/
 			if (CHWinLast.pWin != CHWin.pWin && CHWinLast.pWin) {
-				GUI_DEBUG_LOG("\nSending WM_TOUCH to LastWindow %d (out of area)", CHWinLast.pWin);
 				PID_STATE *pState = StateNew.Pressed ? nullptr : &WM_PID__StateLast;
 				CHWinLast.pWin->_SendTouchMessage(WM_TOUCH, pState);
 				CHWinLast.pWin = nullptr;
@@ -1186,7 +1184,7 @@ public:
 			return true; /* We have done something ... */
 		if (GUI_PollKeyMsg())
 			return true; /* We have done something ... */
-		if (DrawOnce())
+		if (DrawOnce(GUI))
 			return true; /* We have done something ... */
 		return false; /* There was nothing to do ... */
 	}

@@ -8,7 +8,7 @@ struct LCDDEV {
 	BPP_MODE BitsPerPixel;
 	PCLOGPALETTE pPal = nullptr;
 
-	LCDDEV(BPP_MODE BitsPerPixel)
+	LCDDEV(BPP_MODE BitsPerPixel = BPP_DEFAULT)
 		: BitsPerPixel(BitsPerPixel) {}
 	virtual ~LCDDEV() {}
 

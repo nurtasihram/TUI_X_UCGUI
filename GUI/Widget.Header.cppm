@@ -1,8 +1,6 @@
-﻿module;
+﻿export module TUX.Widget.Header;
 
-#include "GUI.h"
-
-export module TUX.Widget.Header;
+#include "GUIConf.h"
 
 import TUX.Widget;
 

@@ -1,9 +1,6 @@
-module;
-
-#include "GUI.h"
-
 export module TUX.Widget;
 
+export import TUX;
 export import TUX.Window;
 export import TUX.WindowTypes;
 

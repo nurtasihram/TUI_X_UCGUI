@@ -1,9 +1,6 @@
-﻿module;
+﻿export module TUX.Widget.Menu;
 
-#include <string.h>
-#include "GUI.h"
-
-export module TUX.Widget.Menu;
+#include "GUIConf.h"
 
 import TUX.Widget;
 
@@ -27,20 +24,15 @@ constexpr uint16_t
 	MENU_IF_DISABLED           = 1 << 0,
 	MENU_IF_SEPARATOR          = 1 << 1;
 
-constexpr uint16_t
-	MENU_ON_ITEMSELECT        = 0,   /* Send to owner when selecting a menu item */
-	MENU_ON_INITMENU          = 1,   /* Send to owner when for the first time selecting a submenu */
-	MENU_ON_INITSUBMENU       = 2,   /* Send to owner when selecting a submenu */
-	MENU_ON_OPEN              = 3,   /* Internal message of menu widget (send to submenus) */
-	MENU_ON_CLOSE             = 4,   /* Internal message of menu widget (send to submenus) */
-	MENU_IS_MENU              = 5;   /* Internal message of menu widget. Owner must call   */
-
-enum MENU_BI { 
-	 MENU_BI_LEFT = 0,
-	 MENU_BI_RIGHT,
-	 MENU_BI_TOP,
-	 MENU_BI_BOTTOM
+enum MENU_MSG : uint16_t {
+	MENU_ON_INITMENU = 0, /* Send to owner when for the first time selecting a submenu */
+	MENU_ON_ITEMSELECT  , /* Send to owner when selecting a menu item */
+	MENU_ON_INITSUBMENU , /* Send to owner when selecting a submenu */
+	MENU_ON_OPEN        , /* Internal message of menu widget (send to submenus) */
+	MENU_ON_CLOSE       , /* Internal message of menu widget (send to submenus) */
+	MENU_IS_MENU          /* Internal message of menu widget. Owner must call   */
 };
+
 enum MENU_CI {
 	 MENU_CI_ENABLED = 0,
 	 MENU_CI_SELECTED,
@@ -64,21 +56,15 @@ public:
 public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
-		RGBC aTextColor[5]{
-			/* enabled , not selected */ RGB_BLACK,        
-			/* enabled ,     selected */ RGB_WHITE,        
-			/* disabled, not selected */ RGBC::Gray(0x7C), 
-			/* disabled,     selected */ RGB_LIGHTGRAY,    
-			/* active submenu         */ RGB_WHITE         
+		BRUSH aBrush[5]{
+			/* Index                  | Background      | Text              */
+			/* enabled  unselected */ { RGB_LIGHTGRAY   , RGB_BLACK         },
+			/* enabled    selected */ { RGBC::Blue(0x98), RGB_WHITE         },
+			/* disabled unselected */ { RGB_LIGHTGRAY   , RGBC::Gray(0x7C)  },
+			/* disabled   selected */ { RGBC::Blue(0x98), RGB_LIGHTGRAY     },
+			/* active submenu      */ { RGBC::Gray(0x7C), RGB_WHITE         }
 		};
-		RGBC aBkColor[5]{
-			RGB_LIGHTGRAY,
-			RGBC::Blue(0x98),
-			RGB_LIGHTGRAY,
-			RGBC::Blue(0x98),
-			RGBC::Gray(0x7C)
-		};
-		uint8_t aBorder[4]{ 4, 4, 2, 2 }; /* Left, Right, Top, Bottom */
+		RECT border{ 4, 2, 4, 2 };
 	} static DefaultProps;
 	
 private:
@@ -98,11 +84,11 @@ private:
 	uint16_t Sel = -1;
 
 	struct MsgPack {
-		uint32_t MsgType : 16;
-		uint32_t ItemId : 16;
+		MENU_MSG MsgType;
+		uint16_t ItemId;
 	};
 
-	static WM_PARAM _SendMenuMessage(WObj *pSrcWin, WObj *pDestWin, uint16_t MsgType, uint16_t ItemId) {
+	static WM_PARAM _SendMenuMessage(WObj *pSrcWin, WObj *pDestWin, MENU_MSG MsgType, uint16_t ItemId) {
 		if (!pDestWin)
 			pDestWin = pSrcWin->Parent();
 		if (pDestWin) {
@@ -128,7 +114,7 @@ private:
 		auto &pItem = ItemArray[Index];
 		uint16_t ItemWidth = (States & MENU_CF_VERTICAL) || !(pItem.Flags & MENU_IF_SEPARATOR)
 			? pItem.TextWidth : 3;
-		return ItemWidth + Props.aBorder[MENU_BI_LEFT] + Props.aBorder[MENU_BI_RIGHT];
+		return ItemWidth + Props.border.x0 + Props.border.x1;
 	}
 	uint16_t _GetItemHeight(uint16_t Index) const {
 		if (Height && !(States & MENU_CF_VERTICAL))
@@ -136,7 +122,7 @@ private:
 		uint16_t ItemHeight = Props.pFont->YSize;
 		if ((States & MENU_CF_VERTICAL) && (ItemArray[Index].Flags & MENU_IF_SEPARATOR))
 			ItemHeight = 3;
-		return ItemHeight + Props.aBorder[MENU_BI_TOP] + Props.aBorder[MENU_BI_BOTTOM];
+		return ItemHeight + Props.border.y0 + Props.border.y1;
 	}
 
 	uint16_t _CalcMenuSizeX() const {
@@ -457,13 +443,10 @@ private:
 				!(States & MENU_CF_HIDE_DISABLED_SEL) && Selected ?
 					MENU_CI_DISABLED_SEL : MENU_CI_DISABLED :
 				Selected ? MENU_CI_SELECTED : MENU_CI_ENABLED;
-		GUI.BkColor(Props.aBkColor[ColorIndex]);
-		GUI.Color(Props.aTextColor[ColorIndex]);
+		GUI.Brush(Props.aBrush[ColorIndex]);
 	}
 	void _OnPaint() {
 		auto NumItems = GetNumItems();
-		auto BorderLeft = Props.aBorder[MENU_BI_LEFT];
-		auto BorderTop = Props.aBorder[MENU_BI_TOP];
 		auto FontHeight = Props.pFont->YSize;
 		auto EffectSize = _GetEffectSize();
 		auto FillRect = ClientRect() / EffectSize;
@@ -473,7 +456,7 @@ private:
 		if (States & MENU_CF_VERTICAL) {
 			auto xSize = _CalcMenuSizeX();
 			FillRect.x1 = xSize - EffectSize - 1;
-			TextRect.x0 = FillRect.x0 + BorderLeft;
+			TextRect.x0 = FillRect.x0 + Props.border.x0;
 			for (uint16_t i = 0; i < NumItems; i++) {
 					auto &pItem = ItemArray[i];
 					auto ItemHeight = _GetItemHeight(i);
@@ -482,12 +465,12 @@ private:
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
 						GUI.Clear(FillRect);
 						GUI.Color(RGBC::Gray(0x7C));
-						GUI.DrawHLine(FillRect.y0 + BorderTop + 1, FillRect.x0 + 2, FillRect.x1 - 2);
+						GUI.DrawHLine(FillRect.y0 + Props.border.y0 + 1, FillRect.x0 + 2, FillRect.x1 - 2);
 					}
 					else {
 						auto TextWidth = pItem.TextWidth;
 						TextRect.x1 = TextRect.x0 + TextWidth - 1;
-						TextRect.y0 = FillRect.y0 + BorderTop;
+						TextRect.y0 = FillRect.y0 + Props.border.y0;
 						TextRect.y1 = TextRect.y0 + FontHeight - 1;
 						WIDGET__FillStringInRect(pItem.pText, FillRect, TextRect);
 					}
@@ -497,7 +480,7 @@ private:
 		else {
 			auto ySize = _CalcMenuSizeY();
 			FillRect.y1 = ySize - EffectSize - 1;
-			TextRect.y0 = FillRect.y0 + BorderTop;
+			TextRect.y0 = FillRect.y0 + Props.border.y0;
 			TextRect.y1 = TextRect.y0 + FontHeight - 1;
 			for (uint16_t i = 0; i < NumItems; i++) {
 					auto &pItem = ItemArray[i];
@@ -507,11 +490,11 @@ private:
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
 						GUI.Clear(FillRect);
 						GUI.Color(RGBC::Gray(0x7C));
-						GUI.DrawVLine(FillRect.x0 + BorderLeft + 1, FillRect.y0 + 2, FillRect.y1 - 2);
+						GUI.DrawVLine(FillRect.x0 + Props.border.x0 + 1, FillRect.y0 + 2, FillRect.y1 - 2);
 					}
 					else {
 						auto TextWidth = pItem.TextWidth;
-						TextRect.x0 = FillRect.x0 + BorderLeft;
+						TextRect.x0 = FillRect.x0 + Props.border.x0;
 						TextRect.x1 = TextRect.x0 + TextWidth - 1;
 						WIDGET__FillStringInRect(pItem.pText, FillRect, TextRect);
 					}
@@ -521,7 +504,7 @@ private:
 
 		if (Width || Height) {
 			auto r = ClientRect() / EffectSize;
-			GUI.BkColor(Props.aBkColor[MENU_CI_ENABLED]);
+			GUI.BkColor(Props.aBrush[MENU_CI_ENABLED].BkColor);
 			GUI.Clear({ FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1 });
 			GUI.Clear({ EffectSize, FillRect.y1 + 1, r.x1, r.y1 });
 		}
@@ -649,20 +632,16 @@ public:
 		_RecalcTextWidthOfItems();
 		_ResizeMenu();
 	}
-	void BkColor(MENU_CI ColorIndex, RGBC Color) {
-		if (ColorIndex >= GUI_COUNTOF(Props.aBkColor))
+	void Brush(MENU_CI ColorIndex, BRUSH brush) {
+		if (Props.aBrush[ColorIndex] == brush)
 			return;
-		if (Color == Props.aBkColor[ColorIndex])
-			return;
-		Props.aBkColor[ColorIndex] = Color;
+		Props.aBrush[ColorIndex] = brush;
 		Invalidate();
 	}
-	void SetBorderSize(unsigned BorderIndex, uint8_t BorderSize) {
-		if (BorderIndex >= GUI_COUNTOF(Props.aBorder))
+	void SetBorder(RECT border) {
+		if (Props.border == border)
 			return;
-		if (BorderSize == Props.aBorder[BorderIndex])
-			return;
-		Props.aBorder[BorderIndex] = BorderSize;
+		Props.border = border;
 		_ResizeMenu();
 	}
 #pragma endregion

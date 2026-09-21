@@ -1,8 +1,6 @@
-module;
-
-#include "GUI.h"
-
 export module TUX.Widget.Button;
+
+#include "GUIConf.h"
 
 import TUX.Widget;
 
@@ -153,7 +151,6 @@ private:
 				pObj->_OnPaint();
 				return 0;
 			case WM_DELETE:
-				GUI_DEBUG_LOG("Button: _Callback(WM_DELETE)\n");
 				pObj->~Button();
 				return 0;
 			case WM_KEY:

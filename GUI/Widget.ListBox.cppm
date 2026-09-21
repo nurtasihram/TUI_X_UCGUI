@@ -1,8 +1,6 @@
-﻿module;
+﻿export module TUX.Widget.ListBox;
 
-#include "GUI.h"
-
-export module TUX.Widget.ListBox;
+#include "GUIConf.h"
 
 import TUX.Widget;
 import TUX.Widget.ScrollBar;
@@ -36,17 +34,12 @@ class ListBox : public Widget {
 public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
-		RGBC aBkColor[4]{
-			/* Unselect */			RGB_WHITE,
-			/* Selected */			RGB_GRAY,
-			/* Selected focussed */	RGB_DARKBLUE,
-			/* Disabled */			RGBC::Gray(0xC0)
-		};
-		RGBC aTextColor[4]{
-			/* Unselect */			RGB_BLACK,
-			/* Selected */			RGB_WHITE,
-			/* Selected focussed */	RGB_WHITE,
-			/* Disabled */			RGB_GRAY
+		BRUSH aBrush[4]{
+			/* Index                | Background      | Text      */
+			/* Unselect          */ { RGB_WHITE       , RGB_BLACK },
+			/* Selected          */ { RGB_GRAY        , RGB_WHITE },
+			/* Selected focussed */	{ RGB_DARKBLUE    , RGB_WHITE },
+			/* Disabled          */ { RGBC::Gray(0xC0), RGB_GRAY  }
 		};
 		uint8_t ScrollStepH{ 10 };
 	} static DefaultProps;
@@ -81,9 +74,6 @@ private:
 			return pfDrawItem(this, Cmd, ItemIndex, Pos);
 		return OwnerDraw(this, Cmd, ItemIndex, Pos);
 	}
-	uint16_t _GetNumItems() {
-		return ItemArray.NumItems();
-	}
 	int _GetYSize() {
 		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
@@ -112,76 +102,60 @@ private:
 		return ySize;
 	}
 	int _GetContentsSizeX() {
-		int i, NumItems, SizeX;
 		int Result = 0;
-		NumItems = _GetNumItems();
-		for (i = 0; i < NumItems; i++) {
-			SizeX = _GetItemSizeX(i);
-			if (Result < SizeX) {
+		auto NumItems = GetNumItems();
+		for (auto i = 0; i < NumItems; i++) {
+			auto SizeX = _GetItemSizeX(i);
+			if (Result < SizeX)
 				Result = SizeX;
-			}
 		}
 		return Result;
 	}
 	int _GetItemPosY(uint16_t Index) {
-		if (Index < _GetNumItems()) {
-			if ((int)Index >= ScrollStateV.v) {
+		if (Index < GetNumItems()) {
+			if (Index >= ScrollStateV.v) {
 				uint16_t i;
 				int PosY = 0;
-				for (i = ScrollStateV.v; i < Index; i++) {
+				for (i = ScrollStateV.v; i < Index; i++)
 					PosY += _GetItemSizeY(i);
-				}
 				return PosY;
 			}
 		}
 		return -1;
 	}
-	int _IsPartiallyVis() {
-		int Index;
-		Index = this->Sel;
-		if (Index < (int)_GetNumItems()) {
-			if (Index >= ScrollStateV.v) {
-				int y;
-				y = _GetItemPosY(Index);
-				y += _GetItemSizeY(Index);
-				if (y > _GetYSize()) {
-					return 1;
-				}
-			}
-		}
-		return 0;
+	bool _IsPartiallyVis() {
+		if (Sel < GetNumItems())
+			if (Sel >= ScrollStateV.v)
+				if (_GetItemPosY(Sel) + _GetItemSizeY(Sel) > _GetYSize())
+					return true;
+		return false;
 	}
 	uint16_t _GetNumVisItems() {
-		int NumItems, r = 1;
-		NumItems = _GetNumItems();
+		int r = 1;
+		auto NumItems = GetNumItems();
 		if (NumItems > 1) {
 			int i, ySize, DistY = 0;
 			ySize = _GetYSize();
 			for (i = NumItems - 1; i >= 0; i--) {
 				DistY += _GetItemSizeY(i);
-				if (DistY > ySize) {
+				if (DistY > ySize)
 					break;
-				}
 			}
 			r = NumItems - i - 1;
-			if (r < 1) {
+			if (r < 1)
 				return 1;
-			}
 		}
 		return r;
 	}
 	int _UpdateScrollPos() {
-		int PrevScrollStateV;
-		PrevScrollStateV = ScrollStateV.v;
-		if (this->Sel >= 0) {
+		auto PrevScrollStateV = ScrollStateV.v;
+		if (Sel >= 0) {
 			/* Check upper limit */
-			if (_IsPartiallyVis()) {
-				ScrollStateV.v = this->Sel - (ScrollStateV.PageSize - 1);
-			}
+			if (_IsPartiallyVis())
+				ScrollStateV.v = Sel - ScrollStateV.PageSize + 1;
 			/* Check lower limit */
-			if (this->Sel < ScrollStateV.v) {
-				ScrollStateV.v = this->Sel;
-			}
+			if (ScrollStateV.v > Sel)
+				ScrollStateV.v = Sel;
 		}
 		ScrollStateV.Bounds();
 		ScrollStateH.Bounds();
@@ -190,8 +164,7 @@ private:
 	}
 	void _InvalidateItemSize(uint16_t Index) {
 		auto &pItem = ItemArray[Index];
-		pItem.xSize = 0;
-		pItem.ySize = 0;
+		pItem.xSize = pItem.ySize = 0;
 	}
 	void _InvalidateInsideArea() {
 		RECT Rect;
@@ -199,44 +172,37 @@ private:
 		Invalidate(&Rect);
 	}
 	void _InvalidateItem(int Sel) {
-		if (Sel >= 0) {
-			int ItemPosY;
-			ItemPosY = _GetItemPosY(Sel);
-			if (ItemPosY >= 0) {
-				RECT Rect;
-				int ItemDistY;
-				ItemDistY = _GetItemSizeY(Sel);
-				WM_GetInsideRectExScrollbar(this, &Rect);
-				Rect.y0 += ItemPosY;
-				Rect.y1 = Rect.y0 + ItemDistY - 1;
-				Invalidate(&Rect);
-			}
-		}
+		if (Sel < 0)
+			return;
+		auto ItemPosY = _GetItemPosY(Sel);
+		if (ItemPosY < 0)
+			return;
+		RECT Rect;
+		WM_GetInsideRectExScrollbar(this, &Rect);
+		Rect.y0 += ItemPosY;
+		Rect.y1 = Rect.y0 + _GetItemSizeY(Sel) - 1;
+		Invalidate(&Rect);
 	}
 	void _InvalidateItemAndBelow(int Sel) {
-		if (Sel >= 0) {
-			int ItemPosY;
-			ItemPosY = _GetItemPosY(Sel);
-			if (ItemPosY >= 0) {
-				RECT Rect;
-				WM_GetInsideRectExScrollbar(this, &Rect);
-				Rect.y0 += ItemPosY;
-				Invalidate(&Rect);
-			}
-		}
+		if (Sel < 0)
+			return;
+		auto ItemPosY = _GetItemPosY(Sel);
+		if (ItemPosY < 0)
+			return;
+		RECT Rect;
+		WM_GetInsideRectExScrollbar(this, &Rect);
+		Rect.y0 += ItemPosY;
+		Invalidate(&Rect);
 	}
 	void _SetScrollbarWidth() {
-		int Width = this->ScrollbarWidth;
-		//	if (Width == 0)
-		//		Width = SCROLLBAR_GetDefaultWidth();	////////////// FIX //////////////
 		if (auto pScroll = (ScrollBar *)GetScrollbarH())
-			pScroll->SetWidth(Width);
+			pScroll->SetWidth(ScrollbarWidth);
 		if (auto pScroll = (ScrollBar *)GetScrollbarV())
-			pScroll->SetWidth(Width);
+			pScroll->SetWidth(ScrollbarWidth);
 	}
 	int _CalcScrollParas() {
 		/* Calc vertical scroll parameters */
-		ScrollStateV.NumItems = _GetNumItems();
+		ScrollStateV.NumItems = GetNumItems();
 		ScrollStateV.PageSize = _GetNumVisItems();
 		/* Calc horizontal scroll parameters */
 		RECT Rect;
@@ -246,43 +212,32 @@ private:
 		return _UpdateScrollPos();
 	}
 	void _ManageAutoScroll() {
-		char IsRequired;
-		if (States & LISTBOX_CF_AUTOSCROLLBAR_V) {
-			IsRequired = (_GetNumVisItems() < _GetNumItems());
-			WM_SetScrollbarV(this, IsRequired);
-		}
+		if (States & LISTBOX_CF_AUTOSCROLLBAR_V)
+			WM_SetScrollbarV(this, _GetNumVisItems() < GetNumItems());
 		if (States & LISTBOX_CF_AUTOSCROLLBAR_H) {
 			RECT Rect;
-			int xSize, xSizeContents;
-			xSizeContents = _GetContentsSizeX();
 			WM_GetInsideRectExScrollbar(this, &Rect);
-			xSize = Rect.x1 - Rect.x0 + 1;
-			IsRequired = (xSizeContents > xSize);
-			WM_SetScrollbarH(this, IsRequired);
+			WM_SetScrollbarH(this, _GetContentsSizeX() > Rect.XSize());
 		}
-		if (this->ScrollbarWidth) {
+		if (ScrollbarWidth)
 			_SetScrollbarWidth();
-		}
 	}
 	int _Tolower(int Key) {
-		if ((Key >= 0x41) && (Key <= 0x5a)) {
+		if (Key >= 0x41 && Key <= 0x5a)
 			Key += 0x20;
-		}
 		return Key;
 	}
-	int _IsAlphaNum(int Key) {
+	bool _IsAlphaNum(int Key) {
 		Key = _Tolower(Key);
-		if (Key >= 'a' && Key <= 'z') {
-			return 1;
-		}
-		if (Key >= '0' && Key <= '9') {
-			return 1;
-		}
-		return 0;
+		if (Key >= 'a' && Key <= 'z')
+			return true;
+		if (Key >= '0' && Key <= '9')
+			return true;
+		return false;
 	}
 	void _SelectByKey(int Key) {
-		 Key = _Tolower(Key);
-		for (uint16_t i = 0; i < _GetNumItems(); i++) {
+		Key = _Tolower(Key);
+		for (uint16_t i = 0; i < GetNumItems(); i++) {
 			auto s = ItemArray[i].pText;
 			if (_Tolower(*s) == Key) {
 				SetSel(i);
@@ -291,40 +246,35 @@ private:
 		}
 	}
 	void _FreeAttached() {
-		for (unsigned _i = 0, _n = ItemArray.NumItems(); _i < _n; _i++) {
+		for (unsigned _i = 0, _n = ItemArray.NumItems(); _i < _n; _i++)
 			GUI_MEM_FreePtr((void **)&ItemArray[_i].pText);
-		}
 		ItemArray.Delete();
 	}
 	void _OnPaint() {
-		int ItemDistY;
 		GUI.Font(Props.pFont);
 		/* Calculate clipping rectangle */
 		auto rClip = GetInvalidRect() - LeftTop();
 		RECT RectInside;
 		WM_GetInsideRectExScrollbar(this, &RectInside);
 		rClip &= RectInside;
-		RECT RectItem;
-		RectItem.x0 = rClip.x0;
-		RectItem.x1 = rClip.x1;
+		RECT rItem{ rClip.x0, 0, rClip.x1, 0 };
 		/* Fill item info structure */
 		POINT ItemPos{
 			RectInside.x0 - ScrollStateH.v,
 			RectInside.y0
 		};
 		/* Do the drawing */
-		for (int i = ScrollStateV.v, NumItems = _GetNumItems(); i < NumItems; i++) {
-			RectItem.y0 = ItemPos.y;
+		for (int i = ScrollStateV.v, NumItems = GetNumItems(); i < NumItems; i++) {
+			rItem.y0 = ItemPos.y;
 			/* Break when all other rows are outside the drawing area */
-			if (RectItem.y0 > rClip.y1) {
+			if (rItem.y0 > rClip.y1)
 				break;
-			}
-			ItemDistY = _GetItemSizeY(i);
-			RectItem.y1 = RectItem.y0 + ItemDistY - 1;
+			auto ItemDistY = _GetItemSizeY(i);
+			rItem.y1 = rItem.y0 + ItemDistY - 1;
 			/* Make sure that we draw only when row is in drawing area */
-			if (RectItem.y1 >= rClip.y0) {
+			if (rItem.y1 >= rClip.y0) {
 				/* Set user clip rect */
-				UserClip(&RectItem);
+				UserClip(&rItem);
 				/* Draw item */
 				_CallOwnerDraw(WIDGET_ITEM_DRAW, i, POINT{ ItemPos.x, ItemPos.y });
 			}
@@ -332,10 +282,10 @@ private:
 		}
 		UserClip(nullptr);
 		/* Calculate & clear 'data free' area */
-		RectItem.y0 = ItemPos.y;
-		RectItem.y1 = RectInside.y1;
-		GUI.BkColor(Props.aBkColor[0]);
-		GUI.Clear(RectItem);
+		rItem.y0 = ItemPos.y;
+		rItem.y1 = RectInside.y1;
+		GUI.BkColor(Props.aBrush[0].BkColor);
+		GUI.Clear(rItem);
 		/* Draw the 3D effect (if configured) */
 		DrawDown();
 	}
@@ -349,21 +299,17 @@ private:
 			}
 		}
 	}
-	int _GetItemFromPos(int x, int y) {
-		int Sel = -1;
+	int _GetItemFromPos(POINT Pos) {
 		RECT Rect;
 		WM_GetInsideRectExScrollbar(this, &Rect);
-		if ((x >= Rect.x0) && (y >= Rect.y0)) {
-			if ((x <= Rect.x1) && (y <= Rect.y1)) {
-				int NumItems = _GetNumItems();
-				int i, y0 = Rect.y0;
-				for (i = ScrollStateV.v; i < NumItems; i++) {
-					if (y >= y0) {
-						Sel = i;
-					}
-					y0 += _GetItemSizeY(i);
-				}
-			}
+		if (!(Rect <= Pos))
+			return -1;
+		auto Sel = -1;
+		auto y0 = Rect.y0;
+		for (int i = ScrollStateV.v, NumItems = GetNumItems(); i < NumItems; i++) {
+			if (Pos.y >= y0)
+				Sel = i;
+			y0 += _GetItemSizeY(i);
 		}
 		return Sel;
 	}
@@ -379,7 +325,7 @@ private:
 	void _OnMouseOver(const PID_STATE *pState) {
 		if (this->pOwner) {
 			if (pState) {  /* Something happened in our area (pressed or released) */
-				int Sel = _GetItemFromPos(pState->x, pState->y);
+				int Sel = _GetItemFromPos(*pState);
 				if (Sel >= 0)
 					if (Sel < (int)(ScrollStateV.v + _GetNumVisItems()))
 						SetSel(Sel);
@@ -388,30 +334,24 @@ private:
 	}
 #endif
 	bool _OnKey(const KEY_STATE *pInfo) {
-		if (pInfo->PressedCnt > 0) {
-			int Key = pInfo->Key;
-			if (AddKey(Key))
+		if (pInfo->PressedCnt > 0)
+			if (AddKey(pInfo->Key))
 				return true; /* Key has been consumed */
-		}
 		return false; /* Key has not been consumed */
 	}
 	void _MoveSel(int Dir) {
 		int NewSel = -1;
-		auto Index = GetSel();
-		auto NumItems = _GetNumItems();
+		auto Sel = GetSel();
+		auto NumItems = GetNumItems();
 		do {
-			Index += Dir;
-			if ((Index < 0) || (Index >= NumItems)) {
+			Sel += Dir;
+			if (Sel < 0 || Sel >= NumItems)
 				break;
-			}
-			auto &pItem = ItemArray[Index];
-			if (!(pItem.Status & LISTBOX_ITEM_DISABLED)) {
-				NewSel = Index;
-			}
+			if (!(ItemArray[Sel].Status & LISTBOX_ITEM_DISABLED))
+				NewSel = Sel;
 		} while (NewSel < 0);
-		if (NewSel >= 0) {
+		if (NewSel >= 0)
 			SetSel(NewSel);
-		}
 	}
 	int _AddKey(int Key) {
 		switch (Key) {
@@ -481,7 +421,7 @@ private:
 			case WM_PID_STATE_CHANGED: {
 				auto pInfo = (const PID_CHANGED_INFO *)Data;
 				if (pInfo->Pressed) {
-					auto Sel = pObj->_GetItemFromPos(pInfo->x, pInfo->y);
+					auto Sel = pObj->_GetItemFromPos(*pInfo);
 					if (Sel >= 0) {
 						pObj->_ToggleMultiSel(Sel);
 						pObj->SetSel(Sel);
@@ -539,7 +479,6 @@ public:
 public:
 
 #pragma region Properties
-
 	UCFONT Font() const { return *Props.pFont; }
 	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
@@ -548,23 +487,15 @@ public:
 		InvalidateItem(LISTBOX_ALL_ITEMS);
 	}
 
-	void TextColor(LISTBOX_CI Index, RGBC Color) {
-		if (Index >= GUI_COUNTOF(Props.aBkColor))
+	void Brush(LISTBOX_CI Index, BRUSH aBrush) {
+		if (Props.aBrush[Index] == aBrush)
 			return;
-		Props.aTextColor[Index] = Color;
+		Props.aBrush[Index] = aBrush;
 		_InvalidateInsideArea();
 	}
-
-	void BkColor(LISTBOX_CI Index, RGBC color) {
-		if (Index >= GUI_COUNTOF(Props.aBkColor))
-			return;
-		Props.aBkColor[Index] = color;
-		_InvalidateInsideArea();
-	}
-
 #pragma endregion
 
-	int UpdateScrollers() {
+	auto UpdateScrollers() {
 		_ManageAutoScroll();
 		return _CalcScrollParas();
 	}
@@ -582,8 +513,7 @@ private:
 			ItemIndex != Sel ? LISTBOX_CI_UNSEL :
 			States & WIDGET_STATE_FOCUS || pOwner ? LISTBOX_CI_SEL_FOCUSSED : LISTBOX_CI_SEL_UNFOCUS;
 		/* Display item */
-		GUI.BkColor(Props.aBkColor[ColorIndex]);
-		GUI.Color(Props.aTextColor[ColorIndex]);
+		GUI.Brush(Props.aBrush[ColorIndex]);
 		auto s = ItemArray[ItemIndex].pText;
 		GUI.Clear();
 		GUI_DispStringAt(s, Pos.x + 1, Pos.y);
@@ -593,7 +523,7 @@ private:
 			rFocus.LeftTop(Pos);
 			rFocus.x1 = r.x1;
 			rFocus.y1 = Pos.y + Props.pFont->TextBound(s).x - 1;
-			GUI.Color(RGB_WHITE - Props.aBkColor[ColorIndex]);
+			GUI.Color(RGB_WHITE - Props.aBrush[ColorIndex].BkColor);
 			GUI_DrawFocusRect(rFocus, 0);
 		}
 	}
@@ -619,7 +549,7 @@ public:
 
 	void InvalidateItem(int Index) {
 		int NumItems;
-		NumItems = _GetNumItems();
+		NumItems = GetNumItems();
 		if (Index < NumItems) {
 			if (Index < 0) {
 				int i;
@@ -645,7 +575,7 @@ public:
 	void AddString(const char *s) {
 		if (s) {
 			Item item = { 0, 0 };
-			if (this->ItemArray.AddItem(&item) == 0) {
+			if (ItemArray.AddItem(&item) == 0) {
 				uint16_t ItemIndex = ItemArray.NumItems() - 1;
 				GUI__SetText(ItemArray[ItemIndex].pText, s);
 				_InvalidateItemSize(ItemIndex);
@@ -665,9 +595,9 @@ public:
 		InvalidateItem(LISTBOX_ALL_ITEMS);
 	}
 
-	auto GetSel() { return Sel; }
+	auto GetSel() const { return Sel; }
 	void SetSel(int NewSel) {
-		auto MaxSel = _GetNumItems();
+		auto MaxSel = GetNumItems();
 		MaxSel = MaxSel ? MaxSel - 1 : 0;
 		if (NewSel > MaxSel)
 			NewSel = MaxSel;
@@ -690,109 +620,8 @@ public:
 	void IncSel() { _MoveSel(1); }
 	void DecSel() { _MoveSel(-1); }
 
-	void DeleteItem(uint16_t Index) {
-		int Sel;
-		uint16_t NumItems;
-		NumItems = _GetNumItems();
-		if (Index < NumItems) {
-			GUI_MEM_FreePtr((void **)&this->ItemArray[Index].pText);
-			this->ItemArray.DeleteItem(Index);
-			/*
-			 * Update selection
-			 */
-			Sel = this->Sel;
-			if (Sel >= 0) {                     /* Valid selction ? */
-				if ((int)Index == Sel) {          /* Deleting selected item ? */
-					this->Sel = -1;                 /* Invalidate selection */
-				}
-				else if ((int)Index < Sel) {    /* Deleting item above selection ? */
-					this->Sel--;
-				}
-			}
-			if (UpdateScrollers()) {
-				_InvalidateInsideArea();
-			}
-			else {
-				_InvalidateItemAndBelow(Index);
-			}
-		}
-	}
-
-	void GetItemText(uint16_t Index, char *pBuffer, int MaxSize) {
-		uint16_t NumItems;
-		NumItems = _GetNumItems();
-		if (Index < NumItems) {
-			const char *pString;
-			int CopyLen;
-			pString = ItemArray[Index].pText;
-			CopyLen = GUI__strlen(pString);
-			if (CopyLen > (MaxSize - 1)) {
-				CopyLen = MaxSize - 1;
-			}
-			GUI__memcpy(pBuffer, pString, CopyLen);
-			pBuffer[CopyLen] = 0;
-		}
-	}
-	uint16_t GetNumItems() {
-		return _GetNumItems();
-	}
-	void InsertString(const char *s, uint16_t Index) {
-		if (s) {
-			uint16_t NumItems;
-
-			NumItems = _GetNumItems();
-			if (Index < NumItems) {
-				if (this->ItemArray.InsertItem(Index)) {
-					auto &pItem = this->ItemArray[Index];
-					pItem.Status = 0;
-					GUI__SetText(pItem.pText, s);
-					InvalidateItem(Index);
-				}
-			}
-			else {
-				AddString(s);
-			}
-		}
-	}
-	int GetItemDisabled(uint16_t Index) {
-		int Ret = 0;
-		uint16_t NumItems;
-		NumItems = _GetNumItems();
-		if (Index < NumItems) {
-			if (ItemArray[Index].Status & LISTBOX_ITEM_DISABLED) {
-				Ret = 1;
-			}
-		}
-
-		return Ret;
-	}
-	void SetItemDisabled(uint16_t Index, int OnOff) {
-		uint16_t NumItems;
-		NumItems = _GetNumItems();
-		if (Index < NumItems) {
-			auto &pItem = this->ItemArray[Index];
-			if (OnOff) {
-				if (!(pItem.Status & LISTBOX_ITEM_DISABLED)) {
-					pItem.Status |= LISTBOX_ITEM_DISABLED;
-					_InvalidateItem(Index);
-				}
-			}
-			else {
-				if (pItem.Status & LISTBOX_ITEM_DISABLED) {
-					pItem.Status &= ~LISTBOX_ITEM_DISABLED;
-					_InvalidateItem(Index);
-				}
-			}
-		}
-	}
-
-	void SetItemSpacing(uint16_t Value) {
-		this->ItemSpacing = Value;
-		InvalidateItem(LISTBOX_ALL_ITEMS);
-	}
-	uint16_t GetItemSpacing() { return ItemSpacing; }
-
-	void SetMulti(int Mode) {
+	bool GetMulti() const { return States & LISTBOX_CF_MULTISEL; }
+	void SetMulti(bool Mode) {
 		if (Mode) {
 			if (!(States & LISTBOX_CF_MULTISEL)) {
 				States |= LISTBOX_CF_MULTISEL;
@@ -806,84 +635,80 @@ public:
 			}
 		}
 	}
-	bool GetMulti() const { return States & LISTBOX_CF_MULTISEL; }
 
-	int GetItemSel(uint16_t Index) {
-		int Ret = 0;
+	auto GetNumItems() const { return ItemArray.NumItems(); }
+	void DeleteItem(uint16_t Index) {
+		auto NumItems = GetNumItems();
+		if (Index < NumItems) {
+			GUI_MEM_FreePtr((void **)&ItemArray[Index].pText);
+			ItemArray.DeleteItem(Index);
+			/*
+			 * Update selection
+			 */
+			if (Sel >= 0) {              /* Valid selction ? */
+				if (Index == Sel)        /* Deleting selected item ? */
+					Sel = -1;            /* Invalidate selection */
+				else if (Index < Sel)    /* Deleting item above selection ? */
+					Sel--;
+			}
+			if (UpdateScrollers())
+				_InvalidateInsideArea();
+			else
+				_InvalidateItemAndBelow(Index);
+		}
+	}
+	void InsertString(uint16_t Index, const char *s) {
+		if (!s) return;
+		auto NumItems = GetNumItems();
+		if (Index < NumItems) {
+			if (ItemArray.InsertItem(Index)) {
+				auto &pItem = ItemArray[Index];
+				pItem.Status = 0;
+				GUI__SetText(pItem.pText, s);
+				InvalidateItem(Index);
+			}
+		}
+		else
+			AddString(s);
+	}
+	int GetItemDisabled(uint16_t Index) const {
+		if (Index >= GetNumItems()) 
+			return true;
+		return ItemArray[Index].Status & LISTBOX_ITEM_DISABLED;
+	}
+	void SetItemDisabled(uint16_t Index, bool OnOff) {
+		if (Index >= GetNumItems())
+			return;
+		auto &pItem = ItemArray[Index];
+		if (OnOff) {
+			if (!(pItem.Status & LISTBOX_ITEM_DISABLED)) {
+				pItem.Status |= LISTBOX_ITEM_DISABLED;
+				_InvalidateItem(Index);
+			}
+		}
+		else if (pItem.Status & LISTBOX_ITEM_DISABLED) {
+			pItem.Status &= ~LISTBOX_ITEM_DISABLED;
+			_InvalidateItem(Index);
+		}
+	}
+
+	void GetItemText(uint16_t Index, char *pBuffer, int MaxSize) {
 		uint16_t NumItems;
-		NumItems = _GetNumItems();
-		if ((Index < NumItems) && (States & LISTBOX_CF_MULTISEL)) {
-			auto &pItem = this->ItemArray[Index];
-			if (pItem.Status & LISTBOX_ITEM_SELECTED) {
-				Ret = 1;
+		NumItems = GetNumItems();
+		if (Index < NumItems) {
+			const char *pString;
+			int CopyLen;
+			pString = ItemArray[Index].pText;
+			CopyLen = GUI__strlen(pString);
+			if (CopyLen > (MaxSize - 1)) {
+				CopyLen = MaxSize - 1;
 			}
-		}
-		return Ret;
-	}
-	void SetItemSel(uint16_t Index, int OnOff) {
-		uint16_t NumItems;
-		NumItems = _GetNumItems();
-		if ((Index < NumItems) && (States & LISTBOX_CF_MULTISEL)) {
-			auto &pItem = this->ItemArray[Index];
-			if (OnOff) {
-				if (!(pItem.Status & LISTBOX_ITEM_SELECTED)) {
-					pItem.Status |= LISTBOX_ITEM_SELECTED;
-					_InvalidateItem(Index);
-				}
-			}
-			else {
-				if (pItem.Status & LISTBOX_ITEM_SELECTED) {
-					pItem.Status &= ~LISTBOX_ITEM_SELECTED;
-					_InvalidateItem(Index);
-				}
-			}
+			GUI__memcpy(pBuffer, pString, CopyLen);
+			pBuffer[CopyLen] = 0;
 		}
 	}
-	void SetScrollStepH(int Value) {
-		Props.ScrollStepH = Value;
-	}
-	int GetScrollStepH() { return Props.ScrollStepH; }
-	void SetAutoScrollH(int State) {
-		char Flags;
-
-		Flags = States & (~LISTBOX_CF_AUTOSCROLLBAR_H);
-		if (State) {
-			Flags |= LISTBOX_CF_AUTOSCROLLBAR_H;
-		}
-		if (States != Flags) {
-			States = Flags;
-			UpdateScrollers();
-		}
-	}
-	void SetAutoScrollV(int State) {
-		char Flags;
-
-		Flags = States & (~LISTBOX_CF_AUTOSCROLLBAR_V);
-		if (State) {
-			Flags |= LISTBOX_CF_AUTOSCROLLBAR_V;
-		}
-		if (States != Flags) {
-			States = Flags;
-			UpdateScrollers();
-		}
-	}
-	void SetOwner(WObj *pOwner) {
-		this->pOwner = pOwner;
-		_InvalidateInsideArea();
-	}
-	void SetOwnerDraw(WIDGET_DRAW_ITEM_FUNC *pfDrawItem) {
-		this->pfDrawItem = pfDrawItem;
-		InvalidateItem(LISTBOX_ALL_ITEMS);
-	}
-	void SetScrollbarWidth(uint16_t Width) {
-		if (Width != (uint16_t)this->ScrollbarWidth) {
-			this->ScrollbarWidth = Width;
-			_SetScrollbarWidth();
-			Invalidate();
-		}
-	}
-	void SetString(const char *s, uint16_t Index) {
-		if (Index < (uint16_t)_GetNumItems()) {
+	void SetString(uint16_t Index, const char *s) {
+		if (Index < GetNumItems()) {
 			if (GUI__SetText(ItemArray[Index].pText, s)) {
 				_InvalidateItemSize(Index);
 				UpdateScrollers();
@@ -892,6 +717,70 @@ public:
 		}
 	}
 
+	bool GetItemSel(uint16_t Index) {
+		if (Index >= GetNumItems() || !(States & LISTBOX_CF_MULTISEL))
+			return false;
+		return ItemArray[Index].Status & LISTBOX_ITEM_SELECTED;
+	}
+	void SetItemSel(uint16_t Index, bool OnOff) {
+		if (Index >= GetNumItems() || !(States & LISTBOX_CF_MULTISEL))
+			return;
+		auto &pItem = ItemArray[Index];
+		if (OnOff) {
+			if (!(pItem.Status & LISTBOX_ITEM_SELECTED)) {
+				pItem.Status |= LISTBOX_ITEM_SELECTED;
+				_InvalidateItem(Index);
+			}
+		}
+		else if (pItem.Status & LISTBOX_ITEM_SELECTED) {
+			pItem.Status &= ~LISTBOX_ITEM_SELECTED;
+			_InvalidateItem(Index);
+		}
+	}
+	void SetItemSpacing(uint16_t Value) {
+		this->ItemSpacing = Value;
+		InvalidateItem(LISTBOX_ALL_ITEMS);
+	}
+	auto GetItemSpacing() const { return ItemSpacing; }
+
+	auto GetScrollStepH() const { return Props.ScrollStepH; }
+	void SetScrollStepH(int Value) { Props.ScrollStepH = Value; }
+
+	void SetScrollbarWidth(uint16_t Width) {
+		if (ScrollbarWidth == Width)
+			return;
+		ScrollbarWidth = Width;
+		_SetScrollbarWidth();
+		Invalidate();
+	}
+
+	void SetAutoScrollH(bool State) {
+		auto Flags = States & (~LISTBOX_CF_AUTOSCROLLBAR_H);
+		if (State)
+			Flags |= LISTBOX_CF_AUTOSCROLLBAR_H;
+		if (States != Flags) {
+			States = Flags;
+			UpdateScrollers();
+		}
+	}
+	void SetAutoScrollV(bool State) {
+		auto Flags = States & (~LISTBOX_CF_AUTOSCROLLBAR_V);
+		if (State)
+			Flags |= LISTBOX_CF_AUTOSCROLLBAR_V;
+		if (States != Flags) {
+			States = Flags;
+			UpdateScrollers();
+		}
+	}
+
+	void SetOwner(WObj *pOwner) {
+		this->pOwner = pOwner;
+		_InvalidateInsideArea();
+	}
+	void SetOwnerDraw(WIDGET_DRAW_ITEM_FUNC *pfDrawItem) {
+		this->pfDrawItem = pfDrawItem;
+		InvalidateItem(LISTBOX_ALL_ITEMS);
+	}
 };
 
 ListBox::Properties ListBox::DefaultProps;

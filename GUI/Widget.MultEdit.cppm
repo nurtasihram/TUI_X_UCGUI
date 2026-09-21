@@ -1,12 +1,8 @@
-module;
-
-#include "GUI.h"
-
 export module TUX.Widget.MultEdit;
 
-import TUX.Widget;
+#include "GUIConf.h"
 
-#define NUM_DISP_MODES 2
+import TUX.Widget;
 
 constexpr uint16_t
 	INVALID_NUMCHARS = 1 << 0,
@@ -35,13 +31,10 @@ class MultEdit : public Widget {
 public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
-		RGBC aBkColor[NUM_DISP_MODES]{
-			/* Edit mode */		RGB_WHITE,
-			/* Read-only */		RGBC::Gray(0xC0)
-		};
-		RGBC aColor[NUM_DISP_MODES]{
-			/* Edit mode */		RGB_BLACK,
-			/* Read-only */		RGB_BLACK
+		BRUSH aBrush[2]{
+			/* Index        | Background      | Text      */
+			/* Edit mode */ { RGB_WHITE       , RGB_BLACK },
+			/* Read-only */ { RGBC::Gray(0xC0), RGB_BLACK }
 		};
 		uint8_t HBorder{ 1 };
 	} static DefaultProps;
@@ -525,13 +518,11 @@ private:
 		auto yOff = EffectSize - ScrollPosY * FontSizeY;
 
 		// Draw background
-		auto ColorIndex = States & MULTEDIT_CF_READONLY ? MULTEDIT_CI_READONLY : MULTEDIT_CI_EDITMODE;
-		GUI.BkColor(Props.aBkColor[ColorIndex]);
-		GUI.Color(Props.aColor[ColorIndex]);
+		GUI.Brush(Props.aBrush[States & MULTEDIT_CF_READONLY ? MULTEDIT_CI_READONLY : MULTEDIT_CI_EDITMODE]);
 		GUI.Clear();
 
 		// Setup clipping rectangle
-		RECT rClip = {
+		RECT rClip{
 			EffectSize + HBorder,
 			EffectSize,
 			SizeX() - EffectSize - HBorder - 1,
@@ -768,7 +759,6 @@ public:
 public:
 
 #pragma region Properties
-
 	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
@@ -779,22 +769,11 @@ public:
 		_InvalidateTextSizeX();
 	}
 
-	void BkColor(MULTEDIT_CI Index, RGBC color) {
-		if (Index >= GUI_COUNTOF(Props.aBkColor))
+	void Brush(MULTEDIT_CI Index, BRUSH brush) {
+		if (Props.aBrush[Index] == brush)
 			return;
-		if (Props.aBkColor[Index] == color)
-			return;
-		Props.aBkColor[Index] = color;
+		Props.aBrush[Index] = brush;
 		_InvalidateTextArea();
-	}
-
-	void TextColor(MULTEDIT_CI Index, RGBC color) {
-		if (Index >= GUI_COUNTOF(Props.aColor))
-			return;
-		if (Props.aColor[Index] == color)
-			return;
-		Props.aColor[Index] = color;
-		Invalidate();
 	}
 
 	void SetHBorder(uint8_t HBorder) {
@@ -803,7 +782,6 @@ public:
 		Props.HBorder = HBorder;
 		_Invalidate();
 	}
-	
 #pragma endregion
 
 	int  AddKey(uint16_t Key) {

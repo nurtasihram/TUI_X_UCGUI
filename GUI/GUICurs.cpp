@@ -1,4 +1,8 @@
-#include "GUI.h"
+#include "GUIConf.h"
+
+import TUX;
+import TUX.X;
+import TUX.Resources;
 
 CLOGPALETTE GUI_CursorPal{ RGB_INVALID, RGB_BLACK, RGB_WHITE };
 CLOGPALETTE GUI_CursorPalI{ RGB_INVALID, RGB_WHITE, RGB_BLACK };

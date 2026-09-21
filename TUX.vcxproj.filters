@@ -76,16 +76,13 @@
     <ClCompile Include="GUI\GUICurs.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\GUIDEV.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\LCD.cppm">
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="GUI\String.cppm">
       <Filter>GUI</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Widget.Widget.cppm">
+    <ClCompile Include="GUI\Widget.cppm">
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Window.cppm">
@@ -151,21 +148,9 @@
     <ClCompile Include="GUI_X\GUI_X.cc">
       <Filter>GUI_X</Filter>
     </ClCompile>
-    <ClCompile Include="GUI_X\GUI_X_LCD.cc">
-      <Filter>GUI_X</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI_X\GUI_X_MEM.cc">
-      <Filter>GUI_X</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUIConf.h" />
-    <ClInclude Include="GUI\GUI.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\GUIDebug.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
     <ClInclude Include="GUI_X\resource.h">
       <Filter>GUI_X\res</Filter>
     </ClInclude>

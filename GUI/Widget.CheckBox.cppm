@@ -1,8 +1,6 @@
-module;
-
-#include "GUI.h"
-
 export module TUX.Widget.CheckBox;
+
+#include "GUIConf.h"
 
 import TUX.Widget;
 
@@ -36,8 +34,7 @@ public:
 			/* Inactive */	RGBC::Gray(0x80),
 			/* Active */	RGB_WHITE
 		};
-		RGBC BkColor{ RGB_INVALID };
-		RGBC TextColor{ RGB_BLACK };
+		BRUSH brush{ RGB_INVALID, RGB_BLACK };
 		TEXTALIGN Align{ TEXTALIGN_LEFT | TEXTALIGN_VCENTER };
 		uint8_t Spacing{ 4 };
 	} static DefaultProps;
@@ -54,7 +51,7 @@ private:
 		auto EffectSize = this->EffectSize();
 		/* Clear inside ... Just in case      */
 		/* Fill with parents background color */
-		SetBkColorPrefer(Props.BkColor);
+		GUI.Brush(Props.brush);
 		GUI.Clear();
 		/* Get size from bitmap */
 		RECT RectBox;
@@ -73,7 +70,6 @@ private:
 		/* Draw the text */
 		auto RectText = ClientRect();
 		RectText.x0 += RectBox.x1 + 1 + Props.Spacing;
-		GUI.Color(Props.TextColor);
 		GUI.Font(Props.pFont);
 		GUI_DispStringInRect(text, RectText, Props.Align);
 		/* Draw focus rectangle */
@@ -150,7 +146,6 @@ private:
 					return 0;
 				break;
 			case WM_DELETE:
-				GUI_DEBUG_LOG("CheckBox: _Callback(WM_DELETE)\n");
 				pObj->~CheckBox();
 				return 0;
 		}
@@ -193,23 +188,14 @@ public:
 		Invalidate();
 	}
 
-	void TextColor(RGBC Color) {
-		if (Props.TextColor == Color)
+	void Brush(BRUSH brush) {
+		if (Props.brush == brush)
 			return;
-		Props.TextColor = Color;
-		Invalidate();
-	}
-
-	void BkColor(RGBC Color) {
-		if (Props.BkColor == Color)
-			return;
-		Props.BkColor = Color;
+		Props.brush = brush;
 		Invalidate();
 	}
 
 	void SetImage(CHECKBOX_BI Index, PCBITMAP pBitmap) {
-		if (Index >= GUI_COUNTOF(Props.apBm))
-			return;
 		if (Props.apBm[Index] == pBitmap)
 			return;
 		Props.apBm[Index] = pBitmap;
@@ -243,7 +229,6 @@ public:
 		CurrentState = State;
 		Invalidate();
 	}
-
 #pragma endregion
 
 	void SetText(const char *s) {

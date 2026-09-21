@@ -1,8 +1,6 @@
-﻿module;
+﻿export module TUX.Widget.MultPage;
 
-#include "GUI.h"
-
-export module TUX.Widget.MultPage;
+#include "GUIConf.h"
 
 import TUX.Widget;
 import TUX.Widget.ScrollBar;

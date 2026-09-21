@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -25,7 +25,6 @@
     <ClCompile Include="GUI\Types.cppm" />
     <ClCompile Include="GUI\GUICore.cpp" />
     <ClCompile Include="GUI\GUICurs.cpp" />
-    <ClCompile Include="GUI\GUIDEV.cpp" />
     <ClCompile Include="GUI\LCD.cppm" />
     <ClCompile Include="GUI\Resources\CursorArrow.cpp" />
     <ClCompile Include="GUI\Resources\CursorHeader.cpp" />
@@ -51,13 +50,11 @@
     <ClCompile Include="GUI\Widget.ScrollBar.cppm" />
     <ClCompile Include="GUI\Widget.Slider.cppm" />
     <ClCompile Include="GUI\Widget.Text.cppm" />
-    <ClCompile Include="GUI\Widget.Widget.cppm" />
+    <ClCompile Include="GUI\Widget.cppm" />
     <ClCompile Include="GUI\Window.cppm" />
     <ClCompile Include="GUI\WindowTypes.cppm" />
     <ClCompile Include="GUI\X.cppm" />
     <ClCompile Include="GUI_X\GUI_X.cc" />
-    <ClCompile Include="GUI_X\GUI_X_LCD.cc" />
-    <ClCompile Include="GUI_X\GUI_X_MEM.cc" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TUX_EXT\CursorCross.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -98,8 +95,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUIConf.h" />
-    <ClInclude Include="GUI\GUI.h" />
-    <ClInclude Include="GUI\GUIDebug.h" />
     <ClInclude Include="GUI_X\resource.h" />
   </ItemGroup>
   <ItemGroup>

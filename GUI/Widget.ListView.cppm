@@ -1,8 +1,6 @@
-﻿module;
+﻿export module TUX.Widget.ListView;
 
-#include "GUI.h"
-
-export module TUX.Widget.ListView;
+#include "GUIConf.h"
 
 import TUX.Widget;
 import TUX.Widget.Header;
@@ -351,14 +349,8 @@ public:
 		_InvalidateInsideArea();
 	}
 
-	BRUSH Brush(LISTVIEW_CI Index) {
-		if (Index >= GUI_COUNTOF(Props.aBrush))
-			return{};
-		return Props.aBrush[Index];
-	}
+	BRUSH Brush(LISTVIEW_CI Index) const { return Props.aBrush[Index]; }
 	void Brush(LISTVIEW_CI Index, BRUSH brush) {
-		if (Index >= GUI_COUNTOF(Props.aBrush))
-			return;
 		if (Props.aBrush[Index] == brush)
 			return;
 		Props.aBrush[Index] = brush;
@@ -483,8 +475,6 @@ public:
 		}
 	}
 	void ItemBrush(uint16_t Column, uint16_t Row, LISTVIEW_CI Index, BRUSH brush) {
-		if (Index >= GUI_COUNTOF(ItemInfo::aBrush))
-			return;
 		if (Column >= GetNumColumns() || Row >= GetNumRows())
 			return;
 		auto pItem = &RowArray[Row][Column];

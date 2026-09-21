@@ -1,5 +1,6 @@
 export module TUX.X;
 
+export import TUX.Types;
 export import TUX.LCD;
 
 export {
@@ -10,11 +11,6 @@ LCDDEV *GUI_X_GetLCD(void);
 
 /**** Timing routines - required for blinking ****/
 int GUI_TIME_Get(void);
-
-/**** Recording (logs/warnings and errors) - required only for higher levels ****/
-void GUI_X_Log(const char *s, ...);
-void GUI_X_Warn(const char *s, ...);
-void GUI_X_ErrorOut(const char *s, ...);
 
 /**** Memory routines ****/
 void*GUI_MEM_Alloc(size_t Size);

@@ -1,5 +1,3 @@
-
-#include "GUIDebug.h"
 #include "GUIConf.h"
 
 import TUX;
@@ -8,12 +6,6 @@ import TUX.Window;
 #if GUI_SUPPORT_TIMER
 import TUX.Timer;
 #endif
-
-void GUI_SelectLCD(void) {
-	GUI.pDevice = GUI_X_GetLCD();
-	GUI.ClipRectMax();
-	WObj::Activate();
-}
 
 bool GUI_Exec1(void) {
 	bool r = false;
@@ -29,15 +21,6 @@ bool GUI_Exec() {
 		r = true;
 	return r;
 }
-
-#pragma region Set/Get Properties
-void GUI_SaveContext(GUI_CONTEXT *pContext) {
-	*pContext = GUI;
-}
-void GUI_RestoreContext(const GUI_CONTEXT *pContext) {
-	GUI = *pContext;
-}
-#pragma endregion
 
 #pragma region Draw
 void LCD_SetPixel(int x, int y, RGBC ColorIndex) {

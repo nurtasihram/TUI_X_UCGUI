@@ -30,9 +30,8 @@ constexpr int16_t
 	GUI_YMIN = -4095,
 	GUI_YMAX =  4095;
 
-typedef void GUI_CALLBACK_VOID_P(void *p);
-/* Create a memory device which is compatible to the selected LCD */
-void GUI_MEMDEV_Draw(RECT r, GUI_CALLBACK_VOID_P *pfDraw, void *pData);
+template<class T, size_t N>
+constexpr uint16_t GUI_COUNTOF(T (&)[N]) { return N; }
 
 #pragma region Text rendering and wrapping
 typedef enum { WRAPMODE_NONE, WRAPMODE_WORD, WRAPMODE_CHAR } WRAPMODE;
@@ -66,8 +65,6 @@ void GUI_DispStringInRect(const char *s, const RECT &r, int Flags);
 void GUI_DispStringInRectMax(const char *s, RECT r, int TextAlign, int MaxLen); /* Not to be doc. */
 void GUI_DispNextLine(void);
 
-void GUI_SelectLCD(void);
-
 bool GUI_Exec();
 bool GUI_Exec1();
 
@@ -93,8 +90,6 @@ public:
 		BkColor(GUI_DEFAULT_BKCOLOR);
 		Color(GUI_DEFAULT_COLOR);
 		ClipRectMax();
-	}
-	void Select(LCDDEV *pDevice) {
 	}
 
 public:
@@ -144,7 +139,38 @@ public:
 
 } GUI;
 
-void GUI_SaveContext(GUI_CONTEXT *pContext);
-void GUI_RestoreContext(const GUI_CONTEXT *pContext);
+struct MEMDEV : LCDDEV {
+	RECT rect;
+	uint16_t BytesPerLine = 0;
+	void *pData = nullptr;
+public:
+	MEMDEV() {}
+	~MEMDEV() {
+		GUI_MEM_Free(pData);
+		pData = nullptr;
+	}
+	MEMDEV(const MEMDEV &) = delete;
+	MEMDEV &operator=(const MEMDEV &) = delete;
+public:
+	void Alloc(const RECT &r) {
+		rect = r;
+		BitsPerPixel = GUI.pDevice->BitsPerPixel;
+		BytesPerLine = (r.XSize() * BPP_Bits[BitsPerPixel] + 7) >> 3;
+		pData = GUI_MEM_Realloc(pData, r.YSize() * BytesPerLine);
+	}
+	RECT Rect() override { return rect; }
+
+	RGBC *_XY2PTR(int x, int y) {
+		auto pData = (uint8_t *)this->pData;
+		pData += (y - rect.y0) * BytesPerLine;
+		return ((RGBC *)pData) + x - rect.x0;
+	}
+	RGBC GetPixel(int16_t x, int16_t y) override {
+		return *_XY2PTR(x, y);
+	}
+	void SetPixel(int16_t x, int16_t y, RGBC color) override {
+		*_XY2PTR(x, y) = color;
+	}
+} MemDev;
 
 }

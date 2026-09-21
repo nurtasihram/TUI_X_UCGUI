@@ -1,8 +1,6 @@
-﻿module;
+﻿export module TUX.Widget.DropDown;
 
-#include "GUI.h"
-
-export module TUX.Widget.DropDown;
+#include "GUIConf.h"
 
 import TUX.Widget;
 import TUX.Widget.ListBox;
@@ -24,28 +22,23 @@ class DropDown : public Widget {
 public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
-		RGBC aBkColor[4]{
-			/* Unselect */			RGB_WHITE,
-			/* Selected */			RGB_GRAY,
-			/* Selected focussed */	RGB_DARKBLUE,
-			/* Disabled */			RGBC::Gray(0xC0)
-		};
-		RGBC aTextColor[4]{
-			/* Unselect */			RGB_BLACK,
-			/* Selected */			RGB_WHITE,
-			/* Selected focussed */	RGB_WHITE,
-			/* Disabled */			RGB_GRAY
+		BRUSH aBrush[4] {
+			/* Index                | Background      | Text         */
+			/* Unselect          */ { RGB_WHITE       , RGB_BLACK    },
+			/* Selected          */ { RGB_GRAY        , RGB_WHITE    },
+			/* Selected focussed */ { RGB_DARKBLUE    , RGB_WHITE    },
+			/* Disabled          */	{ RGBC::Gray(0xC0), RGB_GRAY     }
 		};
 		int16_t TextBorderSize{ 2 };
-		int16_t Align{ TEXTALIGN_LEFT };
+		TEXTALIGN Align{ TEXTALIGN_LEFT };
 	} static DefaultProps;
 	
 private:
 	Properties Props = DefaultProps;
 
-	int16_t    Sel = 0;      /* current selection */
-	int16_t    ySizeEx;  /* Drop down size */
-	int16_t    TextHeight = 0;
+	int16_t Sel = 0;      /* current selection */
+	int16_t ySizeEx;  /* Drop down size */
+	int16_t TextHeight = 0;
 	ARRAY<char *> Handles;
 	SCROLL_STATE ScrollState;
 	ListBox *pListWin = nullptr;
@@ -55,20 +48,15 @@ private:
 	char  IsPressed;
 
 	static int _Tolower(int Key) {
-		if ((Key >= 0x41) && (Key <= 0x5a)) {
+		if (Key >= 0x41 && Key <= 0x5a)
 			Key += 0x20;
-		}
 		return Key;
 	}
 	
-	const char *_GetpItem(int Index) {
+	const char *_GetpItem(int Index) const {
 		if (Index < 0 || Index >= GetNumItems())
 			return nullptr;
 		return Handles[Index];
-	}
-	void _DrawTriangleDown(int x, int y, int Size) {
-		while (Size--)
-			GUI.DrawHLine(y++, x - Size, x + Size);
 	}
 	void _SelectByKey(int Key) {
 		Key = _Tolower(Key);
@@ -80,12 +68,18 @@ private:
 			}
 		}
 	}
-	void _FreeAttached() {
+	void _FreeAttached() {		
+		for (int i = 0; i < Handles.NumItems(); i++)
+			GUI__SetText(Handles[i], nullptr);
 		Handles.Delete();
 		delete pListWin;
 		this->pListWin = nullptr;
 	}
-	void _OnPaint() {
+	void _DrawTriangleDown(int x, int y, int Size) const {
+		while (Size--)
+			GUI.DrawHLine(y++, x - Size, x + Size);
+	}
+	void _OnPaint() const {
 		/* Do some initial calculations */
 		auto Border = this->EffectSize();
 		auto TextBorderSize = Props.TextBorderSize;
@@ -97,15 +91,13 @@ private:
 		/* Draw the 3D effect (if configured) */
 		DrawDown();
 		/* Draw the outer text frames */
-		r.x1 -= InnerSize;     /* Spare square area to the right */
-		GUI.Color(Props.aBkColor[ColorIndex]);
+		r.x1 -= InnerSize; /* Spare square area to the right */
+		GUI.Brush(Props.aBrush[ColorIndex]);
 		/* Draw the text */
-		GUI.BkColor(Props.aBkColor[ColorIndex]);
 		GUI.FillRect(r);
 		r.x0 += TextBorderSize;
 		r.x1 -= TextBorderSize;
-		GUI.Color(Props.aTextColor[ColorIndex]);
-		GUI_DispStringInRect(s, r, Props.Align);/**/
+		GUI_DispStringInRect(s, r, Props.Align);
 		/* Draw arrow */
 		r = ClientRect() / Border;
 		r.x0 = r.x1 + 1 - InnerSize;
@@ -188,8 +180,6 @@ private:
 			pObj->_OnPaint();
 			return 0;
 		case WM_DELETE:
-			for (int i = 0; i < pObj->Handles.NumItems(); i++)
-				GUI__SetText(pObj->Handles[i], nullptr);
 			pObj->_FreeAttached();
 			return 0;
 		case WM_KEY:
@@ -217,12 +207,44 @@ public:
 	}
 
 public:
+
+#pragma region Properties
+	void Font(PCFONT pFont) {
+		auto OldHeight = Props.pFont->YSize;
+		Props.pFont = pFont;
+		_AdjustHeight();
+		Invalidate();
+		if (pListWin) {
+			if (OldHeight != Props.pFont->YSize) {
+				Collapse();
+				Expand();
+			}
+			pListWin->Font(pFont);
+		}
+	}
+
+	void TextAlign(TEXTALIGN Align) {
+		if (Props.Align == Align)
+			return;
+		Props.Align = Align;
+		Invalidate();
+	}
+
+	void Brush(DROPDOWN_CI Index, BRUSH aBrush) {
+		if (Props.aBrush[Index] == aBrush)
+			return;
+		Props.aBrush[Index] = aBrush;
+		Invalidate();
+		if (pListWin)
+			pListWin->Brush(Index, aBrush);
+	}
+#pragma endregion
+
 	void Collapse() {
-		if (this->pListWin) {
-			auto pListWin = this->pListWin;
-			this->pListWin = nullptr;
+		if (pListWin) {
 			ReleaseCapture();
 			delete pListWin;
+			pListWin = nullptr;
 		}
 	}
 	void Expand() {
@@ -254,14 +276,10 @@ public:
 			for (int i = 0; i < NumItems; i++)
 				pListWin->AddString(_GetpItem(i));
 			pListWin->Props.pFont = Props.pFont;
-			pListWin->Props.aBkColor[0] = Props.aBkColor[0];
-			pListWin->Props.aBkColor[1] = Props.aBkColor[1];
-			pListWin->Props.aBkColor[2] = Props.aBkColor[2];
-			pListWin->Props.aBkColor[3] = Props.aBkColor[3];
-			pListWin->Props.aTextColor[0] = Props.aTextColor[0];
-			pListWin->Props.aTextColor[1] = Props.aTextColor[1];
-			pListWin->Props.aTextColor[2] = Props.aTextColor[2];
-			pListWin->Props.aTextColor[3] = Props.aTextColor[3];
+			pListWin->Props.aBrush[0] = Props.aBrush[0];
+			pListWin->Props.aBrush[1] = Props.aBrush[1];
+			pListWin->Props.aBrush[2] = Props.aBrush[2];
+			pListWin->Props.aBrush[3] = Props.aBrush[3];
 
 			pListWin->SetItemSpacing(this->ItemSpacing);
 			pListWin->SetSel(this->Sel);
@@ -282,147 +300,89 @@ public:
 			break;
 		}
 	}
-	void AddString(const char *s) {
-		if (s) {
-			auto idx = Handles.NumItems();
-			if (Handles.AddItem() == 0)
-				GUI__SetText(Handles[idx], s);
-			Invalidate();
-		}
-	}
 
-	auto GetNumItems() { return Handles.NumItems(); }
-	void Font(PCFONT pFont) {
-		auto OldHeight = Props.pFont->YSize;
-		Props.pFont = pFont;
-		_AdjustHeight();
-		Invalidate();
-		if (this->pListWin) {
-			if (OldHeight != Props.pFont->YSize) {
-				Collapse();
-				Expand();
-			}
-			this->pListWin->Font(pFont);
-		}
-	}
-	void BkColor(DROPDOWN_CI Index, RGBC color) {
-		if (Index < GUI_COUNTOF(Props.aBkColor)) {
-			Props.aBkColor[Index] = color;
-			Invalidate();
-			if (this->pListWin) {
-				this->pListWin->BkColor(Index, color);
-			}
-		}
-	}
-	void TextColor(DROPDOWN_CI Index, RGBC color) {
-		if (Index < GUI_COUNTOF(Props.aTextColor)) {
-			Props.aTextColor[Index] = color;
-			Invalidate();
-			if (this->pListWin) {
-				this->pListWin->TextColor(Index, color);
-			}
-		}
-	}
 	void SetSel(int Sel) {
-		int NumItems, MaxSel;
-		NumItems = GetNumItems();
-		MaxSel = NumItems ? NumItems - 1 : 0;
-		if (Sel > MaxSel) {
+		auto NumItems = GetNumItems();
+		auto MaxSel = NumItems ? NumItems - 1 : 0;
+		if (Sel > MaxSel)
 			Sel = MaxSel;
-		}
 		if (Sel != this->Sel) {
 			this->Sel = Sel;
 			Invalidate();
 			NotifyParent(WM_NOTIFICATION_SEL_CHANGED);
 		}
 	}
-	void IncSel() {
-		int Sel = GetSel();
-		SetSel(Sel + 1);
-	}
+	void IncSel() { SetSel(Sel + 1); }
 	void DecSel() {
 		int Sel = GetSel();
 		if (Sel)
 			Sel--;
 		SetSel(Sel);
 	}
-	int  GetSel() {
-		int r = 0;
-		r = this->Sel;
+	auto GetSel() const { return Sel; }
 
-		return r;
+	auto GetNumItems() const { return Handles.NumItems(); }
+	void AddString(const char *s) {
+		if (!s) return;
+		auto idx = Handles.NumItems();
+		if (Handles.AddItem() == 0)
+			GUI__SetText(Handles[idx], s);
+		Invalidate();
 	}
-	void SetScrollbarWidth(unsigned Width) {
-		if (Width != (unsigned)this->ScrollbarWidth) {
-			this->ScrollbarWidth = Width;
-			if (this->pListWin) {
-				this->pListWin->SetScrollbarWidth(Width);
-			}
-		}
-	}
-
-	void DeleteItem(unsigned int Index) {
-		unsigned int NumItems;
-		NumItems = GetNumItems();
-		if (Index < NumItems) {
-			GUI__SetText(Handles[Index], nullptr);
-			Handles.DeleteItem(Index);
-			Invalidate();
-			if (this->pListWin) {
-				this->pListWin->DeleteItem(Index);
-			}
-		}
+	void DeleteItem(uint16_t Index) {
+		if (Index >= GetNumItems()) 
+			return;
+		GUI__SetText(Handles[Index], nullptr);
+		Handles.DeleteItem(Index);
+		Invalidate();
+		if (pListWin)
+			pListWin->DeleteItem(Index);
 	}
 	void InsertString(const char *s, unsigned int Index) {
-		if (s) {
-			unsigned int NumItems;
+		if (!s) return;
+		auto NumItems = GetNumItems();
+		if (Index < NumItems) {
+			auto pp = Handles.InsertItem(Index);
+			if (pp)
+				GUI__SetText(*pp, s);
+			Invalidate();
+			if (pListWin)
+				pListWin->InsertString(Index, s);
+		}
+		else {
+			AddString(s);
+			if (pListWin)
+				pListWin->AddString(s);
+		}
+	}
+	
+	void SetScrollbarWidth(uint8_t Width) {
+		if (ScrollbarWidth == Width)
+			return;
+		ScrollbarWidth = Width;
+		if (pListWin)
+			pListWin->SetScrollbarWidth(Width);
+	}
+	void SetItemSpacing(uint16_t Value) {
+		ItemSpacing = Value;
+		if (pListWin)
+			pListWin->SetItemSpacing(Value);
+	}
+	auto GetItemSpacing() const { return ItemSpacing; }
 
-			NumItems = GetNumItems();
-			if (Index < NumItems) {
-				auto pp = Handles.InsertItem(Index);
-				if (pp)
-					GUI__SetText(*pp, s);
-				Invalidate();
-				if (this->pListWin) {
-					this->pListWin->InsertString(s, Index);
-				}
-			}
-			else {
-				AddString(s);
-				if (this->pListWin) {
-					this->pListWin->AddString(s);
-				}
-			}
-		}
-	}
-	void SetItemSpacing(unsigned Value) {
-		this->ItemSpacing = Value;
-		if (this->pListWin) {
-			this->pListWin->SetItemSpacing(Value);
-		}
-	}
-	uint16_t GetItemSpacing() {
-		return this->ItemSpacing;
-	}
-	void SetAutoScroll(int OnOff) {
+	void SetAutoScroll(bool OnOff) {
 		char Flags = this->Flags & (~DROPDOWN_SF_AUTOSCROLLBAR);
-		if (OnOff) {
+		if (OnOff)
 			Flags |= DROPDOWN_SF_AUTOSCROLLBAR;
-		}
 		if (this->Flags != Flags) {
 			this->Flags = Flags;
-			if (this->pListWin) {
-				this->pListWin->SetAutoScrollV((Flags & DROPDOWN_SF_AUTOSCROLLBAR) ? 1 : 0);
-			}
+			if (pListWin)
+				pListWin->SetAutoScrollV((Flags & DROPDOWN_SF_AUTOSCROLLBAR) ? 1 : 0);
 		}
 	}
-	void TextAlign(TEXTALIGN Align) {
-		if (Props.Align != Align) {
-			Props.Align = Align;
-			Invalidate();
-		}
-	}
-	void SetTextHeight(unsigned TextHeight) {
+	void SetTextHeight(uint16_t TextHeight) {
+		if (this->TextHeight == TextHeight)
+			return;
 		this->TextHeight = TextHeight;
 		_AdjustHeight();
 		Invalidate();

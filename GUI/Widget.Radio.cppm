@@ -1,8 +1,6 @@
-﻿module;
+﻿export module TUX.Widget.Radio;
 
-#include "GUI.h"
-
-export module TUX.Widget.Radio;
+#include "GUIConf.h"
 
 import TUX.Widget;
 

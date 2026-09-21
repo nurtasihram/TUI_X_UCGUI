@@ -1,8 +1,6 @@
-module;
-
-#include "GUI.h"
-
 export module TUX.Widget.ProgBar;
+
+#include "GUIConf.h"
 
 import TUX.Widget;
 
@@ -18,13 +16,10 @@ class ProgBar : public Widget {
 public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
-		RGBC aBkColor[2]{
-			/* Active */	RGB_DARKBLUE,
-			/* Inactive */	RGBC::Gray(0x55)
-		};
-		RGBC aTextColor[2]{
-			/* Active */	RGB_WHITE,
-			/* Inactive */	RGB_BLACK
+		BRUSH aBrush[2]{
+			/* Index       | Background      | Text         */
+			/* Active   */ { RGB_DARKBLUE    , RGB_WHITE    },
+			/* Inactive */ { RGBC::Gray(0x55), RGB_BLACK    },
 		};
 		TEXTALIGN Align{ TEXTALIGN_HCENTER };
 	} static DefaultProps;
@@ -50,8 +45,7 @@ private:
 		return EffectSize + ((xSize - 2 * EffectSize) * (v - Min)) / (Max - Min);
 	}
 	void _DrawPart(int Index, int xText, int yText, const char *pText) const {
-		GUI.BkColor(Props.aBkColor[Index]);
-		GUI.Color(Props.aTextColor[Index]);
+		GUI.Brush(Props.aBrush[Index]);
 		GUI.Clear();
 		GUI_DispStringAt(pText, xText, yText);
 	}
@@ -158,20 +152,10 @@ public:
 		Props.pFont = pFont;
 		Invalidate();
 	}
-	void BarColor(PROGBAR_CI Index, RGBC color) {
-		if (Index >= GUI_COUNTOF(Props.aBkColor))
+	void Brush(PROGBAR_CI Index, BRUSH aBrush) {
+		if (Props.aBrush[Index] == aBrush)
 			return;
-		if (Props.aBkColor[Index] == color)
-			return;
-		Props.aBkColor[Index] = color;
-		Invalidate();
-	}
-	void TextColor(PROGBAR_CI Index, RGBC color) {
-		if (Index >= GUI_COUNTOF(Props.aTextColor))
-			return;
-		if (Props.aTextColor[Index] == color)
-			return;
-		Props.aTextColor[Index] = color;
+		Props.aBrush[Index] = aBrush;
 		Invalidate();
 	}
 	void TextAlign(TEXTALIGN Align) {
@@ -211,7 +195,6 @@ public:
 			}
 		}
 	}
-
 };
 
 ProgBar::Properties ProgBar::DefaultProps;

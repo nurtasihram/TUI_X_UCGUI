@@ -4,8 +4,6 @@
 #	define sprintf sprintf_s
 #endif
 
-#include "GUI.h"
-
 import TUX.Widget;
 import TUX.Widget.CheckBox;
 import TUX.Widget.Menu;

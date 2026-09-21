@@ -1,5 +1,4 @@
-#include "GUI.h"
-
+import TUX;
 import TUX.Widget;
 
 struct WIDGET_EFFECT_Simple : public WIDGET_EFFECT {

@@ -1,8 +1,6 @@
-module;
-
-#include "GUI.h"
-
 export module TUX.Widget.Frame;
+
+#include "GUIConf.h"
 
 import TUX.Widget;
 import TUX.Widget.Button;
@@ -48,13 +46,10 @@ class Frame : public Widget {
 public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
-		RGBC aTextColor[2]{
-			/* Lose focused */	RGB_BLACK,
-			/* Focused */		RGB_WHITE
-		};
-		RGBC aBarColor[2]{
-			/* Lose focused */	RGBC::Gray(0x80),
-			/* Focused */		RGBC::Blue(0x80)
+		BRUSH aBrush[2]{
+			/* Index           | Background      | Text       */
+			/* lost focused */ { RGBC::Gray(0x80) , RGB_BLACK },
+			/* focused      */ { RGBC::Blue(0x80) , RGB_WHITE }
 		};
 		RGBC ClientColor{ RGBC::Gray(0xE4) };
 		RGBC FrameColor{ RGBC::Gray(0xAA) };
@@ -198,9 +193,7 @@ private:
 		GUI.Font(Props.pFont);
 		auto y0 = Pos.TitleHeight + BorderSize;
 		/* Draw Title */
-		auto Index = States & FRAMEWIN_CF_ACTIVE ? FRAME_CI_FOCUSSED : FRAME_CI_UNFOCUS;
-		GUI.BkColor(Props.aBarColor[Index]);
-		GUI.Color(Props.aTextColor[Index]);
+		GUI.Brush(Props.aBrush[States & FRAMEWIN_CF_ACTIVE ? FRAME_CI_FOCUSSED : FRAME_CI_UNFOCUS]);
 		WIDGET__FillStringInRect(pText, r, Pos.rTitleText);
 		/* Draw Frame */
 		GUI.Color(Props.FrameColor);
@@ -516,7 +509,6 @@ private:
 			pObj->_OnChildHasFocus((const NOTIFY_CHILD_HAS_FOCUS_INFO *)Data);
 			break;
 		case WM_DELETE:
-			GUI_DEBUG_LOG("FRAMEWIN: _FRAMEWIN_Callback(WM_DELETE)\n");
 			GUI_MEM_Free(pObj->pText);
 			pObj->pText = nullptr;
 			break;
@@ -548,7 +540,6 @@ public:
 public:
 
 #pragma region Properties
-
 	UCFONT Font() const { return *Props.pFont; }
 	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
@@ -569,21 +560,10 @@ public:
 		Invalidate();
 	}
 
-	void BarColor(FRAME_CI Index, RGBC Color) {
-		if (Index >= GUI_COUNTOF(Props.aBarColor))
+	void Brush(FRAME_CI Index, BRUSH brush) {
+		if (Props.aBrush[Index] == brush)
 			return;
-		if (Props.aBarColor[Index] == Color)
-			return;
-		Props.aBarColor[Index] = Color;
-		Invalidate();
-	}
-
-	void TextColor(FRAME_CI Index, RGBC Color) {
-		if (Index >= GUI_COUNTOF(Props.aTextColor))
-			return;
-		if (Props.aTextColor[Index] == Color)
-			return;
-		Props.aTextColor[Index] = Color;
+		Props.aBrush[Index] = brush;
 		Invalidate();
 	}
 
@@ -593,7 +573,6 @@ public:
 		Props.ClientColor = Color;
 		pClient->Invalidate();
 	}
-	
 #pragma endregion
 
 	void SetText(const char *s) {

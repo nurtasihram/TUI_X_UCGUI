@@ -1,8 +1,6 @@
-module;
-
-#include "GUI.h"
-
 export module TUX.Array;
+
+export import TUX.X;
 
 export {
 
