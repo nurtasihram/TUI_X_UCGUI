@@ -278,7 +278,6 @@ private:
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (MultPage *)pWin;
-		auto Handled = pObj->HandleActive(MsgId, &Data);
 		switch (MsgId) {
 			case WM_PAINT:
 				pObj->_OnPaint();
@@ -308,19 +307,13 @@ private:
 			case WM_SIZE:
 				pObj->_UpdatePositions();
 				return 0;
-			case WM_DELETE: {
+			case WM_DELETE:
 				for (int _i = 0, NumItems = pObj->Handles.NumItems(); _i < NumItems; _i++)
 					GUI_MEM_FreePtr((void **)&pObj->Handles[_i].pText);
 				pObj->Handles.Delete();
-				/* No break here ... DefaultProc needs to be called */
-			}
-			default:
-				/* Let widget handle the standard messages */
-				if (!Handled)
-					return Data;
-				return DefaultProc(pWin, MsgId, Data);
+				return 0;
 		}
-		return 0;
+		return pObj->WidgetProc(MsgId, Data);
 	}
 	static WM_PARAM _ClientCallback(WObj *pObj, int MsgId, WM_PARAM Data) {
 		auto pParent = (MultPage *)pObj->Parent();

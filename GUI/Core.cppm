@@ -77,7 +77,7 @@ PID_STATE GUI_PID_Get(void);
 struct GUI_CONTEXT {
 	LCDDEV *pDevice = nullptr;
 	PCFONT pFont;
-	BRUSH brush{ GUI_DEFAULT_BKCOLOR, GUI_DEFAULT_COLOR };
+	BRUSH brush{ RGB_BLACK, RGB_WHITE };
 	RECT rClip;
 	POINT DispPos, Off;
 
@@ -87,8 +87,8 @@ public:
 		if (pDevice)
 			rClip = pDevice->Rect();
 		Font(GUI_DEFAULT_FONT);
-		BkColor(GUI_DEFAULT_BKCOLOR);
-		Color(GUI_DEFAULT_COLOR);
+		BkColor(RGB_BLACK);
+		Color(RGB_WHITE);
 		ClipRectMax();
 	}
 

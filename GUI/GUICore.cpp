@@ -3,9 +3,7 @@
 import TUX;
 import TUX.X;
 import TUX.Window;
-#if GUI_SUPPORT_TIMER
 import TUX.Timer;
-#endif
 
 bool GUI_Exec1(void) {
 	bool r = false;

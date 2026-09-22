@@ -138,52 +138,49 @@ private:
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (DropDown *)pWin;
-		/* Let widget handle the standard messages */
-		if (!pObj->HandleActive(MsgId, &Data))
-			return Data;
 		switch (MsgId) {
-		case WM_NOTIFY_PARENT: {
-			auto pInfo = (const NOTIFY_INFO *)Data;
-			switch (pInfo->Notification) {
-			case WM_NOTIFICATION_SCROLL_CHANGED:
-				pObj->NotifyParent(WM_NOTIFICATION_SCROLL_CHANGED);
-				break;
-			case WM_NOTIFICATION_CLICKED: {
-				auto pListWin = (ListBox *)pInfo->pWinSrc;
-				int Sel = pListWin->GetSel();
-				pObj->SetSel(Sel);
-				break;
-			}
-			case WM_NOTIFICATION_RELEASED:
-				pObj->Collapse();
-				pObj->SetFocus();
-				break;
-			case LISTBOX_NOTIFICATION_LOST_FOCUS:
-				pObj->Collapse();
-				break;
-			}
-			return 0;
-		}
-		case WM_PID_STATE_CHANGED:
-			if (auto pInfo = (const PID_CHANGED_INFO *)Data)
-				if (pInfo->Pressed)
-					pObj->Expand();
-			return 0;
-		case WM_TOUCH:
-			pObj->_OnTouch((const PID_STATE *)Data);
-			return 0;
-		case WM_PAINT:
-			pObj->_OnPaint();
-			return 0;
-		case WM_DELETE:
-			pObj->_FreeAttached();
-			return 0;
-		case WM_KEY:
-			if (pObj->_OnKey((const KEY_STATE *)Data))
+			case WM_PAINT:
+				pObj->_OnPaint();
 				return 0;
-			break;
+			case WM_NOTIFY_PARENT: {
+				auto pInfo = (const NOTIFY_INFO *)Data;
+				switch (pInfo->Notification) {
+				case WM_NOTIFICATION_SCROLL_CHANGED:
+					pObj->NotifyParent(WM_NOTIFICATION_SCROLL_CHANGED);
+					break;
+				case WM_NOTIFICATION_CLICKED: {
+					auto pListWin = (ListBox *)pInfo->pWinSrc;
+					int Sel = pListWin->GetSel();
+					pObj->SetSel(Sel);
+					break;
+				}
+				case WM_NOTIFICATION_RELEASED:
+					pObj->Collapse();
+					pObj->SetFocus();
+					break;
+				case LISTBOX_NOTIFICATION_LOST_FOCUS:
+					pObj->Collapse();
+					break;
+				}
+				return 0;
+			}
+			case WM_PID_STATE_CHANGED:
+				if (auto pInfo = (const PID_CHANGED_INFO *)Data)
+					if (pInfo->Pressed)
+						pObj->Expand();
+				return 0;
+			case WM_TOUCH:
+				pObj->_OnTouch((const PID_STATE *)Data);
+				return 0;
+			case WM_DELETE:
+				pObj->_FreeAttached();
+				return 0;
+			case WM_KEY:
+				if (pObj->_OnKey((const KEY_STATE *)Data))
+					return 0;
+				break;
 		}
-		return DefaultProc(pWin, MsgId, Data);
+		return pObj->WidgetProc(MsgId, Data);
 	}
 
 public:

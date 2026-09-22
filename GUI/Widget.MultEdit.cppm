@@ -663,10 +663,10 @@ private:
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (MultEdit *)pWin;
-		/* Let widget handle the standard messages */
-		if (!pObj->HandleActive(MsgId, &Data))
-			return Data;
 		switch (MsgId) {
+			case WM_PAINT:
+				pObj->_OnPaint();
+				return 0;
 			case WM_NOTIFY_CLIENTCHANGE:
 				pObj->_InvalidateCursorXY();
 				pObj->_InvalidateNumLines();
@@ -700,9 +700,6 @@ private:
 				}
 				return 0;
 			}
-			case WM_PAINT:
-				pObj->_OnPaint();
-				return 0;
 			case WM_TOUCH:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
@@ -714,7 +711,7 @@ private:
 					return 0;
 				break;
 		}
-		return DefaultProc(pWin, MsgId, Data);
+		return pObj->WidgetProc(MsgId, Data);
 	}
 
 private:

@@ -259,10 +259,10 @@ private:
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (ListView *)pWin;
-		/* Let widget handle the standard messages */
-		if (!pObj->HandleActive(MsgId, &Data))
-			return Data;
 		switch (MsgId) {
+			case WM_PAINT:
+				pObj->_OnPaint();
+				return 0;
 			case WM_NOTIFY_CLIENTCHANGE:
 			case WM_SIZE:
 				pObj->_UpdateScrollParas();
@@ -296,9 +296,6 @@ private:
 				}
 				return 0;
 			}
-			case WM_PAINT:
-				pObj->_OnPaint();
-				return 0;
 			case WM_TOUCH:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
@@ -310,7 +307,7 @@ private:
 				pObj->_FreeAttached();
 				return 0;
 		}
-		return DefaultProc(pWin, MsgId, Data);
+		return pObj->WidgetProc(MsgId, Data);
 	}
 
 public:

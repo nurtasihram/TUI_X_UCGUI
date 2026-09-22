@@ -18,7 +18,8 @@ constexpr uint16_t
 	MENU_CF_CLOSE_ON_SECOND_CLICK    = WIDGET_STATE_USER<2>,
 	MENU_CF_HIDE_DISABLED_SEL        = WIDGET_STATE_USER<3>,  /* Hides the selection when a disabled item is selected */
 	MENU_SF_ACTIVE                   = WIDGET_STATE_USER<4>,
-	MENU_SF_POPUP                    = WIDGET_STATE_USER<5>;
+	MENU_SF_POPUP                    = WIDGET_STATE_USER<5>,
+	MENU_SF_SUBMENU_ACTIVE           = WIDGET_STATE_USER<6>;
 
 constexpr uint16_t
 	MENU_IF_DISABLED           = 1 << 0,
@@ -48,8 +49,8 @@ class Menu : public Widget {
 public:
 	struct ItemData {
 		const char *pText;
-		uint16_t    Id;
-		uint16_t    Flags;
+		uint16_t Id;
+		uint16_t Flags;
 		Menu *pSubmenu;
 	};
 
@@ -64,7 +65,7 @@ public:
 			/* disabled   selected */ { RGBC::Blue(0x98), RGB_LIGHTGRAY     },
 			/* active submenu      */ { RGBC::Gray(0x7C), RGB_WHITE         }
 		};
-		RECT border{ 4, 2, 4, 2 };
+		RECT Border{ 4, 2, 4, 2 };
 	} static DefaultProps;
 	
 private:
@@ -79,7 +80,6 @@ private:
 	};
 	ARRAY<Item> ItemArray;
 	WObj *pOwner = nullptr;
-	bool IsSubmenuActive = false;
 	uint16_t Width = 0, Height = 0;
 	uint16_t Sel = -1;
 
@@ -114,7 +114,7 @@ private:
 		auto &pItem = ItemArray[Index];
 		uint16_t ItemWidth = (States & MENU_CF_VERTICAL) || !(pItem.Flags & MENU_IF_SEPARATOR)
 			? pItem.TextWidth : 3;
-		return ItemWidth + Props.border.x0 + Props.border.x1;
+		return ItemWidth + Props.Border.x0 + Props.Border.x1;
 	}
 	uint16_t _GetItemHeight(uint16_t Index) const {
 		if (Height && !(States & MENU_CF_VERTICAL))
@@ -122,7 +122,7 @@ private:
 		uint16_t ItemHeight = Props.pFont->YSize;
 		if ((States & MENU_CF_VERTICAL) && (ItemArray[Index].Flags & MENU_IF_SEPARATOR))
 			ItemHeight = 3;
-		return ItemHeight + Props.border.y0 + Props.border.y1;
+		return ItemHeight + Props.Border.y0 + Props.Border.y1;
 	}
 
 	uint16_t _CalcMenuSizeX() const {
@@ -145,10 +145,9 @@ private:
 			for (uint16_t i = 0; i < NumItems; i++)
 				ySize += _GetItemHeight(i);
 		else
-			for (uint16_t i = 0; i < NumItems; i++) {
+			for (uint16_t i = 0; i < NumItems; i++)
 				if (auto ItemHeight = _GetItemHeight(i); ItemHeight > ySize)
 					ySize = ItemHeight;
-			}
 		return ySize + (_GetEffectSize() << 1);
 	}
 
@@ -190,7 +189,7 @@ private:
 	}
 
 	void _SetCapture() {
-		if (!IsSubmenuActive && !HasCaptured())
+		if (!(States & MENU_SF_SUBMENU_ACTIVE) && !HasCaptured())
 			SetCapture(0);
 	}
 	void _ReleaseCapture() {
@@ -200,13 +199,13 @@ private:
 	void _CloseSubmenu() {
 		if (!(States & MENU_SF_ACTIVE))
 			return;
-		if (!IsSubmenuActive)
+		if (!(States & MENU_SF_SUBMENU_ACTIVE))
 			return;
 		auto &pItem = ItemArray[Sel];
 		/* Inform submenu about its deactivation and detach it */
 		_SendMenuMessage(this, pItem.pSubmenu, MENU_ON_CLOSE, 0);
 		pItem.pSubmenu->Detach();
-		IsSubmenuActive = false;
+		States &= ~MENU_SF_SUBMENU_ACTIVE;
 		/*
 		 * Keep capture in menu widget. The capture may only released
 		 * by clicking outside the menu or when mouse moved out.
@@ -219,7 +218,7 @@ private:
 	void _OpenSubmenu(uint16_t Index) {
 		if (!(States & MENU_SF_ACTIVE))
 			return;
-		auto PrevActiveSubmenu = IsSubmenuActive;
+		bool PrevActiveSubmenu = States & MENU_SF_SUBMENU_ACTIVE;
 		/* Close previous submenu (if needed) */
 		_CloseSubmenu();
 		auto &pItem = ItemArray[Index];
@@ -253,7 +252,7 @@ private:
 		/* Attach submenu and inform it about its activation. */
 		pItem.pSubmenu->Attach(WObj::GetDesktopWindow(), Pos);
 		_SendMenuMessage(this, pItem.pSubmenu, MENU_ON_OPEN, 0);
-		IsSubmenuActive = true;
+		States |= MENU_SF_SUBMENU_ACTIVE;
 		/* Invalidate menu item. This is needed because the appearance may have changed. */
 		_InvalidateItem(Index);
 	}
@@ -279,7 +278,7 @@ private:
 		}
 	}
 	void _DeselectItem() {
-		if (!IsSubmenuActive) {
+		if (!(States & MENU_SF_SUBMENU_ACTIVE)) {
 			_SetSelection(-1);
 			_ReleaseCapture();
 		}
@@ -321,7 +320,7 @@ private:
 	}
 	bool _ForwardMouseOverMsg(POINT Pos) {
 #if (GUI_SUPPORT_MOUSE)
-		if (!IsSubmenuActive && !(States & MENU_SF_POPUP)) {
+		if (!(States & MENU_SF_SUBMENU_ACTIVE) && !(States & MENU_SF_POPUP)) {
 			if (_IsTopLevelMenu()) {
 				Pos += LeftTop();
 				if (auto pBelow = WM_Screen2Win(Pos); pBelow && (pBelow != this)) {
@@ -413,7 +412,7 @@ private:
 			break;
 		case MENU_ON_OPEN:
 			Sel = -1;
-			IsSubmenuActive = false;
+			States &= ~MENU_SF_SUBMENU_ACTIVE;
 			States |= MENU_SF_ACTIVE | MENU_CF_OPEN_ON_POINTEROVER;
 			_SetCapture();
 			_ResizeMenu();
@@ -426,18 +425,10 @@ private:
 		}
 		return 0;
 	}
-	bool _OnTouch(const PID_STATE *pState) {
-		return pState ? _HandlePID(*pState) : _HandlePID({ -1, -1 });
-	}
-#if (GUI_SUPPORT_MOUSE)
-	bool _OnMouseOver(const PID_STATE *pState) {
-		return pState ? _HandlePID({ *pState, -1 }) : false;
-	}
-#endif
-	void _SetPaintColors(const Item &pItem, int ItemIndex) {
+	void _SetPaintColors(const Item &pItem, int ItemIndex) const {
 		bool Selected = ItemIndex == Sel;
 		auto ColorIndex = 
-			IsSubmenuActive && Selected ? MENU_CI_ACTIVE_SUBMENU :
+			(States & MENU_SF_SUBMENU_ACTIVE) && Selected ? MENU_CI_ACTIVE_SUBMENU :
 			pItem.Flags & MENU_IF_SEPARATOR ? MENU_CI_ENABLED :
 			pItem.Flags & MENU_IF_DISABLED ?
 				!(States & MENU_CF_HIDE_DISABLED_SEL) && Selected ?
@@ -445,7 +436,7 @@ private:
 				Selected ? MENU_CI_SELECTED : MENU_CI_ENABLED;
 		GUI.Brush(Props.aBrush[ColorIndex]);
 	}
-	void _OnPaint() {
+	void _OnPaint() const {
 		auto NumItems = GetNumItems();
 		auto FontHeight = Props.pFont->YSize;
 		auto EffectSize = _GetEffectSize();
@@ -456,7 +447,7 @@ private:
 		if (States & MENU_CF_VERTICAL) {
 			auto xSize = _CalcMenuSizeX();
 			FillRect.x1 = xSize - EffectSize - 1;
-			TextRect.x0 = FillRect.x0 + Props.border.x0;
+			TextRect.x0 = FillRect.x0 + Props.Border.x0;
 			for (uint16_t i = 0; i < NumItems; i++) {
 					auto &pItem = ItemArray[i];
 					auto ItemHeight = _GetItemHeight(i);
@@ -465,12 +456,12 @@ private:
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
 						GUI.Clear(FillRect);
 						GUI.Color(RGBC::Gray(0x7C));
-						GUI.DrawHLine(FillRect.y0 + Props.border.y0 + 1, FillRect.x0 + 2, FillRect.x1 - 2);
+						GUI.DrawHLine(FillRect.y0 + Props.Border.y0 + 1, FillRect.x0 + 2, FillRect.x1 - 2);
 					}
 					else {
 						auto TextWidth = pItem.TextWidth;
 						TextRect.x1 = TextRect.x0 + TextWidth - 1;
-						TextRect.y0 = FillRect.y0 + Props.border.y0;
+						TextRect.y0 = FillRect.y0 + Props.Border.y0;
 						TextRect.y1 = TextRect.y0 + FontHeight - 1;
 						WIDGET__FillStringInRect(pItem.pText, FillRect, TextRect);
 					}
@@ -480,7 +471,7 @@ private:
 		else {
 			auto ySize = _CalcMenuSizeY();
 			FillRect.y1 = ySize - EffectSize - 1;
-			TextRect.y0 = FillRect.y0 + Props.border.y0;
+			TextRect.y0 = FillRect.y0 + Props.Border.y0;
 			TextRect.y1 = TextRect.y0 + FontHeight - 1;
 			for (uint16_t i = 0; i < NumItems; i++) {
 					auto &pItem = ItemArray[i];
@@ -490,11 +481,11 @@ private:
 					if (pItem.Flags & MENU_IF_SEPARATOR) {
 						GUI.Clear(FillRect);
 						GUI.Color(RGBC::Gray(0x7C));
-						GUI.DrawVLine(FillRect.x0 + Props.border.x0 + 1, FillRect.y0 + 2, FillRect.y1 - 2);
+						GUI.DrawVLine(FillRect.x0 + Props.Border.x0 + 1, FillRect.y0 + 2, FillRect.y1 - 2);
 					}
 					else {
 						auto TextWidth = pItem.TextWidth;
-						TextRect.x0 = FillRect.x0 + Props.border.x0;
+						TextRect.x0 = FillRect.x0 + Props.Border.x0;
 						TextRect.x1 = TextRect.x0 + TextWidth - 1;
 						WIDGET__FillStringInRect(pItem.pText, FillRect, TextRect);
 					}
@@ -515,34 +506,33 @@ private:
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (Menu *)pWin;
-		if (MsgId != WM_PID_STATE_CHANGED)
-			/* Let widget handle the standard messages */
-			if (!pObj->HandleActive(MsgId, &Data))
-				return Data;
 		switch (MsgId) {
-			case WM_MENU:
-				return pObj->_OnMenu(Data);
-			case WM_TOUCH:
-				if (pObj->_OnTouch((const PID_STATE *)Data))
-					pObj->_ForwardPIDMsgToOwner(WM_TOUCH, (const PID_STATE *)Data);
-				break;
-#if (GUI_SUPPORT_MOUSE)
-			case WM_MOUSEOVER:
-				if (pObj->_OnMouseOver((const PID_STATE *)Data))
-					pObj->_ForwardPIDMsgToOwner(WM_MOUSEOVER, (const PID_STATE *)Data);
-				break;
-#endif
 			case WM_PAINT:
 				pObj->_OnPaint();
 				return 0;
+			case WM_MENU:
+				return pObj->_OnMenu(Data);
+			case WM_TOUCH:
+				if (auto pState = (const PID_STATE *)Data) {
+					if (pObj->_HandlePID(*pState))
+						pObj->_ForwardPIDMsgToOwner(WM_TOUCH, (const PID_STATE *)Data);
+				} else pObj->_HandlePID({ -1, -1 });
+				return 0;
+#if (GUI_SUPPORT_MOUSE)
+			case WM_MOUSEOVER:
+				if (auto pState = (const PID_STATE *)Data)
+					if (pObj->_HandlePID({ *pState, -1 }))
+						pObj->_ForwardPIDMsgToOwner(WM_MOUSEOVER, (const PID_STATE *)Data);
+				return 0;
+#endif
 			case WM_DELETE: {
 				for (uint16_t i = 0, n = pObj->ItemArray.NumItems(); i < n; i++)
 					GUI_MEM_FreePtr((void **)&pObj->ItemArray[i].pText);
 				pObj->ItemArray.Delete();
-				break;
+				return 0;
 			}
 		}
-		return DefaultProc(pWin, MsgId, Data);
+		return pObj->WidgetProc(MsgId, Data);
 	}
 
 public:
@@ -638,10 +628,10 @@ public:
 		Props.aBrush[ColorIndex] = brush;
 		Invalidate();
 	}
-	void SetBorder(RECT border) {
-		if (Props.border == border)
+	void SetBorder(RECT Border) {
+		if (Props.Border == Border)
 			return;
-		Props.border = border;
+		Props.Border = Border;
 		_ResizeMenu();
 	}
 #pragma endregion

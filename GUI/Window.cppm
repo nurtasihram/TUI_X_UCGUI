@@ -509,12 +509,11 @@ public:
 	static bool DrawOnce(GUI_CONTEXT &ctx) {
 		if (!IsActive || !NumInvalidWindows)
 			return false;
-		GUI_CONTEXT ContextOld = ctx;
+		ctx.Init();
 		if (!pwDraw) pwDraw = pWinFirst;
 		for (; pwDraw; pwDraw = pwDraw->pNextLin)
 			if (pwDraw->_Paint(ctx))
 				break;
-		ctx = ContextOld;
 		return true;
 	}
 #pragma endregion

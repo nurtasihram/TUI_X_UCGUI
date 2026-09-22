@@ -300,6 +300,12 @@ private:
 	}
 	void _OnTouch(const PID_STATE *pState) {
 		if (pState) { /* Something happened in our area (pressed or released) */
+			if (pOwner)
+				if (!(ClientRect() <= *pState)) {
+					if (pState->Pressed)
+						_NotifyOwner(LISTBOX_NOTIFICATION_LOST_FOCUS);
+					return;
+				}
 			if (pState->Pressed == 0)
 				_NotifyOwner(WM_NOTIFICATION_RELEASED);
 		}
@@ -372,15 +378,10 @@ private:
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (ListBox *)pWin;
-		/* In popup mode (pOwner set), bypass WIDGET_HandleActive for WM_PID_STATE_CHANGED.
-		 * WIDGET_HandleActive internally calls SetFocus on press, which would steal
-		 * focus from the dropdown and cause its parent window to flicker. */
-		if (!(pObj->pOwner && MsgId == WM_PID_STATE_CHANGED)) {
-			/* Let widget handle the standard messages */
-			if (!pObj->HandleActive(MsgId, &Data))
-				return Data;
-		}
 		switch (MsgId) {
+			case WM_PAINT:
+				pObj->_OnPaint();
+				return 0;
 			case WM_NOTIFY_PARENT: {
 				auto pInfo = (const NOTIFY_INFO *)Data;
 				auto pWinSrc = pInfo->pWinSrc;
@@ -400,9 +401,6 @@ private:
 				}
 				return 0;
 			}
-			case WM_PAINT:
-				pObj->_OnPaint();
-				return 0;
 			case WM_PID_STATE_CHANGED: {
 				auto pInfo = (const PID_CHANGED_INFO *)Data;
 				if (pInfo->Pressed) {
@@ -415,19 +413,9 @@ private:
 				}
 				return 0;
 			}
-			case WM_TOUCH: {
-				auto pState = (const PID_STATE *)Data;
-				if (pObj->pOwner && pState) {
-					auto r = pObj->ClientRect();
-					if (pState->x < 0 || pState->y < 0 || pState->x > r.x1 || pState->y > r.y1) {
-						if (pState->Pressed)
-							pObj->_NotifyOwner(LISTBOX_NOTIFICATION_LOST_FOCUS);
-						return 0;
-					}
-				}
-				pObj->_OnTouch(pState);
+			case WM_TOUCH:
+				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
-			}
 #if GUI_SUPPORT_MOUSE
 			case WM_MOUSEOVER:
 				pObj->_OnMouseOver((const PID_STATE *)Data);
@@ -445,7 +433,7 @@ private:
 				pObj->Invalidate();
 				return 0;
 		}
-		return DefaultProc(pWin, MsgId, Data);
+		return pObj->WidgetProc(MsgId, Data);
 	}
 
 public:

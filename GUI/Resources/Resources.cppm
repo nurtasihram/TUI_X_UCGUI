@@ -17,9 +17,10 @@ extern CCURSOR
 
 extern CFONT_MONO FontMono6x8;
 extern CFONT_MONO FontMono8x8;
-extern CFONT_PROP FontProp8_1;
-extern CFONT_PROP FontProp8_ASCII;
-extern CFONT_PROP FontProp13_1;
-extern CFONT_PROP FontProp13_ASCII;
+extern CFONT_PROP FontProp8_1, FontProp8_ASCII;
+extern CFONT_PROP FontProp13_1, FontProp13_ASCII;
+
+PCFONT GUI_DEFAULT_FONT = &FontProp13_1;
+PCCURSOR GUI_DEFAULT_CURSOR = &CursorArrowM;
 
 }

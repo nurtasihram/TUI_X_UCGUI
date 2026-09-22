@@ -18,11 +18,9 @@ class Header : public Widget {
 public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
-		RGBC BkColor{ RGBC::Gray(0xAA) };
-		RGBC TextColor{ RGB_BLACK };
+		BRUSH brush{ RGBC::Gray(0xAA), RGB_BLACK };
 		PCCURSOR pCursor{ &CursorHeaderM };
-		int16_t BorderH{ 0 };
-		int16_t BorderV{ 2 };
+		POINT Border{ 0, 2 };
 	} static DefaultProps;
 
 private:
@@ -40,16 +38,14 @@ private:
 	uint16_t ScrollPos = 0;
 
 	void _OnPaint() const {
-		int xPos = -ScrollPos;
-		int NumItems = Columns.NumItems();
-		int EffectSize = this->EffectSize();
-		RECT r;
-		GUI.BkColor(Props.BkColor);
+		auto xPos = -ScrollPos;
+		auto EffectSize = this->EffectSize();
+		GUI.BkColor(Props.brush.BkColor);
 		GUI.Font(Props.pFont);
 		GUI.Clear();
-		for (int i = 0; i < NumItems; i++) {
+		for (uint16_t i = 0, NumItems = Columns.NumItems(); i < NumItems; i++) {
 			auto &col = Columns[i];
-			r = ClientRect();
+			auto r = ClientRect();
 			r.x0 = xPos;
 			r.x1 = r.x0 + col.Width;
 			if (auto pDraw = col.pDrawObj) {
@@ -76,15 +72,13 @@ private:
 				UserClip(nullptr);
 			}
 			DrawUp(r);
-			xPos += r.x1 - r.x0;
-			r.x0 += EffectSize + Props.BorderH;
-			r.x1 -= EffectSize + Props.BorderH;
-			r.y0 += EffectSize + Props.BorderV;
-			r.y1 -= EffectSize + Props.BorderV;
-			GUI.Color(Props.TextColor);
+			xPos += r.DistX();
+			r /= EffectSize;
+			r += Props.Border;
+			GUI.Brush(Props.brush);
 			GUI_DispStringInRect(col.pText, r, col.Align);
 		}
-		r = ClientRect();
+		auto r = ClientRect();
 		r.x0 = xPos;
 		r.x1 = 0xfff;
 		DrawUp(r);
@@ -180,9 +174,6 @@ private:
 #endif
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (Header *)pWin;
-		/* Let widget handle the standard messages */
-		if (!pObj->HandleActive(MsgId, &Data))
-			return Data;
 		switch (MsgId) {
 			case WM_PAINT:
 				pObj->_OnPaint();
@@ -201,7 +192,7 @@ private:
 				pObj->_FreeAttached(); /* No return here ... DefaultProc needs to be called */
 				return 0;
 		}
-		return DefaultProc(pWin, MsgId, Data);
+		return pObj->WidgetProc(MsgId, Data);
 	}
 
 private:
@@ -215,7 +206,7 @@ private:
 			r.x1 = rInside.x1;
 		if (r.y1 <= r.y0)
 			r.y1 = r.y0 + Header::DefaultProps.pFont->YSize
-				+ 2 * Header::DefaultProps.BorderV
+				+ 2 * Header::DefaultProps.Border.y
 				+ 2 * Widget::DefaultEffect->EffectSize;
 	}
 public:
@@ -233,22 +224,15 @@ public:
 		Invalidate();
 	}
 
-	void TextColor(RGBC Color) {
-		if (Props.TextColor == Color)
+	void Brush(BRUSH brush) {
+		if (Props.brush == brush)
 			return;
-		Props.TextColor = Color;
-		Invalidate();
-	}
-
-	void BkColor(RGBC Color) {
-		if (Props.BkColor == Color)
-			return;
-		Props.BkColor = Color;
+		Props.brush = brush;
 		Invalidate();
 	}
 #pragma endregion
 
-	int GetHeight() { return ClientRect().YSize(); }
+	auto GetHeight() const { return ClientRect().YSize(); }
 	void SetHeight(int Height) {
 		Size({ SizeX(), Height });
 		Parent()->Invalidate();
@@ -266,7 +250,7 @@ public:
 	void AddItem(uint16_t Width, const char *s, int Align) {
 		Column Col;
 		Col.Width = Width ? Width : 
-			Props.pFont->TextBound(s).x + 2 * (EffectSize() + Props.BorderH);
+			Props.pFont->TextBound(s).x + 2 * (EffectSize() + Props.Border.x);
 		Col.Align = Align;
 		auto Index = Columns.NumItems();
 		if (Columns.AddItem(&Col) == 0) {

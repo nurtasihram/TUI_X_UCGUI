@@ -431,6 +431,8 @@ private:
 	}
 #endif
 	bool _HandleResizeable(int MsgId, WM_PARAM Data) {
+		if (!(States & FRAMEWIN_CF_RESIZEABLE))
+			return false;
 		if (HasCaptured() && !_CaptureFlags)
 			return false;
 		if (IsMinimized() || IsMaximized())
@@ -456,67 +458,62 @@ private:
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (Frame *)pWin;
-		if (pObj->States & FRAMEWIN_CF_RESIZEABLE)
-			if (pObj->_HandleResizeable(MsgId, Data))
-				return 0;
+		if (pObj->_HandleResizeable(MsgId, Data))
+			return 0;
 		switch (MsgId) {
-		case WM_PAINT:
-			pObj->_OnPaint();
-			return 0;
-		case WM_TOUCH:
-			pObj->_OnTouch((const PID_STATE *)Data);
-			return 0;
-		case WM_GET_INSIDE_RECT: {
-			*(RECT *)Data = pObj->_CalcPositions().rClient;
-			return 0;
-		}
-		case WM_HANDLE_DIALOG_STATUS:
-			return pObj->pClient->Require(WM_HANDLE_DIALOG_STATUS, Data);
-		case WM_GET_CLIENT_WINDOW: /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
-			return (WM_PARAM)pObj->pClient;
-		case WM_NOTIFY_PARENT: {
-			auto pInfo = (const NOTIFY_INFO *)Data;
-			auto pWinSrc = pInfo->pWinSrc;
-			switch (pInfo->Notification) {
-			case WM_NOTIFICATION_RELEASED:
-				switch (pWinSrc->GetID()) {
-					case GUI_ID_CLOSE:
-						delete pObj;
-						break;
-					case GUI_ID_MAXIMIZE:
-						if (pObj->States & FRAMEWIN_CF_MAXIMIZED)
-							pObj->Restore();
-						else
-							pObj->Maximize();
-						break;
-					case GUI_ID_MINIMIZE:
-						if (pObj->States & FRAMEWIN_CF_MINIMIZED)
-							pObj->Restore();
-						else
-							pObj->Minimize();
-						break;
+			case WM_PAINT:
+				pObj->_OnPaint();
+				return 0;
+			case WM_TOUCH:
+				pObj->_OnTouch((const PID_STATE *)Data);
+				return 0;
+			case WM_GET_INSIDE_RECT:
+				*(RECT *)Data = pObj->_CalcPositions().rClient;
+				return 0;
+			case WM_HANDLE_DIALOG_STATUS:
+				return pObj->pClient->Require(WM_HANDLE_DIALOG_STATUS, Data);
+			case WM_GET_CLIENT_WINDOW: /* return handle to client window. For most windows, there is no seperate client window, so it is the same handle */
+				return (WM_PARAM)pObj->pClient;
+			case WM_NOTIFY_PARENT: {
+				auto pInfo = (const NOTIFY_INFO *)Data;
+				auto pWinSrc = pInfo->pWinSrc;
+				switch (pInfo->Notification) {
+				case WM_NOTIFICATION_RELEASED:
+					switch (pWinSrc->GetID()) {
+						case GUI_ID_CLOSE:
+							delete pObj;
+							break;
+						case GUI_ID_MAXIMIZE:
+							if (pObj->States & FRAMEWIN_CF_MAXIMIZED)
+								pObj->Restore();
+							else
+								pObj->Maximize();
+							break;
+						case GUI_ID_MINIMIZE:
+							if (pObj->States & FRAMEWIN_CF_MINIMIZED)
+								pObj->Restore();
+							else
+								pObj->Minimize();
+							break;
+					}
+					break;
 				}
-				break;
+				return 0;
 			}
-			return 0;
+			case WM_SET_FOCUS: /* We have received or lost focus */
+				if (Data)
+					pObj->pClient->SetFocus();
+				pObj->SetActive(Data);
+				return 0;
+			case WM_NOTIFY_CHILD_HAS_FOCUS:
+				pObj->_OnChildHasFocus((const NOTIFY_CHILD_HAS_FOCUS_INFO *)Data);
+				return 0;
+			case WM_DELETE:
+				GUI_MEM_Free(pObj->pText);
+				pObj->pText = nullptr;
+				return 0;
 		}
-		case WM_SET_FOCUS: /* We have received or lost focus */
-			if (Data)
-				pObj->pClient->SetFocus();
-			pObj->SetActive(Data);
-			return 0;
-		case WM_NOTIFY_CHILD_HAS_FOCUS:
-			pObj->_OnChildHasFocus((const NOTIFY_CHILD_HAS_FOCUS_INFO *)Data);
-			break;
-		case WM_DELETE:
-			GUI_MEM_Free(pObj->pText);
-			pObj->pText = nullptr;
-			break;
-		}
-		/* Let widget handle the standard messages */
-		if (!pObj->HandleActive(MsgId, &Data))
-			return Data;
-		return DefaultProc(pWin, MsgId, Data);
+		return pObj->WidgetProc(MsgId, Data);
 	}
 
 public:

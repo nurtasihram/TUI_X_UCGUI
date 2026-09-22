@@ -238,9 +238,6 @@ private:
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (ScrollBar *)pWin;
-		/* Let widget handle the standard messages */
-		if (!pObj->HandleActive(MsgId, &Data))
-			return Data;
 		switch (MsgId) {
 			case WM_PAINT:
 				pObj->_OnPaint();
@@ -260,9 +257,9 @@ private:
 				return 0;
 			case WM_GET_SCROLL_STATE:
 				*(SCROLL_STATE *)Data = pObj->ScrollState;
-				break;
+				return 0;
 		}
-		return DefaultProc(pWin, MsgId, Data);
+		return pObj->WidgetProc(MsgId, Data);
 	}
 
 private:

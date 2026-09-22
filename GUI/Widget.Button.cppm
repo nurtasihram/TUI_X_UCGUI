@@ -8,9 +8,9 @@ import TUX.Widget;
 
 export {
 
-constexpr uint16_t BUTTON_STATE_FOCUS       = WIDGET_STATE_FOCUS;
-constexpr uint16_t BUTTON_STATE_PRESSED     = WIDGET_STATE_USER<0>;
-constexpr uint16_t BUTTON_STATE_HASFOCUS    = 0;
+constexpr uint16_t 
+	BUTTON_STATE_HASFOCUS    = 0,
+	BUTTON_STATE_PRESSED     = WIDGET_STATE_USER<0>;
 
 enum BUTTON_BI {
 	 BUTTON_BI_UNPRESSED = 0,
@@ -79,7 +79,7 @@ private:
 		GUI_DispStringInRect(text, rInside, Props.Align);
 		UserClip(nullptr);
 		/* Draw focus */
-		if (States & BUTTON_STATE_FOCUS) {
+		if (States & WIDGET_STATE_FOCUS) {
 			GUI.Color(RGB_BLACK);
 			GUI_DrawFocusRect(rClient, EffectSize + 1);
 		}
@@ -135,20 +135,17 @@ private:
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (Button *)pWin;
-		/* Let widget handle the standard messages */
-		if (!pObj->HandleActive(MsgId, &Data))
-			return Data;
 		switch (MsgId) {
+			case WM_PAINT:
+				pObj->_OnPaint();
+				return 0;
 #if BUTTON_REACT_ON_LEVEL
 			case WM_PID_STATE_CHANGED:
 				pObj->_OnPidStateChange((const PID_CHANGED_INFO *)Data);
-				return 0; /* Message handled. Do not call DefaultProc, because the window may have been destroyed */
+				return 0;
 #endif
 			case WM_TOUCH:
 				pObj->_OnTouch((const PID_STATE *)Data);
-				return 0; /* Message handled. Do not call DefaultProc, because the window may have been destroyed */
-			case WM_PAINT:
-				pObj->_OnPaint();
 				return 0;
 			case WM_DELETE:
 				pObj->~Button();
@@ -158,7 +155,7 @@ private:
 					return 0;
 				break;
 		}
-		return DefaultProc(pWin, MsgId, Data);
+		return pObj->WidgetProc(MsgId, Data);
 	}
 
 public:

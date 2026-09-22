@@ -151,46 +151,42 @@ protected:
 	
 	RECT _GetInsideRect() const { return ClientRect() / EffectSize(); }
 
-	bool HandleActive(int MsgId, WM_PARAM *Data) {
+	WM_PARAM WidgetProc(int MsgId, WM_PARAM Data) {
 		switch (MsgId) {
 			case WM_WIDGET_SET_EFFECT: {
 				auto Diff = EffectSize();
-				pEffect = (const WIDGET_EFFECT *)*Data;
+				pEffect = (const WIDGET_EFFECT *)Data;
 				Diff -= EffectSize();
 				if (Diff)
 					_UpdateChildPositions({ -Diff, Diff });
 				Invalidate();
-				return false; /* Message handled -> Return */
+				return 0;
 			}
 			case WM_GET_ID:
-				*Data = Id;
-				return false; /* Message handled -> Return */
+				return Id;
 			case WM_PID_STATE_CHANGED:
 				if (IsFocussable()) {
-					auto pInfo = (const PID_CHANGED_INFO *)*Data;
+					auto pInfo = (const PID_CHANGED_INFO *)Data;
 					if (pInfo->Pressed)
 						SetFocus();
 				}
-				break;
-			case WM_TOUCH_CHILD: {
+				return 0;
+			case WM_TOUCH_CHILD:
 				/* A descendent (child) has been touched or released.
 				   If it has been touched, we need to get to top.
 				 */
-				auto pState = (const PID_STATE *)*Data;
-				if (pState) { /* Message may not have a valid pointer (moved out) ! */
+				if (auto pState = (const PID_STATE *)Data) /* Message may not have a valid pointer (moved out) ! */
 					if (pState->Pressed) {
 						BringToTop();
 						return false; /* Message handled -> Return */
 					}
-				}
-				break;
-			}
+				return 0;
 			case WM_SET_ID:
-				Id = (int16_t)*Data;
-				return false; /* Message handled -> Return */
+				Id = (int16_t)Data;
+				return 0;
 			case WM_SET_FOCUS: {
 				int Notification;
-				if (*Data) {
+				if (Data) {
 					SetStates(States | WIDGET_STATE_FOCUS);
 					Notification = WM_NOTIFICATION_GOT_FOCUS;
 				}
@@ -199,17 +195,15 @@ protected:
 					Notification = WM_NOTIFICATION_LOST_FOCUS;
 				}
 				NotifyParent(Notification);
-				*Data = 0;   /* Focus change accepted */
-				return false;
+				return false; /* Focus change accepted */
 			}
 			case WM_GET_ACCEPT_FOCUS:
-				*(bool *)Data = IsFocussable(); /* Can handle focus */
-				return false; /* Message handled */
+				return IsFocussable(); /* Can handle focus */
 			case WM_GET_INSIDE_RECT:
-				*(RECT *)*Data = _GetInsideRect();
-				return false; /* Message handled */
+				*(RECT *)Data = _GetInsideRect();
+				return 0;
 		}
-		return true; /* Message NOT handled */
+		return DefaultProc(this, MsgId, Data);
 	}
 
 public:
