@@ -28,9 +28,6 @@ struct NOTIFY_CHILD_HAS_FOCUS_INFO {
 
 typedef WM_PARAM WM_CALLBACK(WObj *pWin, int MsgId, WM_PARAM Data);
 
-/* Scroll functions */
-WObj*WM_GetScrollPartner(WObj *pWin);
-
 class WObj {
 	RECT rWin, rInvalid;
 	WObj *pNextLin = nullptr, *pNext = nullptr,

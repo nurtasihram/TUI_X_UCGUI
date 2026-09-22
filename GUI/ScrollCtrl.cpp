@@ -13,15 +13,6 @@ static void _SetScrollbar(WObj *pWin, int OnOff, int Id, int Flags) {
 void WObj::SetScrollbarV(bool OnOff) { _SetScrollbar(this, OnOff, GUI_ID_VSCROLL, SCROLLBAR_CF_VERTICAL); }
 void WObj::SetScrollbarH(bool OnOff) { _SetScrollbar(this, OnOff, GUI_ID_HSCROLL, 0); }
 
-WObj *WM_GetScrollPartner(WObj *pScroll) {
-	int Id = pScroll->GetID();
-	if (Id == GUI_ID_HSCROLL)
-		Id = GUI_ID_VSCROLL;
-	else if (Id == GUI_ID_VSCROLL)
-		Id = GUI_ID_HSCROLL;
-	return pScroll->Parent()->GetItem<ScrollBar>(Id);
-}
-
 /*********************************************************************
 *
 *       InsideRectEx

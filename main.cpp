@@ -299,7 +299,7 @@ static void _CreateMenu(Frame *pParent) {
 	//
 	// Attach menu to parent window
 	//
-	pParent->AddMenu(pMenu);
+	pParent->SetMenu(pMenu);
 }
 void _TestListBox() {
 	auto pDialog = (Frame *)_aDialogCreate->CreateDialog(GUI_COUNTOF(_aDialogCreate), &_cbCallback, 0, 0, 0);

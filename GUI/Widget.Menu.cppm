@@ -537,7 +537,7 @@ private:
 
 public:
 	Menu(uint16_t ExFlags, int Id) :
-		Widget({}, WC_VISIBLE | WC_STAYONTOP, _Callback, nullptr, Id, ExFlags | WIDGET_STATE_FOCUSSABLE) {
+		Widget({}, WC_VISIBLE | WC_STAYONTOP, _Callback, nullptr, Id, ExFlags) {
 		Detach();
 		if (ExFlags & MENU_CF_OPEN_ON_POINTEROVER)
 			States |= MENU_SF_ACTIVE;

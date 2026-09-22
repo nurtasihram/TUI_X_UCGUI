@@ -51,13 +51,9 @@ public:
 			/* lost focused */ { RGBC::Gray(0x80) , RGB_BLACK },
 			/* focused      */ { RGBC::Blue(0x80) , RGB_WHITE }
 		};
-		RGBC ClientColor{ RGBC::Gray(0xE4) };
 		RGBC FrameColor{ RGBC::Gray(0xAA) };
 		uint16_t TitleHeight{ 20 };
-		uint16_t BorderSize{ 2 };
-		uint16_t IBorderSize{ 1 };
 		TEXTALIGN Align{ TEXTALIGN_VCENTER };
-		uint8_t Border{ 0 };
 	} static DefaultProps;
 	
 private:
@@ -71,12 +67,9 @@ private:
 	struct POSITIONS {
 		int16_t TitleHeight;
 		int16_t MenuHeight;
+		RECT rTitleBar;
 		RECT rClient;
-		RECT rTitleText;
 	};
-
-	int _IBorderSize() const
-	{ return States & FRAMEWIN_CF_TITLEVIS ? Props.IBorderSize : 0; }
 
 	int _CalcTitleHeight() const {
 		return States & FRAMEWIN_CF_TITLEVIS ? 
@@ -87,33 +80,18 @@ private:
 	}
 
 	POSITIONS _CalcPositions() const {
-		auto BorderSize = Props.BorderSize;
-		int IBorderSize = _IBorderSize();
+		auto EffectSize = this->EffectSize();
 		POSITIONS Pos;
 		Pos.TitleHeight = _CalcTitleHeight();
 		Pos.MenuHeight = pMenu ? pMenu->SizeY() : 0;
 		/* Set object properties accordingly */
-		Pos.rClient = ClientRect() / BorderSize;
-		Pos.rClient.y0 += IBorderSize + Pos.TitleHeight + Pos.MenuHeight;
+		Pos.rClient = ClientRect() / EffectSize;
+		Pos.rClient.y0 += Pos.TitleHeight + Pos.MenuHeight;
 		/* Calculate title rect */
-		Pos.rTitleText.x0 = BorderSize;
-		Pos.rTitleText.x1 = Pos.rClient.x1 - BorderSize - 1;
-		Pos.rTitleText.y0 = BorderSize;
-		Pos.rTitleText.y1 = BorderSize + Pos.TitleHeight - 1;
-		/* Iterate over all children */
-		for (auto pChild = FirstChild(); pChild; pChild = pChild->NextSibling()) {
-			int x0 = pChild->LeftTop().x - LeftTop().x;
-			int y0 = pChild->LeftTop().y - LeftTop().y;
-			int x1 = pChild->Rect().x1 - LeftTop().x;
-			if (y0 == BorderSize) {
-				if (pChild->GetFlags() & WC_ANCHOR_RIGHT) {
-					if (x0 <= Pos.rTitleText.x1)
-						Pos.rTitleText.x1 = x0 - 1;
-				}
-				else if (x1 >= Pos.rTitleText.x0)
-					Pos.rTitleText.x0 = x1 + 1;
-			}
-		}
+		Pos.rTitleBar.x0 = EffectSize;
+		Pos.rTitleBar.x1 = Pos.rClient.x1;
+		Pos.rTitleBar.y0 = EffectSize;
+		Pos.rTitleBar.y1 = EffectSize + Pos.TitleHeight;
 		return Pos;
 	}
 	void _UpdatePositions() {
@@ -128,43 +106,6 @@ private:
 				pMenu->MoveChildTo({ Pos.rClient.x0, Pos.rClient.y0 - Pos.MenuHeight });
 		}
 	}
-	void _UpdateButtons(int OldHeight) {
-		int TitleHeight = _CalcTitleHeight();
-		int Diff = TitleHeight - OldHeight;
-		if (Diff) {
-			WObj *pLeft, *pRight, *pChild;
-			int xLeft, xRight, n = 0;
-			do {
-				pLeft = pRight = nullptr;
-				xLeft = GUI_XMAX;
-				xRight = GUI_XMIN;
-				for (pChild = FirstChild(); pChild; pChild = pChild->NextSibling()) {
-					auto r = pChild->Rect() - LeftTop();
-					if ((r.y0 == Props.BorderSize) && ((r.y1 - r.y0 + 1) == OldHeight)) {
-						if (pChild->GetFlags() & WC_ANCHOR_RIGHT) {
-							if (r.x1 > xRight) {
-								pRight = pChild;
-								xRight = r.x0;
-							}
-						}
-						else if (r.x0 < xLeft) {
-							pLeft = pChild;
-							xLeft = r.x0;
-						}
-					}
-				}
-				if (pLeft) {
-					pLeft->Resize(Diff);
-					pLeft->Move({ n * Diff, 0 });
-				}
-				if (pRight) {
-					pRight->Resize(Diff);
-					pRight->Move({ -(n * Diff), 0 });
-				}
-				n++;
-			} while (pLeft || pRight);
-		}
-	}
 	void _OnTouch(const PID_STATE *pState) {
 		if (pState) {  /* Something happened in our area (pressed or released) */
 			if (pState->Pressed) {
@@ -177,34 +118,12 @@ private:
 		}
 	}
 	void _OnPaint() const {
-		auto size = Size();
-		auto BorderSize = Props.BorderSize;
 		auto &&Pos = _CalcPositions();
-		RECT r{
-			Pos.rClient.x0,
-			Pos.rTitleText.y0,
-			Pos.rClient.x1,
-			Pos.rTitleText.y1
-		};
-		/* Perform computations */
-		Pos.rTitleText.y0++;
-		Pos.rTitleText.x0++;
-		Pos.rTitleText.x1--;
 		GUI.Font(Props.pFont);
-		auto y0 = Pos.TitleHeight + BorderSize;
-		/* Draw Title */
 		GUI.Brush(Props.aBrush[States & FRAMEWIN_CF_ACTIVE ? FRAME_CI_FOCUSSED : FRAME_CI_UNFOCUS]);
-		WIDGET__FillStringInRect(pText, r, Pos.rTitleText);
-		/* Draw Frame */
-		GUI.Color(Props.FrameColor);
-		GUI.FillRect({ 0, 0, size.x - 1, BorderSize - 1 });
-		GUI.FillRect({ 0, 0, Pos.rClient.x0 - 1, size.y - 1 });
-		GUI.FillRect({ Pos.rClient.x1 + 1, 0, size.x - 1, size.y - 1 });
-		GUI.FillRect({ 0, Pos.rClient.y1 + 1, size.x - 1, size.y - 1 });
-		GUI.FillRect({ 0, y0, size.x - 1, y0 + Props.IBorderSize - 1 });
-		/* Draw the 3D effect (if configured) */
-		if (Props.BorderSize >= 2)
-			DrawUp();
+		GUI.Clear(Pos.rTitleBar);
+		GUI_DispStringInRect(pText, Pos.rTitleBar, Props.Align);
+		DrawUp();
 	}
 	void _OnChildHasFocus(const NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
 		if (pInfo) 
@@ -537,23 +456,13 @@ public:
 public:
 
 #pragma region Properties
-	UCFONT Font() const { return *Props.pFont; }
+	PCFONT Font() const { return Props.pFont; }
 	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
 		int OldHeight = _CalcTitleHeight();
 		Props.pFont = pFont;
 		_UpdatePositions();
-		_UpdateButtons(OldHeight);
-		Invalidate();
-	}
-
-	int GetBorderSize() const { return Props.BorderSize; }
-
-	void TextAlign(TEXTALIGN Align) {
-		if (Props.Align == Align)
-			return;
-		Props.Align = Align;
 		Invalidate();
 	}
 
@@ -564,11 +473,11 @@ public:
 		Invalidate();
 	}
 
-	void ClientColor(RGBC Color) {
-		if (Props.ClientColor == Color)
+	void TextAlign(TEXTALIGN Align) {
+		if (Props.Align == Align)
 			return;
-		Props.ClientColor = Color;
-		pClient->Invalidate();
+		Props.Align = Align;
+		Invalidate();
 	}
 #pragma endregion
 
@@ -577,22 +486,16 @@ public:
 			Invalidate();
 	}
 
-	void SetMoveable(bool bMoveable) {
-		CtlStates(FRAMEWIN_CF_MOVEABLE, bMoveable);
-	}
+	void SetMoveable(bool bMoveable) { CtlStates(FRAMEWIN_CF_MOVEABLE, bMoveable); }
 
-	void SetActive(bool bActive) {
-		CtlStates(FRAMEWIN_CF_ACTIVE, bActive);
-	}
+	void SetActive(bool bActive) { CtlStates(FRAMEWIN_CF_ACTIVE, bActive); }
 
-	void AddMenu(Menu *pMenu) {
+	void SetMenu(Menu *pMenu) {
 		auto TitleHeight = _CalcTitleHeight();
-		uint16_t BorderSize = Props.BorderSize, IBorderSize = _IBorderSize();
-		auto xSize = SizeX() - BorderSize * 2;
 		this->pMenu = pMenu;
 		if (pClient)
 			pMenu->SetOwner(pClient);
-		pMenu->AttachMenu(this, { BorderSize, BorderSize + TitleHeight + IBorderSize }, xSize, 0);
+		pMenu->AttachMenu(this, { 0, TitleHeight }, SizeX() - EffectSize() * 2, 0);
 		pMenu->Anchor(WC_ANCHOR_LEFT | WC_ANCHOR_RIGHT);
 		_UpdatePositions();
 		Invalidate();
@@ -666,24 +569,6 @@ public:
 	}
 #pragma endregion
 
-	void SetBorderSize(unsigned Size) {
-		int OldHeight = _CalcTitleHeight();
-		int OldSize = Props.BorderSize;
-		int Diff = Size - OldSize;
-		for (auto pChild = FirstChild(); pChild; pChild = pChild->NextSibling()) {
-			auto r = pChild->Rect() - LeftTop();
-			if (r.y0 == Props.BorderSize && r.YSize() == OldHeight) {
-				if (pChild->GetFlags() & WC_ANCHOR_RIGHT)
-					pChild->Move({ -Diff, Diff });
-				else
-					pChild->Move(Diff);
-			}
-		}
-		Props.BorderSize = Size;
-		_UpdatePositions();
-		Invalidate();
-	}
-
 	void SetResizeable(int bOn) {
 		States = bOn ?
 			States | FRAMEWIN_CF_RESIZEABLE :
@@ -693,10 +578,8 @@ public:
 	void SetTitleHeight(int Height) {
 		if (Props.TitleHeight == Height)
 			return;
-		auto OldHeight = _CalcTitleHeight();
 		Props.TitleHeight = Height;
 		_UpdatePositions();
-		_UpdateButtons(OldHeight);
 		Invalidate();
 	}
 
@@ -705,7 +588,7 @@ public:
 			return;
 		_UpdatePositions();
 		for (auto pChild = FirstChild(); pChild; pChild = pChild->NextSibling())
-			if (pChild->LeftTop().y - LeftTop().y == Props.BorderSize && pChild != pClient) {
+			if (pChild->LeftTop().y - LeftTop().y == 0 && pChild != pClient) {
 				if (States & FRAMEWIN_CF_MINIMIZED)
 					pChild->ShowWindow();
 				else
@@ -723,19 +606,18 @@ public:
 #pragma region Buttons
 	Button *AddButton(int Flags, int Off, int Id) {
 		auto Size = _CalcTitleHeight();
-		auto BorderSize = GetBorderSize();
 		int WinFlags, x;
 		auto &&Pos = _CalcPositions();
 		if (Flags & FRAMEWIN_BUTTON_RIGHT) {
-			x = Pos.rTitleText.x1 - (Size - 1) - Off;
+			x = Pos.rTitleBar.x1 - (Size - 1) - Off;
 			WinFlags = WC_VISIBLE | WC_ANCHOR_RIGHT;
 		}
 		else {
-			x = Pos.rTitleText.x0 + Off;
+			x = Pos.rTitleBar.x0 + Off;
 			WinFlags = WC_VISIBLE;
 		}
-		auto r = new Button(RECT::LeftTop({ x, BorderSize }, Size), WinFlags, this, Id);
-		r->SetFocussable(0);
+		auto r = new Button(RECT::LeftTop({ x, 0 }, Size), WinFlags, this, Id);
+		r->SetFocussable(false);
 		return r;
 	}
 	Button *AddCloseButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {

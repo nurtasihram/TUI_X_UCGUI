@@ -244,15 +244,12 @@ public:
 
 };
 
-void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax) {
+void 
+WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax) {
 	/* Check if we have anything to do at all ... */
 	auto r = FillRect + GUI.Off;
-	if (!(r <= GUI.rClip))
-		return;
 	/* Fill border */
 	GUI.Clear(FillRect);
-	if (!pText) return;
-	if (!*pText) return;
 	/* Set clipping rectangle */
 	auto prOldClip = WObj::UserClip(&TextRectMax);
 	/* Display text */

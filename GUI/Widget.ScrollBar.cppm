@@ -231,9 +231,14 @@ private:
 	}
 
 	void _InvalidatePartner() { /* Invalidate the partner, since it is also affected */
-		if (auto pScroll = WM_GetScrollPartner(this))
+		auto Id = GetID();
+		if (Id == GUI_ID_HSCROLL)
+			Id = GUI_ID_VSCROLL;
+		else if (Id == GUI_ID_VSCROLL)
+			Id = GUI_ID_HSCROLL;
+		if (auto pScroll = Parent()->GetItem<ScrollBar>(Id))
 			pScroll->Invalidate();
-		Parent()->Require(WM_NOTIFY_CLIENTCHANGE);   /* Client area may have changed */
+		Parent()->Require(WM_NOTIFY_CLIENTCHANGE); /* Client area may have changed */
 	}
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {

@@ -38,7 +38,6 @@ private:
 	int16_t ySizeEx; /* Drop down size */
 	int16_t TextHeight = 0;
 	ARRAY<char *> Handles;
-	SCROLL_STATE ScrollState;
 	ListBox *pListWin = nullptr;
 	uint16_t ItemSpacing = 0;
 	uint8_t  ScrollbarWidth = 0;
