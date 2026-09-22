@@ -537,7 +537,7 @@ static const Widget::CreateStruct _aDropDownDialogCreate[]{
 	{ Frame   ::CreateIndirect, "DropDown Test"      , 0                      , 50  , 40  , 390 , 230 , FRAMEWIN_CF_MOVEABLE       },
 	{ DropDown::CreateIndirect, ""                   , ID_DROPDOWN_TEST       , 10  , 10  , 220 , 96  , 0                          },
 	{ Text    ::CreateIndirect, "Use the DropDown or buttons below to interact."
-	                                                                            , 0   , 10  , 45  , 360 , 16 , TEXT_CF_LEFT          },
+	                                                                          , 0   , 10  , 45  , 360 , 16 , TEXT_CF_LEFT          },
 	{ Button  ::CreateIndirect, "Add Item"           , ID_DROPDOWN_ADD        , 10  , 70  , 80  , 25                               },
 	{ Button  ::CreateIndirect, "Insert"             , ID_DROPDOWN_INSERT     , 95  , 70  , 80  , 25                               },
 	{ Button  ::CreateIndirect, "Delete"             , ID_DROPDOWN_DELETE     , 180 , 70  , 80  , 25                               },

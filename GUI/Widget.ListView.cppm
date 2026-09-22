@@ -62,20 +62,14 @@ private:
 		return RowDistY ? RowDistY :
 			Props.pFont->YSize + (States & LISTVIEW_CF_SHOWGRID ? 1 : 0);
 	}
-	auto _GetNumVisibleRows() {
-		RECT Rect;
-		WM_GetInsideRectExScrollbar(this, &Rect);
+	auto _GetNumVisibleRows() const {
 		if (auto RowDistY = _GetRowDistY()) {
-			auto r = (Rect.YSize() - pHeader->GetHeight()) / RowDistY;
+			auto r = (InsideRectEx().YSize() - pHeader->GetHeight()) / RowDistY;
 			return r ? r : 1;
 		}
 		return 1;
 	}
-	int _GetXSize() {
-		RECT Rect;
-		WM_GetInsideRectExScrollbar(this, &Rect);
-		return Rect.x1 + 1;
-	}
+	int _GetXSize() const { return InsideRectEx().XSize(); }
 	int _GetHeaderWidth() const {
 		int r = 1;
 		for (uint16_t i = 0, NumItems = pHeader->GetNumItems(); i < NumItems; i++)
@@ -85,7 +79,7 @@ private:
 		return r;
 	}
 
-	void _OnPaint() {
+	void _OnPaint() const {
 		/* Init some values */
 		auto NumColumns = pHeader->GetNumItems(), NumRows = RowArray.NumItems();
 		auto NumVisRows = _GetNumVisibleRows();
@@ -94,9 +88,8 @@ private:
 		auto yPos = pHeader->GetHeight() + EffectSize;
 		auto EndRow = ScrollStateV.v + (((NumVisRows + 1) > NumRows) ? NumRows : NumVisRows + 1);
 		/* Calculate clipping rectangle */
-		RECT rClient;
 		auto rClip = GetInvalidRect() - LeftTop();
-		WM_GetInsideRectExScrollbar(this, &rClient);
+		auto rClient = InsideRectEx();
 		rClip &= rClient;
 		/* Set drawing color, font and text mode */
 		GUI.Font(Props.pFont);
@@ -170,34 +163,30 @@ private:
 	}
 	void _InvalidateRowAndBelow(int Sel) {
 		if (Sel >= 0) {
-			RECT Rect;
-			WM_GetInsideRectExScrollbar(this, &Rect);
-			Rect.y0 += pHeader->GetHeight() + (Sel - ScrollStateV.v) * _GetRowDistY();
-			Invalidate(&Rect);
+			auto r = InsideRectEx();
+			r.y0 += pHeader->GetHeight() + (Sel - ScrollStateV.v) * _GetRowDistY();
+			Invalidate(&r);
 		}
 	}
 	void _InvalidateInsideArea() {
-		RECT Rect;
-		WM_GetInsideRectExScrollbar(this, &Rect);
-		Rect.y0 += pHeader->GetHeight();
-		Invalidate(&Rect);
+		auto r = InsideRectEx();
+		r.y0 += pHeader->GetHeight();
+		Invalidate(&r);
 	}
 	void _InvalidateRow(int Sel) {
 		if (Sel >= 0) {
-			RECT Rect;
-			WM_GetInsideRectExScrollbar(this, &Rect);
+			auto r = InsideRectEx();
 			auto RowDistY = _GetRowDistY();
-			Rect.y0 += pHeader->GetHeight() + (Sel - ScrollStateV.v) * RowDistY;
-			Rect.y1 = Rect.y0 + RowDistY - 1;
-			Invalidate(&Rect);
+			r.y0 += pHeader->GetHeight() + (Sel - ScrollStateV.v) * RowDistY;
+			r.y1 = r.y0 + RowDistY - 1;
+			Invalidate(&r);
 		}
 	}
 
 	void _SetSelFromPos(POINT Pos) {
-		RECT Rect;
-		WM_GetInsideRectExScrollbar(this, &Rect);
-		if (!(Rect <= Pos)) return;
-		auto Sel = (Pos.y - Rect.y0 - pHeader->GetHeight()) / _GetRowDistY() + ScrollStateV.v;
+		auto r = InsideRectEx();
+		if (!(r <= Pos)) return;
+		auto Sel = (Pos.y - r.y0 - pHeader->GetHeight()) / _GetRowDistY() + ScrollStateV.v;
 		if (Sel < RowArray.NumItems())
 			SetSel(Sel);
 	}

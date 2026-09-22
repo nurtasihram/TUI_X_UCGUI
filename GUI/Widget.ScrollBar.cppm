@@ -5,9 +5,9 @@ export module TUX.Widget.ScrollBar;
 import TUX.Widget;
 
 export {
-constexpr uint16_t SCROLLBAR_CF_FOCUSSABLE   = WIDGET_STATE_FOCUSSABLE;
-constexpr uint16_t SCROLLBAR_CF_VERTICAL     = WIDGET_STATE_USER<0>;
-constexpr uint16_t SCROLLBAR_STATE_PRESSED   = WIDGET_STATE_USER<1>;
+constexpr uint16_t
+	SCROLLBAR_CF_VERTICAL     = WIDGET_STATE_USER<0>,
+	SCROLLBAR_STATE_PRESSED   = WIDGET_STATE_USER<1>;
 
 struct SCROLLBAR_POSITIONS {
 	int16_t x0_LeftArrow = 0,
@@ -269,19 +269,19 @@ private:
 	static void _AdjRect(RECT &r, WObj *pParent, bool bVertical) {
 		if (r.x1 > r.x0 && r.y1 > r.y0)
 			return;
-		auto Rect = pParent->InsideRect();
+		auto rClient = pParent->InsideRect();
 		if (bVertical) {
-			r.y0 = Rect.y0;
-			r.y1 = Rect.y1;
+			r.y0 = rClient.y0;
+			r.y1 = rClient.y1;
 			if (r.x1 <= r.x0)
-				r.x1 = Rect.x1;
+				r.x1 = rClient.x1;
 			r.x0 = r.x1 - ScrollBar::DefaultWidth;
 		}
 		else {
-			r.x0 = Rect.x0;
-			r.x1 = Rect.x1;
+			r.x0 = rClient.x0;
+			r.x1 = rClient.x1;
 			if (r.y1 <= r.y0)
-				r.y1 = Rect.x1;
+				r.y1 = rClient.x1;
 			r.y0 = r.y1 - ScrollBar::DefaultWidth;
 		}
 	}

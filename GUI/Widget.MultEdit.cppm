@@ -73,17 +73,12 @@ private:
 		}
 		return NumChars;
 	}
-	int _GetXSize() {
-		RECT Rect;
-		WM_GetInsideRectExScrollbar(this, &Rect);
-		return Rect.x1 - Rect.x0 - (Props.HBorder * 2) - 1;
-	}
+	auto _GetXSize() const { return InsideRectEx().XSize() - Props.HBorder * 2; }
 	int _GetNumCharsInPrompt(const char *pText) {
-		int r = 0;
 		auto pEndPrompt = this->pText + NumCharsPrompt;
 		if (pText < pEndPrompt)
-			r = (int)(pEndPrompt - pText);
-		return r;
+			return (int)(pEndPrompt - pText);
+		return 0;
 	}
 	int _NumChars2XSize(const char *pText, int NumChars) {
 		int xSize = 0;
@@ -213,11 +208,7 @@ private:
 		}
 		return TextSizeX;
 	}
-	int _GetNumVisLines() {
-		RECT Rect;
-		WM_GetInsideRectExScrollbar(this, &Rect);
-		return (Rect.y1 - Rect.y0 + 1) / Props.pFont->YSize;
-	}
+	auto _GetNumVisLines() const { return InsideRectEx().YSize() / Props.pFont->YSize; }
 	int _GetNumLines() {
 		if (InvalidFlags & INVALID_NUMLINES) {
 			int NumLines = 0;
@@ -256,7 +247,8 @@ private:
 	void _ManageAutoScrollV() {
 		if (States & MULTEDIT_CF_AUTOSCROLLBAR_V) {
 			auto IsRequired = _GetNumVisLines() < _GetNumLines();
-			if (WM_SetScrollbarV(this, IsRequired) != IsRequired) {
+			if ((bool)GetScrollbarV() != IsRequired) {
+				SetScrollbarV(IsRequired);
 				_InvalidateNumLines();
 				_InvalidateTextSizeX();
 				_InvalidateCursorXY();
@@ -269,8 +261,9 @@ private:
 		_ManageAutoScrollV();
 		/* 2. Step: Check if horizontal scrollbar is required */
 		if (States & MULTEDIT_CF_AUTOSCROLLBAR_H) {
-			auto IsRequired = (_GetXSize() < _GetTextSizeX());
-			if (WM_SetScrollbarH(this, IsRequired) != IsRequired) {
+			auto IsRequired = _GetXSize() < _GetTextSizeX();
+			if ((bool)GetScrollbarH() != IsRequired) {
+				SetScrollbarH(IsRequired);
 				/* 3. Step: Check vertical scrollbar again if horizontal has changed */
 				_ManageAutoScrollV();
 			}
@@ -282,14 +275,12 @@ private:
 		Invalidate();
 	}
 	void _InvalidateTextArea() {
-		RECT rInsideRect;
+		auto rInside = InsideRectEx();
 		_ManageScrollers();
-		WM_GetInsideRectExScrollbar(this, &rInsideRect);
-		Invalidate(&rInsideRect);
+		Invalidate(&rInside);
 	}
 	int _InvalidateCursorPos() {
-		int Value;
-		Value = this->CursorPosChar;
+		auto Value = this->CursorPosChar;
 		this->CursorPosChar = 0xffff;
 		return Value;
 	}
@@ -728,15 +719,15 @@ private:
 
 private:
 	static void _AdjRect(RECT &r, WObj *pParent) {
-		auto Rect = pParent->ClientRect();
+		auto rClient = pParent->ClientRect();
 		if (!r.x0)
-			r.x0 = Rect.x0;
+			r.x0 = rClient.x0;
 		if (!r.y1)
-			r.y0 = Rect.y0;
+			r.y0 = rClient.y0;
 		if (r.x1 <= r.x0)
-			r.x1 = Rect.x1;
+			r.x1 = rClient.x1;
 		if (r.y1 <= r.y0)
-			r.y1 = Rect.y1;
+			r.y1 = rClient.y1;
 	}
 public:
 	MultEdit(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,

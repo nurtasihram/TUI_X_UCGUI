@@ -149,7 +149,7 @@ protected:
 	bool CtlStates(uint16_t States, bool On)
 	{ return SetStates(On ? this->States | States : this->States & ~States); }
 	
-	RECT _GetInsideRect() { return ClientRect() / EffectSize(); }
+	RECT _GetInsideRect() const { return ClientRect() / EffectSize(); }
 
 	bool HandleActive(int MsgId, WM_PARAM *Data) {
 		switch (MsgId) {
@@ -260,11 +260,11 @@ void WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax
 	if (!pText) return;
 	if (!*pText) return;
 	/* Set clipping rectangle */
-	auto pOldClipRect = WObj::UserClip(&TextRectMax);
+	auto prOldClip = WObj::UserClip(&TextRectMax);
 	/* Display text */
 	GUI_DispStringAt(pText, TextRectMax.x0, TextRectMax.y0);
 	/* Restore clipping rectangle */
-	WObj::UserClip(pOldClipRect);
+	WObj::UserClip(prOldClip);
 }
 
 }

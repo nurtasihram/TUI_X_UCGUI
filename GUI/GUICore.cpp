@@ -226,13 +226,13 @@ void _DispStringInRect(const char *s, const RECT &r, int TextAlign, int MaxNumCh
 }
 void GUI_DispStringInRectMax(const char *s, RECT r, int TextAlign, int MaxLen) {
 	if (!s) return;
-	auto pOldClipRect = WObj::UserClip(&r);
-	if (pOldClipRect) {
-		r &= *pOldClipRect;
+	auto prOldClip = WObj::UserClip(&r);
+	if (prOldClip) {
+		r &= *prOldClip;
 		WObj::UserClip(&r);
 	}
 	_DispStringInRect(s, r, TextAlign, MaxLen);
-	WObj::UserClip(pOldClipRect);
+	WObj::UserClip(prOldClip);
 }
 void GUI_DispStringInRect(const char *s, const RECT &r, int TextAlign) {
 	GUI_DispStringInRectMax(s, r, TextAlign, 0x7fff);

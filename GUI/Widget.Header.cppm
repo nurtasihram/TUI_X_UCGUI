@@ -39,7 +39,7 @@ private:
 	int16_t CaptureItem = -1;
 	uint16_t ScrollPos = 0;
 
-	void _OnPaint() {
+	void _OnPaint() const {
 		int xPos = -ScrollPos;
 		int NumItems = Columns.NumItems();
 		int EffectSize = this->EffectSize();
@@ -206,13 +206,13 @@ private:
 
 private:
 	static void _AdjRect(RECT &r, WObj *pParent) {
-		auto Rect = pParent->InsideRect();
+		auto rInside = pParent->InsideRect();
 		if (r.x0 <= 0)
-			r.x0 = Rect.x0;
+			r.x0 = rInside.x0;
 		if (r.y0 <= 0)
-			r.y0 = Rect.y0;
+			r.y0 = rInside.y0;
 		if (r.x1 <= r.x0)
-			r.x1 = Rect.x1;
+			r.x1 = rInside.x1;
 		if (r.y1 <= r.y0)
 			r.y1 = r.y0 + Header::DefaultProps.pFont->YSize
 				+ 2 * Header::DefaultProps.BorderV

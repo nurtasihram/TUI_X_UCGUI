@@ -7,13 +7,11 @@ import TUX.Widget.ListBox;
 
 import TUX.Array;
 
-#define DROPDOWN_SF_AUTOSCROLLBAR DROPDOWN_CF_AUTOSCROLLBAR
-
 export {
   
 constexpr uint16_t
-	DROPDOWN_CF_AUTOSCROLLBAR    = 1 << 0,
-	DROPDOWN_CF_UP               = 1 << 1;
+	DROPDOWN_CF_AUTOSCROLLBAR = WIDGET_STATE_USER<0>,
+	DROPDOWN_CF_UP            = WIDGET_STATE_USER<1>;
 
 using DROPDOWN_CI = LISTBOX_CI;
 
@@ -36,16 +34,14 @@ public:
 private:
 	Properties Props = DefaultProps;
 
-	int16_t Sel = 0;      /* current selection */
-	int16_t ySizeEx;  /* Drop down size */
+	int16_t Sel = 0; /* current selection */
+	int16_t ySizeEx; /* Drop down size */
 	int16_t TextHeight = 0;
 	ARRAY<char *> Handles;
 	SCROLL_STATE ScrollState;
 	ListBox *pListWin = nullptr;
-	uint8_t  Flags;
 	uint16_t ItemSpacing = 0;
 	uint8_t  ScrollbarWidth = 0;
-	char  IsPressed;
 
 	static int _Tolower(int Key) {
 		if (Key >= 0x41 && Key <= 0x5a)
@@ -191,18 +187,15 @@ private:
 	}
 
 public:
-	DropDown(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
-			 uint8_t ExFlags) :
+	DropDown(RECT r, WM_CF Style, WObj *pParent, uint16_t Id) :
 		Widget({ r.x0, r.y0, r.x1, r.y0 - 1 }, Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE),
-		ySizeEx(r.YSize()), Flags(ExFlags) {
-		_AdjustHeight();
-	}
+		ySizeEx(r.YSize())
+	{ _AdjustHeight(); }
 	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new DropDown(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			0, pWinParent, pCreateInfo->Id,
-			(uint8_t)pCreateInfo->Flags
+			0, pWinParent, pCreateInfo->Id
 		);
 	}
 
@@ -250,7 +243,7 @@ public:
 	void Expand() {
 		auto NumItems = GetNumItems();
 		auto r = Rect();
-		if (Flags & DROPDOWN_CF_UP)
+		if (States & DROPDOWN_CF_UP)
 			r.y0 -= ySizeEx;
 		else
 			r.y0 = r.y1 + 1;
@@ -259,9 +252,9 @@ public:
 			pListWin = new ListBox(r, WC_VISIBLE | WC_STAYONTOP | WC_ACTIVATE, nullptr, 0);
 			pListWin->SetEffect(WIDGET_Effect_3D1L);
 			if (pListWin) {
-				if (Flags & DROPDOWN_SF_AUTOSCROLLBAR) {
+				if (States & DROPDOWN_CF_AUTOSCROLLBAR) {
 					pListWin->SetScrollbarWidth(this->ScrollbarWidth);
-					pListWin->SetAutoScrollV(1);
+					pListWin->SetAutoScrollV(true);
 				}
 				pListWin->SetOwner(this);
 			}
@@ -371,13 +364,13 @@ public:
 	auto GetItemSpacing() const { return ItemSpacing; }
 
 	void SetAutoScroll(bool OnOff) {
-		char Flags = this->Flags & (~DROPDOWN_SF_AUTOSCROLLBAR);
+		char Flags = this->States & (~DROPDOWN_CF_AUTOSCROLLBAR);
 		if (OnOff)
-			Flags |= DROPDOWN_SF_AUTOSCROLLBAR;
-		if (this->Flags != Flags) {
-			this->Flags = Flags;
+			Flags |= DROPDOWN_CF_AUTOSCROLLBAR;
+		if (this->States != Flags) {
+			this->States = Flags;
 			if (pListWin)
-				pListWin->SetAutoScrollV((Flags & DROPDOWN_SF_AUTOSCROLLBAR) ? 1 : 0);
+				pListWin->SetAutoScrollV((Flags & DROPDOWN_CF_AUTOSCROLLBAR) ? 1 : 0);
 		}
 	}
 	void SetTextHeight(uint16_t TextHeight) {

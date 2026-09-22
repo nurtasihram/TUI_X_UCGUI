@@ -6,8 +6,9 @@ import TUX.Widget;
 
 export {
 
-constexpr uint16_t SLIDER_CF_VERTICAL   = WIDGET_STATE_USER<0>;
-constexpr uint16_t SLIDER_STATE_PRESSED = WIDGET_STATE_USER<1>;
+constexpr uint16_t
+	SLIDER_CF_VERTICAL   = WIDGET_STATE_USER<0>,
+	SLIDER_STATE_PRESSED = WIDGET_STATE_USER<1>;
 
 class Slider : public Widget {
 

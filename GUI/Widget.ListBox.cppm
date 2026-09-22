@@ -61,6 +61,20 @@ private:
 	uint16_t ScrollbarWidth = 0;
 	uint16_t ItemSpacing = 0;
 
+	static int _Tolower(int Key) {
+		if (Key >= 0x41 && Key <= 0x5a)
+			Key += 0x20;
+		return Key;
+	}
+	static bool _IsAlphaNum(int Key) {
+		Key = _Tolower(Key);
+		if (Key >= 'a' && Key <= 'z')
+			return true;
+		if (Key >= '0' && Key <= '9')
+			return true;
+		return false;
+	}
+
 	void _NotifyOwner(int Notification) {
 		auto pOwner = this->pOwner ? this->pOwner : Parent();
 		NOTIFY_INFO Info;
@@ -74,12 +88,8 @@ private:
 			return pfDrawItem(this, Cmd, ItemIndex, Pos);
 		return OwnerDraw(this, Cmd, ItemIndex, Pos);
 	}
-	int _GetYSize() {
-		RECT Rect;
-		WM_GetInsideRectExScrollbar(this, &Rect);
-		return (Rect.y1 - Rect.y0 + 1);
-	}
-	int _GetItemSizeX(uint16_t Index) {
+	auto _GetYSize() const { return InsideRectEx().YSize(); }
+	auto _GetItemSizeX(uint16_t Index) {
 		auto &pItem = ItemArray[Index];
 		int xSize = pItem.xSize;
 		if (xSize == 0) {
@@ -87,10 +97,9 @@ private:
 			xSize = _CallOwnerDraw(WIDGET_ITEM_GET_XSIZE, Index, {});
 			GUI.Font(pOldFont);
 		}
-		pItem.xSize = xSize;
-		return xSize;
+		return pItem.xSize = xSize;
 	}
-	int _GetItemSizeY(uint16_t Index) {
+	auto _GetItemSizeY(uint16_t Index) {
 		auto &pItem = ItemArray[Index];
 		int ySize = pItem.ySize;
 		if (ySize == 0) {
@@ -98,8 +107,7 @@ private:
 			ySize = _CallOwnerDraw(WIDGET_ITEM_GET_YSIZE, Index, {});
 			GUI.Font(pOldFont);
 		}
-		pItem.ySize = ySize;
-		return ySize;
+		return pItem.ySize = ySize;
 	}
 	int _GetContentsSizeX() {
 		int Result = 0;
@@ -167,9 +175,8 @@ private:
 		pItem.xSize = pItem.ySize = 0;
 	}
 	void _InvalidateInsideArea() {
-		RECT Rect;
-		WM_GetInsideRectExScrollbar(this, &Rect);
-		Invalidate(&Rect);
+		auto r = InsideRectEx();
+		Invalidate(&r);
 	}
 	void _InvalidateItem(int Sel) {
 		if (Sel < 0)
@@ -177,11 +184,10 @@ private:
 		auto ItemPosY = _GetItemPosY(Sel);
 		if (ItemPosY < 0)
 			return;
-		RECT Rect;
-		WM_GetInsideRectExScrollbar(this, &Rect);
-		Rect.y0 += ItemPosY;
-		Rect.y1 = Rect.y0 + _GetItemSizeY(Sel) - 1;
-		Invalidate(&Rect);
+		auto r = InsideRectEx();
+		r.y0 += ItemPosY;
+		r.y1 = r.y0 + _GetItemSizeY(Sel) - 1;
+		Invalidate(&r);
 	}
 	void _InvalidateItemAndBelow(int Sel) {
 		if (Sel < 0)
@@ -189,10 +195,9 @@ private:
 		auto ItemPosY = _GetItemPosY(Sel);
 		if (ItemPosY < 0)
 			return;
-		RECT Rect;
-		WM_GetInsideRectExScrollbar(this, &Rect);
-		Rect.y0 += ItemPosY;
-		Invalidate(&Rect);
+		auto r = InsideRectEx();
+		r.y0 += ItemPosY;
+		Invalidate(&r);
 	}
 	void _SetScrollbarWidth() {
 		if (auto pScroll = (ScrollBar *)GetScrollbarH())
@@ -205,35 +210,17 @@ private:
 		ScrollStateV.NumItems = GetNumItems();
 		ScrollStateV.PageSize = _GetNumVisItems();
 		/* Calc horizontal scroll parameters */
-		RECT Rect;
-		WM_GetInsideRectExScrollbar(this, &Rect);
 		ScrollStateH.NumItems = _GetContentsSizeX();
-		ScrollStateH.PageSize = Rect.x1 - Rect.x0 + 1;
+		ScrollStateH.PageSize = InsideRectEx().XSize();
 		return _UpdateScrollPos();
 	}
 	void _ManageAutoScroll() {
 		if (States & LISTBOX_CF_AUTOSCROLLBAR_V)
-			WM_SetScrollbarV(this, _GetNumVisItems() < GetNumItems());
-		if (States & LISTBOX_CF_AUTOSCROLLBAR_H) {
-			RECT Rect;
-			WM_GetInsideRectExScrollbar(this, &Rect);
-			WM_SetScrollbarH(this, _GetContentsSizeX() > Rect.XSize());
-		}
+			SetScrollbarV(_GetNumVisItems() < GetNumItems());
+		if (States & LISTBOX_CF_AUTOSCROLLBAR_H)
+			SetScrollbarH(_GetContentsSizeX() > InsideRectEx().XSize());
 		if (ScrollbarWidth)
 			_SetScrollbarWidth();
-	}
-	int _Tolower(int Key) {
-		if (Key >= 0x41 && Key <= 0x5a)
-			Key += 0x20;
-		return Key;
-	}
-	bool _IsAlphaNum(int Key) {
-		Key = _Tolower(Key);
-		if (Key >= 'a' && Key <= 'z')
-			return true;
-		if (Key >= '0' && Key <= '9')
-			return true;
-		return false;
 	}
 	void _SelectByKey(int Key) {
 		Key = _Tolower(Key);
@@ -254,14 +241,13 @@ private:
 		GUI.Font(Props.pFont);
 		/* Calculate clipping rectangle */
 		auto rClip = GetInvalidRect() - LeftTop();
-		RECT RectInside;
-		WM_GetInsideRectExScrollbar(this, &RectInside);
-		rClip &= RectInside;
+		auto rInside = InsideRectEx();
+		rClip &= rInside;
 		RECT rItem{ rClip.x0, 0, rClip.x1, 0 };
 		/* Fill item info structure */
 		POINT ItemPos{
-			RectInside.x0 - ScrollStateH.v,
-			RectInside.y0
+			rInside.x0 - ScrollStateH.v,
+			rInside.y0
 		};
 		/* Do the drawing */
 		for (int i = ScrollStateV.v, NumItems = GetNumItems(); i < NumItems; i++) {
@@ -283,7 +269,7 @@ private:
 		UserClip(nullptr);
 		/* Calculate & clear 'data free' area */
 		rItem.y0 = ItemPos.y;
-		rItem.y1 = RectInside.y1;
+		rItem.y1 = rInside.y1;
 		GUI.BkColor(Props.aBrush[0].BkColor);
 		GUI.Clear(rItem);
 		/* Draw the 3D effect (if configured) */
@@ -300,12 +286,11 @@ private:
 		}
 	}
 	int _GetItemFromPos(POINT Pos) {
-		RECT Rect;
-		WM_GetInsideRectExScrollbar(this, &Rect);
-		if (!(Rect <= Pos))
+		auto r = InsideRectEx();
+		if (!(r <= Pos))
 			return -1;
 		auto Sel = -1;
-		auto y0 = Rect.y0;
+		auto y0 = r.y0;
 		for (int i = ScrollStateV.v, NumItems = GetNumItems(); i < NumItems; i++) {
 			if (Pos.y >= y0)
 				Sel = i;

@@ -56,13 +56,13 @@ private:
 		/* Select font and text color */
 		GUI.Brush(Props.brush);
 		auto FontDistY = Props.pFont->YSize;
-		RECT Rect;
-		Rect.x0 = pBmRadio->Size.x + RADIO_BORDER * 2 + 2;
-		Rect.y0 = FontDistY <= Height ? (Height - FontDistY) / 2 : 0;
-		Rect.y1 = Rect.y0 + FontDistY - 1;
+		RECT r;
+		r.x0 = pBmRadio->Size.x + RADIO_BORDER * 2 + 2;
+		r.y0 = FontDistY <= Height ? (Height - FontDistY) / 2 : 0;
+		r.y1 = r.y0 + FontDistY - 1;
 		auto FocusBorder = FontDistY <= 12 ? 2 : 3;
-		if (Rect.y0 < FocusBorder)
-			FocusBorder = Rect.y0;
+		if (r.y0 < FocusBorder)
+			FocusBorder = r.y0;
 		/* Clear inside ... Just in case      */
 		/* Fill with parents background color */
 		SetBkColorPrefer(Props.brush.BkColor);
@@ -79,13 +79,13 @@ private:
 					RADIO_BORDER + ((pBmRadio->Size.y - pBmCheck->Size.y) / 2) + y });
 			/* Draw text if available */
 			if (auto pText = TextArray[i]) {
-				auto r = Rect;
-				r.x1 = r.x0 + Props.pFont->TextBound(pText).x - 2;
-				r += POINT{ 0, y };
-				GUI_DispStringAt(pText, r.x0, r.y0);
+				auto rText = r;
+				rText.x1 = rText.x0 + Props.pFont->TextBound(pText).x - 2;
+				rText += POINT{ 0, y };
+				GUI_DispStringAt(pText, rText.x0, rText.y0);
 				/* Calculate focus rect */
 				if (HasFocus && Sel == i)
-					rFocus = r * FocusBorder;
+					rFocus = rText * FocusBorder;
 			}
 		}
 		/* Draw the focus rect */

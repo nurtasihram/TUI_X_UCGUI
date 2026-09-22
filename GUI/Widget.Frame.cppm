@@ -176,7 +176,7 @@ private:
 			}
 		}
 	}
-	void _OnPaint() {
+	void _OnPaint() const {
 		auto size = Size();
 		auto BorderSize = Props.BorderSize;
 		auto &&Pos = _CalcPositions();
@@ -331,13 +331,13 @@ private:
 			_CaptureFlags & FRAMEWIN_RESIZE_Y ?
 				_CaptureFlags & FRAMEWIN_REPOS_Y ? _Capture.y - p.y : p.y - _Capture.y : 0
 		};
-		auto Rect = ClientRect();
+		auto rClient  = ClientRect();
 		/* Check the minimal size of window */
-		if (auto xMin = FRAMEWIN_MINSIZE_X - Rect.x1 - 1; d.x < xMin) {
+		if (auto xMin = FRAMEWIN_MINSIZE_X - rClient .x1 - 1; d.x < xMin) {
 			d.x = xMin;
 			p.x = _Capture.x + xMin;
 		}
-		if (auto yMin = FRAMEWIN_MINSIZE_Y - Rect.y1 - 1; d.y < yMin) {
+		if (auto yMin = FRAMEWIN_MINSIZE_Y - rClient .y1 - 1; d.y < yMin) {
 			d.y = yMin;
 			p.y = _Capture.y + yMin;
 		}
@@ -630,7 +630,7 @@ private:
 		_InvalidateButton(GUI_ID_MAXIMIZE);
 	}
 public:
-	bool IsMinimized() { return States & FRAMEWIN_CF_MINIMIZED; }
+	bool IsMinimized() const { return States & FRAMEWIN_CF_MINIMIZED; }
 	void Minimize() {
 		_RestoreMaximized();
 		/* When window is not minimized, minimize it */
@@ -648,7 +648,7 @@ public:
 		_InvalidateButton(GUI_ID_MINIMIZE);
 	}
 
-	bool IsMaximized() { return States & FRAMEWIN_CF_MAXIMIZED; }
+	bool IsMaximized() const { return States & FRAMEWIN_CF_MAXIMIZED; }
 	void Maximize() {
 		_RestoreMinimized();
 		/* When window is not maximized, maximize it */

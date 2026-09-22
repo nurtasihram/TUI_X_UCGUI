@@ -8,7 +8,6 @@ export {
 class Window : public WObj {
 
 public:
-
 	struct Properties {
 		RGBC BkColor{ RGBC::Gray(0xE4) };
 	} static DefaultProps;
@@ -21,7 +20,6 @@ private:
 	DIALOG_STATUS *pDialogStatus = nullptr;
 
 private:
-
 	void _OnChildHasFocus(const NOTIFY_CHILD_HAS_FOCUS_INFO* pInfo) {
 		if (!pInfo) return;
 		/* A child has received the focus, Framewindow needs to be activated */

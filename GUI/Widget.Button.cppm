@@ -50,7 +50,7 @@ private:
 
 	void _OnPaint() const {
 		bool IsPressed = States & BUTTON_STATE_PRESSED;
-		int ColorIndex = (IsEnabled()) ? IsPressed : 2;
+		int ColorIndex = IsEnabled() ? IsPressed : 2;
 		GUI.Font(Props.pFont);
 		auto rClient = ClientRect();
 		auto rInside = rClient;

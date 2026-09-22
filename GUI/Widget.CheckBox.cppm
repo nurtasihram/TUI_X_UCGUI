@@ -46,7 +46,7 @@ private:
 	uint8_t CurrentState : 6;
 	String text;
 
-	void _OnPaint() {
+	void _OnPaint() const {
 		auto ColorIndex = IsEnabled() ? CHECKBOX_CI_ACTIV : CHECKBOX_CI_INACTIV;
 		auto EffectSize = this->EffectSize();
 		/* Clear inside ... Just in case      */
@@ -54,8 +54,7 @@ private:
 		GUI.Brush(Props.brush);
 		GUI.Clear();
 		/* Get size from bitmap */
-		RECT RectBox;
-		RectBox.RightBottom(Props.apBm[0]->Size + 2 * EffectSize - 1);
+		RECT RectBox{ 0, Props.apBm[0]->Size + 2 * EffectSize - 1 };
 		UserClip(&RectBox);
 		/* Clear inside  ... Just in case */
 		GUI.BkColor(Props.aBkColorBox[ColorIndex]);
@@ -68,34 +67,34 @@ private:
 		/* Draw text if needed */
 		if (!text) return;
 		/* Draw the text */
-		auto RectText = ClientRect();
-		RectText.x0 += RectBox.x1 + 1 + Props.Spacing;
+		auto rText = ClientRect();
+		rText.x0 += RectBox.x1 + 1 + Props.Spacing;
 		GUI.Font(Props.pFont);
-		GUI_DispStringInRect(text, RectText, Props.Align);
+		GUI_DispStringInRect(text, rText, Props.Align);
 		/* Draw focus rectangle */
 		if (!(States & WIDGET_STATE_FOCUS))
 			return;
 		auto textBound = Props.pFont->TextBound(text);
-		RECT RectFocus = RectText;
+		auto rFocus = rText;
 		switch (Props.Align & ~(TEXTALIGN_HORIZONTAL)) {
 			case TEXTALIGN_VCENTER:
-				RectFocus.y0 = (RectText.y1 - textBound.y) / 2;
+				rFocus.y0 = (rText.y1 - textBound.y) / 2;
 				break;
 			case TEXTALIGN_BOTTOM:
-				RectFocus.y0 = RectText.y1 - textBound.y;
+				rFocus.y0 = rText.y1 - textBound.y;
 				break;
 		}
 		switch (Props.Align & ~(TEXTALIGN_VERTICAL)) {
 			case TEXTALIGN_HCENTER:
-				RectFocus.x0 += ((RectText.x1 - RectText.x0) - textBound.x) / 2;
+				rFocus.x0 += ((rText.x1 - rText.x0) - textBound.x) / 2;
 				break;
 			case TEXTALIGN_RIGHT:
-				RectFocus.x0 += (RectText.x1 - RectText.x0) - textBound.x;
+				rFocus.x0 += (rText.x1 - rText.x0) - textBound.x;
 				break;
 		}
-		RectFocus.RightBottom(RectFocus.LeftTop() + textBound);
+		rFocus.RightBottom(rFocus.LeftTop() + textBound);
 		GUI.Color(RGB_BLACK);
-		GUI_DrawFocusRect(RectFocus, 0);
+		GUI_DrawFocusRect(rFocus, 0);
 	}
 	void _OnTouch(const PID_STATE *pState) {
 		int Notification = 0;
