@@ -14,7 +14,7 @@ class Slider : public Widget {
 
 public:
 	struct Properties {
-		BRUSH brush{ RGB_INVALID, RGBC::Gray(0xC0) };
+		BRUSH brush{ RGBC::Gray(0xE4), RGBC::Gray(0xC0) };
 	} static DefaultProps;
 	
 private:
@@ -50,7 +50,7 @@ private:
 				NumTicks = 11;
 		}
 		/* Fill with parents background color */
-		SetBkColorPrefer(Props.brush.BkColor);
+		GUI.Brush(Props.brush);
 		GUI.Clear();
 		GUI.Color(RGB_BLACK);
 		if (States & SLIDER_CF_VERTICAL) {

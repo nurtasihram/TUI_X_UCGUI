@@ -9,36 +9,15 @@ CLOGPALETTE GUI_CursorPalI{ RGB_INVALID, RGB_WHITE, RGB_BLACK };
 
 #if GUI_SUPPORT_CURSOR
 
-int _GetBitmapPixel(PCBITMAP pBMP, unsigned x, unsigned y) {
-	unsigned Off, Value;
-	switch (pBMP->BitsPerPixel) {
-	case 1:
-		Off = (x >> 3) + (y * pBMP->BytesPerLine);
-		Value = *((uint8_t *)pBMP->pData + Off);
-		Value = Value >> (7 - (x & 0x7)) & 0x1;
-		break;
-	case 2:
-		Off = (x >> 2) + (y * pBMP->BytesPerLine);
-		Value = *((uint8_t *)pBMP->pData + Off);
-		Value = Value >> (6 - ((x << 1) & 0x6)) & 0x3;
-		break;
-	case 4:
-		Off = (x >> 1) + (y * pBMP->BytesPerLine);
-		Value = *((uint8_t *)pBMP->pData + Off);
-		Value = (x & 1) ? (Value & 0xF) : (Value >> 4);
-		break;
-	case 8:
-		Off = x + y * pBMP->BytesPerLine;
-		Value = *((uint8_t *)pBMP->pData + Off);
-		break;
-	case 16:
-		Off = (x << 1) + y * pBMP->BytesPerLine;
-		Value = *((uint16_t *)((uint8_t *)pBMP->pData + Off));
-		break;
-	default:
-		Value = 0;
+uint32_t _GetBitmapPixel(PCBITMAP pBMP, unsigned x, unsigned y) {
+	uint8_t BitsPerPixel = BPP_Bits[pBMP->BitsPerPixel];
+	auto pBytes = (const uint8_t *)pBMP->pData + pBMP->BytesPerLine * y;
+	if (BitsPerPixel < 8) {
+		uint8_t Mask = (1u << BitsPerPixel) - 1;
+		auto xBits = x * BitsPerPixel + pBMP->BitsXOff;
+		return pBytes[xBits >> 3] >> (xBits & 7) & Mask;
 	}
-	return Value;
+	return 0;
 }
 
 static int _AllocSize;

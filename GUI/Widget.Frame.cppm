@@ -47,11 +47,10 @@ public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
 		BRUSH aBrush[2]{
-			/* Index           | Background      | Text       */
-			/* lost focused */ { RGBC::Gray(0x80) , RGB_BLACK },
-			/* focused      */ { RGBC::Blue(0x80) , RGB_WHITE }
+			/* Index           | Background   | Text      */
+			/* lost focused */ { RGB_GRAY     , RGB_BLACK },
+			/*      focused */ { RGB_DARKBLUE , RGB_WHITE }
 		};
-		RGBC FrameColor{ RGBC::Gray(0xAA) };
 		uint16_t TitleHeight{ 20 };
 		TEXTALIGN Align{ TEXTALIGN_VCENTER };
 	} static DefaultProps;
@@ -91,7 +90,7 @@ private:
 		Pos.rTitleBar.x0 = EffectSize;
 		Pos.rTitleBar.x1 = Pos.rClient.x1;
 		Pos.rTitleBar.y0 = EffectSize;
-		Pos.rTitleBar.y1 = EffectSize + Pos.TitleHeight;
+		Pos.rTitleBar.y1 = EffectSize + Pos.TitleHeight - 1;
 		return Pos;
 	}
 	void _UpdatePositions() {

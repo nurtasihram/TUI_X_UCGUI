@@ -19,8 +19,8 @@ class Text : public Widget {
 public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
-		BRUSH brush{ RGB_INVALID, RGB_BLACK };
-		TEXTALIGN Align{ 0 };
+		BRUSH brush{ RGBC::Gray(0xE4), RGB_BLACK };
+		TEXTALIGN Align{ TEXTALIGN_LEFT | TEXTALIGN_TOP };
 	} static DefaultProps;
 	
 private:
@@ -31,7 +31,6 @@ private:
 	void _OnPaint() const {
 		GUI.Font(Props.pFont);
 		GUI.Brush(Props.brush);
-		SetBkColorPrefer(Props.brush.BkColor);
 		GUI.Clear();
 		GUI_DispStringInRect(pText, ClientRect(), Props.Align);
 	}

@@ -38,9 +38,9 @@ protected:
 
 #pragma region Window list
 	static uint16_t NumWindows;
-	static WObj *pWinFirst;
+	static WObj *pDesktop;
 	void _RemoveFromLinList() {
-		for (auto pCur = pWinFirst; pCur; ) {
+		for (auto pCur = pDesktop; pCur; ) {
 			auto pNext = pCur->pNextLin;
 			if (pNext == this) {
 				pCur->pNextLin = pNextLin;
@@ -50,17 +50,17 @@ protected:
 		}
 	}
 	void _AddToLinList() {
-		if (!pWinFirst) {
-			pWinFirst = this;
+		if (!pDesktop) {
+			pDesktop = this;
 			return;
 		}
-		auto pFirst = pWinFirst;
+		auto pFirst = pDesktop;
 		pNextLin = pFirst->pNextLin;
 		pFirst->pNextLin = this;
 	}
 public:
 	bool IsWindow() const {
-		for (auto i = pWinFirst; i; i = i->pNextLin)
+		for (auto i = pDesktop; i; i = i->pNextLin)
 			if (i == this)
 				return true;
 		return false;
@@ -145,9 +145,90 @@ public:
 	}
 #pragma endregion
 
+#pragma region Z-order
+private:
+	void _InvalidateWindowAndDescs() {
+		Invalidate();
+		for (auto pChild = FirstChild(); pChild; pChild = pChild->NextSibling()) {
+			pChild->Invalidate();
+			pChild->_InvalidateWindowAndDescs();
+		}
+	}
+public:
+	void BringToTop() {
+		/* Is window alread on top ? If so, we are done. (Not required, just an optimization) */
+		if (!pNext)
+			return;
+		/* For non-top windows, it is good enough if the next one is a stay-on-top-window (Not required, just an optimization) */
+		if (!(Status & WC_STAYONTOP))
+			if (pNext->Status & WC_STAYONTOP)
+				return;
+		_RemoveWindowFromList();
+		_InsertWindowIntoList(pParent);
+		_InvalidateWindowAndDescs();
+	}
+	void BringToBottom() {
+		if (auto pPrev = PrevSibling()) { /* If there is no previous one, there is nothing to do ! */
+			auto pParent = Parent();
+			/* unlink this */
+			pPrev->pNext = pNext;
+			/* Link from parent (making it the first child) */
+			pNext = pParent->pFirstChild;
+			pParent->pFirstChild = this;
+			/* Send message in order to make sure top window will be drawn */
+			InvalidateArea(rWin);
+		}
+	}
+	void StayOnTop(bool bOnTop) {
+		auto Status = bOnTop ?
+			this->Status | WC_STAYONTOP :
+			this->Status & ~WC_STAYONTOP;
+		if (this->Status != Status) {
+			this->Status = Status;
+			Attach(Parent());
+		}
+	}
+	bool StayOnTop() const { return Status & WC_STAYONTOP; }
+#pragma endregion
+	
+#pragma region Desktop
+private:
+	static RGBC BkColorDesktop;
+	static WM_PARAM cbBackWin(WObj *pWin, int MsgId, WM_PARAM Data) {
+		switch (MsgId) {
+			case WM_KEY: {
+				return 0;
+			}
+			case WM_PAINT:
+				if (BkColorDesktop != RGB_INVALID) {
+					GUI.BkColor(BkColorDesktop);
+					GUI.Clear();
+				}
+				return 0;
+			default:
+				return DefaultProc(pWin, MsgId, Data);
+		}
+		return 0;
+	}
+public:
+	static WObj *GetDesktopWindow() { return pDesktop; }
+	static void DesktopColor(RGBC Color) {
+		BkColorDesktop = Color;
+		if (pDesktop)
+			pDesktop->Invalidate();
+	}
+	static WObj *CreateDesktopWindow() {
+		if (!pDesktop) {
+			pDesktop = new WObj(GUI_X_GetLCD()->Rect(), WC_VISIBLE, cbBackWin);
+			pDesktop->Invalidate();
+			pDesktop->Select();
+		}
+		return pDesktop;
+	}
+#pragma endregion
+
 private:
 	static WObj *pWinActive;
-	static bool IsActive;
 public:
 	static auto ActiveWindow() { return pWinActive; }
 	void Select() {
@@ -156,8 +237,6 @@ public:
 		GUI.ClipRectMax();
 		GUI.Off = rWin.LeftTop();
 	}
-	static void Activate() { IsActive = true; }
-	static void Deactivate() { IsActive = false; }
 
 #pragma region Invalidation
 private:
@@ -166,7 +245,7 @@ private:
 		for (auto pWin = this; pWin->Status & WC_VISIBLE; pWin = pWin->pParent) {
 			r &= pWin->rWin;
 			if (!pWin->pParent)
-				return pWin == pWinDesktop;
+				return pWin == pDesktop;
 		}
 		return false;
 	}
@@ -188,7 +267,7 @@ public:
 	static uint16_t GetNumInvalidWindows() { return NumInvalidWindows; }
 	const RECT &GetInvalidRect() const { return rInvalid; }
 	static void InvalidateArea(const RECT &r) {
-		for (auto pWin = pWinFirst; pWin; pWin = pWin->pNextLin)
+		for (auto pWin = pDesktop; pWin; pWin = pWin->pNextLin)
 			pWin->_Invalidate1Abs(r);
 	}
 	void Invalidate(const RECT *pRect = nullptr) {
@@ -198,17 +277,13 @@ public:
 		if (pRect)
 			r &= *pRect + LeftTop();
 		/* Optimization that saves invalidation if window area is not visible ... Not required */
-		if (!_ClipAtParentBorders(r))
-			return;
-		_Invalidate1Abs(r);
+		if (_ClipAtParentBorders(r))
+			_Invalidate1Abs(r);
 	}
 	void InvalidateDescs() {
 		Invalidate();    /* Invalidate window itself */
-		for (auto pChild = FirstChild(); pChild;) {
-			auto pNextChild = pChild->pNext;
+		for (auto pChild = FirstChild(); pChild; pChild = pChild->pNext)
 			pChild->InvalidateDescs();
-			pChild = pNextChild;
-		}
 	}
 	void Validate() {
 		if (Status & WC_ACTIVATE) {
@@ -223,12 +298,11 @@ private:
 	class IVR {
 		RECT rClient, CurRect;
 		const RECT *prUserClip = nullptr;
-		int Cnt = -1, EntranceCnt = 0;
+		int Cnt = -1;
 		
 		void _ActivateClipRect() const {
-			/* Window manager disabled, typically because memory device is active */
 			/* Take UserClipRect into account */
-			RECT rSrc = IsActive ? CurRect : pWinActive->rWin;
+			RECT rSrc = CurRect;
 			if (prUserClip) {
 				auto r = *prUserClip;
 				if (pWinActive)
@@ -293,7 +367,7 @@ private:
 				 we do this only for the leftmost one.
 			*/
 			static auto _Findy1 = [](const WObj *pWin, RECT &r) {
-				for (; pWin; pWin = pWin->pNext)
+				for (; pWin; pWin = pWin->NextSibling())
 					if (pWin->Status & WC_VISIBLE)
 						if (auto rWin = pWin->rWin; rWin <= r) {
 							if (rWin.y0 > r.y0) {
@@ -309,9 +383,9 @@ private:
 				/* Iterate over all windows which are above */
 				/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
 				for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
-					_Findy1(pParent->pNext, r);
+					_Findy1(pParent->NextSibling(), r);
 				/* Check all children */
-				_Findy1(pWinActive->pFirstChild, r);
+				_Findy1(pWinActive->FirstChild(), r);
 			}
 			/*
 			  STEP 4
@@ -319,7 +393,7 @@ private:
 				if we find one that intersects, adjust x0 to the right.
 			*/
 			static auto _Findx0 = [](const WObj * pWin, RECT & r) {
-				for (; pWin; pWin = pWin->pNext)
+				for (; pWin; pWin = pWin->NextSibling())
 					if (pWin->Status & WC_VISIBLE)
 						if (auto rWin = pWin->rWin; rWin <= r) {
 							r.x0 = rWin.x1 + 1;
@@ -332,10 +406,10 @@ private:
 			/* Iterate over all windows which are above */
 			/* Check all siblings above (siblings of window, siblings of parents, etc ...) */
 			for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
-				if (_Findx0(pParent->pNext, r))
+				if (_Findx0(pParent->NextSibling(), r))
 					goto Find_x0;
 			/* Check all children */
-			if (_Findx0(pWinActive->pFirstChild, r))
+			if (_Findx0(pWinActive->FirstChild(), r))
 				goto Find_x0;
 			/*
 			 STEP 5:
@@ -352,16 +426,16 @@ private:
 			   Find r.x1. We have to Iterate over all windows which are above
 			*/
 			static auto _Findx1 = [](const WObj *pWin, RECT &r) {
-				for (; pWin; pWin = pWin->pNext)
+				for (; pWin; pWin = pWin->NextSibling())
 					if (pWin->Status & WC_VISIBLE)
 						if (auto rWin = pWin->rWin; rWin <= r)
 							r.x1 = rWin.x0 - 1;
 			};
 			/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
 			for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
-				_Findx1(pParent->pNext, r);
+				_Findx1(pParent->NextSibling(), r);
 			/* Check all children */
-			_Findx1(pWinActive->pFirstChild, r);
+			_Findx1(pWinActive->FirstChild(), r);
 			/* We are done. Return the rectangle we found in the  */
 			if (Cnt > 200)
 				return false;  /* error !!! This should not happen !*/
@@ -371,16 +445,7 @@ private:
 	public:
 		bool GetNext() {
 	#if GUI_SUPPORT_CURSOR
-			static char _CursorHidden;
-	#endif
-		/* If WM is not active, we have no rectangles to return */
-			if (!IsActive)
-				return false;
-			if (EntranceCnt > 1) {
-				EntranceCnt--;
-				return false;
-			}
-	#if GUI_SUPPORT_CURSOR
+			static char _CursorHidden = false;
 			if (_CursorHidden) {
 				_CursorHidden = 0;
 				GUI_CURSOR__TempShow();
@@ -388,10 +453,8 @@ private:
 	#endif
 			++Cnt;
 			/* Find next rectangle and use it as rClip */
-			if (!_FindNext()) {
-				EntranceCnt--;  /* This search is over ! */
+			if (!_FindNext())
 				return false;        /* Could not find an other one ! */
-			}
 			_ActivateClipRect();
 			/* Hide cursor if necessary */
 	#if GUI_SUPPORT_CURSOR
@@ -400,36 +463,15 @@ private:
 			return true;
 		}
 		bool InitSearch(RECT rcMax) {
-			/* If WM is not active -> nothing to do, leave cliprect alone */
-			if (!IsActive) {
-				_ActivateClipRect();
-				return true;
-			}
-			/* If we entered multiple times, leave Cliprect alone */
-			if (++EntranceCnt > 1)
-				return true;
 			Cnt = -1;
 			/* When using callback mechanism, it is legal to reduce drawing
 			   area to the invalid area ! */
-			RECT r;
-			if (_PaintCallbackCnt)
-				r = pWinActive->rInvalid;
-			else if (pWinActive->Status & WC_VISIBLE) /* Not using callback mechanism, therefor allow entire rectangle */
-				r = pWinActive->rWin;
-			else {
-				--EntranceCnt;
-				return false;  /* window is not even visible ! */
-			}
+			RECT r = pWinActive->rWin;
 			/* If the drawing routine has specified a rectangle, use it to reduce the rectangle */
 			r &= rcMax;
 			/* If user has reduced the cliprect size, reduce the rectangle */
 			if (prUserClip)
 				r &= *(prUserClip) + pWinActive->LeftTop();
-			/* Iterate over all ancestors and clip at their borders. If there is no visible part, we are done */
-			if (!pWinActive->_ClipAtParentBorders(r)) {
-				--EntranceCnt;
-				return false;           /* Nothing to draw */
-			}
 			/* Store the rectangle and find the first rectangle of the area */
 			rClient = r;
 			return GetNext();
@@ -455,33 +497,18 @@ public:
 #pragma endregion
 
 #pragma region Paint & Draw
-	static uint8_t _PaintCallbackCnt;      /* Public for assertions only */
-	void _Paint1(GUI_CONTEXT &ctx) /* const */ {
-		if (cb && (Status & WC_VISIBLE)) {
-			_PaintCallbackCnt++;
-			Iterate(rInvalid, [&] {
-				Require(WM_PAINT, (WM_PARAM)&ctx);
-			});
-			_PaintCallbackCnt--;
-		}
-	}
 	bool _Paint(GUI_CONTEXT &ctx) {
 		if (!(Status & WC_ACTIVATE))
 			return false;
 		bool Ret = false;
-		if (cb && _ClipAtParentBorders(rInvalid)) {
+		if (cb && IsVisible() && _ClipAtParentBorders(rInvalid)) {
 			Select();
 			if (Status & WC_MEMDEV) {
 				MemDev.Alloc(rInvalid);
-				Deactivate();
 				ctx.pDevice = &MemDev;
 				ctx.ClipRectMax();
-				auto rOldInvalid = rInvalid;
-				rInvalid = ctx.rClip;
-				_Paint1(ctx);
-				rInvalid = rOldInvalid;
+				Require(WM_PAINT, (WM_PARAM)&ctx);
 				ctx.pDevice = GUI_X_GetLCD();
-				Activate();
 				Iterate(MemDev.rect, [&] {
 					LCD_DrawBitmap(BITVIEW{
 						MemDev.rect,
@@ -492,7 +519,9 @@ public:
 				});
 			}
 			else
-				_Paint1(ctx);
+				Iterate(rInvalid, [&] {
+					Require(WM_PAINT, (WM_PARAM)&ctx);
+				});
 			Ret = true;    /* Something has been done */
 		}
 		/* We purposly clear the invalid flag after painting so we can still query the invalid rectangle while painting */
@@ -504,10 +533,10 @@ private:
 	static WObj *pwDraw;
 public:
 	static bool DrawOnce(GUI_CONTEXT &ctx) {
-		if (!IsActive || !NumInvalidWindows)
+		if (!NumInvalidWindows)
 			return false;
 		ctx.Init();
-		if (!pwDraw) pwDraw = pWinFirst;
+		if (!pwDraw) pwDraw = pDesktop;
 		for (; pwDraw; pwDraw = pwDraw->pNextLin)
 			if (pwDraw->_Paint(ctx))
 				break;
@@ -535,9 +564,7 @@ private:
 			CriticalHandle *pLast = nullptr;
 			for (auto pCH = pFirst; pCH; pCH = pCH->pNext) {
 				if (pCH == this) {
-					if (pLast)
-						pLast->pNext = pCH->pNext;
-					pFirst = pCH->pNext;
+					(pLast ? pLast->pNext : pFirst) = pCH->pNext;
 					break;
 				}
 				pLast = pCH;
@@ -560,7 +587,7 @@ public:
 		rWin(r), cb(cb), Status(Style & WM_CF_MASK) {
 		WM_ASSERT_NOT_IN_PAINT();
 		if (!pParent)
-			pParent = pWinDesktop;
+			pParent = pDesktop;
 		if (pParent) {
 			rWin += pParent->rWin.LeftTop();
 			if (!r.XSize())
@@ -580,10 +607,12 @@ public:
 	}
 	~WObj() {
 		WM_ASSERT_NOT_IN_PAINT();
-		if (!IsWindow(this))
-			return;
+		if (pDesktop == this)
+			pDesktop = nullptr;
 		if (pwDraw == this)
 			pwDraw = nullptr;
+		if (!IsWindow(this))
+			return;
 		if (pWinFocus == this) {
 			Require(WM_SET_FOCUS, 0);
 			pWinFocus = nullptr;
@@ -592,7 +621,7 @@ public:
 			ReleaseCapture();
 		CriticalHandle::Check(this);
 		_RemoveFromLinList();
-		for (auto pChild = pFirstChild; pChild; ) {
+		for (auto pChild = FirstChild(); pChild; ) {
 			auto pNext = pChild->pNext;
 			delete pChild;
 			pChild = pNext;
@@ -605,7 +634,7 @@ public:
 			NumInvalidWindows--;
 		InvalidateArea(rWin);
 		NumWindows--;
-		pWinFirst->Select();
+		pDesktop->Select();
 	}
 
 public:
@@ -634,7 +663,7 @@ public:
 
 	auto NextSibling() { return pNext; }
 	auto NextSibling() const { return pNext; }
-	auto FirstSibling() { return pParent ? pParent->pFirstChild : nullptr; }
+	auto FirstSibling() { return pParent ? pParent->FirstChild() : nullptr; }
 	auto LastSibling() {
 		for (auto pWin = this; pWin; pWin = pWin->pNext)
 			if (!pWin->pNext)
@@ -694,11 +723,11 @@ public:
 
 #pragma region Coordinate
 private:
-	void _MoveDescendents(POINT d) {
-		for (auto pWin = this; pWin; pWin = pWin->pNext) {
+	static void _MoveDescendents(WObj *pWin, POINT d) {
+		for (; pWin; pWin = pWin->pNext) {
 			pWin->rWin += d;
 			pWin->rInvalid += d;
-			pWin->pFirstChild->_MoveDescendents(d);  /* Children need to be moved along ...*/
+			_MoveDescendents(pWin->FirstChild(), d);  /* Children need to be moved along ...*/
 			pWin->Require(WM_MOVE);
 		}
 	}
@@ -716,7 +745,7 @@ public:
 		auto r = rWin;
 		rWin += d;
 		rInvalid += d;
-		pFirstChild->_MoveDescendents(d);  /* Children need to be moved along ...*/
+		_MoveDescendents(FirstChild(), d);  /* Children need to be moved along ...*/
 		Require(WM_MOVE); /* Notify window it has been moved */
 		/* Invalidate old and new area ... */
 		if (Status & WC_VISIBLE) {
@@ -733,7 +762,7 @@ public:
 	}
 
 	void _UpdateChildPositions(RECT d) {
-		for (auto pChild = pFirstChild; pChild; pChild = pChild->pNext) {
+		for (auto pChild = FirstChild(); pChild; pChild = pChild->NextSibling()) {
 			/* Compute size of new rectangle */
 			auto rOld = pChild->rWin, rNew = rOld;
 			switch (pChild->Status & WC_ANCHOR_VERTICAL) {
@@ -811,8 +840,8 @@ public:
 			return nullptr;
 		/* If the coordinates are in a child, search deeper ... */
 		auto pWin = this;
-		for (auto pChild = pWin->pFirstChild; pChild && (pChild != pStop); ) {
-			auto pNextChild = pChild->pNext;
+		for (auto pChild = pWin->FirstChild(); pChild && (pChild != pStop); ) {
+			auto pNextChild = pChild->NextSibling();
 			if (auto pHit = pChild->Screen2Win(Pos, pStop))
 				pWin = pHit; /* Found a window */
 			pChild = pNextChild;
@@ -820,90 +849,7 @@ public:
 		return pWin; /* No Child affected ... The parent is the right one */
 	}
 	static WObj *WM_Screen2Win(POINT Pos, WObj *pStop = nullptr) {
-		return pWinFirst->Screen2Win(Pos, pStop);
-	}
-#pragma endregion
-
-#pragma region Z-order
-private:
-	void _InvalidateWindowAndDescs() {
-		Invalidate();
-		for (auto pChild = pFirstChild; pChild; pChild = pChild->pNext) {
-			pChild->Invalidate();
-			pChild->_InvalidateWindowAndDescs();
-		}
-	}
-public:
-	void BringToTop() {
-		/* Is window alread on top ? If so, we are done. (Not required, just an optimization) */
-		if (!pNext)
-			return;
-		/* For non-top windows, it is good enough if the next one is a stay-on-top-window (Not required, just an optimization) */
-		if (!(Status & WC_STAYONTOP))
-			if (pNext->Status & WC_STAYONTOP)
-				return;
-		_RemoveWindowFromList();
-		_InsertWindowIntoList(pParent);
-		_InvalidateWindowAndDescs();
-	}
-	void BringToBottom() {
-		if (auto pPrev = PrevSibling()) { /* If there is no previous one, there is nothing to do ! */
-			auto pParent = Parent();
-			/* unlink this */
-			pPrev->pNext = pNext;
-			/* Link from parent (making it the first child) */
-			pNext = pParent->pFirstChild;
-			pParent->pFirstChild = this;
-			/* Send message in order to make sure top window will be drawn */
-			InvalidateArea(rWin);
-		}
-	}
-	void StayOnTop(bool bOnTop) {
-		auto Status = bOnTop ? 
-			this->Status | WC_STAYONTOP :
-			this->Status & ~WC_STAYONTOP;
-		if (this->Status != Status) {
-			this->Status = Status;
-			Attach(Parent());
-		}
-	}
-	bool StayOnTop() const { return Status & WC_STAYONTOP; }
-#pragma endregion
-
-#pragma region Desktop
-private:
-	static WObj *pWinDesktop;
-	static RGBC BkColorDesktop;
-	static WM_PARAM cbBackWin(WObj *pWin, int MsgId, WM_PARAM Data) {
-		switch (MsgId) {
-			case WM_KEY: {
-				return 0;
-			}
-			case WM_PAINT:
-				if (BkColorDesktop != RGB_INVALID) {
-					GUI.BkColor(BkColorDesktop);
-					GUI.Clear();
-				}
-				return 0;
-			default:
-				return DefaultProc(pWin, MsgId, Data);
-		}
-		return 0;
-	}
-public:
-	static WObj *GetDesktopWindow() { return pWinDesktop; }
-	static void DesktopColor(RGBC Color) {
-		BkColorDesktop = Color;
-		if (pWinDesktop)
-			pWinDesktop->Invalidate();
-	}
-	static WObj *CreateDesktopWindow(RGBC BkColor) {
-		if (!pWinDesktop) {
-			pWinDesktop = new WObj(GUI_X_GetLCD()->Rect(), WC_VISIBLE, cbBackWin);
-			pWinDesktop->Invalidate();
-			pWinDesktop->Select();
-		}
-		return pWinDesktop;
+		return pDesktop->Screen2Win(Pos, pStop);
 	}
 #pragma endregion
 
@@ -970,7 +916,7 @@ public:
 	void SetID(uint16_t Id) { Require(WM_SET_ID, (WM_PARAM)Id); }
 
 	WObj *GetItem(uint16_t Id) {
-		for (auto i = pFirstChild; i; i = i->pNext)
+		for (auto i = FirstChild(); i; i = i->NextSibling())
 			if (i->GetID() == Id)
 				return i;
 			else if (auto pItem = i->GetItem(Id))
@@ -1038,9 +984,9 @@ public:
 	static WObj *_GetNextChild(WObj *pParent, WObj *pChild) {
 		WObj *pObj = nullptr;
 		if (pChild)
-			pObj = pChild->pNext;
+			pObj = pChild->NextSibling();
 		if (!pObj)
-			pObj = pParent->pFirstChild;
+			pObj = pParent->FirstChild();
 		if (pObj != pChild)
 			return pObj;
 		return nullptr;
@@ -1196,36 +1142,28 @@ public:
 	}
 
 	static void Init(void) {
-		static bool _IsInited = false;
-		if (_IsInited)
+		if (pDesktop)
 			return;
 		/* Register the critical handles ... Note: This could be moved into the module setting the Window handle */
 		CHWinLast.Add();
-		CreateDesktopWindow(RGB_INVALID);
-		Activate();
-		_IsInited = true;
+		CreateDesktopWindow();
 	}
 };
 
 }
 
 uint16_t WObj::NumWindows = 0;
-WObj* WObj::pWinFirst = nullptr;
+WObj* WObj::pDesktop = nullptr;
 WObj* WObj::pWinActive = nullptr;
-
-bool WObj::IsActive = false;
 
 uint16_t WObj::NumInvalidWindows = 0;
 WObj *WObj::pwDraw = nullptr;
 
 WObj::IVR WObj::_ClipContext;
 
-uint8_t WObj::_PaintCallbackCnt = 0;
-
 WObj::CriticalHandle *WObj::CriticalHandle::pFirst = nullptr;
 WObj::CriticalHandle WObj::CHWinLast;
 
-WObj* WObj::pWinDesktop = nullptr;
 RGBC WObj::BkColorDesktop = RGB_GRAY;
 
 WObj* WObj::pWinCapture = nullptr;

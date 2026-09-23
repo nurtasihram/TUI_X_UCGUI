@@ -105,16 +105,6 @@ public:
 	bool IsFocussable() const { return States & WIDGET_STATE_FOCUSSABLE; }
 
 protected:
-	void SetBkColorPrefer(RGBC BkColor) const {
-		while (BkColor == RGB_INVALID) {
-			if (auto pParent = Parent())
-				BkColor = pParent->BkColor();
-			else
-				break;
-		}
-		GUI.BkColor(BkColor);
-	}
-
 	void ScrollState(const SCROLL_STATE &VState, const SCROLL_STATE &HState);
 
 	void DrawUp() const {

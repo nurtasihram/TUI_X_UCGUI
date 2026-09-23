@@ -32,7 +32,7 @@ public:
 		PCBITMAP apBmRadio[2]{ &_abmRadio[0], &_abmRadio[1] };
 		PCBITMAP pBmCheck{ &_bmCheck };
 		PCFONT pFont{ GUI_DEFAULT_FONT };
-		BRUSH brush{ RGB_INVALID, RGB_BLACK };
+		BRUSH brush{ RGBC::Gray(0xE4), RGB_BLACK };
 	} static DefaultProps;
 	
 private:
@@ -63,9 +63,7 @@ private:
 		auto FocusBorder = FontDistY <= 12 ? 2 : 3;
 		if (r.y0 < FocusBorder)
 			FocusBorder = r.y0;
-		/* Clear inside ... Just in case      */
-		/* Fill with parents background color */
-		SetBkColorPrefer(Props.brush.BkColor);
+		/* Clear inside ... Just in case */
 		GUI.Clear();
 		/* Iterate over all items */
 		for (int i = 0; i < NumItems; i++) {
@@ -337,8 +335,8 @@ __XX____,dddddddd,____dd__,
 ____dddd,________,dddd____,
 ________,dddddddd,________,
 };
-static CLOGPALETTE _PalRadioDisabled{ RGB_INVALID, RGBC::Gray(0x80), RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
-static CLOGPALETTE _PalRadioEnabled{ RGB_INVALID, RGBC::Gray(0x80), RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
+static CLOGPALETTE _PalRadioDisabled{ RGB_INVALID, RGB_GRAY, RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
+static CLOGPALETTE _PalRadioEnabled{ RGB_INVALID, RGB_GRAY, RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
 CBITMAP _abmRadio[]{
 	{ 12, 3, BPP_2, _pxRadio, _PalRadioDisabled },
 	{ 12, 3, BPP_2, _pxRadio, _PalRadioEnabled }

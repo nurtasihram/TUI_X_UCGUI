@@ -30,9 +30,9 @@ public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
 		BRUSH aBrush[2]{
-			/* Index       | Background      | Text             */
-			/* disabled */ { RGBC::Gray(0xD0), RGBC::Gray(0x80) },
-			/* enabled  */ { RGBC::Gray(0xC0), RGB_BLACK        }
+			/* Index       | Background       | Text     */
+			/* disabled */ { RGBC::Gray(0xD0) , RGB_GRAY  },
+			/*  enabled */ { RGBC::Gray(0xC0) , RGB_BLACK }
 		};
 		unsigned Align{ MULTIPAGE_ALIGN_LEFT | MULTIPAGE_ALIGN_TOP };
 	} static DefaultProps;
@@ -167,68 +167,47 @@ private:
 		Invalidate();
 	}
 
-	void _DrawTextItem(const char *pText, uint16_t Index,
-					   const RECT *pRect, int x0, int w, int ColorIndex) const {
-		RECT r;
-		r = *pRect;
+	void _DrawTextItem(const char *pText, uint16_t Index, RECT r, int x0, int w, int ColorIndex) const {
 		r.x0 += x0;
 		r.x1 = r.x0 + w;
+		r.y1 += EffectSize() + 1;
 		DrawUp(r);
-		r -= EffectSize();
-		if (sel == Index) {
-			if (Props.Align & MULTIPAGE_ALIGN_BOTTOM) {
-				r.y0 -= EffectSize() + 1;
-				if (EffectSize() > 1) {
-					GUI.Color(RGB_WHITE);
-					GUI.DrawVLine(r.x0 - 1, r.y0, r.y0 + 1);
-					GUI.Color(RGBC::Gray(0x55));
-					GUI.DrawVLine(r.x1 + 1, r.y0, r.y0 + 1);
-				}
-			}
-			else {
-				r.y1 += EffectSize() + 1;
-				if (EffectSize() > 1) {
-					GUI.Color(RGB_WHITE);
-					GUI.DrawVLine(r.x0 - 1, r.y1 - 2, r.y1 - 1);
-					GUI.Color(RGBC::Gray(0x55));
-					GUI.DrawVLine(r.x1 + 1, r.y1 - 2, r.y1 - 1);
-				}
-			}
-		}
+		r /= EffectSize();
 		GUI.Brush(Props.aBrush[ColorIndex]);
-		GUI.FillRect(r);
-		GUI_DispStringAt(pText, r.x0 + 4, pRect->y0 + 3);
+		GUI.Clear(r);
+		if (sel == Index)
+			GUI_DrawFocusRect(r, 1);
+		r /= EffectSize() + 1;
+		GUI_DispStringInRect(pText, r, TEXTALIGN_VCENTER);
 	}
 	void _OnPaint() const {
-		SetBkColorPrefer(RGB_INVALID);
-		GUI.Clear();
-		/* Draw border of MultPage */
-		auto rBorder = _CalcBorderRect();
-		DrawUp(rBorder);
-		/* Draw text items */
-		auto NumItems = Handles.NumItems();
-		if (!NumItems)
+		DrawUp(_CalcBorderRect());
+		if (Handles.NumItems() <= 0)
 			return;
-		int w = 0, x0 = 0;
-		if (States & MULTIPAGE_STATE_SCROLLMODE) {
-			if (Props.Align & MULTIPAGE_ALIGN_RIGHT)
-				x0 = -_GetPagePosX(ScrollState);
-			else
-				x0 = -_GetPagePosX(ScrollState);
-		}
-		auto rText = _GetTextRect();
+		int x0 = 0;
+		if (Status & MULTIPAGE_STATE_SCROLLMODE)
+			x0 -= _GetPagePosX(ScrollState);
+		auto &&rText = _GetTextRect();
 		auto rClip = rText;
 		rClip.y0 = rText.y0 - 1;
 		rClip.y1 = rText.y1 + 1;
-		UserClip(&rClip);
+		GUI.BkColor(Parent()->BkColor());
+		GUI.Clear();
+		DrawUp(_CalcClientRect() * EffectSize());
+		WObj::UserClip(&rClip);
 		GUI.Font(Props.pFont);
-		for (int i = 0; i < NumItems; i++) {
+		int w = 0;
+		for (int i = 0; i < Handles.NumItems(); ++i) {
 			auto &page = Handles[i];
 			x0 += w;
 			w = Props.pFont->TextBound(page.pText).x + 10;
-			_DrawTextItem(page.pText, i, &rText, x0, w, (page.Status & MULTIPAGE_STATE_ENABLED) ? 1 : 0);
+			if (w >= rText.XSize()) break;
+			_DrawTextItem(page.pText, i, rText, x0, w,
+						  (page.Status & MULTIPAGE_STATE_ENABLED) ?
+							  MULTIPAGE_CI_ENABLED :
+							  MULTIPAGE_CI_DISABLED);
 		}
-		UserClip(nullptr);
+		WObj::UserClip(nullptr);
 	}
 	bool _ClickedOnMultipage(POINT Pos) {
 		auto NumItems = Handles.NumItems();

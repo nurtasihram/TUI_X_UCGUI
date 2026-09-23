@@ -25,16 +25,16 @@ public:
 	struct Properties {
 		PCFONT pFont{ GUI_DEFAULT_FONT };
 		PCBITMAP apBm[4]{
-			/* Inactive */	&abmCheckEnabled[0],
-			/* Active */	&abmCheckEnabled[1],
-			/* Inactive 3-State */	&abmCheckEnabled[2],
-			/* Active 3-State */	&abmCheckEnabled[1]
+			/* Inactive */ &abmCheckEnabled[0],
+			/*   Active */ &abmCheckEnabled[1],
+			/* Inactive 3-State */ &abmCheckEnabled[2],
+			/*   Active 3-State */ &abmCheckEnabled[1]
 		};
 		RGBC aBkColorBox[2]{
-			/* Inactive */	RGBC::Gray(0x80),
+			/* Inactive */	RGB_GRAY,
 			/* Active */	RGB_WHITE
 		};
-		BRUSH brush{ RGB_INVALID, RGB_BLACK };
+		BRUSH brush{ RGBC::Gray(0xE4), RGB_BLACK };
 		TEXTALIGN Align{ TEXTALIGN_LEFT | TEXTALIGN_VCENTER };
 		uint8_t Spacing{ 4 };
 	} static DefaultProps;
@@ -242,7 +242,7 @@ CheckBox::Properties CheckBox::DefaultProps;
 }
 
 /* Palettes */
-static CLOGPALETTE _PalCheckDisabled{ RGBC::Gray(0x10), RGBC::Gray(0x80) };
+static CLOGPALETTE _PalCheckDisabled{ RGBC::Gray(0x10),RGB_GRAY };
 static CLOGPALETTE _PalCheckEnabled{ RGB_BLACK, RGB_WHITE };
 
 /* Pixel data */
