@@ -18,10 +18,12 @@ int GUI_TIME_Get(void) {
 Ayxandar Ayx;
 
 struct LCD_API : public LCDDEV {
-	LCD_API() : LCDDEV(BPP_32) {}
-	RECT Rect() override {
+	LCD_API() : LCDDEV() {}
+	RECT Rect() const override {
 		return{ 0, 0, LCD_XSIZE - 1, LCD_YSIZE - 1 };
 	}
+	BPP_MODE BitsPerPixel() const override
+	{ return BPP_32; }
 	RGBC GetPixel(int16_t x, int16_t y) override {
 		return Ayx.Dot({ x, y });
 	}

@@ -279,6 +279,6 @@ XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,XXXXXX__________};
 /* Bitmaps */
 CBITMAP CheckBox::abmCheckDisabled[2]{
-	{ { 11, 11 }, 2, BPP_1, _pxCheckDisabled,  _PalCheckDisabled},
+	{ { 11, 11 }, 2, BPP_1, _pxCheckDisabled,  _PalCheckDisabled },
 	{ { 11, 11 }, 2, BPP_1, _pxCheckDisabled,  _PalCheckEnabled }
 };

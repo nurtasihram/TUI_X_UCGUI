@@ -74,6 +74,44 @@ bool GUI_PollKeyMsg(void);
 void GUI_PID_Store(const PID_STATE &State);
 PID_STATE GUI_PID_Get(void);
 
+struct BITVIEW_MEM : BITVIEW {
+	BITVIEW_MEM(RECT r = {}, BPP_MODE BitsPerPixel = BPP_DEFAULT) :
+		BITVIEW(r, (r.XSize() * BPP_Bits[BitsPerPixel] + 7) >> 3, BitsPerPixel, nullptr, nullptr) {
+		if (BytesPerLine)
+			pData = GUI_MEM_Alloc(BytesPerLine * r.YSize());
+	}
+	~BITVIEW_MEM() { Free(); }
+	void Alloc() {
+		BytesPerLine = (XSize() * BPP_Bits[BitsPerPixel] + 7) >> 3;
+		pData = GUI_MEM_Realloc(pData, BytesPerLine * YSize());
+	}
+	void Free() {
+		GUI_MEM_Free(pData);
+		pData = nullptr;
+	}
+	uint32_t Dot(POINT Pos) const {
+		uint8_t BitsPerPixel = BPP_Bits[this->BitsPerPixel];
+		auto pBytes = (const uint8_t *)pData + BytesPerLine * Pos.y;
+		if (BitsPerPixel < 8) {
+			uint8_t Mask = (1u << BitsPerPixel) - 1;
+			auto xBits = Pos.x * BitsPerPixel + BitsXOff;
+			return pBytes[xBits >> 3] >> (xBits & 7) & Mask;
+		}
+		return 0;
+	}
+	void DotPoint(POINT Pos, uint32_t color) {
+		uint8_t BitsPerPixel = BPP_Bits[this->BitsPerPixel];
+		auto pBytes = (uint8_t *)pData + BytesPerLine * Pos.y;
+		if (BitsPerPixel < 8) {
+			uint8_t Mask = (1u << BitsPerPixel) - 1;
+			auto xBits = Pos.x * BitsPerPixel + BitsXOff;
+			auto xBitsMask = xBits & 7;
+			pBytes[xBits >> 3] &= ~(Mask << xBitsMask);
+			pBytes[xBits >> 3] |= (color & Mask) << xBitsMask;
+		}
+	}
+};
+
 struct GUI_CONTEXT {
 	LCDDEV *pDevice = nullptr;
 	PCFONT pFont;
@@ -139,37 +177,24 @@ public:
 
 } GUI;
 
-struct MEMDEV : LCDDEV {
-	RECT rect;
-	uint16_t BytesPerLine = 0;
-	void *pData = nullptr;
+struct MEMDEV : LCDDEV, BITVIEW_MEM {
 public:
 	MEMDEV() {}
-	~MEMDEV() {
-		GUI_MEM_Free(pData);
-		pData = nullptr;
-	}
 	MEMDEV(const MEMDEV &) = delete;
 	MEMDEV &operator=(const MEMDEV &) = delete;
 public:
 	void Alloc(const RECT &r) {
-		rect = r;
-		BitsPerPixel = GUI.pDevice->BitsPerPixel;
-		BytesPerLine = (r.XSize() * BPP_Bits[BitsPerPixel] + 7) >> 3;
-		pData = GUI_MEM_Realloc(pData, r.YSize() * BytesPerLine);
-	}
-	RECT Rect() override { return rect; }
 
-	RGBC *_XY2PTR(int x, int y) {
-		auto pData = (uint8_t *)this->pData;
-		pData += (y - rect.y0) * BytesPerLine;
-		return ((RGBC *)pData) + x - rect.x0;
 	}
+
+	RECT Rect() const override { return *this; }
+	BPP_MODE BitsPerPixel() const override
+	{ return BITVIEW_MEM::BitsPerPixel; }
+
 	RGBC GetPixel(int16_t x, int16_t y) override {
-		return *_XY2PTR(x, y);
+		return Dot({ x, y });
 	}
 	void SetPixel(int16_t x, int16_t y, RGBC color) override {
-		*_XY2PTR(x, y) = color;
 	}
 } MemDev;
 

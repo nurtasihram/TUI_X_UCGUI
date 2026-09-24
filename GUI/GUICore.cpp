@@ -34,7 +34,7 @@ void LCD_FillRect(RECT r) {
 }
 void LCD_DrawBitmap(BITVIEW b) {
 	if (b &= GUI.rClip)
-		GUI.pDevice->DrawBitmap(b, b.IsTrans());
+		GUI.pDevice->SetBitmap(b, b.IsTrans());
 }
 
 void GUI_DrawRect(RECT r) {
