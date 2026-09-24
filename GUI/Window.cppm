@@ -473,7 +473,7 @@ public:
 	static const RECT *UserClip(const RECT *pRect) {
 		return _ClipContext.UserClip(pRect);
 	}
-	static inline void Iterate(RECT &r, auto fn) {
+	static inline void Iterate(RECT r, auto fn) {
 
 		if (_ClipContext.InitSearch(r))
 			do { fn(); } while (_ClipContext.GetNext());
@@ -496,11 +496,11 @@ public:
 				ctx.ClipRectMax();
 				Require(WM_PAINT, (WM_PARAM)&ctx);
 				ctx.pDevice = GUI_X_GetLCD();
-				Iterate(MemDev.rect, [&] {
+				Iterate(MemDev.Rect(), [&] {
 					LCD_DrawBitmap(BITVIEW{
-						MemDev.rect,
+						MemDev.Rect(),
 						MemDev.BytesPerLine,
-						MemDev.BitsPerPixel,
+						MemDev.BitsPerPixel(),
 						MemDev.pData,
 						nullptr });
 				});

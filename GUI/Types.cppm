@@ -226,7 +226,7 @@ enum BPP_MODE : uint8_t {
 };
 extern const uint8_t BPP_Bits[8];
 struct BITVIEW : RECT {
-	const void* pData;
+	void* pData;
 	PCLOGPALETTE pPalEntries;
 	uint16_t BytesPerLine;
 	BPP_MODE BitsPerPixel : 3;
@@ -240,7 +240,7 @@ public:
 			PCLOGPALETTE pPalEntries,
 			uint8_t BitsXOff = 0) :
 		RECT(r),
-		pData(pData),
+		pData(const_cast<void*>(pData)),
 		pPalEntries(pPalEntries),
 		BytesPerLine(BytesPerLine),
 		BitsPerPixel(BitsPerPixel),
@@ -260,7 +260,7 @@ public:
 };
 
 struct BITMAP {
-	const void* pData;
+	void* pData;
 	PCLOGPALETTE pPalEntries;
 	POINT Size;
 	uint16_t BytesPerLine;
@@ -272,7 +272,7 @@ struct BITMAP {
 		   const void *pData,
 		   PCLOGPALETTE pPalEntries = nullptr,
 		   uint8_t BitsXOff = 0) :
-		pData(pData),
+		pData(const_cast<void*>(pData)),
 		pPalEntries(pPalEntries),
 		Size(Size),
 		BytesPerLine(BytesPerLine),	

@@ -5,14 +5,14 @@ export import TUX.Types;
 export {
 	
 struct LCDDEV {
-	BPP_MODE BitsPerPixel;
 	PCLOGPALETTE pPal = nullptr;
 
-	LCDDEV(BPP_MODE BitsPerPixel = BPP_DEFAULT)
-		: BitsPerPixel(BitsPerPixel) {}
+	LCDDEV() {}
 	virtual ~LCDDEV() {}
 
-	virtual RECT Rect() = 0;
+	virtual RECT Rect() const = 0;
+	virtual BPP_MODE BitsPerPixel() const = 0;
+
 	virtual void FillRect(RECT r, RGBC color) {
 		for (int y = r.y0; y <= r.y1; ++y)
 		for (int x = r.x0; x <= r.x1; ++x)
@@ -74,7 +74,7 @@ private:
 		}
 	}
 public:
-	virtual void DrawBitmap(BITVIEW b, bool HasTrans) {
+	virtual void SetBitmap(BITVIEW b, bool HasTrans) {
 		static const _SetPixelFunc aSetPixelFunc[]{
 			&LCDDEV::SetPixel,
 			&LCDDEV::SetPixelPal,
@@ -88,6 +88,9 @@ public:
 		else
 			_DrawBitmapBytes(_SetPix, b, bpp, b.pData, b.BytesPerLine);
 		pPal = nullptr;
+	}
+	virtual void GetBitmap(BITVIEW &b) {
+
 	}
 };
 
