@@ -89,7 +89,7 @@ private:
 		r.x1 -= InnerSize; /* Spare square area to the right */
 		GUI.Brush(Props.aBrush[ColorIndex]);
 		/* Draw the text */
-		GUI.FillRect(r);
+		GUI.rFill(r);
 		r.x0 += TextBorderSize;
 		r.x1 -= TextBorderSize;
 		GUI_DispStringInRect(s, r, Props.Align);
@@ -97,7 +97,7 @@ private:
 		r = ClientRect() / Border;
 		r.x0 = r.x1 + 1 - InnerSize;
 		GUI.Color(RGBC::Gray(0xc0));
-		GUI.FillRect(r);
+		GUI.rFill(r);
 		GUI.Color(RGB_BLACK);
 		_DrawTriangleDown((r.x1 + r.x0) / 2, r.y0 + 5, (r.YSize()) / 3);
 		DrawUp(r);

@@ -21,7 +21,6 @@ constexpr uint8_t
 	WIDGET_ITEM_DRAW          = 0,
 	WIDGET_ITEM_GET_XSIZE     = 1,
 	WIDGET_ITEM_GET_YSIZE     = 2;
-typedef int WIDGET_DRAW_ITEM_FUNC(WObj *pWin, int Cmd, int ItemIndex, POINT ItemPos);
 
 #pragma region Widget Effect
 struct WIDGET_EFFECT {
@@ -58,7 +57,7 @@ GUI_DRAW *GUI_DRAW_BITMAP_Create(PCBITMAP pBitmap) {
 		PCBITMAP pBitmap;
 		_GUI_DRAW(PCBITMAP pBitmap) : GUI_DRAW(), pBitmap(pBitmap) {}
 		void Paint(RECT &r) const override {
-			GUI_DrawBitmap(pBitmap, r.LeftTop());
+			GUI_DrawBitmap(*pBitmap, r.LeftTop());
 		}
 		POINT Size() const override
 		{ return pBitmap ? pBitmap->Size : (POINT)0; }
@@ -80,7 +79,6 @@ GUI_DRAW *GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB *pfDraw) {
 #pragma endregion
 
 class Widget : public WObj {
-
 public:
 	static PCWIDGET_EFFECT DefaultEffect;
 
@@ -234,19 +232,7 @@ public:
 
 };
 
-void 
-WIDGET__FillStringInRect(const char *pText, RECT FillRect, RECT TextRectMax) {
-	/* Check if we have anything to do at all ... */
-	auto r = FillRect + GUI.Off;
-	/* Fill border */
-	GUI.Clear(FillRect);
-	/* Set clipping rectangle */
-	auto prOldClip = WObj::UserClip(&TextRectMax);
-	/* Display text */
-	GUI_DispStringAt(pText, TextRectMax.x0, TextRectMax.y0);
-	/* Restore clipping rectangle */
-	WObj::UserClip(prOldClip);
-}
+typedef int WIDGET_DRAW_ITEM_FUNC(const Widget *pWidget, int Cmd, int ItemIndex, POINT ItemPos);
 
 }
 

@@ -21,7 +21,7 @@ public:
 			/* Active   */ { RGB_DARKBLUE    , RGB_WHITE    },
 			/* Inactive */ { RGBC::Gray(0x55), RGB_BLACK    },
 		};
-		TEXTALIGN Align{ TEXTALIGN_HCENTER };
+		TEXTALIGN Align{ TEXTALIGN_CENTER };
 	} static DefaultProps;
 	
 private:
@@ -35,19 +35,19 @@ private:
 		GUI_MEM_FreePtr((void **)&pText);
 		pText = nullptr;
 	}
-	int _Value2X(int v) const {
-		int EffectSize = this->EffectSize();
-		int xSize = SizeX();
+	auto _Value2X(int16_t v) const {
+		auto EffectSize = this->EffectSize();
+		auto xSize = SizeX();
 		if (v < Min)
 			v = Min;
 		if (v > Max)
 			v = Max;
 		return EffectSize + ((xSize - 2 * EffectSize) * (v - Min)) / (Max - Min);
 	}
-	void _DrawPart(int Index, int xText, int yText, const char *pText) const {
+	void _DrawPart(PROGBAR_CI Index, const RECT &rText, const char *pText) const {
 		GUI.Brush(Props.aBrush[Index]);
 		GUI.Clear();
-		GUI_DispStringAt(pText, xText, yText);
+		GUI_DispStringInRect(pText, rText, Props.Align);
 	}
 	const char *_GetText(char *pBuffer) const {
 		if (pText) return pText;
@@ -66,28 +66,8 @@ private:
 			*pBuffer++ = '0' + value;
 		}
 		*pBuffer++ = '%';
-		*pBuffer = 0;
-		return (const char *)pText;
-	}
-	void _GetTextRect(RECT *pRect, const char *pText) const {
-		auto size = Size();
-		auto textBound = Props.pFont->TextBound(pText);
-		auto EffectSize = this->EffectSize();
-		switch (Props.Align & TEXTALIGN_HORIZONTAL) {
-			case TEXTALIGN_HCENTER:
-				pRect->x0 = (size.x - textBound.x) / 2;
-				break;
-			case TEXTALIGN_RIGHT:
-				pRect->x0 = size.x - textBound.x - 1 - EffectSize;
-				break;
-			default:
-				pRect->x0 = EffectSize;
-		}
-		pRect->y0 = (size.y - textBound.y) / 2;
-		pRect->x0 += XOff;
-		pRect->y0 += YOff;
-		pRect->x1 = pRect->x0 + textBound.x - 1;
-		pRect->y1 = pRect->y0 + textBound.y - 1;
+		*pBuffer = '\0';
+		return pText;
 	}
 	void _OnPaint() const {
 		auto rClient = ClientRect();
@@ -96,18 +76,16 @@ private:
 		char ac[5]{ 0 };
 		auto pText = _GetText(ac);
 		GUI.Font(Props.pFont);
-		RECT rText;
-		_GetTextRect(&rText, pText);
 		/* Draw left bar */
 		auto r = rInside;
 		r.x1 = xPos - 1;
 		UserClip(&r);
-		_DrawPart(PROGBAR_CI_INACT, rText.x0, rText.y0, pText);
+		_DrawPart(PROGBAR_CI_INACT, rClient, pText);
 		/* Draw right bar */
 		r = rInside;
 		r.x0 = xPos;
 		UserClip(&r);
-		_DrawPart(PROGBAR_CI_ACTIVE, rText.x0, rText.y0, pText);
+		_DrawPart(PROGBAR_CI_ACTIVE, rClient, pText);
 		UserClip(nullptr);
 		DrawDown(rClient);
 	}

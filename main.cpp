@@ -70,7 +70,7 @@ static const Widget::CreateStruct _aDialogCreate[]{
 	{ Button  ::CreateIndirect, "OK"                   , GUI_ID_OK         , 120 , 65  , 80   , 20                                },
 	{ Button  ::CreateIndirect, "Cancel"               , GUI_ID_CANCEL     , 120 , 90  , 80   , 20                                }
 };
-static int _GetItemSizeY(ListBox *pObj, int ItemIndex) {
+static int _GetItemSizeY(const ListBox *pObj, int ItemIndex) {
 	int DistY = pObj->Font().YSize + 1;
 	if (pObj->GetMulti()) {
 		if (pObj->GetItemSel(ItemIndex))
@@ -80,11 +80,11 @@ static int _GetItemSizeY(ListBox *pObj, int ItemIndex) {
 		DistY += 8;
 	return DistY;
 }
-static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
-	auto pObj = (ListBox *)pWin;
+static int _OwnerDraw(const Widget *pWidget, int Cmd, int Index, POINT ItemPos) {
+	auto pObj = (const ListBox *)pWidget;
 	switch (Cmd) {
 		case WIDGET_ITEM_GET_XSIZE:
-			return ListBox::OwnerDraw(pWin, Cmd, Index, ItemPos) + bmSmilie0.Size.x + 16;
+			return ListBox::OwnerDraw(pObj, Cmd, Index, ItemPos) + bmSmilie0.Size.x + 16;
 		case WIDGET_ITEM_GET_YSIZE:
 			return _GetItemSizeY(pObj, Index);
 		case WIDGET_ITEM_DRAW:
@@ -116,13 +116,13 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 			pObj->GetItemText(Index, acBuffer, sizeof(acBuffer));
 			GUI.Clear();
 			auto FontDistY = GUI.Font().YSize;
-			GUI_DispStringAt(acBuffer, ItemPos.x + bmSmilie0.Size.x + 16, ItemPos.y + (YSize - FontDistY) / 2);
+			auto rInside = pObj->InsideRect();
+			GUI_DispStringInRect(acBuffer, { ItemPos.x + bmSmilie0.Size.x + 16, ItemPos.y, rInside.x1, ItemPos.y + YSize - 1 }, TEXTALIGN_LEFT | TEXTALIGN_VCENTER);
 			/* Draw bitmap */
 			auto pBm = MultiSel ? IsSelected ? &bmSmilie1 : &bmSmilie0 : (Index == Sel) ? &bmSmilie1 : &bmSmilie0;
-			GUI_DrawBitmap(pBm, { ItemPos.x + 7, ItemPos.y + (YSize - pBm->Size.y) / 2 });
+			GUI_DrawBitmap(*pBm, { ItemPos.x + 7, ItemPos.y + (YSize - pBm->Size.y) / 2 });
 			/* Draw focus rectangle */
 			if (MultiSel && Index == Sel) {
-				auto rInside = pObj->InsideRect();
 				RECT rFocus;
 				rFocus.x0 = ItemPos.x;
 				rFocus.y0 = ItemPos.y;
@@ -134,7 +134,7 @@ static int _OwnerDraw(WObj *pWin, int Cmd, int Index, POINT ItemPos) {
 			break;
 		}
 		default:
-			return ListBox::OwnerDraw(pWin, Cmd, Index, ItemPos);
+			return ListBox::OwnerDraw(pObj, Cmd, Index, ItemPos);
 	}
 	return 0;
 }
@@ -344,18 +344,18 @@ static WM_PARAM _cbMemDevPane(WObj *pWin, int MsgId, WM_PARAM Data) {
 			GUI.Color(RGB_DARKGRAY);
 			GUI_DrawRect({ 0, 0, Size.x - 1, Size.y - 1 });
 			GUI.Color(RGB_BLACK);
-			GUI_DispStringAt(MemDevOn ? "MemDev ON" : "MemDev OFF", 8, 8);
-			GUI_DispStringAt(MemDevOn ? "WC_MEMDEV enabled" : "WC_MEMDEV disabled", 8, 24);
+			GUI_DispStringInRect(MemDevOn ? "MemDev ON" : "MemDev OFF", RECT::LeftTop({ 8, 8 }, { Size.x, 16 }), 0);
+			GUI_DispStringInRect(MemDevOn ? "WC_MEMDEV enabled" : "WC_MEMDEV disabled", RECT::LeftTop({ 8, 24 }, { Size.x - 8, 16 }), 0);
 			GUI.Color(RGB_GRAY);
 			GUI_DrawRect({ 10, 48, Size.x - 11, 72 });
 			GUI.Color(MemDevOn ? RGB_GREEN : RGB_RED);
-			GUI.FillRect({ 10 + XPos, 49, 10 + XPos + BarWidth, 71 });
+			GUI.rFill({ 10 + XPos, 49, 10 + XPos + BarWidth, 71 });
 			GUI.Color(RGB_BLUE);
-			GUI.FillRect({ 10, Size.y - 40, Size.x - 11, Size.y - 25 });
+			GUI.rFill({ 10, Size.y - 40, Size.x - 11, Size.y - 25 });
 			GUI.Color(RGB_YELLOW);
-			GUI.FillRect({ 10 + XPos / 2, Size.y - 39, 35 + XPos / 2, Size.y - 26 });
+			GUI.rFill({ 10 + XPos / 2, Size.y - 39, 35 + XPos / 2, Size.y - 26 });
 			GUI.Color(RGB_BLACK);
-			GUI_DispStringAt("Animated redraw area", 8, Size.y - 18);
+			GUI_DispStringInRect("Animated redraw area", RECT::LeftTop({ 8, Size.y - 18 }, { Size.x - 8, 16 }), 0);
 			return 0;
 		}
 	}
@@ -1112,7 +1112,6 @@ static WM_PARAM _cbProgBarTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 			_ProgBarCustomText = false;
 			pProg->SetMinMax(_ProgBarMin, _ProgBarMax);
 			pProg->SetValue(_ProgBarValue);
-			pProg->TextAlign(TEXTALIGN_HCENTER);
 			pProg->SetText(nullptr);
 			return 0;
 		}

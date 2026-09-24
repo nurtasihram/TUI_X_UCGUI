@@ -122,7 +122,7 @@ private:
 		GUI.Color(Props.Color);
 		r.*x0 = Pos.x0_LeftArrow;
 		r.*x1 = Pos.x1_LeftArrow;
-		GUI.FillRect(r);
+		GUI.rFill(r);
 		GUI.Color(Props.aBkColor[1]);
 		_DrawTriangle(r.*x0 + ArrowOff, CenterH, ArrowSize, -1);
 		DrawUp(r);
@@ -132,17 +132,17 @@ private:
 		GUI.Color(Props.aBkColor[0]);
 		r.*x0 = Pos.x1_LeftArrow + 1;
 		r.*x1 = Pos.x0_Thumb - 1;
-		GUI.FillRect(r);
+		GUI.rFill(r);
 		r.*x0 = Pos.x1_Thumb + 1;
 		r.*x1 = Pos.x0_RightArrow - 1;
-		GUI.FillRect(r);
+		GUI.rFill(r);
 		/*
 		  Draw Thumb
 		*/
 		r.*x0 = Pos.x0_Thumb;
 		r.*x1 = Pos.x1_Thumb;
 		GUI.Color(Props.Color);
-		GUI.FillRect(r);
+		GUI.rFill(r);
 		DrawUp(r);
 		/*
 		  Draw right Arrow
@@ -150,7 +150,7 @@ private:
 		GUI.Color(Props.Color);
 		r.*x0 = Pos.x0_RightArrow;
 		r.*x1 = Pos.x1_RightArrow;
-		GUI.FillRect(r);
+		GUI.rFill(r);
 		GUI.Color(Props.aBkColor[1]);
 		_DrawTriangle(r.*x1 - ArrowOff, CenterH, ArrowSize, 1);
 		DrawUp(r);
@@ -161,7 +161,7 @@ private:
 			r.*x0 = Pos.x1_RightArrow + 1;
 			r.*x1 = Pos.x1;
 			GUI.Color(Props.Color);
-			GUI.FillRect(r);
+			GUI.rFill(r);
 		}
 	}
 	void _ScrollbarPressed() {

@@ -22,13 +22,9 @@ constexpr TEXTALIGN
 	TEXTALIGN_TOP         = 0 << 2,
 	TEXTALIGN_BOTTOM      = 1 << 2,
 	TEXTALIGN_VCENTER     = 2 << 2,
-	TEXTALIGN_VERTICAL    = 3 << 2;
-
-constexpr int16_t
-	GUI_XMIN = -4095,
-	GUI_XMAX =  4095,
-	GUI_YMIN = -4095,
-	GUI_YMAX =  4095;
+	TEXTALIGN_VERTICAL    = 3 << 2,
+	
+	TEXTALIGN_CENTER      = TEXTALIGN_VCENTER | TEXTALIGN_HCENTER;
 
 template<class T, size_t N>
 constexpr uint16_t GUI_COUNTOF(T (&)[N]) { return N; }
@@ -45,7 +41,7 @@ int  GUI__DivideRound(int a, int b);
 
 void GUI_DrawFocusRect(RECT r, int Dist);
 void GUI_DrawRect(RECT r);
-void GUI_DrawBitmap(PCBITMAP pBM, POINT Pos);
+void GUI_DrawBitmap(CBITMAP &bm, POINT Pos);
 
 #if GUI_SUPPORT_CURSOR
 void     GUI_CURSOR_Activate(void);
@@ -58,12 +54,8 @@ void     GUI_CURSOR__TempShow(void);
 bool     GUI_CURSOR__TempHide(RECT);
 #endif
 
-void GUI_DispChar(uint16_t c);
-void GUI_DispString(const char *s);
-void GUI_DispStringAt(const char *s, int x, int y);
 void GUI_DispStringInRect(const char *s, const RECT &r, int Flags);
 void GUI_DispStringInRectMax(const char *s, RECT r, int TextAlign, int MaxLen); /* Not to be doc. */
-void GUI_DispNextLine(void);
 
 bool GUI_Exec();
 bool GUI_Exec1();
@@ -76,14 +68,16 @@ PID_STATE GUI_PID_Get(void);
 
 struct BITVIEW_MEM : BITVIEW {
 	BITVIEW_MEM(RECT r = {}, BPP_MODE BitsPerPixel = BPP_DEFAULT) :
-		BITVIEW(r, (r.XSize() * BPP_Bits[BitsPerPixel] + 7) >> 3, BitsPerPixel, nullptr, nullptr) {
+		BITVIEW(r, (r.XSize() * BPP_Bits[BitsPerPixel] + 7) >> 3, BitsPerPixel, nullptr) {
 		if (BytesPerLine)
 			pData = GUI_MEM_Alloc(BytesPerLine * r.YSize());
 	}
 	~BITVIEW_MEM() { Free(); }
-	void Alloc() {
-		BytesPerLine = (XSize() * BPP_Bits[BitsPerPixel] + 7) >> 3;
-		pData = GUI_MEM_Realloc(pData, BytesPerLine * YSize());
+	void Alloc(const RECT &rect, BPP_MODE BitsPerPixel) {
+		RECT::operator=(rect);
+		BITVIEW::BitsPerPixel = BitsPerPixel;
+		if ((BytesPerLine = (XSize() * BPP_Bits[BitsPerPixel] + 7) >> 3))
+			pData = GUI_MEM_Realloc(pData, BytesPerLine * YSize());
 	}
 	void Free() {
 		GUI_MEM_Free(pData);
@@ -91,26 +85,75 @@ struct BITVIEW_MEM : BITVIEW {
 	}
 	uint32_t Dot(POINT Pos) const {
 		uint8_t BitsPerPixel = BPP_Bits[this->BitsPerPixel];
-		auto pBytes = (const uint8_t *)pData + BytesPerLine * Pos.y;
+		auto pLine = (const uint8_t *)pData + BytesPerLine * Pos.y;
 		if (BitsPerPixel < 8) {
 			uint8_t Mask = (1u << BitsPerPixel) - 1;
 			auto xBits = Pos.x * BitsPerPixel + BitsXOff;
-			return pBytes[xBits >> 3] >> (xBits & 7) & Mask;
+			return pLine[xBits >> 3] >> (xBits & 7) & Mask;
+		} else {
+			uint8_t BytesPerPixel = BitsPerPixel / 8;
+			auto pPixel = pLine + Pos.x * BytesPerPixel;
+			if (BytesPerPixel == 1)
+				return *pPixel;
+			else if (BytesPerPixel == 2)
+				return *(const uint16_t *)pPixel;
+			else if (BytesPerPixel == 3)
+				return *(const RGB24b *)pPixel;
+			else if (BytesPerPixel == 4)
+				return *(const RGB32b *)pPixel;
 		}
 		return 0;
 	}
-	void DotPoint(POINT Pos, uint32_t color) {
+	void Dot(POINT Pos, uint32_t color) {
 		uint8_t BitsPerPixel = BPP_Bits[this->BitsPerPixel];
-		auto pBytes = (uint8_t *)pData + BytesPerLine * Pos.y;
+		auto pLine = (uint8_t *)pData + BytesPerLine * Pos.y;
 		if (BitsPerPixel < 8) {
 			uint8_t Mask = (1u << BitsPerPixel) - 1;
 			auto xBits = Pos.x * BitsPerPixel + BitsXOff;
 			auto xBitsMask = xBits & 7;
-			pBytes[xBits >> 3] &= ~(Mask << xBitsMask);
-			pBytes[xBits >> 3] |= (color & Mask) << xBitsMask;
+			auto pPixel = pLine + (xBits >> 3);
+			*pPixel &= ~(Mask << xBitsMask);
+			*pPixel |= (color & Mask) << xBitsMask;
+		} else {
+			uint8_t BytesPerPixel = BitsPerPixel / 8;
+			auto pPixel = pLine + Pos.x * BytesPerPixel;
+			if (BytesPerPixel == 1)
+				*pPixel = color;
+			else if (BytesPerPixel == 2)
+				*(uint16_t *)pPixel = color;
+			else if (BytesPerPixel == 3)
+				*(RGB24b *)pPixel = color;
+			else if (BytesPerPixel == 4)
+				*(RGB32b *)pPixel = color;
 		}
 	}
 };
+
+struct MEMDEV : LCDDEV, BITVIEW_MEM {
+public:
+	MEMDEV() {}
+	MEMDEV(const MEMDEV &) = delete;
+	MEMDEV &operator=(const MEMDEV &) = delete;
+public:
+	RECT Rect() const override { return *this; }
+	BPP_MODE BitsPerPixel() const override
+	{ return BITVIEW_MEM::BitsPerPixel; }
+
+	RGBC GetPixel(int16_t x, int16_t y) override {
+		POINT Pos{ x, y };
+		if (!(*this <= Pos))
+			return RGB_INVALID;
+		Pos -= LeftTop();
+		return Dot(Pos);
+	}
+	void SetPixel(int16_t x, int16_t y, RGBC color) override {
+		POINT Pos{ x, y };
+		if (!(*this <= Pos))
+			return;
+		Pos -= LeftTop();
+		Dot(Pos, color);
+	}
+} MemDev;
 
 struct GUI_CONTEXT {
 	LCDDEV *pDevice = nullptr;
@@ -152,50 +195,45 @@ public:
 	{ rClip = pDevice->Rect(); }
 
 public:
-	void FillRect(RECT r) {
+	//void SetBitmap(BITVIEW b) {
+	//	if (b &= GUI.rClip)
+	//		GUI.pDevice->SetBitmap(b);
+	//}
+	//void SetBitmap(CBITMAP &bm, POINT Pos) {
+	//	Pos += GUI.Off;
+	//	auto bmView = bm.At(Pos);
+	//	if (bmView &= GUI.rClip) {
+	//		CLOGPALETTE aPal{ brush.BkColor, brush.Color };
+	//		GUI.pDevice->SetBitmap(
+	//			bmView,
+	//			bm.pPalEntries ? bm.pPalEntries : bm.BitsPerPixel == BPP_1 ? aPal : nullptr,
+	//			bm.IsTrans());
+	//	}
+	//}
+
+	void rFill(RECT r) {
 		r += Off;
 		if (r &= rClip)
-			pDevice->FillRect(r, Color());
+			pDevice->rFill(r, Color());
 	}
 	void Clear(RECT r) {
 		r += Off;
 		if (r &= rClip)
-			pDevice->FillRect(r, BkColor());
+			pDevice->rFill(r, BkColor());
 	}
 	void Clear() {
 		DispPos = 0;
 		if (auto r = pDevice->Rect(); r &= rClip)
-			pDevice->FillRect(r, BkColor());
+			pDevice->rFill(r, BkColor());
 	}
 
 	void DrawRect(RECT r);
 	void DrawFocusRect(RECT r, int16_t Dist);
 	void DrawVLine(int16_t x0, int16_t y0, int16_t y1)
-	{ FillRect({ x0, y0, x0, y1 }); }
+	{ rFill({ x0, y0, x0, y1 }); }
 	void DrawHLine(int16_t y0, int16_t x0, int16_t x1)
-	{ FillRect({ x0, y0, x1, y0 }); }
+	{ rFill({ x0, y0, x1, y0 }); }
 
 } GUI;
-
-struct MEMDEV : LCDDEV, BITVIEW_MEM {
-public:
-	MEMDEV() {}
-	MEMDEV(const MEMDEV &) = delete;
-	MEMDEV &operator=(const MEMDEV &) = delete;
-public:
-	void Alloc(const RECT &r) {
-
-	}
-
-	RECT Rect() const override { return *this; }
-	BPP_MODE BitsPerPixel() const override
-	{ return BITVIEW_MEM::BitsPerPixel; }
-
-	RGBC GetPixel(int16_t x, int16_t y) override {
-		return Dot({ x, y });
-	}
-	void SetPixel(int16_t x, int16_t y, RGBC color) override {
-	}
-} MemDev;
 
 }

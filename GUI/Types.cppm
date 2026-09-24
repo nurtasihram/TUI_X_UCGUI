@@ -225,28 +225,32 @@ enum BPP_MODE : uint8_t {
 	BPP_DEFAULT
 };
 extern const uint8_t BPP_Bits[8];
+
+enum ROT_MODE : uint8_t {
+	ROT_0 = 0,
+	ROT_90,
+	ROT_180,
+	ROT_270
+};
+
 struct BITVIEW : RECT {
-	void* pData;
-	PCLOGPALETTE pPalEntries;
+	void *pData;
 	uint16_t BytesPerLine;
 	BPP_MODE BitsPerPixel : 3;
 	uint8_t BitsXOff : 3;
-	uint8_t : 2;
+	ROT_MODE Rot: 2;
 public:
 	BITVIEW(RECT r,
 			uint16_t BytesPerLine,
 			BPP_MODE BitsPerPixel,
 			const void* pData,
-			PCLOGPALETTE pPalEntries,
 			uint8_t BitsXOff = 0) :
 		RECT(r),
 		pData(const_cast<void*>(pData)),
-		pPalEntries(pPalEntries),
 		BytesPerLine(BytesPerLine),
 		BitsPerPixel(BitsPerPixel),
 		BitsXOff(BitsXOff) {}
 public:
-	bool IsTrans() const { return pPalEntries ? pPalEntries[0] == RGB_INVALID : false; }
 	bool operator&=(RECT rClip) {
 		auto ptOld = LeftTop();
 		if (!RECT::operator&=(rClip))
@@ -260,32 +264,31 @@ public:
 };
 
 struct BITMAP {
-	void* pData;
 	PCLOGPALETTE pPalEntries;
-	POINT Size;
+	void* pData;
 	uint16_t BytesPerLine;
 	BPP_MODE BitsPerPixel : 3;
-	uint8_t BitsXOff : 3;
+	uint8_t BitsXOff : 3 = 0;
+	ROT_MODE Rot : 2;
+	POINT Size;
 	BITMAP(POINT Size,
 		   uint16_t BytesPerLine,
 		   BPP_MODE BitsPerPixel,
 		   const void *pData,
-		   PCLOGPALETTE pPalEntries = nullptr,
-		   uint8_t BitsXOff = 0) :
-		pData(const_cast<void*>(pData)),
+		   PCLOGPALETTE pPalEntries = nullptr) :
 		pPalEntries(pPalEntries),
-		Size(Size),
+		pData(const_cast<void*>(pData)),
 		BytesPerLine(BytesPerLine),	
 		BitsPerPixel(BitsPerPixel),
-		BitsXOff(BitsXOff) {}
+		Size(Size) {}
 public:
+	bool IsTrans() const { return pPalEntries ? pPalEntries[0] == RGB_INVALID : false; }
 	BITVIEW At(POINT Pos) const {
 		return {
 			RECT::LeftTop(Pos, Size),
 			BytesPerLine,
 			BitsPerPixel,
 			pData,
-			pPalEntries,
 			BitsXOff
 		};
 	}

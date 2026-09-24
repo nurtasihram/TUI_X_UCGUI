@@ -13,7 +13,7 @@ struct LCDDEV {
 	virtual RECT Rect() const = 0;
 	virtual BPP_MODE BitsPerPixel() const = 0;
 
-	virtual void FillRect(RECT r, RGBC color) {
+	virtual void rFill(RECT r, RGBC color) {
 		for (int y = r.y0; y <= r.y1; ++y)
 		for (int x = r.x0; x <= r.x1; ++x)
 		SetPixel(x, y, color);
@@ -74,14 +74,14 @@ private:
 		}
 	}
 public:
-	virtual void SetBitmap(BITVIEW b, bool HasTrans) {
+	virtual void SetBitmap(BITVIEW b, PCLOGPALETTE pPalEntries = nullptr, bool HasTrans = false) {
 		static const _SetPixelFunc aSetPixelFunc[]{
 			&LCDDEV::SetPixel,
 			&LCDDEV::SetPixelPal,
 			&LCDDEV::SetPixelTrans,
 			&LCDDEV::SetPixelTransPal
 		};
-		pPal = b.pPalEntries;
+		pPal = pPalEntries;
 		auto _SetPix = aSetPixelFunc[(pPal ? 1 : 0) | (HasTrans ? 2 : 0)];
 		if (auto bpp = BPP_Bits[b.BitsPerPixel]; bpp < 8)
 			_DrawBitmapBits(_SetPix, b, bpp, b.pData, b.BytesPerLine, b.BitsXOff);

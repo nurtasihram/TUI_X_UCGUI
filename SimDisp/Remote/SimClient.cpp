@@ -66,7 +66,7 @@ class SiDiHost {
 					break;
 				case SIDI_MSG::SetOnKey:
 					if (lpfnOnKey)
-						lpfnOnKey(msg.ParamW(), msg.ParamL());
+						lpfnOnKey((uint16_t)msg.ParamW(), (uint8_t)msg.ParamL());
 					eventReq.Post(msg);
 					break;
 				case SIDI_MSG::SetOnResize:

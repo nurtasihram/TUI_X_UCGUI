@@ -48,7 +48,7 @@ private:
 	Properties Props = DefaultProps;
 
 	struct Item {
-		uint16_t xSize, ySize;
+		mutable uint16_t xSize, ySize;
 		uint8_t Status;
 		char *pText;
 	};
@@ -83,31 +83,31 @@ private:
 		pOwner->Require(WM_NOTIFY_PARENT, (WM_PARAM)&Info);
 	}
 
-	int _CallOwnerDraw(int Cmd, int ItemIndex, POINT Pos) {
+	auto _CallOwnerDraw(int Cmd, int ItemIndex, POINT Pos) const {
 		if (pfDrawItem)
 			return pfDrawItem(this, Cmd, ItemIndex, Pos);
 		return OwnerDraw(this, Cmd, ItemIndex, Pos);
 	}
 	auto _GetYSize() const { return InsideRectEx().YSize(); }
-	auto _GetItemSizeX(uint16_t Index) {
-		auto &pItem = ItemArray[Index];
-		int xSize = pItem.xSize;
+	auto _GetItemSizeX(uint16_t Index) const {
+		auto &item = ItemArray[Index];
+		int xSize = item.xSize;
 		if (xSize == 0) {
 			PCFONT pOldFont = GUI.Font(Props.pFont);
 			xSize = _CallOwnerDraw(WIDGET_ITEM_GET_XSIZE, Index, {});
 			GUI.Font(pOldFont);
 		}
-		return pItem.xSize = xSize;
+		return item.xSize = xSize;
 	}
-	auto _GetItemSizeY(uint16_t Index) {
-		auto &pItem = ItemArray[Index];
-		int ySize = pItem.ySize;
-		if (ySize == 0) {
+	auto _GetItemSizeY(uint16_t Index) const {
+		auto &item = ItemArray[Index];
+		int ySize = item.ySize;
+		if (!ySize) {
 			PCFONT pOldFont = GUI.Font(Props.pFont);
 			ySize = _CallOwnerDraw(WIDGET_ITEM_GET_YSIZE, Index, {});
 			GUI.Font(pOldFont);
 		}
-		return pItem.ySize = ySize;
+		return item.ySize = ySize;
 	}
 	int _GetContentsSizeX() {
 		int Result = 0;
@@ -171,8 +171,8 @@ private:
 		return ScrollStateV.v - PrevScrollStateV;
 	}
 	void _InvalidateItemSize(uint16_t Index) {
-		auto &pItem = ItemArray[Index];
-		pItem.xSize = pItem.ySize = 0;
+		auto &item = ItemArray[Index];
+		item.xSize = item.ySize = 0;
 	}
 	void _InvalidateInsideArea() {
 		auto r = InsideRectEx();
@@ -475,34 +475,31 @@ public:
 
 #pragma region OwnerDraw
 private:
-	void _PaintItem(int ItemIndex, POINT Pos) const {
-		auto &pItem = ItemArray[ItemIndex];
-		auto r = InsideRect();
+	void _PaintItem(uint16_t ItemIndex, POINT Pos) const {
+		auto &item = ItemArray[ItemIndex];
+		auto rInside = InsideRect();
 		/* Calculate color index */
 		auto ColorIndex =
-			pItem.Status & LISTBOX_ITEM_DISABLED ? LISTBOX_CI_DISABLED :
+			item.Status & LISTBOX_ITEM_DISABLED ? LISTBOX_CI_DISABLED :
 			States & LISTBOX_CF_MULTISEL ?
-			pItem.Status & LISTBOX_ITEM_SELECTED ? LISTBOX_CI_SEL_FOCUSSED : LISTBOX_CI_UNSEL :
+			item.Status & LISTBOX_ITEM_SELECTED ? LISTBOX_CI_SEL_FOCUSSED : LISTBOX_CI_UNSEL :
 			ItemIndex != Sel ? LISTBOX_CI_UNSEL :
 			States & WIDGET_STATE_FOCUS || pOwner ? LISTBOX_CI_SEL_FOCUSSED : LISTBOX_CI_SEL_UNFOCUS;
 		/* Display item */
 		GUI.Brush(Props.aBrush[ColorIndex]);
-		auto s = ItemArray[ItemIndex].pText;
 		GUI.Clear();
-		GUI_DispStringAt(s, Pos.x + 1, Pos.y);
+		RECT rText{ Pos, { rInside, Pos.y + _GetItemSizeY(ItemIndex) - 1 } };
+		auto s = ItemArray[ItemIndex].pText;
+		GUI_DispStringInRect(s, rText, TEXTALIGN_LEFT | TEXTALIGN_VCENTER);
 		/* Display focus rectangle */
 		if ((States & LISTBOX_CF_MULTISEL) && ItemIndex == Sel) {
-			RECT rFocus;
-			rFocus.LeftTop(Pos);
-			rFocus.x1 = r.x1;
-			rFocus.y1 = Pos.y + Props.pFont->TextBound(s).x - 1;
 			GUI.Color(RGB_WHITE - Props.aBrush[ColorIndex].BkColor);
-			GUI_DrawFocusRect(rFocus, 0);
+			GUI_DrawFocusRect(rText, 0);
 		}
 	}
 public:
-	static int OwnerDraw(WObj *pWin, int Cmd, int ItemIndex, POINT Pos) {
-		auto pObj = (ListBox *)pWin;
+	static int OwnerDraw(const Widget *pWidget, int Cmd, int ItemIndex, POINT Pos) {
+		auto pObj = (const ListBox *)pWidget;
 		switch (Cmd) {
 			case WIDGET_ITEM_GET_XSIZE: {
 				auto s = pObj->ItemArray[ItemIndex].pText;
@@ -635,9 +632,9 @@ public:
 		auto NumItems = GetNumItems();
 		if (Index < NumItems) {
 			if (ItemArray.InsertItem(Index)) {
-				auto &pItem = ItemArray[Index];
-				pItem.Status = 0;
-				GUI__SetText(pItem.pText, s);
+				auto &item = ItemArray[Index];
+				item.Status = 0;
+				GUI__SetText(item.pText, s);
 				InvalidateItem(Index);
 			}
 		}
@@ -652,20 +649,20 @@ public:
 	void SetItemDisabled(uint16_t Index, bool OnOff) {
 		if (Index >= GetNumItems())
 			return;
-		auto &pItem = ItemArray[Index];
+		auto &item = ItemArray[Index];
 		if (OnOff) {
-			if (!(pItem.Status & LISTBOX_ITEM_DISABLED)) {
-				pItem.Status |= LISTBOX_ITEM_DISABLED;
+			if (!(item.Status & LISTBOX_ITEM_DISABLED)) {
+				item.Status |= LISTBOX_ITEM_DISABLED;
 				_InvalidateItem(Index);
 			}
 		}
-		else if (pItem.Status & LISTBOX_ITEM_DISABLED) {
-			pItem.Status &= ~LISTBOX_ITEM_DISABLED;
+		else if (item.Status & LISTBOX_ITEM_DISABLED) {
+			item.Status &= ~LISTBOX_ITEM_DISABLED;
 			_InvalidateItem(Index);
 		}
 	}
 
-	void GetItemText(uint16_t Index, char *pBuffer, int MaxSize) {
+	void GetItemText(uint16_t Index, char *pBuffer, int MaxSize) const {
 		uint16_t NumItems;
 		NumItems = GetNumItems();
 		if (Index < NumItems) {
@@ -690,7 +687,7 @@ public:
 		}
 	}
 
-	bool GetItemSel(uint16_t Index) {
+	bool GetItemSel(uint16_t Index) const {
 		if (Index >= GetNumItems() || !(States & LISTBOX_CF_MULTISEL))
 			return false;
 		return ItemArray[Index].Status & LISTBOX_ITEM_SELECTED;
@@ -698,15 +695,15 @@ public:
 	void SetItemSel(uint16_t Index, bool OnOff) {
 		if (Index >= GetNumItems() || !(States & LISTBOX_CF_MULTISEL))
 			return;
-		auto &pItem = ItemArray[Index];
+		auto &item = ItemArray[Index];
 		if (OnOff) {
-			if (!(pItem.Status & LISTBOX_ITEM_SELECTED)) {
-				pItem.Status |= LISTBOX_ITEM_SELECTED;
+			if (!(item.Status & LISTBOX_ITEM_SELECTED)) {
+				item.Status |= LISTBOX_ITEM_SELECTED;
 				_InvalidateItem(Index);
 			}
 		}
-		else if (pItem.Status & LISTBOX_ITEM_SELECTED) {
-			pItem.Status &= ~LISTBOX_ITEM_SELECTED;
+		else if (item.Status & LISTBOX_ITEM_SELECTED) {
+			item.Status &= ~LISTBOX_ITEM_SELECTED;
 			_InvalidateItem(Index);
 		}
 	}

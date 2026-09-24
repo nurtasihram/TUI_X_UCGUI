@@ -30,7 +30,7 @@ struct LCD_API : public LCDDEV {
 	void SetPixel(int16_t x, int16_t y, RGBC Color) override {
 		Ayx.Dot({ x, y }, Color);
 	}
-	void FillRect(RECT r, RGBC color) override {
+	void rFill(RECT r, RGBC color) override {
 		Ayx.Fill(color, { r.x0, r.y0, r.x1, r.y1 });
 	}
 } LCD_API;

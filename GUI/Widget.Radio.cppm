@@ -69,10 +69,10 @@ private:
 		for (int i = 0; i < NumItems; i++) {
 			auto y = i * Spacing;
 			/* Draw the radio button bitmap */
-			GUI_DrawBitmap(pBmRadio, { RADIO_BORDER, RADIO_BORDER + y });
+			GUI_DrawBitmap(*pBmRadio, { RADIO_BORDER, RADIO_BORDER + y });
 			/* Draw the check bitmap */
 			if (Sel == i)
-				GUI_DrawBitmap(pBmCheck, {
+				GUI_DrawBitmap(*pBmCheck, {
 					RADIO_BORDER + (pBmRadio->Size.x - pBmCheck->Size.x) / 2,
 					RADIO_BORDER + ((pBmRadio->Size.y - pBmCheck->Size.y) / 2) + y });
 			/* Draw text if available */
@@ -80,7 +80,7 @@ private:
 				auto rText = r;
 				rText.x1 = rText.x0 + Props.pFont->TextBound(pText).x - 2;
 				rText += POINT{ 0, y };
-				GUI_DispStringAt(pText, rText.x0, rText.y0);
+				GUI_DispStringInRect(pText, rText, TEXTALIGN_LEFT | TEXTALIGN_TOP);
 				/* Calculate focus rect */
 				if (HasFocus && Sel == i)
 					rFocus = rText * FocusBorder;

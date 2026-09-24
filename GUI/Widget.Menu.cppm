@@ -111,9 +111,9 @@ private:
 	uint16_t _GetItemWidth(uint16_t Index) const {
 		if (Width && (States & MENU_CF_VERTICAL))
 			return Width - (_GetEffectSize() << 1);
-		auto &pItem = ItemArray[Index];
-		uint16_t ItemWidth = (States & MENU_CF_VERTICAL) || !(pItem.Flags & MENU_IF_SEPARATOR)
-			? pItem.TextWidth : 3;
+		auto &item = ItemArray[Index];
+		uint16_t ItemWidth = (States & MENU_CF_VERTICAL) || !(item.Flags & MENU_IF_SEPARATOR)
+			? item.TextWidth : 3;
 		return ItemWidth + Props.Border.x0 + Props.Border.x1;
 	}
 	uint16_t _GetItemHeight(uint16_t Index) const {
@@ -201,10 +201,10 @@ private:
 			return;
 		if (!(States & MENU_SF_SUBMENU_ACTIVE))
 			return;
-		auto &pItem = ItemArray[Sel];
+		auto &item = ItemArray[Sel];
 		/* Inform submenu about its deactivation and detach it */
-		_SendMenuMessage(this, pItem.pSubmenu, MENU_ON_CLOSE, 0);
-		pItem.pSubmenu->Detach();
+		_SendMenuMessage(this, item.pSubmenu, MENU_ON_CLOSE, 0);
+		item.pSubmenu->Detach();
 		States &= ~MENU_SF_SUBMENU_ACTIVE;
 		/*
 		 * Keep capture in menu widget. The capture may only released
@@ -221,10 +221,10 @@ private:
 		bool PrevActiveSubmenu = States & MENU_SF_SUBMENU_ACTIVE;
 		/* Close previous submenu (if needed) */
 		_CloseSubmenu();
-		auto &pItem = ItemArray[Index];
-		if (!pItem.pSubmenu)
+		auto &item = ItemArray[Index];
+		if (!item.pSubmenu)
 			return;
-		if (pItem.Flags & MENU_IF_DISABLED)
+		if (item.Flags & MENU_IF_DISABLED)
 			return;
 		/* Calculate position of submenu */
 		auto EffectSize = _GetEffectSize();
@@ -246,12 +246,12 @@ private:
 			if (_IsTopLevelMenu())
 				_SendMenuMessage(this, pOwner, MENU_ON_INITMENU, 0);
 		/* Notify owner window when a submenu opens, so it can initialize the menu items. */
-		_SendMenuMessage(this, pOwner, MENU_ON_INITSUBMENU, pItem.Id);
+		_SendMenuMessage(this, pOwner, MENU_ON_INITSUBMENU, item.Id);
 		/* Set active menu as owner of submenu. */
-		pItem.pSubmenu->SetOwner(this);
+		item.pSubmenu->SetOwner(this);
 		/* Attach submenu and inform it about its activation. */
-		pItem.pSubmenu->Attach(WObj::GetDesktopWindow(), Pos);
-		_SendMenuMessage(this, pItem.pSubmenu, MENU_ON_OPEN, 0);
+		item.pSubmenu->Attach(WObj::GetDesktopWindow(), Pos);
+		_SendMenuMessage(this, item.pSubmenu, MENU_ON_OPEN, 0);
 		States |= MENU_SF_SUBMENU_ACTIVE;
 		/* Invalidate menu item. This is needed because the appearance may have changed. */
 		_InvalidateItem(Index);
@@ -284,20 +284,20 @@ private:
 		}
 	}
 	void _ActivateItem(uint16_t Index) {
-		auto &pItem = ItemArray[Index];
-		if (pItem.pSubmenu)
+		auto &item = ItemArray[Index];
+		if (item.pSubmenu)
 			return;
-		if (pItem.Flags & (MENU_IF_DISABLED | MENU_IF_SEPARATOR))
+		if (item.Flags & (MENU_IF_DISABLED | MENU_IF_SEPARATOR))
 			return;
 		_ClosePopup();
 		/* Send item select message to owner. */
-		_SendMenuMessage(this, pOwner, MENU_ON_ITEMSELECT, pItem.Id);
+		_SendMenuMessage(this, pOwner, MENU_ON_ITEMSELECT, item.Id);
 	}
 	void _ActivateMenu(uint16_t Index) {
 		if (!(States & MENU_CF_OPEN_ON_POINTEROVER)) {
-			auto &pItem = ItemArray[Index];
-			if (pItem.pSubmenu) {
-				if ((pItem.Flags & MENU_IF_DISABLED) == 0) {
+			auto &item = ItemArray[Index];
+			if (item.pSubmenu) {
+				if ((item.Flags & MENU_IF_DISABLED) == 0) {
 					if (!(States & MENU_SF_ACTIVE)) {
 						States |= MENU_SF_ACTIVE;
 						_OpenSubmenu(Index);
@@ -425,12 +425,12 @@ private:
 		}
 		return 0;
 	}
-	void _SetPaintColors(const Item &pItem, int ItemIndex) const {
+	void _SetPaintColors(const Item &item, int ItemIndex) const {
 		bool Selected = ItemIndex == Sel;
 		auto ColorIndex = 
 			(States & MENU_SF_SUBMENU_ACTIVE) && Selected ? MENU_CI_ACTIVE_SUBMENU :
-			pItem.Flags & MENU_IF_SEPARATOR ? MENU_CI_ENABLED :
-			pItem.Flags & MENU_IF_DISABLED ?
+			item.Flags & MENU_IF_SEPARATOR ? MENU_CI_ENABLED :
+			item.Flags & MENU_IF_DISABLED ?
 				!(States & MENU_CF_HIDE_DISABLED_SEL) && Selected ?
 					MENU_CI_DISABLED_SEL : MENU_CI_DISABLED :
 				Selected ? MENU_CI_SELECTED : MENU_CI_ENABLED;
@@ -440,64 +440,66 @@ private:
 		auto NumItems = GetNumItems();
 		auto FontHeight = Props.pFont->YSize;
 		auto EffectSize = _GetEffectSize();
-		auto FillRect = ClientRect() / EffectSize;
-		RECT TextRect;
+		auto rFill = ClientRect() / EffectSize;
+		RECT rText;
 		GUI.Font(Props.pFont);
 
 		if (States & MENU_CF_VERTICAL) {
 			auto xSize = _CalcMenuSizeX();
-			FillRect.x1 = xSize - EffectSize - 1;
-			TextRect.x0 = FillRect.x0 + Props.Border.x0;
+			rFill.x1 = xSize - EffectSize - 1;
+			rText.x0 = rFill.x0 + Props.Border.x0;
 			for (uint16_t i = 0; i < NumItems; i++) {
-					auto &pItem = ItemArray[i];
+					auto &item = ItemArray[i];
 					auto ItemHeight = _GetItemHeight(i);
-					_SetPaintColors(pItem, i);
-					FillRect.y1 = FillRect.y0 + ItemHeight - 1;
-					if (pItem.Flags & MENU_IF_SEPARATOR) {
-						GUI.Clear(FillRect);
+					_SetPaintColors(item, i);
+					rFill.y1 = rFill.y0 + ItemHeight - 1;
+					if (item.Flags & MENU_IF_SEPARATOR) {
+						GUI.Clear(rFill);
 						GUI.Color(RGBC::Gray(0x7C));
-						GUI.DrawHLine(FillRect.y0 + Props.Border.y0 + 1, FillRect.x0 + 2, FillRect.x1 - 2);
+						GUI.DrawHLine(rFill.y0 + Props.Border.y0 + 1, rFill.x0 + 2, rFill.x1 - 2);
 					}
 					else {
-						auto TextWidth = pItem.TextWidth;
-						TextRect.x1 = TextRect.x0 + TextWidth - 1;
-						TextRect.y0 = FillRect.y0 + Props.Border.y0;
-						TextRect.y1 = TextRect.y0 + FontHeight - 1;
-						WIDGET__FillStringInRect(pItem.pText, FillRect, TextRect);
+						auto TextWidth = item.TextWidth;
+						rText.x1 = rText.x0 + TextWidth - 1;
+						rText.y0 = rFill.y0 + Props.Border.y0;
+						rText.y1 = rText.y0 + FontHeight - 1;
+						GUI.Clear(rFill);
+						GUI_DispStringInRect(item.pText, rText, TEXTALIGN_LEFT | TEXTALIGN_VCENTER);
 					}
-					FillRect.y0 += ItemHeight;
+					rFill.y0 += ItemHeight;
 				}
 		}
 		else {
 			auto ySize = _CalcMenuSizeY();
-			FillRect.y1 = ySize - EffectSize - 1;
-			TextRect.y0 = FillRect.y0 + Props.Border.y0;
-			TextRect.y1 = TextRect.y0 + FontHeight - 1;
+			rFill.y1 = ySize - EffectSize - 1;
+			rText.y0 = rFill.y0 + Props.Border.y0;
+			rText.y1 = rText.y0 + FontHeight - 1;
 			for (uint16_t i = 0; i < NumItems; i++) {
-					auto &pItem = ItemArray[i];
+					auto &item = ItemArray[i];
 					auto ItemWidth = _GetItemWidth(i);
-					_SetPaintColors(pItem, i);
-					FillRect.x1 = FillRect.x0 + ItemWidth - 1;
-					if (pItem.Flags & MENU_IF_SEPARATOR) {
-						GUI.Clear(FillRect);
+					_SetPaintColors(item, i);
+					rFill.x1 = rFill.x0 + ItemWidth - 1;
+					if (item.Flags & MENU_IF_SEPARATOR) {
+						GUI.Clear(rFill);
 						GUI.Color(RGBC::Gray(0x7C));
-						GUI.DrawVLine(FillRect.x0 + Props.Border.x0 + 1, FillRect.y0 + 2, FillRect.y1 - 2);
+						GUI.DrawVLine(rFill.x0 + Props.Border.x0 + 1, rFill.y0 + 2, rFill.y1 - 2);
 					}
 					else {
-						auto TextWidth = pItem.TextWidth;
-						TextRect.x0 = FillRect.x0 + Props.Border.x0;
-						TextRect.x1 = TextRect.x0 + TextWidth - 1;
-						WIDGET__FillStringInRect(pItem.pText, FillRect, TextRect);
+						auto TextWidth = item.TextWidth;
+						rText.x0 = rFill.x0 + Props.Border.x0;
+						rText.x1 = rText.x0 + TextWidth - 1;
+						GUI.Clear(rFill);
+						GUI_DispStringInRect(item.pText, rText, TEXTALIGN_LEFT | TEXTALIGN_VCENTER);
 					}
-					FillRect.x0 += ItemWidth;
+					rFill.x0 += ItemWidth;
 				}
 		}
 
 		if (Width || Height) {
 			auto r = ClientRect() / EffectSize;
 			GUI.BkColor(Props.aBrush[MENU_CI_ENABLED].BkColor);
-			GUI.Clear({ FillRect.x1 + 1, EffectSize, r.x1, FillRect.y1 });
-			GUI.Clear({ EffectSize, FillRect.y1 + 1, r.x1, r.y1 });
+			GUI.Clear({ rFill.x1 + 1, EffectSize, r.x1, rFill.y1 });
+			GUI.Clear({ EffectSize, rFill.y1 + 1, r.x1, r.y1 });
 		}
 		/* Draw 3D effect (if configured) */
 		if (_HasEffect())
@@ -551,8 +553,8 @@ private:
 
 	void _RecalcTextWidthOfItems() {
 		for (uint16_t i = 0, NumItems = GetNumItems(); i < NumItems; i++) {
-			auto &pItem = ItemArray[i];
-			pItem.TextWidth = Props.pFont->TextBound(pItem.pText).x;
+			auto &item = ItemArray[i];
+			item.TextWidth = Props.pFont->TextBound(item.pText).x;
 		}
 	}
 	bool _SetItem(uint16_t Index, const ItemData *pItemData) {
@@ -569,20 +571,20 @@ private:
 		return true;
 	}
 	void _SetItemFlags(uint16_t Index, uint16_t Mask, uint16_t Flags) {
-		auto &pItem = ItemArray[Index];
-		pItem.Flags &= ~Mask;
-		pItem.Flags |= Flags;
+		auto &item = ItemArray[Index];
+		item.Flags &= ~Mask;
+		item.Flags |= Flags;
 	}
 	int _FindItem(uint16_t ItemId, Menu **pMenu) {
 		auto NumItems = GetNumItems();
 		for (uint16_t i = 0; i < NumItems; i++) {
-			auto &pItem = ItemArray[i];
-			if (pItem.Id == ItemId) {
+			auto &item = ItemArray[i];
+			if (item.Id == ItemId) {
 				*pMenu = this;
 				return i;
 			}
-			if (pItem.pSubmenu) {
-				if (auto ItemIndex = pItem.pSubmenu->_FindItem(ItemId, pMenu); ItemIndex >= 0)
+			if (item.pSubmenu) {
+				if (auto ItemIndex = item.pSubmenu->_FindItem(ItemId, pMenu); ItemIndex >= 0)
 					return ItemIndex;
 			}
 		}
@@ -678,10 +680,10 @@ public:
 		auto Index = _FindItem(ItemId, &pMenu);
 		if (Index < 0)
 			return;
-		auto &pItem = ItemArray[Index];
-		pItemData->Flags = pItem.Flags;
-		pItemData->Id = pItem.Id;
-		pItemData->pSubmenu = pItem.pSubmenu;
+		auto &item = ItemArray[Index];
+		pItemData->Flags = item.Flags;
+		pItemData->Id = item.Id;
+		pItemData->pSubmenu = item.pSubmenu;
 		pItemData->pText = nullptr;
 	}
 	void SetItem(uint16_t ItemId, const ItemData *pItemData) {

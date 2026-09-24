@@ -488,21 +488,17 @@ public:
 		bool Ret = false;
 		if (cb && IsVisible() && _ClipAtParentBorders(rInvalid)) {
 			_ClipContext.pWinActive = this;
-			GUI.ClipRectMax();
-			GUI.Off = rWin.LeftTop();
+			ctx.ClipRectMax();
+			ctx.Off = rWin.LeftTop();
 			if (Status & WC_MEMDEV) {
-				MemDev.Alloc(rInvalid);
+				auto pDev = ctx.pDevice;
+				MemDev.Alloc(rInvalid, pDev->BitsPerPixel());
 				ctx.pDevice = &MemDev;
 				ctx.ClipRectMax();
 				Require(WM_PAINT, (WM_PARAM)&ctx);
-				ctx.pDevice = GUI_X_GetLCD();
+				ctx.pDevice = pDev;
 				Iterate(MemDev.Rect(), [&] {
-					LCD_DrawBitmap(BITVIEW{
-						MemDev.Rect(),
-						MemDev.BytesPerLine,
-						MemDev.BitsPerPixel(),
-						MemDev.pData,
-						nullptr });
+					LCD_DrawBitmap(MemDev);
 				});
 			}
 			else

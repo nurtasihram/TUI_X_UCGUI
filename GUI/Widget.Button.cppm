@@ -34,7 +34,7 @@ public:
 			/* Pressed   */ { RGB_WHITE       , RGB_BLACK    },
 			/* Disabled  */ { RGB_LIGHTGRAY   , RGB_DARKGRAY }
 		};
-		TEXTALIGN Align{ TEXTALIGN_HCENTER | TEXTALIGN_VCENTER };
+		TEXTALIGN Align{ TEXTALIGN_CENTER };
 	} static DefaultProps;
 
 private:

@@ -68,7 +68,7 @@ private:
 		DrawDown(rSlot);
 		/* Draw the slider itself */
 		GUI.Color(Props.brush.Color);
-		GUI.FillRect(rSlider);
+		GUI.rFill(rSlider);
 		GUI.Color(RGB_BLACK);
 		DrawUp(rSlider);
 		/* Draw focus */

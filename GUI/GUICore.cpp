@@ -30,11 +30,11 @@ void LCD_SetPixel(int x, int y, RGBC ColorIndex) {
 }
 void LCD_FillRect(RECT r) {
 	if (r &= GUI.rClip)
-		GUI.pDevice->FillRect(r, GUI.Color());
+		GUI.pDevice->rFill(r, GUI.Color());
 }
 void LCD_DrawBitmap(BITVIEW b) {
 	if (b &= GUI.rClip)
-		GUI.pDevice->SetBitmap(b, b.IsTrans());
+		GUI.pDevice->SetBitmap(b, nullptr, GUI.BkColor() == RGB_INVALID);
 }
 
 void GUI_DrawRect(RECT r) {
@@ -57,13 +57,11 @@ void GUI_DrawFocusRect(RECT r, int Dist) {
 		LCD_SetPixel(r.x1, i, color);
 	}
 }
-void GUI_DrawBitmap(PCBITMAP pBitmap, POINT Pos) {
-	Pos += GUI.Off;
-	auto bmView = pBitmap->At(Pos);
+void GUI_DrawBitmap(CBITMAP &bm, POINT Pos) {
+	auto bmView = bm.At(Pos);
 	CLOGPALETTE aPal{ GUI.BkColor(), GUI.Color() };
-	if (!pBitmap->pPalEntries)
-		bmView.pPalEntries = pBitmap->BitsPerPixel == BPP_1 ? aPal : nullptr;
-	LCD_DrawBitmap(bmView);
+	if (bmView &= GUI.rClip)
+		GUI.pDevice->SetBitmap(bmView, bm.pPalEntries ? bm.pPalEntries : bm.BitsPerPixel == BPP_1 ? aPal : nullptr, bm.IsTrans());
 }
 #pragma endregion
 
@@ -94,18 +92,18 @@ void FONT_MONO::DispChar(uint16_t c) const {
 	if (lst.c0 >= 0) {
 		uint16_t BytesPerLine = (XSize + 7) >> 3;
 		auto BytesPerChar = YSize * BytesPerLine;
-		LCD_DrawBitmap(BITVIEW{
-			RECT::LeftTop(GUI.DispPos, { XSize, YSize }),
+		GUI_DrawBitmap(BITMAP{
+			{ XSize, YSize },
 			BytesPerLine, BPP_1,
-			(const uint8_t *)pData + lst.c0 * BytesPerChar,
-			aPal });
+			(const uint8_t *)pData + lst.c0 * BytesPerChar, aPal },
+			GUI.DispPos);
 		if (lst.c1 >= 0) {
 			aPal[0] = RGB_INVALID;
-			LCD_DrawBitmap(BITVIEW{
-				RECT::LeftTop(GUI.DispPos, { XSize, YSize }),
+			GUI_DrawBitmap(BITMAP{
+				{ XSize, YSize },
 				BytesPerLine, BPP_1,
-				(const uint8_t *)pData + lst.c1 * BytesPerChar,
-				aPal });
+				(const uint8_t *)pData + lst.c1 * BytesPerChar, aPal },
+				GUI.DispPos);
 		}
 	}
 	GUI.DispPos.x += XSize;
@@ -115,11 +113,11 @@ void FONT_PROP::DispChar(uint16_t c) const {
 	if (!pProp) return;
 	auto &ci = pProp->paCharInfo[c - pProp->First];
 	CLOGPALETTE aPal{ GUI.BkColor(), GUI.Color() };
-	LCD_DrawBitmap(BITVIEW{
-		RECT::LeftTop(GUI.DispPos, { ci.XSize, YSize }),
+	GUI_DrawBitmap(BITMAP{
+		{ ci.XSize, YSize },
 		ci.BytesPerLine, BPP_1,
-		ci.pData,
-		aPal });
+		ci.pData, aPal },
+		GUI.DispPos);
 	GUI.DispPos.x += ci.XSize;
 }
 #pragma endregion
@@ -133,55 +131,20 @@ static void _DispLine(const char *s, int MaxNumChars, RECT r) {
 	else while (MaxNumChars--)
 		GUI.pFont->DispChar(*s++);
 }
-void GUI_DispString(const char *s) {
-	if (!s)
-		return;
-	auto FontSizeY = GUI.pFont->YSize;
-	auto xOrg = GUI.DispPos.x;
-	for (; *s; s++) {
-		RECT r;
-		int LineNumChars = GUI__GetLineNumChars(s, 0x7fff);
-		int xLineSize = GUI__GetLineSizeX(s, LineNumChars);
-		r.x0 = GUI.DispPos.x;
-		r.y0 = GUI.DispPos.y;
-		r.x1 = r.x0 + xLineSize - 1;
-		r.y1 = r.y0 + FontSizeY - 1;
-		_DispLine(s, LineNumChars, r);
-		GUI.DispPos.y = r.y0;
-		s += LineNumChars;
-		if (*s == '\n' || *s == '\r') {
-			GUI.DispPos.x = 0;
-			if (*s == '\n')
-				GUI.DispPos.y += FontSizeY;
-		}
-		else
-			GUI.DispPos.x = r.x0 + xLineSize;
-		if (*s == 0)    /* end of string (last line) reached ? */
-			break;
-	}
-}
-void GUI_DispStringAt(const char *s, int x, int y) {
-	GUI.DispPos.x = x;
-	GUI.DispPos.y = y;
-	GUI_DispString(s);
-}
-void _DispStringInRect(const char *s, const RECT &r, int TextAlign, int MaxNumChars) {
+void GUI_DispStringInRectMax(const char *pText, RECT r, int TextAlign, int MaxNumChars) {
+	if (!pText) return;
 	RECT rLine;
 	int y = 0;
-	auto sOrg = s;
-	int xLine = 0;
-	int LineLen;
-	int NumCharsRem;           /* Number of remaining characters */
 	auto FontYSize = GUI.pFont->YSize;
 	/* handle vertical alignment */
 	if ((TextAlign & TEXTALIGN_VERTICAL) == TEXTALIGN_TOP) {
 		y = r.y0;
-	}
-	else {
-		int NumLines;
+	} else {
+		int NumLines = 1;
+		auto s = pText;
 		/* Count the number of lines */
-		for (NumCharsRem = MaxNumChars, NumLines = 1; NumCharsRem; NumLines++) {
-			LineLen = GUI__GetLineNumChars(s, NumCharsRem);
+		for (auto NumCharsRem = MaxNumChars; NumCharsRem; NumLines++) {
+			auto LineLen = GUI__GetLineNumChars(s, NumCharsRem);
 			NumCharsRem -= LineLen;
 			s += LineLen;
 			if (GUI__HandleEOLine(&s))
@@ -189,27 +152,28 @@ void _DispStringInRect(const char *s, const RECT &r, int TextAlign, int MaxNumCh
 		}
 		/* Do the vertical alignment */
 		switch (TextAlign & TEXTALIGN_VERTICAL) {
-			case TEXTALIGN_BOTTOM:
-				y = r.y1 - NumLines * FontYSize + 1;
-				break;
-			case TEXTALIGN_VCENTER:
-				y = r.y0 + (r.y1 - r.y0 + 1 - NumLines * FontYSize) / 2;
-				break;
+		case TEXTALIGN_BOTTOM:
+			y = r.y1 - NumLines * FontYSize + 1;
+			break;
+		case TEXTALIGN_VCENTER:
+			y = r.y0 + (r.y1 - r.y0 + 1 - NumLines * FontYSize) / 2;
+			break;
 		}
 	}
 	/* Output string */
-	for (NumCharsRem = MaxNumChars, s = sOrg; NumCharsRem;) {
-		int xLineSize;
-		LineLen = GUI__GetLineNumChars(s, NumCharsRem);
+	auto s = pText;
+	for (auto NumCharsRem = MaxNumChars; NumCharsRem;) {
+		auto LineLen = GUI__GetLineNumChars(s, NumCharsRem);
 		NumCharsRem -= LineLen;
-		xLineSize = GUI__GetLineSizeX(s, LineLen);
+		auto xLineSize = GUI__GetLineSizeX(s, LineLen);
+		int xLine = 0;
 		switch (TextAlign & TEXTALIGN_HORIZONTAL) {
-			case TEXTALIGN_HCENTER:
-				xLine = r.x0 + (r.x1 - r.x0 - xLineSize) / 2; break;
-			case TEXTALIGN_LEFT:
-				xLine = r.x0; break;
-			case TEXTALIGN_RIGHT:
-				xLine = r.x1 - xLineSize + 1;
+		case TEXTALIGN_HCENTER:
+			xLine = r.x0 + (r.x1 - r.x0 - xLineSize) / 2; break;
+		case TEXTALIGN_LEFT:
+			xLine = r.x0; break;
+		case TEXTALIGN_RIGHT:
+			xLine = r.x1 - xLineSize + 1;
 		}
 		rLine.x0 = GUI.DispPos.x = xLine;
 		rLine.x1 = rLine.x0 + xLineSize - 1;
@@ -222,39 +186,8 @@ void _DispStringInRect(const char *s, const RECT &r, int TextAlign, int MaxNumCh
 			break;
 	}
 }
-void GUI_DispStringInRectMax(const char *s, RECT r, int TextAlign, int MaxLen) {
-	if (!s) return;
-	auto prOldClip = WObj::UserClip(&r);
-	if (prOldClip) {
-		r &= *prOldClip;
-		WObj::UserClip(&r);
-	}
-	_DispStringInRect(s, r, TextAlign, MaxLen);
-	WObj::UserClip(prOldClip);
-}
 void GUI_DispStringInRect(const char *s, const RECT &r, int TextAlign) {
 	GUI_DispStringInRectMax(s, r, TextAlign, 0x7fff);
-}
-#pragma endregion
-
-#pragma region Display Char
-void GUI_DispChar(uint16_t c) {
-	if (c == '\r')
-		return;
-	if (c == '\n') {
-		GUI_DispNextLine();
-		return;
-	}
-	GUI.DispPos += GUI.Off;
-	auto r = RECT::LeftTop(GUI.DispPos, { GUI.Font().CharWidth(c), GUI.pFont->YSize });
-	GUI.pFont->DispChar(c);
-	if (c != '\n')
-		GUI.DispPos.x = r.x1 + 1;
-	GUI.DispPos -= GUI.Off;
-}
-void GUI_DispNextLine(void) {
-	GUI.DispPos.y += GUI.pFont->YSize;
-	GUI.DispPos.x = 0;
 }
 #pragma endregion
 
