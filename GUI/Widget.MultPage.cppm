@@ -185,7 +185,7 @@ private:
 		if (Handles.NumItems() <= 0)
 			return;
 		int x0 = 0;
-		if (Status & MULTIPAGE_STATE_SCROLLMODE)
+		if (States & MULTIPAGE_STATE_SCROLLMODE)
 			x0 -= _GetPagePosX(ScrollState);
 		auto &&rText = _GetTextRect();
 		auto rClip = rText;

@@ -633,41 +633,39 @@ public:
 	Button *AddMaxButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
 		auto pButton = AddButton(Flags, Off, GUI_ID_MAXIMIZE);
 		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, [](RECT &r) {
-			auto pObj = (Frame*)ActiveWindow()->Parent();
-			if (pObj->States & FRAMEWIN_CF_MAXIMIZED) {
-				int Size = ((r.x1 - r.x0 + 1) << 1) / 3;
-				//LCD_DrawHLine(r.x1 - Size, r.y0 + 1, r.x1 - 1);
-				//LCD_DrawHLine(r.x1 - Size, r.y0 + 2, r.x1 - 1);
-				//LCD_DrawHLine(r.x0 + Size, r.y0 + Size, r.x1 - 1);
-				//LCD_DrawVLine(r.x1 - Size, r.y0 + 1, r.y1 - Size);
-				//LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y0 + Size);
-				//LCD_DrawHLine(r.x0 + 1, r.y1 - Size, r.x0 + Size);
-				//LCD_DrawHLine(r.x0 + 1, r.y1 - Size + 1, r.x0 + Size);
-				//LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x0 + Size);
-				//LCD_DrawVLine(r.x0 + 1, r.y1 - Size, r.y1 - 1);
-				//LCD_DrawVLine(r.x0 + Size, r.y1 - Size, r.y1 - 1);
-			}
-			else {
-				//LCD_DrawHLine(r.x0 + 1, r.y0 + 1, r.x1 - 1);
-				//LCD_DrawHLine(r.x0 + 1, r.y0 + 2, r.x1 - 1);
-				//LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x1 - 1);
-				//LCD_DrawVLine(r.x0 + 1, r.y0 + 1, r.y1 - 1);
-				//LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 1);
-			}
+			//if (pObj->States & FRAMEWIN_CF_MAXIMIZED) {
+			//	int Size = ((r.x1 - r.x0 + 1) << 1) / 3;
+			//	LCD_DrawHLine(r.x1 - Size, r.y0 + 1, r.x1 - 1);
+			//	LCD_DrawHLine(r.x1 - Size, r.y0 + 2, r.x1 - 1);
+			//	LCD_DrawHLine(r.x0 + Size, r.y0 + Size, r.x1 - 1);
+			//	LCD_DrawVLine(r.x1 - Size, r.y0 + 1, r.y1 - Size);
+			//	LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y0 + Size);
+			//	LCD_DrawHLine(r.x0 + 1, r.y1 - Size, r.x0 + Size);
+			//	LCD_DrawHLine(r.x0 + 1, r.y1 - Size + 1, r.x0 + Size);
+			//	LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x0 + Size);
+			//	LCD_DrawVLine(r.x0 + 1, r.y1 - Size, r.y1 - 1);
+			//	LCD_DrawVLine(r.x0 + Size, r.y1 - Size, r.y1 - 1);
+			//}
+			//else {
+			//	LCD_DrawHLine(r.x0 + 1, r.y0 + 1, r.x1 - 1);
+			//	LCD_DrawHLine(r.x0 + 1, r.y0 + 2, r.x1 - 1);
+			//	LCD_DrawHLine(r.x0 + 1, r.y1 - 1, r.x1 - 1);
+			//	LCD_DrawVLine(r.x0 + 1, r.y0 + 1, r.y1 - 1);
+			//	LCD_DrawVLine(r.x1 - 1, r.y0 + 1, r.y1 - 1);
+			//}
 		});
 		return pButton;
 	}
 	Button *AddMinButton(int Flags = FRAMEWIN_BUTTON_RIGHT, int Off = 1) {
 		auto pButton = AddButton(Flags, Off, GUI_ID_MINIMIZE);
 		pButton->SetSelfDraw(BUTTON_BI_UNPRESSED, [](RECT &r) {
-			auto pObj = (Frame *)ActiveWindow()->Parent();
-			int Size = (r.x1 - r.x0 + 1) >> 1;
-			if (pObj->States & FRAMEWIN_CF_MINIMIZED)
-				for (int i = 1; i < Size; i++);
-					//LCD_DrawHLine(r.x0 + i, r.y0 + i + (Size >> 1), r.x1 - i);
-			else
-				for (int i = 1; i < Size; i++);
-					//LCD_DrawHLine(r.x0 + i, r.y1 - i - (Size >> 1), r.x1 - i);
+			//int Size = r.XSize() >> 1;
+			//if (pObj->States & FRAMEWIN_CF_MINIMIZED)
+			//	for (int i = 1; i < Size; i++);
+			//		LCD_DrawHLine(r.x0 + i, r.y0 + i + (Size >> 1), r.x1 - i);
+			//else
+			//	for (int i = 1; i < Size; i++);
+			//		//LCD_DrawHLine(r.x0 + i, r.y1 - i - (Size >> 1), r.x1 - i);
 		});
 		return pButton;
 	}

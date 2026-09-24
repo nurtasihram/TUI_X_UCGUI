@@ -221,30 +221,18 @@ public:
 		if (!pDesktop) {
 			pDesktop = new WObj(GUI_X_GetLCD()->Rect(), WC_VISIBLE, cbBackWin);
 			pDesktop->Invalidate();
-			pDesktop->Select();
 		}
 		return pDesktop;
 	}
 #pragma endregion
 
-private:
-	static WObj *pWinActive;
-public:
-	static auto ActiveWindow() { return pWinActive; }
-	void Select() {
-		WM_ASSERT_NOT_IN_PAINT();
-		pWinActive = this;
-		GUI.ClipRectMax();
-		GUI.Off = rWin.LeftTop();
-	}
-
 #pragma region Invalidation
 private:
 	static uint16_t NumInvalidWindows;
 	bool _ClipAtParentBorders(RECT &r) const {
-		for (auto pWin = this; pWin->Status & WC_VISIBLE; pWin = pWin->pParent) {
+		for (auto pWin = this; pWin->Status & WC_VISIBLE; pWin = pWin->Parent()) {
 			r &= pWin->rWin;
-			if (!pWin->pParent)
+			if (!pWin->Parent())
 				return pWin == pDesktop;
 		}
 		return false;
@@ -296,20 +284,17 @@ public:
 #pragma region IVR
 private:
 	class IVR {
+	public:
 		RECT rClient, CurRect;
 		const RECT *prUserClip = nullptr;
+		const WObj *pWinActive = nullptr;
 		int Cnt = -1;
 		
 		void _ActivateClipRect() const {
 			/* Take UserClipRect into account */
 			RECT rSrc = CurRect;
-			if (prUserClip) {
-				auto r = *prUserClip;
-				if (pWinActive)
-					r += pWinActive->LeftTop(); /* Convert User rClip into screen coordinates */
-				/* Set intersection as clip rect */
-				rSrc &= r;
-			}
+			if (prUserClip)
+				rSrc &= *prUserClip + pWinActive->LeftTop();
 			GUI.ClipRect(rSrc);
 		}
 
@@ -382,7 +367,7 @@ private:
 				r.RightBottom(rClient.RightBottom());
 				/* Iterate over all windows which are above */
 				/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
-				for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
+				for (auto pParent = pWinActive; pParent; pParent = pParent->Parent())
 					_Findy1(pParent->NextSibling(), r);
 				/* Check all children */
 				_Findy1(pWinActive->FirstChild(), r);
@@ -405,7 +390,7 @@ private:
 			r.x1 = r.x0;
 			/* Iterate over all windows which are above */
 			/* Check all siblings above (siblings of window, siblings of parents, etc ...) */
-			for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
+			for (auto pParent = pWinActive; pParent; pParent = pParent->Parent())
 				if (_Findx0(pParent->NextSibling(), r))
 					goto Find_x0;
 			/* Check all children */
@@ -432,7 +417,7 @@ private:
 							r.x1 = rWin.x0 - 1;
 			};
 			/* Check all siblings above (Iterate over Parents and top siblings (hNext) */
-			for (auto pParent = pWinActive; pParent; pParent = pParent->pParent)
+			for (auto pParent = pWinActive; pParent; pParent = pParent->Parent())
 				_Findx1(pParent->NextSibling(), r);
 			/* Check all children */
 			_Findx1(pWinActive->FirstChild(), r);
@@ -471,7 +456,7 @@ private:
 			r &= rcMax;
 			/* If user has reduced the cliprect size, reduce the rectangle */
 			if (prUserClip)
-				r &= *(prUserClip) + pWinActive->LeftTop();
+				r &= *prUserClip + pWinActive->LeftTop();
 			/* Store the rectangle and find the first rectangle of the area */
 			rClient = r;
 			return GetNext();
@@ -502,7 +487,9 @@ public:
 			return false;
 		bool Ret = false;
 		if (cb && IsVisible() && _ClipAtParentBorders(rInvalid)) {
-			Select();
+			_ClipContext.pWinActive = this;
+			GUI.ClipRectMax();
+			GUI.Off = rWin.LeftTop();
 			if (Status & WC_MEMDEV) {
 				MemDev.Alloc(rInvalid);
 				ctx.pDevice = &MemDev;
@@ -598,21 +585,18 @@ public:
 		NumWindows++;
 		_AddToLinList();
 		_InsertWindowIntoList(pParent);
-		/* Activate window if WC_ACTIVATE is specified */
-		if (Style & WC_ACTIVATE)
-			Select();  /* This is not needed if callbacks are being used, but it does not cost a lot and makes life easier ... */
 		if (Style & WC_VISIBLE)
 			Invalidate();
 		Require(WM_CREATE);
 	}
 	~WObj() {
 		WM_ASSERT_NOT_IN_PAINT();
+		if (!IsWindow(this))
+			return;
 		if (pDesktop == this)
 			pDesktop = nullptr;
 		if (pwDraw == this)
 			pwDraw = nullptr;
-		if (!IsWindow(this))
-			return;
 		if (pWinFocus == this) {
 			Require(WM_SET_FOCUS, 0);
 			pWinFocus = nullptr;
@@ -634,7 +618,6 @@ public:
 			NumInvalidWindows--;
 		InvalidateArea(rWin);
 		NumWindows--;
-		pDesktop->Select();
 	}
 
 public:
@@ -679,8 +662,8 @@ public:
 	}
 
 	bool IsAncestorOf(WObj *pChild) {
-		for (; pChild; pChild = pChild->pParent)
-			if (pChild->pParent == this)
+		for (; pChild; pChild = pChild->Parent())
+			if (pChild->Parent() == this)
 				return true;
 		return false;
 	}
@@ -993,7 +976,7 @@ public:
 	}
 	WObj *_GetFocussedChild() {
 		if (!pWinFocus) return nullptr;
-		if (pWinFocus->pParent == this)
+		if (pWinFocus->Parent() == this)
 			return pWinFocus;
 		return nullptr;
 	}
@@ -1154,7 +1137,6 @@ public:
 
 uint16_t WObj::NumWindows = 0;
 WObj* WObj::pDesktop = nullptr;
-WObj* WObj::pWinActive = nullptr;
 
 uint16_t WObj::NumInvalidWindows = 0;
 WObj *WObj::pwDraw = nullptr;
