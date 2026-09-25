@@ -53,13 +53,19 @@ private:
 		char *pText;
 	};
 
-	ARRAY<Item> ItemArray;
+	ARRAY<Item> items;
 	WIDGET_DRAW_ITEM_FUNC *pfDrawItem = nullptr;
 	SCROLL_STATE ScrollStateV, ScrollStateH;
 	WObj *pOwner = nullptr;
 	int16_t Sel = 0; /* current selection */
 	uint16_t ScrollbarWidth = 0;
 	uint16_t ItemSpacing = 0;
+
+	~ListBox() {
+		for (uint16_t i = 0, n = items.NumItems(); i < n; i++)
+			GUI_MEM_Free(items[i].pText);
+		items.Delete();
+	}
 
 	static int _Tolower(int Key) {
 		if (Key >= 0x41 && Key <= 0x5a)
@@ -90,7 +96,7 @@ private:
 	}
 	auto _GetYSize() const { return InsideRectEx().YSize(); }
 	auto _GetItemSizeX(uint16_t Index) const {
-		auto &item = ItemArray[Index];
+		auto &item = items[Index];
 		int xSize = item.xSize;
 		if (xSize == 0) {
 			PCFONT pOldFont = GUI.Font(Props.pFont);
@@ -100,7 +106,7 @@ private:
 		return item.xSize = xSize;
 	}
 	auto _GetItemSizeY(uint16_t Index) const {
-		auto &item = ItemArray[Index];
+		auto &item = items[Index];
 		int ySize = item.ySize;
 		if (!ySize) {
 			PCFONT pOldFont = GUI.Font(Props.pFont);
@@ -171,7 +177,7 @@ private:
 		return ScrollStateV.v - PrevScrollStateV;
 	}
 	void _InvalidateItemSize(uint16_t Index) {
-		auto &item = ItemArray[Index];
+		auto &item = items[Index];
 		item.xSize = item.ySize = 0;
 	}
 	void _InvalidateInsideArea() {
@@ -225,17 +231,12 @@ private:
 	void _SelectByKey(int Key) {
 		Key = _Tolower(Key);
 		for (uint16_t i = 0; i < GetNumItems(); i++) {
-			auto s = ItemArray[i].pText;
+			auto s = items[i].pText;
 			if (_Tolower(*s) == Key) {
 				SetSel(i);
 				break;
 			}
 		}
-	}
-	void _FreeAttached() {
-		for (unsigned _i = 0, _n = ItemArray.NumItems(); _i < _n; _i++)
-			GUI_MEM_FreePtr((void **)&ItemArray[_i].pText);
-		ItemArray.Delete();
 	}
 	void _OnPaint() {
 		GUI.Font(Props.pFont);
@@ -277,7 +278,7 @@ private:
 	}
 	void _ToggleMultiSel(int Sel) {
 		if (States & LISTBOX_CF_MULTISEL) {
-			auto &item = ItemArray[Sel];
+			auto &item = items[Sel];
 			if (!(item.Status & LISTBOX_ITEM_DISABLED)) {
 				item.Status ^= LISTBOX_ITEM_SELECTED;
 				_NotifyOwner(WM_NOTIFICATION_SEL_CHANGED);
@@ -325,55 +326,50 @@ private:
 	}
 #endif
 	bool _OnKey(const KEY_STATE *pInfo) {
-		if (pInfo->PressedCnt > 0)
-			if (AddKey(pInfo->Key))
-				return true; /* Key has been consumed */
-		return false; /* Key has not been consumed */
-	}
-	void _MoveSel(int Dir) {
-		int NewSel = -1;
-		auto Sel = GetSel();
-		auto NumItems = GetNumItems();
-		do {
-			Sel += Dir;
-			if (Sel < 0 || Sel >= NumItems)
-				break;
-			if (!(ItemArray[Sel].Status & LISTBOX_ITEM_DISABLED))
-				NewSel = Sel;
-		} while (NewSel < 0);
-		if (NewSel >= 0)
-			SetSel(NewSel);
-	}
-	int _AddKey(int Key) {
-		switch (Key) {
+		if (pInfo->PressedCnt > 0) {
+			switch (auto Key = pInfo->Key) {
 			case ' ':
-				_ToggleMultiSel(this->Sel);
-				return 1;               /* Key has been consumed */
+				_ToggleMultiSel(Sel);
+				return true; /* Key has been consumed */
 			case GUI_KEY_RIGHT:
 				if (ScrollStateH.SetValue(ScrollStateH.v + Props.ScrollStepH)) {
 					UpdateScrollers();
 					_InvalidateInsideArea();
 				}
-				return 1;               /* Key has been consumed */
+				return true; /* Key has been consumed */
 			case GUI_KEY_LEFT:
 				if (ScrollStateH.SetValue(ScrollStateH.v - Props.ScrollStepH)) {
 					UpdateScrollers();
 					_InvalidateInsideArea();
 				}
-				return 1;               /* Key has been consumed */
+				return true; /* Key has been consumed */
 			case GUI_KEY_DOWN:
 				IncSel();
-				return 1;               /* Key has been consumed */
+				return true; /* Key has been consumed */
 			case GUI_KEY_UP:
 				DecSel();
-				return 1;               /* Key has been consumed */
+				return true; /* Key has been consumed */
 			default:
 				if (_IsAlphaNum(Key)) {
 					_SelectByKey(Key);
-					return 1;               /* Key has been consumed */
+					return true; /* Key has been consumed */
 				}
+			}
 		}
-		return 0;
+		return false; /* Key has not been consumed */
+	}
+	void _MoveSel(int Dir) {
+		int NewSel = -1;
+		auto NumItems = GetNumItems();
+		do {
+			Sel += Dir;
+			if (Sel < 0 || Sel >= NumItems)
+				break;
+			if (!(items[Sel].Status & LISTBOX_ITEM_DISABLED))
+				NewSel = Sel;
+		} while (NewSel < 0);
+		if (NewSel >= 0)
+			SetSel(NewSel);
 	}
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
@@ -411,7 +407,7 @@ private:
 					}
 					pObj->_NotifyOwner(WM_NOTIFICATION_CLICKED);
 				}
-				return 0;
+				break;
 			}
 			case WM_TOUCH:
 				pObj->_OnTouch((const PID_STATE *)Data);
@@ -421,9 +417,6 @@ private:
 				pObj->_OnMouseOver((const PID_STATE *)Data);
 				return 0;
 #endif
-			case WM_DELETE:
-				pObj->_FreeAttached();
-				return 0;
 			case WM_KEY:
 				if (pObj->_OnKey((const KEY_STATE *)Data))
 					return 0;
@@ -431,6 +424,9 @@ private:
 			case WM_SIZE:
 				pObj->UpdateScrollers();
 				pObj->Invalidate();
+				return 0;
+			case WM_DELETE:
+				pObj->~ListBox();
 				return 0;
 		}
 		return pObj->WidgetProc(MsgId, Data);
@@ -476,7 +472,7 @@ public:
 #pragma region OwnerDraw
 private:
 	void _PaintItem(uint16_t ItemIndex, POINT Pos) const {
-		auto &item = ItemArray[ItemIndex];
+		auto &item = items[ItemIndex];
 		auto rInside = InsideRect();
 		/* Calculate color index */
 		auto ColorIndex =
@@ -489,8 +485,7 @@ private:
 		GUI.Brush(Props.aBrush[ColorIndex]);
 		GUI.Clear();
 		RECT rText{ Pos, { rInside, Pos.y + _GetItemSizeY(ItemIndex) - 1 } };
-		auto s = ItemArray[ItemIndex].pText;
-		GUI_DispStringInRect(s, rText, TEXTALIGN_LEFT | TEXTALIGN_VCENTER);
+		GUI_DispStringInRect(items[ItemIndex].pText, rText, TEXTALIGN_LEFT | TEXTALIGN_VCENTER);
 		/* Display focus rectangle */
 		if ((States & LISTBOX_CF_MULTISEL) && ItemIndex == Sel) {
 			GUI.Color(RGB_WHITE - Props.aBrush[ColorIndex].BkColor);
@@ -502,11 +497,11 @@ public:
 		auto pObj = (const ListBox *)pWidget;
 		switch (Cmd) {
 			case WIDGET_ITEM_GET_XSIZE: {
-				auto s = pObj->ItemArray[ItemIndex].pText;
+				auto s = pObj->items[ItemIndex].pText;
 				return pObj->Props.pFont->TextBound(s).x;
 			}
 			case WIDGET_ITEM_GET_YSIZE: {
-				auto s = pObj->ItemArray[ItemIndex].pText;
+				auto s = pObj->items[ItemIndex].pText;
 				return pObj->Props.pFont->TextBound(s).y + pObj->ItemSpacing;
 			}
 			case WIDGET_ITEM_DRAW: 
@@ -518,50 +513,37 @@ public:
 #pragma endregion
 
 	void InvalidateItem(int Index) {
-		int NumItems;
-		NumItems = GetNumItems();
-		if (Index < NumItems) {
-			if (Index < 0) {
-				int i;
-				for (i = 0; i < NumItems; i++) {
-					_InvalidateItemSize(i);
-				}
-				UpdateScrollers();
-				_InvalidateInsideArea();
-			}
-			else {
-				_InvalidateItemSize(Index);
-				UpdateScrollers();
-				_InvalidateItemAndBelow(Index);
-			}
+		auto NumItems = GetNumItems();
+		if (Index >= NumItems)
+			return;
+		if (Index < 0) {
+			for (int i = 0; i < NumItems; i++)
+				_InvalidateItemSize(i);
+			UpdateScrollers();
+			_InvalidateInsideArea();
+		}
+		else {
+			_InvalidateItemSize(Index);
+			UpdateScrollers();
+			_InvalidateItemAndBelow(Index);
 		}
 	}
 
-	int AddKey(int Key) {
-		int r = 0;
-		r = _AddKey(Key);
-		return r;
-	}
 	void AddString(const char *s) {
-		if (s) {
-			Item item = { 0, 0 };
-			if (ItemArray.AddItem(&item) == 0) {
-				uint16_t ItemIndex = ItemArray.NumItems() - 1;
-				GUI__SetText(ItemArray[ItemIndex].pText, s);
-				_InvalidateItemSize(ItemIndex);
-				UpdateScrollers();
-				_InvalidateItem(ItemIndex);
-			}
+		if (!s) return;
+		Item item = { 0, 0 };
+		if (items.AddItem(&item) == 0) {
+			uint16_t ItemIndex = items.NumItems() - 1;
+			GUI__SetText(items[ItemIndex].pText, s);
+			_InvalidateItemSize(ItemIndex);
+			UpdateScrollers();
+			_InvalidateItem(ItemIndex);
 		}
 	}
 	void SetText(const char **ppText) {
-		int i;
-		const char *s;
-		if (ppText) {
-			for (i = 0; (s = *(ppText + i)) != 0; i++) {
-				AddString(s);
-			}
-		}
+		if (!ppText) return;
+		while (auto s = *(ppText++))
+			AddString(s);
 		InvalidateItem(LISTBOX_ALL_ITEMS);
 	}
 
@@ -573,7 +555,7 @@ public:
 			NewSel = MaxSel;
 		if (NewSel < 0)
 			NewSel = -1;
-		else if (ItemArray[NewSel].Status & LISTBOX_ITEM_DISABLED)
+		else if (items[NewSel].Status & LISTBOX_ITEM_DISABLED)
 			NewSel = -1;
 		if (NewSel != Sel) {
 			auto OldSel = Sel;
@@ -592,26 +574,16 @@ public:
 
 	bool GetMulti() const { return States & LISTBOX_CF_MULTISEL; }
 	void SetMulti(bool Mode) {
-		if (Mode) {
-			if (!(States & LISTBOX_CF_MULTISEL)) {
-				States |= LISTBOX_CF_MULTISEL;
-				_InvalidateInsideArea();
-			}
-		}
-		else {
-			if (States & LISTBOX_CF_MULTISEL) {
-				States &= ~LISTBOX_CF_MULTISEL;
-				_InvalidateInsideArea();
-			}
-		}
+		if (CtlStates(LISTBOX_CF_MULTISEL, Mode))
+			_InvalidateInsideArea();
 	}
 
-	auto GetNumItems() const { return ItemArray.NumItems(); }
+	auto GetNumItems() const { return items.NumItems(); }
 	void DeleteItem(uint16_t Index) {
 		auto NumItems = GetNumItems();
 		if (Index < NumItems) {
-			GUI_MEM_FreePtr((void **)&ItemArray[Index].pText);
-			ItemArray.DeleteItem(Index);
+			GUI_MEM_FreePtr((void **)&items[Index].pText);
+			items.Delete(Index);
 			/*
 			 * Update selection
 			 */
@@ -627,29 +599,25 @@ public:
 				_InvalidateItemAndBelow(Index);
 		}
 	}
-	void InsertString(uint16_t Index, const char *s) {
+	void InsertItem(uint16_t Index, const char *s) {
 		if (!s) return;
-		auto NumItems = GetNumItems();
-		if (Index < NumItems) {
-			if (ItemArray.InsertItem(Index)) {
-				auto &item = ItemArray[Index];
-				item.Status = 0;
-				GUI__SetText(item.pText, s);
-				InvalidateItem(Index);
-			}
-		}
-		else
+		if (Index >= GetNumItems()) {
 			AddString(s);
+			return;
+		}
+		auto &item = items.Insert(Index);
+		GUI__SetText(item.pText, s);
+		InvalidateItem(Index);
 	}
 	int GetItemDisabled(uint16_t Index) const {
 		if (Index >= GetNumItems()) 
 			return true;
-		return ItemArray[Index].Status & LISTBOX_ITEM_DISABLED;
+		return items[Index].Status & LISTBOX_ITEM_DISABLED;
 	}
 	void SetItemDisabled(uint16_t Index, bool OnOff) {
 		if (Index >= GetNumItems())
 			return;
-		auto &item = ItemArray[Index];
+		auto &item = items[Index];
 		if (OnOff) {
 			if (!(item.Status & LISTBOX_ITEM_DISABLED)) {
 				item.Status |= LISTBOX_ITEM_DISABLED;
@@ -663,23 +631,21 @@ public:
 	}
 
 	void GetItemText(uint16_t Index, char *pBuffer, int MaxSize) const {
-		uint16_t NumItems;
-		NumItems = GetNumItems();
-		if (Index < NumItems) {
-			const char *pString;
-			int CopyLen;
-			pString = ItemArray[Index].pText;
-			CopyLen = GUI__strlen(pString);
-			if (CopyLen > (MaxSize - 1)) {
-				CopyLen = MaxSize - 1;
-			}
-			GUI__memcpy(pBuffer, pString, CopyLen);
-			pBuffer[CopyLen] = 0;
-		}
+		auto NumItems = GetNumItems();
+		if (Index >= NumItems || !pBuffer || MaxSize <= 0)
+			return;
+		const char *pString;
+		int CopyLen;
+		pString = items[Index].pText;
+		CopyLen = GUI__strlen(pString);
+		if (CopyLen > MaxSize - 1)
+			CopyLen = MaxSize - 1;
+		GUI__memcpy(pBuffer, pString, CopyLen);
+		pBuffer[CopyLen] = 0;
 	}
 	void SetString(uint16_t Index, const char *s) {
 		if (Index < GetNumItems()) {
-			if (GUI__SetText(ItemArray[Index].pText, s)) {
+			if (GUI__SetText(items[Index].pText, s)) {
 				_InvalidateItemSize(Index);
 				UpdateScrollers();
 				_InvalidateItem(Index);
@@ -690,12 +656,12 @@ public:
 	bool GetItemSel(uint16_t Index) const {
 		if (Index >= GetNumItems() || !(States & LISTBOX_CF_MULTISEL))
 			return false;
-		return ItemArray[Index].Status & LISTBOX_ITEM_SELECTED;
+		return items[Index].Status & LISTBOX_ITEM_SELECTED;
 	}
 	void SetItemSel(uint16_t Index, bool OnOff) {
 		if (Index >= GetNumItems() || !(States & LISTBOX_CF_MULTISEL))
 			return;
-		auto &item = ItemArray[Index];
+		auto &item = items[Index];
 		if (OnOff) {
 			if (!(item.Status & LISTBOX_ITEM_SELECTED)) {
 				item.Status |= LISTBOX_ITEM_SELECTED;
@@ -707,15 +673,19 @@ public:
 			_InvalidateItem(Index);
 		}
 	}
+
+	auto GetItemSpacing() const { return ItemSpacing; }
 	void SetItemSpacing(uint16_t Value) {
+		if (ItemSpacing == Value)
+			return;
 		this->ItemSpacing = Value;
 		InvalidateItem(LISTBOX_ALL_ITEMS);
 	}
-	auto GetItemSpacing() const { return ItemSpacing; }
 
 	auto GetScrollStepH() const { return Props.ScrollStepH; }
 	void SetScrollStepH(int Value) { Props.ScrollStepH = Value; }
 
+	auto GetScrollbarWidth() const { return ScrollbarWidth; }
 	void SetScrollbarWidth(uint16_t Width) {
 		if (ScrollbarWidth == Width)
 			return;

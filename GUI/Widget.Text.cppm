@@ -26,16 +26,13 @@ public:
 private:
 	Properties Props = DefaultProps;
 
-	char *pText = nullptr;
+	String text;
 
 	void _OnPaint() const {
 		GUI.Font(Props.pFont);
 		GUI.Brush(Props.brush);
 		GUI.Clear();
-		GUI_DispStringInRect(pText, ClientRect(), Props.Align);
-	}
-	void _Delete() {
-		GUI_MEM_FreePtr((void **)&pText);
+		GUI_DispStringInRect(text, ClientRect(), Props.Align);
 	}
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
@@ -45,23 +42,18 @@ private:
 				pObj->_OnPaint();
 				return 0;
 			case WM_DELETE:
-				pObj->_Delete();
+				pObj->~Text();
 				return 0;
 		}
 		return pObj->WidgetProc(MsgId, Data);
 	}
 
 public:
-	Text(RECT r, WM_CF Style, WObj *pParent, uint16_t Id,
-		 TEXTALIGN ExFlags, const char *pText) :
+	Text(RECT r, WM_CF Style, WObj *pParent, uint16_t Id, TEXTALIGN ExFlags, const char *pText) :
 		Widget(r, Style, _Callback, pParent, Id, 0) {
-		if (pText)
-			GUI__SetText(this->pText, pText);
-		else
-			this->pText = nullptr;
+		text.Set(pText);
 		Props.Align = ExFlags;
 	}
-
 	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new Text(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
@@ -99,7 +91,7 @@ public:
 #pragma endregion
 
 	void SetText(const char *s) {
-		if (GUI__SetText(pText, s))
+		if (text.Set(s))
 			Invalidate();
 	}
 };

@@ -50,6 +50,22 @@ private:
 	SCROLL_STATE ScrollStateV, ScrollStateH;
 	WObj *pOwner = nullptr;
 
+	~ListView() {
+		auto NumRows = RowArray.NumItems(), 
+			 NumColumns = AlignArray.NumItems();
+		for (auto i = 0; i < NumRows; i++) {
+			auto &pRow = RowArray[i];
+			for (auto j = 0; j < NumColumns; j++) {
+				auto &item = pRow[j];
+				GUI_MEM_Free(item.pText);
+				GUI_MEM_Free(item.pItemInfo);
+			}
+			pRow.Delete();
+		}
+		AlignArray.Delete();
+		RowArray.Delete();
+	}
+
 	void _NotifyOwner(int Notification) {
 		auto pOwner = this->pOwner ? this->pOwner : Parent();
 		NOTIFY_INFO Info;
@@ -238,25 +254,7 @@ private:
 		ScrollStateH.NumItems = _GetHeaderWidth();
 		return _UpdateScrollPos();
 	}
-	void _FreeAttached() {
-		auto NumRows = RowArray.NumItems(), 
-			 NumColumns = AlignArray.NumItems();
-		for (auto i = 0; i < NumRows; i++) {
-				auto &pRow = RowArray[i];
-				/* Delete attached info items */
-				for (auto j = 0; j < NumColumns; j++) {
-					auto &item = pRow[j];
-					GUI_MEM_FreePtr((void **)&item.pText);
-					if (item.pItemInfo)
-						GUI_MEM_Free(item.pItemInfo);
-				}
-				/* Delete row */
-				pRow.Delete();
-			}
-		AlignArray.Delete();
-		RowArray.Delete();
-	}
-
+	
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (ListView *)pWin;
 		switch (MsgId) {
@@ -304,7 +302,7 @@ private:
 					return 0;
 				break;
 			case WM_DELETE:
-				pObj->_FreeAttached();
+				pObj->~ListView();
 				return 0;
 		}
 		return pObj->WidgetProc(MsgId, Data);
@@ -415,7 +413,7 @@ public:
 		if (Index >= AlignArray.NumItems())
 			return;
 		pHeader->DeleteItem(Index);
-		AlignArray.DeleteItem(Index);
+		AlignArray.Delete(Index);
 		for (int i = 0, NumRows = RowArray.NumItems(); i < NumRows; i++) {
 			auto &Row = RowArray[i];
 			/* Delete attached info items */
@@ -423,7 +421,7 @@ public:
 			GUI_MEM_FreePtr((void **)&item.pText);
 			GUI_MEM_FreePtr((void **)&item.pItemInfo);
 			/* Delete cell */
-			Row.DeleteItem(Index);
+			Row.Delete(Index);
 		}
 		_UpdateScrollParas();
 		_InvalidateInsideArea();
@@ -441,7 +439,7 @@ public:
 		}
 		/* Delete row */
 		Row.Delete();
-		RowArray.DeleteItem(Index);
+		RowArray.Delete(Index);
 		/* Adjust properties */
 		if (Sel == Index)
 			Sel = -1;
@@ -500,11 +498,8 @@ public:
 			NotifyParent(WM_NOTIFICATION_SEL_CHANGED);
 		}
 	}
-	void IncSel() { SetSel(GetSel() + 1); }
-	void DecSel() {
-		if (auto Sel = GetSel())
-			SetSel(Sel - 1);
-	}
+	void IncSel() { SetSel(Sel + 1); }
+	void DecSel() { SetSel(Sel - 1); }
 };
 
 ListView::Properties ListView::DefaultProps;

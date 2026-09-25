@@ -27,14 +27,10 @@ public:
 private:
 	Properties Props = DefaultProps;
 
-	char *pText = nullptr;
+	String text;
 	int16_t XOff = 0, YOff = 0;
 	int16_t v = 0, Min = 0, Max = 0;
 
-	void _FreeText() {
-		GUI_MEM_FreePtr((void **)&pText);
-		pText = nullptr;
-	}
 	auto _Value2X(int16_t v) const {
 		auto EffectSize = this->EffectSize();
 		auto xSize = SizeX();
@@ -50,7 +46,7 @@ private:
 		GUI_DispStringInRect(pText, rText, Props.Align);
 	}
 	const char *_GetText(char *pBuffer) const {
-		if (pText) return pText;
+		if (text) return text;
 		auto pText = pBuffer;
 		uint8_t value = 100 * (v - Min) / (Max - Min);
 		if (value == 100) {
@@ -89,9 +85,6 @@ private:
 		UserClip(nullptr);
 		DrawDown(rClient);
 	}
-	void _Delete() {
-		_FreeText();
-	}
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
 		auto pObj = (ProgBar *)pWin;
@@ -100,7 +93,7 @@ private:
 				pObj->_OnPaint();
 				return 0;
 			case WM_DELETE:
-				pObj->_Delete();
+				pObj->~ProgBar();
 				return 0;
 		}
 		return pObj->WidgetProc(MsgId, Data);
@@ -152,15 +145,18 @@ public:
 			Invalidate();
 		}
 	}
+
 	void SetText(const char *s) {
-		if (GUI__SetText(pText, s))
+		if (text.Set(s))
 			Invalidate();
 	}
+
 	void SetTextPos(int XOff, int YOff) {
 		this->XOff = XOff;
 		this->YOff = YOff;
 		Invalidate();
 	}
+
 	void SetMinMax(int Min, int Max) {
 		if (Max > Min) {
 			if (Max != this->Max || Min != this->Min) {

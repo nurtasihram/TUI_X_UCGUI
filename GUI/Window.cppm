@@ -196,14 +196,13 @@ private:
 	static RGBC BkColorDesktop;
 	static WM_PARAM cbBackWin(WObj *pWin, int MsgId, WM_PARAM Data) {
 		switch (MsgId) {
-			case WM_KEY: {
-				return 0;
-			}
 			case WM_PAINT:
 				if (BkColorDesktop != RGB_INVALID) {
 					GUI.BkColor(BkColorDesktop);
 					GUI.Clear();
 				}
+				return 0;
+			case WM_KEY:
 				return 0;
 			default:
 				return DefaultProc(pWin, MsgId, Data);
@@ -692,9 +691,6 @@ public:
 			return 0;
 		case WM_GET_BKCOLOR:
 			return RGB_INVALID;
-		case WM_NOTIFY_ENABLE:
-			pWin->Invalidate();
-			return 0;
 		}
 		/* Message not handled. If it queries something, we return 0 to be on the safe side. */
 		return 0;

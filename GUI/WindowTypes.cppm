@@ -15,64 +15,40 @@ export {
 * The following is the list of windows messages.
 */
 enum WM_MSGID : int {
-	 WM_NONE                    = 0,
-	 /* The first message received, right after client has actually been created */
-	 WM_CREATE                  = 1 ,
-	 /* window has been moved */
-	 WM_MOVE                    = 3 ,
-	 /* Is sent to a window after its size has changed */
-	 WM_SIZE                    = 5 ,
-	 /* Delete (Destroy) command: This tells the client to free its data strutures since the window it is associates with no longer exists.*/
-	 WM_DELETE                  = 11,
-	 /* Touch screen message */
-	 WM_TOUCH                   = 12,
-	 /* Touch screen message to ancestors */
-	 WM_TOUCH_CHILD             = 13,
-	 /* Key has been pressed */
-	 WM_KEY                     = 14,
-	 /* Repaint window (because content is (partially) invalid */
-	 WM_PAINT                   = 15,
-	 /* Mouse has moved, no key pressed */
-	 WM_MOUSEOVER               = 16,
-	 /* Pointer input device state has changed */
-	 WM_PID_STATE_CHANGED       = 17,
-	 /* get inside rectangle: client rectangle minus pixels lost to effect */
-	 WM_GET_INSIDE_RECT         = 20,
-	 /* Get id of widget */
-	 WM_GET_ID                  = 21,
-	 /* Set id of widget */
-	 WM_SET_ID                  = 22,
-	 /* Get window handle of client window. Default is the same as window */
-	 WM_GET_CLIENT_WINDOW       = 23,
-	 /* Let window know that mouse capture is over */
-	 WM_CAPTURE_RELEASED        = 24,
-	 /* Inform dialog that it is ready for init */
-	 WM_INIT_DIALOG             = 30,
-	 /* Inform window that it has gotten or lost the focus */
-	 WM_SET_FOCUS               = 31,
-	 /* Find out if window can accept the focus */
-	 WM_GET_ACCEPT_FOCUS        = 32,
-	 
-	 WM_NOTIFY_CHILD_HAS_FOCUS  = 33,
-	 /* Return back ground color (only frame window and similar) */
-	 WM_GET_BKCOLOR             = 34,
-	 /* Query state of scroll bar */
-	 WM_GET_SCROLL_STATE        = 35,
-	 /* Set scroll info ... only effective for scrollbars */
-	 WM_SET_SCROLL_STATE        = 36,
-	 /* Client area may have changed */
-	 WM_NOTIFY_CLIENTCHANGE     = 37,
-	 /* Notify parent. Information is detailed as notification code */
-	 WM_NOTIFY_PARENT           = 38,
-	 /* Enable or disable widget */
-	 WM_NOTIFY_ENABLE           = 40,
-	 /* Visibility of a window has or may have changed */
-	 /* Set or get dialog status */
-	 WM_HANDLE_DIALOG_STATUS    = 41,
-	 /* Send to all siblings and children of a radio control when selection changed */
-	 WM_GET_RADIOGROUP          = 42,
-	 /* Send to owner window of menu widget */	
-	 WM_MENU                    = 43,
+	 WM_NONE = 0 ,
+
+	 WM_CREATE, WM_DELETE,
+
+	 WM_PAINT,
+
+	 WM_MOVE, WM_SIZE,
+
+	 WM_TOUCH, WM_TOUCH_CHILD,
+	 WM_MOUSEOVER, WM_PID_STATE_CHANGED,
+
+	 WM_CAPTURE_RELEASED,
+
+	 WM_KEY,
+	 WM_GET_ID, WM_SET_ID,
+
+	 WM_GET_INSIDE_RECT,
+	 WM_GET_CLIENT_WINDOW,
+	 WM_NOTIFY_CLIENTCHANGE,
+
+	 WM_INIT_DIALOG,
+
+	 WM_SET_FOCUS,
+	 WM_GET_ACCEPT_FOCUS,
+	 WM_NOTIFY_CHILD_HAS_FOCUS,
+
+	 WM_GET_BKCOLOR,
+	 WM_GET_SCROLL_STATE, WM_SET_SCROLL_STATE,
+	 WM_NOTIFY_PARENT,
+	 WM_HANDLE_DIALOG_STATUS,
+
+	 WM_GET_RADIOGROUP,
+
+	 WM_MENU,
 };
 template<auto code> constexpr int16_t WM_WIDGET = 0x0300 + code;
 template<auto code> constexpr int16_t WM_USER   = 0x0400 + code;
@@ -85,17 +61,17 @@ template<auto code> constexpr int16_t WM_USER   = 0x0400 + code;
 * with the WM_NOTIFY_PARENT message
 */
 enum WM_NOTIFICATION : int {
-	WM_NOTIFICATION_START            = 0,
-	WM_NOTIFICATION_CLICKED             ,
-	WM_NOTIFICATION_RELEASED            ,
-	WM_NOTIFICATION_MOVED_OUT           ,
-	WM_NOTIFICATION_SEL_CHANGED         ,
-	WM_NOTIFICATION_VALUE_CHANGED       ,
-	WM_NOTIFICATION_SCROLLBAR_ADDED     ,
-	WM_NOTIFICATION_CHILD_DELETED       ,
-	WM_NOTIFICATION_GOT_FOCUS           ,
-	WM_NOTIFICATION_LOST_FOCUS          ,
-	WM_NOTIFICATION_SCROLL_CHANGED		,
+	WM_NOTIFICATION_START = 0,
+	WM_NOTIFICATION_CLICKED,
+	WM_NOTIFICATION_RELEASED,
+	WM_NOTIFICATION_MOVED_OUT,
+	WM_NOTIFICATION_SEL_CHANGED,
+	WM_NOTIFICATION_VALUE_CHANGED,
+	WM_NOTIFICATION_SCROLLBAR_ADDED,
+	WM_NOTIFICATION_CHILD_DELETED,
+	WM_NOTIFICATION_GOT_FOCUS,
+	WM_NOTIFICATION_LOST_FOCUS,
+	WM_NOTIFICATION_SCROLL_CHANGED,
 	WM_NOTIFICATION_END
 };
 template<int code> constexpr int WM_NOTIFICATION_WIDGET = (static_cast<int>(WM_NOTIFICATION_END) + code);

@@ -63,10 +63,8 @@ static const char *_ListBox[]{
 static const Widget::CreateStruct _aDialogCreate[]{
 	{ Frame   ::CreateIndirect, "Owner drawn list box" , 0                 , 50  , 50  , 220  , 175  , FRAMEWIN_CF_MOVEABLE | FRAMEWIN_CF_RESIZEABLE },
 	{ ListBox ::CreateIndirect, ""                     , GUI_ID_MULTIEDIT0 , 10  , 10  , 100  , 100  , 0                    , 100 },
-	{ CheckBox::CreateIndirect, ""                     , GUI_ID_CHECK0     , 120 , 10  , 0    , 0                                 },
-	{ Text    ::CreateIndirect, "Multi select"         , 0                 , 140 , 10  , 80   , 15   , TEXT_CF_LEFT               },
-	{ CheckBox::CreateIndirect, ""                     , GUI_ID_CHECK1     , 120 , 35  , 0    , 0                                 },
-	{ Text    ::CreateIndirect, "Owner drawn"          , 0                 , 140 , 35  , 80   , 15   , TEXT_CF_LEFT               },
+	{ CheckBox::CreateIndirect, "Multi select"         , GUI_ID_CHECK0     , 120 , 10  , 90   , 0                                 },
+	{ CheckBox::CreateIndirect, "Owner drawn"          , GUI_ID_CHECK1     , 120 , 35  , 90   , 0                                 },
 	{ Button  ::CreateIndirect, "OK"                   , GUI_ID_OK         , 120 , 65  , 80   , 20                                },
 	{ Button  ::CreateIndirect, "Cancel"               , GUI_ID_CANCEL     , 120 , 90  , 80   , 20                                }
 };
@@ -590,7 +588,7 @@ static WM_PARAM _cbDropDownTest(WObj *pWin, int MsgId, WM_PARAM Data) {
 							int Num = pDropDown->GetNumItems();
 							sprintf(acLabel, "Item %d", ++_DropDownItemCounter);
 							if (Num > 0) {
-								pDropDown->InsertString(acLabel, (unsigned)Sel);
+								pDropDown->InsertItem(acLabel, (unsigned)Sel);
 							}
 							else {
 								pDropDown->AddString(acLabel);

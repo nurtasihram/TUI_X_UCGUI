@@ -37,6 +37,18 @@ private:
 	int16_t CaptureItem = -1;
 	uint16_t ScrollPos = 0;
 
+	~Header() {
+		for (uint16_t i = 0, NumItems = Columns.NumItems(); i < NumItems; i++) {
+			auto &col = Columns[i];
+			GUI_MEM_Free(col.pText);
+			if (col.pDrawObj)
+				GUI_MEM_Free(col.pDrawObj);
+		}
+		/* Delete attached objects (if any) */
+		Columns.Delete();
+		_RestoreOldCursor();
+	}
+
 	void _OnPaint() const {
 		auto xPos = -ScrollPos;
 		auto EffectSize = this->EffectSize();
@@ -90,20 +102,6 @@ private:
 #endif
 			_pOldCursor = 0;
 		}
-	}
-	void _FreeAttached() {
-		int i, NumItems;
-		NumItems = Columns.NumItems();
-		for (i = 0; i < NumItems; i++) {
-			auto &col = Columns[i];
-			GUI_MEM_FreePtr((void **)&col.pText);
-			if (col.pDrawObj) {
-				GUI_MEM_Free(col.pDrawObj);
-			}
-		}
-		/* Delete attached objects (if any) */
-		Columns.Delete();
-		_RestoreOldCursor();
 	}
 #if (HEADER_SUPPORT_DRAG)
 	int _GetItemIndex(int x, int y) {
@@ -189,7 +187,7 @@ private:
 #endif
 #endif
 			case WM_DELETE:
-				pObj->_FreeAttached(); /* No return here ... DefaultProc needs to be called */
+				pObj->~Header();
 				return 0;
 		}
 		return pObj->WidgetProc(MsgId, Data);
@@ -263,7 +261,7 @@ public:
 	void DeleteItem(uint16_t Index) {
 		if (Index < Columns.NumItems()) {
 			GUI_MEM_FreePtr((void **)&Columns[Index].pText);
-			Columns.DeleteItem(Index);
+			Columns.Delete(Index);
 			Invalidate();
 			Parent()->Invalidate();
 		}

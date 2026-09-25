@@ -45,10 +45,16 @@ private:
 		uint8_t Status;
 		char *pText;
 	};
-	ARRAY<Page> Handles;
+	ARRAY<Page> pages;
 	WObj *pClient;
 	uint16_t sel = 0xffff;
 	int16_t ScrollState = 0;
+
+	~MultPage() {
+		for (int i = 0, n = pages.NumItems(); i < n; i++)
+			GUI_MEM_Free(pages[i].pText);
+		pages.Delete();
+	}
 
 	void _AddScrollbar(int x, int y, int w, int h) {
 		if (auto pScroll = GetScrollbarH()) {
@@ -79,8 +85,8 @@ private:
 
 	void _ShowPage(uint16_t Index) {
 		WObj *pWin = nullptr;
-		if (Index < Handles.NumItems())
-			pWin = Handles[Index].pWin;
+		if (Index < pages.NumItems())
+			pWin = pages[Index].pWin;
 		for (auto pChild = pClient->FirstChild(); pChild; pChild = pChild->NextSibling()) {
 			if (pChild == pWin) {
 				pChild->ShowWindow();
@@ -108,9 +114,9 @@ private:
 		return r;
 	}
 	uint16_t _GetPageSizeX(uint16_t Index) const {
-		if (Index >= Handles.NumItems())
+		if (Index >= pages.NumItems())
 			return 0;
-		return Props.pFont->TextBound(Handles[Index].pText).x + 10;
+		return Props.pFont->TextBound(pages[Index].pText).x + 10;
 	}
 	uint16_t _GetPagePosX(uint16_t Index) const {
 		uint16_t r = 0;
@@ -119,7 +125,7 @@ private:
 		return r;
 	}
 	uint16_t _GetTextWidth() const {
-		return _GetPagePosX(Handles.NumItems());
+		return _GetPagePosX(pages.NumItems());
 	}
 	RECT _GetTextRect() const {
 		RECT r;
@@ -182,7 +188,7 @@ private:
 	}
 	void _OnPaint() const {
 		DrawUp(_CalcBorderRect());
-		if (Handles.NumItems() <= 0)
+		if (pages.NumItems() <= 0)
 			return;
 		int x0 = 0;
 		if (States & MULTIPAGE_STATE_SCROLLMODE)
@@ -197,8 +203,8 @@ private:
 		WObj::UserClip(&rClip);
 		GUI.Font(Props.pFont);
 		int w = 0;
-		for (int i = 0; i < Handles.NumItems(); ++i) {
-			auto &page = Handles[i];
+		for (int i = 0; i < pages.NumItems(); ++i) {
+			auto &page = pages[i];
 			x0 += w;
 			w = Props.pFont->TextBound(page.pText).x + 10;
 			if (w >= rText.XSize()) break;
@@ -210,7 +216,7 @@ private:
 		WObj::UserClip(nullptr);
 	}
 	bool _ClickedOnMultipage(POINT Pos) {
-		auto NumItems = Handles.NumItems();
+		auto NumItems = pages.NumItems();
 		if (!NumItems)
 			return false;
 		auto rText = _GetTextRect();
@@ -287,9 +293,7 @@ private:
 				pObj->_UpdatePositions();
 				return 0;
 			case WM_DELETE:
-				for (int _i = 0, NumItems = pObj->Handles.NumItems(); _i < NumItems; _i++)
-					GUI_MEM_FreePtr((void **)&pObj->Handles[_i].pText);
-				pObj->Handles.Delete();
+				pObj->~MultPage();
 				return 0;
 		}
 		return pObj->WidgetProc(MsgId, Data);
@@ -363,8 +367,8 @@ public:
 			auto pClient = this->pClient;
 			for (auto pChild = pClient->FirstChild(); pChild && !pWin; pChild = pChild->NextSibling()) {
 				pWin = pChild;
-				for (int i = 0; i < Handles.NumItems(); i++) {
-					auto &page = Handles[i];
+				for (int i = 0; i < pages.NumItems(); i++) {
+					auto &page = pages[i];
 					if (page.pWin == pChild) {
 						pWin = nullptr;
 						break;
@@ -381,18 +385,18 @@ public:
 				pText = &NullByte;
 			page.pWin = pWin;
 			page.Status = MULTIPAGE_STATE_ENABLED;
-			if (Handles.AddItem(&page) == 0)
-				GUI__SetText(Handles[Handles.NumItems() - 1].pText, pText);
-			Selected(Handles.NumItems() - 1);
+			if (pages.AddItem(&page) == 0)
+				GUI__SetText(pages[pages.NumItems() - 1].pText, pText);
+			Selected(pages.NumItems() - 1);
 		}
 	}
 	void DeletePage(uint16_t Index, int Delete) {
-		if (Index >= Handles.NumItems())
+		if (Index >= pages.NumItems())
 			return;
-		auto pWin = Handles[Index].pWin;
+		auto pWin = pages[Index].pWin;
 		/* Remove the page from the MultPage object */
 		if (Index == sel) {
-			if (Index == Handles.NumItems() - 1) {
+			if (Index == pages.NumItems() - 1) {
 				_ShowPage(Index - 1);
 				sel--;
 			}
@@ -401,17 +405,17 @@ public:
 		}
 		else if (Index < sel)
 			sel--;
-		GUI_MEM_FreePtr((void **)&Handles[Index].pText);
-		Handles.DeleteItem(Index);
+		GUI_MEM_FreePtr((void **)&pages[Index].pText);
+		pages.Delete(Index);
 		_UpdatePositions();
 		/* Delete the window of the page */
 		if (Delete)
 			delete pWin;
 	}
 	void PageEnable(uint16_t Index, bool bEnable) {
-		if (Index >= Handles.NumItems())
+		if (Index >= pages.NumItems())
 			return;
-		auto &page = Handles[Index];
+		auto &page = pages[Index];
 		if (bEnable)
 			page.Status |= MULTIPAGE_STATE_ENABLED;
 		else
@@ -419,26 +423,26 @@ public:
 		Invalidate();
 	}
 	bool PageEnable(uint16_t Index) const {
-		if (Index >= Handles.NumItems())
+		if (Index >= pages.NumItems())
 			return false;
-		return Handles[Index].Status & MULTIPAGE_STATE_ENABLED;
+		return pages[Index].Status & MULTIPAGE_STATE_ENABLED;
 	}
 	WObj *GetWindow(uint16_t Index) {
-		if (Index >= Handles.NumItems())
+		if (Index >= pages.NumItems())
 			return nullptr;
-		return Handles[Index].pWin;
+		return pages[Index].pWin;
 	}
 	void SetText(const char *pText, uint16_t Index) {
-		if (Index < Handles.NumItems()) {
-			if (GUI__SetText(Handles[Index].pText, pText))
+		if (Index < pages.NumItems()) {
+			if (GUI__SetText(pages[Index].pText, pText))
 				_UpdatePositions();
 		}
 	}
 
 	void Selected(uint16_t Index) {
-		if (Index >= Handles.NumItems())
+		if (Index >= pages.NumItems())
 			return;
-		if (Index != sel && (Handles[Index].Status & MULTIPAGE_STATE_ENABLED)) {
+		if (Index != sel && (pages[Index].Status & MULTIPAGE_STATE_ENABLED)) {
 			_ShowPage(Index);
 			sel = Index;
 			_UpdatePositions();

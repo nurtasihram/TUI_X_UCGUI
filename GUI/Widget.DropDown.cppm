@@ -37,10 +37,19 @@ private:
 	int16_t Sel = 0; /* current selection */
 	int16_t ySizeEx; /* Drop down size */
 	int16_t TextHeight = 0;
-	ARRAY<char *> Handles;
+	ARRAY<char *> items;
 	ListBox *pListWin = nullptr;
 	uint16_t ItemSpacing = 0;
 	uint8_t  ScrollbarWidth = 0;
+
+	~DropDown() {
+		for (uint16_t i = 0, n = items.NumItems(); i < n; i++)
+			GUI_MEM_Free(items[i]);
+		if (pListWin) {
+			delete pListWin;
+			pListWin = nullptr;
+		}
+	}
 
 	static int _Tolower(int Key) {
 		if (Key >= 0x41 && Key <= 0x5a)
@@ -51,7 +60,7 @@ private:
 	const char *_GetpItem(int Index) const {
 		if (Index < 0 || Index >= GetNumItems())
 			return nullptr;
-		return Handles[Index];
+		return items[Index];
 	}
 	void _SelectByKey(int Key) {
 		Key = _Tolower(Key);
@@ -62,13 +71,6 @@ private:
 				break;
 			}
 		}
-	}
-	void _FreeAttached() {		
-		for (int i = 0; i < Handles.NumItems(); i++)
-			GUI__SetText(Handles[i], nullptr);
-		Handles.Delete();
-		delete pListWin;
-		this->pListWin = nullptr;
 	}
 	void _DrawTriangleDown(int x, int y, int Size) const {
 		while (Size--)
@@ -171,13 +173,13 @@ private:
 			case WM_TOUCH:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
-			case WM_DELETE:
-				pObj->_FreeAttached();
-				return 0;
 			case WM_KEY:
 				if (pObj->_OnKey((const KEY_STATE *)Data))
 					return 0;
 				break;
+			case WM_DELETE:
+				pObj->~DropDown();
+				return 0;
 		}
 		return pObj->WidgetProc(MsgId, Data);
 	}
@@ -290,6 +292,7 @@ public:
 		}
 	}
 
+	auto GetSel() const { return Sel; }
 	void SetSel(int Sel) {
 		auto NumItems = GetNumItems();
 		auto MaxSel = NumItems ? NumItems - 1 : 0;
@@ -308,41 +311,36 @@ public:
 			Sel--;
 		SetSel(Sel);
 	}
-	auto GetSel() const { return Sel; }
 
-	auto GetNumItems() const { return Handles.NumItems(); }
+	auto GetNumItems() const { return items.NumItems(); }
 	void AddString(const char *s) {
 		if (!s) return;
-		auto idx = Handles.NumItems();
-		if (Handles.AddItem() == 0)
-			GUI__SetText(Handles[idx], s);
+		auto idx = items.NumItems();
+		if (items.AddItem() == 0)
+			GUI__SetText(items[idx], s);
 		Invalidate();
 	}
 	void DeleteItem(uint16_t Index) {
 		if (Index >= GetNumItems()) 
 			return;
-		GUI__SetText(Handles[Index], nullptr);
-		Handles.DeleteItem(Index);
+		items.Delete(Index);
 		Invalidate();
 		if (pListWin)
 			pListWin->DeleteItem(Index);
 	}
-	void InsertString(const char *s, unsigned int Index) {
+	void InsertItem(const char *s, unsigned int Index) {
 		if (!s) return;
 		auto NumItems = GetNumItems();
-		if (Index < NumItems) {
-			auto pp = Handles.InsertItem(Index);
-			if (pp)
-				GUI__SetText(*pp, s);
-			Invalidate();
-			if (pListWin)
-				pListWin->InsertString(Index, s);
-		}
-		else {
+		if (Index >= NumItems) {
 			AddString(s);
 			if (pListWin)
 				pListWin->AddString(s);
+			return;
 		}
+		GUI__SetText(items.Insert(Index), s);
+		Invalidate();
+		if (pListWin)
+			pListWin->InsertItem(Index, s);
 	}
 	
 	void SetScrollbarWidth(uint8_t Width) {

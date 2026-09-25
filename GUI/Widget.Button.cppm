@@ -147,13 +147,13 @@ private:
 			case WM_TOUCH:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
-			case WM_DELETE:
-				pObj->~Button();
-				return 0;
 			case WM_KEY:
 				if (pObj->_OnKey((const KEY_STATE *)Data))
 					return 0;
 				break;
+			case WM_DELETE:
+				pObj->~Button();
+				return 0;
 		}
 		return pObj->WidgetProc(MsgId, Data);
 	}

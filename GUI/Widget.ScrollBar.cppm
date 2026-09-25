@@ -247,9 +247,6 @@ private:
 			case WM_PAINT:
 				pObj->_OnPaint();
 				return 0;
-			case WM_DELETE:
-				pObj->_InvalidatePartner();
-				return 0;
 			case WM_TOUCH:
 				pObj->_OnTouch((const PID_STATE *)Data);
 				return 0;
@@ -262,6 +259,9 @@ private:
 				return 0;
 			case WM_GET_SCROLL_STATE:
 				*(SCROLL_STATE *)Data = pObj->ScrollState;
+				return 0;
+			case WM_DELETE:
+				pObj->_InvalidatePartner();
 				return 0;
 		}
 		return pObj->WidgetProc(MsgId, Data);

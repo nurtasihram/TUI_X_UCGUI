@@ -60,7 +60,7 @@ private:
 	
 	Menu *pMenu = nullptr;
 	Window *pClient = nullptr;
-	char *pText = nullptr;
+	String text;
 	RECT rRestore;
 
 	struct POSITIONS {
@@ -121,7 +121,7 @@ private:
 		GUI.Font(Props.pFont);
 		GUI.Brush(Props.aBrush[States & FRAMEWIN_CF_ACTIVE ? FRAME_CI_FOCUSSED : FRAME_CI_UNFOCUS]);
 		GUI.Clear(Pos.rTitleBar);
-		GUI_DispStringInRect(pText, Pos.rTitleBar, Props.Align);
+		GUI_DispStringInRect(text, Pos.rTitleBar, Props.Align);
 		DrawUp();
 	}
 	void _OnChildHasFocus(const NOTIFY_CHILD_HAS_FOCUS_INFO *pInfo) {
@@ -427,8 +427,7 @@ private:
 				pObj->_OnChildHasFocus((const NOTIFY_CHILD_HAS_FOCUS_INFO *)Data);
 				return 0;
 			case WM_DELETE:
-				GUI_MEM_Free(pObj->pText);
-				pObj->pText = nullptr;
+				pObj->~Frame();
 				return 0;
 		}
 		return pObj->WidgetProc(MsgId, Data);
@@ -481,7 +480,7 @@ public:
 #pragma endregion
 
 	void SetText(const char *s) {
-		if (GUI__SetText(this->pText, s))
+		if (text.Set(s))
 			Invalidate();
 	}
 

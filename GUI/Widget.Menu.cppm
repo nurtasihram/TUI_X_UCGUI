@@ -78,10 +78,16 @@ private:
 		uint16_t TextWidth;
 		char *pText;
 	};
-	ARRAY<Item> ItemArray;
+	ARRAY<Item> items;
 	WObj *pOwner = nullptr;
 	uint16_t Width = 0, Height = 0;
 	uint16_t Sel = -1;
+
+	~Menu() {
+		for (uint16_t i = 0, n = items.NumItems(); i < n; i++)
+			GUI_MEM_Free(items[i].pText);
+		items.Delete();
+	}
 
 	struct MsgPack {
 		MENU_MSG MsgType;
@@ -111,7 +117,7 @@ private:
 	uint16_t _GetItemWidth(uint16_t Index) const {
 		if (Width && (States & MENU_CF_VERTICAL))
 			return Width - (_GetEffectSize() << 1);
-		auto &item = ItemArray[Index];
+		auto &item = items[Index];
 		uint16_t ItemWidth = (States & MENU_CF_VERTICAL) || !(item.Flags & MENU_IF_SEPARATOR)
 			? item.TextWidth : 3;
 		return ItemWidth + Props.Border.x0 + Props.Border.x1;
@@ -120,7 +126,7 @@ private:
 		if (Height && !(States & MENU_CF_VERTICAL))
 			return Height - (_GetEffectSize() << 1);
 		uint16_t ItemHeight = Props.pFont->YSize;
-		if ((States & MENU_CF_VERTICAL) && (ItemArray[Index].Flags & MENU_IF_SEPARATOR))
+		if ((States & MENU_CF_VERTICAL) && (items[Index].Flags & MENU_IF_SEPARATOR))
 			ItemHeight = 3;
 		return ItemHeight + Props.Border.y0 + Props.Border.y1;
 	}
@@ -201,7 +207,7 @@ private:
 			return;
 		if (!(States & MENU_SF_SUBMENU_ACTIVE))
 			return;
-		auto &item = ItemArray[Sel];
+		auto &item = items[Sel];
 		/* Inform submenu about its deactivation and detach it */
 		_SendMenuMessage(this, item.pSubmenu, MENU_ON_CLOSE, 0);
 		item.pSubmenu->Detach();
@@ -221,7 +227,7 @@ private:
 		bool PrevActiveSubmenu = States & MENU_SF_SUBMENU_ACTIVE;
 		/* Close previous submenu (if needed) */
 		_CloseSubmenu();
-		auto &item = ItemArray[Index];
+		auto &item = items[Index];
 		if (!item.pSubmenu)
 			return;
 		if (item.Flags & MENU_IF_DISABLED)
@@ -284,7 +290,7 @@ private:
 		}
 	}
 	void _ActivateItem(uint16_t Index) {
-		auto &item = ItemArray[Index];
+		auto &item = items[Index];
 		if (item.pSubmenu)
 			return;
 		if (item.Flags & (MENU_IF_DISABLED | MENU_IF_SEPARATOR))
@@ -295,7 +301,7 @@ private:
 	}
 	void _ActivateMenu(uint16_t Index) {
 		if (!(States & MENU_CF_OPEN_ON_POINTEROVER)) {
-			auto &item = ItemArray[Index];
+			auto &item = items[Index];
 			if (item.pSubmenu) {
 				if ((item.Flags & MENU_IF_DISABLED) == 0) {
 					if (!(States & MENU_SF_ACTIVE)) {
@@ -304,7 +310,7 @@ private:
 						_SetSelection(Index);
 					}
 					else if (States & MENU_CF_CLOSE_ON_SECOND_CLICK) {
-						if ((int)Index == Sel) {
+						if (Index == Sel) {
 							_CloseSubmenu();
 							States &= ~MENU_SF_ACTIVE;
 						}
@@ -449,25 +455,25 @@ private:
 			rFill.x1 = xSize - EffectSize - 1;
 			rText.x0 = rFill.x0 + Props.Border.x0;
 			for (uint16_t i = 0; i < NumItems; i++) {
-					auto &item = ItemArray[i];
-					auto ItemHeight = _GetItemHeight(i);
-					_SetPaintColors(item, i);
-					rFill.y1 = rFill.y0 + ItemHeight - 1;
-					if (item.Flags & MENU_IF_SEPARATOR) {
-						GUI.Clear(rFill);
-						GUI.Color(RGBC::Gray(0x7C));
-						GUI.DrawHLine(rFill.y0 + Props.Border.y0 + 1, rFill.x0 + 2, rFill.x1 - 2);
-					}
-					else {
-						auto TextWidth = item.TextWidth;
-						rText.x1 = rText.x0 + TextWidth - 1;
-						rText.y0 = rFill.y0 + Props.Border.y0;
-						rText.y1 = rText.y0 + FontHeight - 1;
-						GUI.Clear(rFill);
-						GUI_DispStringInRect(item.pText, rText, TEXTALIGN_LEFT | TEXTALIGN_VCENTER);
-					}
-					rFill.y0 += ItemHeight;
+				auto &item = items[i];
+				auto ItemHeight = _GetItemHeight(i);
+				_SetPaintColors(item, i);
+				rFill.y1 = rFill.y0 + ItemHeight - 1;
+				if (item.Flags & MENU_IF_SEPARATOR) {
+					GUI.Clear(rFill);
+					GUI.Color(RGBC::Gray(0x7C));
+					GUI.DrawHLine(rFill.y0 + Props.Border.y0 + 1, rFill.x0 + 2, rFill.x1 - 2);
 				}
+				else {
+					auto TextWidth = item.TextWidth;
+					rText.x1 = rText.x0 + TextWidth - 1;
+					rText.y0 = rFill.y0 + Props.Border.y0;
+					rText.y1 = rText.y0 + FontHeight - 1;
+					GUI.Clear(rFill);
+					GUI_DispStringInRect(item.pText, rText, TEXTALIGN_LEFT | TEXTALIGN_VCENTER);
+				}
+				rFill.y0 += ItemHeight;
+			}
 		}
 		else {
 			auto ySize = _CalcMenuSizeY();
@@ -475,24 +481,24 @@ private:
 			rText.y0 = rFill.y0 + Props.Border.y0;
 			rText.y1 = rText.y0 + FontHeight - 1;
 			for (uint16_t i = 0; i < NumItems; i++) {
-					auto &item = ItemArray[i];
-					auto ItemWidth = _GetItemWidth(i);
-					_SetPaintColors(item, i);
-					rFill.x1 = rFill.x0 + ItemWidth - 1;
-					if (item.Flags & MENU_IF_SEPARATOR) {
-						GUI.Clear(rFill);
-						GUI.Color(RGBC::Gray(0x7C));
-						GUI.DrawVLine(rFill.x0 + Props.Border.x0 + 1, rFill.y0 + 2, rFill.y1 - 2);
-					}
-					else {
-						auto TextWidth = item.TextWidth;
-						rText.x0 = rFill.x0 + Props.Border.x0;
-						rText.x1 = rText.x0 + TextWidth - 1;
-						GUI.Clear(rFill);
-						GUI_DispStringInRect(item.pText, rText, TEXTALIGN_LEFT | TEXTALIGN_VCENTER);
-					}
-					rFill.x0 += ItemWidth;
+				auto &item = items[i];
+				auto ItemWidth = _GetItemWidth(i);
+				_SetPaintColors(item, i);
+				rFill.x1 = rFill.x0 + ItemWidth - 1;
+				if (item.Flags & MENU_IF_SEPARATOR) {
+					GUI.Clear(rFill);
+					GUI.Color(RGBC::Gray(0x7C));
+					GUI.DrawVLine(rFill.x0 + Props.Border.x0 + 1, rFill.y0 + 2, rFill.y1 - 2);
 				}
+				else {
+					auto TextWidth = item.TextWidth;
+					rText.x0 = rFill.x0 + Props.Border.x0;
+					rText.x1 = rText.x0 + TextWidth - 1;
+					GUI.Clear(rFill);
+					GUI_DispStringInRect(item.pText, rText, TEXTALIGN_LEFT | TEXTALIGN_VCENTER);
+				}
+				rFill.x0 += ItemWidth;
+			}
 		}
 
 		if (Width || Height) {
@@ -527,12 +533,9 @@ private:
 						pObj->_ForwardPIDMsgToOwner(WM_MOUSEOVER, (const PID_STATE *)Data);
 				return 0;
 #endif
-			case WM_DELETE: {
-				for (uint16_t i = 0, n = pObj->ItemArray.NumItems(); i < n; i++)
-					GUI_MEM_FreePtr((void **)&pObj->ItemArray[i].pText);
-				pObj->ItemArray.Delete();
+			case WM_DELETE:
+				pObj->~Menu();
 				return 0;
-			}
 		}
 		return pObj->WidgetProc(MsgId, Data);
 	}
@@ -553,14 +556,14 @@ private:
 
 	void _RecalcTextWidthOfItems() {
 		for (uint16_t i = 0, NumItems = GetNumItems(); i < NumItems; i++) {
-			auto &item = ItemArray[i];
+			auto &item = items[i];
 			item.TextWidth = Props.pFont->TextBound(item.pText).x;
 		}
 	}
 	bool _SetItem(uint16_t Index, const ItemData *pItemData) {
-		if (Index >= ItemArray.NumItems())
+		if (Index >= items.NumItems())
 			return false;
-		auto &item = ItemArray[Index];
+		auto &item = items[Index];
 		item.Id        = pItemData->Id;
 		item.Flags     = pItemData->Flags;
 		item.pSubmenu  = pItemData->Flags & MENU_IF_SEPARATOR ? nullptr : pItemData->pSubmenu;
@@ -571,14 +574,14 @@ private:
 		return true;
 	}
 	void _SetItemFlags(uint16_t Index, uint16_t Mask, uint16_t Flags) {
-		auto &item = ItemArray[Index];
+		auto &item = items[Index];
 		item.Flags &= ~Mask;
 		item.Flags |= Flags;
 	}
 	int _FindItem(uint16_t ItemId, Menu **pMenu) {
 		auto NumItems = GetNumItems();
 		for (uint16_t i = 0; i < NumItems; i++) {
-			auto &item = ItemArray[i];
+			auto &item = items[i];
 			if (item.Id == ItemId) {
 				*pMenu = this;
 				return i;
@@ -617,6 +620,7 @@ public:
 public:
 
 #pragma region Properties
+	auto Font() const { return Props.pFont; }
 	void Font(PCFONT pFont) {
 		if (pFont == Props.pFont)
 			return;
@@ -624,13 +628,17 @@ public:
 		_RecalcTextWidthOfItems();
 		_ResizeMenu();
 	}
+
+	auto Brush(MENU_CI ColorIndex) const { return Props.aBrush[ColorIndex]; }
 	void Brush(MENU_CI ColorIndex, BRUSH brush) {
 		if (Props.aBrush[ColorIndex] == brush)
 			return;
 		Props.aBrush[ColorIndex] = brush;
 		Invalidate();
 	}
-	void SetBorder(RECT Border) {
+
+	auto Border() const { return Props.Border; }
+	void Border(RECT Border) {
 		if (Props.Border == Border)
 			return;
 		Props.Border = Border;
@@ -638,25 +646,25 @@ public:
 	}
 #pragma endregion
 
-	auto GetNumItems() const { return ItemArray.NumItems(); }
+	auto GetNumItems() const { return items.NumItems(); }
 	void AddItem(const ItemData *pItemData) {
 		if (!pItemData)
 			return;
-		if (ItemArray.AddItem() != 0)
+		if (items.AddItem() != 0)
 			return;
 		auto Index = GetNumItems() - 1;
 		if (_SetItem(Index, pItemData))
 			_ResizeMenu();
 		else
-			ItemArray.DeleteItem(Index);
+			items.Delete(Index);
 	}
 	void DeleteItem(uint16_t ItemId) {
 		Menu *pMenu;
 		auto Index = _FindItem(ItemId, &pMenu);
 		if (Index < 0)
 			return;
-		GUI_MEM_FreePtr((void **)&pMenu->ItemArray[Index].pText);
-		ItemArray.DeleteItem(Index);
+		GUI_MEM_FreePtr((void **)&pMenu->items[Index].pText);
+		items.Delete(Index);
 		_ResizeMenu();
 	}
 	void InsertItem(uint16_t ItemId, const ItemData *pItemData) {
@@ -666,12 +674,11 @@ public:
 		auto Index = _FindItem(ItemId, &pMenu);
 		if (Index < 0)
 			return;
-		if (ItemArray.InsertBlankItem(Index) != 0)
-			return;
+		items.Insert(Index);
 		if (_SetItem(Index, pItemData))
 			_ResizeMenu();
 		else
-			ItemArray.DeleteItem(Index);
+			items.Delete(Index);
 	}
 	void GetItem(uint16_t ItemId, ItemData *pItemData) {
 		if (!pItemData)
@@ -680,7 +687,7 @@ public:
 		auto Index = _FindItem(ItemId, &pMenu);
 		if (Index < 0)
 			return;
-		auto &item = ItemArray[Index];
+		auto &item = items[Index];
 		pItemData->Flags = item.Flags;
 		pItemData->Id = item.Id;
 		pItemData->pSubmenu = item.pSubmenu;

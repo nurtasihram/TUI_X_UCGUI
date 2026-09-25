@@ -15,10 +15,10 @@ public:
 	ARRAY() = default;
 	ARRAY(uint16_t nItems) : nItems(nItems) {
 		pArray = (T*)GUI_MEM_Alloc((size_t)nItems * sizeof(T));
+		for (auto i = pArray, n = pArray + nItems; i < n; ++i)
+			new(i) T;
 	}
 	~ARRAY() { Delete(); }
-
-	auto GetnItems() const { return nItems; }
 
 	void Delete() {
 		if (pArray) {
@@ -42,7 +42,7 @@ public:
 		if (Index >= nItems || !pArray)
 			return;
 		pArray[Index].~T();
-		for (uint16_t i = Index; i + 1 < nItems; ++i)
+		for (uint16_t i = Index; i + 1 < nItems; ++i) /////
 			pArray[i] = pArray[i + 1];
 		if (--nItems)
 			pArray = (T*)GUI_MEM_Realloc((void*)pArray, (size_t)nItems * sizeof(T));
@@ -54,9 +54,7 @@ public:
 
 	inline T &Add() {
 		pArray = (T*)GUI_MEM_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
-		auto &item = pArray[nItems++];
-		item = {};
-		return item;
+		return *(new(pArray + nItems++) T);
 	}
 
 	inline T &Insert(unsigned Index) {
@@ -89,30 +87,6 @@ public:
 			pArray[nItems] = {};
 		++nItems;
 		return 0;
-	}
-
-	void DeleteItem(unsigned int Index) {
-		Delete((uint16_t)Index);
-	}
-
-	char InsertBlankItem(unsigned int Index) {
-		if (Index > nItems)
-			return 0;
-		auto pNew = (T*)GUI_MEM_Realloc((void*)pArray, (size_t)(nItems + 1) * sizeof(T));
-		if (!pNew)
-			return 0;
-		pArray = pNew;
-		for (uint16_t i = nItems; i > Index; --i)
-			pArray[i] = pArray[i - 1];
-		pArray[Index] = {};
-		++nItems;
-		return 1;
-	}
-
-	T *InsertItem(unsigned int Index) {
-		if (!InsertBlankItem(Index))
-			return nullptr;
-		return &pArray[Index];
 	}
 
 	T &operator[](uint16_t Index) { return pArray[Index]; }

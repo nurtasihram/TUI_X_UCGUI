@@ -19,7 +19,6 @@ private:
 	WObj *pFocussedChild = nullptr;
 	DIALOG_STATUS *pDialogStatus = nullptr;
 
-private:
 	void _OnChildHasFocus(const NOTIFY_CHILD_HAS_FOCUS_INFO* pInfo) {
 		if (!pInfo) return;
 		/* A child has received the focus, Framewindow needs to be activated */
@@ -42,7 +41,9 @@ private:
 		auto pObj = (Window*)pWin;
 		auto cb = pObj->cb;
 		switch (MsgId) {
-		case WM_CREATE:
+		case WM_PAINT:
+			GUI.BkColor(pObj->Props.BkColor);
+			GUI.Clear();
 			return 0;
 		case WM_PID_STATE_CHANGED:
 			if (auto pInfo = (const PID_CHANGED_INFO *)Data)
@@ -69,10 +70,6 @@ private:
 		case WM_KEY:
 			pObj->_OnKey((const KEY_STATE*)Data);
 			break;
-		case WM_PAINT:
-			GUI.BkColor(pObj->Props.BkColor);
-			GUI.Clear();
-			return 0;
 		case WM_GET_BKCOLOR:
 			return pObj->Props.BkColor;
 		}

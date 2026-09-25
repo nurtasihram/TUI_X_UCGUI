@@ -44,6 +44,12 @@ private:
 	uint16_t Height = Props.apBmRadio[0]->Size.y + RADIO_BORDER * 2;
 	uint8_t  GroupId = 0;
 
+	~Radio() {
+		for (int i = 0, n = TextArray.NumItems(); i < n; i++)
+			GUI_MEM_Free(TextArray[i]);
+		TextArray.Delete();
+	}
+
 	void _OnPaint() const {
 		/* Init some data */
 		bool HasFocus = States & WIDGET_STATE_FOCUS;
@@ -115,20 +121,18 @@ private:
 			Notification = WM_NOTIFICATION_MOVED_OUT;
 		NotifyParent(Notification);
 	}
-	char _OnKey(const KEY_STATE *pInfo) {
+	bool _OnKey(const KEY_STATE *pInfo) {
 		if (pInfo->PressedCnt > 0) {
 			switch (pInfo->Key) {
-				case GUI_KEY_RIGHT:
-				case GUI_KEY_DOWN:
+				case GUI_KEY_RIGHT: case GUI_KEY_DOWN:
 					Inc();
-					return 1;
-				case GUI_KEY_LEFT:
-				case GUI_KEY_UP:
+					return true;
+				case GUI_KEY_LEFT: case GUI_KEY_UP:
 					Dec();
-					return 1;
+					return true;
 			}
 		}
-		return 0;
+		return false;
 	}
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
@@ -147,9 +151,7 @@ private:
 					return 0;
 				break;
 			case WM_DELETE:
-				for (int i = 0; i < pObj->TextArray.NumItems(); i++)
-					GUI__SetText(pObj->TextArray[i], nullptr);
-				pObj->TextArray.Delete();
+				pObj->~Radio();
 				return 0;
 		}
 		return pObj->WidgetProc(MsgId, Data);
@@ -318,9 +320,6 @@ Radio::Properties Radio::DefaultProps;
 
 }
 
-#define RADIO_BKCOLOR0_DEFAULT RGBC::Gray(0xc0)           /* Inactive color */
-#define RADIO_BKCOLOR1_DEFAULT RGB_WHITE          /* Active color */
-
 static const uint8_t _pxRadio[]{
 ________,XXXXXXXX,________,
 ____XXXX,oooooooo,XXXX____,
@@ -335,8 +334,8 @@ __XX____,dddddddd,____dd__,
 ____dddd,________,dddd____,
 ________,dddddddd,________,
 };
-static CLOGPALETTE _PalRadioDisabled{ RGB_INVALID, RGB_GRAY, RGB_BLACK, RADIO_BKCOLOR0_DEFAULT };
-static CLOGPALETTE _PalRadioEnabled{ RGB_INVALID, RGB_GRAY, RGB_BLACK, RADIO_BKCOLOR1_DEFAULT };
+static CLOGPALETTE _PalRadioDisabled{ RGB_INVALID, RGB_GRAY, RGB_BLACK, RGBC::Gray(0xc0) };
+static CLOGPALETTE _PalRadioEnabled{ RGB_INVALID, RGB_GRAY, RGB_BLACK, RGB_WHITE };
 CBITMAP _abmRadio[]{
 	{ 12, 3, BPP_2, _pxRadio, _PalRadioDisabled },
 	{ 12, 3, BPP_2, _pxRadio, _PalRadioEnabled }

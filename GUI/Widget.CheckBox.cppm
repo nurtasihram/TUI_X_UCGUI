@@ -31,8 +31,8 @@ public:
 			/*   Active 3-State */ &abmCheckEnabled[1]
 		};
 		RGBC aBkColorBox[2]{
-			/* Inactive */	RGB_GRAY,
-			/* Active */	RGB_WHITE
+			/* Inactive */ RGB_GRAY,
+			/*   Active */ RGB_WHITE
 		};
 		BRUSH brush{ RGBC::Gray(0xE4), RGB_BLACK };
 		TEXTALIGN Align{ TEXTALIGN_LEFT | TEXTALIGN_VCENTER };
@@ -69,6 +69,7 @@ private:
 		/* Draw the text */
 		auto rText = ClientRect();
 		rText.x0 += RectBox.x1 + 1 + Props.Spacing;
+		GUI.Brush(Props.brush);
 		GUI.Font(Props.pFont);
 		GUI_DispStringInRect(text, rText, Props.Align);
 		/* Draw focus rectangle */
@@ -114,18 +115,18 @@ private:
 			Notification = WM_NOTIFICATION_MOVED_OUT;
 		NotifyParent(Notification);
 	}
-	char _OnKey(const KEY_STATE *pInfo) {
+	bool _OnKey(const KEY_STATE *pInfo) {
 		if (IsEnabled()) {
 			if (pInfo->PressedCnt > 0) {
 				switch (pInfo->Key) {
 					case GUI_KEY_SPACE:
 						CurrentState = (CurrentState + 1) % NumStates;
 						Invalidate();
-						return 1;
+						return true;
 				}
 			}
 		}
-		return 0;
+		return false;
 	}
 
 	static WM_PARAM _Callback(WObj *pWin, int MsgId, WM_PARAM Data) {
@@ -157,19 +158,20 @@ private:
 			r.y1 = r.y0 + DefaultProps.apBm[0]->Size.y + EffectSize;
 	}
 public:
-	CheckBox(RECT r, WM_CF Style, WObj *pParent, uint16_t Id) :
+	CheckBox(RECT r, WM_CF Style, WObj *pParent, uint16_t Id, const char *pText = nullptr) :
 		Widget((_AdjRect(r), r), Style, _Callback, pParent, Id, WIDGET_STATE_FOCUSSABLE),
 		NumStates(2),
-		CurrentState(0) {}
+		CurrentState(0) { text.Set(pText); }
 	static Widget *CreateIndirect(const CreateStruct *pCreateInfo, WObj *pWinParent, int x0, int y0, WM_CALLBACK *cb) {
 		return new CheckBox(
 			RECT::LeftTop({ pCreateInfo->x0 + x0, pCreateInfo->y0 + y0 },
 						  { pCreateInfo->xSize, pCreateInfo->ySize }),
-			pCreateInfo->Flags, pWinParent, pCreateInfo->Id);
+			pCreateInfo->Flags, pWinParent, pCreateInfo->Id, pCreateInfo->pName);
 	}
 public:
 
 #pragma region Properties
+	auto Font() const { return Props.pFont; }
 	void Font(PCFONT pFont) {
 		if (Props.pFont == pFont)
 			return;
@@ -177,6 +179,7 @@ public:
 		Invalidate();
 	}
 
+	auto TextAlign() const { return Props.Align; }
 	void TextAlign(TEXTALIGN Align) {
 		if (Props.Align == Align)
 			return;
@@ -184,6 +187,7 @@ public:
 		Invalidate();
 	}
 
+	auto Brush() const { return Props.brush; }
 	void Brush(BRUSH brush) {
 		if (Props.brush == brush)
 			return;
@@ -198,7 +202,8 @@ public:
 		Invalidate();
 	}
 
-	void SetSpacing(uint8_t Spacing) {
+	auto Spacing() const { return Props.Spacing; }
+	void Spacing(uint8_t Spacing) {
 		if (Props.Spacing == Spacing)
 			return;
 		Props.Spacing = Spacing;
@@ -217,6 +222,16 @@ public:
 		}
 	}
 
+#pragma endregion
+
+	void SetText(const char *s) {
+		if (text.Set(s))
+			Invalidate();
+	}
+
+	bool Checked() const { return CurrentState == 1; }
+
+	auto GetState() const { return CurrentState; }
 	void SetState(uint8_t State) {
 		if (NumStates < State)
 			return;
@@ -225,16 +240,6 @@ public:
 		CurrentState = State;
 		Invalidate();
 	}
-#pragma endregion
-
-	void SetText(const char *s) {
-		if (text.Set(s))
-			Invalidate();
-	}
-
-	auto GetState() { return CurrentState; }
-	bool IsChecked() { return CurrentState == 1; }
-
 };
 
 CheckBox::Properties CheckBox::DefaultProps;
@@ -246,7 +251,7 @@ static CLOGPALETTE _PalCheckDisabled{ RGBC::Gray(0x10),RGB_GRAY };
 static CLOGPALETTE _PalCheckEnabled{ RGB_BLACK, RGB_WHITE };
 
 /* Pixel data */
-static const uint8_t _pxCheckEnabled[] = {
+static const uint8_t _pxCheckEnabled[]{
 XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,__XXXX__________,
@@ -260,8 +265,8 @@ XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,XXXXXX__________};
 /* Bitmaps */
 CBITMAP CheckBox::abmCheckEnabled[2]{
-	{ { 11, 11 }, 2, BPP_1, _pxCheckEnabled,  _PalCheckDisabled },
-	{ { 11, 11 }, 2, BPP_1, _pxCheckEnabled,  _PalCheckEnabled  }
+	{ 11, 2, BPP_1, _pxCheckEnabled,  _PalCheckDisabled },
+	{ 11, 2, BPP_1, _pxCheckEnabled,  _PalCheckEnabled  }
 };
 
 /* Pixel data */
@@ -279,6 +284,6 @@ XXXXXXXXXXXXXXXX,XXXXXX__________,
 XXXXXXXXXXXXXXXX,XXXXXX__________};
 /* Bitmaps */
 CBITMAP CheckBox::abmCheckDisabled[2]{
-	{ { 11, 11 }, 2, BPP_1, _pxCheckDisabled,  _PalCheckDisabled },
-	{ { 11, 11 }, 2, BPP_1, _pxCheckDisabled,  _PalCheckEnabled }
+	{ 11, 2, BPP_1, _pxCheckDisabled,  _PalCheckDisabled },
+	{ 11, 2, BPP_1, _pxCheckDisabled,  _PalCheckEnabled }
 };
